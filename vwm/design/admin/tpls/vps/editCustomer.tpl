@@ -63,11 +63,11 @@
 	<tr>
 		<td>Balance</td>
 		{if $what2edit == "balance"}
-			<td>$ {$customer.balance} <select name="operation">
+			<td>{$curentCurrency.sign} {$customer.balance} <select name="operation">
 											<option value="+" {if $operation == "+"}selected{/if}>+</option>
 											<option value="-" {if $operation == "-"}selected{/if}>-</option>
 										</select>
-										$<input type="text" name="balance" value="{$addToBalance}">
+										{$curentCurrency.sign}<input type="text" name="balance" value="{$addToBalance}">
 										{if $problem.balance}Fail{/if}			
 		{else}
 			<td>${$customer.balance}</td>

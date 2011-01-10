@@ -528,6 +528,9 @@
 							break;
 					}
 					
+					$curentCurrency = $billing->getCurrencyByCustomer($customerID);
+					
+					$smarty->assign('curentCurrency',$curentCurrency);
 					$smarty->assign('customer',$customerDetails);
 					$smarty->assign('billingPlan',$billingPlan);
 					$smarty->assign('availableBillingPlans',$availableBillingPlans);					

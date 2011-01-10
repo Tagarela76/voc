@@ -271,7 +271,7 @@ class VPSUser {
 
 			$timeData = (date('Y') - date('Y',strtotime($c['trial_end_date'])))*12 + 
 				(date('n') - date('n',strtotime($c['trial_end_date']))) - 
-				((date('j') - date('j',strtotime($c['trial_end_date'])) >= 0)? 0 : 1 );
+				((date('j') - date('j',strtotime($c['trial_end_date'])) >= 0)? 0 : 1 ); //govnokod
 			
 			$customer = array(
 				'id'				=>	$c['customer_id'],
@@ -283,7 +283,8 @@ class VPSUser {
 				'discount'			=>  $c['discount'],
 				'status'			=>  $c['status'],
 				'balance'			=>  $c['balance'],
-				'time_with_us'		=>  (($timeData > 0)?$timeData:0)
+				'time_with_us'		=>  (($timeData > 0)?$timeData:0),
+				'currencySign'		=>	$c['currencySign']
 			);
 			
 			$customers[]=$customer;

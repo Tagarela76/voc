@@ -48,7 +48,7 @@
 	</tr>
 	<tr>
 		<td>Balance</td>
-		<td>$ {$customer.balance} <input type="button" class="button" onclick="location.href='admin.php?action=vps&vpsAction=showEdit&itemID=customer&what2edit=balance&customerID={$customer.id}'" value="Edit"/></td>
+		<td>{$currencySign} {$customer.balance} <input type="button" class="button" onclick="location.href='admin.php?action=vps&vpsAction=showEdit&itemID=customer&what2edit=balance&customerID={$customer.id}'" value="Edit"/></td>
 		
 	</tr>
 	<tr>
@@ -210,22 +210,22 @@
 				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].invoiceID}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].oneTimeCharge}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].oneTimeCharge}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].amount}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].amount}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].discount}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].discount}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].total}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].total}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].paid}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].paid}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;${$invoices[i].due}</div></a>
+				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left">&nbsp;{$invoices[i].sign}{$invoices[i].due}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
 				<a href="admin.php?action=vps&vpsAction=viewDetails&itemID=invoice&invoiceID={$invoices[i].invoiceID}"><div align="left" >&nbsp;{$invoices[i].generationDate}</div></a>

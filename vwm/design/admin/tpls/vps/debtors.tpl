@@ -41,7 +41,7 @@
         	<td>{$customers[i].name}</td>
         	<td>{$customers[i].phone}</td>
         	<td>{$billingPlans[i].bplimit} sources {$billingPlans[i].months_count} months {$billingPlans[i].type}</td>
-        	<td>$ {$customers[i].balance}</td>
+        	<td>{$customers[i].currencySign} {$customers[i].balance}</td>
         	<td>{if $customers[i].status == "on"}yes{elseif $customers[i].status == "off"}no{/if}</td>        	 
     	</tr>
     	{/section}

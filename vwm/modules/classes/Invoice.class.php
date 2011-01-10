@@ -1242,8 +1242,10 @@ class Invoice {
 					inv.status,
 					inv.currency_id, 
 					inv.suspension_disable as 'suspensionDisable',
-					vps_customer.balance as 'customer_balance'	
-					FROM vps_invoice inv, vps_invoice_item it, vps_customer WHERE inv.invoice_id = it.invoice_id and inv.customer_id = vps_customer.customer_id";
+					vps_customer.balance as 'customer_balance'	, 
+					vps_currency.sign
+					FROM vps_invoice inv, vps_invoice_item it, vps_customer, vps_currency WHERE inv.invoice_id = it.invoice_id and inv.customer_id = vps_customer.customer_id
+					and vps_currency.id = inv.currency_id ";
 		if($customerID and is_numeric($customerID))
 		{
 			$query .= " AND inv.customer_id = $customerID";
@@ -1273,6 +1275,8 @@ class Invoice {
 		}
 		
 		$query .= " GROUP BY inv.invoice_id";
+		
+	
 					return $query;
     }
     

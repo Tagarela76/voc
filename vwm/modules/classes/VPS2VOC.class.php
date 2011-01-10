@@ -69,12 +69,18 @@ class VPS2VOC {
     	
     	$customerDetails = array();
 
-    	$query = "SELECT * FROM `".TB_COMPANY."` c, `".TB_VPS_CUSTOMER."` vc " .
-    			"WHERE c.company_id = vc.customer_id ";
+    	$query = "SELECT c . * , vc . * , cur.sign AS currencySign
+				FROM ".TB_COMPANY." c, ".TB_VPS_CUSTOMER." vc, ".TB_VPS_CURRENCY." cur
+				WHERE c.company_id = vc.customer_id
+				AND cur.id = vc.currency_id ";
+    	
+    	/*$query = "SELECT * FROM `".TB_COMPANY."` c, `".TB_VPS_CUSTOMER."` vc " .
+    			"WHERE c.company_id = vc.customer_id ";*/
     	if(!is_null($customerID)) {
     		$customerID = (int)$customerID;
     		$query .= "AND vc.customer_id = '$customerID' LIMIT 1";
     	}
+    	
 
     	$this->db->query($query);
     	
