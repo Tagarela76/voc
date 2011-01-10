@@ -1258,12 +1258,12 @@
 								if($newBillingDetails['type'] != $currentBillingPlan['type'] and $applyWhen == "asap")
 								{
 									$appliedModules = $billing->getPurchasedModule($customerID,null,'today&future','today',$currentCurrency['id']);
-									echo "CANCEL ALL MODULES";
+									//echo "CANCEL ALL MODULES";
 									var_dump($appliedModules);
 									foreach($appliedModules as $module)
 									{
 										$billing->removeModuleBillingPlan($customerID,$module['id']);
-										echo "<br/>module {$module['id']} deleted<br/>";
+										//echo "<br/>module {$module['id']} deleted<br/>";
 									}
 								}
 								
@@ -1271,8 +1271,8 @@
 								
 								$result = $billing->setScheduledPlan($customerID, $newBillingPlanID, $applyWhen);
 								
-								echo "<a href='vps.php?action=viewDetails&category=billing&subCategory=MyBillingPlan'>next</a>";
-								exit;
+								//echo "<a href='vps.php?action=viewDetails&category=billing&subCategory=MyBillingPlan'>next</a>";
+								//exit;
 								
 								header("Location: vps.php?action=viewDetails&category=billing&subCategory=MyBillingPlan");
 
