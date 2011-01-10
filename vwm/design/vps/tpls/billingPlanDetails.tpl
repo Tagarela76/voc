@@ -69,7 +69,7 @@
 						One Time Setup Charge:
 					</td>
 					<td class="pcenter">
-						{$currentCurrency.sign} {$billingPlan.one_time_charge}
+						{$totalCurrency.sign} {$billingPlan.one_time_charge}
 					</td>
 				</tr>
 				<tr>
@@ -77,7 +77,7 @@
 						Cost:
 					</td>
 					<td class="pcenter">
-						{$currentCurrency.sign} {$billingPlan.price}
+						{$totalCurrency.sign} {$billingPlan.price}
 					</td>
 				</tr>
 				<tr>
@@ -89,7 +89,7 @@
 						{/if}
 					</td>
 					<td class="pcenter">
-						<b>{$currentCurrency.sign} {$totalInvoice}</b>
+						<b>{$totalCurrency.sign} {$totalInvoice}</b>
 					</td>
 				</tr>									
 			</table>

@@ -629,6 +629,8 @@
 										$totalInvoice = $currentInvoice['billing_total_price'];
 										$totalCurrency = $billing->getCurrencyDetails($currentInvoice['currency_id']);
 									}									 					
+									$customerPlan['one_time_charge'] = $currentInvoice['oneTimeCharge'];
+									$customerPlan['price'] = $currentInvoice['amount'];
 									
 									$smarty->assign("billingPlan",$customerPlan);
 									$smarty->assign("totalInvoice", number_format($totalInvoice, 2));
@@ -714,10 +716,11 @@
 								//getting available billing plans
 								$billingPlanList = $billing->getAvailablePlans($currency['id']);								
 								$smarty->assign("availablePlans",$billingPlanList);
+								
 					
 								//distinct months count and user count
 								$months = $billing->getDistinctMonths();
-								$sources = $billing->getDistinctSource();
+								$sources = $billing->getDistinctSource($currency['id']);
 								
 								//remove options with less emission sources than current are 
 								//for($i=0;$i<count($sources);$i++) {
