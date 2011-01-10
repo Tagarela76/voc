@@ -487,7 +487,13 @@ class Billing {
     	
     	//	if exist already exist? - ?? if we want to add it for future it's a fail - we can't!
     	$saveModuleBillingPlanIDs = array();
+    	
+    	//	sometimes $moduleBillingPlanIDs is array, sometimes as int. 
+    	//	here we always convert $moduleBillingPlanIDs to array
+    	$moduleBillingPlanIDs = (is_array($moduleBillingPlanIDs) ? $moduleBillingPlanIDs : array($moduleBillingPlanIDs));
+    	
     	foreach($moduleBillingPlanIDs as $moduleBillingPlanID) { 
+    		
 	    	if (!$this->_isModule2CustomerLink($customerID, $moduleBillingPlanID)) {
 	    		//it's did not exist yet
 	    		$saveModuleBillingPlanIDs []= $moduleBillingPlanID;
@@ -496,7 +502,7 @@ class Billing {
     	if(empty($saveModuleBillingPlanIDs)) {
     		return false;//no need in apply
     	}
-    	
+
     	//now remove old conflicted modules plans and group all ids by month_count
     	$moduleBPIDsByMonthCount = array();
 		foreach ($saveModuleBillingPlanIDs as $moduleBillingPlanID) {

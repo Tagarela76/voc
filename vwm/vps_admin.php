@@ -2049,7 +2049,10 @@
 								//$billingPlanID=$billing->getBillingPlanIDWithModuleName($_POST['module_name']);											
 								//$invoice->createInvoiceForModule($customerID,$_POST['startDate'],$billingPlanID);	
 								$billingPlanID = $billing->getModulePlanByParams($_POST['module_name'],$_POST['bp_type'],$_POST['period']);
-								$billing->applyModuleBillingPlan($customerID,$billingPlanID,$_POST['startDate']);	
+								
+								$db->beginTransaction();
+								$billing->applyModuleBillingPlan($customerID,$billingPlanID,$_POST['startDate']);
+								$db->commitTransaction();	
 								break;
 							case "custom":						
 								$customInfo = "'".$_POST['customInfo']."'";
