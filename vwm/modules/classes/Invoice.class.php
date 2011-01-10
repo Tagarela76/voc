@@ -32,8 +32,9 @@ class Invoice {
      * @param date $periodStartDate
      * @param int $billingID
      * @param array() $multiInvoiceData
+     * @param status = due. if not due = autopay is disabled
      */
-    public function createMultiInvoiceForNewCustomer($customerID,$periodStartDate,$billingID,$multiInvoiceData) {    	
+    public function createMultiInvoiceForNewCustomer($customerID,$periodStartDate,$billingID,$multiInvoiceData,$status = 'due') {    	
     	
     	$billing = new Billing($this->db);
     	$currencyDetails = $billing->getCurrencyByCustomer($customerID);
@@ -60,7 +61,7 @@ class Invoice {
 		
 		$total = $this->calculateTotal($oneTimeCharge, $totalSum, $discount);
 		
-		$status = "due";
+		
 		
 		$currencyDetails = $billing->getCurrencyByCustomer($customerID);
 		if (!$currencyDetails) {
@@ -91,7 +92,15 @@ class Invoice {
 		//	TODO: start transaction from controller 
 		//$this->db->beginTransaction(); // Start Transaction
 		
-		$invoiceID = $this->insertInvoice($invoiceData); // Create Invoice items For Billing
+		if($status != "due")
+		{
+			$autopay = false;
+		}
+		else
+		{
+			$autopay = true;
+		}
+		$invoiceID = $this->insertInvoice($invoiceData,$autopay); // Create Invoice items For Billing
 		
 		if(!isset($invoiceID) or $invoiceID == 0) {
 			die( "invoiceID is 0");
@@ -150,7 +159,7 @@ class Invoice {
     			'currency_id'		=> 	$currencyDetails['id']		
     		);
     		
-    		$this->insertInvoice($invoiceData);
+    		$this->insertInvoice($invoiceData,$autopay);
     		
     		$modulesToBilling []= $module['id'];
 		}
@@ -1077,8 +1086,8 @@ class Invoice {
 		$row = $this->db->fetch_array(0);
 		$moduleID = $row['module_id'];
 		
-		echo $query;
-		p("moduleID",$moduleID);
+		//echo $query;
+		//p("moduleID",$moduleID);
     	
     	$query = "SELECT inv.invoice_id
 					FROM vps_invoice_item item, vps_invoice inv
@@ -1091,7 +1100,7 @@ class Invoice {
 		$row = $this->db->fetch_array(0);
 		$invoiceID = $row['invoice_id'];
 		
-		p("invoiceID",$invoiceID);
+		//p("invoiceID",$invoiceID);
 		
 		return $invoiceID;
      }
@@ -1872,7 +1881,7 @@ class Invoice {
 	}
 	
 		
-	public function cancelInvoice($invoiceID,$type='canceled') 
+	public function cancelInvoice($invoiceID,$type='CANCELED') 
 	{				
 		//echo "<br/>cancelInvoice";
 		$invoiceDetails = $this->getInvoiceDetails($invoiceID);		
@@ -1901,7 +1910,8 @@ class Invoice {
 			$ar = $this->db->fetch_all_array();
 			$m2cID = $ar[0]['id'];
 			
-			$query = "DELETE FROM ".TB_VPS_MODULE2CUSTOMER." WHERE id = $m2cID";  	
+			$query = "DELETE FROM ".TB_VPS_MODULE2CUSTOMER." WHERE id = $m2cID"; 
+			 	
 			$this->db->exec($query);
 		}
 		
@@ -2093,7 +2103,7 @@ class Invoice {
     }
 
 
-	private function insertInvoice($invoiceData) {
+	private function insertInvoice($invoiceData,$autopay = true) {
 		//echo "<br/>insertInvoice";						
 		
 		$query = "INSERT INTO ".TB_VPS_INVOICE." (customer_id, discount, total, paid, due, generation_date, suspension_date, period_start_date, period_end_date, status, suspension_disable, currency_id) VALUES ( " .
@@ -2151,8 +2161,10 @@ class Invoice {
     	    			    	    	    	
     	//pay from/to balance
     	$invoiceData['invoiceID'] = $insertedInvoiceID; // TODO: вынести автоматическую оплату внаружу
-    	
-    	$this->payInvoiceFromBalance($invoiceData);
+    	if($autopay)
+    	{
+    		$this->payInvoiceFromBalance($invoiceData);
+    	}
 		
 		$this->emailNotification($invoiceData['customerID'], 'new');	
 		

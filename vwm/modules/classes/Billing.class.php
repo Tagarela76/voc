@@ -718,20 +718,20 @@ class Billing {
 	    		 p("IDs");
 	    		 var_dump($moduleIDs);
 	    		 p("modules");
-	    		 $modules = $this->getModulesBillingByIDs($moduleIDs);
+	    		 $modules = $this->getModulesBillingByIDs($moduleIDs,$currency['id']);
 	    		 
 	    		 p("deleting module id:",$deletingModuleID);
 	    		 
-	    		 $deletingModuleInfo = $this->getModulesBillingByIDs(array($deletingModuleID));
+	    		 $deletingModuleInfo = $this->getModulesBillingByIDs(array($deletingModuleID),$currency['id']);
 	    		 $deletingModuleInfo = $deletingModuleInfo[0];
+	    		 echo "deletingModuleInfo:";
+	    		 echo "<br/>";
 	    		 var_dump($deletingModuleInfo);
 	    		 
 	    		 
 	    		 $multiInvoiceData = array();
 	    		 $multiInvoiceData['billingID'] = $billingID;
 	    		 $multiInvoiceData['appliedModules'] = $modules;
-	    		 
-	    		 
 
 	    		 //Cancel Invoice 
 	    		 $invoice->cancelInvoice($invoiceDetails['invoiceID']);
@@ -741,12 +741,9 @@ class Billing {
 	    		 echo "create new multi invoice<br/>";
 	    		 p("multiInvoiceData");
 	    		 var_dump($multiInvoiceData);
-	    		 $insertedInvoiceID = $invoice->createMultiInvoiceForNewCustomer($customerID,$trialEndDate,$billingID,$multiInvoiceData);
+	    		 p("delete applied modules for test..");
 	    		 
-				 
-	    		 
-	    		 p("invoiceItems");
-	    		 var_dump($invoiceItems);
+	    		 $insertedInvoiceID = $invoice->createMultiInvoiceForNewCustomer($customerID,$trialEndDate,$billingID,$multiInvoiceData,"PAID");
 	    		 
 	    		 p("billingID",$billingID);
 	    		 p("trialEndDate",$trialEndDate);
@@ -776,6 +773,7 @@ class Billing {
     	
 		/*Delete module2customer*/
 	    $rowsDeleted = $this->deleteModule2Customer($safeCustomerID,$safeModuleBillingPlanID);
+	    p("rowsDeleted",$rowsDeleted);
 	
     	//switching off the module
     	if ($invoiceDetails['periodStartDate'] <= date('Y-m-d') && $invoiceDetails['periodEndDate'] >= date('Y-m-d')) {
@@ -787,7 +785,7 @@ class Billing {
 			$ms->setModule2company($moduleName,0,$customerID);
     	}
     	
-    	
+    	exit;
     	return true;
     }
     
