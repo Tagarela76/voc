@@ -1107,8 +1107,6 @@ class Invoice {
      
      public function getInvoiceDetailsByBillingModuleID($customerID,$billingModuleID)
      {
-     	
-     	
      	$invoiceID = $this->getInvoiceIDByBillingModuleID($customerID,$billingModuleID);
      	
      	$invoiceDetails = $this->getInvoiceDetails($invoiceID);

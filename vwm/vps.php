@@ -682,6 +682,7 @@
 								$modulesView = $billing->getPurchasedPlansForCustomerView($customerID,$currency['id']);
 								//var_dump($modulesView);
 								
+								
 								$smarty->assign("appliedModules",$modulesView['modules']);
 								if (!is_null($modulesView['bonus'])) {
 									$smarty->assign("bonusModules",$modulesView['bonus']);

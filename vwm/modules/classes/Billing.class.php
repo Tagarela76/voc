@@ -914,6 +914,7 @@ class Billing {
 	    $vps2voc = new VPS2VOC($this->db);
 	    $purchasedModules = $this->getPurchasedModule($customerID,null,'today&future','today',$currencyID);
 	    
+	    //var_dump($purchasedModules);
 	    
 	    
 	    //$this->printArray($purchasedModules);
@@ -925,6 +926,7 @@ class Billing {
 	    foreach ($allModules as $key => $value) {
 		    $activatedModules[$key] = $user->checkAccess($value,$customerID);
 	    }
+	    
 	    $appliedModules = array();
 	    foreach ($purchasedModules as $key => $module) {
 		    $module_plan = array(
@@ -955,6 +957,9 @@ class Billing {
 			    }
 		    }
 	    }
+	    
+	    //var_dump($appliedModules);
+	    
 	    $bonus = 0;
 	    foreach ($activatedModules as $module => $activated) {
 		    if ($activated) {
