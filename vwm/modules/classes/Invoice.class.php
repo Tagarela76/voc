@@ -594,7 +594,7 @@ class Invoice {
 			'suspensionDisable'	=> 0,
 			'currency_id'		=> $currencyDetails['id']					
 		);
-		
+
     	$this->insertInvoice($invoiceData);
     	
     	return $invoiceData;

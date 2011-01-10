@@ -1314,6 +1314,7 @@ class Billing {
 		$invoice = new Invoice($this->db);				
 		$increaseCost = $limits[$limitName]['increase_cost'] * ($plusToValue/$limits[$limitName]['increase_step']);			
 		$limitInfo = "'Increase ".$limitName. " + ".$plusToValue." ".$limits[$limitName]['unit_type']."'";
+
 		$invoice->createInvoiceForLimit($customerID, $increaseCost, $limitInfo);
 		//echo 	$limits[$limitName]['max_value'] . " + " . 		$plusToValue;		
     }
@@ -1567,7 +1568,7 @@ class Billing {
 	    }    	
     }
     
-    private function getLimitDetailsByID($limitID) {
+    public function getLimitDetailsByID($limitID) {
 	    $query = "SELECT * FROM ".TB_VPS_LIMIT." WHERE limit_id = ".$limitID;			
 	    
 	    $this->db->query($query);

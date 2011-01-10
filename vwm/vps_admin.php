@@ -2061,7 +2061,10 @@
 								$suspensionDisable = $_POST['suspensionDisable'];								
 								
 								$invoice = new Invoice($db);
-								$invoice->createCustomInvoice($customerID, $amount, $suspensionDate, $suspensionDisable, $customInfo);																
+								
+								$db->beginTransaction();
+								$invoice->createCustomInvoice($customerID, $amount, $suspensionDate, $suspensionDisable, $customInfo);
+								$db->commitTransaction();																
 								break;
 								
 							case "limit":								
@@ -2069,7 +2072,11 @@
 								$plusToValue = $_POST['plusToValue'];
 								
 								$billing = new Billing($db);
-								$billing->invoiceIncreaseLimit($limitName, $customerID, $plusToValue);
+								
+								$db->beginTransaction();
+								$currencyDetails = $billing->getCurrencyByCustomer($customerID);
+								$billing->invoiceIncreaseLimit($limitName, $customerID, $plusToValue, $currencyDetails['id']);
+								$db->commitTransaction();
 								break;
 						}
 						
