@@ -535,31 +535,40 @@ class Billing {
     	$query = substr($query,0,-2);
     	$this->db->exec($query);
     }
-    
-    public function getModulesBillingByIDs($modulesIDs)
+    /**
+     * 
+     * @param $modulesIDs
+     * @param $currencyID default <b>1</b>
+     * @return unknown_type
+     */
+    public function getModulesBillingByIDs($modulesIDs,$currencyID = 1)
     {
     	$count = count($modulesIDs);
-    		 if($count > 0)
-    		 {
-    		 	$q = "SELECT mb.*, m.name FROM vps_module_billing mb, module m WHERE m.id = mb.module_id AND mb.id IN( ";
-    		 	foreach($modulesIDs as $id)
-	    		{
-	    			 $q .= $id . ",";
-	    		}
-	    		
-	    		$q = substr_replace($q,"",strlen($q)-1,1); // Delete last symbol ','
-	    		$q .= ")";
-	    		
-	    		$this->db->query($q);
-	    		p("query",$q);
-	    		$modules = $this->db->fetch_all_array();
-	    		
-	    		return $modules;
-    		 }
-    		 else
-    		 {
-    		 	return false;
-    		 }
+    	 if($count == 0)
+    	 {
+    	 	return;
+    	 }
+    	 
+    	 $q = "SELECT mb.id, mb.month_count, mb.module_id, mb.type, m.name, m2c.price
+			FROM vps_module_billing mb, module m, vps_module2currency m2c
+			WHERE m.id = mb.module_id
+			AND m2c.module_billing_id = mb.id
+			AND m2c.currency_id = $currencyID ";
+    	 
+     	$q .= " AND mb.id IN( ";
+     	foreach($modulesIDs as $id)
+    	{
+    		 $q .= $id . ",";
+    	}
+    	
+    	$q = substr_replace($q,"",strlen($q)-1,1); // Delete last symbol ','
+    	$q .= ")";
+    	
+    	$this->db->query($q);
+    	p("query",$q);
+    	$modules = $this->db->fetch_all_array();
+    	
+    	return $modules;
     }
     
     private function deleteModule2Customer($customerID,$moduleBillingPlanID)
@@ -663,6 +672,85 @@ class Billing {
 	    		 $customInfo = mysql_escape_string($customInfo);
 	    		 //echo "<h2>Back to customer: $backToCustomer</h2>";
 	    		 $invoice->createCustomInvoice($customerID, $backToCustomer, $invoiceDetails['suspensionDate'], 0, $customInfo,'CANCELED'); 
+	    		 //exit;
+	    		 
+	    		 //-------------------------------------------------------------------------------------------------------------------------------------------
+	    		 ///Remove invoice_item from main multiInvoice
+	    		 /*$query = "SELECT item.id 
+					FROM  vps_invoice inv, vps_invoice_item item
+					WHERE inv.invoice_id = item.invoice_id and inv.customer_id = $customerID AND item.module_id = $mID";
+	    		 
+	    		 $this->db->query($query);
+	    		 $removingInvoiceItemId = $this->db->fetch(0)->id;
+	    		 
+	    		 if($removingInvoiceItemId)
+	    		 {
+	    		 	$query = "DELETE FROM vps_invoice_item where id = $removingInvoiceItemId";
+	    		 }
+	    		 else
+	    		 {
+	    		 	die("$query <h1>returns null!</h1>");
+	    		 }*/
+	    		 $invoiceItemsDetails = $invoice->getInvoiceItemsDetails($invoiceDetails['invoiceID']);
+	    		 
+	    		 $invoiceItems = $invoiceItemsDetails['invoice_items'];
+	    		 
+	    		 $moduleIDs = array();
+	    		 
+	    		 
+	    		 // Prepare data to create new multi invoice without deleting module
+	    		 foreach($invoiceItems as $i)
+	    		 {
+	    		 	$mID = $invoice->getModuleIDByBillingModuleID($moduleBillingPlanID);
+	    		 	
+	    		 	p($mID . " == " . $i['moduleID']);
+	    		 	
+	    		 	if($i['moduleID'] and $i['moduleID'] != $mID)
+	    		 	{
+	    		 		$moduleIDs[] = $i['moduleID'];	
+	    		 	}
+	    		 	else
+	    		 	{
+	    		 		$deletingModuleID = $i['moduleID'];
+	    		 	}
+	    		 }
+	    		 
+	    		 p("IDs");
+	    		 var_dump($moduleIDs);
+	    		 p("modules");
+	    		 $modules = $this->getModulesBillingByIDs($moduleIDs);
+	    		 
+	    		 p("deleting module id:",$deletingModuleID);
+	    		 
+	    		 $deletingModuleInfo = $this->getModulesBillingByIDs(array($deletingModuleID));
+	    		 $deletingModuleInfo = $deletingModuleInfo[0];
+	    		 var_dump($deletingModuleInfo);
+	    		 
+	    		 
+	    		 $multiInvoiceData = array();
+	    		 $multiInvoiceData['billingID'] = $billingID;
+	    		 $multiInvoiceData['appliedModules'] = $modules;
+	    		 
+	    		 
+
+	    		 //Cancel Invoice 
+	    		 $invoice->cancelInvoice($invoiceDetails['invoiceID']);
+ 
+	    		 // Create New Multi Invoice 
+	    		 
+	    		 echo "create new multi invoice<br/>";
+	    		 p("multiInvoiceData");
+	    		 var_dump($multiInvoiceData);
+	    		 $insertedInvoiceID = $invoice->createMultiInvoiceForNewCustomer($customerID,$trialEndDate,$billingID,$multiInvoiceData);
+	    		 
+				 
+	    		 
+	    		 p("invoiceItems");
+	    		 var_dump($invoiceItems);
+	    		 
+	    		 p("billingID",$billingID);
+	    		 p("trialEndDate",$trialEndDate);
+	    		 //$this->db->rollbackTransaction();*/
 	    		 //exit;
 	    		 
     	}

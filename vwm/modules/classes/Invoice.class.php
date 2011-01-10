@@ -67,8 +67,6 @@ class Invoice {
 			throw new Exception('No currency for customer '.$customerID);
 		}
 		
-		var_dump($currencyDetails);
-		
 		$invoiceData = array (
 			'customerID' 		=> $customerID,
 			'oneTimeCharge'		=> $oneTimeCharge,
@@ -91,7 +89,7 @@ class Invoice {
 		);
 		
 		//	TODO: start transaction from controller 
-		$this->db->beginTransaction(); // Start Transaction
+		//$this->db->beginTransaction(); // Start Transaction
 		
 		$invoiceID = $this->insertInvoice($invoiceData); // Create Invoice items For Billing
 		
@@ -160,7 +158,7 @@ class Invoice {
 		//now we should add all modules to billing
     	$billing->insertModuleBillingPlan($customerID,$periodStartDate,$modulesToBilling);
 		
-		$this->db->commitTransaction();
+		//$this->db->commitTransaction(); TODO: Do that things on this API level is wrong! (Ilya)
 		
 		return $invoiceID;
     }
