@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <!-- VPS_CUSTOMER TABLE-->
+  <vps_customer customer_id="105" billing_id="1" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="111" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="115" billing_id="1" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="116" billing_id="2" status="on" discount="0.00" balance="0.00"/>
+  <!-- BILLING TABLE -->
+  <vps_billing billing_id="1" name="unitTest" description="Vasya lubit cotlety!" one_time_charge="7.00" bplimit="1" months_count="1" price="9.99" type="self" defined="0"/>
+  <vps_billing billing_id="2" name="unitTestSecond" description="Testing Rocks" one_time_charge="30.00" bplimit="2" months_count="6" price="99.99" type="self" defined="0"/>
+  <vps_billing billing_id="3" name="unitTestDefined" description="Kofe teper' ono" one_time_charge="45.00" bplimit="1" months_count="6" price="200" type="gyant" defined="1"/>
+  <!-- LIMIT PRICE TABLE -->
+  <vps_limit_price limit_price_id="1" limit_id="1" bplimit="1" default_limit="50" increase_cost="67.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="2" limit_id="2" bplimit="1" default_limit="300" increase_cost="67.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="3" limit_id="1" bplimit="2" default_limit="60" increase_cost="70.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="4" limit_id="2" bplimit="2" default_limit="310" increase_cost="70.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="5" limit_id="1" bplimit="1" default_limit="100" increase_cost="100.00" type="gyant" defined="1"/>
+  <vps_limit_price limit_price_id="6" limit_id="2" bplimit="1" default_limit="400" increase_cost="400.00" type="gyant" defined="1"/>
+  <!-- CUSTOMER_LIMIT TABLE -->
+  <vps_customer_limit id="1" customer_id="105" limit_price_id="1" max_value="50"/>
+  <vps_customer_limit id="2" customer_id="105" limit_price_id="2" max_value="300"/>
+  <vps_customer_limit id="3" customer_id="115" limit_price_id="1" max_value="75"/>
+  <vps_customer_limit id="4" customer_id="115" limit_price_id="2" max_value="350"/>
+  <vps_customer_limit id="5" customer_id="116" limit_price_id="3" max_value="60"/>
+  <vps_customer_limit id="6" customer_id="116" limit_price_id="4" max_value="310"/>
+  <!-- SCHEDULE_CUSTOMER_PLAN TABLE -->
+  <vps_schedule_customer_plan id="1" customer_id="105" billing_id="2" type="bpEnd"/>
+  <vps_schedule_customer_plan id="2" customer_id="115" billing_id="2" type="asap"/>
+  <!-- SCHEDULE_LIMIT TABLE -->
+  <vps_schedule_limit id="1" customer_id="105" limit_price_id="3" type="bpEnd"/>
+  <vps_schedule_limit id="2" customer_id="105" limit_price_id="4" type="bpEnd"/>
+  <vps_schedule_limit id="3" customer_id="115" limit_price_id="3" type="asap"/>
+  <vps_schedule_limit id="4" customer_id="115" limit_price_id="4" type="asap"/>
+  <!-- INVOICE TABLE -->
+  <vps_invoice invoice_id="1" customer_id="116" one_time_charge="30.00" amount="99.99" discount="0.00" total="129.99" paid="129.99" due="0.00" balance="0.00" generation_date="2009-12-07" suspension_date="2009-12-12" period_start_date="2009-12-12" period_end_date="2010-06-12" billing_info="bla bla" status="paid" suspension_disable="1"/>
+  <vps_invoice invoice_id="2" customer_id="105" one_time_charge="7.00" amount="9.99" discount="0.00" total="16.99" paid="16.99" due="0.00" balance="0.00" generation_date="2009-12-23" suspension_date="2010-01-07" period_start_date="2010-01-07" period_end_date="2010-02-07" billing_info="bla bla" status="paid" suspension_disable="1"/>
+  <!-- PAYMENT TABLE -->
+  <vps_payment payment_id="1" invoice_id="1" user_id="0" txn_id="eprst123456789098765" paid="129.99" due="0.00" balance="0.00" payment_date="2009-07-30 15:15:15" status="Completed"/>
+  <!-- DEFINED BP REQUEST TABLE -->
+  <vps_defined_bp_request id="1" customer_id="116" bplimit="1" months_count="6" type="gyant" MSDS_limit="101" memory_limit="404" description="Work on saturdays!" date="2009-11-14" status="unprocessed"/>
+  <!-- VPS_USER TABLE-->
+  <!--<vps_user
+		user_id="1" 
+		accessname="innokentiy" 
+		password="5f4dcc3b5aa765d61d8327deb882cf99" 
+		accesslevel_id="0" 
+		first_name="innokentiy" 
+		last_name="innokentiy" 
+		secondary_contact="" 
+		email="unitTestUser@qw.qw" 
+		secondary_email="" 
+		company_id="115" 
+		facility_id="0" 
+		department_id="0" 
+		address1="turkey" 
+		address2="" 
+		city="turkeystan" 
+		state_id="15" 
+		zip="12312" 
+		country_id="205"	
+		phone="aa" 
+		fax="adasd"
+	/>-->
+  <!-- USER TABLE-->
+  <!--<user
+		user_id="1"
+		username="gennadiy"	
+		accessname="gennadiy"
+		password="5f4dcc3b5aa765d61d8327deb882cf99"	
+		phone=""
+		mobile=""
+		email=""
+		accesslevel_id="0"
+		company_id="114"
+		facility_id="0"
+		department_id="0"
+		grace=""
+		creater_id="0"
+	/>-->
+  <!-- COMPANY TABLE-->
+  <!--<company
+		company_id="115"
+		name="Gyant Demo Version"
+		address="23974 Aliso Creek Road, Suite 280"
+		city="Laguna Niguel"
+		zip="92677"
+		county="1"
+		state="133"		
+		phone="949 495-0999"
+		fax="(714) 379-8894"
+		email="test_email@somewhere.com"
+		contact="Jon Gypsyn"
+		title="Software Sales"
+		creater_id="18"
+		country="215"
+		gcg_id="40"
+	/>
+	<company
+		company_id="114"
+		name=""
+		address=""
+		city=""
+		zip=""
+		county=""
+		state=""		
+		phone=""
+		fax=""
+		email=""
+		contact=""
+		title=""
+		creater_id=""
+		country="0"
+		gcg_id=""
+	/>		-->
+</dataset>

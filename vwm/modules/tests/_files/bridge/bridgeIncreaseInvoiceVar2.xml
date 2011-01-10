@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bridge xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="bridge.xsd">
+  <customers>
+    <customer id="105">
+      <name>Gyant Demo Version</name>
+      <address>23974 Aliso Creek Road, Suite 280</address>
+      <city>Laguna Niguel</city>
+      <zip>92677</zip>
+      <state>133</state>
+      <country>215</country>
+      <county>1</county>
+      <phone>949 495-0999</phone>
+      <fax>(714) 379-8894</fax>
+      <email>test_email@somewhere.com</email>
+      <contact>Jon Gypsyn</contact>
+      <title>Software Sales</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-12-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>on</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>50</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>325</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>1</max_value>
+      </limit>
+    </customer>
+    <customer id="111">
+      <name>TestCompany</name>
+      <address>gdfgdf</address>
+      <city>hkjhkh</city>
+      <zip>74654</zip>
+      <state>129</state>
+      <country>215</country>
+      <county>khkjhk</county>
+      <phone>kgh</phone>
+      <fax>jg</fax>
+      <email>ghjg@o.ia</email>
+      <contact>gd</contact>
+      <title>dfgfdg</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-11-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>off</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>50</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>300</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>1</max_value>
+      </limit>
+    </customer>
+    <customer id="112">
+      <name>ABC</name>
+      <address>20, Apple Raoad</address>
+      <city>Laguna Niguel</city>
+      <zip>92677</zip>
+      <state>207</state>
+      <country>215</country>
+      <county>Orange</county>
+      <phone>1234567</phone>
+      <fax>9876543</fax>
+      <email>a@go.com</email>
+      <contact>me</contact>
+      <title>o</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-11-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>off</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>50</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>300</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>1</max_value>
+      </limit>
+    </customer>
+    <customer id="113">
+      <name>Shmaze Custom Coatings</name>
+      <address>20792 Canada Road</address>
+      <city>Lake Forest</city>
+      <zip>92677</zip>
+      <state>133</state>
+      <country>215</country>
+      <county>Orange</county>
+      <phone>949 583 1448</phone>
+      <fax>949 583 1263</fax>
+      <email>mike@shmaze.com</email>
+      <contact>Mike Shmaze</contact>
+      <title>CEO</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-11-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>off</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>50</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>300</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>1</max_value>
+      </limit>
+    </customer>
+	<customer id="115">
+      <name>Tukalenko Inc</name>
+      <address>23974 Aliso Creek Road, Suite 280</address>
+      <city>Laguna Niguel</city>
+      <zip>92677</zip>
+      <state>133</state>
+      <country>215</country>
+      <county>1</county>
+      <phone>949 495-0999</phone>
+      <fax>(714) 379-8894</fax>
+      <email>test_email@somewhere.com</email>
+      <contact>Denis</contact>
+      <title>Software Sales</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-12-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>on</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>75</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>350</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>1</max_value>
+      </limit>
+    </customer>
+	<customer id="116">
+      <name>Tukalenko Inc Corp</name>
+      <address>23974 Aliso Creek Road, Suite 280</address>
+      <city>Laguna Niguel</city>
+      <zip>92677</zip>
+      <state>133</state>
+      <country>215</country>
+      <county>1</county>
+      <phone>949 495-0999</phone>
+      <fax>(714) 379-8894</fax>
+      <email>test_email@somewhere.com</email>
+      <contact>Denis</contact>
+      <title>Software Sales</title>
+      <trial_end_date>2009-11-16</trial_end_date>
+      <period_end_date>2009-12-16</period_end_date>
+      <deadline_counter>NULL</deadline_counter>
+      <status>on</status>
+      <limit>
+        <limit_id>1</limit_id>
+        <current_value>0</current_value>
+        <max_value>60</max_value>
+      </limit>
+      <limit>
+        <limit_id>2</limit_id>
+        <current_value>0</current_value>
+        <max_value>300</max_value>
+      </limit>
+      <limit>
+        <limit_id>3</limit_id>
+        <current_value>0</current_value>
+        <max_value>2</max_value>
+      </limit>
+    </customer>
+  </customers>  
+  <limits>
+    <limit id="1">
+      <name>MSDS</name>
+      <increase_step>10</increase_step>
+      <unit_type/>
+      <type>limit</type>
+    </limit>
+    <limit id="2">
+      <name>memory</name>
+      <increase_step>100</increase_step>
+      <unit_type>Mb</unit_type>
+      <type>limit</type>
+    </limit>
+    <limit id="3">
+      <name>Source count</name>
+      <increase_step>1</increase_step>
+      <unit_type/>
+      <type>bplimit</type>
+    </limit>
+  </limits>
+  <users>
+    <user id="1">
+      <username>gennadiy</username>
+      <accessname>gennadiy</accessname>
+      <password>5f4dcc3b5aa765d61d8327deb882cf99</password>
+      <email></email>
+      <phone></phone>
+      <accesslevel_id>0</accesslevel_id>
+      <company_id>105</company_id>
+      <facility_id>0</facility_id>
+      <department_id>0</department_id>
+    </user>
+    <!--<user id="2">
+      <username>Department</username>
+      <accessname>department</accessname>
+      <password>459d9fca17e3a950deae755d13578292</password>
+      <email>department@department.department</email>
+      <phone>department</phone>
+      <accesslevel_id>2</accesslevel_id>
+      <company_id>105</company_id>
+      <facility_id>0</facility_id>
+      <department_id>0</department_id>
+    </user>-->
+  </users>
+</bridge>

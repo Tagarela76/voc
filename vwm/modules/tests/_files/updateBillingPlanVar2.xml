@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+ 
+  <!-- BILLING TABLE -->
+  <vps_billing billing_id="1" name="unitTest" description="Vasya lubit cotlety!" one_time_charge="10.00" bplimit="1" months_count="1" price="10.00" type="self" defined="0"/>
+  <vps_billing billing_id="2" name="unitTestSecond" description="Testing Rocks" one_time_charge="30.00" bplimit="2" months_count="6" price="99.99" type="self" defined="0"/>
+  <vps_billing billing_id="3" name="unitTestDefined" description="Kofe teper' ono" one_time_charge="45.00" bplimit="1" months_count="6" price="200.00" type="gyant" defined="1"/>
+ 
+</dataset>

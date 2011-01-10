@@ -1,0 +1,100 @@
+<?php
+
+	class MixManager {
+		
+		public $db;
+		public $departmentID;
+		
+		public function __construct($db, $departmentID = null) {
+			$this->db = $db;
+			if (isset($departmentID)) {
+				$this->departmentID = $departmentID;
+			}
+		}
+		
+		
+		public function getMixList(Pagination $pagination = null, $filter = ' TRUE ') {
+			
+			if (!isset($this->departmentID)) return false;
+			$departmentID = mysql_escape_string($this->departmentID);
+
+			$query = "SELECT * FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND ".$filter." ORDER BY mix_id DESC";
+
+			if (isset($pagination)) {
+				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+			}
+				
+			$this->db->query($query);
+
+			if ($this->db->num_rows() == 0) return false;
+			
+			//	prepare all stuff
+			$mixesData = $this->db->fetch_all();
+			$mixValidator = new MixValidatorOptimized();
+			$department = new Department($this->db);
+			$department->initializeByID($this->departmentID);
+			$facility = new Facility($this->db);
+			$facility->initializeByID($department->getFacilityID());
+			$mixHover = new Hover();
+			$equipments = array();
+			
+			foreach ($mixesData as $mixData) {
+				
+				$mix = new MixOptimized($this->db);				
+				foreach ($mixData as $property =>$value) {
+					if (property_exists($mix,$property)) {
+						$mix->$property = $mixData->$property;
+					}
+				}
+				
+				$mix->setDepartment($department);
+				$mix->setFacility($facility);
+				
+				if (!$equipments[$mix->equipment_id]) {
+					//	we didnot created this equipment yet
+					$equipment = new Equipment($this->db);
+					$equipment->initializeByID($mix->equipment_id);
+					$equipments[$mix->equipment_id] = $equipment;
+				}
+				$mix->setEquipment($equipments[$mix->equipment_id]);
+				
+				// validate them
+				$validatorResponse = $mixValidator->isValidMix($mix);
+				
+				if ($validatorResponse->isValid()) {
+					$mix->valid = MixOptimized::MIX_IS_VALID;
+					$mix->hoverMessage = $mixHover->mixValid();
+				} else {
+					if ($validatorResponse->isPreExpired()) {
+						$mix->valid = MixOptimized::MIX_IS_PREEXPIRED;
+						$mix->hoverMessage = $mixHover->mixPreExpired();						
+					}						
+					if ($validatorResponse->isSomeLimitExceeded() or $validatorResponse->isExpired()){
+						$mix->valid = MixOptimized::MIX_IS_INVALID;
+						$mix->hoverMessage = $mixHover->mixInvalid();						
+					}
+				}
+										
+				$usageList[] = $mix;
+			}
+			
+			return $usageList;
+		}
+		
+		
+		
+		
+		public function countMixes() {
+			if (!isset($this->departmentID)) return false;
+			$departmentID=mysql_escape_string($this->departmentID);
+
+			$query = "SELECT count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = ".$departmentID;
+			$this->db->query($query);
+
+			if ($this->db->num_rows() > 0) {
+				return $this->db->fetch(0)->mixCount;
+			} else {
+				return false;
+			}				
+		}
+	}
