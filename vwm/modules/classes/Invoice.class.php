@@ -745,9 +745,9 @@ class Invoice {
     
     public function getInvoiceItemsDetails($invoiceID)
     {
-    	$query = "SELECT item.id,inv.*, item.*, DATEDIFF(period_end_date, CURDATE()) end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP  
-    			 FROM ".TB_VPS_INVOICE." inv, " . TB_VPS_INVOICE_ITEM . " item " .
-    			 "WHERE inv.invoice_id = $invoiceID AND item.invoice_id = inv.invoice_id";			
+    	$query = "SELECT item.id,inv.*, item.*, DATEDIFF(period_end_date, CURDATE()) end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP, cur.sign   
+    			 FROM ".TB_VPS_INVOICE." inv, " . TB_VPS_INVOICE_ITEM . " item, " . TB_VPS_CURRENCY . " cur " .
+    			 "WHERE inv.invoice_id = $invoiceID AND item.invoice_id = inv.invoice_id and inv.currency_id = cur.id";			
     	$this->db->query($query);
     	if ($this->db->num_rows()) 
     	{
@@ -778,7 +778,8 @@ class Invoice {
 	    			'currency_id'		=> $row['currency_id'],
 					'suspensionDisable'	=> $row['suspension_disable'],
 					'daysLeft2BPEnd'	=> $row['end_BP_days_left'],
-					'daysCountAtBP'		=> $row['days_count_at_BP'] 
+					'daysCountAtBP'		=> $row['days_count_at_BP'] ,
+	    			'sign'				=> $row['sign']
 	    			);
 	    		}
 	    		
@@ -860,9 +861,9 @@ class Invoice {
     	
     	$query = "SELECT inv.*,
     			 item.*, item.billing_info as 'item_billing_info',
-    			  DATEDIFF(period_end_date, '".$this->currentDate."') end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP  
-    			 FROM ".TB_VPS_INVOICE." inv, " . TB_VPS_INVOICE_ITEM . " item " .
-    			 "WHERE inv.invoice_id = $invoiceID AND item.invoice_id = inv.invoice_id";
+    			  DATEDIFF(period_end_date, '".$this->currentDate."') end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP, cur.sign  
+    			 FROM ".TB_VPS_INVOICE." inv, " . TB_VPS_INVOICE_ITEM . " item, " . TB_VPS_CURRENCY . " cur " .
+    			 "WHERE inv.invoice_id = $invoiceID AND item.invoice_id = inv.invoice_id AND cur.id = inv.currency_id";
 
     	/*$query = "SELECT * FROM ".TB_VPS_INVOICE . " WHERE invoice_id = $invoiceID";
     	$this->db->query($query);
@@ -911,7 +912,8 @@ class Invoice {
 	    			'currency_id'		=> $row['currency_id'],
 					'suspensionDisable'	=> $row['suspension_disable'],
 					'daysLeft2BPEnd'	=> $row['end_BP_days_left'],
-					'daysCountAtBP'		=> $row['days_count_at_BP']
+					'daysCountAtBP'		=> $row['days_count_at_BP'],
+	    			'sign'				=> $row['sign']
 		    		);
 		    		$flag = false;
 	    		}

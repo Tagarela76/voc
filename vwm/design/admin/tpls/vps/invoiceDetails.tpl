@@ -114,8 +114,8 @@
 	<tr>
 		<td>{$invoiceItem.invoiceItemID}</td>
 		
-		<td>${$invoiceItem.oneTimeCharge}</td>
-		<td>${$invoiceItem.amount}</td>
+		<td>{$invoiceDetails.sign}{$invoiceItem.oneTimeCharge}</td>
+		<td>{$invoiceDetails.sign}{$invoiceItem.amount}</td>
 		<td>
 			{if $invoiceItem.billingInfo != NULL}
 				<b>Billing Plan</b> - {$invoiceItem.billingInfo}
@@ -127,7 +127,7 @@
 				<b>Module</b> - {$invoiceItem.module_name}
 			{/if}	
 		</td>
-		<td>${$invoiceItem.total}</td>
+		<td>{$invoiceDetails.sign}{$invoiceItem.total}</td>
 	</tr>
 	{/foreach}
 </table>
@@ -138,15 +138,15 @@
 	<tr>
 		<td colspan="2" rowspan="3" style="width:75%;"></td>
 		<td>Subtotal:</td>
-		<td>${$invoiceDetails.total}</td>
+		<td>{$invoiceDetails.sign}{$invoiceDetails.total}</td>
 	</tr>
 	<tr>
 		<td>Discount:</td>
-		<td>${$invoiceDetails.discountSum}</td>
+		<td>{$invoiceDetails.sign}{$invoiceDetails.discountSum}</td>
 	</tr>
 	<tr>
 		<td>TOTAL:</td>
-		<td><b>${$invoiceDetails.totalSum}</b></td>
+		<td><b>{$invoiceDetails.sign}{$invoiceDetails.totalSum}</b></td>
 	</tr>
 </table>
 
@@ -196,18 +196,18 @@
 				{$paymentHistory[i].status}
 			</td>
 			<td>
-				${$paymentHistory[i].due}
+				{$paymentHistory[i].sign}{$paymentHistory[i].due}
 			</td>
 			<td>
-				${$paymentHistory[i].paid}
+				{$paymentHistory[i].sign}{$paymentHistory[i].paid}
 			</td>
 			{if $paymentHistory[i].balance >= 0}
 				<td style="color:green">				
-					${$paymentHistory[i].balance}
+					{$paymentHistory[i].sign}{$paymentHistory[i].balance}
 				</td>
 			{else}
 				<td style="color:red">				
-					${$paymentHistory[i].balance}
+					{$paymentHistory[i].sign}{$paymentHistory[i].balance}
 				</td>
 			{/if}
 			

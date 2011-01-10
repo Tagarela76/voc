@@ -27,7 +27,8 @@ class Payment {
 			'due'			=> $invoiceDetails['total'],
 			'paid'			=> "0.00",
 			'balance'		=> $invoiceDetails['balance'],
-			'status'		=> "--"
+			'status'		=> "--",
+			'sign'			=> $invoiceDetails['sign']
 		);
 		$history[] = $invoiceGeneration;
 								

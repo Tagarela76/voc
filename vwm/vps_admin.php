@@ -221,12 +221,14 @@
 					
 					$invoice = new Invoice($db);
 					
-					$invoiceDetails = $invoice->getInvoiceItemsDetails($invoiceID);						
+					$invoiceDetails = $invoice->getInvoiceItemsDetails($invoiceID);	
+								
 					$smarty->assign("invoiceDetails", $invoiceDetails);
 					
 					$payment = new Payment($db);
 					
-					$paymentHistory = $payment->getHistory($invoiceID);						
+					$paymentHistory = $payment->getHistory($invoiceID);		
+								
 					$smarty->assign("paymentHistory", $paymentHistory);
 					
 					$smarty->assign('action',"viewInvoice");
