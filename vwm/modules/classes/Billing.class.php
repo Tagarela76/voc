@@ -55,10 +55,24 @@ class Billing {
     	    	    	
     	if ($billingID != "NULL") {
     		
-    		$billingPlanDetails = $this->getBillingPlanDetails($billingID);
-    		
-    		//	insert customer's limits info 
-    		$query = "INSERT INTO ".TB_VPS_CUSTOMER_LIMIT." (customer_id, limit_price_id, current_value, max_value) VALUES (" .
+    		$this->addCustomerLimit($customerID, $billingID);  
+
+//	   		//	save customer's limits to Bridge
+//	   		$vps2voc->setCustomerLimits($customerID, $billingPlanDetails['limits']);
+    	}    	
+    }
+    
+    /**
+     * insert customer's limits info 
+     * @param $customerID
+     * @param $billingPlanDetails
+     * @return unknown_type
+     */
+    public function addCustomerLimit($customerID, $billingID)
+    {
+    	$billingPlanDetails = $this->getBillingPlanDetails($billingID);
+    	
+    	$query = "INSERT INTO ".TB_VPS_CUSTOMER_LIMIT." (customer_id, limit_price_id, current_value, max_value) VALUES (" .
     				"".$customerID.", " .
     				"".$billingPlanDetails['limits']['MSDS']['limit_price_id'].", " .
     				"0, " .
@@ -67,11 +81,7 @@ class Billing {
     				"".$billingPlanDetails['limits']['memory']['limit_price_id'].", " .
     				"0, " .
     				"".$billingPlanDetails['limits']['memory']['default_limit'].")";    			
-    		$this->db->query($query);   
-
-//	   		//	save customer's limits to Bridge
-//	   		$vps2voc->setCustomerLimits($customerID, $billingPlanDetails['limits']);
-    	}    	
+    		$this->db->query($query); 
     }
     
     

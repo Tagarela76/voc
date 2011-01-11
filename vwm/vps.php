@@ -617,7 +617,7 @@
 										} else {
 											$customerPlan['limits'][$limit]['max_value'] .= " ".$value['unit_type'];
 										}		
-									}
+									}//insert customer's limits info
 									$invoice = new Invoice($db);
 									
 									$currentInvoice = $invoice->getCurrentInvoice($customerID);
