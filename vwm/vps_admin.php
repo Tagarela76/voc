@@ -1353,10 +1353,13 @@
 							}		
 							
 							$billing = new Billing($db);
-							$currentBillingPlan = $billing->getCustomerPlan($customerID);							
+							$currentBillingPlan = $billing->getCustomerPlan($customerID);
+													
 							if (!$currentBillingPlan) {								
 								//	no current billing plan, probably trial period
+								$billing->addCustomerLimit($customerID,$newBillingPlan);
 								$billing->setCustomerPlan($customerID, $newBillingPlan);
+								
 							
 								$vps2voc = new VPS2VOC($db);
 								$customerDetails = $vps2voc->getCustomerDetails($customerID);					
@@ -1367,6 +1370,7 @@
 								$result = $billing->setScheduledPlan($customerID, $newBillingPlan, $applyWhen);
 							}																																																								
 							
+							//echo "<a page='_blank' href='admin.php?action=vps&vpsAction=viewDetails&itemID=customer&customerID=$customerID'>next</a>";
 							header("Location: admin.php?action=vps&vpsAction=viewDetails&itemID=customer&customerID=".$customerID);		
 							break;
 							
