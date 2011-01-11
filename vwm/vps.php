@@ -605,6 +605,7 @@
 													
 								$customerPlan = $billing->getCustomerPlan($customerID, $currency['id']);
 								
+								
 								//defined plan is not processed yet by admin
 								if (!$customerPlan) {
 									$pleaseWait = "VOC WEB MANAGER's Administrator is working with your query. Please wait for some time. If have questions <a href=''>contact Administrator</a>.";
@@ -643,7 +644,8 @@
 										$smarty->assign("discountPercent",$discountPercent);	
 									}									
 								}								
-								$scheduledBillingPlan = $billing->getScheduledPlanByCustomer($customerID);	
+								$scheduledBillingPlan = $billing->getScheduledPlanByCustomer($customerID);
+									
 								
 								if ( $scheduledBillingPlan && ($scheduledBillingPlan['billingID'] != $customerPlan['billingID']) ) {
 									$currentCurrency = $billing->getCurrencyByCustomer($customerID);									
@@ -680,7 +682,8 @@
 								//modules in billing
 								$currency = $billing->getCurrencyByCustomer($customerID);
 								$modulesView = $billing->getPurchasedPlansForCustomerView($customerID,$currency['id']);
-								//var_dump($modulesView);
+								
+								
 								
 								
 								$smarty->assign("appliedModules",$modulesView['modules']);

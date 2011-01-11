@@ -165,6 +165,7 @@ class Invoice {
 		}
 		
 		//now we should add all modules to billing
+		
     	$billing->insertModuleBillingPlan($customerID,$periodStartDate,$modulesToBilling);
 		
 		//$this->db->commitTransaction(); TODO: Do that things on this API level is wrong! (Ilya)
@@ -1070,6 +1071,7 @@ class Invoice {
     {
     	$query = "SELECT module_id FROM vps_module_billing WHERE id = $billingModuleID LIMIT 1";
     	$this->db->query($query);
+    	echo $query;
 		$row = $this->db->fetch_array(0);
 		$moduleID = $row['module_id'];
 		return $moduleID;
@@ -1082,6 +1084,7 @@ class Invoice {
      public function getInvoiceIDByBillingModuleID($customerID,$billingModuleID)
      {
      	$query = "SELECT module_id FROM vps_module_billing WHERE id = $billingModuleID LIMIT 1";
+     	
     	$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		$moduleID = $row['module_id'];
@@ -1094,9 +1097,12 @@ class Invoice {
 					WHERE inv.invoice_id = item.invoice_id
 					AND item.module_id = $moduleID
 					AND inv.customer_id = $customerID
+					AND inv.status != 'CANCELED'
+					AND inv.status != 'canceled'
 					LIMIT 1";
 		
 		$this->db->query($query);
+		//echo $query;
 		$row = $this->db->fetch_array(0);
 		$invoiceID = $row['invoice_id'];
 		
@@ -1892,7 +1898,8 @@ class Invoice {
 		$modules = $this->db->fetch_all_array();
 		$customerID = $invoiceDetails['customerID'];
 		
-		
+		$ms = new ModuleSystem($this->db);
+		$vps2voc = new VPS2VOC($this->db);
 		
 		foreach($modules as $m)
 		{
@@ -1908,7 +1915,18 @@ class Invoice {
 			$ar = $this->db->fetch_all_array();
 			$m2cID = $ar[0]['id'];
 			
+			//switching off the module
+	    	//if ($invoiceDetails['periodStartDate'] <= date('Y-m-d') && $invoiceDetails['periodEndDate'] >= date('Y-m-d')) {
+	    		//p("cancelModule2company");
+		    	
+		    	$moduleName = $vps2voc->getModuleNameByID($m['module_id']);
+		    	//p("moduleName",$moduleName);
+				$ms->setModule2company($moduleName,0,$customerID);
+	    	//}
+			
 			$query = "DELETE FROM ".TB_VPS_MODULE2CUSTOMER." WHERE id = $m2cID"; 
+			
+			//echo "<h3>$query</h3>";
 			 	
 			$this->db->exec($query);
 		}
@@ -1922,6 +1940,8 @@ class Invoice {
 		
 		$payment = (isset($this->payment)) ? $this->payment : new Payment($this->db);		
 		$payment->cancelInvoicePayment($invoiceID, 0,$type); // 0 - superAdmin
+		
+		
 		
 		//DEPRECATED deadlinecounter
 //		if ((int)$invoiceDetails['suspensionDisable'] == 1) {
@@ -2096,8 +2116,9 @@ class Invoice {
     					{$invoiceData['customInfo']},
     					{$invoiceData['module_id']}    					
     				)";
-    		
+    	
     	$this->db->query($query) or die("mysql query error: <h3>$query</h3>" . mysql_error());
+    	echo "<h3>insertMultiInvoiceItem query:$query </h3>";
     }
 
 

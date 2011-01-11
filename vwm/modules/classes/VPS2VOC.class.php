@@ -28,8 +28,10 @@ class VPS2VOC {
     
     //MODULES
     
-    public function getModuleNameByID($moduleID) {    	
-    	$this->db->query("SELECT name FROM ".TB_MODULE." WHERE id=$moduleID LIMIT 1");
+    public function getModuleNameByID($moduleID) {
+    	$query = "SELECT name FROM ".TB_MODULE." WHERE id=$moduleID LIMIT 1";    	
+    	$this->db->query($query);
+    	echo "<br/>$query<br/>";
     	$name=$this->db->fetch(0)->name;    			
     	return $name;    	
     }
