@@ -712,7 +712,7 @@
 								
 								//defined plan is not processed yet by admin
 								if (!$customerPlan) {
-									header("Location: /voc_src/vwm/vps.php?action=viewDetails&category=billing&subCategory=MyBillingPlan");
+									header("Location: vps.php?action=viewDetails&category=billing&subCategory=MyBillingPlan");
 								}
 								
 								$smarty->assign("billingPlan",$customerPlan);
@@ -1180,14 +1180,14 @@
 						
 						if(($balance - $idata['total']) < 0)
 						{
-							header ("Location: /voc_src/vwm/vps.php?action=viewList&category=invoices&subCategory=Due&error=no_enough_money");
+							header ("Location: vps.php?action=viewList&category=invoices&subCategory=Due&error=no_enough_money");
 						}
 						else /*Все хорошо, денег на оплату хватает*/
 						{
 							$db->beginTransaction();
 							$invoice->payInvoiceFromBalance($idata);
 							$db->commitTransaction();
-							header ("Location: /voc_src/vwm/vps.php?action=viewList&category=invoices&subCategory=Due");
+							header ("Location: vps.php?action=viewList&category=invoices&subCategory=Due");
 						}
 						
 					break;

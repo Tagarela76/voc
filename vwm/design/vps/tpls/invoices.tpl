@@ -112,7 +112,7 @@
 				{if $currentBookmark eq "Due"}
 				<td  class="border_users_r border_users_b" style="text-align:center;">
 					{if isset($invoiceList[i].enablePayButton) && $invoiceList[i].enablePayButton neq "disabled"} 
-					<input type="button" class="button" value="Pay!" onclick="window.location = '/voc_src/vwm/vps.php?action=payInvoice&category=invoices&invoiceID={$invoiceList[i].invoiceID}'" 
+					<input type="button" class="button" value="Pay!" onclick="window.location = 'vps.php?action=payInvoice&category=invoices&invoiceID={$invoiceList[i].invoiceID}'" 
 							/>
 					{else}
 					&nbsp;
