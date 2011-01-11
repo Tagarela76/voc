@@ -800,7 +800,7 @@ class Billing {
 	    		 
 	    		 
 	    		 //$this->db->rollbackTransaction();*/
-	    		 exit;
+	    		 //exit;
 	    		 
     	}
     	else /** Invoice with one item */
