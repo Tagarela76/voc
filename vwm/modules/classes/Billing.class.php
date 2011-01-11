@@ -626,6 +626,10 @@ class Billing {
     	//var_dump($invoiceDetails);
     	//var_dump($invoiceDetails);
     	
+    	p("is multi?");
+    	var_dump($result);
+    	
+    	
     	if($result) /**MULTI INVOICE*/
     	{
 	    		 $billingID = $invoiceDetails['customerDetails']['billing_id'];

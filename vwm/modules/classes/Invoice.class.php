@@ -1140,6 +1140,7 @@ class Invoice {
 					WHERE item.invoice_id = inv.invoice_id AND item.invoice_id = $invoiceID";
 								
 		$this->db->query($query);
+		
 		$row = $this->db->fetch_array(0);
 		$count = $row['count'];
 		
