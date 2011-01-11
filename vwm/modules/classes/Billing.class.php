@@ -14,25 +14,21 @@ class Billing {
     
     //	get customer's billing plan by customer's ID
     //	output: billing plan details ARRAY or FALSE if billing plan or customer does not exist    
-    public function getCustomerPlan($customerID,$currencyID = 1) { // TODO: что за говно код, не проще ли добавить where billing_id != NULL ?
+    public function getCustomerPlan($customerID) {
     
     	$query = "SELECT billing_id 
     				FROM ".TB_VPS_CUSTOMER." 
-    				WHERE customer_id = $customerID";
+    				WHERE customer_id = $customerID AND billing_id IS NOT NULL";
     	
 		$this->db->query($query);
 		      
 		if ($this->db->num_rows()) {
-			$data = $this->db->fetch(0);						
-			if ($data->billing_id == NULL) {
-				//	billing plan is not defined yet				
-				return false;
-			} else {
-				//	return billing plan details				 				
-				return $this->getBillingPlanDetails($data->billing_id, $customerID, $currencyID);
-			}						
+			$data = $this->db->fetch(0);			
+			$currencyDetails = $this->getCurrencyByCustomer($customerID);
+			//	return billing plan details				 				
+			return $this->getBillingPlanDetails($data->billing_id, $customerID, $currencyDetails['id']);									
 		} else {
-			//	no such customer			
+			//	no such customer or billing not set			
 			return false;
 		}		
     }

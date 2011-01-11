@@ -603,7 +603,7 @@
 						switch ($subCategory) {
 							case "MyBillingPlan":
 													
-								$customerPlan = $billing->getCustomerPlan($customerID, $currency['id']);
+								$customerPlan = $billing->getCustomerPlan($customerID);
 								
 								
 								//defined plan is not processed yet by admin
@@ -706,7 +706,7 @@
 								
 																														
 								//getting current billing plan 
-								$customerPlan = $billing->getCustomerPlan($customerID, $curentCurrency['id']);
+								$customerPlan = $billing->getCustomerPlan($customerID);
 								
 								
 								
@@ -861,7 +861,7 @@
 								$currency = $billing->getCurrencyByCustomer($customerID);
 								$smarty->assign("curentCurrency",$currency);
 								
-								$currentBillingPlan = $billing->getCustomerPlan($customerID,$currency['id']);
+								$currentBillingPlan = $billing->getCustomerPlan($customerID);
 								
 								$areYouSureAction = "change MSDS limit";
 								$from =	$currentBillingPlan;
@@ -895,7 +895,7 @@
 								$currency = $billing->getCurrencyByCustomer($customerID);
 								$smarty->assign("curentCurrency",$currency);
 								
-								$currentBillingPlan = $billing->getCustomerPlan($customerID,$currency['id']);
+								$currentBillingPlan = $billing->getCustomerPlan($customerID);
 								
 								$smarty->assign("currentCurrency",$currency);
 								
@@ -1023,7 +1023,7 @@
 								$smarty->assign("currentCurrency",$currentCurrency);
 								
 								$newBillingDetails = $billing->getBillingPlanDetails($selectedBillingPlanID, false, $currentCurrency['id']);
-								$currentBillingPlan = $billing->getCustomerPlan($customerID, $currentCurrency['id']);																
+								$currentBillingPlan = $billing->getCustomerPlan($customerID);																
 							
 								//check current and new plan. if equal than go to billing plan page
 								if ($currentBillingPlan['billingID'] == $newBillingDetails['billingID']) {
@@ -1259,7 +1259,7 @@
 
 								$currentCurrency = $billing->getCurrencyByCustomer($customerID);
 								$newBillingDetails = $billing->getBillingPlanDetails($newBillingPlanID, false, $currentCurrency['id']);
-								$currentBillingPlan = $billing->getCustomerPlan($customerID, $currentCurrency['id']);	
+								$currentBillingPlan = $billing->getCustomerPlan($customerID);	
 								//$db->beginTransaction();
 								
 								if($newBillingDetails['type'] != $currentBillingPlan['type'] and $applyWhen == "asap")

@@ -1926,8 +1926,12 @@
 								$smarty->assign("suspensionDisable", $suspensionDisable);
 								break;
 							case "limit":								
-								$billing = new Billing($db);
+								$billing = new Billing($db);								
 								$customerPlan = $billing->getCustomerPlan($customerID);
+								if (!$customerPlan) {
+									throw new Exception('This customer does not have billing plan yet.');
+								}
+								
 								foreach ($customerPlan['limits'] as $limitName=>$limitInfo) {
 									$limit['id'] = $limitInfo['limit_id'];
 									$limit['name'] = $limitName;
