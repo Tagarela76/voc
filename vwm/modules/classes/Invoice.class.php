@@ -608,6 +608,16 @@ class Invoice {
     	return $invoiceData;
     }
     
+    /**
+     * 
+     * @param $customerID
+     * @param $amount
+     * @param $suspensionDate
+     * @param $suspensionDisable
+     * @param $customInfo
+     * @param $status
+     * @return unknown_type
+     */
     public function createCustomInvoice($customerID, $amount, $suspensionDate, $suspensionDisable, $customInfo,$status='due') {
     	//echo "<br/>createCustomInvoice";
     	$oneTimeCharge = 0;
@@ -1919,9 +1929,9 @@ class Invoice {
 	    	//if ($invoiceDetails['periodStartDate'] <= date('Y-m-d') && $invoiceDetails['periodEndDate'] >= date('Y-m-d')) {
 	    		//p("cancelModule2company");
 		    	
-		    	$moduleName = $vps2voc->getModuleNameByID($m['module_id']);
-		    	//p("moduleName",$moduleName);
-				$ms->setModule2company($moduleName,0,$customerID);
+	    	$moduleName = $vps2voc->getModuleNameByID($m['module_id']);
+	    	//p("moduleName",$moduleName);
+			$ms->setModule2company($moduleName,0,$customerID);
 	    	//}
 			
 			$query = "DELETE FROM ".TB_VPS_MODULE2CUSTOMER." WHERE id = $m2cID"; 

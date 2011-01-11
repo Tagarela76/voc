@@ -103,7 +103,8 @@
 					
 					$smarty->assign("moduleBillingPlans",$moduleBillingPlans);
 					
-					$modules=$billing->getModules();					
+					$modules=$billing->getModules();	
+								
 					$smarty->assign("modules",$modules);
 					
 					//distinct months count and user count

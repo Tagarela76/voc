@@ -613,7 +613,12 @@ class Billing {
     	
     	$invoice = new Invoice($this->db);
     	$result = $invoice->isModuleInMultiinvoice($customerID,$safeModuleBillingPlanID);
+    	
+    	
     	$invoiceDetails = $invoice->getInvoiceDetailsByBillingModuleID($customerID,$safeModuleBillingPlanID);
+    	
+    	
+    	
     	
     	$currency = $this->getCurrencyByCustomer($customerID);
     	
@@ -820,21 +825,45 @@ class Billing {
     		 	if (strtolower($invoiceDetails['status']) == 'due') 
     		 	{
     				$invoice->cancelInvoice($invoiceDetails['invoiceID']);
+    				p("cancel Invoice");
+    				exit;
 	    		} 
 	    		else 
 	    		{
-	    			$backToCustomer = $invoice->partialRefund($invoiceDetails);;
-	    			$invoice->manualBalanceChange($customerID,'+',$backToCustomer);
+	    			$backToCustomer = $invoice->partialRefund($invoiceDetails);
+	    			//$invoice->manualBalanceChange($customerID,'+',$backToCustomer);
+	    			
+	    			$customInfo = "Canceled module <b>{$deletingModuleInfo['name']}</b>,
+		    		month - <b>{$deletingModuleInfo['month_count']}</b>, 
+		    		type - <b>{$deletingModuleInfo['type']}</b>,
+		    		back to customer - <b>$ $backToCustomer</b>
+		    		<a href='/voc_src/vwm/vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceDetails['invoiceID']}'>Original Invoice</a>";
+	    		 	$customInfo = mysql_escape_string($customInfo);
+	    		 	$invoice->createCustomInvoice($customerID, $backToCustomer * -1, $invoiceDetails['suspensionDate'], 0, $customInfo,'CANCELED');
+	    		 	
+	    		 	$query = "UPDATE ".TB_VPS_INVOICE. " " .
+						"SET status = 'CANCELED' " .
+						"WHERE invoice_id = ".$invoiceDetails['invoiceID'];
+					$this->db->query($query);							
+					
+					$payment = (isset($this->payment)) ? $this->payment : new Payment($this->db);		
+					$payment->cancelInvoicePayment($invoiceID, 0,$type); 
+					
+					/*Delete module2customer*/
+	   				$rowsDeleted = $this->deleteModule2Customer($safeCustomerID,$safeModuleBillingPlanID);
+				    
+	    			
+	    			//$invoice->cancelInvoice($invoiceDetails['invoiceID']);
+	    			
+	    			//exit;
 	    		}
     		 } 
     	}
     	
-		/*Delete module2customer*/
-	   /* $rowsDeleted = $this->deleteModule2Customer($safeCustomerID,$safeModuleBillingPlanID);
-	    p("rowsDeleted",$rowsDeleted);
-	    var_dump($rowsDeleted);
+		
 	
     	//switching off the module
+    	/*
     	if ($invoiceDetails['periodStartDate'] <= date('Y-m-d') && $invoiceDetails['periodEndDate'] >= date('Y-m-d')) {
     		p("cancelModule2company");
 	    	$ms = new ModuleSystem($this->db);
