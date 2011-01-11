@@ -629,9 +629,9 @@
 									} else {
 										$totalInvoice = $currentInvoice['billing_total_price'];
 										$totalCurrency = $billing->getCurrencyDetails($currentInvoice['currency_id']);
-									}									 					
-									$customerPlan['one_time_charge'] = $currentInvoice['oneTimeCharge'];
-									$customerPlan['price'] = $currentInvoice['amount'];
+									}									 				
+									$customerPlan['one_time_charge'] = $currentInvoice['oneTimeCharge'] ? $currentInvoice['oneTimeCharge'] : 0;
+									$customerPlan['price'] = $currentInvoice['amount'] ? $currentInvoice['amount'] : 0;
 									
 									$smarty->assign("billingPlan",$customerPlan);
 									$smarty->assign("totalInvoice", number_format($totalInvoice, 2));
