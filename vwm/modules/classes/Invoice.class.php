@@ -251,7 +251,7 @@ class Invoice {
     		);
 			
     		//	TODO: start transaction from controller 
-			$this->db->beginTransaction(); // Start Transaction
+			//$this->db->beginTransaction(); // Start Transaction
 			
     		$invoiceID = $this->insertInvoice($invoiceData);
     		
@@ -275,7 +275,7 @@ class Invoice {
 				$this->insertMultiInvoiceItem($moduleData);
 			}
 
-			$this->db->commitTransaction();
+			//$this->db->commitTransaction();
 			
     		return $invoiceID;
     	} else {
@@ -1126,6 +1126,22 @@ class Invoice {
      	$invoiceID = $this->getInvoiceIDByBillingModuleID($customerID,$billingModuleID);
      	
      	$invoiceDetails = $this->getInvoiceDetails($invoiceID);
+     	
+     	//adding modules info
+     	$query = "SELECT mb.id, mb.month_count, mb2c.price, mb.module_id, mb.type, m2c.start_date
+				FROM vps_module2customer m2c, vps_module_billing mb, vps_module2currency mb2c, vps_invoice_item item
+				WHERE mb.id = m2c.module_billing_id
+				AND mb2c.module_billing_id = mb.id
+				AND m2c.customer_id = $customerID
+				AND mb2c.currency_id = {$invoiceDetails['currency_id']}
+				AND item.invoice_id = {$invoiceDetails['invoiceID']}
+				AND item.module_id = mb.module_id";
+     	
+     	$this->db->query($query);
+     	
+     	$modules = $this->db->fetch_all_array();
+     	
+     	$invoiceDetails['modules'] = $modules;
      	
      	return $invoiceDetails; //p("moduleID
      }

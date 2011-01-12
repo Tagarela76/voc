@@ -617,17 +617,17 @@ class Billing {
     	
     	$invoiceDetails = $invoice->getInvoiceDetailsByBillingModuleID($customerID,$safeModuleBillingPlanID);
     	
-    	
-    	
-    	
     	$currency = $this->getCurrencyByCustomer($customerID);
     	
+    	//var_dump($moduleBillingPlanID);
     	//p("invoiceDetails");
     	//var_dump($invoiceDetails);
     	//var_dump($invoiceDetails);
     	
-    	p("is multi?");
-    	var_dump($result);
+    	//p("is multi?");
+    	//var_dump($result);
+    
+    	//exit;
     	
     	
     	if($result) /**MULTI INVOICE*/
@@ -712,7 +712,7 @@ class Billing {
 	    		 {
 	    		 	die("$query <h1>returns null!</h1>");
 	    		 }*/
-	    		 $invoiceItemsDetails = $invoice->getInvoiceItemsDetails($invoiceDetails['invoiceID']);
+	    		 /*$invoiceItemsDetails = $invoice->getInvoiceItemsDetails($invoiceDetails['invoiceID']);
 	    		 
 	    		 $invoiceItems = $invoiceItemsDetails['invoice_items'];
 	    		 
@@ -751,13 +751,15 @@ class Billing {
 	    		 //$purcashedModules = $this->getPurchasedModule($customerID, null, 'todayOnly', 'today', $currency['id']);
 	    		 
 	    		 /*getPurchasedModule без всякой фигни*/
-	    		 $query = "SELECT  mb.id, mb.month_count, mb2c.price, mb.module_id, mb.type, m2c.start_date " .
+	    		 /*$query = "SELECT  mb.id, mb.month_count, mb2c.price, mb.module_id, mb.type, m2c.start_date " .
     			 "FROM ".TB_VPS_MODULE2CUSTOMER." m2c, ".TB_VPS_MODULE_BILLING." mb, " . TB_VPS_MODULE2CURRENCY . " mb2c 
     			 WHERE mb.id = m2c.module_billing_id
     			AND mb2c.module_billing_id = mb.id
     			AND m2c.customer_id = $customerID 
     			 AND mb2c.currency_id = {$currency['id']} ";
     			 $this->db->query($query);
+    			 
+    			 echo $query;
     			
     			 $purcashedModules = $this->db->fetch_all_array();
 	    		 
@@ -778,14 +780,24 @@ class Billing {
 	    		 //var_dump($moduleIDs);
 	    		 //p("modules");
 	    		 $modules = $this->getModulesBillingByIDs($moduleIDs,$currency['id']);
+	    		 var_dump($modules);*/
+	    		 
+	    		 //echo "<h1>Normal modules ;)</h1>";
+	    		 $modules = array(); //clear modules
+	    		 foreach($invoiceDetails['modules'] as $m)
+	    		 {
+	    		 	if($m['id'] != $moduleBillingPlanID)
+	    		 	{
+	    		 		$modules[] = $m;
+	    		 	}
+	    		 }
 	    		 //var_dump($modules);
-	    		 
-	    		 
+	    		 //exit;
 	    		 
 	    		// p("deleting module id:",$deletingModuleID);
 	    		 
-	    		 $deletingModuleInfo = $this->getModulesBillingByIDs(array($deletingModuleID),$currency['id']);
-	    		 $deletingModuleInfo = $deletingModuleInfo[0];
+	    		 //$deletingModuleInfo = $this->getModulesBillingByIDs(array($deletingModuleID),$currency['id']);
+	    		 //$deletingModuleInfo = $deletingModuleInfo[0];
 	    		 //echo "deletingModuleInfo:";
 	    		 //echo "<br/>";
 	    		 //var_dump($deletingModuleInfo);
@@ -806,7 +818,28 @@ class Billing {
 	    		 //var_dump($multiInvoiceData);
 	    		 //p("delete applied modules for test..");
 	    		 
-	    		 $insertedInvoiceID = $invoice->createMultiInvoiceForNewCustomer($customerID,$trialEndDate,$billingID,$multiInvoiceData);
+	    		 if($invoiceDetails['billingInfo']) // If multiinvoice is included billing
+	    		 {
+	    		 	//p("multiinvoice is included billing");
+	    		 	$insertedInvoiceID = $invoice->createMultiInvoiceForNewCustomer($customerID,$trialEndDate,$billingID,$multiInvoiceData);
+	    		 	//var_dump($multiInvoiceData);
+    			 }
+    			 else // If multiinvoice contains just modules
+    			 {
+    			 	//p("multiinvoice contains just modules");
+    			 	$billing = new Billing($this->db);
+    			 	
+    			 	$billingModulesIDs = array();
+    			 	foreach($modules as $m)
+    			 	{
+    			 		$billingModulesIDs = $m['id'];
+    			 	}
+    			 	//var_dump($billingModulesIDs);
+    			 	$billing->applyModuleBillingPlan($customerID,$billingModulesIDs,$invoiceDetails['periodStartDate']);
+    			 }
+	    		 
+	    		 
+	    		 //exit;
 	    		 //echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>createMultiInvoiceForNewCustomer</b><br/>");
 	    		 
 	    		 //p("billingID",$billingID);
@@ -829,13 +862,15 @@ class Billing {
     		 	if (strtolower($invoiceDetails['status']) == 'due') 
     		 	{
     				$invoice->cancelInvoice($invoiceDetails['invoiceID']);
-    				p("cancel Invoice");
-    				exit;
+    				//p("cancel single Invoice");
+    				//exit;
 	    		} 
 	    		else 
 	    		{
+	    			//echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>Begin</b><br/>");
 	    			$backToCustomer = $invoice->partialRefund($invoiceDetails);
 	    			//$invoice->manualBalanceChange($customerID,'+',$backToCustomer);
+	    			$deletingModuleInfo = $invoiceDetails['modules'][0];
 	    			
 	    			$customInfo = "Canceled module <b>{$deletingModuleInfo['name']}</b>,
 		    		month - <b>{$deletingModuleInfo['month_count']}</b>, 
@@ -844,7 +879,7 @@ class Billing {
 		    		<a href='/voc_src/vwm/vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceDetails['invoiceID']}'>Original Invoice</a>";
 	    		 	$customInfo = mysql_escape_string($customInfo);
 	    		 	$invoice->createCustomInvoice($customerID, $backToCustomer * -1, $invoiceDetails['suspensionDate'], 0, $customInfo,'CANCELED');
-	    		 	
+	    		 	//echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>createCustomInvoice</b><br/>");
 	    		 	$query = "UPDATE ".TB_VPS_INVOICE. " " .
 						"SET status = 'CANCELED' " .
 						"WHERE invoice_id = ".$invoiceDetails['invoiceID'];
@@ -852,11 +887,21 @@ class Billing {
 					
 					$payment = (isset($this->payment)) ? $this->payment : new Payment($this->db);		
 					$payment->cancelInvoicePayment($invoiceID, 0,$type); 
+					//echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>cancelPayment</b><br/>");
+					//p("delete module from gacl");
+					//var_dump($deletingModuleInfo);
+					//Delete module from gacl
+					
+					$ms = new ModuleSystem($this->db);
+					$vps2voc = new VPS2VOC($this->db);
+					$moduleName = $vps2voc->getModuleNameByID($deletingModuleInfo['module_id']);
+			    	//p("moduleName",$moduleName);
+					$ms->setModule2company($moduleName,0,$customerID);
 					
 					/*Delete module2customer*/
 	   				$rowsDeleted = $this->deleteModule2Customer($safeCustomerID,$safeModuleBillingPlanID);
 				    
-	    			
+	    			//p("cancel PAID single Invoice");
 	    			//$invoice->cancelInvoice($invoiceDetails['invoiceID']);
 	    			
 	    			//exit;
