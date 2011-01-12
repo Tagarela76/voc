@@ -554,9 +554,10 @@
 					}
 					$billing = new Billing($db);
 					
+					$currency = $billing->getCurrencyByCustomer($customerID);
 					
+					$modules = $billing->getPurchasedModule($customerID,$moduleID,'today&future',"today",$currency['id']);
 					
-					$modules = $billing->getPurchasedModule($customerID,$moduleID,'today&future');
 					if ($_GET['status'] == 'remove_plan') {
 						$planID = $_GET['plan'];
 						$moduleForRemove = null;
