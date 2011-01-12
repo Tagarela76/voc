@@ -832,7 +832,7 @@ class Billing {
     			 	$billingModulesIDs = array();
     			 	foreach($modules as $m)
     			 	{
-    			 		$billingModulesIDs = $m['id'];
+    			 		$billingModulesIDs[] = $m['id'];
     			 	}
     			 	//var_dump($billingModulesIDs);
     			 	$billing->applyModuleBillingPlan($customerID,$billingModulesIDs,$invoiceDetails['periodStartDate']);
