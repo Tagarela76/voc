@@ -62,8 +62,29 @@ class RegActManager {
 	    }
     }
     
-	public function getRegActsList($customerID = null) {
+    /**
+     * function getRegActsList($userID = null)
+     * gets list of acts from db, if was set userId in objects filled info about act was readen by user, was act mailed to user.
+     * @param int $userID
+     * @return array of RegAct objects 
+     */
+	public function getRegActsList($userID = null) {
+		$query = "SELECT * FROM ".TB_REG_ACTS." ra".((!is_null($userID))?", ".TB_USERS2REGS." u2r WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'":"")." ORDER BY ra.category ";
+		$this->db->query($query);
+		$data = $this->db->fetch_all_array();
 		
+		//the funiest part: make from array of assoc-array an array of objects))
+		$objectsList = array();
+		foreach($data as $actData) {
+			$regAct = new RegAct($this->db);
+			foreach($actData as $property => $value) {
+				if (property_exists($regAct, $property)) {
+					$regAct->$property = $value;
+				}
+			}
+			$objectsList []= $regAct;
+		}
+		return $objectsList;
 	}
 	
 	public function getUnreadList($userID, $category = null, $mailed = null) {

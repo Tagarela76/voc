@@ -18,6 +18,12 @@ class RegAct {
 	public $reg_agency_id;
 	public $reg_agency;
 	
+	//if we get reg act for User
+	public $user_id;
+	public $readed;
+	public $mailed;
+	
+	//additional
 	private $tableMap = array(
 			'rin', 'reg_agency_id', 'title', 'stage', 'significant', 'date_received', 'legal_deadline', 'date_completed', 'category', 'decision' 
 		);
