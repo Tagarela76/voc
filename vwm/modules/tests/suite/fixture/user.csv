@@ -1,0 +1,87 @@
+"1";"admin";"admin";"3890967a490b25dddf7b821a9ac6b220";"000";"000";"admin@admin.admin";"3";NULL;NULL;NULL;"14";"0"
+"43";"Department";"department";"459d9fca17e3a950deae755d13578292";"department";"department";"department@department.department";"2";"105";"66";"212";"14";"0"
+"44";"Facility";"facility";"eaaa42a1464aa2b40a3ecfd68e2105d7";"facility";"facility";"facility@facility.facility";"1";"105";"66";"0";"14";"0"
+"45";"Company";"company";"93c731f1c3a84ef05cd54d044c379eaa";"company";"company";"company@company.company";"0";"105";"0";"0";"14";"0"
+"46";"test2";"test2";"098f6bcd4621d373cade4e832627b4f6";"test2";"test2";"test@example.com";"0";"138";NULL;NULL;"14";"0"
+"47";"User Name";"shmazefacility";"f24b79e6d44e0f3be11d764eaa807f79";"Phone";"Mobile Phone";"email@email.com";"1";"113";"82";"0";"14";"0"
+"48";"User Name";"cell1";"fb7015d29832324d57e6d020374a5c2e";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"237";"14";"0"
+"49";"name";"cell2";"c88e5ab92bfa861dc6d9ba7a77aca40c";"phone";"Mobile Phone";"email@email.com";"2";"113";"82";"239";"14";"0"
+"61";"User Name";"cell9";"6fdc46fb447c56296cbd2bc63e623a88";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"249";"14";"0"
+"55";"name";"cell7";"ba5b4de86289d45f2fef44c312ed9d42";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"247";"14";"0"
+"60";"User Name";"cell5";"8cf81f5d3e0f73c5aa0d4a8dddd1956d";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"243";"14";"0"
+"59";"User Name";"cell4";"4d636d672f288b78815927d5b4761f2b";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"242";"14";"0"
+"54";"User Name";"cell6";"b3850217acc0c6847e9bf72d08baba10";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"246";"14";"0"
+"56";"User Name";"cell8";"2c9362a6fef3501a8683c456c8dd7b3f";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"248";"14";"0"
+"58";"User Name";"cell3";"db6b45db0b51a6ebdc41dc54bf6322ce";"Phone";"Mobile Phone";"email@email.com";"2";"113";"82";"241";"14";"0"
+"62";"kttsoft";"kttsoft";"a69c6a228b105a8fccf413dad7a3f24e";"+38 067 7218938";"+38 067 7218938";"dmitry.vd@kttsoft.com";"3";NULL;NULL;NULL;"14";"0"
+"63";"Oleg Petro";"testcell1";"efe6398127928f1b2e9ef3207fb82663";"+380637725656";"+380637725656";"petro@mail.ru";"2";"113";"82";"237";"14";"0"
+"64";"Steve Jobs";"TestCell";"efe6398127928f1b2e9ef3207fb82663";"1-800-MY-APPLE";"1-800-MY-APPLE";"steve@apple.com";"2";"113";"82";"237";"14";"0"
+"65";"Michael Shmaze";"mike";"81dc9bdb52d04dc20036dbd8313ed055";"949 583-1448";"714 350-9151";"mike@shmaze.com";"0";"113";NULL;NULL;"14";"0"
+"66";"Craig ";"craig";"1e48c4420b7073bc11916c6c1de226bb";"949 583-1448";"949 2949325";"crysavy@shmaze.com";"1";"113";"82";NULL;"14";"0"
+"69";"Jon Gypsyn";"Jon Gypsyn";"006cb570acdab0e0bfc8e3dcb7bb4edf";"12345678";"01234567";"jgypsyn@gyantgroup.com";"3";"0";"0";"0";"14";"0"
+"70";"dev_01";"dev_01";"207e64e7490b7b59e3f348b3bb9065f0";"1111";"1111";"denis.nt@kttsoft.com";"0";"113";"0";"0";"14";"0"
+"71";"dev_02";"dev_02";"fde45e33ef36584192271bf5037a88cb";"1111";"1111";"denis.nt@kttsoft.com";"0";"113";"0";"0";"14";"0"
+"72";"dev_04";"dev_04";"6c01df295ca938dfe76520fc943d8a1f";"1111";"1111";"denis.nt@kttsoft.com";"0";"113";"0";"0";"14";"0"
+"105";"feda";"feda";"4bdf61ea2a182a1783affb44767603ad";"123";"2134";"DF@us.fm";"0";"143";"0";"0";"14";"0"
+"74";"Jon Gypsyn";"Jon";"48bc893fcbc0a33ed3ad2cf2d5d57cfe";"5555";"5555";"denis.nt@kttsoft.com";"0";"115";NULL;NULL;"14";"0"
+"106";"ui";"ui";"7d5c009e4eb8bbc78647caeca308e61b";"45";"45";"gh@hj.jk";"0";"143";"0";"0";"14";"0"
+"76";"peter";"peter";"66fae5b05c0f64c4d2bdcdf1ad85f7b2";"0121 423 7333";"0121-434- 5346";"luxton@ppg.com";"2";"115";"92";"270";"14";"0"
+"77";"peter";"peter";"fee67cadcc3a0bec8e00641884903c45";"0121 423 7333";"0121-434- 5346";"luxton@ppg.com";"1";"115";"92";"0";"14";"0"
+"78";"david morriss";"david";"1b111411f1b95cfbf70d3ad478b247d9";"01952 244321";"0";"David.Morriss@autostructures.gknplc.com";"0";"121";"0";"0";"14";"0"
+"79";"david morriss";"david";"1f7690ebdd9b4caf8fab49ca1757bf27";"01952 244321";"0";"David.Morriss@autostructures.gknplc.com";"1";"121";"95";"0";"14";"0"
+"80";"david morriss";"david";"e2fc714c4727ee9395f324cd2e7f331f";"01952 244321";"0";"David.Morriss@autostructures.gknplc.com";"2";"121";"95";"274";"14";"0"
+"81";"david morriss";"david";"e2fc714c4727ee9395f324cd2e7f331f";"01952 244321";"0";"David.Morriss@autostructures.gknplc.com";"2";"121";"95";"274";"14";"0"
+"84";"Ksuha - dev";"ksuha";"0231cfad04add7a0609be58bed71ace5";"00000";"00000";"ksenya.ta@kttsoft.com";"3";"0";"0";"0";"14";"0"
+"153";"2911";"2911";"ef67f7c2d86352c2c42e19d20f881f53";"2911";"2911";"vps_test291110@GMAIL.COM";"0";"174";NULL;NULL;"14";NULL
+"85";"Yulia Timoshenko";"yulia";"03be66295cd7eb6cf6001c9181bb904d";"-";"0668728158";"yulia.ts@kttsoft.com";"3";"0";"0";"0";"14";"0"
+"152";"tb";"tb";"e44d967f3e8a44f6a7fee562af4d82f4";"868";"8768";"t1@t1.tt";"0";"165";NULL;NULL;"14";NULL
+"151";"ilya";"ilya";"67e21d45f7b1fab0a3c43dd4339ee8e9";"555555";"55555";"ilya.iz@kttsoft.com";"3";NULL;NULL;NULL;"14";NULL
+"88";"qqq";"qqq";"b2ca678b4c936f905fb82f2733f5297f";"qqq";"qqq";"qqq@uy.fd";"3";"0";"0";"0";"14";"0"
+"89";"Yura";"comus";"bd8912c78ab80dc88f4c342592de36fb";"34";"23";"sdf@ua.fm";"0";"141";"0";"0";"14";"0"
+"104";"Yura";"Upps";"27f457656d3e91eb3e140f571b67bea8";"3434";"23423";"sdfs@sdf.sdf";"0";"141";"0";"0";"14";"0"
+"91";"323_c_level";"323_c_level";"d8578edf8458ce06fbc5bb76a58c5ca4";"55555";"55555";"email@email.com";"0";"141";NULL;NULL;"14";"0"
+"93";"323_f_level";"323_f_level";"d8578edf8458ce06fbc5bb76a58c5ca4";"323_f_level";"55555";"email@email.com";"1";"141";"109";"0";"14";"0"
+"94";"323_d_level";"323_d_level";"d8578edf8458ce06fbc5bb76a58c5ca4";"55555";"55555";"email@email.com";"2";"141";"112";"285";"14";"0"
+"109";"Super Designer";"alla";"beb10db7751f292cfcfe970ec9d77dce";"55555";"55555";"dev@decv.com";"3";"0";"0";"0";"14";"0"
+"102";"test_l";"test_l";"098f6bcd4621d373cade4e832627b4f6";"1";"1";"1@gmail.com";"1";"115";"92";"0";"14";"0"
+"97";"test_d";"test_d";"098f6bcd4621d373cade4e832627b4f6";"1";"1";"1@gmail.com";"2";"115";"92";"270";"14";"0"
+"100";"eeee";"eeee";"670da91be64127c92faac35c8300e814";"eeee";"eeee";"eee@ee.ee";"1";"141";"113";"0";"14";"0"
+"110";"Vasyl";"Vasyl";"3ef85a5aa3145e83b298b11afad61c8a";"234234234";"3234234";"fen@ua.fm";"0";"113";"0";"0";"14";"0"
+"103";"323_c_level2";"323_c_level2";"d8578edf8458ce06fbc5bb76a58c5ca4";"453535";"00000";"denis.nt@kttsoft.com";"0";"141";"0";"0";"14";"0"
+"111";"Denit T";"denis";"c3875d07f44c422f3b3bc019c23e16ae";"55555";"55555";"denis.nt@kttsoft.com";"0";"147";"0";"0";"14";"0"
+"113";"Nymph - dev - company Level";"nymph";"866da8f728fefd30006abb8628ae7b01";"0000";"0000";"nymph666@i.ua";"0";"148";NULL;NULL;"14";"0"
+"120";"vps#1";"vps1";"d8578edf8458ce06fbc5bb76a58c5ca4";"55555";"55555";"denis.nt@kttsoft.com";"0";"150";NULL;NULL;"14";"0"
+"118";"21212";"21212";"2f38e266bfecbac1601445e864b1639a";"1";"1";"1@d.hy";"0";"143";"0";"0";"14";"0"
+"122";"bbb";"bbb";"08f8e0260c64418510cefb2b06eee5cd";"bbb";"bbb";"bbb@bb.ua";"0";"151";"0";"0";"14";"0"
+"123";"qqq";"qqq";"b2ca678b4c936f905fb82f2733f5297f";"qqq";"qqq";"qqq@qq.qq";"0";"152";"0";"0";"14";"0"
+"124";"111";"111";"698d51a19d8a121ce581499d7b701668";"11111111111111111";"11111111111111111";"1111111111@1111111111.er";"0";"149";NULL;NULL;"14";"0"
+"125";"asdf";"asdf";"912ec803b2ce49e4a541068d495ab570";"asdf";"asdf";"asdf@as.df";"0";"153";"0";"0";"14";"0"
+"126";"sip";"sip";"06b15d3af713e318d123274a98d70bc9";"555555";"55555";"denis.nt@kttsoft.com";"0";"154";"0";"0";"14";"0"
+"127";"company";"yulia_c";"b59c67bf196a4758191e42f76670ceba";"1";"1";"yulia.ts@kttsoft.com";"0";"113";NULL;NULL;"14";NULL
+"128";"yulia";"yulia_s";"b59c67bf196a4758191e42f76670ceba";"1";"1";"yulia.ts@kttsoft.com";"3";NULL;NULL;NULL;"14";NULL
+"129";"department";"yulia_d";"b59c67bf196a4758191e42f76670ceba";"1";"1";"yulia.ts@kttsoft.com";"2";"113";"82";"241";"14";NULL
+"130";"1";"1";"6512bd43d9caa6e02c990b0a82652dca";"1";"1";"1@g.jhi";"2";"149";NULL;NULL;"14";NULL
+"131";"facility";"yulia_f";"b59c67bf196a4758191e42f76670ceba";"1";"1";"yulia.ts@kttsoft.com";"1";"113";"82";NULL;"14";NULL
+"132";"nymph";"nymph_M";"866da8f728fefd30006abb8628ae7b01";"0923451231";"0923451231";"ksenya.ta@kttsoft.com";"0";"148";NULL;NULL;"14";NULL
+"133";"vps3active";"vps3active";"20e6460753b9eb57195fe69f128d2369";"vps3active";"vps3active";"vps3active@vps3active.com";"0";"157";NULL;NULL;"14";NULL
+"134";"vps2active";"vps2active";"94bf24fe834b22bbd19e73a7a57ff5a3";"vps2active";"vps2active";"vps2active@vps2active.com";"0";"156";NULL;NULL;"14";NULL
+"135";"vps1active";"vps1active";"09650177bf31a4f7ef995ddf1f5c6985";"vps1active";"vps1active";"vps1active@vps1active.com";"0";"155";NULL;NULL;"14";NULL
+"136";"vvv";"vvv";"4786f3282f04de5b5c7317c490c6d922";"vvv";"vvv";"vvv@vv.vv";"1";"113";"82";NULL;"14";NULL
+"137";"mmm";"mmm";"c4efd5020cb49b9d3257ffa0fbccc0ae";"mmm";"mmm";"mmm@uf.fm";"1";"141";"109";NULL;"14";NULL
+"138";"xxx";"xxx";"f561aaf6ef0bf14d4208bb46a4ccb3ad";"xxx";"xxx";"xxx@xx.xx";"2";"146";"117";"299";"14";NULL
+"139";"qaz";"qaz";"4eae18cf9e54a0f62b44176d074cbe2f";"qaz";"qaz";"qaz@qa.za";"1";"143";"120";NULL;"14";NULL
+"140";"ssss";"ssss";"8f60c8102d29fcd525162d02eed4566b";"ssss";"er";"ssss@ua.fm";"0";"149";NULL;NULL;"14";NULL
+"141";"wewe";"wewe";"2a7d544ccb742bd155e55c796de8e511";"wewe";"wewe";"ssss@ua.fm";"0";"149";NULL;NULL;"14";NULL
+"142";"mew";"new";"22af645d1859cb5ca6da0c484f1f37ea";"1255";"44554";"445@rt.ry";"0";"161";NULL;NULL;"14";NULL
+"143";"Denis T";"detook";"7403edf62a85df3902f6aa81d23b6330";"55555";"55555";"denis.nt@kttsoft.com";"0";"166";NULL;NULL;"14";NULL
+"144";"Denis T";"detook2";"44cb4998445917d199cffba2cb01a7da";"55555";"55555";"denis.nt@kttsoft.com";"0";"167";NULL;NULL;"14";NULL
+"145";"11";"bil";"b59c67bf196a4758191e42f76670ceba";"11";"11";"1@df.mk";"0";"149";NULL;NULL;"14";NULL
+"146";"11";"bill";"b59c67bf196a4758191e42f76670ceba";"11";"1";"1@df.mk";"0";"146";NULL;NULL;"14";NULL
+"147";"t1";"t1";"83f1535f99ab0bf4e9d02dfd85d3e3f7";"11";"11";"t1@t1.tt";"0";"168";NULL;NULL;"14";NULL
+"148";"q";"q";"7694f4a66316e53c8cdd9d9954bd611d";"1";"1";"t1@t1.tt";"0";"170";NULL;NULL;"14";NULL
+"149";"2211";"2211";"3323fe11e9595c09af38fe67567a9394";"2211";"2211";"t1@t1.tt";"0";"171";NULL;NULL;"14";NULL
+"150";"2311";"2311";"046ddf96c233a273fd390c3d0b1a9aa4";"2311";"2311";"vps_2311@vps.com";"0";"172";NULL;NULL;"14";NULL
+"154";"3011";"3011";"b1f62fa99de9f27a048344d55c5ef7a6";"3011";"3011";"vps_test301110@gmail.com";"0";"178";NULL;NULL;"14";NULL
+"155";"0112";"0112";"07aeb18febbdbf77511a10fd4aa49942";"0112";"0112";"vps_test011210@gmail.com";"0";"179";NULL;NULL;"14";NULL
+"156";"drugandguns";"drugsandguns";"e57677782bac97c81c6ea11a0787cc88";"7777777";"7777777";"boss@drugs.com";"0";"176";NULL;NULL;"14";NULL
+"157";"ilya";"vpc_ilya_test";"81dc9bdb52d04dc20036dbd8313ed055";"asdf";"111";"boss@drugs.com";"0";"180";NULL;NULL;"14";NULL
