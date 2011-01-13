@@ -105,13 +105,17 @@
 	
 	if ($db->num_rows()) {
 		$invoiceData = $db->fetch(0);
+		
 		$xnyo->filter_post_var('mc_gross', 'text');
+		$xnyo->filter_post_var('mc_currency', 'text');
+		
 		$postAmount = str_replace("-","",$_POST["mc_gross"]);
 		
 		$currencyDetails = $billing->getCurrencyDetails($invoiceData->currency_id);
+		
 		if ($invoiceData->total != $postAmount || $_POST['mc_currency'] != $currencyDetails['iso']) {	//customer pays entire amount case
 		
-			write2log("Amount mismatch. EXIT.");
+			write2log("Amount mismatch. EXIT.");					
 			exit;					//	amount mismatch
 		}    	    	 
 	}

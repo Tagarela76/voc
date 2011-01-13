@@ -81,10 +81,8 @@
 					$ci = $_POST['currencySelect'] ? $_POST['currencySelect'] : ($_GET['currency'] ? $_GET['currency'] : false);
 					
 					if($ci) {
-						$curentCurrency = $billing->getCurrencyDetails($ci);
-					}
-					else {
-
+						$curentCurrency = $billing->getCurrencyDetails($ci);						
+					} else {
 						$curentCurrency = $billing->getCurrencyDetails( $currencies[0]['id']);
 					}
 
@@ -99,8 +97,7 @@
 					$smarty->assign("availablePlans",$billingPlanList);	
 									
 					//getting billing plans for modules
-					$moduleBillingPlans= $billing->getModuleBillingPlans(NULL,$curentCurrency['id']);
-					
+					$moduleBillingPlans= $billing->getModuleBillingPlans(NULL,$curentCurrency['id']);					
 					$smarty->assign("moduleBillingPlans",$moduleBillingPlans);
 					
 					$modules=$billing->getModules();	

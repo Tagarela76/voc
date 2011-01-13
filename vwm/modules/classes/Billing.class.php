@@ -1912,10 +1912,11 @@ class Billing {
     		$query = "SELECT * FROM " . TB_VPS_CURRENCY . " WHERE id = $currencyID";
     		$this->db->query($query);
     		$res = $this->db->fetch_array(0);
-    		
+ 		
     		return $res;
     	}
     	else {
+    		
     		return false;
     	}
     }

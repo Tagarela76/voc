@@ -1527,7 +1527,9 @@ class Invoice {
 					
 					//	vwm/ - working directory
 					// 	test/VOC15/ - test directory
-					$URLBody = "http://vocwebmanager.com/vwm/";
+					//$URLBody = "http://vocwebmanager.com/vwm/";
+					$URLBody = "http://".DOMAIN."/";
+					$URLBody .= (ENVIRONMENT == "server") ? "vwm/" : "dev/VOC15/";
 					
 					//	paypal settings----
 					$this->db->query("SELECT value FROM ".TB_VPS_CONFIG." WHERE name = 'paypal_merchant_email'");
