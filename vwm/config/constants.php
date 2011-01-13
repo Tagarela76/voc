@@ -34,7 +34,7 @@
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'fghbjhysq');
+				define ('DB_PASS', 'bdevelop');
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
 				define ('TRACE_MYSQL', 'off'); 	//	TRACE MYSQL QUERIES
@@ -223,6 +223,9 @@
 	define ('TB_NOTIFY_TIME', 'notify_time');
 	define ('TB_LIMITES', 'limites');
 	define ('TB_LIMIT2USER', 'limit2user');
+	define ('TB_REG_AGENCY', 'reg_agency');
+	define ('TB_REG_ACTS', 'reg_acts');
+	define ('TB_USERS2REGS', 'users2regs');
 	
 	//billing system constants
 	define ('TB_VPS_MODULE_BILLING','vps_module_billing');
@@ -244,7 +247,9 @@
 	define ('TB_PAYMENT_METHOD', 'vps_payment_method');		
 	define ('TB_VPS_INVOICE_ITEM', 'vps_invoice_item');
 	define ('TB_VPS_CURRENCY', 'vps_currency');
-	define ('TB_VPS_BILLING2CURRENCY', 'vps_billing2currency');
+	define ('TB_VPS_BILLING2CURRENCY','vps_billing2currency');
+	define ('TB_VPS_MODULE2CURRENCY','vps_module2currency');
+	define ('TB_VPS_LIMIT_PRICE2CURRENCY','vps_limit_price2currency'); 
 	
 	
 			
