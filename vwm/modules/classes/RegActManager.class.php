@@ -5,6 +5,9 @@ class RegActManager {
 	
 	private $xmlReview = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml";
 	private $xmlCompleted = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml";
+	
+	const CATEGORY_REVIEW = 'review';
+	const CATEGORY_COMPLETED = 'completed';
 
     function __construct($db, $xmlFileReviewPath = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml", $xmlFileCompletedPath = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml") {
     	$this->db = $db;
@@ -23,7 +26,7 @@ class RegActManager {
 	    $xmlDOM->preserveWhiteSpace = false;
 	    $xmlDOM->formatOutput = true;
 	    if (!is_null($category)) {
-	    	$xmlDOM->load(($category == 'review')?$this->xmlReview:$this->xmlCompleted);
+	    	$xmlDOM->load(($category == self::CATEGORY_REVIEW)?$this->xmlReview:$this->xmlCompleted);
 	    	$XMLoira = $xmlDOM->getElementsByTagName('OIRA_DATA')->item(0);
 	    	$XMLregs = $XMLoira->getElementsByTagName('REGACT');
 	    	$regsCount = $XMLregs->length;
@@ -41,7 +44,7 @@ class RegActManager {
 					$regAct->significant = $XMLregAct->getElementsByTagName('ECONOMICALLY_SIGNIFICANT')->item(0)->nodeValue;
 					$regAct->date_received = $XMLregAct->getElementsByTagName('DATE_RECEIVED')->item(0)->nodeValue;
 					$regAct->legal_deadline = $XMLregAct->getElementsByTagName('LEGAL_DEADLINE')->item(0)->nodeValue;
-					if ($category == 'completed') {
+					if ($category == self::CATEGORY_COMPLETED) {
 						$regAct->date_completed = $XMLregAct->getElementsByTagName('DATE_COMPLETED')->item(0)->nodeValue;
 						$regAct->decision = $XMLregAct->getElementsByTagName('DECISION')->item(0)->nodeValue;
 					}
@@ -57,8 +60,8 @@ class RegActManager {
 	    	//update regActs=>Users Info
 	    	$this->updateRegs2Users($rin_array);
 	    } else {
-	    	$this->parseXML('review');
-	    	$this->parseXML('completed');
+	    	$this->parseXML(self::CATEGORY_REVIEW);
+	    	$this->parseXML(self::CATEGORY_COMPLETED);
 	    }
     }
     
@@ -69,38 +72,117 @@ class RegActManager {
      * @return array of RegAct objects 
      */
 	public function getRegActsList($userID = null) {
-		$query = "SELECT * FROM ".TB_REG_ACTS." ra".((!is_null($userID))?", ".TB_USERS2REGS." u2r WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'":"")." ORDER BY ra.category ";
+		$query = "SELECT * FROM ".TB_REG_ACTS." ra".((!is_null($userID))?", ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
+				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'":"").
+					" AND ra.reg_agency_id = rag.id ".
+				" ORDER BY ra.category ";
 		$this->db->query($query);
-		$data = $this->db->fetch_all_array();
-		
-		//the funiest part: make from array of assoc-array an array of objects))
-		$objectsList = array();
-		foreach($data as $actData) {
-			$regAct = new RegAct($this->db);
-			foreach($actData as $property => $value) {
-				if (property_exists($regAct, $property)) {
-					$regAct->$property = $value;
+		if ($this->db->num_rows()>0) {
+			$data = $this->db->fetch_all_array();
+			
+			//the funiest part: make from array of assoc-array an array of objects))
+			$objectsList = array();
+			foreach($data as $actData) {
+				$objectsList []= $this->arrayIntoRegActObject($actData);
+			}
+			return $objectsList;
+		}
+		return false;
+	}
+	
+	/**
+	 * function getUnreadList
+	 * get Unread(by default unmailed too) list to notify about new updates
+	 * @param int $userID
+	 * @param string $category
+	 * @param bool $mailed
+	 * @return array of RegAct objects
+	 */
+	public function getUnreadList($userID, $category = null, $mailed = false) {
+		$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
+				"WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID' " .
+					"AND u2r.readed = '0' AND u2r.mailed = '".((!$mailed)?'0':'1')."' " .
+					((!is_null($category))?" AND ra.category = '$category' ":"").
+					"AND ra.reg_agency_id = rag.id ".
+				"ORDER BY ra.category ";
+		$this->db->query($query);//var_dump($query);
+		if ($this->db->num_rows()>0) {
+			$data = $this->db->fetch_all_array();
+			
+			//the funiest part: make from array of assoc-array an array of objects))
+			$objectsList = array();
+			foreach($data as $actData) {
+				$objectsList []= $this->arrayIntoRegActObject($actData);
+			}
+			return $objectsList;
+		}
+		return false;
+	}
+	
+	/**
+	 * function markRIN
+	 * mark RIN for user(was it readen? was it mailed?)
+	 * @param int  $userID
+	 * @param string $action = 'readed'/'mailed'
+	 * @param array of int $RINarray
+	 */
+	public function markRIN($userID,$action = 'readed', $RINarray = null) {
+		$query = "UPDATE ".TB_USERS2REGS." SET ".(($action == 'readed')?"readed":"mailed")." = '1' " .
+				"WHERE user_id = '$userID' ".((!is_null($RINarray))?" AND rin IN ('".implode('\', \'',$RINarray)."')":"");
+		$this->db->query($query);var_dump($query);
+	}
+	
+	/**
+	 * function getMessageForNotificator
+	 * @param int $userID
+	 * @return string $textToMail
+	 */
+	public function getMessageForNotificator($userID) {
+		$listToMail = $this->getUnreadList($userID); //its already sorted by category
+		$textToMail = "New updates in Enviromental Protection Agency Regulations! \n";
+		$curCategory = "";
+		foreach($listToMail as $regAct) {
+			if ($regAct->category != $curCategory) {
+				$curCategory = $regAct->category;
+				$textToMail .= "\n\n\tExecutive Order Submissions ";
+				if ($curCategory == self::CATEGORY_REVIEW) {
+					$textToMail .= "Under Review\n";
+				} elseif ($curCategory == self::CATEGORY_COMPLETED) {
+					$textToMail .= "with Review Completed in Last 30 Days\n";
 				}
 			}
-			$objectsList []= $regAct;
+			$textToMail .= "\nAGENCY: ".$regAct->reg_agency->name." \n";
+			$textToMail .= "RIN: ".$regAct->rin." \n";
+			$textToMail .= "TITLE: ".$regAct->title." \n";
+			$textToMail .= "STAGE: ".$regAct->stage." \n";
+			$textToMail .= "ECONOMICALLY SIGNIFICANT: ".$regAct->significant." \n";
+			$textToMail .= "RECEIVED DATE: ".$regAct->date_received." \n";
+			$textToMail .= "LEGAL DEADLINE: ".$regAct->legal_deadline." \n";
+			if ($curCategory == self::CATEGORY_COMPLETED) {
+				$textToMail .= "COMLETED: ".$regAct->date_completed." \n";
+				$textToMail .= "DECISION: ".$regAct->decision." \n";
+			}
 		}
-		return $objectsList;
+		
+		$textToMail .= "\n______ \n";
+		$textToMail .= "You can swith off it in EmailNotificator option in your VOCWEBMANAGER Settings"; //here we should add some footer))
+		return $textToMail;
 	}
 	
-	public function getUnreadList($userID, $category = null, $mailed = null) {
-		
-	}
-	
-	public function markAsRead($userID, $IDarray = null) {
-		
-	}
-	
-	public function markAsMailed($userID, $IDarray = null) {
-		
-	}
-	
-	public function getMessageForNotificator($userID) {
-		
+	private function arrayIntoRegActObject($actData) {
+		$regAct = new RegAct($this->db);
+		foreach($actData as $property => $value) {
+			if (property_exists($regAct, $property)) {
+				$regAct->$property = $value;
+			}
+		}
+		//now lets manage RegAgency in RegActObject
+		$agency = new RegAgency($this->db);
+		$agency->name = $actData['name'];
+		$agency->code = $actData['code'];
+		$agency->acronym = $actData['acronym'];
+		$regAct->reg_agency = $agency;
+		return $regAct;
 	}
 	
 	private function updateRegs2Users($newRINarray) {
