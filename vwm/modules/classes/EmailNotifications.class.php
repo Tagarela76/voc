@@ -16,7 +16,8 @@ class EmailNotifications {
 		'facility_annual' => 'Facility Annual Limit Exceeded',
 		'equipment_expired' => 'Equipment Expired',
 		'equipment_preexpired' => 'Equipment Preexpired',
-		'waste_storage_critical' => 'Waste Storage Limit Overflow');
+		'waste_storage_critical' => 'Waste Storage Limit Overflow',
+		'regupdate' => 'EPA Regulations Updates');
 
     function EmailNotifications($db, $user_id = null) {
     	$this->db = $db;

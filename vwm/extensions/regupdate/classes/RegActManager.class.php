@@ -206,11 +206,13 @@ class RegActManager {
 		$user = new User($this->db, null, null, null);
 		$userList = $user->getUsersList();
 		
-		//add new info for not managed RIN's
+		//add new info for not managed RIN's + TODO manage also new users for old RINS!!!
 		$query = "INSERT INTO ".TB_USERS2REGS." (user_id, rin, readed, mailed) VALUES ";
 		foreach($userList as $userData) {
-			foreach ($newRINarray as $rin) {
-				$query .= "('".$userData['user_id']."', '$rin', '0', '0'),";
+			if ($user->checkAccess('regupdate',$userData['company_id']) || $userData['accesslevel_id'] == 3) {
+				foreach ($newRINarray as $rin) {
+					$query .= "('".$userData['user_id']."', '$rin', '0', '0'),";
+				}
 			}
 		}
 		$query = substr($query,0,-1);

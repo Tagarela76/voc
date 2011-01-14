@@ -29,7 +29,8 @@ class ModuleSystem {
 		'reduction' => 'MReductionScheme',
 		'carbon_footprint' => 'MCarbonFootprint',
 		'logbook' => 'MLogbook',
-		'reports' => 'MReports'
+		'reports' => 'MReports',
+		'regupdate' => 'MRegAct'
 	);
 	
 	
