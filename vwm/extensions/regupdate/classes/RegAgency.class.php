@@ -57,7 +57,7 @@ class RegAgency {
     	if (!$new) {
     		$query = "UPDATE ".TB_REG_AGENCY." SET " .
     					"code = '$this->code', " .
-    					"name = '$this->name', " .
+    					"name = '".mysql_escape_string($this->name)."', " .
     					"acronym = '$this->acronym', " .
     					"track = '$this->track' " .
     				" WHERE id = '$this->id' ";

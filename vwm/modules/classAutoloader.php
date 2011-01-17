@@ -1,6 +1,6 @@
 <?php
 function __autoload($class_name) {
-	
+	//var_dump($class_name);
 	$filePath = site_path.'modules'.DIRSEP.'classes'.DIRSEP;
 	$controllersFilePath=$filePath.'controllers'.DIRSEP; 
 	$localizedFilePath = $filePath; 
@@ -53,6 +53,6 @@ function __autoload($class_name) {
 	}else {		
 		include ($controllersFilePath);
 	}
-	
+	//echo($filePath.$localizedFilePath.$controllersFilePath.'+');
 }
 ?>

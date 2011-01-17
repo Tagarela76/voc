@@ -32,29 +32,33 @@ class RegActManager {
 	    	$regsCount = $XMLregs->length;
 	    	$regAgency = new RegAgency($this->db);
 	    	$rin_array = array();
+	    	$query = "INSERT INTO ".TB_REG_ACTS." (rin, reg_agency_id, title, stage, significant, date_received, legal_deadline,category, date_completed, decision) VALUES ";
 	    	for($i = 0; $i < $regsCount; $i++) {
 	    		$XMLregAct = $XMLregs->item($i);
 	    		$agencyID = $regAgency->getAgencyIdByCode($XMLregAct->getElementsByTagName('AGENCY_CODE')->item(0)->nodeValue);//var_dump($agencyID);
 	    		if ($agencyID !== false ) {
-	    			$regAct = new RegAct($this->db);
-		    		$regAct->rin = $XMLregAct->getElementsByTagName('RIN')->item(0)->nodeValue;
-					$regAct->reg_agency_id = $agencyID;
-					$regAct->title = $XMLregAct->getElementsByTagName('TITLE')->item(0)->nodeValue;
-					$regAct->stage = $XMLregAct->getElementsByTagName('STAGE')->item(0)->nodeValue;
-					$regAct->significant = $XMLregAct->getElementsByTagName('ECONOMICALLY_SIGNIFICANT')->item(0)->nodeValue;
-					$regAct->date_received = $XMLregAct->getElementsByTagName('DATE_RECEIVED')->item(0)->nodeValue;
-					$regAct->legal_deadline = $XMLregAct->getElementsByTagName('LEGAL_DEADLINE')->item(0)->nodeValue;
+	    			$rin = mysql_escape_string($XMLregAct->getElementsByTagName('RIN')->item(0)->nodeValue);
+	    			$query .= " ( ".
+		    		"'".$rin. "', ".
+					"'".$agencyID."', ".
+					"'".mysql_escape_string($XMLregAct->getElementsByTagName('TITLE')->item(0)->nodeValue)."', ".
+					"'".mysql_escape_string($XMLregAct->getElementsByTagName('STAGE')->item(0)->nodeValue)."', ".
+					"'".mysql_escape_string($XMLregAct->getElementsByTagName('ECONOMICALLY_SIGNIFICANT')->item(0)->nodeValue)."', ".
+					"'".mysql_escape_string($XMLregAct->getElementsByTagName('DATE_RECEIVED')->item(0)->nodeValue)."', ".
+					"'".mysql_escape_string($XMLregAct->getElementsByTagName('LEGAL_DEADLINE')->item(0)->nodeValue)."', ".
+					"'".$category."' ";
 					if ($category == self::CATEGORY_COMPLETED) {
-						$regAct->date_completed = $XMLregAct->getElementsByTagName('DATE_COMPLETED')->item(0)->nodeValue;
-						$regAct->decision = $XMLregAct->getElementsByTagName('DECISION')->item(0)->nodeValue;
+						$query .= ", '".$XMLregAct->getElementsByTagName('DATE_COMPLETED')->item(0)->nodeValue."', ".
+								"'".mysql_escape_string($XMLregAct->getElementsByTagName('DECISION')->item(0)->nodeValue)."' ";
+					} else {
+						$query .= ", NULL, NULL";
 					}
-					$regAct->category = $category;
-					$regAct->save();
-					$rin_array []= $regAct->rin;
+					$query .= "), ";
+					$rin_array []= $rin;
 	    		}
 	    	}
-	    	//lets delete all acts in that category if it was not in xml! - is it NEDEED?!
-	    	$query = "DELETE FROM ".TB_REG_ACTS." WHERE category = '$category' AND rin NOT IN ('".implode('\', \'',$rin_array)."')";
+	    	$query = substr($query, 0 , -2);
+	    	$this->db->query('DELETE FROM '.TB_REG_ACTS.' WHERE category = \''.$category.'\''); //delete all acts was in db
 	    	$this->db->query($query);
 	    	
 	    	//update regActs=>Users Info
@@ -186,37 +190,70 @@ class RegActManager {
 		return $regAct;
 	}
 	
-	private function updateRegs2Users($newRINarray) {
+	private function updateRegs2Users($newRINarray) {//var_dump($newRINarray);
 		//delete all info with RIN not id db anymore
 		$query = "DELETE FROM ".TB_USERS2REGS." WHERE rin NOT IN (SELECT rin FROM ".TB_REG_ACTS." )";
 		$this->db->query($query);
 		
 		//get list for already managed rin's
-		$query = "SELECT rin FROM ".TB_USERS2REGS." GROUP BY rin ";
+		$query = "SELECT rin FROM ".TB_USERS2REGS." WHERE rin IN ('".implode("', '", $newRINarray)."') GROUP BY rin ";
 		$this->db->query($query);
 		$rins = $this->db->fetch_all_array();
+				
+		//get all users list
+		$userObj = new User($this->db, null, null, null);
+		$userList = $userObj->getUsersList();
+		$regUpdateUsers = array();
+		foreach($userList as $userData) {
+			if ($userData['accesslevel_id'] == 3 || $userObj->checkAccess('regupdate',$userData['company_id'])) {
+				$regUpdateUsers []= $userData['user_id'];
+			}
+		}
+		
+		//delete all info with users without this module anymore
+		$query = "DELETE FROM ".TB_USERS2REGS." WHERE user_id NOT IN ('".implode("', '", $regUpdateUsers)."')";
+		$this->db->query($query);
+		
 		if ($rins) {
+			//lets get list for already  managed users
+			$query = "SELECT user_id FROM ".TB_USERS2REGS." WHERE rin IN ('".implode("', '", $newRINarray)."') GROUP BY user_id ";
+			$this->db->query($query);
+			$managedUserList = $this->db->fetch_all_array();
+			
+			//now check is all users was managed for old rins(there can be new users)
+			foreach($managedUserList as $key => $user) {
+				$managedUserList[$key] = $user['user_id'];
+			}
+			
+			$newUsers = array();
+			foreach($regUpdateUsers as $userID) {
+				if (!in_array($userID, $managedUserList)) {
+					$newUsers []= $userID;
+				}
+			}
+			
+			$queryPartForNewUsers = '';
+			
 			//lets cut out from array rins was already managed
 			foreach($rins as $data) {
+				foreach ($newUsers as $userID) {
+					$queryPartForNewUsers .= "('".$userID."', '".$data['rin']."', '0', '0'),";
+				}
 				$key = array_search($data['rin'],$newRINarray);
 				unset($newRINarray[$key]);
 			}
+			$queryPartForNewUsers = substr($queryPartForNewUsers, 0, -1);
+			
 		}
 		
-		//get all users list
-		$user = new User($this->db, null, null, null);
-		$userList = $user->getUsersList();
-		
-		//add new info for not managed RIN's + TODO manage also new users for old RINS!!!
+		//add new info for not managed RIN's + manage also new users for old RINS!!!
 		$query = "INSERT INTO ".TB_USERS2REGS." (user_id, rin, readed, mailed) VALUES ";
-		foreach($userList as $userData) {
-			if ($user->checkAccess('regupdate',$userData['company_id']) || $userData['accesslevel_id'] == 3) {
-				foreach ($newRINarray as $rin) {
-					$query .= "('".$userData['user_id']."', '$rin', '0', '0'),";
-				}
+		foreach($regUpdateUsers as $userID) {
+			foreach ($newRINarray as $rin) {
+				$query .= "('".$userID."', '$rin', '0', '0'),";
 			}
 		}
-		$query = substr($query,0,-1);
+		$query = ((!is_null($queryPartForNewUsers) && $queryPartForNewUsers != '')?$query.$queryPartForNewUsers:substr($query, 0, -1));
 		$this->db->query($query);
 	} 
 }

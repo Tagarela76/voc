@@ -33,7 +33,7 @@ class EmailNotifications {
      * @param string $category - name of category where was this limit expired = department, facility, etc.
      * @param int $category_id - id by category
      */
-    public function getLimits2Notify($limit_names_array,$category,$category_id) {
+    public function getLimits2Notify($limit_names_array,$category = null,$category_id = null) {
     	//return array of messages with limits to send by user with $this->user_id
     	switch ($category) {
     		case 'company':
@@ -96,7 +96,10 @@ class EmailNotifications {
     				}
     			}
     			
-    			if ($toSend) {
+    			if (is_null($category) && is_null($category_id)) {
+    				//if we get here its a periodic limit - no need to check users
+    				$notifyList []= array('email' => $email, 'limits' => $limits, 'id' => $ids[$email]);
+    			} elseif ($toSend) {
     				$idsToSend[$email] = $ids[$email];
     				
     				$point=($category=="department"?("$category \"$category_name\" (facility \"$facility_name\")"):("$category \"$category_name\""));
@@ -208,8 +211,8 @@ class EmailNotifications {
 	}
     
     public function sendNotify($notifyList) {
-    	/*
-    	$from = "yulia_tim90@mail.ru";
+    	
+    	$from = "kttsoft.mailtester@mail.ru";
     	$theme = "Notification: ";
     	
     		function get_data($smtp_conn)
@@ -229,12 +232,12 @@ class EmailNotifications {
 				
 					
 					$header="Date: ".date("D, j M Y G:i:s")." +0700\r\n"; 
-					$header.="From: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('Feanor')))."?= <yulia_tim90@mail.ru>\r\n"; 
+					$header.="From: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('VOC WEB MANAGER mail Tester')))."?= <kttsoft.mailtester@mail.ru>\r\n"; 
 					$header.="X-Mailer: The Bat! (v3.99.3) Professional\r\n"; 
-					$header.="Reply-To: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('Feanor')))."?= <yulia_tim90@mail.ru>\r\n";
+					$header.="Reply-To: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('VOC WEB MANAGER mail Tester')))."?= <kttsoft.mailtester@mail.ru>\r\n";
 					$header.="X-Priority: 3 (Normal)\r\n";
 					$header.="Message-ID: <172562218.".date("YmjHis")."@mail.ru>\r\n";
-					$header.="To: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('Feanor')))."?= <$to>\r\n";
+					$header.="To: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('VOC WEB MANAGER mail Tester')))."?= <$to>\r\n";
 					$header.="Subject: =?windows-1251?Q?".str_replace("+","_",str_replace("%","=",urlencode('test')))."?=\r\n";
 					$header.="MIME-Version: 1.0\r\n";
 					$header.="Content-Type: text/plain; charset=windows-1251\r\n";
@@ -252,16 +255,16 @@ class EmailNotifications {
 					$code = substr(get_data($smtp_conn),0,3);
 					if($code != 334) {print "сервер не разрешил начать авторизацию"; fclose($smtp_conn); exit;}
 					
-					fputs($smtp_conn,base64_encode("yulia_tim90")."\r\n");
+					fputs($smtp_conn,base64_encode("kttsoft.mailtester")."\r\n");
 					$code = substr(get_data($smtp_conn),0,3);
 					if($code != 334) {print "ошибка доступа к такому юзеру"; fclose($smtp_conn); exit;}
 					
 					
-					fputs($smtp_conn,base64_encode("250865bd")."\r\n");
+					fputs($smtp_conn,base64_encode("developer")."\r\n");
 					$code = substr(get_data($smtp_conn),0,3);
 					if($code != 235) {print "не правильный пароль"; fclose($smtp_conn); exit;}
 					
-					fputs($smtp_conn,"MAIL FROM:yulia_tim90@mail.ru\r\n");
+					fputs($smtp_conn,"MAIL FROM:kttsoft.mailtester@mail.ru\r\n");
 					$code = substr(get_data($smtp_conn),0,3);
 					if($code != 250) {print "сервер отказал в команде MAIL FROM"; fclose($smtp_conn); exit;}
 					
@@ -279,8 +282,8 @@ class EmailNotifications {
 					
 					fputs($smtp_conn,"QUIT\r\n");
 					fclose($smtp_conn);
-		}*/
-    	$email = new EMail();
+		}
+  /*  	$email = new EMail();
     	$from = AUTH_SENDER."@".DOMAIN;
     	$theme = "Notification ";
 		
@@ -292,7 +295,7 @@ class EmailNotifications {
 			
 			$message = $nonify['message'];		
 			$email->sendMail($from, $to, $theme, $message);
-		}
+		}*/
     }
     
     private function checkUser($user_id = null) {
@@ -320,6 +323,31 @@ class EmailNotifications {
     	}
     	$query = substr($query,0,-1);
     	return $this->db->query($query);
+    }
+    
+    public function checkPeriodicNotifiers() {
+    	$periodicNotifiers = array('regupdate');
+    	//here we should get List to notify
+    	$notifyList = $this->getLimits2Notify($periodicNotifiers);
+    	foreach($notifyList as $key => $data2notify) {
+    		$message = '';
+    		foreach ($data2notify['limits'] as $limit) {
+    			$message .= $this->getPeriodicMessage($limit,$data2notify['id'])."\n\n";
+    		}
+    		$notifyList[$key]['message'] = $message;
+    	}
+    	//var_dump($notifyList);
+    	$this->sendNotify($notifyList);
+    }
+    
+    private function getPeriodicMessage($limit,$id) {
+    	switch ($limit) {
+    		case 'regupdate':
+    			$regManager = new RegActManager($this->db);
+    			$notify = $regManager->getMessageForNotificator($id);
+    			break;
+    	}
+    	return $notify;
     }
     
     private function _load($user_id) {
