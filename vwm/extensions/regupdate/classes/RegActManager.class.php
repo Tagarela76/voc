@@ -127,7 +127,7 @@ class RegActManager {
 	/**
 	 * function markRIN
 	 * mark RIN for user(was it readen? was it mailed?)
-	 * @param int  $userID
+	 * @param int  $userID - can be id or array of id 
 	 * @param string $action = 'readed'/'mailed'
 	 * @param array of int $RINarray
 	 */

@@ -4,9 +4,8 @@ chdir('../..');
 
 	require('config/constants.php');
 	require_once ('modules/xnyo/xnyo.class.php'); 			
-	
-	define ('DIRSEP', DIRECTORY_SEPARATOR);
-	$site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP; 
+
+	$site_path = getcwd().DIRECTORY_SEPARATOR;
 	define ('site_path', $site_path);
 	
 	//	Include Class Autoloader
@@ -21,15 +20,15 @@ chdir('../..');
 	require_once('modules/Reform.inc.php');
 	
 	$db->select_db(DB_NAME);
-	
+
 	/* HERE CODE: */
 	
 	//update EPA Regulations
 	//$rag = new RegAgency($db);
 	//$rag->loadAgencyFromXML();
 	
-//	$ram = new RegActManager($db);
-//	$ram->parseXML();
+	$ram = new RegActManager($db);
+	$ram->parseXML();
 	
 	//send periodic Notifiers
 	$eNotificator = new EmailNotifications($db);

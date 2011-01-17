@@ -338,6 +338,14 @@ class EmailNotifications {
     	}
     	//var_dump($notifyList);
     	$this->sendNotify($notifyList);
+    	
+    	//set notifiers as sent
+//    	foreach($notifyList as $key => $data2notify) {
+//    		foreach ($data2notify['limits'] as $limit) {
+//    			$this->setPeriodicSent($limit,$data2notify['id'])."\n\n";
+//    		}
+//    		$notifyList[$key]['message'] = $message;
+//    	}
     }
     
     private function getPeriodicMessage($limit,$id) {
