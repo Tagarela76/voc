@@ -20,7 +20,7 @@ class RegAgency {
     
     public function getAgencyIdByCode($code) {
     	$query = "SELECT id FROM ".TB_REG_AGENCY." WHERE code = '$code' LIMIT 1";
-    	$this->db->query($query);
+    	$this->db->query($query);//var_dump($query);
     	return ($this->db->num_rows()>0)?$this->db->fetch(0)->id:false;
     }
     

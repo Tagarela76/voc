@@ -34,7 +34,7 @@ class RegActManager {
 	    	$rin_array = array();
 	    	for($i = 0; $i < $regsCount; $i++) {
 	    		$XMLregAct = $XMLregs->item($i);
-	    		$agencyID = $regAgency->getAgencyIdByCode($XMLregAct->getElementsByTagName('RIN')->item(0)->nodeValue);
+	    		$agencyID = $regAgency->getAgencyIdByCode($XMLregAct->getElementsByTagName('AGENCY_CODE')->item(0)->nodeValue);//var_dump($agencyID);
 	    		if ($agencyID !== false ) {
 	    			$regAct = new RegAct($this->db);
 		    		$regAct->rin = $XMLregAct->getElementsByTagName('RIN')->item(0)->nodeValue;
@@ -93,14 +93,15 @@ class RegActManager {
 	/**
 	 * function getUnreadList
 	 * get Unread(by default unmailed too) list to notify about new updates
-	 * @param int $userID
+	 * @param int $userID - can be $id or array of ids
 	 * @param string $category
 	 * @param bool $mailed
 	 * @return array of RegAct objects
 	 */
 	public function getUnreadList($userID, $category = null, $mailed = false) {
+		
 		$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
-				"WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID' " .
+				"WHERE ra.rin = u2r.rin AND u2r.user_id ".((is_array($userID))?" IN ('".implode('\', \'',$userID)."')":"= '$userID'")." " .
 					"AND u2r.readed = '0' AND u2r.mailed = '".((!$mailed)?'0':'1')."' " .
 					((!is_null($category))?" AND ra.category = '$category' ":"").
 					"AND ra.reg_agency_id = rag.id ".
@@ -129,12 +130,12 @@ class RegActManager {
 	public function markRIN($userID,$action = 'readed', $RINarray = null) {
 		$query = "UPDATE ".TB_USERS2REGS." SET ".(($action == 'readed')?"readed":"mailed")." = '1' " .
 				"WHERE user_id = '$userID' ".((!is_null($RINarray))?" AND rin IN ('".implode('\', \'',$RINarray)."')":"");
-		$this->db->query($query);var_dump($query);
+		$this->db->query($query);//var_dump($query);
 	}
 	
 	/**
 	 * function getMessageForNotificator
-	 * @param int $userID
+	 * @param int $userID - can be id or array of ids
 	 * @return string $textToMail
 	 */
 	public function getMessageForNotificator($userID) {
