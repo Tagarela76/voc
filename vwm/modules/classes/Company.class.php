@@ -136,21 +136,19 @@ class Company {
 		$company_id=mysql_real_escape_string($company_id);
 		//$this->db->select_db(DB_NAME);
 		$this->db->query('SELECT * FROM '.TB_COMPANY.' WHERE company_id = \''.$company_id.'\'');
-		
 		$companyDetails=$this->db->fetch_array(0);
-		
 		if (!$vanilla) {
 			$reg = new Registration($this->db);
 			
 			//	Set State
-			if ($reg->isOwnState($data->country))
+			if ($reg->isOwnState($companyDetails['country']))
 			{
 				//	have own state list
-				$companyDetails["state"] = $reg->getState($data->state);
+				$companyDetails["state"] = $reg->getState($companyDetails['state']);
 			}
 			
 			//	Set Country
-			$companyDetails["country"] = $reg->getCountry($data->country);
+			$companyDetails["country"] = $reg->getCountry($companyDetails['country']);
 		}
 		return $companyDetails;
 	}

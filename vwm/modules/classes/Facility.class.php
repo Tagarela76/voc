@@ -1,5 +1,4 @@
 <?php
-
 require_once('modules/phpgacl/gacl.class.php');
 require_once('modules/phpgacl/gacl_api.class.php');
 
