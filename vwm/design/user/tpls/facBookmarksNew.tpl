@@ -3,6 +3,15 @@
         <td align="right">
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
+                {*REGULATION UPDATES*}
+                {if $show.regupdate}
+                	{if $permissions.data.view}
+                		{include file="tpls:regupdate/design/bookmarkRegulationUpdates.tpl"}
+                	{/if}
+                {else}
+                No show regupdate(
+                {/if}
+                {*/REGULATION UPDATES*}
                 
 				{*WASTE STREAM MODULE*}
 				{if $show.waste_streams}
