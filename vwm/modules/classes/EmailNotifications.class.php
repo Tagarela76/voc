@@ -340,12 +340,11 @@ class EmailNotifications {
     	$this->sendNotify($notifyList);
     	
     	//set notifiers as sent
-//    	foreach($notifyList as $key => $data2notify) {
-//    		foreach ($data2notify['limits'] as $limit) {
-//    			$this->setPeriodicSent($limit,$data2notify['id'])."\n\n";
-//    		}
-//    		$notifyList[$key]['message'] = $message;
-//    	}
+    	foreach($notifyList as $key => $data2notify) {
+    		foreach ($data2notify['limits'] as $limit) {
+    			$this->setPeriodicSent($limit,$data2notify['id'])."\n\n";
+    		}
+    	}
     }
     
     private function getPeriodicMessage($limit,$id) {
@@ -356,6 +355,17 @@ class EmailNotifications {
     			break;
     	}
     	return $notify;
+    }
+    
+    private function setPeriodicSent($limit,$idArray) {
+    	switch ($limit) {
+    		case 'regupdate':
+    			$regManager = new RegActManager($this->db);
+    			foreach ($idArray as $id) {
+    				$regManager->markRIN($id,'mailed');
+    			}
+    			break;
+    	}
     }
     
     private function _load($user_id) {
