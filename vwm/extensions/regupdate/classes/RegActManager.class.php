@@ -35,7 +35,7 @@ class RegActManager {
 	    	$query = "INSERT INTO ".TB_REG_ACTS." (rin, reg_agency_id, title, stage, significant, date_received, legal_deadline,category, date_completed, decision) VALUES ";
 	    	for($i = 0; $i < $regsCount; $i++) {
 	    		$XMLregAct = $XMLregs->item($i);
-	    		$agencyID = $regAgency->getAgencyIdByCode($XMLregAct->getElementsByTagName('AGENCY_CODE')->item(0)->nodeValue);//var_dump($agencyID);
+	    		$agencyID = $regAgency->getAgencyIdByCode($XMLregAct->getElementsByTagName('AGENCY_CODE')->item(0)->nodeValue);
 	    		if ($agencyID !== false ) {
 	    			$rin = mysql_escape_string($XMLregAct->getElementsByTagName('RIN')->item(0)->nodeValue);
 	    			$query .= " ( ".
@@ -75,20 +75,16 @@ class RegActManager {
      * @param int $userID
      * @return array of RegAct objects 
      */
-	public function getRegActsList($userID = null) {
-		if(!is_null($userID))
-		{
-			$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
+	public function getRegActsList($userID = null, $category = self::CATEGORY_REVIEW) {
+		$query = "SELECT * FROM ".TB_REG_ACTS." ra ".
+			( (!is_null($userID)) ?
+				(", ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
 				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'".
-					" AND ra.reg_agency_id = rag.id ".
-				" ORDER BY ra.category ";
-		}
-		else
-		{
-			$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
-				" WHERE ra.rin = u2r.rin AND ra.reg_agency_id = rag.id ".
-				" ORDER BY ra.category ";
-		}
+					" AND ra.reg_agency_id = rag.id " .
+					" AND ra.category = '$category' ") : 
+				(" WHERE ra.category = '$category' ")
+			).
+			" ORDER BY ra.category ";
 		
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
@@ -120,7 +116,7 @@ class RegActManager {
 					((!is_null($category))?" AND ra.category = '$category' ":"").
 					"AND ra.reg_agency_id = rag.id ".
 				"ORDER BY ra.category ";
-		$this->db->query($query);//var_dump($query);
+		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();
 			
@@ -141,10 +137,11 @@ class RegActManager {
 	 * @param string $action = 'readed'/'mailed'
 	 * @param array of int $RINarray
 	 */
-	public function markRIN($userID,$action = 'readed', $RINarray = null) {
-		$query = "UPDATE ".TB_USERS2REGS." SET ".(($action == 'readed')?"readed":"mailed")." = '1' " .
-				"WHERE user_id = '$userID' ".((!is_null($RINarray))?" AND rin IN ('".implode('\', \'',$RINarray)."')":"");
-		$this->db->query($query);//var_dump($query);
+	public function markRIN($userID,$action = 'readed', $RINarray = null, $category = null) {
+		$query = "UPDATE ".TB_USERS2REGS." u2r SET ".(($action == 'readed')?"u2r.readed":"u2r.mailed")." = '1' " .
+				"WHERE u2r.user_id = '$userID' ".((!is_null($RINarray))?" AND u2r.rin IN ('".implode('\', \'',$RINarray)."')":"").
+				( (!is_null($category)) ? " AND '$category' = (SELECT ra.category FROM ".TB_REG_ACTS." ra WHERE ra.rin = u2r.rin)" : "" );
+		$this->db->query($query);
 	}
 	
 	/**
@@ -184,6 +181,21 @@ class RegActManager {
 		return $textToMail;
 	}
 	
+	/**
+	 * getUnreadCountForCategries($userID)
+	 * @param $userID
+	 * @return array - counts for review and for completed
+	 */
+	public function getUnreadCountForCategories($userID) {
+		$query = "SELECT count(ra.category) as count, ra.category " .
+				" FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r " .
+				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID' " .
+					"AND u2r.readed = '0' " .
+				" GROUP BY ra.category ";
+		$this->db->query($query);
+		return $this->db->fetch_all_array();
+	}
+	
 	private function arrayIntoRegActObject($actData) {
 		$regAct = new RegAct($this->db);
 		foreach($actData as $property => $value) {
@@ -201,7 +213,7 @@ class RegActManager {
 		return $regAct;
 	}
 	
-	private function updateRegs2Users($newRINarray) {//var_dump($newRINarray);
+	private function updateRegs2Users($newRINarray) {
 		//delete all info with RIN not id db anymore
 		$query = "DELETE FROM ".TB_USERS2REGS." WHERE rin NOT IN (SELECT rin FROM ".TB_REG_ACTS." )";
 		$this->db->query($query);
