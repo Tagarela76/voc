@@ -30,6 +30,22 @@ class MRegAct extends Module {
     }
     
     /**
+     * function prepareCountUnread
+     * @param $params - array of params: $db, $userID
+     * @return $count  -  for smarty('unreadedRegUpdatesCount')
+     */
+    public function prepareCountUnread($params) {
+    	extract($params);
+    	$regActManager = new RegActManager($db);
+    	$data = $regActManager->getUnreadCountForCategories($userID);
+    	$count = 0;
+    	foreach($data as $countData) {
+    		$count += $countData['count'];
+    	}
+    	return $count;
+    }
+    
+    /**
      * function prepareMarkRead
      * @param $params - array of params: $db, $userID, $mark = 'all'/category/idToMark
      */

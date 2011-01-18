@@ -125,7 +125,16 @@ class CFacility extends Controller
 		{
 			$showModules[$key] = $this->user->checkAccess($key, $facilityDetails['company_id']);
 		}							
-		$this->smarty->assign('show',$showModules);		
+		$this->smarty->assign('show',$showModules);	
+		
+		if ($showModules['regupdate']) {
+			$mRegAct = new $moduleMap['regupdate'];
+			$result = $mRegAct->prepareCountUnread(array(
+				'db'=>$this->db,
+				'userID' => $this->user->xnyo->user['user_id']
+			));
+			$this->smarty->assign('unreadedRegUpdatesCount', $result);
+		}	
 		
 		$vars=array	(
 						'facility'			=>$facility,
