@@ -34,11 +34,15 @@ class CRegupdate extends Controller {
 		$params = array(
 				'db' => $this->db,
 				'userID' => $userID,
-				'mark' => ($this->getFromPost('mark') == 'all')?$this->getFromPost("category"):$this->getFromPost("mark")
+				'mark' => ($this->getFromRequest('mark') == 'all')?$this->getFromRequest("tab"):$this->getFromRequest("mark")
 			);
-		$mRegAct->prepareMarkRead($params);
-				
-		header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest("facilityID")."&bookmark=regupdate&tab=".$this->getFromPost("category"));
+		$rin = $mRegAct->prepareMarkRead($params);
+			
+		if (!is_null($rin)) {
+			header("Location: http://www.reginfo.gov/public/do/eAgendaViewRule?RIN=$rin ");
+		} else {	
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest("facilityID")."&bookmark=regupdate&tab=".$this->getFromRequest("tab"));
+		}
 		die();
 	}
     
@@ -66,7 +70,8 @@ class CRegupdate extends Controller {
 		$params = array(
 			'db' => $this->db,
 			'tab' => $this->getFromRequest('tab'),
-			'userID' => $userID
+			'userID' => $userID,
+			'facilityID' => $this->getFromRequest('id')
 		);
 		$result = $mRegAct->prepareView($params);
 									

@@ -75,7 +75,7 @@ class RegActManager {
      * @param int $userID
      * @return array of RegAct objects 
      */
-	public function getRegActsList($userID = null, $category = self::CATEGORY_REVIEW) {
+	public function getRegActsList($userID = null, $category = self::CATEGORY_REVIEW, $pagination = null) {
 		$query = "SELECT * FROM ".TB_REG_ACTS." ra ".
 			( (!is_null($userID)) ?
 				(", ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
@@ -85,7 +85,10 @@ class RegActManager {
 				(" WHERE ra.category = '$category' ")
 			).
 			" ORDER BY ra.category ";
-		
+		if (!is_null($pagination)) {
+				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+			}
+			
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();
@@ -194,6 +197,12 @@ class RegActManager {
 				" GROUP BY ra.category ";
 		$this->db->query($query);
 		return $this->db->fetch_all_array();
+	}
+	
+	public function getCountForCategory($category) {
+		$query = "SELECT count(category) as count FROM ".TB_REG_ACTS." WHERE category = '$category' GROUP BY category ";
+		$this->db->query($query);
+		return $this->db->fetch(0)->count;
 	}
 	
 	private function arrayIntoRegActObject($actData) {

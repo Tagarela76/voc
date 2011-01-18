@@ -11,13 +11,15 @@ class MRegAct extends Module {
     
     /**
      * function prepareView
-     * @param $params - array of params: $db, $userID, $tab 
+     * @param $params - array of params: $db, $userID, $tab, $facilityID 
      * @return array data for smarty
      */
     public function prepareView($params) {
     	extract($params);
     	$regActManager = new RegActManager($db);
-    	$regActList = $regActManager->getRegActsList($userID, $tab);
+    	$pagination = new Pagination($regActManager->getCountForCategory($tab));
+    	$pagination->url = "?action=browseCategory&category=facility&id=".$facilityID."&bookmark=regupdate&tab=".$tab;
+    	$regActList = $regActManager->getRegActsList($userID, $tab, $pagination);
     	$TabsCount = $regActManager->getUnreadCountForCategories($userID);
     	$countByCategory = array();
     	foreach($TabsCount as $data) {
@@ -25,7 +27,8 @@ class MRegAct extends Module {
     	}
     	return array(
 			'data' => $regActList,
-			'countForTabs' => $countByCategory
+			'countForTabs' => $countByCategory,
+    		'pagination' => $pagination
 			);
     }
     
@@ -58,8 +61,10 @@ class MRegAct extends Module {
     		$category = $mark;
     	} elseif ($mark != 'all') {
     		$rin = array($mark);
+    		$single = $mark;
     	}
     	$regActManager->markRIN($userID,'readed',$rin,$category);
+    	return $single;
     }
 }
 ?>
