@@ -76,10 +76,20 @@ class RegActManager {
      * @return array of RegAct objects 
      */
 	public function getRegActsList($userID = null) {
-		$query = "SELECT * FROM ".TB_REG_ACTS." ra".((!is_null($userID))?", ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
-				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'":"").
+		if(!is_null($userID))
+		{
+			$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
+				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'".
 					" AND ra.reg_agency_id = rag.id ".
 				" ORDER BY ra.category ";
+		}
+		else
+		{
+			$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
+				" WHERE ra.rin = u2r.rin AND ra.reg_agency_id = rag.id ".
+				" ORDER BY ra.category ";
+		}
+		
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();
@@ -183,6 +193,7 @@ class RegActManager {
 		}
 		//now lets manage RegAgency in RegActObject
 		$agency = new RegAgency($this->db);
+		$agency->id = $actData['id'];
 		$agency->name = $actData['name'];
 		$agency->code = $actData['code'];
 		$agency->acronym = $actData['acronym'];
