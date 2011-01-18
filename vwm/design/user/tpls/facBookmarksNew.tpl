@@ -8,8 +8,6 @@
                 	{if $permissions.data.view}
                 		{include file="tpls:regupdate/design/bookmarkRegulationUpdates.tpl"}
                 	{/if}
-                {else}
-                No show regupdate(
                 {/if}
                 {*/REGULATION UPDATES*}
                 
@@ -106,7 +104,8 @@
 {if $request.bookmark  eq "carbonfootprint"}  class="bookmark_bg_yellowgreen" {/if}
 {if $request.bookmark  eq "logbook"}  class="bookmark_bg_brown" {/if}
 {if $request.bookmark  eq "solventplan"}  class="bookmark_bg_ultraviolet" {/if}
-{if $request.bookmark  eq "wastestorage"}  class="bookmark_bg_green" {/if}>
+{if $request.bookmark  eq "wastestorage"}  class="bookmark_bg_green" {/if}
+{if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} >
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>

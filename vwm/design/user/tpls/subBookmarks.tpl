@@ -14,4 +14,12 @@
 		{/if}						
 	{/if}
 {*/WASTE STREAM MODULE*}
+
+{*UPDATE REGS MODULE*}
+	{if $show.regupdate}
+		{if $permissions.data.view}
+			{include file="tpls:regupdate/design/subBookmark.tpl"} 
+		{/if}
+	{/if}
+{*/UPDATE REGS MODULE*}
                 

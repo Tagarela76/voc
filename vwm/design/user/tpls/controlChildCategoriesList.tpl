@@ -8,7 +8,6 @@
                         <div class="control_panel_br">
                             <div class="control_panel_center">
                                
-							   
 							    <div class="controlCategoriesList" style="display:table;width:100%;">
 							    	
                                         {*  {if $childCategoryItems|@count > 0}
@@ -130,7 +129,6 @@
 											{/if}
                                         
                           			 </div>
-                                   
 								
                             </div>
                         </div>

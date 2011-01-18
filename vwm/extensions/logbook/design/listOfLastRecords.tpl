@@ -12,6 +12,8 @@
 	{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
 
+
+
 <table class="users" align="center" cellpadding="0" cellspacing="0">
 	<tr class="users_u_top_size users_top_brown">
 		<td class="users_u_top_brown" colspan="2">

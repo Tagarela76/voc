@@ -27,6 +27,7 @@
                                             	($bookmarkType=="inventory" && $permissions.data.add) || 
                                             	($bookmarkType=="usage" && $permissions.data.add) || 
                                             	$permissions.addItem}
+                                            	
                                             <div class="button_alpha add_button">
                                                 <input type="submit" name="action" value="showAddItem" onclick="location.href='{$addItem}'">
                                             </div>

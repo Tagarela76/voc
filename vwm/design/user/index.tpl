@@ -41,6 +41,7 @@
 												{include file="tpls:tpls/depBookmarks.tpl"}
 											{/if}
 											
+											
 											{*SORT*}
 												{if $request.bookmark == 'department' || 
 													$request.bookmark == 'logbook'||
@@ -94,7 +95,7 @@
 											</table>						
 																						
 											
-											{if $request.action == 'browseCategory'}												
+											{if $request.action == 'browseCategory'}			
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 											

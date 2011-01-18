@@ -30,7 +30,11 @@ chdir('../..');
 	$ram = new RegActManager($db);
 	$ram->parseXML();
 	
+	
+	
 	//send periodic Notifiers
 	$eNotificator = new EmailNotifications($db);
 	$eNotificator->checkPeriodicNotifiers();
+	
+	echo "DONE";
 ?>

@@ -19,6 +19,7 @@
     define(LABEL_LOGBOOK_BOOKMARK, 'Logbook');
     define(LABEL_SOLVENTPLAN_BOOKMARK, 'Solvent Plan');
     define(LABEL_WASTESTORAGE_BOOKMARK, 'Waste Storage');
+    define(LABEL_REGUPDATE_BOOKMARK,'Reg Updates');
     
     //	FACILITY SUBBOOKMARKS
     define(LABEL_PAINT_PRODUCT_BOOKMARK, 'Paint Products');
