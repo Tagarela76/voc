@@ -67,7 +67,7 @@
 	{/if}
 	{assign var=link value=" href='$url' $boldStyle target='_blank'"}
 		<tr>
-			<td class="border_users_l border_users_b border_users_r"><input type="checkbox" name="mark[]" value="{$actionList[i]->id}"></td>			
+			<td class="border_users_l border_users_b border_users_r"><input type="checkbox" name="mark[]" value="{$act->rin}"></td>			
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
 					<a {$link}>
