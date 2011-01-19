@@ -770,14 +770,16 @@ class Product extends ProductProperties {
 		//get all used products list
 		$productList = array();
 		foreach($productUsageData as $data) {
-			$productList []= $data->product_nr;
+			if (!in_array($data->product_nr)) {
+				$productList []= $data->product_nr;
+			}
 		}
 
 		//format output for all products
 		foreach($productList as $data) {
 			$result[$data] = $emptyProductData;
 		}
-		
+
 		foreach ($productUsageData as $data) {
 			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
 			$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
