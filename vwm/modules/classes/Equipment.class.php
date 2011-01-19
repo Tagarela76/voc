@@ -457,6 +457,52 @@ class Equipment extends EquipmentProperties {
 	}
 	
 	
+	public function getDailyEmissionsByDays($beginDate, $endDate, $category, $categoryID) {
+		$query = "SELECT sum(m.voc) as voc, eq.equip_desc, m.creation_time " .
+				" FROM ".TB_USAGE." m, ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
+				" WHERE ".(($category == 'facility')?
+							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " : 
+							"eq.department_id = '$categoryID' ") . 
+					"AND m.equipment_id = eq.equipment_id " .
+					"AND m.creation_time BETWEEN '$beginDate' AND '$endDate' " .
+				" GROUP BY m.equipment_id, m.creation_time " .
+				" ORDER BY m.equipment_id ";
+		$this->db->query($query);
+		$dailyEmissionsData = $this->db->fetch_all();
+		$result = array();
+		
+		//get empty template for output for each equiment
+		$emptyEquipmentData = array();
+		$day = 86400; // Day in seconds
+		$daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
+		$curDay = $beginDate;
+		for($i = 0; $i< $daysCount; $i++) {
+			$emptyEquipmentData []= array(strtotime($curDay)*1000, 0);
+			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
+		}
+		
+		//get all equipments list
+		$query = "SELECT eq.equip_desc FROM ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
+				" WHERE ".(($category == 'facility')?
+							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " : 
+							"eq.department_id = '$categoryID' ");
+		$this->db->query($query);
+		$equipmentList = $this->db->fetch_all();
+		
+		//format output for all equipments
+		foreach($equipmentList as $data) {
+			$result[$data->equip_desc] = $emptyEquipmentData;
+		}
+		
+		foreach ($dailyEmissionsData as $data) {
+			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
+			$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
+		}
+		
+		return $result;
+	}
+	
+	
 	//	check difference between $expireTimestamp and DB value
 	private function isExpireDateChanged($equipmentID, $expireTimestamp) {
 		
