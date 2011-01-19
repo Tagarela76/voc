@@ -62,6 +62,7 @@
 												<div class="button_float_left">	
                                                 	<input type="submit" class="button" name="action" value="markReaded" {if $vpsSaysNo}disabled{/if} />
                                            	 		<input type="hidden" name="facilityID" value="{$request.id}" />
+                                           	 		<input type="hidden" name="tab" value="{$request.tab}" />
 												</div>
 											{/if}
 											
