@@ -95,6 +95,7 @@
 											</table>						
 																						
 											
+													
 											{if $request.action == 'browseCategory'}			
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}

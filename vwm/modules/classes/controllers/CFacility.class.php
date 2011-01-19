@@ -141,7 +141,9 @@ class CFacility extends Controller
 						'facilityDetails'	=>$facilityDetails,
 						'moduleMap'			=>$moduleMap
 					);
-
+		
+		
+		
 		$this->forvard($bookmark,'bookmark'.ucfirst($bookmark),$vars);		
 		$this->smarty->display("tpls:index.tpl");			
 	}	

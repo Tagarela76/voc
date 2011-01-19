@@ -770,10 +770,15 @@ class Product extends ProductProperties {
 		//get all used products list
 		$productList = array();
 		foreach($productUsageData as $data) {
-			if (!in_array($data->product_nr)) {
+			if (!in_array($data->product_nr,$productList)) {
 				$productList []= $data->product_nr;
 			}
 		}
+		$this->setProductNR($productList);
+		
+		if (count($productList) == 0) {
+			$productList []= 'products not used!';
+		} 
 
 		//format output for all products
 		foreach($productList as $data) {

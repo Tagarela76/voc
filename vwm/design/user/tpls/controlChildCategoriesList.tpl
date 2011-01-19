@@ -48,8 +48,8 @@
                                             	($request.bookmark=="accessory" && $permissions.data.add) || 
                                             	($request.bookmark=="inventory" && $permissions.data.add) || 
                                             	($request.bookmark=="mix" && $permissions.data.add) || 
-                                            	$permissions.addItem && $request.bookmark!="reduction" && $request.bookmark != "solventplan" &&
-                                            	$request.bookmark != "regupdate"}
+                                            	$permissions.addItem && $request.bookmark != "reduction" && $request.bookmark != "solventplan" &&
+                                            	$request.bookmark != "regupdate" && $request.bookmark != "emissionGraphs" }
                                             	
 											<div class="button_float_left">	
                                             <div class="button_alpha add_button">
@@ -130,7 +130,7 @@
 										</div>
                                             {/if}
                                         
-										
+										{if $request.bookmark != 'emissionGraphs'}
                                         	<input type="hidden" name="category" value="{$childCategory}">
 											{if $request.category != 'root'}
 												<input type="hidden" name="{$request.category}ID" value="{$request.id}">												
@@ -138,6 +138,12 @@
 											{if $request.bookmark == 'inventory'}
 												<input type="hidden" name="tab" value="{$request.tab}">
 											{/if}
+										{else}
+											<input type="hidden" name="action" value="browseCategory" />
+											<input type="hidden" name="category" value="{$request.category}" />
+											<input type="hidden" name="id" value="{$request.id}" />
+											<input type="hidden" name="bookmark" value="{$request.bookmark}" />
+										{/if}
                                         
                           			 </div>
 								

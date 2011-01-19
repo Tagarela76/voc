@@ -51,6 +51,7 @@
 												{/if}
                                             {/if}
                                         </td>
+                                        
                                         <td class="middle">
                                             {if $smarty.session.overCategoryType!="company"}
                                             <div class="button_alpha report_button">

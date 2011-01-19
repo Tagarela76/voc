@@ -106,7 +106,8 @@
 {if $request.bookmark  eq "equipment"}  class="bookmark_bg" {/if}
 {if $request.bookmark  eq "inventory"}  class="bookmark_bg_violet" {/if}
 {if $request.bookmark  eq "product"}  class="bookmark_bg_green" {/if}
-{if $request.bookmark  eq "mix"}  class="bookmark_bg_orange" {/if}>
+{if $request.bookmark  eq "mix"}  class="bookmark_bg_orange" {/if}
+{if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if} >
 	
                 		<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 						

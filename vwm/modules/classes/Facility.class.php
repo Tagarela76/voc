@@ -497,6 +497,47 @@ class Facility extends FacilityProperties {
 			
 	
 	
+	public function getDepartmentUsageByDays($beginDate, $endDate, $facilityID) {
+		$query = "SELECT sum(m.voc) as voc, d.name, m.creation_time " .
+				" FROM ".TB_USAGE." m, ".TB_DEPARTMENT." d " .
+				" WHERE m.department_id = d.department_id AND d.facility_id = '$facilityID' " . 
+					"AND m.creation_time BETWEEN '$beginDate' AND '$endDate' " .
+				" GROUP BY m.department_id, m.creation_time " .
+				" ORDER BY m.department_id ";
+		$this->db->query($query);
+		$departmentUsageData = $this->db->fetch_all();
+		$result = array();
+		
+		//get empty template for output for each equiment
+		$emptyDepartmentData = array();
+		$day = 86400; // Day in seconds
+		$daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
+		$curDay = $beginDate;
+		for($i = 0; $i< $daysCount; $i++) {
+			$emptyDepartmentData []= array(strtotime($curDay)*1000, 0);
+			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
+		}
+		
+		//get all equipments list
+		$query = "SELECT name FROM ".TB_DEPARTMENT .
+				" WHERE facility_id = '$facilityID' " .
+				" ORDER BY department_id";
+		$this->db->query($query);
+		$departmentList = $this->db->fetch_all();
+		
+		//format output for all equipments
+		foreach($departmentList as $data) {
+			$result[$data->name] = $emptyDepartmentData;
+		}
+		
+		foreach ($departmentUsageData as $data) {
+			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
+			$result[$data->name][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
+		}
+		
+		return $result;
+	}
+	
 	
 	//	check difference between $vocLimit and DB value
 	private function isVocLimitChanged($facilityID, $vocLimit, $annualVocLimit) {

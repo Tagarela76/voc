@@ -105,7 +105,8 @@
 {if $request.bookmark  eq "logbook"}  class="bookmark_bg_brown" {/if}
 {if $request.bookmark  eq "solventplan"}  class="bookmark_bg_ultraviolet" {/if}
 {if $request.bookmark  eq "wastestorage"}  class="bookmark_bg_green" {/if}
-{if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} >
+{if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} 
+{if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if} >
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>
