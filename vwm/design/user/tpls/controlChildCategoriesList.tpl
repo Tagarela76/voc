@@ -33,7 +33,7 @@
                                         	{/if}
                                         {/if}*}
 									
-									<div style="display:table;" class="floatleft">											
+									<div style="display:table;" class="floatleft">										
 									{if $request.bookmark=="inventory" && $request.tab==Inventory::PAINT_MATERIAL && $request.category=="department"}
 												{if $permissions.data.add && $permissions.data.delete}
 											<div class="button_float_left">	
@@ -48,13 +48,23 @@
                                             	($request.bookmark=="accessory" && $permissions.data.add) || 
                                             	($request.bookmark=="inventory" && $permissions.data.add) || 
                                             	($request.bookmark=="mix" && $permissions.data.add) || 
-                                            	$permissions.addItem && $request.bookmark!="reduction" && $request.bookmark != "solventplan"}
+                                            	$permissions.addItem && $request.bookmark!="reduction" && $request.bookmark != "solventplan" &&
+                                            	$request.bookmark != "regupdate"}
+                                            	
 											<div class="button_float_left">	
                                             <div class="button_alpha add_button">
                                                 <input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
                                             </div>
 											</div>
 											{/if}
+											
+											{if $request.bookmark == "regupdate"}
+												<div class="button_float_left">	
+                                                	<input type="submit" class="button" name="action" value="markReaded" {if $vpsSaysNo}disabled{/if} />
+                                           	 		<input type="hidden" name="facilityID" value="{$request.id}" />
+												</div>
+											{/if}
+											
 											{if $childCategoryItems|@count > 0 || $request.bookmark == 'logbook'} 
                                             	{if ($request.bookmark=="equipment" && $permissions.equipment.delete) || 
                                             		($request.bookmark=="user" && $permissions.user.delete) ||  
@@ -87,13 +97,13 @@
 											{/if}  
 									{/if}										                                        
 									</div>
-                                            {if $childCategory != "company" && $show.reports}											
+                                    {if $childCategory != "company" && $show.reports}											
 									<div class="button_float_left">
                                             <div class="button_alpha report_button">
                                                 <input type="button" name="action" value="createReport" onclick="location.href='?action=createReport&category={$request.category}&id={$request.id}'">
                                             </div>											
                                      </div>
-											{/if}
+									{/if}
 											
 										{*EXPORT PAGE*}
 										

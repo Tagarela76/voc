@@ -12,23 +12,6 @@
 	{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
 
-{if $pagination && $pagination->getPageCount() > 1}
-pagination enabled
-{else}
-no pagination
-{/if}
-<style type="text/css">
-.regUpdateNotReaded
-{
-	font-size:22px;
-	background-color:Red;
-} 
-</style>
-<table>
-<tr class="regUpdateNotReaded">
-<td class="regUpdateNotReaded">test</td>
-</tr>
-</table>
 <table class="users" align="center" cellpadding="0" cellspacing="0">
 	<tr class="users_u_top_size users_top_brown">
 		<td class="users_u_top_brown" colspan="10">
@@ -72,40 +55,62 @@ no pagination
 			Reg Agency Acronym
 		</td>
 	</tr>
+	
 	{foreach from=$data item=act}
-		<tr {if !$act->readed}class="regUpdateNotReaded"{/if}>
-			<td class="border_users_l border_users_b border_users_r"><input type="checkbox" name="checkLogbook[]" value="{$actionList[i]->id}"></td>			
-			<td >
-					
+	{assign var=rin value=$act->rin}
+	{assign var=facilityID value=$request.id}
+	{assign var=url value="?tab=review&action=markReaded&category=regupdate&mark=$rin&facilityID=$facilityID"} <!-- target="_blank" -->
+	{if !$act->readed}
+	{assign var=boldStyle value=" style='font-weight:bold;'"}
+	{else}
+	{assign var=boldStyle value=""}
+	{/if}
+	{assign var=link value=" href='$url' $boldStyle target='_blank'"}
+		<tr>
+			<td class="border_users_l border_users_b border_users_r"><input type="checkbox" name="mark[]" value="{$actionList[i]->id}"></td>			
+			<td class="border_users_b border_users_r">
+					<div style="width:100%;">
+					<a {$link}>
 						{$act->rin}
-					
+					</a>
+					</div>
 			</td>
 					
 			<td class="border_users_b border_users_r">
-					<div style="width:100%;">
+					<div style="width:100%; ">
+					<a {$link}>
 						{$act->title}
+					</a>
 					</div>
 			</td>	
 			
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->stage}
+					</a>
 					</div>
 			</td>	
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->significant}
+					</a>
 					</div>
 			</td>	
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->date_received}
+					</a>
 					</div>
 			</td>
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
 					{if $act->date_completed and $act->date_completed != "0000-00-00"}
+					<a {$link}>
 						{$act->date_completed}
+					</a>
 					{else}
 						-
 					{/if}
@@ -115,7 +120,9 @@ no pagination
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
 					{if $act->decision}
+					<a {$link}>
 						{$act->decision}
+					</a>
 					{else}
 						-
 					{/if}
@@ -123,17 +130,23 @@ no pagination
 			</td>
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->legal_deadline}
+					</a>
 					</div>
 			</td>
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->reg_agency->code}
+					</a>
 					</div>
 			</td>
 			<td class="border_users_b border_users_r">
 					<div style="width:100%;">
+					<a {$link}>
 						{$act->reg_agency->acronym}
+					</a>
 					</div>
 			</td>
 		</tr>
