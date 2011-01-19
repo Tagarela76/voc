@@ -31,13 +31,14 @@ class CRegupdate extends Controller {
 		
 		$userID = $this->user->xnyo->user['user_id'];
 		
+		$mark = (is_null($this->getFromRequest("mark")))?$this->getFromPost("mark"):$this->getFromRequest("mark");
 		$params = array(
 				'db' => $this->db,
 				'userID' => $userID,
-				'mark' => ($this->getFromRequest('mark') == 'all')?$this->getFromRequest("tab"):$this->getFromRequest("mark")
+				'mark' => ($mark == 'all')?$this->getFromRequest("tab"):$mark
 			);
 		$rin = $mRegAct->prepareMarkRead($params);
-			
+		
 		if (!is_null($rin)) {
 			header("Location: http://www.reginfo.gov/public/do/eAgendaViewRule?RIN=$rin ");
 		} else {	

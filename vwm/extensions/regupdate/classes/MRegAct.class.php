@@ -60,8 +60,11 @@ class MRegAct extends Module {
     	if($mark == RegActManager::CATEGORY_REVIEW || $mark == RegActManager::CATEGORY_COMPLETED) {
     		$category = $mark;
     	} elseif ($mark != 'all') {
-    		$rin = array($mark);
-    		$single = $mark;
+    		$rin = $mark;
+    		if (!is_array($rin)) {
+    			$rin = array($mark);
+    			$single = $mark;
+    		}
     	}
     	$regActManager->markRIN($userID,'readed',$rin,$category);
     	return $single;
