@@ -211,7 +211,7 @@ class EmailNotifications {
 	}
     
     public function sendNotify($notifyList) {
-    	/*
+    	
     	$from = "kttsoft.mailtester@mail.ru";
     	$theme = "Notification: ";
     	
@@ -282,8 +282,8 @@ class EmailNotifications {
 					
 					fputs($smtp_conn,"QUIT\r\n");
 					fclose($smtp_conn);
-		}*/
-  	 	$email = new EMail();
+		}
+ /* 	 	$email = new EMail();
     	$from = AUTH_SENDER."@".DOMAIN;
     	$theme = "Notification ";
 		
@@ -295,7 +295,7 @@ class EmailNotifications {
 			
 			$message = $nonify['message'];		
 			$email->sendMail($from, $to, $theme, $message);
-		}
+		}*/
     }
     
     private function checkUser($user_id = null) {
