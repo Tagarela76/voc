@@ -9,7 +9,7 @@ class RegActManager {
 	const CATEGORY_REVIEW = 'review';
 	const CATEGORY_COMPLETED = 'completed';
 
-    function __construct($db, $xmlFileReviewPath = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml", $xmlFileCompletedPath = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml") {
+    function __construct($db, $xmlFileReviewPath = XML_FILE_REVIEWED_RULES, $xmlFileCompletedPath = XML_FILE_COMPLETED_RULES) {
     	$this->db = $db;
     	
     	$this->xmlReview = $xmlFileReviewPath;
