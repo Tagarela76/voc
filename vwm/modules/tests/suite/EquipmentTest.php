@@ -70,19 +70,7 @@ chdir('../../..');
         	/*equipment, mix, user, department, facility*/
     	}
     	/**
-    	 * Create Array like 
-    	 * array
-		 * 'Removable Cartridge' => 
-		 *   array
-		 *     0 => 
-		 *       array
-		 *         0 => float 1293832800000
-		 *         1 => int 0
-		  *    1 => 
-		 *       array
-		 *         0 => float 1293919200000
-		 *         1 => int 0
-		 *         
+    	 * 
     	 * @param $startDate
     	 * @param $endDate
     	 * @param $emissionList

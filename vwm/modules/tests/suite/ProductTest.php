@@ -107,7 +107,7 @@ chdir('../../..');
 			$this->productsExpected = $this->createEmptyEmissionsExpected($this->defaultStartDate,$this->defaultEndDate,$products);
     	}
     	
-    	public function testGetProductUsageByDays()
+    	public function testGetProductUsageByDaysV1()
     	{
     		$product = new Product($this->db);
     		$category 	=	"department";
@@ -125,7 +125,27 @@ chdir('../../..');
     		$pr["Cocaine"][0] = array(strtotime("2011-01-01")*1000,8.33);
     		$pr["Cocaine"][2] = array(strtotime("2011-01-03")*1000,87.96);
     		
+    		$this->assertEquals($prus, $pr);
     		
+    	}
+    	
+		public function testGetProductUsageByDaysV2()
+    	{
+    		$product = new Product($this->db);
+    		$category 	=	"facility";
+    		$categoryID = 	"66";
+    		
+    		$prus = $product->getProductUsageByDays($this->defaultStartDate,$this->defaultEndDate,$category,$categoryID);
+    		
+    		$pr = $this->productsExpected;
+    		
+    		$pr["XPB44447(0811-F1)"][0] = array(strtotime("2011-01-01")*1000,317.56);
+    		
+    		$pr["PV150006"][1] = array(strtotime("2011-01-02")*1000,99.96);
+    		$pr["PV150006"][2] = array(strtotime("2011-01-03")*1000,14.50);
+    		
+    		$pr["Cocaine"][0] = array(strtotime("2011-01-01")*1000,8.33);
+    		$pr["Cocaine"][2] = array(strtotime("2011-01-03")*1000,87.96);
     		
     		$this->assertEquals($prus, $pr);
     		
