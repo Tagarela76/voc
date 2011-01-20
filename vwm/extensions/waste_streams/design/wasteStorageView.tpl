@@ -1,4 +1,4 @@
-</form>
+<!-- </form> -->
 {if $color eq "green"}
 	{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
@@ -10,7 +10,18 @@
 {/if}
 
 <form name="wasteStorage" action = "?action=deleteItem&category=wastestorage&facilityID={$request.id}" method = "post">
-<div style='padding-left:20px'>			
+<!-- Start Cute Table Head -->
+<div align="center" class="control_panel_padd">
+        										<div class="control_panel" class="logbg" align="left">
+           											 <div class="control_panel_tl">
+                										<div class="control_panel_tr">
+                    										<div class="control_panel_bl">
+                       											 <div class="control_panel_br">										
+																	<div class="control_panel_center">
+																		<div class="controlCategoriesList" style="display:table;width:100%;">
+																			<div style="display:table;" class="floatleft">
+<!-- End Cute Table Head -->
+<div style='padding-left:20px;padding-top:10px;padding-bottom:10px;'>			
 		{if $request.tab eq 'active'}	
 			<input type='button' class='button' id='add' value='Add' onclick="location.href='?action=addItem&category=wastestorage&facilityID={$request.id}'"/>					
 			<input type='submit' class='button' id='empty' name="empty" value='Empty'/>
@@ -23,6 +34,20 @@
 		{/if}
 </div>
 
+<!-- Start Footer Cute table -->
+</div>
+								<div class="button_float_right">
+								&nbsp;
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End Footer Cute table -->
 
 <br />
 
@@ -111,7 +136,7 @@
 				{else}			
 			 		<span class="error">&nbsp;</span>			
 				{/if}
-				<input type='checkbox' name='checkWastestorage[]' value='{$data[i]->storage_id}' >
+				<input type='checkbox' name='checkWastestorage[]' value='{$data[i]->storage_id}' />
 			</td>			
 			<td class="border_users_b border_users_r">
 				<a {if $permissions.viewItem}href="?action=viewDetails&category=wastestorage&facilityID={$request.id}&id={$data[i]->storage_id}"{/if}>
@@ -192,9 +217,9 @@
 	$(document).ready(function()
 	{
 		date = new Date();
-		var month = date.getMonth() + 1
-		var day = date.getDate()
-		var year = date.getFullYear()
+		var month = date.getMonth() + 1;
+		var day = date.getDate();
+		var year = date.getFullYear();
 		var dateString=month + "/" + day + "/" + year;
 		if ((month/10)<1)
 		{

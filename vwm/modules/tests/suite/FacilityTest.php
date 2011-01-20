@@ -16,6 +16,8 @@ chdir('../../..');
 	//	Include Class Autoloader
 	require_once('modules/classAutoloader.php');
 	
+	
+	
 	class FacilityTest extends PHPUnit_Extensions_Database_TestCase
 	{
 		protected $pdo;	

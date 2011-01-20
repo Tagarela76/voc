@@ -3140,3 +3140,5 @@ div:hover.category_folder_hover{cursor:pointer;}
 .waste{background:#F7F7F7 url(images/link_folder.png) no-repeat 10px -21px;}
 .errors_list{padding:20px 10px 0px 20px;font:normal 72pt Century,Serif;color:#D8D8E3}
 .errors_list_text{padding:20px;font:normal 14px Helvetica, Sans-serif;color:#D8D8E3}
+
+#ui-datepicker-div { display: none; }

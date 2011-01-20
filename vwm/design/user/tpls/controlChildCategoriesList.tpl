@@ -10,30 +10,7 @@
                                
 							    <div class="controlCategoriesList" style="display:table;width:100%;">
 							    	
-                                        {*  {if $childCategoryItems|@count > 0}
-                                        	{if ($request.bookmark=="equipment" && $permissions.equipment.showSelectAll) || 
-												($request.bookmark=="user" && $permissions.user.showSelectAll) || 
-												($request.bookmark=="inventory" && $permissions.data.showSelectAll) || 
-												($request.bookmark=="accessory" && $permissions.data.showSelectAll) || 
-												($request.bookmark=="product" && $permissions.data.showSelectAll) || 
-												($request.bookmark=="mix" && $permissions.data.showSelectAll) || 
-												$permissions.showSelectAll}
-                                  <div class="select_button_float_left">
-                                        <div class="control_list">
-                                            <div class="control_list" style="width:130px">
-												<span style='displany:inline-block'>
-													Select: 
-													<a onclick="CheckAll(this)" class="id_company1" >All</a>									
-													 /
-													<a onclick="unCheckAll(this)" class="id_company1">None</a>
-												</span>
-											</div>
-                                        </div>
-										</div>                                        
-                                        	{/if}
-                                        {/if}*}
-									
-									<div style="display:table;" class="floatleft">										
+							    	<div style="display:table;" class="floatleft">		
 									{if $request.bookmark=="inventory" && $request.tab==Inventory::PAINT_MATERIAL && $request.category=="department"}
 												{if $permissions.data.add && $permissions.data.delete}
 											<div class="button_float_left">	
@@ -43,6 +20,7 @@
 											</div>
 												{/if}
 									{else}
+									
                                             {if ($request.bookmark=="equipment" && $permissions.equipment.add) || 
                                             	($request.bookmark=="user" && $permissions.user.add) ||  
                                             	($request.bookmark=="accessory" && $permissions.data.add) || 
@@ -105,7 +83,6 @@
                                             </div>											
                                      </div>
 									{/if}
-											
 										{*EXPORT PAGE*}
 										
 										{if $childCategoryItems|@count > 0 && $childCategoryItems}

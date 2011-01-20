@@ -93,20 +93,40 @@
 													</td>
 												</tr>
 											</table>						
-																						
+												
+											<!-- CUTE TABLE 
+											<div align="center" class="control_panel_padd">
+        										<div class="control_panel" class="logbg" align="left">
+           											 <div class="control_panel_tl">
+                										<div class="control_panel_tr">
+                    										<div class="control_panel_bl">
+                       											 <div class="control_panel_br">										
+																	<div class="control_panel_center">
+																		<div class="controlCategoriesList" style="display:table;width:100%;">
+																			<div style="display:table;" class="floatleft">
+																				test
+																			</div>
+																			<div class="button_float_right">
+																			&nbsp;
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>-->
 											
-													
-											{if $request.action == 'browseCategory'}			
+											{if $request.action == 'browseCategory'}	
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
-											
 											
 											{if $request.action == 'viewDetails'}			
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
 								
 								
-											
 											{include file="tpls:$tpl"}			
 																			
 										</td>										
@@ -121,5 +141,4 @@
 			{include file="tpls:footer.tpl"}																			
 		</table>								
 	</body>
-	
 </html>
