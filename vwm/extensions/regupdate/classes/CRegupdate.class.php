@@ -80,7 +80,6 @@ class CRegupdate extends Controller {
 			$this->smarty->assign($key,$data);
 		}										
 
-		
 		$this->smarty->assign('tpl','regupdate/design/regUpdateView.tpl');
 	}
 }

@@ -76,7 +76,7 @@ class MReports {
     }
     
     /**
-     * function prepareSendSubReport($params) - filter get vars and create report
+     * function prepareSendSubReport($params) - filter get vars and create report createReportForm 
      * @param array $params - $db, $xnyo, $request, $companyID
      */
     public function prepareSendSubReport($params) {

@@ -224,6 +224,7 @@ class Controller
 						'request' => $request
 						);
 		$result = $mReport->prepareSendReport($params);
+		//var_dump($result);
 					
 		foreach($result as $key => $data) 
 		{

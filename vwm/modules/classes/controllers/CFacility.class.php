@@ -5,13 +5,13 @@ class CFacility extends Controller
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='facility';
-		$this->parent_category='company';				
+		$this->parent_category='company';
 	}
 	
 	function runAction()
 	{
 		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
+		$functionName='action'.ucfirst($this->action);
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}

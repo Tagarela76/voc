@@ -61,9 +61,8 @@ class CEmissionGraphs extends Controller {
 	    
 	    //Daily Emissions Graph
 	    $equip = new Equipment($this->db);
-	    $data = $equip->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);   
+	    $data = $equip->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);  
 	    $this->smarty->assign('dataDE',$this->performDataForGraph($data));
-	    
 	    //Product Usage Graph
 	    $product = new Product($this->db);
 	    $data = $product->getProductUsageByDays($beginDate,$endDate,$category,$id);
@@ -79,9 +78,14 @@ class CEmissionGraphs extends Controller {
 	    
 	    $jsSources = array (										
 		    'modules/js/flot/jquery.flot.js',
-			'modules/js/graph.js'							
+			'modules/js/graph.js',
+	    	'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js'							
 	    );
 	    $this->smarty->assign('jsSources',$jsSources);
+	    
+	    $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources',$cssSources);
+	    
 	    $this->smarty->assign('tpl','tpls/graph.tpl');
     }
     

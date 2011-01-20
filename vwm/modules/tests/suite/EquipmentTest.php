@@ -161,7 +161,7 @@ chdir('../../..');
 		public function testgetDailyEmissionsByDaysV3()
 		{
 			$equipment = new Equipment($this->db);
-    		//$category = 'facility'/'department' a $categoryID соответственно id
+    		//$category = 'facility'/'department' a $categoryID соответственно id Toxic Compounds
     		$category 	=	"facility";
     		$categoryID = 	"66";
     		

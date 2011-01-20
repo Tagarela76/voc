@@ -1,5 +1,4 @@
 <?php
-
 class RtoxicCompounds extends ReportCreator implements iReportCreator {
 
     function RtoxicCompounds($db, $reportRequest) {
