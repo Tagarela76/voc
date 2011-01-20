@@ -136,12 +136,11 @@ class CSolventplan extends Controller
 							'companyID' => $facilityDetails['company_id']
 						);
 		$result = $mReduction->prepareViewSolventPlan($params);
-
 		foreach($result as $key => $data) 
 		{
 			$this->smarty->assign($key,$data);
 		}
-		$this->smarty->assign('tpl','reduction/design/solventPlanView.tpl');	
+		$this->smarty->assign('tpl','reduction/design/solventPlanView.tpl');	//assign('show'
 		
 	}
 }

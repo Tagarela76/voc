@@ -34,10 +34,10 @@
 											{*Categories List*}											
 											{include file="tpls:tpls/login_categoriesList.tpl"}
 											
-																																	
 											{if $request.category == 'facility' && $request.action == 'browseCategory'}
 												{include file="tpls:tpls/facBookmarksNew.tpl"}
 											{elseif $request.category == 'department' && $request.action == 'browseCategory'}
+											
 												{include file="tpls:tpls/depBookmarks.tpl"}
 											{/if}
 											
@@ -50,7 +50,8 @@
 													$request.bookmark == 'equipment'||
 													$request.bookmark == 'inventory'||
 													$request.bookmark == 'wastestorage'||
-													$request.bookmark == 'mix'}
+													$request.bookmark == 'mix' ||
+													$request.bookmark == 'solventplan'}
 													{include file="tpls:tpls/sort.tpl"}
 												{/if}
 											{*/SORT*}							
@@ -94,29 +95,6 @@
 												</tr>
 											</table>						
 												
-											<!-- CUTE TABLE 
-											<div align="center" class="control_panel_padd">
-        										<div class="control_panel" class="logbg" align="left">
-           											 <div class="control_panel_tl">
-                										<div class="control_panel_tr">
-                    										<div class="control_panel_bl">
-                       											 <div class="control_panel_br">										
-																	<div class="control_panel_center">
-																		<div class="controlCategoriesList" style="display:table;width:100%;">
-																			<div style="display:table;" class="floatleft">
-																				test
-																			</div>
-																			<div class="button_float_right">
-																			&nbsp;
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>-->
 											
 											{if $request.action == 'browseCategory'}	
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
@@ -126,7 +104,7 @@
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
 								
-								
+											
 											{include file="tpls:$tpl"}			
 																			
 										</td>										

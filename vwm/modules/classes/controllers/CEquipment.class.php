@@ -106,7 +106,8 @@ class CEquipment extends Controller
 		foreach($moduleMap as $key=>$module) {
 			$showModules[$key] = $this->user->checkAccess($key, $companyID);
 		}
-		$this->smarty->assign('show',$showModules);						
+		$this->smarty->assign('show',$showModules);		
+						
 		
 		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'), array('bookmark'=>'equipment'));

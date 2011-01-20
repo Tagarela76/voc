@@ -60,6 +60,16 @@
                     {/if}          
 				{/if}   
                 {*/INVENTORY MODULE*}
+                
+                {*SOLVENT PLAN MODULE*}
+                {if $show.reports}
+                	
+                {/if}
+                {*Show: {get_keys($show)}
+                {foreach from=$show key=k item=i}
+                	item: {$i}, key: {$k}<br/>
+                {/foreach}*/
+                {*/SOLVENT PLAN MODULE*}
 				
 				      
                     {if $permissions.data.view}

@@ -82,6 +82,11 @@
                                                 <input type="button" name="action" value="createReport" onclick="location.href='?action=createReport&category={$request.category}&id={$request.id}'">
                                             </div>											
                                      </div>
+                                     {if $show.reports and $request.bookmark == "solventplan" and $periodType=='month'}
+                                     <div class="button_float_left">
+                                     <input type='button' id='edit' class='button' value='Edit' onclick="location.href='?action=edit&category=solventplan&tab=direct&facilityID={$request.id}&mm={$period.month}&yyyy={$period.year}'">
+                                     </div>
+                                     {/if}
 									{/if}
 										{*EXPORT PAGE*}
 										

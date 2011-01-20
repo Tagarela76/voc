@@ -22,4 +22,13 @@
 		{/if}
 	{/if}
 {*/UPDATE REGS MODULE*}
+
+{*SOLVENT PLAN MODULE*}
+	{if $show.reduction and $request.bookmark == "solventplan"}
+		{if $permissions.data.view}
+			{include file="tpls:reduction/design/subBookmarks.tpl"} 
+		{/if}
+	{/if}
+
+{*/SOLVENT PLAN MODULE*}
                 
