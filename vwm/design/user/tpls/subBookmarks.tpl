@@ -19,7 +19,7 @@
 	{if $show.regupdate}
 		{if $permissions.data.view}
 			{include file="tpls:regupdate/design/subBookmark.tpl"} 
-		{/if}tro
+		{/if}
 	{/if}
 {*/UPDATE REGS MODULE*}
 
