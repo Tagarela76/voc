@@ -829,8 +829,9 @@
 				
 				$defaultModuleList=$modSystem->getDefaultModuleList();
 				
-//				//	прокомментировать зачем нужен этот foreach
+//				//	прокомментировать зачем нужен этот foreach Ksenya: скорее всего он был нужен для добавления новых АСО для модулей автоматически
 //				$ACOs=$gacl_api->get_object('access',true,'ACO');
+				
 				foreach($modules as $mod)
 				{
 					$ACOs=$gacl_api->get_object('access',true,'ACO');											
@@ -838,8 +839,10 @@
 					foreach ($ACOs as $ACO)
 					{						
 						$obj_data=$gacl_api->get_object_data($ACO,'ACO');
-						if ($mod->name === $obj_data[0][1])
-							$isACOmodule=true;						
+						if ($mod->name === $obj_data[0][1]) {
+							$isACOmodule=true;				
+							break;
+						}		
 					}				
 					if (!$isACOmodule)
 						$acoID = $gacl_api->add_object('access', $mod->name, $mod->name, 0, 0, 'ACO');	
@@ -850,28 +853,32 @@
 					switch ($_POST['modularButton']) 
 					{
 						case "save": 
+						$checkedByCompanies = array();
+						foreach ($_POST['modularID'] as $value)
+						{
+							$value = substr($value,6);
+							$pos = strpos($value,'_');
+							$checkedByCompanies[substr($value,0,$pos)] []= substr($value,$pos+1);									
+						}
 						for ($i=0;$i<count($companyList);$i++)
 						{
 							for ($j=0;$j<count($modules);$j++)
-							{			
-								
-								$status='0';
-								foreach ($_POST['modularID'] as $value)
-								{
-									if ($value==="chbox_".$companyList[$i]["id"]."_".$modules[$j]->id)
-										$status='1';										
-								}			
-								if ($defaultModuleList[$modules[$j]->name][$companyList[$i]["id"]]!==$status && class_exists($map[$modules[$j]->name]))
+							{	
+								$status	= (in_array($modules[$j]->id,$checkedByCompanies[$companyList[$i]["id"]]))?1:0;
+								if ($defaultModuleList[$modules[$j]->name][$companyList[$i]["id"]]!= $status && class_exists($map[$modules[$j]->name]))
     							{    					
-    								$modSystem->setModule2company($modules[$j]->name, $status, $companyList[$i]["id"]);    									
+    								$modSystem->setModule2company($modules[$j]->name, $status, $companyList[$i]["id"]); 
+    								$defaultModuleList[$modules[$j]->name][$companyList[$i]["id"]] = $status; //to view them without reloding page!   									
     							}								
 							}
 						}
-						header("Location: ?action=browseCategory&categoryID=modulars");
-						die();	
+						//header("Location: ?action=browseCategory&categoryID=modulars");
+						//die();	
 						break;
 					}									
-				}				
+				} else {
+					
+				}			
 											
 				$smarty->assign('defaultModuleList',$defaultModuleList);			
 				$smarty->assign('companyList',$companyList);

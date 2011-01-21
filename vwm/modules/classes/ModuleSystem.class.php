@@ -45,6 +45,12 @@ class ModuleSystem {
 	private $companyID;
 	
 	/**
+	 * @var array from db
+	 */
+	private $modules;
+	private $modules2company;
+	
+	/**
 	 * @var array of loaded modules
 	 */
 	//public $loadedModules = array();
@@ -177,12 +183,13 @@ class ModuleSystem {
 //    	return false;
 //    }
     
-    function selectAllModules()
-    {
-    	$query = "SELECT * FROM ".TB_MODULE;
-    	$this->db->query($query); 
-    	$modules=$this->db->fetch_all();	
-    	return $modules;
+    function selectAllModules() {
+    	if (is_null($this->modules)) {
+	    	$query = "SELECT * FROM ".TB_MODULE;
+	    	$this->db->query($query); 
+	    	$this->modules=$this->db->fetch_all();
+    	}	
+    	return $this->modules;
     }
     
 	    
@@ -205,9 +212,7 @@ class ModuleSystem {
     	$this->db->query($query);
     	$companies=$this->db->fetch_all();
 
-    	$query = "SELECT * FROM ".TB_MODULE;
-    	$this->db->query($query); 
-    	$modules=$this->db->fetch_all();
+    	$modules = $this->selectAllModules();
     	
     	foreach ($companies as $com )
     	{    		
