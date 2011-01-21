@@ -3,7 +3,7 @@ function saveEmailNotifications() {
 	//	scan checked rules
 	var notifyCount = 0;
 	var notifyData="";
-	var notifies = document.forms[1].notifyID;
+	var notifies = document.all.notifyID;
 	for (i=0;i<notifies.length;i++) {
   		if (notifies[i].checked) {    		
     		notifyData+="notifyID_"+notifyCount+"="+notifies[i].value+"&";
@@ -23,7 +23,25 @@ function saveEmailNotifications() {
       	dataType: "html",
       	success: function (response) 
       		{   
-      			Popup.hide('emailNotifyModal');										
+      			$("#emailNotify").dialog('close');									
       		}        		   			   	
 		});
 }
+
+$(function() {
+	$("#emailNotify").dialog({
+			width: 800,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,			
+			modal: true,
+			buttons: {				
+				'Cancel': function() {					
+					$(this).dialog('close');
+				},
+				'Save': function() {
+					saveEmailNotifications();
+				}
+			}	
+		});
+});

@@ -300,7 +300,8 @@ class CCompany extends Controller
 			'modules/js/form.js',
 			'modules/js/reg_country_state.js',
 			'modules/js/PopupWindow.js',
-			'modules/js/checkBoxes.js'
+			'modules/js/checkBoxes.js',
+			'modules/js/addCompanyPopups.js'
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 		
@@ -456,7 +457,8 @@ class CCompany extends Controller
 			'modules/js/form.js',
 			'modules/js/reg_country_state.js',
 			'modules/js/PopupWindow.js',
-			'modules/js/checkBoxes.js'
+			'modules/js/checkBoxes.js',
+			'modules/js/addCompanyPopups.js'
 		);
 		$this->smarty->assign('jsSources', $jsSources);						
 		$this->smarty->assign('unitTypelist', $unitTypelist);

@@ -66,6 +66,7 @@ class Rule {
 			$rulesArr = $this->db->fetch_all_array();			
 			foreach ($rulesArr as $rule) {			
 				$rule['description'] = $rule['rule_desc'];
+				$rule['rule_nr'] = $rule[$defultRuleNrPropoperty];
 				$rules[]=$rule;
 			}
 																	
@@ -95,7 +96,7 @@ class Rule {
 			'rule_desc'	=>	$data->rule_desc
 		);
 		
-		//var_dump($ruleDetails);
+		
 		
 		foreach ($this->ruleNrMap as $region=>$field) {
 			$ruleDetails[$field] = $data->$field;

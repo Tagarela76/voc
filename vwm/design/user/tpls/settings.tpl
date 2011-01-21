@@ -28,7 +28,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <a style="color: black" href="#" onclick="Popup.showModal('ruleListModal');return false;"><h2>Manage Rule List</h2></a>
+                        <a style="color: black" href="#" onclick="$('#ruleList').dialog('open');"><h2>Manage Rule List</h2></a>
                     </td>
                     <td>
                         Add or remove rules at your rule list.
@@ -36,7 +36,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <a style="color: black" href="#" onclick="Popup.showModal('emailNotifyModal');return false;"><h2>Manage Email Notifications</h2></a>
+                        <a style="color: black" href="#" onclick="$('#emailNotify').dialog('open');"><h2>Manage Email Notifications</h2></a>
                     </td>
                     <td>
                         Add or remove notifications about limits you want to get at your email.
@@ -59,16 +59,22 @@
     </tr>
 </table>
 {*/shadow_table*} 
-{*SELECT_RULES_POPUP*} 
-<div id="ruleListModal" style="text-align:center;height:700px;overflow:auto;display:none;">
-    <div style="width:800px">
-        <div class="popup_table_t_l">
-            <div class="popup_table_t_r">
-                <div class="popup_table_t_center">
-                </div>
-            </div>
-        </div>
-        <div class="popup_table_center">
+{*JQUERY POPUP SETTINGS*}
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
+{*END OF SETTINGS*}
+
+{*NEW RULES POPUP*}
+<div id="ruleList" title="Choose Rules" style='display:none;'>
+
             <form>
                 <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center">
                     <tr>
@@ -77,9 +83,6 @@
                             /<a onclick="unCheckAll(this)" name="allRules" class="id_company1">None</a>
                         </td>
                         <td colspan="2" style="border-bottom:0px solid #fff">
-                            <div style="float:right;padding-right:5px">
-                                <a href="#" onClick="Popup.hide('ruleListModal');">X</a>
-                            </div>
                             <div>
                                 I am customizing this rule list as 
 								<span style="padding:0px 3px;"><input type="radio" name="role" value="user" checked></span>user 
@@ -87,11 +90,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="3">
-                            <h1 class="titleinfo_popup">Choose Rules</h1>
-                        </td>
-                    </tr>
+                   
                     <tr class="table_popup_rule">
                         <td align="center">
                             Select
@@ -111,8 +110,7 @@
 									{if $ruleList[i].rule_id  == $customizedRuleList[j].rule_id}
  										checked
 									{/if}	
-								{/section}
->
+								{/section}>
                         </td>
                         <td id="ruleName_{$smarty.section.i.index}">
                             {$ruleList[i].rule_nr}&nbsp;
@@ -123,8 +121,6 @@
                     </tr>
                     {/section} 
                 </table>
-                <input type="button" class="button" value="Save" onClick="saveCustomizedRuleList();">
-				<input type="button" class="button" value="Cancel" onClick="Popup.hide('ruleListModal');">
 				<input id="userID" type="hidden" name="userID" value="{$userID}">
 				<input id="categoryName" type="hidden" name="categoryName" value="{$categoryName}">
 				{if $categoryName == 'department'}
@@ -135,44 +131,22 @@
 				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}"> 
 				{/if}
             </form>
-        </div>
-        <div class="popup_table_b_l">
-            <div class="popup_table_b_r">
-                <div class="popup_table_b_center">
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>
-{*end*}
+{*END OF NEW RULES POPUP*}
+
 {*SELECT_LIMITS_POPUP*} 
-<div id="emailNotifyModal" style="text-align:center;height:700px;overflow:auto;display:none;">
-    <div style="width:800px">
-        <div class="popup_table_t_l">
-            <div class="popup_table_t_r">
-                <div class="popup_table_t_center">
-                </div>
-            </div>
-        </div>
-        <div class="popup_table_center">
+<div id="emailNotify" title="Choose Email Notifications" style="display:none;">
             <form>
                 <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center">
                     <tr>
-                        <td class="control_list" style="border-bottom:0px solid #fff;padding-left:0px">
+                        <td class="control_list" colspan="3" style="border-bottom:0px solid #fff;padding-left:0px">
                             Select: <a onclick="CheckAll(this)" name="allNotifies" class="id_company1">All</a>
                             /<a onclick="unCheckAll(this)" name="allNotifies" class="id_company1">None</a>
                         </td>
-                        <td colspan="2" style="border-bottom:0px solid #fff">
-                            <div style="float:right;padding-right:5px">
-                                <a href="#" onClick="Popup.hide('emailNotifyModal');">X</a>
-                            </div>
-                        </td>
+                        
                     </tr>
-                    <tr>
-                        <td colspan="3">
-                            <h1 class="titleinfo_popup">Choose Email Notifications</h1>
-                        </td>
-                    </tr>
+                    
                     <tr class="table_popup_rule">
                         <td align="center" width="10%">
                             Select
@@ -192,20 +166,17 @@
 									{if $notificationsList[i].id  == $notificationsListSelected[j].id}
  										checked
 									{/if}	
-								{/section}
->
+								{/section}>
                         </td>
                         <td id="ruleName_{$smarty.section.i.index}">
-                            {*$notificationsList[i].name*}{$notificationsList[i].description}&nbsp;
+                            {$notificationsList[i].description}&nbsp;
                         </td>
                         <td>
-                            {*$notificationsList[i].description*}&nbsp;
+                            &nbsp;
                         </td>
                     </tr>
                     {/section} 
                 </table>
-                <input type="button" class="button" value="Save" onClick="saveEmailNotifications();">
-				<input type="button" class="button" value="Cancel" onClick="Popup.hide('emailNotifyModal');">
 				<input id="userID" type="hidden" name="userID" value="{$userID}">
 				<input id="categoryName" type="hidden" name="categoryName" value="{$categoryName}">
 				{if $categoryName == 'department'}
@@ -216,12 +187,5 @@
 				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}"> 
 				{/if}
             </form>
-        </div>
-        <div class="popup_table_b_l">
-            <div class="popup_table_b_r">
-                <div class="popup_table_b_center">
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+{*END OF POPUP LIMITS*}

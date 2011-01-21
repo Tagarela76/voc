@@ -3,7 +3,7 @@ function saveCustomizedRuleList() {
 	//	scan checked rules
 	var ruleCount = 0;
 	var ruleData="";
-	var rules = document.forms[0].ruleID;
+	var rules = document.all.ruleID;
 	for (i=0;i<rules.length;i++) {
   		if (rules[i].checked) {    		
     		ruleData+="ruleID_"+ruleCount+"="+rules[i].value+"&";
@@ -13,7 +13,7 @@ function saveCustomizedRuleList() {
 	ruleData+="ruleCount="+ruleCount;
 	
   	//	scan selected role
-  	var role = document.forms[0].role;
+  	var role = document.all.role;
   	for (i=0;i<role.length;i++) {
   		if (role[i].checked) 
   		{  			
@@ -40,7 +40,25 @@ function saveCustomizedRuleList() {
       	dataType: "html",
       	success: function (response) 
       		{   
-      			Popup.hide('ruleListModal');										
+					$("#ruleList").dialog('close');									
       		}        		   			   	
 		});
 }
+
+$(function() {
+	$("#ruleList").dialog({
+			width: 800,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,			
+			modal: true,
+			buttons: {				
+				'Cancel': function() {					
+					$(this).dialog('close');
+				},
+				'Save': function() {
+					saveCustomizedRuleList();
+				}
+			}	
+		});
+});
