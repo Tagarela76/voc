@@ -14,17 +14,13 @@
 <input type='hidden' name='id' value='{$request.id}'>
 <input type='hidden' name='bookmark' value='carbonfootprint'>*}
 
-
-	<table width="97%" align="center">
+<table width="97%" align="center">
 		<tr>
 			<td class="link_bookmark_left">
-			<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=setLimit" name="setLimitsAnchor">Set Limits</a>
+			
 		   </td>
 			<td align="right"  class="link_bookmark">		
-				<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=month" name="monthlyAnchor" {if $request.tab eq 'month'}class="active_link" {/if}>monthly</a> 		
-				<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=quarter" name="quartelyAnchor" {if $request.tab eq 'quarter'}class="active_link" {/if}>quarterly</a> 		
-				<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=semi-year" name="semiannuallyAnchor" {if $request.tab eq 'semi-year'}class="active_link" {/if}>semi-­annually</a>		
-				<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=year" name="yearlyAnchor" {if $request.tab eq 'year'}class="active_link" {/if}>yearly</a>
+				
 			</td>
 {*INDICATORS*}
 <td rowspan="2" width="313px" valign="top">
@@ -50,11 +46,11 @@
 {*/ INDICATORS*}
 
 		</tr>
-		<tr>
-			{*<td>
-				You can edit report at <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=month" name="editReportMonthlyAnchor">monthly</a> view
-			</td>*}
-			<td colspan="2">
+		<tr valign="middle">
+		<td class="link_bookmark_left">
+				<a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=carbonfootprint&tab=setLimit" name="setLimitsAnchor">Set Limits</a>
+		</td>
+			<td  style='text-align:center;'>
 				{if $periodType == 'month'}
 					<select name="selectMonth" {*onChange="document.forms['carbonForm'].submit();"*}>
 						<option value="1" {if $period.month =='01'}selected='selected'{/if}>January</option>
@@ -98,14 +94,43 @@
 				<input type='submit' class='button' name='setPeriod' value='View' />
 			</td>				
 		</tr>
+		
 	</table>	
 	<br>
 </form>
 
 {*MONTHLY*}
 {if $periodType == 'month'}
+
+<div align="center" class="control_panel_padd" style="padding:5px;">	
+	<div class="control_panel" class="logbg" align="left">
+	<div class="control_panel_tl">
+	<div class="control_panel_tr"><div class="control_panel_bl"><div class="control_panel_br">
+	<div class="control_panel_center" style="margin: 5px;">
+	
+	<table  cellpadding="0" cellspacing="0" class="controlCategoriesList"  style="padding: 5px; " valign="middle">
+	<tr><td>	
+			<form id="carbonFootprintAdd" method="post" action="?action=addItem&category=carbonfootprint&facilityID={$request.id}" >
+				<input type='hidden' name='selectMonth' value='{$period.month}' />
+				<input type='hidden' name='selectYear' value='{$period.year}' />
+				<input type ="submit" name="Add" value="Add" class="button" />&nbsp;
+			</form>
+			
+			
+	</td>
+	<td>
+		<form id="carbonFootprintDelete" method="post" action="?action=deleteItem&category=carbonfootprint&facilityID={$request.id}" >	
+			
+			<input type ="submit" name="Delete" value="Delete" class="button" />
+	</td>
+	</tr>	
+	</table>
+
+	</div></div	></div></div></div></div></div>	
+
+
 <div id="monthly">
-<form id="carbonFootprintDelete" method="post" action="?action=deleteItem&category=carbonfootprint&facilityID={$request.id}" >	
+
 	<table class="users" align="center" cellpadding="0" cellspacing="0">
 		<tr class="users_header_yellowgreen">
 			<td colspan="2">
@@ -188,18 +213,30 @@
             <td height="20" class="users_u_bottom">
             </td>
             <td colspan="6" height="27" class="users_u_bottom_r" align="right">
-            	<div style="float:right"><input type ="submit" name="Delete" value="Delete" class="button">	</div>
+            	<div style="float:right">	</div>
 	</form>	
-<form id="carbonFootprintAdd" method="post" action="?action=addItem&category=carbonfootprint&facilityID={$request.id}" >
-<input type='hidden' name='selectMonth' value='{$period.month}'>
-<input type='hidden' name='selectYear' value='{$period.year}'>
-<input type ="submit" name="Add" value="Add" class="button">&nbsp;
-</form>
             </td>
         </tr>
 	</table>	
+
+<form id="carbonFootprintEdit" method="post" action="?action=edit&category=carbonfootprint&facilityID={$request.id}&tab=indirect" >
+<div align="center" class="control_panel_padd" style="padding:5px;padding-bottom:0px;">	
+	<div class="control_panel" class="logbg" align="left">
+	<div class="control_panel_tl">
+	<div class="control_panel_tr"><div class="control_panel_bl"><div class="control_panel_br">
+	<div class="control_panel_center" style="margin: 5px;">
 	
-	<form id="carbonFootprintEdit" method="post" action="?action=edit&category=carbonfootprint&facilityID={$request.id}&tab=indirect" >
+	<table  cellpadding="0" cellspacing="0" class="controlCategoriesList"  style="" valign="middle">
+	<tr>
+	<td height="27" align="left">            	
+				<input type ="submit" name="Edit" value="Edit" class="button"/>				
+            </td>
+	</tr>	
+	</table>
+
+</div></div	></div></div></div></div></div>	
+	
+	
 	<input type='hidden' name='selectMonth' value='{$period.month}'>
 	<input type='hidden' name='selectYear' value='{$period.year}'>	
 	<div class=br_10></div>
@@ -232,7 +269,7 @@
             <td height="20" class="users_u_bottom">
             </td>
             <td colspan="6" height="27" class="users_u_bottom_r" align="right">            	
-				<input type ="submit" name="Edit" value="Edit" class="button" />				
+						
             </td>
 		</tr>	
 						
@@ -352,7 +389,7 @@
                             <div class="control_panel_center">
 	<div class="padd7 warning_text bold" style="display:table;height:27px;width:100%">
 	<div class="floatleft">TOTAL TCO2</div>
-	<div class="floatright">{$total}</div>
+	<div class="floatright" style="margin-right:10px;">{$total}</div>
 	</div>			
   							</div>
                         </div>

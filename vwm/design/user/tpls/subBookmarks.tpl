@@ -19,7 +19,7 @@
 	{if $show.regupdate}
 		{if $permissions.data.view}
 			{include file="tpls:regupdate/design/subBookmark.tpl"} 
-		{/if}
+		{/if}tro
 	{/if}
 {*/UPDATE REGS MODULE*}
 
@@ -29,6 +29,13 @@
 			{include file="tpls:reduction/design/subBookmarks.tpl"} 
 		{/if}
 	{/if}
-
 {*/SOLVENT PLAN MODULE*}
+
+{*CARBON FOOTPRINT*}
+{if $show.carbon_footprint and $request.bookmark == "carbonfootprint"}
+	{if $permissions.data.view}
+		{include file="tpls:carbon_footprint/design/subBookmarks.tpl"} 
+	{/if}
+{/if}
+{*CARBON FOOTPRINT*}
                 
