@@ -330,7 +330,6 @@ class CMix extends Controller
 	
 	private function addEdit($action, $departmentID) {
 //same=>
-
 		$form = $this->getFromPost();	
 		
 		// protecting from xss
@@ -1323,12 +1322,22 @@ class CMix extends Controller
 	}
 		//END OF DIFFERS
 
-		//	set js scripts				
-		$jsSources = array(									
+		//	set js scripts			
+		$jsSources = array (										
+		    'modules/js/flot/jquery.flot.js',
+			'modules/js/addUsage.js',
+	    	'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js'							
+	    );
+	    $this->smarty->assign('jsSources',$jsSources);
+	    
+	    $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources',$cssSources);
+			
+		/*$jsSources = array(									
 			'modules/js/addUsage.js'							
 		);							
 		
-		$this->smarty->assign('jsSources', $jsSources);						
+		$this->smarty->assign('jsSources', $jsSources);		*/				
 		$this->smarty->assign('sendFormAction', '?action='.$action.'&category='.$this->category.(($action == 'addItem')?'&departmentID='.$departmentID:'&id='.$this->getFromRequest('id')));
 		$this->smarty->assign('tpl', 'tpls/addUsageNew.tpl');	
 		$this->smarty->display("tpls:index.tpl");

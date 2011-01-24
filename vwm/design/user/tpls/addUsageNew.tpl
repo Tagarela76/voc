@@ -60,7 +60,7 @@
 								Mix Date (mm-dd-yyyy):
 							</td>
 							<td class="border_users_r border_users_b">
-							<div align="left" ><input type="text" name="creationTime" value="{$data.creationTime}">
+							<div align="left" ><input type="text" name="creationTime" id="calendar1" value="{$data.creationTime}">
 								{if $validStatus.summary eq 'false'}
 								{if $validStatus.creationTime eq 'failed'}
 						
@@ -69,7 +69,19 @@
 								{*/ERORR*}
 							{/if}
 							{/if}
-							</div>								
+							</div>
+							{literal}
+							<script type="text/javascript">
+							    function clearInputBox(item){
+							        item.value = "";
+							    }
+							    
+							    $(document).ready(function(){	
+									 $('#calendar1').datepicker({ dateFormat: 'mm-dd-yy' }); 
+							    });
+							   
+							</script>
+							{/literal}								
 							</td>
 						</tr>
 						<tr>
