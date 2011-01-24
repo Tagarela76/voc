@@ -34,7 +34,8 @@
                     </td>
                     <td>
                         <select name="logs" id="logs">
-                            {section name=i loop=$rules}<option value='{$rules[i].rule_id}' {if $rules[i].rule_id  eq $data.rule}selected="selected"{/if}> {$rules[i].rule_nr}  </option>
+                            {section name=i loop=$rules}
+                            	<option value='{$rules[i].rule_id}' {if $rules[i].rule_id  eq $data.rule}selected="selected"{/if}> {$rules[i].rule_nr}  </option>
                             {/section} 
                         </select>
                     </td>

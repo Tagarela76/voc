@@ -1,7 +1,19 @@
 <?php	
+	register_shutdown_function("endF");
+	
+	function endF(){
+		
+		$error = error_get_last ();
+		if($error['type'] == 1){
+			
+				$additionalInfo = " Try select less date period if you generate report. Our team is working about this problem. Thank you for patience.";
+				header("Location: " . "error.php?message=".$error["message"] . $additionalInfo); // Если был вывод до этой строки, хедер не сработает, потому выводиться джаваскрипт
+				echo "<script type='text/javascript'> document.location = 'error.php?message={$error['message']}. $additionalInfo'; </script>";
+				exit;
+		}
+	}
 	
 	define("USERS_TABLE", "user");
-	
 	
 	require('config/constants.php'); 			
 	
