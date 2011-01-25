@@ -84,7 +84,7 @@ class RegActManager {
 					" AND ra.category = '$category' ") : 
 				(" WHERE ra.category = '$category' ")
 			).
-			" ORDER BY ra.category ";
+			" ORDER BY ra.category, ra.date_received desc";
 		if (!is_null($pagination)) {
 				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 			}
