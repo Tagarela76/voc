@@ -8,7 +8,12 @@ class CCommon extends Controller
     
     function runAction()
 	{				
+		try{
+			
 		$this->runCommon();
+		}catch (Exception $e){
+			throw new Exception("My Defined Exception! $e");
+		}
 		$functionName='action'.ucfirst($this->action);				
 		if (method_exists($this,$functionName))
 		{			

@@ -99,6 +99,20 @@ class VPSUser {
     	}
     }
     
+    
+    
+    
+	public function isLoggedIn(){
+		if ($this->access->check("required")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
+	
+	
     public function logout() {
     	$this->access->logout();
 		header ('Location: '.$this->xnyo->logout_redirect_url);
@@ -460,7 +474,7 @@ class VPSUser {
 	 * 	function gets trial period customers
 	 * 	@return array of 'notRegistered' and 'registered' at VPS customers
 	 */
-	public function getTrialCustomers() {	//	UNIT TEST
+	public function getTrialCustomers() {
 
 		$vps2voc = new VPS2VOC($this->db);
 		$customers = array (

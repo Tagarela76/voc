@@ -132,7 +132,9 @@ class CCompany extends Controller
 		if ($checkResult['shouldPay']) {
 			$notify = new Notify($this->smarty);
 			$notify->paymentNotify($checkResult['daysLeft']);
-		}						
+		}				
+
+		
 							
 		//	set js
 		$jsSources = array('modules/js/checkBoxes.js');
@@ -144,7 +146,6 @@ class CCompany extends Controller
 	}
 	
 	private function actionAddItem() {
-		
 		//	Access control
 		if (!$this->user->checkAccess('root', null)) {						
 			throw new Exception('deny');
@@ -170,8 +171,15 @@ class CCompany extends Controller
 		
 		if (count($form) > 0) {							
 			//	"Init state" dances
-			$registration = new Registration($this->db);							
-			$state = ($registration->isOwnState($form["country"])) ? $form["selectState"] : $form["textState"]; 
+			$registration = new Registration($this->db);		
+			if($registration->isOwnState($form["country"]))
+			{
+				$state = $form["selectState"];
+			}	
+			else
+			{
+				$state = $form["textState"]; 
+			}				
 			
 			$companyData = array(
 				"name"				=>	$form["name"],
@@ -222,7 +230,7 @@ class CCompany extends Controller
 				$notify->formErrors();
 				
 				$this->smarty->assign('validStatus', $validStatus);
-				$this->smarty->assign('data', $companyData);									
+													
 				$this->smarty->assign('defaultUnitTypelist', $form['unitTypeID']);
 				$this->smarty->assign('defaultAPMethodlist', $form['APMethodID']);
 			}
@@ -249,12 +257,29 @@ class CCompany extends Controller
 		}						
 		
 		
-		if (!isset($companyData)) {							
+		$companyData['country'] = $companyData['country'] ? $companyData['country'] : $usaID;
+		//$this->smarty->assign("data", $data);
+		$this->smarty->assign('data', $companyData);
+		$state = new State($this->db);
+		$stateList = $state->getStateList($companyData['country']);	
+		if(empty($stateList)){
+			$this->smarty->assign("selectMode", false);
+		}
+		else{
+			$this->smarty->assign("state", $stateList);
+			$this->smarty->assign("selectMode", true);
+		}
+		
+		/*if (!isset($companyData)) {							
 			$data['country'] = $usaID;
+			
 			$this->smarty->assign("data", $data);	
 			$state = new State($this->db);
 			$stateList = $state->getStateList($usaID);
-			$this->smarty->assign("selectMode", true);
+			
+			if(empty($stateList)){
+			$this->smarty->assign("selectMode", false);
+			}
 		} else {
 			if ($companyData['country'] == $usaID) {
 				$selectMode = true;
@@ -263,7 +288,7 @@ class CCompany extends Controller
 				$this->smarty->assign("state", $stateList);
 				$this->smarty->assign("selectMode", true);	
 			}			
-		}	
+		}	*/
 		
 		//							$state = new State($db);
 		//							$stateList = $state->getStateList($usaID);
@@ -478,15 +503,17 @@ class CCompany extends Controller
 		$shouldPay = false;
 		$daysLeft = null;
 		
+		$currentDate = date('Y-m-d');		
+		
 		$voc2vps = new VOC2VPS($db);
 		$configs = $voc2vps->loadConfigs();
 		$vpsRegistrationPeriod = $configs['vps_registration_period'];
 		
 		$vps_customer = $voc2vps->getCustomerDetails($customerID,true);
 		
-		$timeStampTrialDaysLeft = strtotime($vps_customer['trial_end_date']) - strtotime(date('Y-m-d'));
+		$timeStampTrialDaysLeft = strtotime($vps_customer['trial_end_date']) - strtotime();
 		
-		if ( $timeStampTrialDaysLeft < $vpsRegistrationPeriod*24*60*60 && $timeStampTrialDaysLeft > 0 && $vps_customer['status'] == "off") {															
+		if ( $timeStampTrialDaysLeft < $vpsRegistrationPeriod*24*60*60 && $timeStampTrialDaysLeft > 0 && $vps_customer['status'] == "notReg") {															
 			$shouldPay = true;
 			$daysLeft = round($timeStampTrialDaysLeft/60/60/24);			
 		} else {						

@@ -1,11 +1,18 @@
 <?php
 
 class Issue {
+	
 	private $db;
 
-    function Issue($db) {
+	
+	
+	
+    function __construct($db) {
     	$this->db = $db;
     }
+    
+    
+    
     
     public function addIssue($issueDetails) {
     	
@@ -15,10 +22,6 @@ class Issue {
 			$issueDetails[$key]=mysql_escape_string($value);
 		}
     	
-    	//$this->db->select_db(DB_NAME);
-    	
-    	//	New line dances
-//    	$issueDetails["description"] = str_replace("\r\n", "<br>", $issueDetails["description"]);
     	
     	$query = "INSERT INTO ".TB_ISSUE." (title, description, creator_id, referer, priority, status) VALUES ("
     			."'".$issueDetails["title"]."'"
@@ -38,53 +41,60 @@ class Issue {
     	$from = "issues@vocwebmanager.com";
     	
     	//	Getting issues-mailing-list group
-    	//	For now ststaic
-    	$to = array("dmitry.vd@kttsoft.com",					
-					"denis.nt@kttsoft.com");
-    	/*
-    	$to = array(
-					"oleg.lv@kttsoft.com"
-					);
-    	*/
-    	
+    	switch (ENVIRONMENT) {    		
+    		case "server":
+    			//	boss should see this issue
+    			$to = array("dmitry.vd@kttsoft.com",
+					"denis.nt@kttsoft.com",
+    				"denis.yv@kttsoft.com");
+    			break;
+    		case "sandbox":
+    			//	only 4 developers
+    			$to = array("denis.nt@kttsoft.com",
+    				"denis.yv@kttsoft.com");
+    			break;
+    		default:
+    			//	smth else - do nothing
+    			return true;
+    				
+    	}
+    	    	    	
     	$subject = "New Issue reported - ".$issueDetails["title"];
     	
     	$message = "Title: ".$issueDetails["title"]."\n\n";
     	$message .= "Description: \n".$issueDetails["description"]."\n\n";
-    	$message .= "Referer: ".$issueDetails["referer"];
-    	
-    	//$message = $issueDetails["description"];
+    	$message .= "Referer: ".$issueDetails["referer"];    	
     	
     	//	Sending message
     	$mail->sendMail($from, $to, $subject, $message);
     }
     
-    public function getIssuesList($sortBy = "none") {
-    	//$this->db->select_db(DB_NAME);
-    	
-    	$query = "SELECT issue_id, title, status, priority FROM ".TB_ISSUE." WHERE 1";
+        
+    
+    
+    public function getIssuesList($sortBy = "none") {    	
+    	$query = "SELECT issue_id issueID, title, status, priority FROM ".TB_ISSUE." WHERE 1";
     	
     	switch($sortBy) {
     		case "none":
     			$query .= " ORDER BY issue_id";
-    			break;
-    			
+    			break;    			
     		default:
     			break;
     	}
     	
-    	$this->db->query($query);
-    	
+    	$this->db->query($query);    	
     	$issues = $this->db->fetch_all_array();
     	
     	return $issues;
     }
     
+    
+    
+    
     public function getIssueDetails($issueID) {
     	
     	$issueID=mysql_escape_string($issueID);
-    	
-    	//$this->db->select_db(DB_NAME);
     	
     	$query = "SELECT * FROM ".TB_ISSUE." WHERE issue_id=".$issueID." LIMIT 1";
     	$this->db->query($query);
@@ -103,15 +113,15 @@ class Issue {
     	return $issueDetails;
     }
     
+    
+    
+    
     public function updateIssueDetails($issue) {
     	
     	//screening of quotation marks
-		foreach ($issue as $key=>$value)
-		{
+		foreach ($issue as $key=>$value) {
 			$issue[$key]=mysql_escape_string($value);
 		}
-    	
-    	//$this->db->select_db(DB_NAME);
     	
     	$query = "UPDATE ".TB_ISSUE." SET "
     			."status='".$issue["status"]."', "

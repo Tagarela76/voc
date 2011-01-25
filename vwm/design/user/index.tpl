@@ -53,7 +53,6 @@
 									<tr>																				
 										{include file="tpls:tpls/categoriesListLeft.tpl"}							
 										<td valign="top"  class="foot_block">
-										
 											{*Categories List*}											
 											{include file="tpls:tpls/login_categoriesList.tpl"}
 											
@@ -127,7 +126,6 @@
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
 								
-											
 											{include file="tpls:$tpl"}			
 																			
 										</td>										

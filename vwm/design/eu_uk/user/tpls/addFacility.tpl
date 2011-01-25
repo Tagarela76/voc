@@ -9,7 +9,6 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 </div>
-	
 <div class="padd7">
 	
 	<form name="addFacility">

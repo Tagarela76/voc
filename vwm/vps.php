@@ -398,13 +398,21 @@
 	} else {
 		$userID = $_SESSION['userID'];
 		$customerID = $_SESSION['customerID'];
-		
-		if (empty($userID) && !$_SESSION['registration']) {
-
+						
+		//	logged in?			
+		if ( (!($user->isLoggedIn() && $_SESSION['auth']['company_id'] == $customerID) && !$_SESSION['registration'])) {
 			$backUrl = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-			$backUrl = urlencode($backUrl);
+			$backUrl = urlencode($backUrl);			
 			header("Location: vps.php?backUrl=$backUrl");
 		}
+			
+		
+//		if (empty($userID) && !$_SESSION['registration']) {
+//
+//			$backUrl = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+//			$backUrl = urlencode($backUrl);
+//			header("Location: vps.php?backUrl=$backUrl");
+//		}
 		
 		if (!$_SESSION['registration']) {
 			$vps2voc = new VPS2VOC($db);

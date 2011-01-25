@@ -67,8 +67,7 @@ class VPS2VOC {
     
     //CUSTOMER
     
-    public function getCustomerDetails($customerID = null, $getWithNotRegistered = false, $getDeadline = true) {    	
-    	
+    public function getCustomerDetails($customerID = null, $getWithNotRegistered = false, $getDeadline = true) {    	    	
     	$customerDetails = array();
 
     	$query = "SELECT c . * , vc . * , cur.sign AS currencySign
@@ -84,57 +83,77 @@ class VPS2VOC {
     	}
     	
 
-    	$this->db->query($query);
-    	
-    	$customerDetails = $this->db->fetch_all_array();
+    	$this->db->query($query);    	
+    	$customerDetails = $this->db->fetch_all_array();    	
     	
     	$companyList = array();
     	foreach($customerDetails as $details) {
     		$companyList []= $details['company_id'];
-    	}
-    	
-    	if ($getDeadline) {
-	    	$invoice = new Invoice($this->db); //TODO cut invoice out of there!
+    	}    	
+    	    	
+    	if ($getDeadline && $customerDetails) {
+    		
+    		//echo "<h1>IF</h1>";
+	    	$invoice = new Invoice($this->db);
 	    	if (method_exists($invoice,'getDatesForCustomerList')) {
-	    		$dates = $invoice->getDatesForCustomerList($companyList);
+	    		$dates = $invoice->getDatesForCustomerList($companyList);	    		
+	    		//echo "if exists";
 	    	} else {
+	    		//echo "else";
 	    		//no need in deadline counter if we dont have any info from invoice!
 	    		foreach ( $companyList as $value ) {
 	    			$dates [$value]['status']= 'PAID';
 	    		}
 	    	}
 	    	
+	    	//var_dump($dates);
+	    	
 	    	foreach($customerDetails as $key => $details) {
 	    		$customerDetails [$key]['period_end_date']= $dates[$details['company_id']]['period_end_date'];
 	    		if (strtoupper($dates[$details['company_id']]['status']) == 'PAID') {	    			
+	    			
 	    			$customerDetails [$key]['deadline_counter']= (strtotime($dates [$details['company_id']]['period_end_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
 	    		} else {
+	    			
 	    			$customerDetails [$key]['deadline_counter']= (strtotime($dates [$details['company_id']]['suspension_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
 	    		}
 	    	}
     	}
 
-    	if ($getWithNotRegistered && (is_null($customerID) || empty($customerDetails))) {
-    		if (!is_null($customerID)) {
-    			$query = "SELECT * FROM `company` c " .
-    				"WHERE c.company_id = '$customerID' LIMIT 1 ";
-    		} else {
+    	//elseif ($getWithNotRegistered) {
+    	if ($getWithNotRegistered) {
+    		//echo "<h1>NOT REGISTERED</h1>";
+    		if(is_null($customerID))
+    		{
     			$query = "SELECT * FROM `company` c " .
     				"WHERE c.company_id NOT IN " .
     				"(SELECT customer_id FROM `vps_customer`) ";
     		}
+    		else
+    		{
+    			$query = "SELECT * FROM `company` c " .
+    				"WHERE c.company_id = '$customerID' LIMIT 1 ";
+    		}
+    		
     		$this->db->query($query);
     		$notRegisteredCustomers = $this->db->fetch_all_array();
     		foreach ($notRegisteredCustomers as $customer) {
     			$customer ['status']= 'notReg';
+    			
     			$customer ['deadline_counter']= (strtotime($customer['trial_end_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
     			$customerDetails []= $customer;
     		}
+    	}
+    	else
+    	{
+    		//echo "<h1>ELSE</h1>";
     	}
     	
     	if (!is_null($customerID)) {
     		$customerDetails = $customerDetails[0];
     	}
+    	//echo "<h2>Customer Details:</h2>";
+    	//var_dump($customerDetails);
     	return $customerDetails;    	
     }
     

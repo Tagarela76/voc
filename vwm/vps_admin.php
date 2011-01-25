@@ -121,9 +121,8 @@
 					$smarty->assign("extraLimits",$extraLimits);
 					$smarty->assign("extraLimitsSources",$extraLimits['sources']);											
 					
-					//getting defined plans
-					
-					$definedPlans = $billing->getDefinedPlans("All",$curentCurrency['id']);
+					//getting defined plans					
+					$definedPlans = $billing->getDefinedPlans("All",$curentCurrency['id']);					
 					$vps2voc = new VPS2VOC($db);
 					foreach ($definedPlans as $key=>$value)	{
 						$customerDetails = $vps2voc->getCustomerDetails($definedPlans[$key]['customer_id']);						

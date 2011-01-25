@@ -100,7 +100,16 @@ class CFacility extends Controller
 		$this->setPermissionsNew('viewFacility');
 		
 		$facilities = new Facility($this->db);
-		$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("id"));		
+		$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("id"));
+		//var_dump($facilityDetails);
+		
+		/*if(is_numeric($facilityDetails['state']))
+		{
+			$state = new State($this->db);
+			$state = $state->getStateDetails($facilityDetails['state']);
+			$facilityDetails['state'] = $state['name'];
+		}*/
+		
 		$this->smarty->assign("facility", $facilityDetails);
 		$this->smarty->assign('backUrl','?action=browseCategory&category=facility&id='.$this->getFromRequest("id").'&bookmark=department');
 		$this->smarty->assign('tpl', 'tpls/viewFacility.tpl');

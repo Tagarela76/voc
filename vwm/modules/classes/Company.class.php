@@ -139,7 +139,6 @@ class Company {
 		$companyDetails=$this->db->fetch_array(0);
 		if (!$vanilla) {
 			$reg = new Registration($this->db);
-			
 			//	Set State
 			if ($reg->isOwnState($companyDetails['country']))
 			{

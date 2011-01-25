@@ -953,20 +953,22 @@ class Billing {
     	if (!is_null($moduleID)) {
     		$query .= "AND mb.module_id = ".$safeModuleID;
     	}
-    	
-    	$this->db->query($query);
-    	
+   
+    	$this->db->query($query);    	
     	
     	$modulesCnt = $this->db->num_rows();
     	if ($modulesCnt > 0) {
-    		$modulesFetched = $this->db->fetch_all_array();    		
+    		$modulesFetched = $this->db->fetch_all_array();
+    		    		
     		$vps2voc = new VPS2VOC($this->db);
     		$invoiceObj = new Invoice($this->db);
+    		
     		$allAvailableModules = $vps2voc->getModules();    
     		$modulesExists = array();	//needed only if $period[1] is null
     		$modules = array();
+    		
     		if ($period == 'today') {
-    			$period = array(date('Y-m-d'), null);
+    			$period = array($this->currentDate, null);
     		} elseif (!is_array($period)) {
     			$period = array(date('Y-m-d', strtotime($period)), null);
     		} else {
@@ -974,6 +976,7 @@ class Billing {
     				$period[$key] = date('Y-m-d', strtotime($value));
     			}
     		}    		
+    		
     		foreach($modulesFetched as  $module) {
     			if (is_null($period[1])) {
     				if ($module['start_date'] > $period[0] && $invoiceType == 'todayOnly') {
@@ -989,7 +992,8 @@ class Billing {
     					$id = count($modules);
     					$modulesExists [$module['module_id']]= $id;
     				}	
-    			} else {
+    				
+    			} else {    				
     				$month_count = ' + '.$module['month_count'].(($module['month_count'] == 1)?' month':' months').' - 1 day';
     				if (($module['start_date'] >= $period[0] && $module['start_date'] <= $period[1]) || 
     				 (date('Y-m-d',strtotime($module['start_date'].$month_count)) > $period[0] && 
@@ -1252,12 +1256,12 @@ class Billing {
 		    	FROM ".TB_VPS_BILLING." b, ".TB_VPS_CUSTOMER." c, " . TB_VPS_BILLING2CURRENCY . " b2c
 				WHERE b.billing_id = c.billing_id				
     			AND b2c.billing_id = b.billing_id
+    			AND b.defined = 1
     			AND b2c.currency_id = $currencyID";
     	if($customerID != "All") {
 				$query .= " AND c.customer_id = ".$customerID;
     	}
-    	
-    							
+    	    				
 		$this->db->query($query);
 		
 		$billingPlans = $this->db->fetch_all_array();

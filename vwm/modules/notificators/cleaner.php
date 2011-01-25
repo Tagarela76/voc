@@ -38,14 +38,14 @@
 	$customerObj = new VPSUser($db);
 	$invoiceObj = new Invoice($db);
 	$billingObj = new Billing($db);
-	$bridge = new Bridge($db);
+	$vps2voc = new VPS2VOC($db);
 	$user = new User($db, null,null, null);
 	$modSystem = new ModuleSystem($db);
 	$config = $customerObj->loadConfigs($db);
 
 	
-	$currentDate = date('Y-m-d');
-//	$currentDate = '2011-06-09';
+//	$currentDate = date('Y-m-d');
+	$currentDate = '2012-02-19';
 
 	//	current Date in timestamp
 	// I do not use time() to simplify debugging (test script with different current dates)	
@@ -60,7 +60,7 @@
 			// skip iteration
 			continue;
 		}				
-		if ($customer['id'] != 182) {
+		if ($customer['id'] != 140) {
 			continue;
 		}
 		
@@ -104,15 +104,24 @@
 		
 		
 		
-		$isBillingInvoice = false;				
+		$isBillingInvoice = false;						
 		if (false !== ($currentInvoices = getCurrentInvoice($customer['id']))) {
 			/*
 			 * Current invoice is defined - client is in BILLING PERIOD now
 			 */			
+
+			//	save here already processed invoices							
+			$alreadyProcessedInvoices = array();
+			
 			foreach ($currentInvoices as $currentInvoice) {
 				if (!$isBillingInvoice && !is_null($currentInvoice->billing_info)) {
 					$isBillingInvoice = true;
 				}
+				
+//				if ($alreadyProcessedInvoices[$currentInvoice->invoice_id]) {
+//					//skip
+//					continue;
+//				}			
 				
 				if ($currentInvoice->status == 'paid') {
 					/*					  
@@ -126,8 +135,8 @@
 					
 					
 					//	module processing					
-					if(!is_null($currentInvoice->module_id) && $sDateInt <= $cDateInt) {
-						$moduleName = $bridge->getModuleNameByID($currentInvoice->module_id);																				
+					if(!is_null($currentInvoice->module_id) && $sDateInt <= $cDateInt) {						
+						$moduleName = $vps2voc->getModuleNameByID($currentInvoice->module_id);																				
 						if (!$modSystem->searchModule2company($moduleName, $customer['id'])) {
 							/*
 							 * activate module
@@ -188,12 +197,14 @@
 							/*
 							 * Generate invoice for future period
 							 */
-							echo 'generate invoice '.$currentInvoice->invoice_id.'<br>';
-							if (!DRY_RUN) {
-								$db->beginTransaction();
-								$log .= createInvoice($currentInvoice);
-								$db->commitTransaction();
-							}
+							if (!$alreadyProcessedInvoices[$currentInvoice->invoice_id]) {
+								echo 'generate invoice '.$currentInvoice->invoice_id.'<br>';
+								if (!DRY_RUN) {
+									$db->beginTransaction();
+									$log .= createInvoice($currentInvoice);
+									$db->commitTransaction();
+								}
+							}							
 						}												
 					}
 					
@@ -209,13 +220,15 @@
 						 * Suspend account
 						 */							
 						if (!is_null($currentInvoice->billing_info)) {
-							echo 'suspension '.$currentInvoice->invoice_id.'<br>';
+							echo 'suspension '.$currentInvoice->invoice_id.'<br>';							
 							if (!DRY_RUN) {
 								$log .=	manageCustomersAndNotify($customer['id'], -1);	//	deactivate customer
 							}
 						} elseif (!is_null($currentInvoice->module_id)) {
-							// TODO:test me
+							//	TODO: если это комплексный и уже отменен?							
 							echo 'Deactivate module '.$currentInvoice->invoice_id.'<br>';
+							$moduleName = $vps2voc->getModuleNameByID($currentInvoice->module_id);							
+							
 							if (!DRY_RUN) {
 								$db->beginTransaction();
 								$modSystem->setModule2company($moduleName, '0', $customer['id']);
@@ -223,7 +236,7 @@
 								$db->commitTransaction();
 							}
 							$log .= "Custom Invoice ID ".$currentInvoice->invoice_id." is canceled. Today = Suspension date.\n";
-						}else {							
+						} else {							
 							echo 'cancel '.$currentInvoice->invoice_id.'<br>';
 							if (!DRY_RUN) {
 								$db->beginTransaction();
@@ -242,21 +255,34 @@
 						if (!DRY_RUN) {					
 							$log .= manageCustomersAndNotify($customer['id'], $daysLeft);
 						}
-					}
-										
+					}										
 				}
+				
+				$alreadyProcessedInvoices[$currentInvoice->invoice_id] = true;
 			}			
 		}		
-		var_dump(getFutureInvoice($customer['id']));
+		
 		if( !$isBillingInvoice && (false !== ($futureInvoices = getFutureInvoice($customer['id']))) ) {
 			/*
 			 * TRIAL PERIOD
-			 */			
-			foreach ($futureInvoices as $futureInvoice) {
+			 */
+
+			//	save here already processed invoices							
+			$alreadyProcessedInvoices = array();
+			
+			foreach ($futureInvoices as $futureInvoice) {																	
+				
 				if (!$isBillingInvoice && !is_null($futureInvoice->billing_info)) {
 					$isBillingInvoice = true;
 				}
-												
+				
+				
+				if ($alreadyProcessedInvoices[$futureInvoice->invoice_id]) {
+					//skip
+					continue;
+				}			
+
+				
 				if ($futureInvoice->status == 'paid') {
 					continue;
 				} else {					
@@ -279,18 +305,22 @@
 						}											
 					} else {
 						$daysLeft = round(($sDateInt - $cDateInt)/86400);													
-						echo 'notify '.$futureInvoice->invoice_id.'<br>';
-						if (!DRY_RUN) {
-							$log .= manageCustomersAndNotify($customer['id'], $daysLeft);
+						echo 'notify '.$futureInvoice->invoice_id.'<br>';						
+						if (!DRY_RUN) {							
+							$log .= manageCustomersAndNotify($customer['id'], $daysLeft);												
 						}
 					}					
 				}
+								
+				$alreadyProcessedInvoices[$futureInvoice->invoice_id] = true;
 			}
 		}
 		
-		if (!$isBillingInvoice) {
-			//	TODO:отключать
+		if (!$isBillingInvoice) {			
 			echo "no invoices<br>";
+			if (!DRY_RUN) {							
+				$log .= manageCustomersAndNotify($customer['id'], 0);												
+			}									
 		}
 		
 //		//customer has due invoices					
@@ -363,12 +393,14 @@
 		global $db;
 		global $currentDate;
 				
-		$query = "SELECT * FROM ".TB_VPS_INVOICE." WHERE " .
-					" '".$currentDate."' >= period_start_date " .
-					" AND '".$currentDate."' <= period_end_date " .
-					" AND (billing_info IS NOT NULL OR module_id) " .
-					" AND status <> 'canceled' " .
-					" AND customer_id = ".$customerID." ";		
+		$query = "SELECT * " .
+				"FROM ".TB_VPS_INVOICE." i, ".TB_VPS_INVOICE_ITEM." ii " .
+				"WHERE i.invoice_id = ii.invoice_id " .
+					"AND '".$currentDate."' >= i.period_start_date " .
+					" AND '".$currentDate."' <= i.period_end_date " .
+					" AND (ii.billing_info IS NOT NULL OR ii.module_id) " .
+					" AND i.status <> 'canceled' " .
+					" AND i.customer_id = ".$customerID." ";		
 		$db->query($query);		
 		
 		return ($db->num_rows() > 0) ? $db->fetch_all() : false; 		
@@ -401,45 +433,117 @@
 	function createInvoice(StdClass $invoice) {
 		global $db;
 		global $config;
+		global $currentDate;
 		
 		$invoiceObj = new Invoice($db);
-		$billingObj = new Billing($db);
+		$invoiceObj->currentDate = $currentDate;
+		$billingObj = new Billing($db);		
+		$billingObj->currentDate = $currentDate;
+
+		$currentCurrency = $billingObj->getCurrencyByCustomer($invoice->customer_id);
 		
-		if (!is_null($invoice->billing_info)) {
-			
-			//create new invoice
-			$log = date('Y-m-d H:i:s')."		Checking scheduled billing plan for customer ".$invoice->customer_id.".\n";
+		$invoiceDetails = $invoiceObj->getInvoiceItemsDetails($invoice->invoice_id);
+		$multiInvoiceData = array(
+			'billingID'				=> false,
+			'appliedModules' 		=> array(),
+			'not_approach_modules' 	=> array(),
+		);		
+		
+		foreach ($invoiceDetails['invoice_items'] as $invoiceItem) {
+			if (!is_null($invoiceItem['billingInfo'])) {
+				//	create new invoice
+				$log = date('Y-m-d H:i:s')."		Checking scheduled billing plan for customer ".$invoice->customer_id.".\n";
 
-			//	check scheduled billing plan,
-			// 	if no then apply current billing plan
+				//	check scheduled billing plan, if no then apply current billing plan
+				$scheduledBillingPlan = $billingObj->getScheduledPlanByCustomer($invoice->customer_id);
 
-			$scheduledBillingPlan = $billingObj->getScheduledPlanByCustomer($invoice->customer_id);
+				if ($scheduledBillingPlan) {
+					//	TODO: scheduled modules may not work
+					$log .= date('Y-m-d H:i:s')."		Scheduled billing plan for customer ".$invoice->customer_id." is found. Billing plan ID = ".$scheduledBillingPlan['billingID'].".\n";
+					$log .= date('Y-m-d H:i:s')."		Changing billing plan for customer ".$invoice->customer_id." to billing plan ".$scheduledBillingPlan['billingID'].".\n";					
+					$billingObj->setCustomerPlan($invoice->customer_id, $scheduledBillingPlan['billingID']); //apply new plan
 
-			if ($scheduledBillingPlan) {
+					$log .= date('Y-m-d H:i:s')."		Deleting billing plan from schedule. ID=".$scheduledBillingPlan['id']."\n";
+					$billingObj->deletePlanFromSchedule($scheduledBillingPlan['id']);
+				}
 
-				$log .= date('Y-m-d H:i:s')."		Scheduled billing plan for customer ".$invoice->customer_id." is found. Billing plan ID = ".$scheduledBillingPlan['billingID'].".\n";
-
-				$log .= date('Y-m-d H:i:s')."		Changing billing plan for customer ".$invoice->customer_id." to billing plan ".$scheduledBillingPlan['billingID'].".\n";
-				$billingObj->setCustomerPlan($invoice->customer_id, $scheduledBillingPlan['billingID']); //apply new plan
-
-				$log .= date('Y-m-d H:i:s')."		Deleting billing plan from schedule. ID=".$scheduledBillingPlan['id']."\n";
-				$billingObj->deletePlanFromSchedule($scheduledBillingPlan['id']);
-
+				$billingPlan = $billingObj->getCustomerPlan($invoice->customer_id);
+				$multiInvoiceData['billingID'] = $billingPlan['billingID'];    			
 			}
-
-			$billingPlan = $billingObj->getCustomerPlan($invoice->customer_id);
-
-			$log .= date('Y-m-d H:i:s')."		Creating new invoice for customer ".$invoice->customer_id.".\n";
-			$newInvoicePeriodStartDate = date('Y-m-d',strtotime($invoice->period_end_date)+86400); // +1 day
-			$invoiceData = $invoiceObj->createInvoiceForBilling($invoice->customer_id, $newInvoicePeriodStartDate,$billingPlan['billingID']); //creating new invoice							
-		} else {			
-			//	tmp
-			if ($invoice->invoice_id == 206) return false;			
 			
-			$currentModuleBP = $billingObj->getPurchasedModule($invoice->customer_id, $invoice->module_id);
-			$newInvoicePeriodStartDate = date('Y-m-d',strtotime($invoice->period_end_date)+86400); // +1 day
-			$invoiceData = $invoiceObj->createInvoiceForModule($invoice->customer_id, $newInvoicePeriodStartDate, $currentModuleBP[0]['id']);			
+			if (!is_null($invoiceItem['moduleID'])) {
+				$currentModuleBP = $billingObj->getPurchasedModule($invoice->customer_id, $invoiceItem['moduleID'], $invoiceType = 'todayOnly', $period = 'today', $currentCurrency['id']);		
+				if (!$currentModuleBP || count($currentDate) == 0) {
+					throw new Exception('Billing::getPurchasedModule says that no modules purchased. Probably this is lie.');
+				}		
+				$multiInvoiceData['appliedModules'][] = $currentModuleBP[0];
+			}
 		}
+				
+		$log .= date('Y-m-d H:i:s')."		Creating new invoice for customer ".$invoice->customer_id.".\n";
+		$newInvoicePeriodStartDate = date('Y-m-d',strtotime($invoice->period_end_date)+86400); // +1 day
+		
+		if ($multiInvoiceData['billingID']) {			
+			$invoiceData = $invoiceObj->createMultiInvoiceForNewCustomer($invoice->customer_id, $newInvoicePeriodStartDate, $billingPlan['billingID'], $multiInvoiceData);	
+		} else {
+			foreach ($multiInvoiceData['appliedModules'] as $module) {
+				$invoiceData = $invoiceObj->createInvoiceForModule($invoice->customer_id, $newInvoicePeriodStartDate, $currentModuleBP[0]['id']);
+			}			
+		}			
+		
+//		if (!is_null($invoiceDetails['billingInfo'])) {
+//			
+//			//create new invoice
+//			$log = date('Y-m-d H:i:s')."		Checking scheduled billing plan for customer ".$invoice->customer_id.".\n";
+//
+//			//	check scheduled billing plan,
+//			// 	if no then apply current billing plan
+//
+//			$scheduledBillingPlan = $billingObj->getScheduledPlanByCustomer($invoice->customer_id);
+//
+//			if ($scheduledBillingPlan) {
+//
+//				$log .= date('Y-m-d H:i:s')."		Scheduled billing plan for customer ".$invoice->customer_id." is found. Billing plan ID = ".$scheduledBillingPlan['billingID'].".\n";
+//
+//				$log .= date('Y-m-d H:i:s')."		Changing billing plan for customer ".$invoice->customer_id." to billing plan ".$scheduledBillingPlan['billingID'].".\n";
+//				$billingObj->setCustomerPlan($invoice->customer_id, $scheduledBillingPlan['billingID']); //apply new plan
+//
+//				$log .= date('Y-m-d H:i:s')."		Deleting billing plan from schedule. ID=".$scheduledBillingPlan['id']."\n";
+//				$billingObj->deletePlanFromSchedule($scheduledBillingPlan['id']);
+//
+//			}
+//
+//			$billingPlan = $billingObj->getCustomerPlan($invoice->customer_id);
+//
+//			$log .= date('Y-m-d H:i:s')."		Creating new invoice for customer ".$invoice->customer_id.".\n";
+//			$newInvoicePeriodStartDate = date('Y-m-d',strtotime($invoice->period_end_date)+86400); // +1 day
+//			foreach ($invoiceDetails['modules'] as $module) {
+//				//$modulesDetails[] = $billingObj-
+//			}
+//			$multiInvoiceData = array(
+//    			'billingID' => $billingPlan['billingID'],
+//    			'appliedModules' => array (
+//    				array(
+//    					'id' 			=> '20',
+//          				'month_count' 	=> '6',
+//          				'price' 		=> '800.00',
+//          				'module_id' 	=> '12',
+//          				'type' 			=> 'self',
+//          				'module_name'	=> 'carbon_footprint',
+//    				),
+//    			),    			
+//    			'not_approach_modules' => array(),
+//    		);
+//			//$invoiceData = $invoiceObj->createInvoiceForBilling($invoice->customer_id, $newInvoicePeriodStartDate,$billingPlan['billingID']); //creating new invoice							
+//			$invoiceData = $invoiceObj->createMultiInvoiceForNewCustomer($invoice->customer_id, $newInvoicePeriodStartDate, $billingPlan['billingID']);
+//		} else {			
+//			//	tmp
+//			if ($invoice->invoice_id == 206) return false;			
+//			
+//			$currentModuleBP = $billingObj->getPurchasedModule($invoice->customer_id, $invoice->module_id);
+//			$newInvoicePeriodStartDate = date('Y-m-d',strtotime($invoice->period_end_date)+86400); // +1 day
+//			$invoiceData = $invoiceObj->createInvoiceForModule($invoice->customer_id, $newInvoicePeriodStartDate, $currentModuleBP[0]['id']);			
+//		}
 
 		$log .= date('Y-m-d H:i:s')."		New invoice added:\n" .
 			"					customer ID: ".$invoiceData['customerID']."\n " .

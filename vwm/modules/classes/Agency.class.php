@@ -59,7 +59,7 @@ class Agency {
 	public function getAgencyDetails($agencyID) {
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT *, ".$this->nameMap[$this->getRegion()]." AS name FROM ".TB_AGENCY." WHERE agency_id= $agencyID LIMIT 1");	
-		return $this->db->fetch_array() ;		
+		return $this->db->fetch_array(0) ;		
 	}
 	
 	public function setAgencyDetails($agencyDetails){

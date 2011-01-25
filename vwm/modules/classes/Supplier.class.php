@@ -23,12 +23,15 @@ class Supplier {
     }
     
     
-    public function getSupplierDetails($supplierID)
-    {	   
-	    $this->db->query("SELECT s.supplier_id AS supplier_id,s.supplier AS supplier_desc,s.contact_person AS contact,s.phone AS phone,s.address AS address, s.country_id AS country_id, c.name AS country FROM ".TB_SUPPLIER." s, ".TB_COUNTRY." c   WHERE (s.country_id=c.country_id OR s.country_id=NULL) AND supplier_id=$supplierID LIMIT 1 ");
-	    if ($this->db->num_rows()) {
-	    	$data = $this->db->fetch_array();	    	
-		    return $data;
+    public function getSupplierDetails($supplierID) {
+    	$query = "SELECT s.supplier_id,s.supplier AS supplier_desc,s.contact_person AS contact,s.phone, s.address, s.country_id, c.name AS country 
+    				FROM ".TB_SUPPLIER." s, ".TB_COUNTRY." c   
+    				WHERE (s.country_id = c.country_id OR s.country_id IS NULL) 
+    				AND supplier_id=$supplierID LIMIT 1 ";	   
+	    $this->db->query($query);
+	    
+	    if ($this->db->num_rows() > 0) {	    	
+		    return $this->db->fetch_array(0);	  
 	    }	    
 	   	return false;   
     }

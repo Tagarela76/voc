@@ -88,7 +88,6 @@ class Invoice {
 			'suspensionDisable'	=> 1,
 			'currency_id'		=> $currencyDetails['id']			
 		);
-		
 		//	TODO: start transaction from controller 
 		//$this->db->beginTransaction(); // Start Transaction
 		
@@ -109,6 +108,7 @@ class Invoice {
 		
 		$modulesToBilling = array();
 		echo "insert multiinvoicedata:<br/>";
+
 		foreach($multiInvoiceData['appliedModules'] as $module) {	
 			$moduleData = array (
 				'invoiceID'		=> $invoiceID,
@@ -120,6 +120,7 @@ class Invoice {
 				'module_id'		=> $module['module_id'],
 				'currency_id'	=> $currencyDetails['id']
 			);	
+						
 			$this->insertMultiInvoiceItem($moduleData);
 			
 			$modulesToBilling []= $module['id'];
@@ -542,11 +543,14 @@ class Invoice {
     	}
     	$customers = implode(", ",$arrayOfCustomerIDs);
     	$query = "SELECT customer_id,period_start_date, period_end_date, suspension_date, status " .
-    			"FROM `vps_invoice` WHERE customer_id IN ($customers) " .
+    			"FROM ".TB_VPS_INVOICE." i, ".TB_VPS_INVOICE_ITEM." ii " . 
+    			"WHERE i.invoice_id = ii.invoice_id " .
+    			"AND i.customer_id IN ($customers) " .
 //    			"AND '".date('Y-m-d')."' BETWEEN period_start_date AND period_end_date " . //- if we want current invoice, but maybe here we need last invoice => ORDER BY suspension_date DESC
-    			"AND status != 'CANCELED' " .
-    			"ORDER BY customer_id ASC, suspension_date ASC"; //by suspension_date ASC(not DESC) because of in result erlier values replased by last => needed invoice should be the last
-    	//TODO add here check is this invoice was from billing period
+    			"AND i.status != 'CANCELED' " .
+    			"AND ii.billing_info IS NOT NULL " .
+    			"ORDER BY i.customer_id ASC, i.suspension_date ASC"; //by suspension_date ASC(not DESC) because of in result erlier values replased by last => needed invoice should be the last
+
     	$this->db->query($query);
     	
     	$data = $this->db->fetch_all_array();
@@ -1918,7 +1922,7 @@ class Invoice {
 	{				
 		//echo "<br/>cancelInvoice";
 		$invoiceDetails = $this->getInvoiceDetails($invoiceID);		
-		if (!$invoiceDetails) {
+		if (!$invoiceDetails || strtoupper($invoiceDetails['status']) == 'CANCELED') {
 			return false;
 		}
 		

@@ -277,8 +277,8 @@ class Mix extends MixProperties {
 		}
 		
 		//	get products
-		$usageDetails['products'] = $this->getMixProducts($data->mix_id);
-		
+		$usageDetails['products'] = $this->getMixProducts($usageDetails['mix_id']);
+				
 		//	get waste
 		if (!$isMWS) {						
 			$wasteDetails = $this->getWasteDetails($usageID);
@@ -1303,16 +1303,20 @@ class Mix extends MixProperties {
 				
 				//	Getting Supplier Name
 				$supplier = new Supplier($this->db);
-				$supplierDetails = $supplier->getSupplierDetails($data->supplier_id);
+				$supplierDetails = $supplier->getSupplierDetails($product['supplier_id']);
 				$product["supplier"] = $supplierDetails["supplier_desc"];
 				
 				//	Getting coating
 				$coat = new Coat($this->db);
-				$coatingDetails = $coat->getCoatDetails($data->coating_id);
+				$coatingDetails = $coat->getCoatDetails($product['coating_id']);
 				$product["coatDesc"] = $coatingDetails["coat_desc"];
 				
+				//	sorry for this
+				$product["description"] = $product['name'];
+				$product["unittype"] = $product['unit_type'];
+								
 				$productData[]=$product;
-			}
+			}			
 			return $productData;
 		} else 
 			return false;		

@@ -49,9 +49,7 @@
                             Description
                         </td>
                         <td valign="top" align="left">                           
-                            <textarea class="reportIssue_text" name="issueDescription">
-                                {$issueDescription}
-                            </textarea>
+                            <textarea class="reportIssue_text" name="issueDescription">{$issueDescription}</textarea>
                         </td>
                         <td>
                             {if $validStatus.summary eq 'false'}

@@ -48,7 +48,6 @@ class Registration {
 		//$this->db->select_db(DB_NAME);
 		$query="SELECT * FROM ".TB_STATE." WHERE country_id='".$country_id."'";
 		$this->db->query($query);
-		
 		if ($this->db->num_rows()) {
 			return true;
 		} else {
@@ -60,7 +59,6 @@ class Registration {
 		//$this->db->select_db(DB_NAME);
 		$query = "SELECT * FROM ".TB_STATE." WHERE state_id=".$state_id;
 		$this->db->query($query);
-		
 		if ($this->db->num_rows()) {
 			$state = $this->db->fetch(0);
 			return $state->name;

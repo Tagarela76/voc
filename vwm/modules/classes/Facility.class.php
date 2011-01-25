@@ -124,18 +124,18 @@ class Facility extends FacilityProperties {
 			'voc_annual_limit'	=>	$data->voc_annual_limit,
 			'gcg_id'		=>	$data->gcg_id									
 		);*/
-		
+		//var_dump($facilityDetails);
 		if (!$vanilla) {
 			$reg = new Registration($this->db);
 			
 			//	Set State
-			if ($reg->isOwnState($data->country)) {
+			if ($reg->isOwnState($facilityDetails['country'])) {
 				//	have own state list
-				$facilityDetails["state"] = $reg->getState($data->state);
+				$facilityDetails["state"] = $reg->getState($facilityDetails['state']);
 			}
 			
 			//	Set Country
-			$facilityDetails["country"] = $reg->getCountry($data->country);
+			$facilityDetails["country"] = $reg->getCountry($facilityDetails['country']);
 		}
 		
 		return $facilityDetails;

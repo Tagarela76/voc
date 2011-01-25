@@ -22,7 +22,7 @@ class GCG {
     	$query = "SELECT MAX(number) FROM ".TB_GCG." WHERE 1";
     	$this->db->query($query);
     	
-    	$maxNumber = $this->db->fetch_array();
+    	$maxNumber = $this->db->fetch_array(0);
     	$number = $maxNumber["MAX(number)"];
     	
     	if ($number == null) {
