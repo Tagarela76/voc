@@ -37,7 +37,7 @@
       	dataType: "html",
       	success: function (response) 
       		{   
-      			Pdocument.getElementById("wait").style.display = "none";
+      			document.getElementById("wait").style.display = "none";
 		        eval(response);
 		        document.getElementById('saveButton').disabled = 0;
 		        document.getElementById('flashPart').style.display = "none";									

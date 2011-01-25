@@ -296,6 +296,7 @@
 			for (var j:Number = i; j < totalList.length-1; j++) {
 				lList[j].text=lList[j+1].text;
 			}
+
 			
 			//for vps limits			
 			limitNewMSDS--;
@@ -395,43 +396,22 @@
 		}
 
 		private function checkLimits():void {
-			var xmlLoader:URLLoader = new URLLoader();
-			var xmlData:XML = new XML();
-
-			xmlLoader.addEventListener(Event.COMPLETE, LoadXML);
-			//xmlLoader.load(new URLRequest("http://192.168.1.68/voc_src/modules/resources/bridge/bridge.xml?"+Math.random()));
-			xmlLoader.load(new URLRequest("http://"+domain+"/bridge/bridge.xml?"+Math.random()));
-		}
-
-		function LoadXML(e:Event):void {
-			var xmlData:XML=new XML(e.target.data);
-			//var companyID=this.loaderInfo.parameters.companyID;
-			
 			var paramObj:Object = LoaderInfo(this.root.loaderInfo).parameters;
-            var companyID = String(paramObj["companyID"]);
-			trace(companyID);
+			var companyID = String(paramObj["companyID"]);
 			if (companyID != "0") {//not super user
-				var MSDSLimits:XMLList = xmlData.customers.customer.(@id == companyID).limit.(limit_id == "1");
-				var memoryLimits:XMLList = xmlData.customers.customer.(@id == companyID).limit.(limit_id == "2");
-				compareLimits(MSDSLimits,memoryLimits,companyID);
-			}			
-		}
-
-		function compareLimits(MSDSLimits:XMLList, memoryLimits:XMLList, customerID:String) {			
-			if (domain=="vocwebmanager.com" ||domain=="vocwebmanager.co.uk")
-			{
-				if ((parseInt(MSDSLimits.current_value)+limitNewMSDS > parseInt(MSDSLimits.max_value)) || (parseInt(memoryLimits.current_value)+limitNewMemory > parseInt(memoryLimits.max_value))) {
+				var memoryLimit = int(paramObj["memoryLimit"]);
+				var MSDSLimit = int(paramObj["MSDSLimit"]);
+				var MSDSMaxLimit = int(paramObj["MSDSMaxLimit"]);
+				var memoryMaxLimit = int(paramObj["memoryMaxLimit"]);
+				if ((MSDSLimit + limitNewMSDS > MSDSMaxLimit) || (memoryLimit + limitNewMemory > memoryMaxLimit)) {
 					upload_btn.enabled=false;
 					trace ("disable");
 					warningLabel.text="You cannot add new products according to Billing Plan";
 				} else {
-					trace ("enable");
 					upload_btn.enabled=true;
 					warningLabel.text="VOC WEB MANAGER | MSDS UPLOADER";
 				}
-			}
-			else
-			{
+			} else {
 				upload_btn.enabled=true;
 				warningLabel.text="VOC WEB MANAGER | MSDS UPLOADER";
 			}

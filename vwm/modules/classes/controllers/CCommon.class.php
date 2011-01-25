@@ -250,7 +250,14 @@ class CCommon extends Controller
 						$swfUrl = (ENVIRONMENT == "server") ? "modules/flash/uploader.swf?companyID=".$companyID
 																		: "modules/flash/sandbox/uploader.swf?companyID=".$companyID;
 					}*/
-					$swfUrl = "modules/flash/uploader.swf?companyID=".$companyID;
+					$voc2vps = new VOC2VPS($this->db);
+					$customerLimits = $voc2vps->getCustomerLimits($companyID);
+					
+					$swfUrl = "modules/flash/uploader.swf?companyID=".$companyID .
+							"&memoryLimit=".$customerLimits['memory']['current_value'] .
+							"&MSDSLimit=".$customerLimits['MSDS']['current_value'] .
+							"&memoryMaxLimit=".$customerLimits['memory']['max_value'] .
+							"&MSDSMaxLimit=".$customerLimits['MSDS']['max_value'];
 								
 					$this->smarty->assign("swfUrl", $swfUrl);
 				}
