@@ -624,7 +624,7 @@ class Controller
 				if ($permissions['data']['delete']==true || $permissions['data']['add']==true) {
 					$permissions['data']['showSelectAll']=true;
 				}			
-				//var_dump($permissions);
+				
 				break;
 				
 			case "department":	

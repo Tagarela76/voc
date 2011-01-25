@@ -1,5 +1,5 @@
 <td class="bg_left" valign="top" width="220px ">
-    {if $permissions.showOverCategory}
+    {if $permissions.showOverCategory && ($permissions.root.view || ($request.action != 'addItem' || $request.category != 'facility'))}
 	<h3 id="left">{$upCategoryName}</h3>
     <table style="table-layout: fixed;" width="100%" cellpadding="0" cellspacing="0" class="menu_padd_b">
         <tr>
