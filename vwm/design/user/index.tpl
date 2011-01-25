@@ -8,6 +8,29 @@
 		  <link rel="shortcut icon" href="images/vocicon.ico" type="image/x-icon">
 		{*loadjs*}
 		<script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custom/js/jquery-1.4.2.min.js'></script>
+		{if $notify}
+			
+			
+			<script type="text/javascript">
+			var notifyParams = new Object();
+
+			{if $notify.params}
+					
+			{foreach from=$notify.params item=i key=k}
+				notifyParams.{$k} = "{$i}";
+			{/foreach}
+			
+			 
+			{/if}
+			/*notifyParams.color = "Black";
+			notifyParams.backgroundColor = "Yellow"; {"color": "Black", "backgroundColor": "Yellow" } ;*/
+			
+			var notifyText = "{$notify.text}";
+			</script>
+			<script type="text/javascript" src='modules/js/notify.js'></script>
+			
+		{/if}
+		
 		{foreach from=$jsSources item=jsSource}
 			<script type="text/javascript" src="{$jsSource}"></script>
 		{/foreach}
