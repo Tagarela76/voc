@@ -119,7 +119,7 @@ class Hazardous {
     public function getChemicalClassDetails($id) {
     	//$this->db->select_db(DB_NAME);
 		$query = "SELECT * " .
-				"FROM chemical_class cc " .
+				"FROM chemical_class " .
 				"WHERE id = ".$id;				
 		$this->db->query($query);
 		

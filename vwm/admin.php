@@ -2005,6 +2005,7 @@
 									$xnyo->filter_post_var("specialty_coating", "text");
 									$xnyo->filter_post_var("aerosol", "text");
 									$xnyo->filter_post_var("specific_gravity", "text");
+									$xnyo->filter_post_var("selectGravityType","text");
 									$xnyo->filter_post_var("selectSupplier", "text");
 									$xnyo->filter_post_var("componentCount", "text");
 									$xnyo->filter_post_var("voclx", "text");
@@ -2040,6 +2041,7 @@
 										"specialty_coating"	=>	(!isset($_POST['specialty_coating'])) ? "no" : "yes",
 										"aerosol"			=>	(!isset($_POST['aerosol'])) ? "no" : "yes",
 										"specific_gravity"	=>	$_POST["specific_gravity"],
+										"specific_gravity_unit_id"	=>	$_POST["selectGravityType"],
 										"supplier_id"		=>	$_POST["selectSupplier"],
 										"vocwx"				=>	$_POST["vocwx"],
 										"voclx"				=>	$_POST["voclx"],
@@ -2056,18 +2058,25 @@
 										//"oxy_1"				=>	$oxy_1,
 										"creator_id"		=>	18
 									);
-									
+									var_dump($_POST["selectGravityType"]);
 									//	process hazardous (chemical) classes
 									$hazardous = new Hazardous($db);
 									$chemicalClassesList = $hazardous->getChemicalClassesList();
 									for ($i=0;$i<count($chemicalClassesList);$i++) {
 										$xnyo->filter_post_var("chemicalClass_".$i, "text");
 										if (isset($_POST['chemicalClass_'.$i])) {
-											$chemicalClass = $hazardous->getChemicalClassDetails($_POST['chemicalClass_'.$i]);										
-											$chemicalClasses[] = $chemicalClass;
+											$xnyo->filter_post_var("chemicalRule_".$i."_0", "text");
+											$chemicalClass = $hazardous->getChemicalClassDetails($_POST['chemicalClass_'.$i]);	
+											$j = 0;
+											while (isset($_POST['chemicalRule_'.$i.'_'.$j])) {
+												$chemicalClass ['rules'][]= $_POST['chemicalRule_'.$i.'_'.$j];
+												$j++;
+												$xnyo->filter_post_var("chemicalRule_".$i."_".$j, "text");
+											}
+											$chemicalClasses []= $chemicalClass;
 										}										
 									}								
-									$productData['chemicalClasses'] = $chemicalClasses; 
+									$productData['chemicalClasses'] = $chemicalClasses;
 									
 									//	process components
 									$componentCount = $_POST['componentCount'];
@@ -2357,7 +2366,7 @@
 									$smarty->assign("componentCount", count($components));
 									$smarty->assign("compsAdded", $components);									
 								}
-								$data = $productData;
+								$data = $productData;//var_dump($data['chemicalClasses'][0]);
 //								$smarty->assign('data', $productData);
 //								$smarty->assign("ID", $id);
 //								$smarty->assign("currentOperation", "edit");
@@ -2367,7 +2376,8 @@
 									"modules/js/reg_country_state.js",
 									"modules/js/componentPreview.js",
 									"modules/js/getInventoryShortInfo.js",
-									"modules/js/addProductQuantity.js"	
+									"modules/js/addProductQuantity.js",
+									"modules/js/hazardousPopup.js"
 								);
 								$smarty->assign('jsSources', $jsSources);
 								$smarty->assign('tpl','tpls/addProductClass.tpl');
@@ -3167,6 +3177,7 @@
 									$xnyo->filter_post_var("specialty_coating", "text");
 									$xnyo->filter_post_var("aerosol", "text");
 									$xnyo->filter_post_var("specific_gravity", "text");
+									$xnyo->filter_post_var("selectGravityType", "text");
 									$xnyo->filter_post_var("selectSupplier", "text");									
 									$xnyo->filter_post_var("componentCount", "text");
 									$xnyo->filter_post_var("voclx", "text");
@@ -3185,39 +3196,18 @@
 									//	replace false/true for no/yes 
 									$specialty_coating 	= (!isset($_POST['specialty_coating'])) ? "no" : "yes";
 									$aerosol 			= (!isset($_POST['aerosol'])) ? "no" : "yes";								
-									
-									/*if (!isset($_GET['irr'])) {
-										$irr="no";
-									} else {
-										$irr="yes";
-									}
-									if (!isset($_GET['ohh'])) {
-										$ohh="no";
-									} else {
-										$ohh="yes";
-									}
-									if (!isset($_GET['sens'])) {
-										$sens="no";
-									} else {
-										$sens="yes";
-									}
-									if (!isset($_GET['oxy_1'])) {
-										$oxy_1="no";
-									} else {
-										$oxy_1="yes";
-									}*/
-									
+																		
 									$productData = array (
 										"product_nr"		=>	$_POST["product_nr"],
 										"name"				=>	$_POST["name"],
 										"component_id"		=>	$_POST["selectComponent"],
 										"density"			=>	$_POST["density"],
 										"density_unit_id"	=>  $_POST["selectDensityType"],
-										"inventory_id"		=>	$_POST["selectInventory"],
 										"coating_id"		=>	$_POST["selectCoat"],
 										"specialty_coating"	=>	$specialty_coating,
 										"aerosol"			=>	$aerosol,
 										"specific_gravity"	=>	$_POST["specific_gravity"],
+										"specific_gravity_unit_id"	=>	$_POST["selectGravityType"],
 										"supplier_id"		=>	$_POST["selectSupplier"],
 										"vocwx"				=>	$_POST["vocwx"],
 										"voclx"				=>	$_POST["voclx"],
@@ -3225,13 +3215,7 @@
 										"boiling_range_to"	=>	$_POST["boiling_range_to"],
 										"percent_volatile_weight"=>	$_POST["percent_volatile_weight"],
 										"percent_volatile_volume"	=>	$_POST["percent_volatile_volume"],
-										//"hazardous_class"			=>	$_GET["hazardous_class"],
-										//"class"			=>	$_GET["hazardous_class"],
-										//"irr"			=>	$irr,
-										//"ohh"			=>	$ohh,
-										//"sens"			=>	$sens,
-										//"oxy_1"			=>	$oxy_1,
-										"creator_id"			=>	18
+										"creator_id"			=>	18 //???
 									);
 									
 									//	process hazardous (chemical) classes
@@ -3240,8 +3224,15 @@
 									for ($i=0;$i<count($chemicalClassesList);$i++) {
 										$xnyo->filter_post_var("chemicalClass_".$i, "text");
 										if (isset($_POST['chemicalClass_'.$i])) {
-											$chemicalClass = $hazardous->getChemicalClassDetails($_POST['chemicalClass_'.$i]);										
-											$chemicalClasses[] = $chemicalClass;
+											$xnyo->filter_post_var("chemicalRule_".$i."_0", "text");
+											$chemicalClass = $hazardous->getChemicalClassDetails($_POST['chemicalClass_'.$i]);	
+											$j = 0;
+											while (isset($_POST['chemicalRule_'.$i.'_'.$j])) {
+												$chemicalClass ['rules'][]= $_POST['chemicalRule_'.$i.'_'.$j];
+												$j++;
+												$xnyo->filter_post_var("chemicalRule_".$i."_".$j, "text");
+											}
+											$chemicalClasses []= $chemicalClass;
 										}										
 									}								
 									$productData['chemicalClasses'] = $chemicalClasses;
@@ -3335,7 +3326,7 @@
 //											$inventoryList=$inventory->getInventoryList();
 //											$smarty->assign("inventory", $inventoryList);
 //											
-//											$inventoryDetails=$inventory->getInventoryDetails($productData['inventory_id']);
+//											$inventoryDetails=addProductQuantity.js$inventory->getInventoryDetails($productData['inventory_id']);
 //											$productData["inventory_desc"]=$inventoryDetails["inventory_desc"];
 											
 											$product=new Product($db);
@@ -3481,7 +3472,8 @@
 									"modules/js/reg_country_state.js",
 									"modules/js/componentPreview.js",
 									"modules/js/getInventoryShortInfo.js",
-									"modules/js/addProductQuantity.js"	
+									"modules/js/addProductQuantity.js",
+									"modules/js/hazardousPopup.js"
 								);
 								$smarty->assign('jsSources', $jsSources);
 								$smarty->assign('tpl', 'tpls/addProductClass.tpl');

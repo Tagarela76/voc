@@ -59,7 +59,7 @@ class Hazardous {
     }
     
     
-    public function getChemicalClassification($productID) {
+    public function getChemicalClassification($productID,$getRuleDetails = false) {
     	$rule = new Rule($this->db);
     	$productID = $this->db->sqltext($productID);
     	
@@ -83,10 +83,14 @@ class Hazardous {
 				$this->db->query($query);
 				$rulesData = $this->db->fetch_all();
 				foreach ($rulesData as $ruleData) {
-					$ruleDetails = $rule->getRuleDetails($ruleData->rule_id);
-					$chemicalClass['rules'][] = $ruleDetails;	
+					if ($getRuleDetails) {
+						$ruleDetails = $rule->getRuleDetails($ruleData->rule_id);
+						$chemicalClass['rules'][] = $ruleDetails;	
+					} else {
+						$chemicalClass['rules'][] = $ruleData->rule_id;
+					}
 				}
-																
+																 
 				$chemicalClasses[] = $chemicalClass; 
 			}			
 			return $chemicalClasses;
@@ -180,9 +184,16 @@ class Hazardous {
     	//$this->db->select_db(DB_NAME);
 		$query = "INSERT INTO product2chemical_class (product_id, chemical_class_id, rule_id) VALUES ";
 		foreach($chemicalClasses as $chemicalClass) {
+			$wasAdded = false;
 			foreach ($chemicalClass['rules'] as $ruleID) {
-				$query .= "(".$productID.", ".$chemicalClass['id'].", ".$ruleID."), ";	
-			}			 
+				if ($ruleID != 0) {
+					$query .= "(".$productID.", ".$chemicalClass['id'].", ".$ruleID."), ";
+					$wasAdded = true;	
+				}
+			}
+			if (!$wasAdded) {
+				$query .= "(".$productID.", ".$chemicalClass['id'].", NULL), ";
+			}		 
 		}
 		$query = substr($query, 0, -2);															
 		$this->db->query($query);

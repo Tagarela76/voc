@@ -267,7 +267,7 @@
 								<input type='text' name='specific_gravity' value='{$data.specific_gravity}'>
 								<select id="selectGravityType" name="selectGravityType" style="width:108px">
 									{section name=i loop=$densityDetails}	
-										<option value='{$densityDetails[i].id}' {if $densityDetails[i].id eq $specific_gravity_unit_id}selected='selected'{/if}>{$densityDetails[i].numerator}/{$densityDetails[i].denominator}</option>										
+										<option value='{$densityDetails[i].id}' {if $densityDetails[i].id eq $data.specific_gravity_unit_id}selected='selected'{/if}>{$densityDetails[i].numerator}/{$densityDetails[i].denominator}</option>										
 									{/section}
 								</select>
 							</div>
@@ -319,16 +319,12 @@
 								</div>
 								<div id="hiddenChemicalClasses">
 									{section name=i loop=$data.chemicalClasses}
-									<input type="hidden" name="chemicalClass_{$smarty.section.i.index}" value="{$data.chemicalClasses[i].id}">
+										<input type="hidden" name="chemicalClass_{$smarty.section.i.index}" value="{$data.chemicalClasses[i].id}">
+										{section name=j loop=$data.chemicalClasses[i].rules}
+											<input type="hidden" name="chemicalRule_{$smarty.section.i.index}_{$smarty.section.j.index}" value="{$data.chemicalClasses[i].rules[j]}">
+										{/section}
 									{/section} 	
 								</div>
-							{*Class: 
-							<input type='text' name='hazardous_class' value='{$data.hazardous_class}'></div>
-													
-							<input type="checkbox" name="irr" value="yes"{if $data.irr=="yes"}checked="yes"{/if}> IRR
-							<input type="checkbox" name="ohh" value="yes"{if $data.ohh=="yes"}checked="yes"{/if}> OHH
-							<input type="checkbox" name="sens" value="yes"{if $data.sens=="yes"}checked="yes"{/if}> SENS
-							<input type="checkbox" name="oxy_1" value="yes"{if $data.oxy_1=="yes"}checked="yes"{/if}> OXY-1*}
 							
 							</div>
 							</td>
@@ -648,18 +644,25 @@
 				<td>
 					Description
 				</td>
+				<td>
+					Rule
+				</td>
 			</tr>
 		
 			{section name=i loop=$chemicalClassesList}
 			<tr>
 				<td align="center" style="width:150px">				
-					<input type="checkbox"  value="{$chemicalClassesList[i].id}" 
+					<input id="checkBox_{$smarty.section.i.index}" type="checkbox"  value="{$chemicalClassesList[i].id}" 
+					{assign var='checked' value=false}
 						{section name=j loop=$data.chemicalClasses}
 							{if $chemicalClassesList[i].id == $data.chemicalClasses[j].id}
 								checked
+								{assign var='checked' value=true}
+								{assign var='selectedRules' value=$data.chemicalClasses[j].rules}
+								{break}
 							{/if}
 						{/section}
-					></td>
+					onClick="addRuleSelector({$smarty.section.i.index});"></td>
 				</td>
 				<td id="chemicalClassName_{$smarty.section.i.index}">
 					{$chemicalClassesList[i].name}&nbsp;
@@ -667,8 +670,55 @@
 				<td>
 					{$chemicalClassesList[i].description}&nbsp;
 				</td>
+				<td>
+					<div align="left" id="rules_{$smarty.section.i.index}" >
+						{if $checked}
+							<input type="button" value="-" onClick="deleteLastRuleSelector({$smarty.section.i.index});" />
+							<input type="button" value="+" onClick="addRuleSelector({$smarty.section.i.index});" />
+							{if $selectedRules|@count > 0}	
+							{section name=f loop=$selectedRules}
+								<select name="chemicalRule_{$smarty.section.i.index}_{$smarty.section.f.index}" id="chemicalRule_{$smarty.section.i.index}_{$smarty.section.f.index}">
+									<option value='0'></option>
+									{section name=k loop=$rule}
+										<option value='{$rule[k].rule_id}' 
+											{if $selectedRules[f] == $rule[k].rule_id}
+												selected
+												{break}
+											{/if}> 
+											{$rule[k].rule_nr}
+										</option>
+									{/section}
+								</select>
+							{/section}
+							<input type="hidden" id="rulesCount_{$smarty.section.i.index}" name="rulesCount_{$smarty.section.i.index}" value="{$selectedRules|@count}" />
+							{else}
+								<select name="chemicalRule_{$smarty.section.i.index}_0" id="chemicalRule_{$smarty.section.i.index}_0">
+									<option value='0'></option>
+									{section name=k loop=$rule}
+										<option value='{$rule[k].rule_id}'>
+											{$rule[k].rule_nr}
+										</option>
+									{/section}
+								</select>
+								<input type="hidden" id="rulesCount_{$smarty.section.i.index}" name="rulesCount_{$smarty.section.i.index}" value="1" />
+							{/if}
+						{else}
+							&nbsp;
+						{/if}
+					</div>
+				</td>
 			</tr>
 			{/section}
 				
 		</table>	
+		<div align="left" id="rules_default" style="display:none;" >
+			<select name="chemicalRule" id="chemicalRule">
+				<option value='0'></option>
+				{section name=k loop=$rule}
+					<option value='{$rule[k].rule_id}'>
+						{$rule[k].rule_nr}
+					</option>
+				{/section}
+			</select>
+		</div>
 </div>

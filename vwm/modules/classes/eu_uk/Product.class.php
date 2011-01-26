@@ -97,10 +97,9 @@ class Product extends ProductProperties {
 			'vocwx'						=>	$data->vocwx,
 			'density'					=>	$data->density,
 			'densityUnitID'				=>	$data->density_unit_id,
-			//next was only in usa version
 			'coating_id'				=>	$data->coating_id,
 			'specialty_coating'			=>	$data->specialty_coating,
-			'aerosol'					=>	$data->aerosol,//end 
+			'aerosol'					=>	$data->aerosol,
 			'specific_gravity'			=>	$data->specific_gravity,
 			'specific_gravity_unit_id'	=>	$data->specific_gravity_unit_id, //only in eu/uk
 			'supplier_id'				=>	$data->supplier_id,
@@ -221,10 +220,7 @@ class Product extends ProductProperties {
 		if (!empty($companyID)) {
 			$this->assignProduct2Company($productID, $companyID);
 		}
-
-		foreach ($productData['chemicalClasses'] as $key=>$chemicalClass) {
-			$productData['chemicalClasses'][$key]['rules'][0] = 'NULL';
-		}		
+		
 		$hazardous = new Hazardous($this->db);
 		$hazardous->setProduct2ChemicalClasses($productID, $productData['chemicalClasses']);
 						
@@ -289,15 +285,9 @@ class Product extends ProductProperties {
 		}
 		
 		//	set hazardous (chemical) classes		
-		foreach ($productData['chemicalClasses'] as $key=>$chemicalClass) {
-			$productData['chemicalClasses'][$key]['rules'][0] = 'NULL';
-		}		
-		
 		$hazardous = new Hazardous($this->db);
 		$hazardous->setProduct2ChemicalClasses($productData['product_id'], $productData['chemicalClasses']);
-		
-		$productData["specific_gravity_unit_id"] = 2;	//	TODO: make UI
-		
+				
 		$query = "UPDATE ".TB_PRODUCT." SET ";
 		
 		$query .= "product_nr = '".$productData["product_nr"]."', ";
@@ -306,7 +296,9 @@ class Product extends ProductProperties {
 		$query .= "vocwx = '".$productData["vocwx"]."', ";
 		$query .= (empty($productData["density"])) ? "density = NULL, " : "density = '".$productData["density"]."', ";
 		$query .= "density_unit_id = '".$productData["density_unit_id"]."', ";
-		$query .= "coating_id = '".$productData["coating_id"]."', ";		
+		$query .= "coating_id = '".$productData["coating_id"]."', ";
+		$query .= "specialty_coating = '".$productData["specialty_coating"]."', ";
+		$query .= "aerosol = '".$productData["aerosol"]."', ";
 		$query .= "specific_gravity = '".$productData["specific_gravity"]."', ";
 		$query .= "specific_gravity_unit_id = '".$productData["specific_gravity_unit_id"]."', ";
 		$query .= "boiling_range_from = '".$productData["boiling_range_from"]."', ";
@@ -553,7 +545,7 @@ class Product extends ProductProperties {
 		
 		//	only if products are in company
 		if ($productListTemp) {			
-			$maxValues = $this->getMaxLenghtSupplierAndProductNR($productListTemp);
+			//$maxValues = $this->getMaxLenghtSupplierAndProductNR($productListTemp);
 			for ($i = 0; $i<count($productListTemp); $i++) {
 				$show = true;
 				if ($products) {
@@ -596,12 +588,12 @@ class Product extends ProductProperties {
 		
 		if ($companyID === 0){
 			$query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
-				"FROM ".TB_PRODUCT." p";
+				"FROM ".TB_PRODUCT." p WHERE LOCATE('".$occurrence."', product_nr)>0 OR LOCATE('".$occurrence."', name)>0 LIMIT ".AUTOCOMPLETE_LIMIT;
 		} else {
 			$query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
 				"FROM ".TB_PRODUCT." p, product2company p2c " .
 				"WHERE p.product_id = p2c.product_id " .
-				"AND p2c.company_id = ".$companyID;
+				"AND p2c.company_id = ".$companyID."  AND (LOCATE('".$occurrence."', product_nr)>0 OR LOCATE('".$occurrence."', name)>0) LIMIT ".AUTOCOMPLETE_LIMIT;
 		}
 						
 		$this->db->query($query);

@@ -295,9 +295,7 @@ class Product extends ProductProperties {
 		}		
 		$hazardous = new Hazardous($this->db);
 		$hazardous->setProduct2ChemicalClasses($productData['product_id'], $chemicalClassIDArray);
-		
-		$productData["specific_gravity_unit_id"] = 1;	//	TODO: make UI
-		
+				
 		$query = "UPDATE ".TB_PRODUCT." SET ";
 		
 		$query .= "product_nr = '".$productData["product_nr"]."', ";
