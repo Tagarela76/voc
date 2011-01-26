@@ -65,10 +65,15 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 	}
 	
 	public function buildXML($fileName) {
+		
+		$debug = new Debug();
+		$debug->printMicrotime(__LINE__,__FILE__);
 		$reportData = $this->data;
 		//	get rule name
 		$ruleObj = new Rule($this->db);
+		$debug->printMicrotime(__LINE__,__FILE__);
 		$ruleDetails = $ruleObj->getRuleDetails($this->rule, true);
+		$debug->printMicrotime(__LINE__,__FILE__);
 		$rule = $ruleDetails['rule_nr'];	
 		
 		switch ($this->categoryType) {
@@ -131,13 +136,14 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				break;
 		}
 		
-		
+		$debug->printMicrotime(__LINE__,__FILE__);
 		$in = $this->group($query, $this->dateBegin, $this->dateEnd, $this->rule);	
-		
+		$debug->printMicrotime(__LINE__,__FILE__);
 		
 		//xml generation
 		
 		$this->createXML($orgDetails, $rule, $in['equipments'], $in['days'], $fileName, $reportData);
+		$debug->printMicrotime(__LINE__,__FILE__);
 	}
 	
 	private function createXML($orgDetails, $rule, $equipments, $days, $fileName, $reportData) {
@@ -680,7 +686,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				$this->db->query($query);
 				
 				if ($this->db->num_rows()) {
+					
 					$mixesData = $this->db->fetch_all();
+					$c = count($mixesData);
+					
 					foreach ($mixesData as $mixData) {	
 						
 						$mix = $mixObj->getMixDetails($mixData->mix_id);
@@ -694,11 +703,13 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 						
 						$equipment['mixes'][$creationTime][] = $mix;
 					}
+					
 					$equipments[] = $equipment;
 				}							
 			}
 						
 		}	
+		
 		
 		//	create day list		
 		$days[0] = strtotime($dateBegin);		
@@ -710,7 +721,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 	
 		$out['equipments'] = $equipments;
 		$out['days'] = $days;
-
+echo "<h1>out</h1>";
 		return $out;
 	}
 		

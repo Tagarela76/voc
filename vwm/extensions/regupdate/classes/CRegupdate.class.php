@@ -42,7 +42,7 @@ class CRegupdate extends Controller {
 		if (!is_null($rin)) {
 			header("Location: http://www.reginfo.gov/public/do/eAgendaViewRule?RIN=$rin ");
 		} else {	
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest("facilityID")."&bookmark=regupdate&tab=".$this->getFromRequest("tab"));
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest("facilityID")."&bookmark=regupdate&tab=".$this->getFromRequest("tab") . "&notify=30");
 		}
 		die();
 	}

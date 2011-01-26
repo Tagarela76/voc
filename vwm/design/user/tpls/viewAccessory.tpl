@@ -7,7 +7,6 @@
 {if $color eq "blue"}
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
-asdfasdfasdfasdfasdfasdf
 <div class="padd7">
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr class="users_top_yellowgreen users_u_top_size">

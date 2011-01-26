@@ -14,12 +14,19 @@ class MReports {
      */
     public function makeXml($params) {
     	extract($params);
+    	$debug = new Debug();
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	$reportType = $reportRequest->getReportType(); // if we get there it mean that we already cheack that report type exist for company
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	//all ReportCreators files have names in format "R".$reportType.".class.php"
     	$reportClassName = "R".$reportType;
     	if (class_exists($reportClassName)) {
+    		ECHO "Class name: $reportClassName";
+    		$debug->printMicrotime(__LINE__,__FILE__);
     		$reportCreator = new $reportClassName($db,$reportRequest);
+    		$debug->printMicrotime(__LINE__,__FILE__);
     		$reportCreator->buildXML($fileName);
+    		$debug->printMicrotime(__LINE__,__FILE__);
     	} else {
     		throw new Exception('Unknown report type!');
     	}
@@ -44,7 +51,16 @@ class MReports {
 	    // getting rule list				
 	    $rule = new Rule($db);				
 	    $rulesList = $rule->getRuleListFromMix($request['category'], $request['id']);
+	    
+	    
+	    $count = count($rulesList);
+	    for( $i=0; $i<$count; $i++)
+	    {
+	    	$rulesList[$i]['rule_nr'] = $rulesList[$i]['rule_nr_us'] ? $rulesList[$i]['rule_nr_us'] : $rulesList[$i]['rule_nr_uk'];
+	    }
+	    
 	    $result["rules"] = $rulesList;
+	    
 	    $result["subReport"] = $reportType;
 	    $result["tpl"] = $this->getInputTPLfileName($reportType);
 	    
@@ -75,6 +91,10 @@ class MReports {
 	    return $result;
     }
     
+    
+    
+    
+    
     /**
      * function prepareSendSubReport($params) - filter get vars and create report createReportForm 
      * @param array $params - $db, $xnyo, $request, $companyID
@@ -83,8 +103,17 @@ class MReports {
     	extract($params);
     	$reportType = $request['reportType'];
     	
+    	$debug = new Debug();
+    	
+    	$debug->printMicrotime(__LINE__,__FILE__);
+    	
+    	//$this->printMicrotime(__LINE__);
+    	
     	//at first we should check if exist this reportType for company:
     	$reportsList = $this->getAvailableReportsList($db,$companyID);
+    	
+    	$debug->printMicrotime(__LINE__,__FILE__);
+    	
     	if (isset($reportsList[$reportType])) {
     		//ok! company has this report
     		$result["reportName"] = $reportsList[$reportType];
@@ -94,6 +123,8 @@ class MReports {
     	
     	$standartInputTPL = 'reports/design/standartInput.tpl';// file name of standart input tpl
     	$currentTpl = $this->getInputTPLfileName($reportType);
+    	$debug->printMicrotime(__LINE__,__FILE__);
+    	
     	if ($currentTpl == $standartInputTPL) {
     		$categoryType = $request['categoryLevel'];
 	    	$id = $request['id'];				
@@ -103,7 +134,7 @@ class MReports {
 	    	$xnyo->filter_get_var("date_end","text");
 	    	$dateBegin = $_GET['date_begin'];
 	    	$dateEnd = $_GET['date_end'];
-	    	
+	    	$debug->printMicrotime(__LINE__,__FILE__);
 	    	if ($format == "csv") {
 		    	$xnyo->filter_get_var("commaSeparator","text");
 		    	$xnyo->filter_get_var("textDelimiter","text");
@@ -117,16 +148,28 @@ class MReports {
 		    	}
 	    	}
 	    	$frequency = null;
+	    	$debug->printMicrotime(__LINE__,__FILE__);
+	    	
+	    	try{
 	    	$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id']);
+	    	}catch(Exception $e){
+	    		throw new Exception("Error Create Report!! ");
+	    	}
+	    	$debug->printMicrotime(__LINE__,__FILE__);
+	    	
     	} else {
     		//for reports with specific data in input report request gets in class
+    		$debug->printMicrotime(__LINE__,__FILE__);
     		$reportClassName = "R".$reportType;
 	    	if (class_exists($reportClassName)) {
+	    		$debug->printMicrotime(__LINE__,__FILE__);
 	    		$reportCreator = new $reportClassName($db);
 	    		$reportRequest = $reportCreator->getReportRequestByGetVars($xnyo);
 	    	}
     	}
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	$result = new Report($reportRequest,$db);
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	return $result;
     }
     

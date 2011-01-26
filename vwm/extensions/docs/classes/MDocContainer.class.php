@@ -78,7 +78,7 @@ class MDocContainer extends Module {
 				    $doc = new Doc($params['db']);
 				    $doc->addNewDoc($info);
 				    //	redirect
-				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs");
+				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=12");
 				    die();
 		    	}
 		    } else {
@@ -93,7 +93,7 @@ class MDocContainer extends Module {
 				    $folder = new Folder($params['db']);
 				    $folder->addNewFolder($info);
 				    //	redirect
-				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs");
+				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=14");
 				    die();
 			    }	
 		    }
@@ -140,7 +140,7 @@ class MDocContainer extends Module {
 		    $doc = new Doc($params['db']);
 		    $doc->editDoc($info);
 		    //redirect
-		    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs");
+		    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=15");
 		    die();
 	    }
 	    return $result;

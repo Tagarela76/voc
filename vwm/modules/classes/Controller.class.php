@@ -19,7 +19,17 @@ class Controller
 		$this->user		=$user;
 		$this->action	=$action;
 		$this->request	=$_GET;
-		$this->post		=$_POST;									
+		$this->post		=$_POST;		
+
+		if(isset($_GET['notify']) and is_numeric($_GET['notify']))
+		{
+			$notifyc = new Notify(null, $db);
+			
+			$notify = $notifyc->getPopUpNotifyMessage($_GET['notify']);
+			
+			$this->smarty->assign("notify", $notify);
+			
+		}
 	}
 		
 	protected function forvard($controller,$function,$vars)
@@ -217,6 +227,7 @@ class Controller
 		$ms = new ModuleSystem($this->db);	//	TODO: show?
 		$moduleMap = $ms->getModulesMap();
 		$mReport = new $moduleMap['reports'];
+		
 		$params = array(
 						'db' => $this->db,								
 						'reportType' => $reportType,
@@ -224,8 +235,7 @@ class Controller
 						'request' => $request
 						);
 		$result = $mReport->prepareSendReport($params);
-		//var_dump($result);
-					
+		
 		foreach($result as $key => $data) 
 		{
 			$this->smarty->assign($key,$data);												

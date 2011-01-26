@@ -12,6 +12,7 @@
 			
 			
 			<script type="text/javascript">
+
 			var notifyParams = new Object();
 
 			{if $notify.params}
@@ -26,6 +27,8 @@
 			notifyParams.backgroundColor = "Yellow"; {"color": "Black", "backgroundColor": "Yellow" } ;*/
 			
 			var notifyText = "{$notify.text}";
+
+			
 			</script>
 			<script type="text/javascript" src='modules/js/notify.js'></script>
 			
@@ -40,7 +43,10 @@
 		{/foreach}			
 	</head>
 	
-	<body>										
+	<body>		
+	
+		{include file="tpls:tpls/notify/popupNotify.tpl"}
+									
 		<table width="100%" height="100%"  cellspacing="0" cellpadding="0" >			  						  
 			<tr>											
 				{include file="tpls:logo.tpl"}											

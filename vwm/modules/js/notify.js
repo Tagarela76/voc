@@ -6,8 +6,9 @@ function Notificator(text, params)// params: color,backgroundColor, width, heigh
 	{
 		color = params.color || "Black";
 		backgroundColor = params.backgroundColor || "Red";
-		width = params.width || "600px";
-		this.height = params.height || "37px";
+		width = params.width || "400px";
+		this.height = params.height || "34px";
+		fontSize = params.fontSize || "18px";
 	}
 	else
 	{
@@ -19,7 +20,7 @@ function Notificator(text, params)// params: color,backgroundColor, width, heigh
 var notify = $("#notify");
 $(notify).css("text-align","center");
 $(notify).css("background-color",backgroundColor);
-$(notify).css("color",color);
+$("#text").css("color",color);
 $(notify).css("display","none");
 $(notify).css("width",width);
 $(notify).css("position","fixed");
@@ -31,7 +32,7 @@ $(notify).css("padding","10px");
 $(notify).css("opacity","0.8");
 
 $(notify).css("vertical-align","middle");
-$(notify).css("font-size","16px");
+$("#text").css("font-size",fontSize);
 
 $(notify).css("left",($(window).width() / 2) - ($("#notify").width() / 2)); 
 
@@ -55,8 +56,9 @@ this.close = function ()/*Close Notify*/
 
 function docReady()
 {
-	var appendText = "<div id='notify' valign='center'><a href='#' id='notifyClose' style='position:absolute;left:0px;top:0px;background-color:inherit;border:none;'><img src='images/close.png' style='border: 0;' /></a><span id='text'></span></div>";
-	$("body").append(appendText);
+	//var appendText = "<div id='notify' valign='center'><a href='#' id='notifyClose' style='position:absolute;left:0px;top:0px;background-color:inherit;border:none;'><img src='images/close.png' style='border: 0;' /></a><span id='text'></span></div>";
+	
+	//$("body").append(appendText);
 	//alert('docReady: notifyText: ' + notifyText + " params: " + notifyParams);
 	var notificator = new Notificator(notifyText,notifyParams);// { color: "White", backgroundColor: "Black"});
 	notificator.show();

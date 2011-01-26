@@ -42,7 +42,7 @@ class CFacility extends Controller
 		//post redirect
 		//$returnURL = "?action=browseCategory&categoryID=facility&companyID=".$companyDetails['company_id'];		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=company&id=".$companyDetails['company_id']);										
+			header("Location: ?action=browseCategory&category=company&id=".$companyDetails['company_id']. "&notify=6");										
 	}
 	
 	private function actionDeleteItem()
@@ -220,7 +220,6 @@ class CFacility extends Controller
 		if (!$this->user->checkAccess($this->category, $this->getFromRequest('id'))) {						
 			throw new Exception('deny');
 		}
-		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'), true);
 		$this->smarty->assign('data', $facilityDetails);	

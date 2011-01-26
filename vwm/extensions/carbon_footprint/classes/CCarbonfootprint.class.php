@@ -5,7 +5,7 @@ class CCarbonfootprint extends Controller
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='carbonfootprint';
-		$this->parent_category='facility';			
+		$this->parent_category='facility';	
 	}
 	
 	function runAction()
@@ -37,7 +37,7 @@ class CCarbonfootprint extends Controller
 						);
 		$mCarbonFootprint->prepareDelete($params);		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=carbonfootprint&tab=month");	
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=carbonfootprint&tab=month&notify=22");	
 	}
 	
 	private function actionDeleteItem()
@@ -113,7 +113,7 @@ class CCarbonfootprint extends Controller
 	 	$result = $mCarbonFootprint->prepareAddEditDirect($params);
 		if ($result === true) {
 			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=carbonfootprint&tab=month");
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=carbonfootprint&tab=month&notify=19");
 			die();
 		}
 		foreach($result as $key => $data) {
@@ -161,6 +161,9 @@ class CCarbonfootprint extends Controller
 				);
 				$result = $mCarbonFootprint->prepareEditIndirect($params);
 				$this->smarty->assign('tpl','carbon_footprint/design/editIndirectEmission.tpl');
+				if($result){
+					$notifyID = 21;
+				}
 				break;
 			case 'direct':
 				$params = array(
@@ -177,6 +180,9 @@ class CCarbonfootprint extends Controller
 					'year' => $this->getFromPost('selectYear')
 				);
 				$result = $mCarbonFootprint->prepareAddEditDirect($params);
+				if($result){
+					$notifyID = 20;
+				}
 				
 				$this->smarty->assign('tpl','carbon_footprint/design/addDirectEmission.tpl');
 				break;
@@ -186,7 +192,7 @@ class CCarbonfootprint extends Controller
 		}
 		if ($result === true) {
 			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=carbonfootprint&tab=month");
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=carbonfootprint&tab=month" . ($notifyID ? "&notify=" . $notifyID : ""));
 			die();
 		}
 		foreach($result as $key => $data) {
@@ -276,7 +282,7 @@ class CCarbonfootprint extends Controller
 				if ($result === true) 
 				{
 					//	redirect
-					header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('id')."&bookmark=carbonfootprint&tab=month");
+					header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('id')."&bookmark=carbonfootprint&tab=month&notify=23");
 					die();
 				}
 				foreach($result as $key => $data) 

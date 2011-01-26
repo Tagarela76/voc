@@ -46,7 +46,7 @@ class CEquipment extends Controller
 		
 		//post redirect			
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=department&id=".$equipmentDetails['department_id']."&bookmark=equipment");										
+			header("Location: ?action=browseCategory&category=department&id=".$equipmentDetails['department_id']."&bookmark=equipment&notify=36");										
 		}
 	
 	private function actionDeleteItem()
@@ -145,7 +145,7 @@ class CEquipment extends Controller
 		$voc2vps = new VOC2VPS($this->db);
 		$limits = $voc2vps->getCustomerLimits($companyID);
 		if ($limits['Source count']['current_value'] >= $limits['Source count']['max_value']) {
-			header ('Location: ?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=equipment');
+			header ('Location: ?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=equipment&notify=35');
 			die();
 		}
 		

@@ -18,7 +18,8 @@ class CMix extends Controller
 	
 	private function actionConfirmDelete()
 	{		
-		$usage = new Mix($this->db, $trashRecord);																					
+		$usage = new Mix($this->db, $trashRecord);
+																				
 		foreach ($this->itemID as $ID)
 		{									
 			//	setter injection
@@ -29,7 +30,7 @@ class CMix extends Controller
 		}		
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=department&id=".$usageDetails['department_id']."&bookmark=mix");										
+			header("Location: ?action=browseCategory&category=department&id=".$usageDetails['department_id']."&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));										
 	}
 	
 	private function actionDeleteItem()
@@ -663,7 +664,7 @@ class CMix extends Controller
 					$emailNotifications = new EmailNotifications($this->db);
 					$emailNotifications->checkLimits($mixValidatorResponse,'department',$departmentID);
 					//	redirect
-					header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=mix");
+					header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=mix&notify=31&notify=34");
 					die();										
 				} else {
 					//Set Notify

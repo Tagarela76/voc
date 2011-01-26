@@ -46,7 +46,7 @@ class CWastestorage extends Controller
 		}
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=wastestorage&tab=active");	
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=wastestorage&tab=active&notify=29");	
 	}
 	
 	private function actionDeleteItem()
@@ -214,7 +214,7 @@ class CWastestorage extends Controller
 		if ($result === true) 
 		{
 			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=wastestorage&tab=active");
+			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=wastestorage&tab=active&notify=27");
 			die();
 		}
 		foreach($result as $key => $data) 
@@ -294,7 +294,7 @@ class CWastestorage extends Controller
 		if ($result === true) 
 		{			
  			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=wastestorage&tab=active");
+			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=wastestorage&tab=active&notify=28");
 			die();
 		}
 		foreach($result as $key => $data) 

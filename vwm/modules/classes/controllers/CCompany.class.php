@@ -36,7 +36,7 @@ class CCompany extends Controller
 		//post redirect							
 		//$returnURL = "?action=browseCategory&categoryID=company";		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=root");										
+			header("Location: ?action=browseCategory&category=root&notify=4");										
 	}
 	
 	private function actionViewDetails()
@@ -139,10 +139,21 @@ class CCompany extends Controller
 		//	set js
 		$jsSources = array('modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
-							
+
+		$text = "The payment period is coming to end in -2 days. Please, go to VOC Payment System pay for the next period.";
+		/*$notify = array("text" => "Test notify!",
+							"params" => array(
+									"color" => "White",
+									"backgroundColor" => "Red"	
+		));*/
+		
+		//$notify = new Notify(null,$this->db);
+		//$notify = $notify->getPopUpNotifyMessage(null,array("backgroundColor"=>"Yellow", "fontSize" => "14px"),"The payment period is coming to end in -2 days. Please, go to VOC Payment System pay for the next period.");
+		//$this->smarty->assign("notify",$notify);
 		//	set tpl
 		$this->smarty->assign('tpl','tpls/company.tpl');
-		$this->smarty->display("tpls:index.tpl");				
+		$this->smarty->display("tpls:index.tpl");	
+					
 	}
 	
 	private function actionAddItem() {
@@ -221,7 +232,7 @@ class CCompany extends Controller
 				
 				
 				//	redirect
-				header("Location: ?action=browseCategory&category=root");
+				header("Location: ?action=browseCategory&category=root&notify=3");
 				die();	
 				
 			} else {
@@ -401,7 +412,7 @@ class CCompany extends Controller
 				
 				
 				//	redirect
-				header("Location: ?action=browseCategory&category=".$this->category."&id=".$this->getFromRequest('id'));
+				header("Location: ?action=browseCategory&category=".$this->category."&id=".$this->getFromRequest('id') . "&notify=5");
 				die();	
 				
 			} else {

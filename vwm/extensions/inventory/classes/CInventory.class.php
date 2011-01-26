@@ -4,7 +4,7 @@ class CInventory extends Controller
 	function CInventory($smarty,$xnyo,$db,$user,$action)
 		{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
-		$this->category='inventory';				
+		$this->category='inventory';
 		}
 	
 	function runAction()
@@ -31,7 +31,7 @@ class CInventory extends Controller
 		}	
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=$lastInventoryFaciltiyID&bookmark=inventory&tab=$lastInventoryType");										
+			header("Location: ?action=browseCategory&category=facility&id=$lastInventoryFaciltiyID&bookmark=inventory&tab=$lastInventoryType&notify=8");										
 	}	
 	
 	private function actionDeleteItem()
@@ -251,6 +251,7 @@ class CInventory extends Controller
 			'smarty' => $this->smarty													
 		);
 		$result = $mInventory->prepareAdd($params);
+		
 		foreach ($result as $key=>$value) {
 			$this->smarty->assign($key,$value);
 		}

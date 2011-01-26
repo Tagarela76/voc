@@ -38,7 +38,7 @@ class CLogbook extends Controller
 		$mLogbook->prepareDelete($params);		
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=logbook");	
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=logbook&notify=26");	
 	}
 	
 	
@@ -121,7 +121,7 @@ class CLogbook extends Controller
 		if ($result === true) 
 		{
 			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=logbook");
+			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=logbook&notify=24");
 			die();
 		}
 		foreach($result as $key => $data) 
@@ -179,7 +179,7 @@ class CLogbook extends Controller
 		if ($result === true) 
 		{
 			//	redirect
-			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=logbook");
+			header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=logbook&notify=25");
 			die();
 		}
 		

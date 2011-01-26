@@ -231,7 +231,7 @@
 						$inventory->save();
 						
 						//	redirect
-						header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=inventory&tab=".$request['tab']);
+						header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=inventory&tab=".$request['tab']."&notify=9");
 						die();	
 						
 					} else {										
@@ -306,7 +306,7 @@
 						}
 						
 						//	redirect
-						header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$request['tab']);
+						header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$request['tab']."&notify=9");
 						die();	
 						break;
 						
@@ -367,7 +367,7 @@
 							$inventory->save();
 							
 							//	redirect
-							header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$request['tab']);
+							header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$request['tab']."&notify=9");
 							die();	
 							
 						} else {										
@@ -722,10 +722,10 @@
 
 					//	redirect
 					if (isset($request['departmentID'])) {			
-						header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$inventory->getType());
+						header("Location: ?action=browseCategory&category=department&id=".$request['departmentID']."&bookmark=inventory&tab=".$inventory->getType()."&notify=10");
 						die();																
 					} elseif (isset($request['facilityID'])) {
-						header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=inventory&tab=".$inventory->getType());
+						header("Location: ?action=browseCategory&category=facility&id=".$request['facilityID']."&bookmark=inventory&tab=".$inventory->getType()."&notify=10");
 						die();										
 					} else {
 						throw new Exception('404');

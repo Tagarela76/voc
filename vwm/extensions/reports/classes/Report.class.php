@@ -5,22 +5,28 @@ class Report {
 	
     function Report($reportRequest, $db) {
     	$this->reportRequest = $reportRequest; 
+    	$debug = new Debug();
     	
-    	ini_set("max_execution_time","180");  	  	    	
-    	ini_set("memory_limit","70M");
-    	
+    	$debug->printMicrotime(__LINE__,__FILE__);
+    	//ini_set("max_execution_time","180");  	  	    	
+    	//ini_set("memory_limit","70M");
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	//	XML Building
     	$userID = $this->reportRequest->getUserID();
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	$xmlFileName = 'tmp/reportByUser'.$userID.'.xml';
     	$xml = new XMLBuilder($db);
-    	$xml -> BuildXML($reportRequest, $xmlFileName);
+    	$debug->printMicrotime(__LINE__,__FILE__);
+    	$xml->BuildXML($reportRequest, $xmlFileName);
+    	$debug->printMicrotime(__LINE__,__FILE__);
     	
     	//	Report Building
     	$reportType	= $this->reportRequest->getReportType();
     	$format		= $this->reportRequest->getFormat();
     	$extraVar 	= $this->reportRequest->getExtraVar();
-    	   
+    	  $debug->printMicrotime(__LINE__,__FILE__);
 		$this->buildReport($xmlFileName, $reportType, $format, $extraVar);
+		$debug->printMicrotime(__LINE__,__FILE__);
     }
     
     private function buildReport($xmlFileName, $reportType, $format,$extraVar) {

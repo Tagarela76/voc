@@ -88,7 +88,7 @@ class RegActManager {
 		if (!is_null($pagination)) {
 				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 			}
-			
+		
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();

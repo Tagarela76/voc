@@ -1,4 +1,4 @@
-asdfasdf{if $color eq "green"}
+{if $color eq "green"}
 {include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
 {if $color eq "orange"}

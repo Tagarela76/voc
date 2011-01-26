@@ -54,7 +54,7 @@ class CSolventplan extends Controller
 
 							if ($result === true) {
 								 //	redirect
-								header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=solventplan&tab=month");
+								header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=solventplan&tab=month&notify=16");
 								die();
 							}
 							foreach($result as $key => $data) {

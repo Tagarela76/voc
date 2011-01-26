@@ -43,7 +43,7 @@ class CDocs extends Controller
 		$successDeleteInventories = $mDocs->prepareDelete($params);	//$successDeleteInventories ?????????????
 									
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=docs");	
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=docs&notify=11");	
 	}
 	
 	private function actionDeleteItem()

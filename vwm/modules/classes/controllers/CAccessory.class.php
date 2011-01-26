@@ -18,7 +18,7 @@ class CAccessory extends Controller
 	
 	private function actionConfirmDelete()
 	{		
-		$accessory = new Accessory($this->db);
+		$accessory = new Accessory($this->db); //.deactiveBookmark
 								
 		foreach ($this->itemID as $ID) 
 		{
@@ -31,7 +31,7 @@ class CAccessory extends Controller
 		}							
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=department&id=".$this->getFromPost('departmentID')."&bookmark=accessory");			
+			header("Location: ?action=browseCategory&category=department&id=".$this->getFromPost('departmentID')."&bookmark=accessory&notify=40");			
 	}
 	
 	private function actionDeleteItem()
@@ -156,7 +156,7 @@ class CAccessory extends Controller
 				$accessory->insertAccessory($companyID);
 								
 				// redirect
-				header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=accessory");
+				header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=accessory&notify=38");
 				die();
 													
 			} 
@@ -234,7 +234,7 @@ class CAccessory extends Controller
 				$accessory->updateAccessory();
 								
 				// redirect
-				header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=accessory");
+				header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=accessory&notify=39");
 				die();
 														
 			} 

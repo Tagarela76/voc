@@ -55,6 +55,9 @@ class CReduction extends Controller
 								'TEfactor' => null
 								);
 				$result = $mReduction->prepareSaveFactors($params);
+				$notify = new Notify(null, $this->db);
+				$message = $notify->getPopUpNotifyMessage(17);
+				$this->smarty->assign("notify",$message);
 			} 
 			elseif ($this->getFromPost('saveTargetEmission')) 
 			{
@@ -65,6 +68,9 @@ class CReduction extends Controller
 								'AREfactor' => null
 								);
 				$result = $mReduction->prepareSaveFactors($params);
+				$notify = new Notify(null, $this->db);
+				$message = $notify->getPopUpNotifyMessage(18);
+				$this->smarty->assign("notify",$message);
 			}
 		}									
 		$params = array(

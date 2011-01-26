@@ -38,7 +38,7 @@ class CDepartment extends Controller
 		$companyDetails=$company->getCompanyDetails($facilityDetails['company_id']);								
 		
 		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$facilityDetails['facility_id']."&bookmark=department");										
+			header("Location: ?action=browseCategory&category=facility&id=".$facilityDetails['facility_id']."&bookmark=department&notify=7");										
 	}
 	
 	private function actionDeleteItem()

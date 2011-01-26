@@ -2,9 +2,80 @@
 
 class Notify {
 	private $smarty;
+	private $db;
 	
-	function Notify($smarty) {
-		$this->smarty=$smarty;
+	function Notify($smarty,$db = null) {
+		$this->smarty = $smarty;
+		$this->db = $db;
+	}
+	
+	/**
+	 * Builds data for popup notify, that uses notify.js
+	 *  array
+	 *    'text' => string 'Cannot connect to database' (length=26)
+	 *      'params' => 
+	 *          array
+	 *                'color' => string 'Black' (length=5)
+	 *                'backgroundColor' => string 'Red' (length=3)
+	 * @param mix_type $errorCode can be NULL than use $text for Message
+	 * @param mix_type $additionalParams like array(key=>value),supported values: width, height, color, backgroundColor, fontSize.
+	 * @param string $text if $errorCode == NULL than use $text for Message
+	 */
+	public function getPopUpNotifyMessage($errorCode,$additionalParams = NULL, $text = NULL){
+
+			if($errorCode){
+				$text = $this->getMessageByCode($errorCode);
+			}
+			
+			$colors = 	$this->getErrorColors($errorCode);
+
+			$notify = array("text" => $text,
+							"params" => $colors);
+
+			if($additionalParams){
+				foreach($additionalParams as $key => $value){
+					
+						$notify['params'][$key] = $value;
+				}
+			}
+
+			return $notify;
+			
+	}
+
+	/**
+	 * 
+	 * Returns notify message from database table NotifyCode by code
+	 * @param int $code
+	 * @throws Exception "Wrong error code!" if code is wrong
+	 */
+	private function getMessageByCode(int $code){
+	
+		if(is_numeric($code)){
+			$query = "select message from " . TB_NOTIFY_CODE . " where code = $code limit 1";
+			$this->db->query($query);
+			$message = $this->db->fetch_array(0);
+			return $message['message'];
+		}else{
+			throw new Exception("Wrong error code!");
+		}
+	}
+	
+	/**
+	 * 
+	 * Get colors combination by code. 0-400 are notify colors (green background, white text color), 400 and more - error notifies (red background and black text)
+	 * @param int $error ErrorCode
+	 * @return Array("color" => "ColorName", "backgroundColor" => "ColorName"); 
+	 */
+	private function getErrorColors(int $error){
+
+			if($error > 0 and $error < 400){
+					return Array("color" => "White", "backgroundColor" => "Green");
+			}elseif($error >= 400)
+			{
+					return Array("color" => "Black", "backgroundColor" => "Red");
+			}
+		
 	}
 	
 	function warnDelete($categoryType, $categoryName = "", $linked = false, $count = 0, $info = null) {
