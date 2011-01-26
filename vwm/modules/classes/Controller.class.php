@@ -7,6 +7,7 @@ class Controller
 	protected $user;
 	protected $action;
 	private   $post;
+	private	  $request;
 	protected $category;
 	protected $parentCategory;	
 	protected $filter;
@@ -21,7 +22,7 @@ class Controller
 		$this->request	=$_GET;
 		$this->post		=$_POST;		
 
-		if(isset($_GET['notify']) and is_numeric($_GET['notify']))
+		if(isset($this->request['notify']) and is_numeric($this->request['notify']))
 		{
 			$notifyc = new Notify(null, $db);
 			
