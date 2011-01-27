@@ -101,7 +101,7 @@ class Product extends ProductProperties {
 			'specialty_coating'			=>	$data->specialty_coating,
 			'aerosol'					=>	$data->aerosol,
 			'specific_gravity'			=>	$data->specific_gravity,
-			'specific_gravity_unit_id'	=>	$data->specific_gravity_unit_id, //only in eu/uk
+			'specific_gravity_unit_id'	=>	$data->specific_gravity_unit_id, 
 			'supplier_id'				=>	$data->supplier_id,
 			'boiling_range_from'		=>	$data->boiling_range_from,
 			'boiling_range_to'			=>	$data->boiling_range_to,
@@ -632,45 +632,28 @@ class Product extends ProductProperties {
 		
 	//	search product by product_nr or name.
 	public function searchProducts($products, $companyID = 0) {
-		
-		//	$mixes can be array or single var		
-		if (is_array($products)) {
-			foreach ($products as $product) {
-				$found = false;
-				
-				//	try to find by product nr
-				if (false !== ($searchedProduct = $this->selectProduct($product, 'product_nr', $companyID))) {
-					$found = true;
-					
-				//	didn't find, so let's try to find by name					 	
-				} elseif (false !== ($searchedProduct = $this->selectProduct($product, 'name', $companyID))) {
-					$found = true;
-				}
-				
-				
-				if ($found) {
-					foreach ($searchedProduct as $value) {
-						$searchedProducts[] = $value;	
-					}				  	
-				}				
-			}
+		$products = (!is_array($products))?array($products):$products;
+		$where = "";
+		foreach($products as $product) {
+			$product = mysql_escape_string($product);
+			$where .= " (LOCATE('$product',product_nr) > 0 OR LOCATE('$product', name) > 0) OR";
+		}
+		$where = substr($where,0,-2);
+		if ($companyID === 0){
+			$query = "SELECT * FROM ".TB_PRODUCT." " .
+					" WHERE $where LIMIT ".AUTOCOMPLETE_LIMIT;
 		} else {
-			$found = false;
-				
-			//	try to find by product nr
-			if (false !== ($searchedProduct = $this->selectProduct($products, 'product_nr', $companyID))) {
-				$found = true;
-					
-			//	didn't find, so let's try to find by name					 	
-			} elseif (false !== ($searchedProduct = $this->selectProduct($products, 'name', $companyID))) {
-				$found = true;
-			}
-			
-			if ($found) {
-				foreach ($searchedProduct as $value) {
-					$searchedProducts[] = $value;	
-				}				  	
-			}										
+			$query = "SELECT * FROM ".TB_PRODUCT." p, product2company p2c " .
+				"WHERE p.product_id = p2c.product_id " .
+				"AND p2c.company_id = ".$companyID."  AND $where LIMIT ".AUTOCOMPLETE_LIMIT;
+		}
+		$this->db->query($query);
+		$searchedProducts = $this->db->fetch_all_array();
+		$coat = new Coat($this->db);
+		$coatList = $coat->getCoatArrayListedById();
+		foreach($searchedProducts as $key => $product) {
+			$searchedProducts [$key]['coating'] = $coatList[$product['coating_id']];
+			$searchedProducts [$key]['msdsLink'] = $this->checkForAvailableMSDS($product['product_id']);
 		}
 		
 		return (isset($searchedProducts)) ? $searchedProducts : null;		
