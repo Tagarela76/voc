@@ -39,7 +39,7 @@ class Agency {
 		return $this->region;
 	}
 			
-	public function getAgencyList($sort='', Pagination $pagintaion = null, $filter=' TRUE ', $sortStr=' ORDER BY a.name_us ') {
+	public function getAgencyList($sort='', Pagination $pagination = null, $filter=' TRUE ', $sortStr=' ORDER BY a.name_us ') {
 		$field = $this->nameMap[$this->getRegion()];
 		$query = "SELECT a.agency_id AS agency_id ,a.name_us AS name_us, a.name_eu AS name_eu, a.name_cn AS name_cn, a.$field AS name, a.description AS description, a.location AS location,a.contact_info AS contact_info,c.name AS country FROM ".TB_AGENCY." a, ".TB_COUNTRY."".
 					" c WHERE (a.country_id=c.country_id OR a.country_id=NULL) AND $filter  $sortStr ";
