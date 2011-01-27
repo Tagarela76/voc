@@ -79,5 +79,16 @@ class Coat {
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
 	}
+	
+	public function getCoatArrayListedById(){
+		$query = "SELECT * FROM ".TB_COAT;
+		$this->db->query($query);
+		$data = $this->db->fetch_all();
+		$coatList = array();
+		foreach($data as $coat) {
+			$coatList [$coat->coat_id] = $coat->coat_desc;
+		}
+		return $coatList;
+	}
 }
 ?>
