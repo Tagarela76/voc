@@ -32,23 +32,21 @@ class Unittype {
 	
 	
 	public function getUnittypeDetails($unittypeID, $vanilla=false) {
-		//$this->db->select_db(DB_NAME);
+		
 		$this->db->query("SELECT * FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id AND unittype_id=".$unittypeID);
-		$data=$this->db->fetch(0);
-		$unittypeDetails=array(
+		if ($this->db->num_rows() == 0) {
+			throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);			
+		}
+		
+		$data = $this->db->fetch(0);	
+		$unittypeDetails = array(
 			'unittype_id'	=>	$data->unittype_id,
-			'name'	=>	$data->name,
+			'name'			=>	$data->name,
 			'description'	=>	$data->unittype_desc,
-			'formula'	=>	$data->formula,
-			'type_id' => $data->type_id,
-			'type' => $data->type_desc
+			'formula'		=>	$data->formula,
+			'type_id'		=> $data->type_id,
+			'type' 			=> $data->type_desc
 		);
-		//	formulas are not implemented
-//		if (!$vanilla) {
-//			$this->db->query("SELECT * FROM ".TB_FORMULA." WHERE formula_id=".$data->formula);
-//			$data=$this->db->fetch(0);
-//			$unittypeDetails['formula']=$data->formula;
-//		}
 		
 		return $unittypeDetails;
 	}
