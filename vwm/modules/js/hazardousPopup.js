@@ -40,8 +40,8 @@
 			
 			for (i = 0; i < checkBoxes.length; i++) {
 				if (checkBoxes[i].type == 'checkbox' && checkBoxes[i].checked == true) {
-					chemicalClassString.innerHTML +=  document.getElementById('chemicalClassName_'+i).innerHTML + "; ";
 					var index = checkBoxes[i].value -1 ;
+					chemicalClassString.innerHTML +=  document.getElementById('chemicalClassName_'+index).innerHTML + "; ";
 					var hiddenChemicalClassID =  document.createElement("input");
 					hiddenChemicalClassID.type = "hidden";
 					hiddenChemicalClassID.name = 'chemicalClass_'+index;
