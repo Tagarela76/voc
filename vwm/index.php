@@ -148,8 +148,7 @@
 										header("Location: ?action=browseCategory&category=root");
 									}
 									break;
-									$request = $_GET;
-				$smarty->assign('request',$request);
+									
 								case "CompanyLevel":
 									
 									$company_id=$user->getUserDetails($_SESSION['user_id'], true);
@@ -164,7 +163,7 @@
 									break;
 									
 								case "FacilityLevel":
-									echo "FacilityUser<br>";
+									//echo "FacilityUser<br>";
 									
 									$facility_id=$user->getUserDetails($_SESSION['user_id'], true);
 									$facility_id=$facility_id['facility_id'];
@@ -178,7 +177,7 @@
 									break;
 									
 								case "DepartmentLevel":
-									echo "DepartmentUser<br>";
+									//echo "DepartmentUser<br>";
 									
 									$department_id=$user->getUserDetails($_SESSION['user_id'], true);
 									$department_id=$department_id['department_id'];
