@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	var accessLevel='{$accesslevel}';
+	var accessLevel='{$bookmark}';
 </script>
 <script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custom/js/jquery-1.4.2.min.js'></script>
 <script type='text/javascript' src='modules/js/registration.js'></script>
@@ -20,11 +20,11 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 	
-	<form method='post' action='admin.php?action={$currentOperation}&categoryID=users&itemID={$accesslevel}{if $currentOperation neq "addItem"}&id={$ID}{/if}'>
+	<form method='post' action='admin.php?action={$request.action}&category=users&bookmark={$bookmark}{if $request.action neq "addItem"}&id={$request.id}{/if}'>
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">
-					{if $currentOperation == 'edit'}
+					{if $request.action == 'edit'}
 						<span >Edit user</span>
 					{else}
 						<span >Registering user</span>
@@ -158,16 +158,16 @@
 							<td class="border_users_l border_users_b border_users_r">
 							<div align="left" >
 							
-							{if $accesslevel=="company"}
+							{if $bookmark=="company"}
 								Company level
 								<input type="hidden" name="accesslevel_id" value="0">
-							{elseif $accesslevel=="facility"}
+							{elseif $bookmark=="facility"}
 								Facility level
 								<input type="hidden" name="accesslevel_id" value="1">
-							{elseif $accesslevel=="department"}
+							{elseif $bookmark=="department"}
 								Department level
 								<input type="hidden" name="accesslevel_id" value="2">
-							{elseif $accesslevel=="admin"}
+							{elseif $bookmark=="admin"}
 								Superuser level
 								<input type="hidden" name="accesslevel_id" value="3">
 							{/if}
@@ -178,7 +178,7 @@
 						
 						
 
-					{if $accesslevel!="admin"}	
+					{if $bookmark!="admin"}	
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Company:
@@ -197,7 +197,7 @@
 							</td>
 						</tr>
 				{/if}
-				{if $accesslevel=="facility" || $accesslevel=="department"}
+				{if $bookmark=="facility" || $bookmark=="department"}
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Facility:
@@ -219,7 +219,7 @@
 						
 											</tr>
 					{/if}	
-					{if $accesslevel=="department"}	
+					{if $bookmark=="department"}	
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Department:
@@ -251,7 +251,7 @@
 			</table>
 	<div align="right">
 		<br>
-		{if $currentOperation eq "edit"}					
+		{if $request.action eq "edit"}					
 			<input type='submit' id='saveButton' class="button" name='save' value='Save'>
 		{else}
 			<input type='submit' id='saveButton' class="button" name='save' value='Register'>

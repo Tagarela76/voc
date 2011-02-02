@@ -148,7 +148,8 @@
 										header("Location: ?action=browseCategory&category=root");
 									}
 									break;
-									
+									$request = $_GET;
+				$smarty->assign('request',$request);
 								case "CompanyLevel":
 									
 									$company_id=$user->getUserDetails($_SESSION['user_id'], true);

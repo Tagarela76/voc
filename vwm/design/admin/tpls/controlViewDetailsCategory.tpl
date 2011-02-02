@@ -1,10 +1,13 @@
 <div style="margin:7 0 0 10">
-{if $currentOperation == ""}
-	<input type="button" class="button" value="<< Back" onclick="location.href='admin.php?action=browseCategory&categoryID={$categoryID}&itemID={$itemID}'">
-	<input type="button" class="button" value="Edit" onclick="location.href='admin.php?action=edit&categoryID={$categoryID}&itemID={$itemID}&id={$ID}'">
+{if $request.action != ""}
+	<input type="button" class="button" value="<< Back" 
+	onclick="location.href='admin.php?action=browseCategory&category={if $request.category != 'users'}{$parent}&bookmark={$request.category}{else}{$request.category}&bookmark={$request.bookmark}{/if}'">
+	{if $request.category != 'issue'}
+	<input type="button" class="button" value="Edit" onclick="location.href='admin.php?action=edit&category={$request.category}&id={$request.id}'">
+	{/if}
 	{*do not allow delete emissionfactors*}
-	{if $itemID != 'emissionFactor'}
-	<input type="button" class="button" value="Delete" onclick="location.href='admin.php?action=deleteItem&categoryID={$categoryID}&itemID={$itemID}&itemsCount=1&item_0={$ID}'">
+	{if $request.category != 'emissionFactor' && $request.category != 'issue'}
+	<input type="button" class="button" value="Delete" onclick="location.href='admin.php?action=deleteItem&category={$request.category}&itemsCount=1&item_0={$request.id}'">
 	{/if}
 {/if}
 </div>

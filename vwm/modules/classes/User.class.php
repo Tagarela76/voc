@@ -186,7 +186,7 @@ class User {
 	
 	function setUserDetails($userData, $fullUpdate=false) {
 		//$this->db->select_db(DB_NAME);
-		var_dump($userData);
+		
 		$groupType = 'ARO';
 		$separator = '_';
 		$gacl_api = new gacl_api();		

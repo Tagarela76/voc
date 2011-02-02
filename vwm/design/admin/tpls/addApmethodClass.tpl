@@ -17,7 +17,7 @@
 				&nbsp;
 			</td>				
 		</tr>
-		<form method='POST' action='admin.php?action={$currentOperation}&categoryID=class&itemID=apmethod{if $currentOperation neq "addItem"}&id={$ID}{/if}'>
+		<form method='POST' action='admin.php?action={$request.action}&category=apmethod{if $request.action neq "addItem"}&id={$request.id}{/if}'>
 		<tr height="10px">
 			<td class="border_users_l border_users_b" height="20">
 				AP Method Description:
@@ -52,8 +52,8 @@
 		<br>
 		<input type='submit' name='save' class="button" value='Save'>
 		<input type='button' name='cancel' class="button" value='Cancel' 
-			{if $currentOperation=='edit'} onclick='location.href="admin.php?action=viewDetails&categoryID=class&itemID=apmethod&id={$ID}"'{/if}
-			{if $currentOperation=='addItem'} onclick='location.href="admin.php?action=browseCategory&categoryID=class&itemID=apmethod"'{/if}>
+			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=apmethod&id={$request.id}"'{/if}
+			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=tables&bookmark=apmethod"'{/if}>
 		<span style="padding-right:50">&nbsp;</span>
 		</div>
 		{*  <input type='hidden' name='itemID' value='apmethod'>

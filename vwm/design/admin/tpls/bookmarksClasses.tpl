@@ -2,26 +2,26 @@
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0">
     <tr>
         <td align="right"
-{if $bookmarkType  eq "apmethod"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "coat"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "product"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "components"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "agency"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "density"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "country"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "lol"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "msds"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "rule"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "substrate"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "supplier"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "type"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "unittype"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "formulas"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "emissionFactor"}  class="bookmark_fon" {/if} >
+{if $request.bookmark  eq "apmethod"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "coat"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "product"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "components"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "agency"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "density"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "country"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "lol"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "msds"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "rule"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "substrate"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "supplier"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "type"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "unittype"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "formulas"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if} >
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks_big" style="margin-left:10px">
                 <tr>
                     <td>
-                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=apmethod">{if $bookmarkType != "apmethod"}
+                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=apmethod">{if $request.bookmark != "apmethod"}
                             <div class="deactiveBookmark_big">
                                 <div class="deactiveBookmark_right_big">
                                 {else}
@@ -34,7 +34,7 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=coat">{if $bookmarkType != "coat"}
+                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=coat">{if $request.bookmark != "coat"}
                                     <div class="deactiveBookmark">
                                         <div class="deactiveBookmark_right">
                                         {else}
@@ -47,7 +47,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=product">{if $bookmarkType != "product"}
+                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=product">{if $request.bookmark != "product"}
                                             <div class="deactiveBookmark">
                                                 <div class="deactiveBookmark_right">
                                                 {else}
@@ -60,7 +60,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=components">{if $bookmarkType != "components"}
+                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=components">{if $request.bookmark != "components"}
                                                     <div class="deactiveBookmark">
                                                         <div class="deactiveBookmark_right">
                                                         {else}
@@ -73,7 +73,7 @@
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=agency">{if $bookmarkType != "agency"}
+                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=agency">{if $request.bookmark != "agency"}
                                                             <div class="deactiveBookmark">
                                                                 <div class="deactiveBookmark_right">
                                                                 {else}
@@ -86,7 +86,7 @@
                                                                 </a>
                                                             </td>
                                                            {* <td>
-                                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=density">{if $bookmarkType != "density"}
+                                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=density">{if $request.bookmark != "density"}
                                                                     <div class="deactiveBookmark">
                                                                         <div class="deactiveBookmark_right">
                                                                         {else}
@@ -99,7 +99,7 @@
                                                                         </a>
                                                                     </td>*}
                                                                     <td>
-                                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=country">{if $bookmarkType != "country"}
+                                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=country">{if $request.bookmark != "country"}
                                                                             <div class="deactiveBookmark">
                                                                                 <div class="deactiveBookmark_right">
                                                                                 {else}
@@ -112,7 +112,7 @@
                                                                                 </a>
                                                                             </td>
                                                                      {*       <td>
-                                                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=lol">{if $bookmarkType != "lol"}
+                                                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=lol">{if $request.bookmark != "lol"}
                                                                                     <div class="deactiveBookmark_big">
                                                                                         <div class="deactiveBookmark_right_big" nowrap="nowrap">
                                                                                         {else}
@@ -125,7 +125,7 @@
                                                                                         </a>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=msds">{if $bookmarkType != "msds"}
+                                                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=msds">{if $request.bookmark != "msds"}
                                                                                             <div class="deactiveBookmark">
                                                                                                 <div class="deactiveBookmark_right">
                                                                                                 {else}
@@ -138,7 +138,7 @@
                                                                                                 </a>
                                                                                             </td>*}
                                                                                             <td>
-                                                                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=rule">{if $bookmarkType != "rule"}
+                                                                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=rule">{if $request.bookmark != "rule"}
                                                                                                     <div class="deactiveBookmark">
                                                                                                         <div class="deactiveBookmark_right">
                                                                                                         {else}
@@ -151,7 +151,7 @@
                                                                                                         </a>
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=substrate">{if $bookmarkType != "substrate"}
+                                                                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=substrate">{if $request.bookmark != "substrate"}
                                                                                                             <div class="deactiveBookmark">
                                                                                                                 <div class="deactiveBookmark_right">
                                                                                                                 {else}
@@ -164,7 +164,7 @@
                                                                                                                 </a>
                                                                                                             </td>
                                                                                                             <td>
-                                                                                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=supplier">{if $bookmarkType != "supplier"}
+                                                                                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=supplier">{if $request.bookmark != "supplier"}
                                                                                                                     <div class="deactiveBookmark">
                                                                                                                         <div class="deactiveBookmark_right">
                                                                                                                         {else}
@@ -177,7 +177,7 @@
                                                                                                                         </a>
                                                                                                                     </td>
                                                                                                                   {*  <td>
-                                                                                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=type">{if $bookmarkType != "type"}
+                                                                                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=type">{if $request.bookmark != "type"}
                                                                                                                             <div class="deactiveBookmark">
                                                                                                                                 <div class="deactiveBookmark_right">
                                                                                                                                 {else}
@@ -190,7 +190,7 @@
                                                                                                                                 </a>
                                                                                                                             </td>
                                                                                                                             <td>
-                                                                                                                                <a href="admin.php?action=browseCategory&categoryID=class&itemID=unittype">{if $bookmarkType != "unittype"}
+                                                                                                                                <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=unittype">{if $request.bookmark != "unittype"}
                                                                                                                                     <div class="deactiveBookmark">
                                                                                                                                         <div class="deactiveBookmark_right">
                                                                                                                                         {else}
@@ -203,7 +203,7 @@
                                                                                                                                         </a>
                                                                                                                                     </td>
                                                                                                                                     <td>
-                                                                                                                                        <a href="admin.php?action=browseCategory&categoryID=class&itemID=formulas">{if $bookmarkType != "formulas"}
+                                                                                                                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=formulas">{if $request.bookmark != "formulas"}
                                                                                                                                             <div class="deactiveBookmark">
                                                                                                                                                 <div class="deactiveBookmark_right">
                                                                                                                                                 {else}
@@ -217,8 +217,8 @@
                                                                                                                                             </td>*}
                                                                                                                             {if $showFootprint neq 'false'}                
                                                                                                                                 <td>
-                                                                                                                                	<a href="admin.php?action=browseCategory&categoryID=class&itemID=emissionFactor">
-                                                                                                                                		{if $bookmarkType != "emissionFactor"}
+                                                                                                                                	<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=emissionFactor">
+                                                                                                                                		{if $request.bookmark != "emissionFactor"}
                                                                                                                                     		<div class="deactiveBookmark_big">
 	                                                                                                                                        	<div class="deactiveBookmark_right_big">
                                                                                                                                         {else}
@@ -236,66 +236,66 @@
                                                                                                                                             <td>
                                                                                                                                             </tr>
                                                                                                                                             <tr height="19">
-                                                                                                                                            <td {if $bookmarkType  eq "apmethod"}  class="active_bookmark_fon" {/if} >
+                                                                                                                                            <td {if $request.bookmark  eq "apmethod"}  class="active_bookmark_fon" {/if} >
                                                                                                                                             </td>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "coat"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "coat"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "product"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "product"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "components"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "components"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "agency"}  class="active_bookmark_fon" {/if}>
-                                                                                                                                        </td>
-                                                                                                                                        
-                                                                                                                                        {*<td {if $bookmarkType  eq "density"}  class="active_bookmark_fon" {/if}>*}
-                                                                                                                                        
-                                                                                                                                        </td>
-                                                                                                                                        <td {if $bookmarkType  eq "country"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "agency"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
                                                                                                                                         
-                                                                                                                                        {*<td {if $bookmarkType  eq "lol"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        {*<td {if $request.bookmark  eq "density"}  class="active_bookmark_fon" {/if}>*}
+                                                                                                                                        
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "msds"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "country"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        </td>
+                                                                                                                                        
+                                                                                                                                        {*<td {if $request.bookmark  eq "lol"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        </td>
+                                                                                                                                        <td {if $request.bookmark  eq "msds"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>*}
                                                                                                                                         
-                                                                                                                                        <td {if $bookmarkType  eq "rule"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "rule"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "substrate"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "substrate"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "supplier"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "supplier"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
                                                                                                                                         
-                                                                                                                                        {*<td {if $bookmarkType  eq "type"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        {*<td {if $request.bookmark  eq "type"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "unittype"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "unittype"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
-                                                                                                                                        <td {if $bookmarkType  eq "formulas"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "formulas"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>*}
                                                                                                                                         
-                                                                                                                                        <td {if $bookmarkType  eq "emissionFactor"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        <td {if $request.bookmark  eq "emissionFactor"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
                                                                                                                                         </tr>
                                                                                                                                     </table>
 																																	
                                                                                                                                     </td>
                                                                                                                                     <td
-{if $bookmarkType  eq "apmethod"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "coat"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "product"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "components"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "agency"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "density"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "country"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "lol"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "msds"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "rule"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "substrate"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "supplier"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "type"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "unittype"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "formulas"}  class="bookmark_fon" {/if}
-{if $bookmarkType  eq "emissionFactor"}  class="bookmark_fon" {/if} >
+{if $request.bookmark  eq "apmethod"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "coat"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "product"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "components"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "agency"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "density"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "country"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "lol"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "msds"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "rule"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "substrate"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "supplier"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "type"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "unittype"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "formulas"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if} >
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 </table>

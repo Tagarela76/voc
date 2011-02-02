@@ -10,7 +10,7 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 	
-<form method="POST" action='admin.php?action=edit&categoryID=issue&itemID=issue&id={$ID}'>			  
+<form method="POST" action='admin.php?action=edit&category=issue&id={$request.id}'>			  
 		<table class="users" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_top_yellowgreen users_u_top_size" >
 				<td class="users_u_top_yellowgreen" width="15%">View details</td>
@@ -109,7 +109,7 @@
 </div></div>
 	
 	{*  <input type='hidden' name='itemID' value='issue'>
-	<input type='hidden' name='categoryID' value='issue'>
+	<input type='hidden' name='category' value='issue'>
 	<input type='hidden' name='action' value="updateItem">
 	<input type="hidden" name="id" value="{$ID}">*}
 </div>

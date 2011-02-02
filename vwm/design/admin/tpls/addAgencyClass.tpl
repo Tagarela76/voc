@@ -12,12 +12,12 @@
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">
-					<span >{if $currentOperation eq "addItem"}Adding for a new Agency{else}Editing Agency{/if}</span>
+					<span >{if $request.action eq "addItem"}Adding for a new Agency{else}Editing Agency{/if}</span>
 				</td>
 				<td class="users_u_top_r">
 				</td>				
 			</tr>
-<form method='POST' action='admin.php?action={$currentOperation}&categoryID=class&itemID=agency{if $currentOperation neq "addItem"}&id={$ID}{/if}'>
+<form method='POST' action='admin.php?action={$request.action}&category=agency{if $request.action neq "addItem"}&id={$request.id}{/if}'>
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
 						Agency name US:
@@ -147,8 +147,8 @@
 			$('#cancelButton').click(function()
 			{
 				{/literal}
-					{if $currentOperation=='edit'} location.href="admin.php?action=viewDetails&categoryID=class&itemID=agency&id={$ID}"{/if}
-					{if $currentOperation=='addItem'} location.href="admin.php?action=browseCategory&categoryID=class&itemID=agency"{/if}					
+					{if $request.action=='edit'} location.href="admin.php?action=viewDetails&category=agency&id={$request.id}"{/if}
+					{if $request.action=='addItem'} location.href="admin.php?action=browseCategory&category=tables&bookmark=agency"{/if}					
 				{literal}
 			});
 						

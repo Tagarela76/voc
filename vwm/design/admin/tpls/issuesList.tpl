@@ -35,7 +35,7 @@
 						 <tr  height="10px" class="hov_company">
 
 	<td  class="border_users_l border_users_r border_users_b">
-		<input type="checkbox"  value="{$category[i].user_id}" name="item_{$smarty.section.i.index}">
+		<input type="checkbox"  value="{$category[i].issueID}" name="item_{$smarty.section.i.index}">
  	</td>
 
 	<td  class="border_users_r border_users_b">

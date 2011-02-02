@@ -11,13 +11,13 @@
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top" >
 				<td class="users_u_top" width="27%" height="30" >
-					<span >{if $currentOperation eq "addItem"}Adding for a new substrate{else}Editing substrate{/if}</span>
+					<span >{if $request.action eq "addItem"}Adding for a new substrate{else}Editing substrate{/if}</span>
 				</td>
 				<td class="users_u_top_r" >
 					&nbsp;
 				</td>				
 			</tr>
-<form method='POST' action='admin.php?action={$currentOperation}&categoryID=class&itemID=substrate{if $currentOperation neq "addItem"}&id={$ID}{/if}'>
+<form method='POST' action='admin.php?action={$request.action}&category=substrate{if $request.action neq "addItem"}&id={$request.id}{/if}'>
 			<tr height="10px">
 		
 							<td class="border_users_l border_users_b" height="20">
@@ -55,8 +55,8 @@
 			<div align="right">
 				<input type='submit' name='save' class="button" value='Save'>
 				<input type='button' name='cancel' class="button" value='Cancel' 
-					{if $currentOperation=='edit'} onclick='location.href="admin.php?action=viewDetails&categoryID=class&itemID=substrate&id={$ID}"'{/if}
-					{if $currentOperation=='addItem'} onclick='location.href="admin.php?action=browseCategory&categoryID=class&itemID=substrate"'{/if}>
+					{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=substrate&id={$request.id}"'{/if}
+					{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=tables&bookmark=substrate"'{/if}>
 				<span style="padding-right:50">&nbsp;</span>
 			</div>
 		{*  <input type='hidden' name='itemID' value='substrate'>

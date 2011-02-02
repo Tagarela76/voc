@@ -311,7 +311,7 @@ class MCarbonFootprint {
     	extract($params);
     	$carbonFootprint = new CarbonFootprint($db);
     	$pagination = new Pagination($carbonFootprint->queryTotalEmissionCount());
-		$pagination->url = '?action=browseCategory&categoryID=class&itemID=emissionFactor';
+		$pagination->url = '?action=browseCategory&category=tables&bookmark=emissionFactor';
     	
     	$emissionFactors = $carbonFootprint->getAllDirectEmissionFactors($pagination);						
 			//	and electricity)
@@ -327,10 +327,7 @@ class MCarbonFootprint {
     	extract($params);
     	$emissionFactor = new EmissionFactor($db, $id); //in caae it add action id=null so all ok!
     	if ($_POST['save'] == 'Save')
-    	{
-	    	$xnyo->filter_post_var("name","text");
-	    	$xnyo->filter_post_var("unittypeID","text");
-	    	$xnyo->filter_post_var("emissionFactor","text");													
+    	{													
 	    	$emissionFactor->name = $_POST['name'];
 	    	$emissionFactor->unittype_id = $_POST['unittypeID'];
 	    	$emissionFactor->emission_factor = $_POST['emissionFactor'];
@@ -341,7 +338,7 @@ class MCarbonFootprint {
 	    	if ($validStatus['summary'] != 'false') {
 		    	//	save
 		    	$emissionFactor->save();
-		    	header ('Location: admin.php?action=browseCategory&categoryID=class&itemID=emissionFactor');
+		    	header ('Location: admin.php?action=browseCategory&category=tables&bookmark=emissionFactor');
 		    	die();	
 	    	} 
     	}

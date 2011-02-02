@@ -27,11 +27,11 @@
 		<td>
 		<div style="float:left; width:80px">
 		
-		{if $categoryType=="users"}
+		{if $request.category=="users"}
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem">
 			</div>
-		{elseif $categoryType=="class"}
+		{elseif $request.category=="tables"}
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem"  >
 			</div>
@@ -39,7 +39,7 @@
 		
 		</div>
 		
-		{if $itemsCount > 0}
+		{if $itemsCount > 0 }{*&& $request.category != "issue"*}
 		<div style="float:left; width:80px">
 		<div class="delete_button button_alpha">
 			<input type="submit" name="action" value="deleteItem" >
@@ -48,7 +48,7 @@
 		{/if}
 		
 		
-	{if $bookmarkType=="product"}
+	{if $request.bookmark=="product"}
 		
 		{*{if $itemsCount > 0}
 		<div style="float:left; width:80px">
@@ -88,8 +88,14 @@
 		
 	{/if}		
 			<div id='hiddens'>	
-				<input type="hidden" name="categoryID" value="{$categoryType}">
-				<input type="hidden" name="itemID" value="{$bookmarkType}">
+			{if $request.category eq 'tables'}
+				<input type="hidden" name="category" value="{$request.bookmark}">
+			{elseif $request.category eq 'issue'}
+				<input type="hidden" name="category" value="{$request.category}">
+			{else}
+				<input type="hidden" name="category" value="{$request.category}">
+				<input type="hidden" name="bookmark" value="{$request.bookmark}">
+			{/if}
 				<input type="hidden" name="itemsCount" value="{$itemsCount}">			
 			</div>
 		</td>
@@ -105,7 +111,7 @@
 			$('#hiddens').append('<input type="hidden" name="subaction" value="'+subaction+'">');
 			$('#hiddens').append('<input type="hidden" name="action" value="'+action+'">');
 			{/literal}
-			{if $bookmarkType=="product"}
+			{if $request.bookmark=="product"}
 			$('#hiddens').append('<input type="hidden" name="sort" value="{$sort}">');
 			{/if}
 			{literal}	

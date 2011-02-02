@@ -12,7 +12,7 @@
 			   
 <center><h1><b>VOC Bulk Uploader Settings</b></h1></center>
 
-<form name="form" enctype="multipart/form-data" action="admin.php" method="post">
+<form name="form" enctype="multipart/form-data" action="admin.php?action=upload&category=bulkUploader" method="post">
 	<input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
 	<table>		
 		<tr>				
@@ -46,8 +46,8 @@
 			<td></td><td><input type="button" value="Start" onClick="Check()"></td>
 		</tr>
 	</table>
-	<input type='hidden' name='action' value='bulkUpload'>
-	<input type='hidden' name='categoryID' value='bulkUploader'>
+	{*<input type='hidden' name='action' value='bulkUpload'>
+	<input type='hidden' name='categoryID' value='bulkUploader'>*}
 </form>
 			
 			

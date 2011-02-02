@@ -18,7 +18,7 @@
 				</td>					
 			</tr>
 			
-<form method='post' action='admin.php?action={$currentOperation}&categoryID=class&itemID=country{if $currentOperation neq "addItem"}&id={$ID}{/if}'>
+<form method='post' action='admin.php?action={$request.action}&category=country{if $request.action neq "addItem"}&id={$request.id}{/if}'>
 			<tr height="10px">
 		
 							<td class="border_users_l border_users_b" height="20">
@@ -98,8 +98,8 @@
 				<input type='submit' name='save' class="button" value='Add state to country'>	
 				<input type='submit' name='save' class="button" value='Save'>
 				<input type='button' name='cancel' class="button" value='Cancel' 
-					{if $currentOperation=='edit'} onclick='location.href="admin.php?action=viewDetails&categoryID=class&itemID=country&id={$ID}"'{/if}
-					{if $currentOperation=='addItem'} onclick='location.href="admin.php?action=browseCategory&categoryID=class&itemID=country"'{/if}>
+					{if $action.request=='edit'} onclick='location.href="admin.php?action=viewDetails&category=country&id={$request.id}"'{/if}
+					{if $action.request=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=tables&bookmark=country"'{/if}>
 				<span style="padding-right:50">&nbsp;</span>
 			</div>
 		

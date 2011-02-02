@@ -33,9 +33,13 @@ class Controller
 		}
 	}
 		
-	protected function forvard($controller,$function,$vars)
+	protected function forvard($controller,$function,$vars,$controllerType = 'main')
 	{
-		$className="C".ucfirst($controller);
+		if ($controllerType != 'admin') {
+			$className="C".ucfirst($controller);
+		} else {
+			$className="CA".ucfirst($controller);
+		}
 		if (class_exists($className)) {
 			$controllerObj=new $className($this->smarty,$this->xnyo,$this->db,$this->user,$this->action);
 		} else {
@@ -49,12 +53,17 @@ class Controller
 		return $controllerObj;
 	}
 	
-	protected function runCommon()
+	protected function runCommon($controllerType = 'main')
 	{			
 		$title = new TitlesNew($this->smarty, $this->db);		
 		$title->getTitle($this->getFromRequest());
 		
-		$functionName='action'.ucfirst($this->action).'Common';		
+		if ($controllerType != 'admin') {
+			$functionName='action'.ucfirst($this->action).'Common';
+		} else {
+			$functionName='action'.ucfirst($this->action).'ACommon';
+		}
+		
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
@@ -378,11 +387,25 @@ class Controller
 	{		
 		//titles new!!! {panding}
 		$title = new TitlesNew($this->smarty, $this->db);
-		$request = $this->getFromRequest();
-		$title->getTitle($this->getFromRequest());	
-		$request = $this->getFromRequest();
+		$title->getTitle($this->getFromRequest());
 		$this->smarty->assign("request", $this->getFromRequest());
 		$this->smarty->assign("accessname", $_SESSION["username"]);
+	}
+	
+	protected function finalDeleteItemACommon($itemForDelete) {
+		$this->smarty->assign('parent',$this->parent_category);
+		$title = new TitlesNew($this->smarty, $this->db);
+		$title->getTitle($this->getFromRequest());
+		$this->smarty->assign("request", $this->getFromRequest());
+		if (count($itemForDelete) == 1) {
+			$this->smarty->assign('tpl', 'tpls/deleteCategory.tpl');
+		} else {
+			$this->smarty->assign('tpl', 'tpls/deleteCategories.tpl');
+		}
+		$this->smarty->assign("itemForDelete", $itemForDelete);
+		$this->smarty->assign("itemsCount", count($itemForDelete));
+		
+		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	protected function finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info)
@@ -416,6 +439,11 @@ class Controller
 		$this->smarty->assign("accessname", $_SESSION["username"]);
 	}
 	
+	private function actionViewDetailsACommon() {
+		$this->smarty->assign('parent',$this->parent_category);
+		$this->smarty->assign('request', $this->getFromRequest());
+	}
+	
 	private function actionBrowseCategoryCommon()
 	{
 		$paramsForListLeft = array();
@@ -447,12 +475,22 @@ class Controller
 		}		
 	}
 	
+	private function actionBrowseCategoryACommon() {
+		$this->smarty->assign('parent',$this->parent_category);
+		$this->smarty->assign('request', $this->getFromRequest());
+	}
+	
 	private function actionAddItemCommon() {
 		$title = new TitlesNew($this->smarty, $this->db);
 		$request = $_GET;
 		$title->getTitle($request);	
 		$this->smarty->assign('request', $request);
 		$this->smarty->assign("accessname", $_SESSION["username"]);	
+	}
+	
+	private function actionAddItemACommon() {
+		$this->smarty->assign("request", $this->getFromRequest());
+		$this->smarty->assign('parent',$this->parent_category); 
 	}
 	
 	private function actionEditCommon() {
@@ -462,6 +500,11 @@ class Controller
 		
 		$this->smarty->assign('request', $request);
 		$this->smarty->assign("accessname", $_SESSION["username"]);				
+	}
+	
+	private function actionEditACommon() {
+		$this->smarty->assign("request", $this->getFromRequest()); 
+		$this->smarty->assign('parent',$this->parent_category);
 	}
 		
 	//	voc indicator

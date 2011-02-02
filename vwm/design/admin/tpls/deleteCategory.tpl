@@ -106,9 +106,9 @@ ID number
 {*if $itemsCount > 0*}
 
 {if $gobackAction=="viewDetails"}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=viewDetails&categoryID={$categoryID}&itemID={$itemID}&id={$itemForDelete[0].id}'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=viewDetails&category={$request.category}&bookmark={$request.bookmark}&id={$itemForDelete[0].id}'">
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&categoryID={$categoryID}&itemID={$itemID}'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button">
 
@@ -117,9 +117,9 @@ ID number
 
 {*/if*}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
-<input type="hidden" name="itemID" value="{$itemID}">
+<input type="hidden" name="bookmark" value="{$request.bookmark}">
 <input type="hidden" name="ID" value="{$ID}">
-<input type="hidden" name="categoryID" value="{$categoryID}">
+<input type="hidden" name="category" value="{$request.category}">
 <input type="hidden" name="action" value="confirmDelete">
 <input type="hidden" value="{$itemForDelete[0].id}" name="item_0">
 </div>

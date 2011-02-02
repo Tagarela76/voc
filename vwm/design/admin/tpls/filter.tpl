@@ -54,8 +54,8 @@
 		</table>
 		<input type="hidden" name='filterField' >
 		<input type="hidden" name="action" value="browseCategory">
-		<input type="hidden" name="categoryID" value="{$categoryType}">
-		<input type="hidden" name="itemID" value="{$bookmarkType}">
+		<input type="hidden" name="category" value="{$request.category}">
+		<input type="hidden" name="bookmark" value="{$request.bookmark}">
 		<input type="hidden" name="searchAction" value="filter">
 		<input type="hidden" name="sort" value='{$sort}'>
 	</form>

@@ -117,18 +117,18 @@
 <div align="center">
 <div style="width:650px;" align="right">
 	{if $itemsCount > 0}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&categoryID={$categoryID}&itemID={$itemID}'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
 
 
 {else}
-<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&categoryID={$categoryID}&itemID={$itemID}'">
+<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
 
 {/if}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
-<input type="hidden" name="itemID" value="{$itemID}">
-<input type="hidden" name="categoryID" value="{$categoryID}">
+<input type="hidden" name="bookmark" value="{$request.bookmark}">
+<input type="hidden" name="category" value="{$request.category}">
 <input type="hidden" name="action" value="confirmDelete">
 {if $itemType=="inventory" && $deleteWithProducts==true}
 	<input type="hidden" name="deleteWithProducts" value="yes">

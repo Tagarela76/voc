@@ -21,27 +21,27 @@
 	
 	<table  class="users" height="200"  cellspacing="0" cellpadding="0">
            <tr   
-	  {if $bookmarkType eq "company"} class="users_top"  {/if}
-	  {if $bookmarkType eq "facility"} class="users_top_green"  {/if}
-	  {if $bookmarkType eq "department"} class="users_top_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="users_top_blue"  {/if} 
+	  {if $request.bookmark eq "company"} class="users_top"  {/if}
+	  {if $request.bookmark eq "facility"} class="users_top_green"  {/if}
+	  {if $request.bookmark eq "department"} class="users_top_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="users_top_blue"  {/if} 
 		   height="27" bgcolor="#ecb57f">
 		   
 		   
 				<td width="1%" 
-	  {if $bookmarkType eq "company"}class="users_top users_u_top"  {/if}
-	  {if $bookmarkType eq "facility"} class="users_top_green users_u_top_green"  {/if}
-	  {if $bookmarkType eq "department"} class="users_top_violet users_u_top_violet"  {/if}
-	  {if $bookmarkType eq "admin"} class="users_top_blue users_u_top_blue"   {/if} 
+	  {if $request.bookmark eq "company"}class="users_top users_u_top"  {/if}
+	  {if $request.bookmark eq "facility"} class="users_top_green users_u_top_green"  {/if}
+	  {if $request.bookmark eq "department"} class="users_top_violet users_u_top_violet"  {/if}
+	  {if $request.bookmark eq "admin"} class="users_top_blue users_u_top_blue"   {/if} 
 
 
 				> <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></td>
 				
 				<td width="10%" 
-	  {if $bookmarkType eq "company"}class="users_top" {/if}
-	  {if $bookmarkType eq "facility"}class="users_top_green"  {/if}
-	  {if $bookmarkType eq "department"} class="users_top_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="users_top_blue"  {/if} 
+	  {if $request.bookmark eq "company"}class="users_top" {/if}
+	  {if $request.bookmark eq "facility"}class="users_top_green"  {/if}
+	  {if $request.bookmark eq "department"} class="users_top_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="users_top_blue"  {/if} 
 
 				>
 				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
@@ -53,10 +53,10 @@
 				</td>
 
 				<td width="15%" 
-	  {if $bookmarkType eq "company"} class="users_top"  {/if}
-	  {if $bookmarkType eq "facility"}class="users_top_green"  {/if}
-	  {if $bookmarkType eq "department"}class="users_top_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="users_top_blue"  {/if} 
+	  {if $request.bookmark eq "company"} class="users_top"  {/if}
+	  {if $request.bookmark eq "facility"}class="users_top_green"  {/if}
+	  {if $request.bookmark eq "department"}class="users_top_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="users_top_blue"  {/if} 
 
 				>
 				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
@@ -68,10 +68,10 @@
 				</td>
 
 				<td  width="15%" 
-	  {if $bookmarkType eq "company"} class="users_top"  {/if}
-	  {if $bookmarkType eq "facility"} class="users_top_green"  {/if}
-	  {if $bookmarkType eq "department"} class="users_top_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="users_top_blue"  {/if} 
+	  {if $request.bookmark eq "company"} class="users_top"  {/if}
+	  {if $request.bookmark eq "facility"} class="users_top_green"  {/if}
+	  {if $request.bookmark eq "department"} class="users_top_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="users_top_blue"  {/if} 
 
 				>				
 				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
@@ -82,15 +82,15 @@
 				</a> 
 				</td>
 
-{if $bookmarkType != "admin"}
+{if $request.bookmark != "admin"}
 				<td 
-	  {if $bookmarkType eq "company"} class="users_u_top_r"  {/if}
-	  {if $bookmarkType eq "facility"} class="users_u_top_r_green"  {/if}
-	  {if $bookmarkType eq "department"} class="users_u_top_r_violet" {/if}
+	  {if $request.bookmark eq "company"} class="users_u_top_r"  {/if}
+	  {if $request.bookmark eq "facility"} class="users_u_top_r_green"  {/if}
+	  {if $request.bookmark eq "department"} class="users_u_top_r_violet" {/if}
 	  
 				>Start point</td>
 {else}
-				<td width="15%"  {if $bookmarkType eq "admin"} class="users_u_top_r_blue"  {/if} >&nbsp;
+				<td width="15%"  {if $request.bookmark eq "admin"} class="users_u_top_r_blue"  {/if} >&nbsp;
 				</td>
 {/if}
 
@@ -119,7 +119,7 @@
 				</td>
 				
 				<td style="border-bottom:1px solid #cacaca;" class="border_users_r">
-				{if $bookmarkType != "admin"}
+				{if $request.bookmark != "admin"}
 					<a href="{$category[i].url}" ><div style="width:100%;">{$category[i].startPoint}</div ></a>
 				{else}
 					&nbsp;

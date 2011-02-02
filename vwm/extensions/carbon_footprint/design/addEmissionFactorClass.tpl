@@ -9,16 +9,16 @@
 	{/if}
 	
 <div class="padd7">
-	{if $currentOperation == 'addItem'}
-		<form action='admin.php?action=addItem&categoryID=class&itemID=emissionFactor' method="post">
+	{if $request.action == 'addItem'}
+		<form action='admin.php?action=addItem&category=emissionFactor' method="post">
 	{else}
-		<form action='admin.php?action=edit&categoryID=class&itemID=emissionFactor&id={$emissionFactor->id}' method="post">
+		<form action='admin.php?action=edit&category=emissionFactor&id={$emissionFactor->id}' method="post">
 	{/if}
 	
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<thead>
 				<tr class="users_u_top_size users_top">
-					<td class="users_u_top"><span><b>{if $currentOperation == 'addItem'}Adding{else}Editing{/if} Emission Factor</b></span></td>
+					<td class="users_u_top"><span><b>{if $request.action == 'addItem'}Adding{else}Editing{/if} Emission Factor</b></span></td>
 					<td class="users_u_top_r">&nbsp;</td>		
 				</tr>
 			</thead>
@@ -98,7 +98,7 @@
 			<tr>
 				<td>				
 					<div align="right">
-						<input type='button' name='cancel' class="button" value='Cancel' onClick="location.href='admin.php?action=browseCategory&categoryID=class&itemID=emissionFactor'">
+						<input type='button' name='cancel' class="button" value='Cancel' onClick="location.href='admin.php?action=browseCategory&category=tables&bookmark=emissionFactor'">
 						<input type='submit' name='save' class="button" value='Save'>						
 					</div>							
 				</td>

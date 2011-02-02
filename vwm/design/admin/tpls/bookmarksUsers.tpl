@@ -6,10 +6,10 @@
   
    <td  align="right" 
 
-	  {if $bookmarkType eq "company"} class="bookmark_fon_orange" {/if}
-	  {if $bookmarkType eq "facility"} class="bookmark_fon_green" {/if}
-	  {if $bookmarkType eq "department"} class="bookmark_fon_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="bookmark_fon" {/if}
+	  {if $request.bookmark eq "company"} class="bookmark_fon_orange" {/if}
+	  {if $request.bookmark eq "facility"} class="bookmark_fon_green" {/if}
+	  {if $request.bookmark eq "department"} class="bookmark_fon_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="bookmark_fon" {/if}
 
 	  
 	  >
@@ -17,8 +17,8 @@
 
    <tr>
    <td >
-    <a href="admin.php?action=browseCategory&categoryID=users&itemID=company">
-   {if $bookmarkType != "company"}
+    <a href="admin.php?action=browseCategory&category=users&bookmark=company">
+   {if $request.bookmark != "company"}
    <div class="deactiveBookmark"><div class="deactiveBookmark_right">
    {else}
  <div  class = "activeBookmark_orange">  <div class = "activeBookmark_orange_right">
@@ -29,8 +29,8 @@
    </td>
    
    <td >
-    <a href="admin.php?action=browseCategory&categoryID=users&itemID=facility">
-   {if $bookmarkType != "facility"}
+    <a href="admin.php?action=browseCategory&category=users&bookmark=facility">
+   {if $request.bookmark != "facility"}
    <div class="deactiveBookmark"><div class="deactiveBookmark_right">
    {else}
  <div  class = "activeBookmark_green">  <div class = "activeBookmark_green_right">
@@ -41,8 +41,8 @@
    </td>
    
    <td >
-    <a href="admin.php?action=browseCategory&categoryID=users&itemID=department">
-   {if $bookmarkType != "department"}
+    <a href="admin.php?action=browseCategory&category=users&bookmark=department">
+   {if $request.bookmark != "department"}
   <div class="deactiveBookmark"><div class="deactiveBookmark_right">
    {else}
  <div class="activeBookmark_violet"><div class="activeBookmark_violet_right">
@@ -53,8 +53,8 @@
    </td>
    
    <td >
-    <a href="admin.php?action=browseCategory&categoryID=users&itemID=admin">
-   {if $bookmarkType != "admin"}
+    <a href="admin.php?action=browseCategory&category=users&bookmark=admin">
+   {if $request.bookmark != "admin"}
    <div class="deactiveBookmark"><div class="deactiveBookmark_right">
    {else}
  <div  class = "activeBookmark">  <div class = "activeBookmark_right">
@@ -73,20 +73,20 @@
      </tr>
 	  
 	 <tr height="19px">
-	 <td {if $bookmarkType eq "company"} class="active_bookmark_orange_fon" {/if}></td>
-	 <td {if $bookmarkType eq "facility"} class="active_bookmark_green_fon" {/if}></td>
-	 <td {if $bookmarkType eq "department"} class="active_bookmark_violet_fon" {/if}></td>
-	 <td {if $bookmarkType eq "admin"} class="active_bookmark_fon" {/if}></td>
+	 <td {if $request.bookmark eq "company"} class="active_bookmark_orange_fon" {/if}></td>
+	 <td {if $request.bookmark eq "facility"} class="active_bookmark_green_fon" {/if}></td>
+	 <td {if $request.bookmark eq "department"} class="active_bookmark_violet_fon" {/if}></td>
+	 <td {if $request.bookmark eq "admin"} class="active_bookmark_fon" {/if}></td>
 	
 	 </tr>
 </table>   
  </td>
    
     <td 
-	{if $bookmarkType eq "company"} class="bookmark_fon_orange" {/if}
-	 {if $bookmarkType eq "facility"} class="bookmark_fon_green" {/if}
-	  {if $bookmarkType eq "department"} class="bookmark_fon_violet" {/if}
-	  {if $bookmarkType eq "admin"} class="bookmark_fon" {/if}
+	{if $request.bookmark eq "company"} class="bookmark_fon_orange" {/if}
+	 {if $request.bookmark eq "facility"} class="bookmark_fon_green" {/if}
+	  {if $request.bookmark eq "department"} class="bookmark_fon_violet" {/if}
+	  {if $request.bookmark eq "admin"} class="bookmark_fon" {/if}
 	
 	
 	

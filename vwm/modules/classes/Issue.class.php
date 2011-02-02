@@ -130,5 +130,10 @@ class Issue {
     			
     	$this->db->query($query);
     }
+    
+    public function deleteIssue($issueID) {
+    	$query = "DELETE FROM ".TB_ISSUE." WHERE issue_id='$issueID'";
+    	$this->db->query($query);
+    }
 }
 ?>

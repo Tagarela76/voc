@@ -35,7 +35,7 @@ class Country {
 	
 	
 	public function getCountryDetails($countryID) {
-		echo "getCountryDetails";
+		//echo "getCountryDetails";
 		//$this->db->select_db(DB_NAME);
 		$this->AddDatetypeColumn();
 		$this->db->query("SELECT country_id,name as 'country_name',date_type FROM ".TB_COUNTRY." WHERE country_id = ".$countryID);

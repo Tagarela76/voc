@@ -35,36 +35,37 @@
 											{include file="tpls:tpls/login_categoriesList.tpl"}
 											
 											{if $request.action == 'browseCategory'}
-												{if $request.categoryID == 'class'}																						
+												{if $request.category == 'tables'}																						
 													{include file="tpls:tpls/bookmarksClasses.tpl"}
-												{elseif $request.categoryID == 'users'}
+												{elseif $request.category == 'users'}
 													{include file="tpls:tpls/bookmarksUsers.tpl"}																
 												{/if}
 											{/if}
 											{*SORT*}
-												{if $bookmarkType == 'coat'||
-													$bookmarkType == 'components'||
-													$bookmarkType == 'country'||
-													$bookmarkType == 'rule'||
-													$bookmarkType == 'supplier'||
-													$bookmarkType == 'agency'||
-													$bookmarkType == 'product'||
-													$request.categoryID == 'users'}
+												{if $request.bookmark == 'coat'||
+													$request.bookmark == 'components'||
+													$request.bookmark == 'country'||
+													$request.bookmark == 'rule'||
+													$request.bookmark == 'supplier'||
+													$request.bookmark == 'agency'||
+													$request.bookmark == 'product'||
+													$request.category == 'users'}
 													{include file="tpls:tpls/sort.tpl"}
 												{/if}
 											{*/SORT*}
 											
+											{if $request.action == 'browseCategory'}
 											<table width='100%'>
 												<tr>
 													<td>
 													{*FILTER*}
-														{if $bookmarkType == 'coat'||
-															$bookmarkType == 'components'||
-															$bookmarkType == 'country'||
-															$bookmarkType == 'rule'||
-															$bookmarkType == 'supplier'||
-															$bookmarkType == 'agency'||
-															$request.categoryID == 'users'}
+														{if $request.bookmark == 'coat'||
+															$request.bookmark == 'components'||
+															$request.bookmark == 'country'||
+															$request.bookmark == 'rule'||
+															$request.bookmark == 'supplier'||
+															$request.bookmark == 'agency'||
+															$request.category == 'users'}
 															{include file="tpls:tpls/filter.tpl"}
 														{/if}
 													{*/FILTER*}
@@ -72,7 +73,7 @@
 													<td align='right'>
 														<br>																																		
 														{*SEARCH*}																																	
-															{if $bookmarkType == "product"}
+															{if $request.bookmark == "product"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>
@@ -81,7 +82,7 @@
 																		options = { serviceUrl:'modules/ajax/autocomplete.php', 
 																					minChars:2, 
 																					delimiter: /(,|;)\s*/, 
-																					params: { category:'{/literal}{$bookmarkType}All{literal}' }, 
+																					params: { category:'{/literal}{$request.bookmark}All{literal}' }, 
 																					deferRequestBy:300   								
 																		};
 																		a = $('#search').autocomplete(options);
@@ -94,6 +95,7 @@
 													</td>
 												</tr>
 											</table>
+											{/if}
 											
 											{if !$doNotShowControls}
 												{if $request.action == 'browseCategory'}

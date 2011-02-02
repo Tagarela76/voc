@@ -493,15 +493,16 @@ class Unittype {
 		}
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
-		$unittypeList = $this->db->fetch_all_array();
-		//$unittypeList = array();
-		/*foreach ($data as $unittype) {
+		//$unittypeList = $this->db->fetch_all_array();
+		$data = $this->db->fetch_all();
+		$unittypeList = array();
+		foreach ($data as $unittype) {
 			$unittypeList []= array(
 				'id' => $unittype->unittype_id,
 				'name' => $unittype->name,
 				'description' => $unittype->unittype_desc
 			); 
-		}*/
+		}
 		} elseif($companyID != null) {
 			$unittypeList = $this->getUnittypeListByCategory($category);
 		}
