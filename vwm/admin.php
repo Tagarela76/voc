@@ -74,9 +74,7 @@ try {
 			$action='main';				
 		}
 		
-		//$_GET['category'] = $_GET['categoryID']; //remove it later
-		//if ($_GET['categoryID'] == 'class') $_GET['category'] = 'tables';//dohh!
-		//$_GET['bookmark'] = $_GET['itemID'];
+		$smarty->assign("accessname", $xnyo->user['username']);
 		
 		if (isset($_GET['category']) || isset($_POST['itemID']))
 		{	
