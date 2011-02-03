@@ -52,7 +52,7 @@ class CAUsers extends Controller {
 		/*/SORT*/
 		
 		$pagination = new Pagination($this->user->queryTotalCount($bookmark,$filterStr));
-		$pagination->url = "?action=browseCategory&category=users&bookmark=$itemID".
+		$pagination->url = "?action=browseCategory&category=users&bookmark=$bookmark".
 			(isset($filterData['filterField'])?"&filterField=".$filterData['filterField']:"").
 			(isset($filterData['filterCondition'])?"&filterCondition=".$filterData['filterCondition']:"").
 			(isset($filterData['filterValue'])?"&filterValue=".$filterData['filterValue']:"").
@@ -180,8 +180,8 @@ class CAUsers extends Controller {
 				} else {
 					$this->user->setUserDetails($data, true);
 				}								
-				//header ('Location: admin.php?action=browseCategory&category=users&bookmark='.$this->getFromRequest('bookmark'));								
-				//die();								
+				header ('Location: admin.php?action=browseCategory&category=users&bookmark='.$this->getFromRequest('bookmark'));								
+				die();								
 			} else {
 				$data['password']="";
 				$data['confirm_password']="";
