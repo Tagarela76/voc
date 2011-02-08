@@ -20,28 +20,13 @@ class RprojectCoat extends ReportCreator implements iReportCreator {
 		}
 	}
 	
-	public function getReportRequestByGetVars($xnyo) {
+	public function getReportRequestByGetVars($companyID) {
 		//at first lets get data already filtered
 		$categoryType = $_REQUEST['categoryLevel'];
 		$id = $_REQUEST['id'];
 		$reportType = $_REQUEST['reportType'];				
 		$format = $_REQUEST['format'];
-		
-		//now lets filter specific data
-		$xnyo->filter_get_var("frequency","text");
-		$xnyo->filter_get_var("monthYearSelect","text");
-		$xnyo->filter_get_var("logs","text");
-		
-		$xnyo->filter_get_var("clientName","text");
-		$xnyo->filter_get_var("clientSpecification","text");
-		$xnyo->filter_get_var("supplier1","text");
-		$xnyo->filter_get_var("supplier2","text");
-		$xnyo->filter_get_var("supplier3","text");				
-		$xnyo->filter_get_var("reason1","text");
-		$xnyo->filter_get_var("reason2","text");
-		$xnyo->filter_get_var("reason3","text");
-		$xnyo->filter_get_var("summary","text");
-		
+				
 		//and get them too
 		$frequency = $_REQUEST['frequency'];
 		$extraVar['monthYear'] = $_REQUEST['monthYearSelect'];
@@ -60,8 +45,6 @@ class RprojectCoat extends ReportCreator implements iReportCreator {
 		
 		//lets set extra vars in case its csv format
 		if ($format == "csv") {
-			$xnyo->filter_get_var("commaSeparator","text");
-			$xnyo->filter_get_var("textDelimiter","text");
 			$extraVar['commaSeparator'] = $_REQUEST['commaSeparator'];
 			$extraVar['textDelimiter'] = $_REQUEST['textDelimiter'];
 			if (strstr($extraVar['commaSeparator'],"\\")) {
@@ -71,6 +54,9 @@ class RprojectCoat extends ReportCreator implements iReportCreator {
 				$extraVar['textDelimiter'] = str_replace("\\","",$extraVar['textDelimiter']); 
 			}
 		}
+		
+		$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
+	    $dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
 		
 		//finally: lets get	reportRequest object!
 		$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id']);							

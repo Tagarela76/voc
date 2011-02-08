@@ -1,5 +1,5 @@
 <?php	
-	register_shutdown_function("endF");
+	//register_shutdown_function("endF");
 	
 	function endF(){
 		
@@ -215,7 +215,8 @@
 			
 			//$smarty->assign("action", $_GET["action"]);
 			$user = new User($db, $xnyo, $access, $auth);
-															
+			
+								
 			if (!($user->isLoggedIn()) && $_GET["action"] != 'auth') {
 				for($l = 0; $l<strlen($queryStr); $l++) {
 					if ($queryStr[$l] == '&') $queryStr[$l] = '!'; 

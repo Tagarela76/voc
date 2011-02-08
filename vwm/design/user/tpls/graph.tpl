@@ -1,6 +1,6 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="modules/js/flot/excanvas.min.js"></script><![endif]-->
 <span style="float:right;padding-right:40px;">
-<input type="text" name="begin" id="calendar1" value="{$begin}" /> - <input type="text" name="end" id="calendar2" value="{$end}" />
+<input type="text" name="begin" id="calendar1" value="{$begin->formatOutput()}" /> - <input type="text" name="end" id="calendar2" value="{$end->formatOutput()}" />
 <input type="submit" value="Set Date" class="button" /></span> 
 </form>
 {assign var=noDataTable value="<table style='padding-left:20px;width:100%;height:100%;verticalalign:middle;'><tr><td style='width:100%;height:100%;text-align:center; vertical-align:middle; border:1px solid Black'><h2>No Data</h2></td></tr></table>"}
@@ -92,7 +92,7 @@ $(function () {
     }
     
     $(document).ready(function(){	
-		 $('#calendar1, #calendar2').datepicker({ dateFormat: 'mm/dd/yy' }); 
+		 $('#calendar1, #calendar2').datepicker({ dateFormat: '{/literal}{$begin->getFromTypeController('getFormatForCalendar')}{literal}' }); 
     });
    
 </script>

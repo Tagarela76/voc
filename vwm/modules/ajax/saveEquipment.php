@@ -91,7 +91,7 @@
 		
 			if ($validateStatus["summary"] == "true") {		
 				//	convert date to timestamp							
-				$regData["expire"] = strtotime($regData["expire_date"]);
+				$regData['expire'] = new TypeChain($regData['expire_date'],'date',$db,$regData['department_id'],'department');
 							
 				$equipment = new Equipment($db);
 				//	setter injection								
@@ -159,8 +159,8 @@
 			
 			$equipment = new Equipment($db);
 			if ($validStatus['summary'] == 'true') {
-				$equipmentData["expire"] = strtotime($equipmentData['expire_date']);
-
+				$equipmentData['expire'] = new TypeChain($equipmentData['expire_date'],'date',$db,$equipmentData['department_id'],'department');
+//var_dump($equipmentData['expire']->formatInput());
 				//	setter injection								
 				$equipment->setTrashRecord(new Trash($db));
 				$equipment->addNewEquipment($equipmentData);

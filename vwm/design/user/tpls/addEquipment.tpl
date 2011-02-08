@@ -52,11 +52,11 @@
 		
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
-					Expire {if $data.date_type=='d-m-Y g:iA'}(dd-mm-yyyy){else}(mm/dd/yyyy){/if}				
+					Expire {*if $data.date_type=='d-m-Y g:iA'}(dd-mm-yyyy){else}(mm/dd/yyyy){/if*}({$data.expire->getFormatInfo()})				
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" >
-						<input type="text" name="expire_date" id="calendar1" class="calendarFocus" value='{$data.expire_date}'/>							
+						<input type="text" name="expire_date" id="calendar1" class="calendarFocus" value='{$data.expire->formatOutput()}'/>							
 					</div>												
 								{*ERORR*}
 									<div id="error_expire_date"style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
@@ -142,16 +142,16 @@
 	  {literal}
 	  $(document).ready(function () { 
         
-        	if (dateType=='d-m-Y g:iA')
-			{
+        	//if (dateType=='d-m-Y g:iA')
+		//	{
         		//popUpCal.dateFormat = 'DMY-';					 
-				$('#calendar1').datepicker({ dateFormat: 'dd-mm-yy' }); 
-			}		
-            else
-			{
-            	 $('#calendar1').datepicker({ dateFormat: 'mm/dd/yy' });            
+				$('#calendar1').datepicker({ dateFormat: '{/literal}{$data.expire->getFromTypeController('getFormatForCalendar')}{*dd-mm-yy*}{literal}' }); 
+		//	}		
+        //    else
+		//	{
+        //    	 $('#calendar1').datepicker({ dateFormat: 'mm/dd/yy' });            
             	//popUpCal.dateFormat = 'MDY/';
-			}						    		   	
+		//	}						    		   	
       });
 	  {/literal}
     </script>

@@ -35,7 +35,8 @@ class Unittype {
 		
 		$this->db->query("SELECT * FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id AND unittype_id=".$unittypeID);
 		if ($this->db->num_rows() == 0) {
-			throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);			
+			//throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);	//WTF?!	In reports we used it with not valid id to get empty result!!! 
+			return false;
 		}
 		
 		$data = $this->db->fetch(0);	

@@ -53,11 +53,11 @@
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Expire :
+                Expire({$equipment.expire->getFormatInfo()}) :
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.expire}
+                    &nbsp;{$equipment.expire->formatOutput()}
                 </div>
             </td>
         </tr>

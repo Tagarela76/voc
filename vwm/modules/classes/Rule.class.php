@@ -198,16 +198,16 @@ class Rule {
 		$defultRuleNrPropoperty = $this->ruleNrMap[$this->region];
 		
 		if ($this->db->num_rows()) {
-			$rules = $this->db->fetch_all_array();					
-			/*foreach ($rows as $data) {				
+			$rows = $this->db->fetch_all();					
+			foreach ($rows as $data) {				
 				$rule = array (
 					'rule_id'			=>	$data->rule_id,
 					'rule_nr'			=>	$data->$defultRuleNrPropoperty,
 					'description'		=>	$data->rule_desc					
 				);				
 				$rules[]=$rule;
-			}*/
-		}		
+			}
+		}	
 		return $rules;
 	}
 	

@@ -497,11 +497,11 @@ class Facility extends FacilityProperties {
 			
 	
 	
-	public function getDepartmentUsageByDays($beginDate, $endDate, $facilityID) {
+	public function getDepartmentUsageByDays(TypeChain $beginDate, TypeChain $endDate, $facilityID) {
 		$query = "SELECT sum(m.voc) as voc, d.name, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_DEPARTMENT." d " .
 				" WHERE m.department_id = d.department_id AND d.facility_id = '$facilityID' " . 
-					"AND m.creation_time BETWEEN '$beginDate' AND '$endDate' " .
+					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
 				" GROUP BY m.department_id, m.creation_time " .
 				" ORDER BY m.department_id ";
 		$this->db->query($query);
@@ -511,8 +511,8 @@ class Facility extends FacilityProperties {
 		//get empty template for output for each equiment
 		$emptyDepartmentData = array();
 		$day = 86400; // Day in seconds
-		$daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
-		$curDay = $beginDate;
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;
+		$curDay = $beginDate->formatInput();
 		for($i = 0; $i< $daysCount; $i++) {
 			$emptyDepartmentData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
@@ -531,7 +531,7 @@ class Facility extends FacilityProperties {
 		}
 		
 		foreach ($departmentUsageData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
+			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
 			$result[$data->name][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
 		}
 		

@@ -11,6 +11,7 @@ class Controller
 	protected $category;
 	protected $parentCategory;	
 	protected $filter;
+	private $typeInformer;
 	
 	function Controller($smarty,$xnyo,$db,$user,$action)
 	{		

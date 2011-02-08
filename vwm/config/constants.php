@@ -17,12 +17,12 @@
 			break;			
 		
 		case 'web':
-			define('ENVIRONMENT2LOAD','local');			//	LOCAL AREA
+		//	define('ENVIRONMENT2LOAD','local');			//	LOCAL AREA
 		//	define('ENVIRONMENT2LOAD','work');			//	KTTSOFT AREA
 		//	define('ENVIRONMENT2LOAD','server');		//	DEDICATED SERVER LIVE AREA
 		//	define('ENVIRONMENT2LOAD','sandbox');		//	DEDICATED SERVER SANDBOX AREA
 		//	define('ENVIRONMENT2LOAD','acceptance');	//	LOCAL ACCEPTANCE TESTS AREA
-		//	define('ENVIRONMENT2LOAD','localEU-UK');	//	LOCAL EUROPE - UNITED KINGDOM AREA
+			define('ENVIRONMENT2LOAD','localEU-UK');	//	LOCAL EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','workEU-UK');		//	KTTSOFT EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','serverEU-UK');	//	DEDICATED SERVER LIVE EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','sandboxEU-UK');	//	DEDICATED SERVER SANDBOX EUROPE - UNITED KINGDOM AREA
@@ -226,6 +226,7 @@
 	define ('TB_REG_AGENCY', 'reg_agency');
 	define ('TB_REG_ACTS', 'reg_acts');
 	define ('TB_USERS2REGS', 'users2regs');
+	define ('TB_DATE_FORMAT', 'date_format');
 	
 	//billing system constants
 	define ('TB_VPS_MODULE_BILLING','vps_module_billing');

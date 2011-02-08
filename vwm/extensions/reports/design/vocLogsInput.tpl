@@ -210,7 +210,7 @@
             </td>
             <td valign="middle" align="right">
                 <input class="button" align="right" type="button" name="goBack" value="Back" onClick="{if $backUrl}location.href='{$backUrl}'{else}history.go(-1);return true;{/if}"/>
-				<input class="button" align="right" type="button" value="Submit" onClick='CheckDate()'/>
+				<input class="button" align="right" type="button" value="Submit" onClick='{*CheckDate()*}form.submit()'/>
             </td>
         </tr>
     </table>
@@ -235,7 +235,7 @@
      $(document).ready(function(){
       /*  popUpCal.dateFormat = 'MDY/';
         $("#calendar1, #calendar2").calendar();*/		
-		 $('#calendar1, #calendar2').datepicker({ dateFormat: 'mm/dd/yy' }); 
+		 $('#calendar1, #calendar2').datepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}' }); 
     });
 </script>
 {/literal}

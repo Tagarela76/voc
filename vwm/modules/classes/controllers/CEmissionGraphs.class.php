@@ -31,50 +31,48 @@ class CEmissionGraphs extends Controller {
     private function setGraphs($category, $id) {
     	
     	//dates validation!
-    	$endDate = $this->getFromRequest('end');
-	    $beginDate = $this->getFromRequest('begin');
-	    if (is_null($endDate) && is_null($beginDate)) {
-	    	$endDate = date('Y-m-d');
-	    	$beginDate = date('Y-m-d', strtotime(' - 30 days'));
-	    } elseif (is_null($endDate)) {
-	    	$endDate = date('Y-m-d', strtotime($beginDate.' + 30 days'));
-	    } elseif (is_null($beginDate)) {
-	    	$beginDate = date('Y-m-d', strtotime($endDate.' - 30 days'));
+    	$endDate = new TypeChain($this->getFromRequest('end'),'date',$this->db,$id,$category);
+	    $beginDate = new TypeChain($this->getFromRequest('begin'),'date',$this->db,$id,$category);
+	    if (!$endDate->formatInput() && !$beginDate->formatInput()) {
+	    	$endDate->setValue(date('Y-m-d'));
+	    	$beginDate->setValue(date('Y-m-d', strtotime(' - 30 days')));
+	    } elseif (!$endDate->formatInput()) {
+	    	$endDate->setValue(date('Y-m-d',strtotime($beginDate->formatInput().' + 30 days')));
+	    } elseif (!$beginDate->formatInput()) {
+	    	$beginDate->setValue(date('Y-m-d',strtotime($endDate->formatInput().' - 30 days')));
 	    }
 	    
-	    if($beginDate > $endDate) {
+	    if($beginDate->formatInput() > $endDate->formatInput()) {
 	    	$date = $endDate;
 	    	$endDate = $beginDate;
 	    	$beginDate = $date;
 	    }
-	    $endDate = date('Y-m-d', strtotime($endDate));
-	    $beginDate = date('Y-m-d', strtotime($beginDate));
 	    $this->smarty->assign('begin',$beginDate);
 	    $this->smarty->assign('end',$endDate);
-	    
+	   // var_dump($endDate);var_dump($beginDate);//die();
 	    
 	    //calc tick for graph
 	    $day = 86400; // Day in seconds
-	    $daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
+	    $daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;
 	    $tick = round($daysCount/10);
 	    $this->smarty->assign('tick',$tick);
 	    
 	    //Daily Emissions Graph
 	    $equip = new Equipment($this->db);
 	    $data = $equip->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);  
-	    $this->smarty->assign('dataDE',$this->performDataForGraph($data));
+	    $this->smarty->assign('dataDE',$this->performDataForGraph($data));//var_dump($data);
 	    //Product Usage Graph
 	    $product = new Product($this->db);
 	    $data = $product->getProductUsageByDays($beginDate,$endDate,$category,$id);
 	    $this->smarty->assign('legendPUheight',count($product->getProductNR())*18);
-	    $this->smarty->assign('dataPU',$this->performDataForGraph($data));
+	    $this->smarty->assign('dataPU',$this->performDataForGraph($data));//var_dump($data);
 	    
 	    //Department Usage Graph(only for facility)
 	    if ($category == 'facility') {
 	    	$facility = new Facility($this->db);
 	    	$data = $facility->getDepartmentUsageByDays($beginDate,$endDate,$id);
-	    	$this->smarty->assign('dataDU',$this->performDataForGraph($data));
-	    }
+	    	$this->smarty->assign('dataDU',$this->performDataForGraph($data));//var_dump($data);
+	    }//die();
 	    
 	    $jsSources = array (										
 		    'modules/js/flot/jquery.flot.js',

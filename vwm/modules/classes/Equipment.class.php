@@ -85,7 +85,7 @@ class Equipment extends EquipmentProperties {
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT * FROM ".TB_EQUIPMENT." WHERE equipment_id=".$equipmentID);
 		$equipmentDetails=$this->db->fetch_array(0);
-		$DateType = new DateTypeConverter($this->db);
+	//	$DateType = new DateTypeConverter($this->db);
 		/*$equipmentDetails=array (
 			'equipment_id'		=>	$data->equipment_id,
 			'equipment_nr'		=>	$data->equipment_nr,
@@ -100,17 +100,17 @@ class Equipment extends EquipmentProperties {
 			'department_id'		=>	$data->department_id,
 			'departmentID'		=>	$data->department_id
 		);*/
-		$equipmentDetails['expire'] = date($DateType->getDatetypebyID($equipmentID), $equipmentDetails['expire']);
-		
+		//$equipmentDetails['expire'] = date($DateType->getDatetypebyID($equipmentID), $equipmentDetails['expire']);
+		$equipmentDetails['expire'] = new TypeChain(date('Y-m-d',$equipmentDetails['expire']),'date',$this->db,$equipmentDetails['department_id'],'department');
 		if (!$vanilla){
-			$this->db->query("SELECT * FROM ".TB_DEPARTMENT." WHERE department_id=".$data->department_id);
+			$this->db->query("SELECT * FROM ".TB_DEPARTMENT." WHERE department_id=".$equipmentDetails['department_id']);
 			$data2=$this->db->fetch(0);
 			$equipmentDetails['department_id']=$data2->name;
 			
-			$this->db->query("SELECT * FROM ".TB_INVENTORY." WHERE id = ".$data->inventory_id);
+			$this->db->query("SELECT * FROM ".TB_INVENTORY." WHERE id = ".$equipmentDetails['inventory_id']);
 			$data2=$this->db->fetch(0);			
 			$equipmentDetails['inventory_id']=$data2->name;			
-		}		
+		}		//var_dump($equipmentDetails);
 		
 		return $equipmentDetails;
 	}
@@ -121,7 +121,7 @@ class Equipment extends EquipmentProperties {
 		//screening of quotation marks
 		foreach ($equipmentData as $key=>$value)
 		{
-			$equipmentData[$key]=mysql_escape_string($value);
+			$equipmentData[$key]=($key != "expire")?mysql_escape_string($value):$value;
 		}
 		
 		
@@ -133,7 +133,7 @@ class Equipment extends EquipmentProperties {
 		$query .= "'".$equipmentData["equip_desc"]."', ";
 		$query .= "'".$equipmentData["inventory_id"]."', ";
 		$query .= "'".$equipmentData["permit"]."', ";
-		$query .= "'".$equipmentData["expire"]."', ";
+		$query .= "'".strtotime($equipmentData["expire"]->formatInput())."', ";
 		$query .= "'".$equipmentData["daily"]."', ";
 		$query .= "'".$equipmentData["dept_track"]."', ";
 		$query .= "'".$equipmentData["facility_track"]."', ";
@@ -172,7 +172,7 @@ class Equipment extends EquipmentProperties {
 		//screening of quotation marks
 		foreach ($equipmentData as $key=>$value)
 		{
-			$equipmentData[$key]=mysql_escape_string($value);
+			$equipmentData[$key]=($key != 'expire')?mysql_escape_string($value):$value;
 		}
 		
 		//$this->db->select_db(DB_NAME);
@@ -199,7 +199,7 @@ class Equipment extends EquipmentProperties {
 		$query.="equip_desc='".$equipmentData["equip_desc"]."', ";
 		$query.="inventory_id='".$equipmentData["inventory_id"]."', ";
 		$query.="permit='".$equipmentData["permit"]."', ";
-		$query.="expire='".$equipmentData["expire"]."', ";
+		$query.="expire='".strtotime($equipmentData["expire"]->formatInput())."', ";
 		$query.="daily='".$equipmentData["daily"]."', ";
 		$query.="dept_track='".$equipmentData["dept_track"]."', ";
 		$query.="facility_track='".$equipmentData["facility_track"]."', ";
@@ -457,14 +457,14 @@ class Equipment extends EquipmentProperties {
 	}
 	
 	
-	public function getDailyEmissionsByDays($beginDate, $endDate, $category, $categoryID) {
+	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 		$query = "SELECT sum(m.voc) as voc, eq.equip_desc, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
 							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " : 
 							"eq.department_id = '$categoryID' ") . 
 					"AND m.equipment_id = eq.equipment_id " .
-					"AND m.creation_time BETWEEN '$beginDate' AND '$endDate' " .
+					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
 				" GROUP BY m.equipment_id, m.creation_time " .
 				" ORDER BY m.equipment_id ";
 		$this->db->query($query);
@@ -474,8 +474,8 @@ class Equipment extends EquipmentProperties {
 		//get empty template for output for each equiment
 		$emptyEquipmentData = array();
 		$day = 86400; // Day in seconds
-		$daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
-		$curDay = $beginDate;
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;//var_dump('day_count',$daysCount);
+		$curDay = $beginDate->formatInput();
 		for($i = 0; $i< $daysCount; $i++) {
 			$emptyEquipmentData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
@@ -495,7 +495,7 @@ class Equipment extends EquipmentProperties {
 		}
 		
 		foreach ($dailyEmissionsData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
+			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
 			$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
 		}
 		

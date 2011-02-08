@@ -20,24 +20,17 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		}
 	}
 	
-	public function getReportRequestByGetVars($xnyo) {
+	public function getReportRequestByGetVars($companyID) {
 		//at first lets get data already filtered
 		$categoryType = $_REQUEST['categoryLevel'];
 		$id = $_REQUEST['id'];
 		$reportType = $_REQUEST['reportType'];				
 		$format = $_REQUEST['format'];
 		
-		//now lets filter specific data
-		$xnyo->filter_get_var("date_begin","text");
-		$xnyo->filter_get_var("date_end","text");
-		$xnyo->filter_get_var("logs","text");
-		$xnyo->filter_get_var("responsiblePerson","text");
-		$xnyo->filter_get_var("title","text");
-		$xnyo->filter_get_var("notes","text");
 		
 		//and get them too
-		$dateBegin = $_GET['date_begin'];
-		$dateEnd = $_GET['date_end'];
+		$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
+	    $dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
 		$extraVar['rule'] = $_REQUEST['logs'];
 		
 		$data['responsiblePerson'] = (($_REQUEST['responsiblePerson'] == "[Responsible Person]") ? "" : $_REQUEST['responsiblePerson']);
@@ -47,8 +40,6 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		
 		//lets set extra vars in case its csv format
 		if ($format == "csv") {
-			$xnyo->filter_get_var("commaSeparator","text");
-			$xnyo->filter_get_var("textDelimiter","text");
 			$extraVar['commaSeparator'] = $_REQUEST['commaSeparator'];
 			$extraVar['textDelimiter'] = $_REQUEST['textDelimiter'];
 			if (strstr($extraVar['commaSeparator'],"\\")) {

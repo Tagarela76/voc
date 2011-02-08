@@ -170,7 +170,8 @@ class CEquipment extends Controller
 		}																						
 		
 		$DateType = new DateTypeConverter($this->db);
-		$categoryDetails['date_type'] = $DateType->getDatetype($department->getFacilityID()); 							
+		$categoryDetails['date_type'] = $DateType->getDatetype($department->getFacilityID()); 	
+		$categoryDetails['expire'] = new TypeChain(null,'date',$this->db,$this->getFromRequest('departmentID'),'department');						
 		$this->smarty->assign('data', $categoryDetails);
 		
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'), array('bookmark'=>'equipment'));

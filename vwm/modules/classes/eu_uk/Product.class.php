@@ -671,7 +671,7 @@ class Product extends ProductProperties {
 	
 	
 	
-	public function getProductUsageByDays($beginDate, $endDate, $category, $categoryID) {
+	public function getProductUsageByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
@@ -679,7 +679,7 @@ class Product extends ProductProperties {
 							"m.department_id = '$categoryID' ") . 
 					"AND p.product_id = mg.product_id " .
 					"AND m.mix_id = mg.mix_id " .
-					"AND m.creation_time BETWEEN '$beginDate' AND '$endDate' " .
+					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
 				" GROUP BY mg.product_id, m.creation_time " .
 				" ORDER BY p.product_id ";
 		$this->db->query($query);
@@ -689,8 +689,8 @@ class Product extends ProductProperties {
 		//get empty template for output for each product
 		$emptyProductData = array();
 		$day = 86400; // Day in seconds
-		$daysCount = round((strtotime($endDate) - strtotime($beginDate))/$day) + 1;
-		$curDay = $beginDate;
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;
+		$curDay = $beginDate->formatInput();
 		for($i = 0; $i< $daysCount; $i++) {
 			$emptyProductData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
@@ -715,7 +715,7 @@ class Product extends ProductProperties {
 		}
 
 		foreach ($productUsageData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate))/$day); //$key == day from the begin date
+			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
 			$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
 		}
 		
