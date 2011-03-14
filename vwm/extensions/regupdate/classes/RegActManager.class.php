@@ -154,6 +154,9 @@ class RegActManager {
 	 */
 	public function getMessageForNotificator($userID) {
 		$listToMail = $this->getUnreadList($userID); //its already sorted by category
+		if (!$listToMail) {
+			return false;
+		}
 		$textToMail = "New updates in Enviromental Protection Agency Regulations! \n";
 		$curCategory = "";
 		foreach($listToMail as $regAct) {

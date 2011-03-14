@@ -1911,6 +1911,30 @@ a.button_select_none:hover{
     width: 100px
 }
 
+/*Mark as Read button*/
+.markasread_button {
+    background: url(images/markasread_button.gif) no-repeat left center;
+    border: 0px;
+    cursor: pointer;
+    color: #5c5c5c;
+    height: 20px;
+    width: 100px;
+	font-family:Tahoma,Verdana,Helvetica,sans-serif;
+}
+.markasread_button input {
+    width: 71px;
+	border: 0px;
+}
+
+.markasread_button:hover, a:hover.markasread_button, input:hover.markasread_button {
+    background: url(images/markasread_button.gif) no-repeat -100px center;
+    border: 0px;
+    cursor: pointer;
+    height: 20px;
+    width: 100px
+}
+
+
 input.button_70 {
     background: url(images/button_70.gif) no-repeat top;
     border: 0px;
@@ -3142,3 +3166,16 @@ div:hover.category_folder_hover{cursor:pointer;}
 .errors_list_text{padding:20px;font:normal 14px Helvetica, Sans-serif;color:#D8D8E3}
 
 #ui-datepicker-div { display: none; }
+
+
+
+#notify {
+	-webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);
+	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);
+	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);		
+	text-shadow:0px -1px 1px #000000;	
+}
+
+#notifyClose {
+	margin:3px;	
+}

@@ -27,8 +27,7 @@ class Controller
 		{
 			$notifyc = new Notify(null, $db);
 			
-			$notify = $notifyc->getPopUpNotifyMessage($this->request['notify']);
-			
+			$notify = $notifyc->getPopUpNotifyMessage($this->request['notify']);			
 			$this->smarty->assign("notify", $notify);
 			
 		}
@@ -179,8 +178,14 @@ class Controller
 				$this->smarty->assign("referer", $issueDetails["referer"]);
 							
 				//	Prepare Notify system
-				$notify = new Notify($this->smarty);
-				$notify->formErrors();
+				/* old school style */
+				//$notify = new Notify($this->smarty);
+				//$notify->formErrors();
+				
+				/*	the modern style */
+				$notifyc = new Notify(null, $this->db);					
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
 							
 				$this->smarty->assign("validStatus", $validationStatus);
 							
@@ -395,6 +400,7 @@ class Controller
 	
 	protected function finalDeleteItemACommon($itemForDelete) {
 		$this->smarty->assign('parent',$this->parent_category);
+		
 		$title = new TitlesNew($this->smarty, $this->db);
 		$title->getTitle($this->getFromRequest());
 		$this->smarty->assign("request", $this->getFromRequest());
@@ -403,6 +409,7 @@ class Controller
 		} else {
 			$this->smarty->assign('tpl', 'tpls/deleteCategories.tpl');
 		}
+		
 		$this->smarty->assign("itemForDelete", $itemForDelete);
 		$this->smarty->assign("itemsCount", count($itemForDelete));
 		
@@ -484,6 +491,8 @@ class Controller
 	private function actionAddItemCommon() {
 		$title = new TitlesNew($this->smarty, $this->db);
 		$request = $_GET;
+		$request['parent_category'] = $this->parent_category;
+		$request['parent_id'] = $this->getFromRequest($this->parent_category.'ID');
 		$title->getTitle($request);	
 		$this->smarty->assign('request', $request);
 		$this->smarty->assign("accessname", $_SESSION["username"]);	

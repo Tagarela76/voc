@@ -60,6 +60,7 @@ try {
 			$smarty->display('tpls:adminLogin.tpl');
 		}
 	} else {
+		
 		$smarty->assign("action", $_GET["action"]);
 		$user=new User($db, $xnyo, $access, $auth);
 		
@@ -73,6 +74,7 @@ try {
 		} else {
 			$action='main';				
 		}
+		
 		
 		$smarty->assign("accessname", $xnyo->user['username']);
 		

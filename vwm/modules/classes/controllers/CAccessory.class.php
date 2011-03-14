@@ -93,7 +93,8 @@ class CAccessory extends Controller
 	private function actionAddItem() 
 	{ 
 		$request=$this->getFromRequest();
-		$request['id'] = $request['departmentID'];		
+		$request['id'] = $request['departmentID'];	
+		$request['parent_id'] = $request['departmentID'];	
 		$request['parent_category'] = 'department';
 							
 		//	Access control
@@ -163,8 +164,14 @@ class CAccessory extends Controller
 			else 
 			{
 				//	Errors on validation of adding for a new accessory
-				$notify = new Notify($this->smarty);
-				$notify->formErrors();
+				/* old school style */
+				//$notify = new Notify($this->smarty);
+				//$notify->formErrors();
+				
+				/*	the modern style */
+				$notifyc = new Notify(null, $this->db);					
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
 									
 				$this->smarty->assign('validStatus', $validStatus);
 				$this->smarty->assign('data', $accessoryDetails);
@@ -241,8 +248,14 @@ class CAccessory extends Controller
 			else 
 			{
 				//	Errors on validation of editing accessory
-				$notify = new Notify($this->smarty);
-				$notify->formErrors();
+				/* old school style */
+				//$notify = new Notify($this->smarty);
+				//$notify->formErrors();
+				
+				/*	the modern style */
+				$notifyc = new Notify(null, $this->db);					
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
 								
 				$this->smarty->assign('validStatus', $validStatus);
 			}

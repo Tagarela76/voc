@@ -11,25 +11,29 @@
 	//	Include Class Autoloader
 	require_once('modules/classAutoloader.php');
 	
-	$xnyo = new Xnyo();
+	/*$xnyo = new Xnyo();
 	$xnyo->database_type	= DB_TYPE;
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
-	$xnyo->start();
+	$xnyo->start();*/
 	
+	//	Start xnyo Framework
+	require ('modules/xnyo/startXnyo.php');
 	$db->select_db(DB_NAME);
 	
 	require ('modules/xnyo/smarty/startSmartyAdmin.php');
 	
 	//	filter action var	
+
 	$xnyo->filter_post_var('action', 'text');
-	$action = $_POST['action'];
+
+	$action = $_REQUEST['action']; 
 		
 	//	logged in?	
 	$user = new User($db, $xnyo, $access, $auth);
 	if (!$user->isLoggedIn()) {
-		die();
+		die("user not logined");
 	}	
 			
 	
@@ -157,9 +161,11 @@
 			break;				
 				
 		case "index":		
-		default:		
+			
 			$xnyo->filter_post_var('searchText', 'text');
-			$searchText = $_POST['searchText'];
+			
+			$searchText = $_REQUEST['searchText'];
+			
 			
 			$trackManager = new TrackManager($db);
 			$trashRecords = $trackManager->getTrackList($searchText);	

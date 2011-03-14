@@ -207,7 +207,7 @@ class Rule {
 				);				
 				$rules[]=$rule;
 			}
-		}	
+		}		
 		return $rules;
 	}
 	

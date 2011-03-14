@@ -10,7 +10,8 @@ class CAApmethod extends Controller {
 	
 	function runAction() {
 		$this->runCommon('admin');
-		$functionName='action'.ucfirst($this->action);				
+		$functionName='action'.ucfirst($this->action);	
+					
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
@@ -129,6 +130,7 @@ class CAApmethod extends Controller {
 				$itemForDelete []= $item;
 			}
 		}
+		$this->smarty->assign("gobackAction","viewDetails");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
 	

@@ -48,6 +48,42 @@
 		$("#UnitTypelist").dialog('close');
 	}
 	
+	function addUnittypeData() {
+		var unittypeData = document.getElementById("unittype_data");
+		unittypeData.innerHTML = "";
+		$('input[id^=unitTypeID]').each(function(el) {
+			if ($(this).attr('checked')) {
+			//	var checkInput = document.createElement("input");
+			//	checkInput.type = "checkbox";
+			//	checkInput.name = $(this).attr('name');
+			//	checkInput.id = checkInput.name;
+			//	checkInput.value = $(this).attr('value');
+			//	checkInput.checked = $(this).attr('checked');
+			//	unittypeData.appendChild(checkInput);
+				var checkInput = '<input type="checkbox" name="' + $(this).attr('name') + '" id="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" checked />';
+				$("#apmethod_data").append(checkInput);
+			}
+		});	
+	}
+	
+	function addAPMethodData() {
+		var unittypeData = document.getElementById("apmethod_data");
+		unittypeData.innerHTML = "";
+		$('input[id^=APMethodID]').each(function(el) {
+			if ($(this).attr('checked')) {
+			//	var checkInput = document.createElement("input");
+			//	checkInput.type = "checkbox";
+			//	checkInput.name = $(this).attr('name');
+			//	checkInput.id = checkInput.name;
+			//	checkInput.value = $(this).attr('value');
+			//	checkInput.checked = $(this).attr('checked');
+			//	unittypeData.appendChild(checkInput);
+				var checkInput = '<input type="checkbox" name="' + $(this).attr('name') + '" id="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" checked />';
+				$("#apmethod_data").append(checkInput);
+			}
+		});	
+	}
+	
 	$(function() {
 		$("#UnitTypelist").dialog({
 				width: 800,
@@ -60,6 +96,7 @@
 						cancelPopupUnittype()
 					},
 					'Save': function() {
+						addUnittypeData();
 						$(this).dialog('close');
 					}
 				}	
@@ -78,6 +115,7 @@
 						cancelPopupAPMethod()
 					},
 					'Save': function() {
+						addAPMethodData();
 						$(this).dialog('close');
 					}
 				}	

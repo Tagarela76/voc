@@ -104,7 +104,7 @@
                         </span>
                     </td>
                     <td>
-                        {if $request.category != 'root'}
+                        {if $request.category != 'root' && !($request.action == 'addItem' && $request.category == 'company')}
                         <div align="center">
                             {*<input type="button" class="button" value="Settings" onclick="location.href='?action=settings&itemID={$smarty.session.overCategoryType}&id={$smarty.session.CategoryID}'">*}
 							{*<input type="button" class="button" value="Settings" onclick="location.href='?action=settings&category={if $request.action!='addItem'}{$request.category}{else}{$request.parent_category}{/if}&id={$request.id}'">*}
@@ -118,9 +118,9 @@
                     </td>
                 </tr>
                 <tr>
-                	<td><a href="?action=showIssueReport&category={if $request.action!='addItem'}{$request.category}{else}{$request.parent_category}{/if}&id={$request.id}"><img src="images/question_y.png" title="{$smarty.const.DESCRIPTION_SUGGEST_FEATURE}"/></a></td>
+                	<td><a href="?action=showIssueReport&category={if $request.action!='addItem'}{$request.category}&id={$request.id}{else}{$request.parent_category}&id={$request.parent_id}{/if}"><img src="images/question_y.png" title="{$smarty.const.DESCRIPTION_SUGGEST_FEATURE}"/></a></td>
                     <td align="middle">                       
-                       <a href="?action=showIssueReport&category={if $request.action!='addItem'}{$request.category}{else}{$request.parent_category}{/if}&id={$request.id}" style="color:#506480;font-size:12px;" title="{$smarty.const.DESCRIPTION_SUGGEST_FEATURE}"><b>{$smarty.const.LINK_SUGGEST_FEATURE}</b></a>
+                       <a href="?action=showIssueReport&category={if $request.action!='addItem'}{$request.category}&id={$request.id}{else}{$request.parent_category}&id={$request.parent_id}{/if}" style="color:#506480;font-size:12px;" title="{$smarty.const.DESCRIPTION_SUGGEST_FEATURE}"><b>{$smarty.const.LINK_SUGGEST_FEATURE}</b></a>
                     </td>
                     <td>
                         <div class="" align="center">

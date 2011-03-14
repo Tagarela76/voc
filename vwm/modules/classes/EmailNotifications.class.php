@@ -211,7 +211,7 @@ class EmailNotifications {
 	}
     
     public function sendNotify($notifyList) {
-    	
+    /*	
     	$from = "kttsoft.mailtester@mail.ru";
     	$theme = "Notification: ";
     	
@@ -282,8 +282,8 @@ class EmailNotifications {
 					
 					fputs($smtp_conn,"QUIT\r\n");
 					fclose($smtp_conn);
-		}
- /* 	 	$email = new EMail();
+		}*/
+  	 	$email = new EMail();
     	$from = AUTH_SENDER."@".DOMAIN;
     	$theme = "Notification ";
 		
@@ -295,7 +295,7 @@ class EmailNotifications {
 			
 			$message = $nonify['message'];		
 			$email->sendMail($from, $to, $theme, $message);
-		}*/
+		}
     }
     
     private function checkUser($user_id = null) {
@@ -331,10 +331,19 @@ class EmailNotifications {
     	$notifyList = $this->getLimits2Notify($periodicNotifiers);
     	foreach($notifyList as $key => $data2notify) {
     		$message = '';
+    		$send = false;
     		foreach ($data2notify['limits'] as $limit) {
-    			$message .= $this->getPeriodicMessage($limit,$data2notify['id'])."\n\n";
+    			$periodicMessage = $this->getPeriodicMessage($limit,$data2notify['id']);
+    			if ($periodicMessage !== false) {
+    				$message .= $this->getPeriodicMessage($limit,$data2notify['id'])."\n\n";
+    				$send = true;
+    			}
     		}
-    		$notifyList[$key]['message'] = $message;
+    		if ($send) {
+    			$notifyList[$key]['message'] = $message;
+    		} else {
+    			unset($notifyList[$key]);
+    		}
     	}
     	//var_dump($notifyList);
     	$this->sendNotify($notifyList);

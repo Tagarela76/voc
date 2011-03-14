@@ -73,7 +73,7 @@ class Notify {
 					return Array("color" => "White", "backgroundColor" => "Green");
 			}elseif($error >= 400)
 			{
-					return Array("color" => "Black", "backgroundColor" => "Red");
+					return Array("color" => "White", "backgroundColor" => "Red");
 			}
 		
 	}
@@ -974,6 +974,10 @@ class Notify {
     	
     	$this->smarty->assign("message", "The payment period is coming to end in ".$foramttedDaysLeft.". Please, go to ".$vpsLink." pay for the next period.");
 	    $this->smarty->assign("color", "orange");
+//	    $notify = array("text" 	=> "The payment period is coming to end in ".$foramttedDaysLeft.". Please, go to ".$vpsLink." pay for the next period.",
+//						"params"=> $this->getErrorColors(401));
+	    
+//	    return $notify;
     }
     
     public function billingPlanLimitations($limitName) {

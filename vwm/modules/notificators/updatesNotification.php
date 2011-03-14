@@ -24,8 +24,8 @@ chdir('../..');
 	/* HERE CODE: */
 	
 	//update EPA Regulations
-	//$rag = new RegAgency($db);
-	//$rag->loadAgencyFromXML();
+//	$rag = new RegAgency($db);
+//	$rag->loadAgencyFromXML();
 	
 	$ram = new RegActManager($db);
 	$ram->parseXML();

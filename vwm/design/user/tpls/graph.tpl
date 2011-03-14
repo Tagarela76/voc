@@ -8,7 +8,7 @@
 
 <div style="padding-left:20px;width:1450px;height:370px;">
    <div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
-   <div id="legendDE" style="float:left;width:200px;height:300px"></div>
+   <div id="legendDE" style="float:left;width:200px;height:300px;overflow:auto;"></div>
     <p id="hoverdataDE" style="float:left;">Mouse hovers at
     (<span id="xDE">0</span>, <span id="yDE">0</span>). <span id="clickdata"></span></p>
 </div>
@@ -16,9 +16,9 @@
 
 
 <h2 style="align:center;padding-left:40px;">Product Usage</h2><br/>
-<div style="padding-left:20px;width:1450px;height:{if $legendPUheight > 370}{$legendPUheight}{else}370{/if}px;">
+<div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}370{*/if*}px;">
    <div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
-   <div id="legendPU" style="float:left;width:200px;height:300px"></div>
+   <div id="legendPU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
     <p id="hoverdataPU" style="float:left;">Mouse hovers at
     (<span id="xPU">0</span>, <span id="yPU">0</span>). <span id="clickdata"></span></p>
 </div>
@@ -26,7 +26,7 @@
 <h2 style="align:center;padding-left:40px;">Department Usage</h2><br/>
 <div style="padding-left:20px;width:1450px;height:370px;">
    <div id="placeholderDU" style="float:left;width:1200px;height:300px"></div>
-   <div id="legendDU" style="float:left;width:200px;height:300px"></div>
+   <div id="legendDU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
     <p id="hoverdataDU" style="float:left;">Mouse hovers at
     (<span id="xDU">0</span>, <span id="yDU">0</span>). <span id="clickdata"></span></p>
 </div>
@@ -71,6 +71,7 @@ $(function () {
 	{if $dataDU}
 		all_data = {$dataDU};
 		placeholder = $("#placeholderDU");
+		var ylabel = 'voc, lbs';
 		x = $("#xDU");
 		y = $("#yDU");
 		legend = $("#legendDU");

@@ -151,6 +151,7 @@ class CDepartment extends Controller
 		//	modules/ajax/saveDepartment.php - for more details	
 		$request = $this->getFromRequest();																							
 		$request["id"] = $request["facilityID"];	
+		$request['parent_id'] = $request['facilityID'];
 		$request['parent_category'] = 'facility';
 		$this->smarty->assign('request',$request);
 		

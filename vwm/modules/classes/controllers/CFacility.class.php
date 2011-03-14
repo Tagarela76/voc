@@ -210,6 +210,7 @@ class CFacility extends Controller
 		//	modules/ajax/saveFacility.php - for more details	
 		$request = $this->getFromRequest();										
 		$request['id'] = $this->getFromRequest('companyID');	
+		$request['parent_id'] = $this->getFromRequest('companyID');
 		$request['parent_category'] = 'company';
 		$this->smarty->assign('request',$request);
 		$this->smarty->assign('tpl','tpls/addFacility.tpl');		

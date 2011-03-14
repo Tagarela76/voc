@@ -14,7 +14,7 @@
 
 	
 	//	Do not apply changes to DB? 
-	define('DRY_RUN', true);
+	define('DRY_RUN', false);
 	
 	
 	if (!isset($inspectorFlag)) {		
@@ -44,8 +44,8 @@
 	$config = $customerObj->loadConfigs($db);
 
 	
-//	$currentDate = date('Y-m-d');
-	$currentDate = '2012-02-19';
+	$currentDate = date('Y-m-d');
+//	$currentDate = '2012-02-19';
 
 	//	current Date in timestamp
 	// I do not use time() to simplify debugging (test script with different current dates)	
@@ -59,10 +59,7 @@
 		if (strtolower($customer['status']) == 'off') {
 			// skip iteration
 			continue;
-		}				
-		if ($customer['id'] != 140) {
-			continue;
-		}
+		}						
 		
 		/*
 		 * remove modules
@@ -592,6 +589,14 @@
 				"WHERE limit_info IS NOT NULL " .
 				"AND suspension_date <= '".$currentDate."' " .
 				"AND status = 'due'";
+		
+		$query = 'SELECT invoice_id ' . 
+				'FROM '.TB_VPS_INVOICE.' i, '.TB_VPS_INVOICE_ITEM.' ii ' . 
+				'WHERE i.invoice_id = ii.invoice_id ' .
+				"AND i.suspension_date <= '".$currentDate."' " . 
+				'AND ii.limit_info IS NOT NULL ' . 
+				"AND i.status = 'due' ";				
+		
 		$db->query($query);			
 		
 		if ($db->num_rows() > 0) {
@@ -623,6 +628,15 @@
 				"AND i.custom_info IS NOT NULL " .
 				"AND c.status = 'on' " .				
 				"AND i.status = 'due'";
+		
+		$query = "SELECT i.invoice_id, i.customer_id, i.suspension_disable, DATEDIFF(i.suspension_date, '".$currentDate."') days_left " . 
+				'FROM '.TB_VPS_INVOICE.' i, '.TB_VPS_INVOICE_ITEM.' ii, '.TB_VPS_CUSTOMER.' c ' . 
+				'WHERE i.invoice_id = ii.invoice_id ' .
+				'AND c.customer_id = i.customer_id ' .
+				"AND ii.custom_info IS NOT NULL " .
+				"AND c.status = 'on' " .				
+				"AND i.status = 'due'";
+		
 		$db->query($query);			
 		
 		if ($db->num_rows() > 0) {

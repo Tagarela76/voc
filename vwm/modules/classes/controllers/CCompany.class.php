@@ -129,9 +129,9 @@ class CCompany extends Controller
 							
 		//Set Payment Notify
 		$checkResult = $this->checkPaymentNotify($this->getFromRequest('id'), $this->db);						
-		if ($checkResult['shouldPay']) {
-			$notify = new Notify($this->smarty);
-			$notify->paymentNotify($checkResult['daysLeft']);
+		if ($checkResult['shouldPay']) {						
+			$notify = new Notify($this->smarty);			
+			$this->smarty->assign('notify', $notify->paymentNotify($checkResult['daysLeft']));
 		}				
 
 		
@@ -237,8 +237,14 @@ class CCompany extends Controller
 				
 			} else {
 				//	Errors on validation of adding for a new company
-				$notify = new Notify($this->smarty);
-				$notify->formErrors();
+				/* old school style */
+				//$notify = new Notify($this->smarty);
+				//$notify->formErrors();
+				
+				/*	the modern style */
+				$notifyc = new Notify(null, $this->db);					
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
 				
 				$this->smarty->assign('validStatus', $validStatus);
 													
@@ -416,9 +422,16 @@ class CCompany extends Controller
 				die();	
 				
 			} else {
-				//	Errors on validation of adding for a new company
-				$notify = new Notify($this->smarty);
-				$notify->formErrors();
+				//	Errors on validation of adding for a new company				
+				
+				/* old school style */
+				//$notify = new Notify($this->smarty);
+				//$notify->formErrors();
+				
+				/*	the modern style */
+				$notifyc = new Notify(null, $this->db);					
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
 				
 				$this->smarty->assign('validStatus', $validStatus);
 				$this->smarty->assign('data', $companyData);									
@@ -438,8 +451,11 @@ class CCompany extends Controller
 		
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
-		$this->smarty->assign("country", $registration->getCountryList());							
-		switch (REGION)
+		$this->smarty->assign("country", $registration->getCountryList());	
+
+		$usaID = $country->getCountryIDByName('USA');
+		
+		/*switch (REGION)
 		{
 			case 'eu_uk':
 			{
@@ -451,14 +467,17 @@ class CCompany extends Controller
 				$usaID = $country->getCountryIDByName('USA');
 				break;
 			}
-		}	 		
+		}*/	 		
+		
 		$selectMode = false;
 		if ($companyDetails['country'] === $usaID) {
 			$selectMode = true;
 			$state = new State($this->db);
 			$stateList = $state->getStateList($usaID);														
 			$this->smarty->assign("state", $stateList);	
-		}																																								
+		}							
+		//var_dump($selectMode);
+		//var_dump($companyDetails);
 		$this->smarty->assign("selectMode", $selectMode);
 		
 		$this->setNavigationUpNew($this->category, $this->getFromRequest('id'));

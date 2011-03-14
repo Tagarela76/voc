@@ -441,7 +441,23 @@
                     </table>
                     <input id="categoryName" type="hidden" name="categoryName" value="{$request.category}">{if $request.action == 'edit'}<input id="companyID" type="hidden" name="companyID" value="{$companyID}">{/if} <input id="unitCount" type="hidden" name="unitCount" value="{$smarty.section.i.index}">
 
-    </form>
+    </div>
 </div>
 {*END OF POPUP*}
 
+
+{*DATA TO SAVE FROM POPUPS*}
+<div style="display:none;">
+	<div id="unittype_data">
+		{section  name=j loop=$defaultUnitTypelist}
+			<input type="checkbox" id="unitTypeID[]" name="unitTypeID[]" value="{$defaultUnitTypelist[j]}" checked >
+		{/section}
+	</div>
+	<div id="apmethod_data">
+		{section  name=j loop=$defaultAPMethodlist}
+			<input type="checkbox" id="APMethodID[]" name="APMethodID[]" value="{$defaultAPMethodlist[j]}" checked >
+		{/section}
+	</div>
+</div>
+{*/END OF DATA*}
+    </form>

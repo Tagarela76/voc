@@ -29,7 +29,7 @@ $(notify).css("height","0%");
 $(notify).css("top",0+"px");
 $(notify).css("line-break","strict");
 $(notify).css("padding","10px");
-$(notify).css("opacity","0.8");
+//$(notify).css("opacity","0.8");
 
 $(notify).css("vertical-align","middle");
 $("#text").css("font-size",fontSize);

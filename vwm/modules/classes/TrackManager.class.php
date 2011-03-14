@@ -66,18 +66,27 @@
     					$crudText='D';
     					break;   					
     			}
-    			$subQuery=	" AND (".(($crudText!=false)? " CRUD='$crudText' ":" FALSE "). 
+    			/*$subQuery=	" AND (".(($crudText!=false)? " CRUD='$crudText' ":" FALSE "). 
     						" OR user_id IN (SELECT user_id FROM user WHERE accessname like '%$searchText%' ) ".
     						" OR  IF((data REGEXP '&[^\s]*;'),HTML_UnEncode(data),data) like '%description\":\"$searchText%' ".
     						" OR IF((data REGEXP '&[^\s]*;'),HTML_UnEncode(data),data) like '%equip_desc\":\"$searchText%' ".
     						" OR IF((data REGEXP '&[^\s]*;'),HTML_UnEncode(data),data) like '%name\":\"$searchText%' ".
-    						" OR IF((table_name REGEXP '&[^\s]*;'),HTML_UnEncode(table_name),table_name) like '%$searchText%' ) ";
+    						" OR IF((table_name REGEXP '&[^\s]*;'),HTML_UnEncode(table_name),table_name) like '%$searchText%' ) ";*/
+    			$searchText = mysql_escape_string($searchText);
+    			$subQuery = " AND (".(($crudText!=false)? " CRUD='$crudText' ":" FALSE "). 
+    						" OR user_id IN (SELECT user_id FROM user WHERE accessname like '%$searchText%' ) ".
+    						" OR  IF((data REGEXP '&[^\s]*;'),data,data) like '%description\":\"$searchText%' ".
+    						" OR IF((data REGEXP '&[^\s]*;'),data,data) like '%equip_desc\":\"$searchText%' ".
+    						" OR IF((data REGEXP '&[^\s]*;'),data,data) like '%name\":\"$searchText%' ".
+    						" OR IF((table_name REGEXP '&[^\s]*;'),table_name,table_name) like '%$searchText%' ) ";
+    			
     						
     		}    		
     		$query = 	"SELECT id FROM ".self::TRASH_TB_NAME." WHERE referrer IS NULL ".
     					$subQuery.
 						"ORDER BY date DESC LIMIT 100";
 			
+    					//echo $query;
     		$this->db->query($query);     		 		
 
     		if ($this->db->num_rows() > 0) {

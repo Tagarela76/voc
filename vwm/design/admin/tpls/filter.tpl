@@ -5,7 +5,6 @@
 	var filterStr='{$filterArray}';			
 </script>
 
-<script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custm/js/jquery-1.4.2.min.js'></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.datepicker.js"></script>

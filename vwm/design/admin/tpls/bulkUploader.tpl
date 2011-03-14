@@ -17,8 +17,9 @@
 	<table>		
 		<tr>				
 			<td>Input file</td><td><input name="inputFile" type="file"><br>
-				<a href="samples/VOC_Bulk_Uploader_input_file_sample.html" target="_blank" class="report_uploader">sample1</a><br>
-				<a href="samples/VOC_Bulk_Uploader_input_file_sample2.html" target="_blank"class="report_uploader">sample2</a></td>			
+				<a href="samples/VOC_Bulk_Uploader_input_file_sample.html" target="_blank" class="report_uploader">sample 1</a><br>
+				<a href="samples/VOC_Bulk_Uploader_input_file_sample2.html" target="_blank"class="report_uploader">sample 2</a><br>
+				<a href="samples/BulkUploaderSample.xls" target="_blank"class="report_uploader">xls sample</a></td>			
 		</tr>		
 		<tr>
 			<td>Max number of products</td><td><input name="maxNumber" type="text" value="10000"></td>

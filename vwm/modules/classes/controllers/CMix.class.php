@@ -668,8 +668,15 @@ class CMix extends Controller
 					die();										
 				} else {
 					//Set Notify
-					$notify = new Notify($this->smarty);
-					$notify->formErrors();
+						
+					/* old school style */
+					//$notify = new Notify($this->smarty);
+					//$notify->formErrors();
+
+					/*	the modern style */
+					$notifyc = new Notify(null, $this->db);
+					$notify = $notifyc->getPopUpNotifyMessage(401);
+					$this->smarty->assign("notify", $notify);
 					//DIFFERS
 					if ($action == 'addItem') {
 						$this->smarty->assign('productsAdded', $products);									
@@ -1152,7 +1159,10 @@ class CMix extends Controller
 											$validStatus['waste']['error'] = $ws_error;
 										}
 									}
+									
 									$usageData['waste'] = json_encode($wasteArr); //$wasteArr was modified(now its with validation) and extracted from $result
+									var_dump($usageData['waste']);
+									var_dump($wasteArr);
 								} else {
 									$wasteData = $usageData['waste'];
 								}
@@ -1293,6 +1303,7 @@ class CMix extends Controller
 			$usage = new Mix($this->db);
 			if (!$isMWS) {
 				$data['waste'] = $usage->getWasteDetails();
+				var_dump($data['waste']);
 			}
 			$this->smarty->assign('data', $data);																
 		}
