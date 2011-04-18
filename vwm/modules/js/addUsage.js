@@ -453,12 +453,20 @@ function initNoMWS() {
       			
       			
       			
-      			checkbox = $("<input>").attr({
+      			/*checkbox = $("<input>").attr({
       				type:"checkbox",
-      				value:"" + productID,
-      				checked:"checked"
+      				value:"" + productID
       			}
       			);
+      			
+      			checkbox.attr('checked', false); */
+      			
+      			checkbox = $("<input type='checkbox' value='"+productID+"' CHECKED>");
+      			
+      			
+      			//dCh = checkbox.get();
+      			//dCh.checked = true;
+      			//checkbox = $(dCh);
       			
       			td1.attr({
       				"class":"border_users_r border_users_b border_users_l"
