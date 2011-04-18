@@ -626,7 +626,14 @@ function initNoMWS() {
 		selectedOption = $("#selectProduct option[value='"+productID+"']");
 
 		selectedOption.attr({disabled:"disabled"}).removeAttr('selected');
-		nextEl = selectedOption.next("option");//.attr('selected', 'selected');
+		
+		
+		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
+			
+			nextEl = selectedOption.next("option");//.attr('selected', 'selected');
+			nextEl.attr('selected', 'selected');
+			
+		}
 		
 		
 
