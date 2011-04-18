@@ -6,16 +6,19 @@
 		
 	$site_path = getcwd().DIRECTORY_SEPARATOR; 
 	define ('site_path', $site_path);
-	
+
 	//	Include Class Autoloader
 	require_once('modules/classAutoloader.php');
 	
-	$xnyo = new Xnyo();
+	/*$xnyo = new Xnyo();
 	$xnyo->database_type	= DB_TYPE;
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
-	$xnyo->start();
+	$xnyo->start();*/
+	
+	//	Start xnyo Framework
+	require ('modules/xnyo/startXnyo.php'); 
 	
 	$db->select_db(DB_NAME);
 	
@@ -23,6 +26,7 @@
 	
 	//	filter action var	
 	$xnyo->filter_get_var('action', 'text');
+	
 	$action = $_GET['action'];
 	try {
 		//	logged in?	
@@ -32,6 +36,76 @@
 		}
 		
 		switch ($action) {
+			
+			case "isMixDescrUnique":
+				{
+					
+					$validation = new Validation($db);
+					
+					$data = array("description" => mysql_escape_string($_GET['descr']),
+									"department_id" => mysql_escape_string($_GET['depID']));
+					
+					
+					$result = $validation->isUniqueUsage($data);
+					
+					$response = array('isUnique'=>$result, 'other shit' => array($data));
+					echo json_encode($response);
+					
+					break;
+				}
+				
+			case "productSupportWeight":
+				{
+					$productID = mysql_escape_string($_GET['productID']);
+					$unittypeID = mysql_escape_string($_GET['unittypeID']);
+					
+					$productObj = new Product($db);
+					$productDetails = $productObj->getProductDetails($productID);
+					
+					try {
+						$density = floatval($productDetails['density']);
+					}catch(Exception $e) {
+						$density = 0;
+					}
+					
+					$result = true;
+					if($density < 1) { //Check, if product has'nt density, can we calculate VOC in future without density with current unit type.
+						
+						$unittypeObj = new Unittype($db);
+						$res = $unittypeObj->isWeightOrVolume($unittypeID);
+						
+						if($res == "weight") {
+							$result = false;
+						}
+					}
+					
+					echo json_encode(Array("supportWeight" => $result));
+					
+					break;
+				}
+				
+			case "getProductInfo":
+				{
+					$productID = mysql_escape_string($_GET['productID']);
+					
+					$productObj = new Product($db);
+					$productDetails = $productObj->getProductDetails($productID);
+					
+					echo json_encode($productDetails);
+					break;
+				}
+				
+			case "getVOC":
+				{
+					$products_json = '[["454","3","1"],["453","0.04","1"],["173","0.03","1"],["145","0.04","1"]]';
+					
+					$products = json_decode($products_json);
+					
+					
+					break;
+				}
+			
+			
 			case "addProduct":								
 				
 				$xnyo->filter_get_var('productID', 'text');

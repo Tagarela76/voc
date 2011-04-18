@@ -46,6 +46,8 @@
 						$mix->$property = $mixData->$property;
 					}
 				}
+
+				$mix->url = "?action=viewDetails&category=mix&id=" . $mixData->mix_id . "&departmentID=" . $departmentID;
 				
 				$mix->setDepartment($department);
 				$mix->setFacility($facility);
@@ -82,7 +84,24 @@
 		}
 		
 		
-		
+		public function fillProductsUnitTypes($mixesProducts) {
+			
+			$ids = array();
+			
+			foreach($mixesProducts as $product) {
+				$ids[] = $product->unit_type;
+			}
+			
+			$unittype = new Unittype($this->db);
+			
+			$unitTypeDetails = $unittype->getUnittypesDetails($ids);
+			
+			foreach($mixesProducts as $product) {
+				$product->unittypeDetails = $unitTypeDetails[$product->unit_type];
+			}
+			
+			
+		}
 		
 		public function countMixes() {
 			if (!isset($this->departmentID)) return false;

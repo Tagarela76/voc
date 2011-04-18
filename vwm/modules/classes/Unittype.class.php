@@ -35,8 +35,8 @@ class Unittype {
 		
 		$this->db->query("SELECT * FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id AND unittype_id=".$unittypeID);
 		if ($this->db->num_rows() == 0) {
-			//throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);	//WTF?!	In reports we used it with not valid id to get empty result!!! 
-			return false;
+			//exit;
+			//throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);			
 		}
 		
 		$data = $this->db->fetch(0);	
@@ -48,6 +48,36 @@ class Unittype {
 			'type_id'		=> $data->type_id,
 			'type' 			=> $data->type_desc
 		);
+		
+		return $unittypeDetails;
+	}
+	
+	/**
+	 * Returns unit type details for array of unit type ids. Returns associative array, key is unittype_id
+	 * 
+	 * @param int array <b>$unittypeIDAray</b>
+	 */
+	public function getUnittypesDetails($unittypeIDAray) {
+		
+		$query = "SELECT *,unittype_desc as 'description' FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id AND unittype_id IN ( ";
+		
+		foreach ($unittypeIDAray as $id) {
+			$query .= " $id,";
+		}
+	
+		$query = substr_replace($query,")", strlen($query)-1);
+		
+		$this->db->query($query);
+		
+		
+		$tmp = $this->db->fetch_all_array();
+		
+		
+		
+		foreach($tmp as $unit) {
+			
+			$unittypeDetails[$unit['unittype_id']] = $unit;
+		}
 		
 		return $unittypeDetails;
 	}
@@ -431,6 +461,8 @@ class Unittype {
 			}
 		}
 	}
+	
+	
 	
 	public function getUnittypListFromClassOfUnittypeID($unittypeID)
 	{

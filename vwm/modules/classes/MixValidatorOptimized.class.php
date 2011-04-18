@@ -22,11 +22,33 @@
 		private function isExpired($mix) {
 			if ($this->recalc) {
 				$currentDate = new Date(time());
-				$equipmentExpireDate = $mix->getEquipment()->getDate();
-					
+				$currentDateTimeStamp = strtotime("now");
+				
+				$mixEq = $mix->getEquipment();				
+				//echo "<h2>mix: </h2>";
+				//var_dump($mix);
+				//echo "<h2>mixEq: </h2>";
+				//var_dump($mixEq);
+				$equipmentExpireDate = $mixEq->expire;
+				$equipmentExpireDateTimeStamp = strtotime($equipmentExpireDate);				
+				//echo "<h2>Expire Date: $equipmentExpireDate</h2>";
+				
+				//echo "<h2>Test Date</h2>";
+				//$ss = "11/19/2011 9:00PM";
+				//$strTime = strtotime($ss);
+				//echo "<h2>strTime: $strTime</h2>";
+				//$strTime = strtotime("now");
+				//echo "<h2>strToTimeNow:$strTime </h2>";
+				//if($currentDate->isBiggerThan($ss)) {
+				//	echo "<h2>$ss is bigger</h2>";
+				//} else {
+				//	echo "<h2>$ss is not bigger</h2>";
+				//}
 				//	If Equipment has expire date - check MIX for overdue
 				if ($equipmentExpireDate != null) {
-					if ($currentDate->isBiggerThan($equipmentExpireDate)) {
+					//if ($currentDate->isBiggerThan($equipmentExpireDate)) {
+					if ($currentDateTimeStamp > $equipmentExpireDateTimeStamp) {
+						//echo "<h2>$currentDateTimeStamp is bigger than $equipmentExpireDateTimeStamp</h2>";
 						return true;
 					} else {
 						return false;
@@ -47,7 +69,7 @@
 			if ($this->recalc) {
 				$currentDate = new Date(time());
 				$equipmentExpireDate = $mix->getEquipment()->getDate();
-					
+				
 				//	If Equipment expire date - current date less than 5 days,
 				//	change status to "preExpired"
 				if ($equipmentExpireDate != null) {
@@ -71,11 +93,12 @@
 		private function isFacilityLimitExceeded($mix) {
 			if ($this->recalc) {
 				if ($mix->getEquipment()->isTrackedTowardsFacility()) {
+					
 					if ($mix->getFacility()->getDailyLimit() == 0) {
 						return false;
 					}
 
-					$mixCreationMonth = substr($mix->getCreationTime(),0,2);
+					$mixCreationMonth = substr($mix->getCreationTime(),3,2);	//	be careful with this
 					$mixCreationYear = substr($mix->getCreationTime(),-4);
 
 					//$totalFacilityUsage = $mix->getFacility()->getCurrentUsageOptimized((int)$mixCreationMonth, (int)$mixCreationYear);
@@ -83,14 +106,13 @@
 						$totalFacilityUsage = $this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth];
 					} else {
 						$totalFacilityUsage = $mix->getFacility()->getAnnualUsage((int)$mixCreationYear, (int)$mixCreationMonth);
-						$this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth] = $totalFacilityUsage;
+						$this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth] = $totalFacilityUsage;						
 					}
 
-					if (!$mix->isAlreadyExist()) {
-						//TODO:sdelai eto!
-						//$totalFacilityUsage += $mix->getCurrentUsage();
+					if (!$mix->isAlreadyExist()) {						
+						$totalFacilityUsage += $mix->getCurrentUsage();
 					}
-
+					
 					if ((float)$totalFacilityUsage > (float)$mix->getFacility()->getDailyLimit()) {
 						return true;
 					}
@@ -271,6 +293,7 @@
 
 
 		public function isValidMix($mix) {
+			//echo "<h1>".__FUNCTION__."</h1>";			
 			$mixValidatorResponse = new MixValidatorResponse();
 
 			//	Assign default values
@@ -300,6 +323,7 @@
 				$mixValidatorResponse->setFacilityLimitExcess(false);
 			}
 
+			//TODO: stoped here - Denis April 6, 2011
 			//	Check if DEPARTMENT LIMIT is exceeded
 			if ($this->isDepartmentLimitExceeded($mix)) {
 				$mixValidatorResponse->setValidationStatus(false);

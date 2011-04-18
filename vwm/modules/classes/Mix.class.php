@@ -247,6 +247,7 @@ class Mix extends MixProperties {
 				
 		$usageDetails = $this->db->fetch_array(0);
 		$usageDetails['creationTime'] = date('m-d-Y', strtotime($usageDetails['creationTime']));
+
 		
 		/*$usageDetails = array (
 			'mix_id'			=>	$data->mix_id,
@@ -620,7 +621,8 @@ class Mix extends MixProperties {
 	
 	
 	public function calculateCurrentUsage() {	
-		
+		echo "<h1>".__FUNCTION__."</h1>";
+
 		$errors = array(
 			'isDensityToVolumeError'=>false,
 			'isDensityToWeightError'=>false,
@@ -689,7 +691,8 @@ class Mix extends MixProperties {
 			if (empty($vocwx) || $vocwx == '0.00')			
 				$isVocwx = false;				
 			if (empty($percentVolatileWeight) || $percentVolatileWeight == '0.00')			
-				$isPercentVolatileWeight = false;					
+				$isPercentVolatileWeight = false;	
+								
 			if ($isPercentVolatileWeight||$isVocwx)
 			{
 				$errors['isVocwxOrPercentWarning'][$key]=false;
@@ -729,6 +732,7 @@ class Mix extends MixProperties {
 								'volume'=>$galQty,
 								'vocwx'=>$vocwx
 							);
+							
 							$ArrayVolume[] =$vocwxAndVolume;
 						}
 						else 
@@ -752,10 +756,12 @@ class Mix extends MixProperties {
 			}
 			else  			
 				$errors['isVocwxOrPercentWarning'][$key]='true';								
-		}				
+		}		
+			
 		//$quantitiWeightSum=array_sum($quantityArrayWeight);		
 		//$quantitiVolumeSum=array_sum($quantityArrayVolume);		
 		$wasteResult=$this->calculateWastePercent($this->wasteData['unittypeID'], $this->wasteData['value'],$unitTypeConverter,$quantitiWeightSum,$quantitiVolumeSum);
+		
 		//$errors['isWasteCalculatedError']=$wasteResult[];
 		$calculator = new Calculator();
 		
@@ -764,7 +770,7 @@ class Mix extends MixProperties {
 		//	I don't know what about Europe			
 		//$this->voclx = $calculator->calculateVoclx($voclxArray, $quantityArray, $wasteCalculated);
 		//$this->vocwx = $calculator->calculateVocwx($vocwxArray, $quantityArray, $wasteCalculated);
-		
+
 		$this->waste_percent = $wasteResult['wastePercent'];
 		$this->currentUsage = $this->voc;
 		$this->wastePercent = $wasteResult['wastePercent'];

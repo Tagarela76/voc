@@ -286,7 +286,12 @@ class Equipment extends EquipmentProperties {
 			
 			$this->equipment_id = $equipmentID;
 			
+			
 			$this->date = new Date($equipmentData->expire);
+			
+			$DateType = new DateTypeConverter($this->db);
+			$this->expire = date($DateType->getDatetypebyID($this->equipment_id), $equipmentData->expire);
+			
 			$this->dailyLimit = $equipmentData->daily;
 			
 			if ($equipmentData->dept_track == "yes") {

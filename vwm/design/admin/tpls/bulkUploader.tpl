@@ -1,4 +1,4 @@
-               {*shadow_table*}	
+             {*shadow_table*}	
 	             <table class="" cellspacing="0" cellpadding="0" align="center" >
                          <tr>
                                <td valign="top" class="report_uploader_t_l"></td>

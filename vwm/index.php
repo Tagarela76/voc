@@ -1,7 +1,7 @@
 <?php	
 	//register_shutdown_function("endF");
 	
-	function endF(){
+	/*function endF(){
 		
 		$error = error_get_last ();
 		if($error['type'] == 1){
@@ -11,7 +11,7 @@
 				echo "<script type='text/javascript'> document.location = 'error.php?message={$error['message']}. $additionalInfo'; </script>";
 				exit;
 		}
-	}
+	}*/
 	
 	define("USERS_TABLE", "user");
 	
@@ -262,6 +262,9 @@
 			}	
 		}
 	} catch (Exception $e) {
+		var_dump($e);
+		var_dump(xdebug_get_function_stack());
+		exit;
 		switch ($e->getMessage()) {
 			case '404':						
 				$smarty->display('tpls:errors/404.tpl');

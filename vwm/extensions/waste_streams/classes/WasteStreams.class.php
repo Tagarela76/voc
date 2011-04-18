@@ -97,6 +97,7 @@ class WasteStreams {
 	    $value = $wasteData['value'];
 	    $storage = $wasteData['storage_id'];
 	    $query = $query_select." AND waste_stream_id = $ws_id AND pollution_id $p_id_select ";
+	    //echo "<p>$query</p>";
 	    $this->db->query($query);
 	    if($this->db->num_rows()>0) {
 		    $w_id = $this->db->fetch(0)->id; //id in the Waste table with needed waste stream
@@ -110,12 +111,18 @@ class WasteStreams {
 		    		", $storage " .		// storage_id (Storage.class.php)
 		    		" ) ";
 	    }
+	    //echo "<p>$query</p>";
 	    $this->db->query($query);
     }
     
 
     
     public function addWasteStreamsToMix($mixId,$wasteArray) {
+    	//echo "<h2>addWasteStreamsToMix</h2>";
+    	//echo "<p>mixID: $mixId</p>";
+    	//echo "<p>wasteArray: </p>";
+    	//var_dump($wasteArray);
+    	
 		$query = "SELECT id, waste_stream_id, pollution_id FROM ".TB_WASTE." WHERE mix_id = $mixId ";
     	$this->db->query($query);
     	$data = $this->db->fetch_all();
@@ -130,9 +137,13 @@ class WasteStreams {
     			//$wasteStream - array of pollutions
     			$ws_id = $wasteStream['id']; // id of Waste Stream
     			$storage_id = $wasteStream['storage_id'];
+    			//echo "<p>ws_id: $ws_id, storage_id: $storage_id</p>";
     			foreach($wasteStream as $key => $pollution) {
+    				//echo "key: $key<br/>";
     				if ($key !== 'count' && $key !== 'id' && $key !== 'storage_id') {
+    					
     					$pollution['storage_id'] = $storage_id;
+    					//echo "<h3>addWasteToMix $mixId with pollutions, ws_id: $ws_id</h3>";
     					$this->addWasteToMix($mixId,$pollution,'pollution',$ws_id);
     					 if (isset($idArray[$wasteStream['id']][$pollution['id']])) {
     						$newId []= $idArray[$wasteStream['id']][$pollution['id']];
@@ -141,6 +152,7 @@ class WasteStreams {
     			}
     		} else {
     			//$wasteStream - array of details about stream(without pollutions)
+    			//echo "<h3>addWasteToMix $mixId</h3>";
     			$this->addWasteToMix($mixId,$wasteStream);
     			if (isset($idArray[$wasteStream['id']][null])) {
 		       		$newId []= $idArray[$wasteStream['id']][null];
@@ -149,13 +161,15 @@ class WasteStreams {
     	}
     	foreach($data as $key => $value) {
 			if (!in_array($key,$newId)) {
+				
 				$query = " DELETE FROM `waste` WHERE `waste`.`id` = $value->id ";
+				//echo "<p>$query</p>";
 				$this->db->query($query);
 			}
 		}
     }
     
-    public function checkWasteType($product) {
+    public function checkWasteType($product) { // TODO Deprecated, use checkWasteTypeByObj($product) instead
     	$unittype = new Unittype($this->db);
     	$unittypeID = $product['unittype'];
     	$unittypeType = $unittype->isWeightOrVolume($unittypeID);
@@ -180,19 +194,63 @@ class WasteStreams {
 	    	$this->wasteType['weight'] = ($this->wasteType['weight'])?$isDensity:false;
     	}
     	$unitTypeConverter = new UnitTypeConverter();
-    	if ($this->wasteType['weight']) {
-	    	$this->productSumm['weight'] += $unitTypeConverter->convertFromTo($product['quantity'], $unitTypeDetails["description"], $unittype->getDescriptionByID($this->defUnittypeID['weight']), $density, $densityType);
+    	if ($this->wasteType['weight']) {    		
+	    	$this->productSumm['weight'] += $unitTypeConverter->convertFromTo($product['quantity'], $unitTypeDetails["description"], $unittype->getDescriptionByID($this->defUnittypeID['weight']), $density, $densityType);	    	
     	} 
 		if ($this->wasteType['volume']) {
 	    	$this->productSumm['volume'] += $unitTypeConverter->convertFromTo($product['quantity'], $unitTypeDetails["description"], $unittype->getDescriptionByID($this->defUnittypeID['volume']), $density, $densityType);
     	}
     }
     
+    
+    
+    public function checkWasteTypeByObj(MixProduct $product) {
+   		$unittype = new Unittype($this->db);
+    	$unittypeID = $product->unittypeDetails['unittype_id'];
+    	$unittypeType = $unittype->isWeightOrVolume($unittypeID);
+    	
+    	if (empty($product->density) || $product->density == '0.00') {
+    		$isDensity = false;
+    	} else {
+    		$isDensity = true;
+    	}
+		$densityObj = new Density($this->db,$product->density_unit_id);
+    	$densityType = array (
+	    	'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+    	);
+
+    	if ($unittypeType == 'weight') {
+    		$this->wasteType['volume'] = ($this->wasteType['volume'])?($isDensity):false;
+    	} else {
+	    	$this->wasteType['weight'] = ($this->wasteType['weight'])?$isDensity:false;
+    	}
+    	
+    	$unitTypeConverter = new UnitTypeConverter();
+    	if ($this->wasteType['weight']) {
+	    	$this->productSumm['weight'] += $unitTypeConverter->convertFromTo($product->quantity,
+	    																	 $product->unittypeDetails['description'], 
+	    																	 $unittype->getDescriptionByID($this->defUnittypeID['weight']), 
+	    																	 $product->density, 
+	    																	 $densityType);
+    	} 
+		if ($this->wasteType['volume']) {
+	    	$this->productSumm['volume'] += $unitTypeConverter->convertFromTo($product->quantity, 
+	    																	 $product->unittypeDetails['description'], 
+	    																	 $unittype->getDescriptionByID($this->defUnittypeID['volume']), 
+	    																	 $product->density, 
+	    																	 $densityType);
+    	}    	
+    }
+    
+    
+    
     public function calculateTotalWaste($wasteArray, $unittypeType = null, $productSumm = null) {
     	$value = 0;
     	$this->wasteData = $wasteArray;
     	$unittype = new Unittype($this->db);
     	if ($unittypeType == null) {
+    		
     		if ($this->wasteType['weight'] === false && $this->wasteType['volume'] === false) {
     			$this->error = "Error! Products summary quantity can not be calculated in one type(weight or volume). So waste for them cannot be calculated! Please set density for products or set all products in one type. Voc calculated with waste = 0.";
     			return $result = array('error' => 'wasteCalc');

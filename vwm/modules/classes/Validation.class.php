@@ -58,6 +58,7 @@ class Validation {
 
 		//$this->db->select_db(DB_NAME);
 		$this->db->query($query);
+		
 		$data=$this->db->fetch(0);
 		
 		if ($this->db->num_rows() != 0 && $data->mix_id!=$usageData['mix_id']) {

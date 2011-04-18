@@ -43,9 +43,9 @@ class FacilityProperties {
      */
     public function getAnnualUsage($year, $mm = null) {
     	if ($mm === null) {
-    		return (isset($this->annualUsage[$year])) ? array_sum($this->annualUsage[$year]) : false;	
-    	} else {
-    		return (isset($this->annualUsage[$year][$mm])) ? $this->annualUsage[$year][$mm] : false;
+    		return (isset($this->annualUsage[$year])) ? array_sum($this->annualUsage[$year]) : 0;	
+    	} else {    		
+    		return (isset($this->annualUsage[$year][$mm])) ? $this->annualUsage[$year][$mm] : 0;
     	}
     	 
     }

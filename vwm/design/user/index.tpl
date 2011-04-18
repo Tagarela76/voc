@@ -7,7 +7,9 @@
 		<link href="style.css" rel="stylesheet" type="text/css">
 		  <link rel="shortcut icon" href="images/vocicon.ico" type="image/x-icon">
 		{*loadjs*}
-		<script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custom/js/jquery-1.4.2.min.js'></script>
+		<!--  <script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custom/js/jquery-1.4.2.min.js'></script> -->
+		<script type="text/javascript" src='modules/js/jquery-1.5.2.js'></script>
+		
 		{if $notify}
 			
 			
@@ -123,12 +125,11 @@
 												</tr>
 											</table>						
 												
-											
 											{if $request.action == 'browseCategory'}	
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 											
-											{if $request.action == 'viewDetails'}			
+											{if $request.action == 'viewDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
 								

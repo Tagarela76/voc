@@ -277,6 +277,8 @@ class Department extends DepartmentProperties {
 		return $facility;
 	}
 	
+	
+	
 	public function isOverLimit() {
 		
 		if ($this->getDailyLimit() > 0) {		

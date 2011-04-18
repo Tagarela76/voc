@@ -71,6 +71,7 @@ class Apmethod {
 		$this->db->query($query);
 		
 		
+		
 		if ($this->db->num_rows()) {
 			for ($j=0; $j < $this->db->num_rows(); $j++) {
 				$data=$this->db->fetch($j);				
@@ -80,11 +81,13 @@ class Apmethod {
 				);	
 				$apmethods[]=$apmethod;				
 			}
-		}
+		} 
 		
 		return $apmethods;
 		
 	}
+	
+	
 	
 	public function setDefaultAPMethodlist($apmethodID, $categoryName, $companyID) {
 		

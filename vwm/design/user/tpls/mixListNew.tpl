@@ -60,10 +60,10 @@
     {*BEGIN LIST*} 
     {foreach from=$childCategoryItems item=mix} 
 	<!-- Begin Highlighting -->
-    <tr {if $mix.valid  eq "valid"}
+    <tr {if $mix->valid  eq "valid"}
  			class="hov_company"
 		{else}
-			{if $mix.valid  eq "invalid"}
+			{if $mix->valid  eq "invalid"}
 			 class="us_red"
 			{else}
  			class="us_orange"
@@ -73,42 +73,42 @@
         <!-- End Highlighting -->
 		
         <td class="border_users_b border_users_l" >
-            {if $mix.valid eq "valid"}
+            {if $mix->valid eq "valid"}
 				<span class="ok">&nbsp;</span>
             {else}
-            	{if $mix.valid eq "invalid"}
+            	{if $mix->valid eq "invalid"}
 				<span class="error">&nbsp;</span>
            		{else}
 				<span class="warning">&nbsp;</span>
             	{/if}
             {/if}
-			<input type="checkbox" value="{$mix.mix_id}" name="id[]">
+			<input type="checkbox" value="{$mix->mix_id}" name="id[]">
         </td>
         <td class="border_users_b border_users_r" >
-            <a href="{$mix.url}" class="id_company1" title="{$mix.hoverMessage}">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$mix.mix_id} &nbsp;
+                    {$mix->mix_id} &nbsp;
                 </div>
             </a>
         </td>
         <td class="border_users_b border_users_r">
-            <a href="{$mix.url}" class="id_company1" title="{$mix.hoverMessage}">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">
-                    {$mix.description} &nbsp;
+                    {$mix->description} &nbsp;
                 </div>
             </a>
         </td>
         <td class="border_users_b border_users_r">
-            <a href="{$mix.url}" class="id_company1" title="{$mix.hoverMessage}">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$mix.voc} &nbsp;
+                    {$mix->voc} &nbsp;
                 </div>
             </a>
         </td>
         <td class="border_users_b border_users_r">
-            <a href="{$mix.url}" class="id_company1" title="{$mix.hoverMessage}">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" >
-                    {$mix.creation_time} &nbsp;
+                    {$mix->creation_time} &nbsp;
                 </div>
             </a>
         </td>

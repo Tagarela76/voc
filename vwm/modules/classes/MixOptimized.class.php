@@ -47,9 +47,8 @@
 		const MIX_IS_INVALID = 'invalid';
 		const MIX_IS_EXPIRED = 'expired';
 		const MIX_IS_PREEXPIRED = 'preexpired';
-		
-		
-		
+				
+		public $debug;
 		
 		public function __construct($db, $mix_id = null) {
 			$this->db = $db;
@@ -140,18 +139,22 @@
 			}
 			
 			//	save waste data (If module 'Waste Stream' is disabled)
-			echo "<h1>Waste:</h1>";
-			var_dump($this->waste);
+			//echo "<h1>Waste:</h1>";
+			//var_dump($this->waste);
 			
-			if(!$isMWS and isset($this->waste)) {
-				echo "<h1>Save single waste</h1>";
-				var_dump($mixID, $this->waste['value'], $this->waste['unittypeID']);
-				$this->saveWaste($mixID, $this->waste['value'], $this->waste['unittypeID']);
+			if(!$isMWS and isset($this->waste) and ($this->waste->value) and $this->waste->value != "" and $this->vaste->value != "0.00") {
+				//echo "<h1>Save single waste</h1>";
+				//var_dump($mixID, $this->waste['value'], $this->waste['unittypeID']);
+				$this->saveWaste($mixID, $this->waste->value, $this->waste->unittype);
+				//echo "Only waste saved {$this->waste->value} {$this->waste->unittype}";
+			} else {
+				//echo "not MWS!!"; 
 			}
 			
 			return $mixID;
 		}
 		
+
 		private function updateMix($isMWS, $mix) {
 			
 			$query = 'SELECT voc, department_id, creation_time FROM '.TB_USAGE.' WHERE mix_id = '. $this->mix_id;
@@ -189,20 +192,27 @@
 				//$wasteData = $usageData['waste'];
 				//$this->saveWaste($wasteData['mixID'], $wasteData['value'], $wasteData['unittypeID']);																		
 			}
-			var_dump($this);
-			var_dump($mix);
+			if($this->debug) {
+				var_dump($this);
+				var_dump($mix);
+			}
 			
-			$updateMixQuery = $this->getUpdateMixQuery($mix);
-			echo "<h1>UpdateMixQuery:</h1>";
-			echo "<h3>$updateMixQuery</h3>";
+			$updateMixQuery = $this->getUpdateMixQuery();
+			
+			if($this->debug) {
+				echo "<h1>UpdateMixQuery:</h1>";
+				echo "<h3>$updateMixQuery</h3>";
+			}
 			
 			$deleteProductsQuery = $this->getDeleteProductsQuery();
 			
 			if($this->products and is_array($this->products) and count($this->products) > 0) {
 				$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);
 			
-				echo "<h2>insertProductsQuery:</h2>";
-				echo($insertProductsQuery);
+				if($this->debug) {
+					echo "<h2>insertProductsQuery:</h2>";
+					echo($insertProductsQuery);
+				}
 			}
 			
 			$this->db->query($updateMixQuery);
@@ -211,13 +221,19 @@
 			
 			return $this->mix_id;
 		}
+
 		
 		private  function getDeleteProductsQuery() {
 			$query = "DELETE FROM ".TB_MIXGROUP." WHERE mix_id = ".$this->mix_id;
 			return $query;
 		}
 		
-		private function getUpdateMixQuery($editedMix) {
+		private function getUpdateMixQuery() {
+			
+			if($this->debug) {
+				//echo "<h1>Edited Mix:</h1>";
+				//var_Dump($editedMix);
+			}
 			
 			$query = "UPDATE ".TB_USAGE." SET ";		
 			$query .= "equipment_id='{$this->equipment_id}', ";
@@ -227,7 +243,7 @@
 			$query .= "vocwx='{$this->vocwx}', ";
 			$query .= "waste_percent=".((empty($this->waste_percent))?"NULL":"'".$this->waste_percent."'").", ";
 			$query .= "description='{$this->description}', ";
-			$query .= "rule_id={$editedMix->rule_id}, ";
+			$query .= "rule_id={$this->rule_id}, ";
 			$query .= (empty($this->exempt_rule)) ? "exempt_rule = NULL, " : "exempt_rule ='".$this->exempt_rule."', ";			
 			if (empty($this->creation_time)) {
 				$query .= "creation_time = '".date('Y-m-d')."' ";
@@ -240,7 +256,7 @@
 		}
 		
 		private function addNewMix($isMWS) {
-			echo "<h1>addNewMix</h1>";
+			//echo "<h1>addNewMix</h1>";
 			//screening of quotation marks
 			/*foreach ($this as $key=>$value) {
 				switch ($key) {
@@ -263,8 +279,8 @@
 			}
 			
 			$facility = $this->getFacility();
-			echo "<h2>Facility:</h2>";
-			var_dump($facility);
+			//echo "<h2>Facility:</h2>";
+			//var_dump($facility);
 			
 			$user = new User($this->db);
 			
@@ -274,20 +290,20 @@
 			}
 			
 			$insertQuery = $this->getInsertMixQuery();
-			echo "<h2>insert mix query:</h2>";
-			var_dump($insertQuery);
+			//echo "<h2>insert mix query:</h2>";
+			//var_dump($insertQuery);
 			
 			
 			$this->db->query($insertQuery);
-			echo "<h1>$insertQuery</h1>";
+			//echo "<h1>$insertQuery</h1>";
 			$mixID = $this->db->getLastInsertedID();
 			
-			var_dump($this->products);
+			//var_dump($this->products);
 			if($this->products and is_array($this->products) and count($this->products) > 0) {
 				$insertProductsQuery = $this->getInsertProductsQuery($mixID);
 			
-				echo "<h2>insertProductsQuery:</h2>";
-				echo($insertProductsQuery);
+				//echo "<h2>insertProductsQuery:</h2>";
+				//echo($insertProductsQuery);
 				$this->db->query($insertProductsQuery);
 			}
 			
@@ -301,10 +317,10 @@
 									
 			//	if waste already saved at DB - update, else - insert
 			if ($this->checkIfWasteExist($wasteData['mixID'])) {
-				echo "<h1>Update waste</h1>";
+				//echo "<h1>Update waste</h1>";
 				$this->updateWaste($wasteData);
 			} else {
-				echo "<h1>Insert waste</h1>";
+				//echo "<h1>Insert waste</h1>";
 				$this->insertWaste($wasteData);
 			}
 		}
@@ -564,8 +580,8 @@
 			$this->department = $department;
 		}
 		
-		private function loadFacility() {
-			
+
+		private function loadFacility() {			
 			$facility = new Facility($this->db);
 			$facility->initializeByID($this->facility_id);
 			$this->facility = $facility;
@@ -581,6 +597,7 @@
 			$this->equipment = $equipment;
 		}
 		
+
 		public function loadProducts() {
 									
 			if (!isset($this->mix_id)) return false;
@@ -662,12 +679,20 @@
 		public function iniWaste($isMWS) { //Is Module Wase Streams Enabled
 			//if (!isset($this->mix_id)) return false;
 			
+			//$isMWS = $this->isMWS;
+			
 			$unittype = new Unittype($this->db);
 			$unitTypeConverter = new UnitTypeConverter();
-
+			
+			//$wastesFromDB = $this->selectWaste($isMWS);
+			/*if($isMWS) {
+				$ws = new WasteStreams($this->db);
+				$wastesFromDB = $ws->getWasteStreamsFromMix($this->mix_id);
+			} else {
+				$wastesFromDB = $this->selectWaste($isMWS);
+			}*/
+			
 			$wastesFromDB = $this->selectWaste($isMWS);
-			
-			
 			//echo "<h1>Waste from DB</h1>";
 			//var_dump($wastesFromDB);
 			
@@ -676,9 +701,8 @@
 				$this->loadProducts();
 			}
 			
-			$this->isMWS = $isMWS;
-			
-			
+			//$this->isMWS = $isMWS;
+					
 
 			if (!$wastesFromDB) {
 				//	default values
@@ -687,11 +711,26 @@
 					'value'			=> "0.00",
 					'unittypeClass'	=> 'percent'								
 				);
-			} else {
-				
+			} else {				
 				foreach($wastesFromDB as $w) {
 						
-					$waste = array();
+					/*$waste = array();
+					$waste['id']	= $w->id;
+					$waste['mixID'] = $w->mix_id;
+					$waste['value'] = $w->value;
+					$waste['unitttypeID'] 	= $w->unittype_id;
+					$waste['unittypeClass'] = ($w->method == 'percent') ? "%" : $unittype->getUnittypeClass($w->unittype_id);
+					$waste['storage_id'] 	= $w->storage_id;
+					$waste['unitTypeList'] = (is_null($w->unittype_id)) ? false : $unittype->getUnittypeListDefault($w->method); */
+					
+					if(!isset($w->pollution_id)) {
+						$waste['id']	= $w->id;
+						$waste['value'] = $w->value;
+						
+					} else {
+						
+					}
+					
 					$waste['id']	= $w->id;
 					$waste['mixID'] = $w->mix_id;
 					$waste['value'] = $w->value;
@@ -703,12 +742,17 @@
 					if($isMWS) {
 						//echo "<h1>Add waste</h1>";
 						$this->waste[] = $waste;
+						
+						//echo "<h1>Waste:</h1>";
+						//var_dump($this->waste[count($this->waste)-1]);
 					} else {
 						$this->waste = $waste;
 					}
+					
+					
 				}	
-						
-				//var_dump($this->waste);
+
+				
 				
 				//exit;	
 			}
@@ -731,6 +775,15 @@
 				$unitTypeDetails = $unittype->getUnittypeDetails($product->unit_type);
 				
 				$quantitySum += $unitTypeConverter->convertToDefault($product->quantity, $unitTypeDetails['description'], $product->getDensity(), $densityType);
+			}			
+			// sum total waste
+			if($isMWS) {
+				$totalWasteValue = 0;
+				foreach ($this->waste as $w) {					
+					$totalWasteValue += $w['value'];
+				}
+			} else {
+				$totalWasteValue = $this->waste['value'];
 			}
 			// sum total waste
 			if($isMWS) {
@@ -761,7 +814,19 @@
 				$this->waste_calculated += $this->calculateWaste($this->waste['unittypeID'], $w->value, $quantitySum);	//	waste in weight unit type same as VOC
 			}
 			
+			//echo "<h1>WASTE:</h1>";
+			//var_dump($this->waste);
 			
+			//echo "<h1>WASTE переделанное с pollutions:</h1>";
+			if($isMWS) {
+				$ws = new WasteStreams($this->db);
+				$wastesFromDB = $ws->getWasteStreamsFromMix($this->mix_id);
+				//var_dump($wastesFromDB);
+				$this->waste = $wastesFromDB;
+				
+				$this->waste_json = json_encode($this->waste);
+			}
+						
 			return $this->waste;
 		}
 		
@@ -780,166 +845,165 @@
 		}
 	
 		
-		public function calculateCurrentUsage($isMWS) {
-			
+
+		public function calculateCurrentUsage() {	
+			//echo "<h3>calculateCurrentUsage</h3>";	
 			if ($this->products === null) return false; 
-			
+								
 			if(!isset($this->waste)) {
 				$this->iniWaste($isMWS);
 			}
 			
 			$errors = array(
-				'isDensityToVolumeError'=>false,
-				'isDensityToWeightError'=>false,
-				'isWasteCalculatedError'=>false,
-				'isWastePercentAbove100'=>false			
+			'isDensityToVolumeError'=>false,
+			'isDensityToWeightError'=>false,
+			'isWasteCalculatedError'=>false,
+			'isWastePercentAbove100'=>false			
 			);
 
 			$isThereProductWithoutDensity = false;
-			
 			$company = new Company($this->db);
 			$unittype = new Unittype($this->db);
+			//echo "<h1>WASTE:</h1>";
 			//var_dump($this->waste);
-			try {
-				//$wasteUnitDetails = $unittype->getUnittypeDetails($this->waste['unittypeID']);
-			} catch(Exception $e) {
-				
-			}
-			
-			//echo "<h1>depp:{$this->getDepartment()->getDepartmentID()}</h1>";
-			
-			$companyID = $company->getCompanyIDbyDepartmentID($this->getDepartment()->getDepartmentID());
-			$companyDetails = $company->getCompanyDetails($companyID);
-			//echo "<h1>Company #$companyID details</h1>";
-			//var_dump($companyDetails);
+			$wasteUnitDetails = $unittype->getUnittypeDetails($this->waste['unittypeID']);			
+							
+			$companyDetails = $company->getCompanyDetails($this->facility->getCompanyID());
+
 			//	default unit type = company's voc unit
 			$defaultType = $unittype->getDescriptionByID($companyDetails['voc_unittype_id']);
-			//var_dump($this);
+					
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
-
 			
-			foreach ($this->products as $key=>$product) {
-					
-				$voclx = $product->getVoclx();
-				$vocwx = $product->getVocwx();
-				$percentVolatileWeight = $product->getPercentVolatileWeigh();
-				//echo "<h1>percentVolatileWeight $percentVolatileWeight </h1>";
-				//echo "<h1>vocwx $vocwx </h1>";
-				$percentVolatileVolume = $product->getPercentVolatileVolume();
+			//echo "<h3>Products: </h3>";
+			//var_dump($this->products);
+			//echo "<h1>Calculate Current Usage!</h1>";
+			foreach ($this->products as $key=>$product) {	
+				//echo "<h2>Product: </h2>";
+				//var_dump($product);
+				//echo "$key => "; var_dump($product);				
 				$errors['isVocwxOrPercentWarning'][$key]='false';
-					
-				$density = $product->getDensity();
-				$densityObj = new Density($this->db, $product->getDensityUnitID());
-					
-				//	check density
-				if (empty($density) || $density == '0.00') {
-					$density = false;
-					$isThereProductWithoutDensity = true;
-				}							
-					
-				$quantity = $product->quantity;
 				
-				$unitTypeId = $product->unittypeDetails['unittype_id'];
-					
-				$unitTypeDetails = $unittype->getUnittypeDetails($unitTypeId);								
-					
+				$densityObj = new Density($this->db, $product->density_unit_id);
+				
+				//	check density
+				if (empty($product->density) || $product->density == '0.00') {
+					$product->density = false;
+					$isThereProductWithoutDensity = true;
+				}
+								
 				// get Density Type
 				$densityType = array (
-    				'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
-    				'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+    			'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+    			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
 				);
-					
-				//quantity array in lbs
-				$quantitiWeightSum += $unitTypeConverter->convertFromTo($quantity, $unitTypeDetails["description"], "lb", $density, $densityType);//	in weight
+				
+				$quantitiWeightSum += $unitTypeConverter->convertFromTo($product->quantity, 
+																		$product->unittypeDetails['description'], 
+																		"lb", 
+																		$product->density, 
+																		$densityType);//	in weight
 				//quantity array in gallon
-				$quantitiVolumeSum += $unitTypeConverter->convertFromTo($quantity, $unitTypeDetails["description"], "us gallon", $density, $densityType);//	in volume ;
-
-					
+				$quantitiVolumeSum += $unitTypeConverter->convertFromTo($product->quantity, 
+																		$product->unittypeDetails['description'], 
+																		"us gallon", 
+																		$product->density, 
+																		$densityType);//	in volume ;
+																		
+				//echo "<p>quantitiWeightSum: $quantitiWeightSum, quantitiVolumeSum: $quantitiVolumeSum</p>";
+																		
+			
 				//check, is vocwx or percentVolatileWeight
 				$isVocwx = true;
 				$isPercentVolatileWeight = true;
-				
-				if (empty($vocwx) || $vocwx == '0.00') {
+				if (empty($product->vocwx) || $product->vocwx == '0.00') {
 					$isVocwx = false;	
-				}
+				}			
 				
-				if (empty($percentVolatileWeight) || $percentVolatileWeight == '0.00') {
+				$percentVolatileWeight = $product->getPercentVolatileWeight();			
+				$percentVolatileVolume = $product->getPercentVolatileVolume();
+								
+				if (empty($percentVolatileWeight) || $percentVolatileWeight == '0.00') {		
 					$isPercentVolatileWeight = false;	
+					//echo "<p>set isPercentVolatileWeight to false</p>";
+					
+					if(empty($percentVolatileWeight)) {
+						$w = $percentVolatileWeight;
+						//echo "<p>product->perccentVolatileWeight is empty: $w</p>";
+					}
 				}
 				//echo "<h1>isPercentVolatileWeight $isPercentVolatileWeight, isVocwx $isVocwx</h1>";
-				if ($isPercentVolatileWeight||$isVocwx) {
-					$errors['isVocwxOrPercentWarning'][$key] = false;
-					//echo "<h1>unitTypeId $unitTypeId</h1>";
-					switch ($unittype->isWeightOrVolume($unitTypeId)) {
-						
+				if ($isPercentVolatileWeight || $isVocwx) {				
+					//echo "<p>isPercentVolatileWeight || isVocwx</p>";					
+					$errors['isVocwxOrPercentWarning'][$key] = false;					
+					switch ($unittype->isWeightOrVolume($product->unittypeDetails['unittype_id'])) {
 						case 'weight':
-							if ($isPercentVolatileWeight) {
+							//echo "<p>weight</p>";
+							if ($isPercentVolatileWeight) {														
 								$percentAndWeight = array(
-									'weight' => $unitTypeConverter->convertToDefault($quantity, $unitTypeDetails["description"]),
-									'percent'=> $percentVolatileWeight
+									'weight'	=> $unitTypeConverter->convertToDefault($product->quantity, $product->unittypeDetails['description']),
+									'percent'	=> $product->getPercentVolatileWeight()
 								);
-								$ArrayWeight[] = $percentAndWeight;
-							} else {
-								if ($density) {
-									$galQty = $unitTypeConverter->convertFromTo($quantity, $unitTypeDetails["description"], "us gallon", $density, $densityType);//	in volume
-									$vocwxAndVolume = array(
-										'volume' => $galQty,
-										'vocwx' => $vocwx
+								//echo "percentAndWeight: ";
+								//var_Dump($percentAndWeight);
+								$ArrayWeight[] =$percentAndWeight; 
+							} else  {								
+								if ($product->density) {
+									$galQty = $unitTypeConverter->convertFromTo($product->quantity, $product->unittypeDetails['description'], "us gallon", $product->density, $densityType);//	in volume
+									$vocwxAndVolume = array (
+										'volume'	=> $galQty,
+										'vocwx'		=> $product->vocwx
 									);
 									$ArrayVolume[] = $vocwxAndVolume;
 								} else {
 									$errors['isDensityToVolumeError'] = true;
 								}
-							}
+							}						
 							break;
-							
-						case 'volume':
-							if ($isVocwx) {
-								$galQty = $unitTypeConverter->convertFromTo($quantity, $unitTypeDetails["description"], "us gallon");//	in volume
+						
+						case 'volume':		
+							//echo "<p>volume</p>";					
+							if ($isVocwx) {			
+								//echo "<p>isVocwx</p>";				
+								$galQty = $unitTypeConverter->convertFromTo($product->quantity,  $product->unittypeDetails['description'], "us gallon");//	in volume								
 								$vocwxAndVolume = array(
 									'volume'=>$galQty,
-									'vocwx'=>$vocwx
-								);
+									'vocwx'=>$product->vocwx
+								);			
+								//echo "<p>vocwxAndVolume: $vocwxAndVolume</p>";					
 								$ArrayVolume[] = $vocwxAndVolume;
-							} else {
-								if ($density) {
+							} else  {								
+								if ($product->density) {
+									//echo "<p>density</p>";
 									$percentAndWeight = array(
-										'weight'=>$unitTypeConverter->convertToDefault($quantity, $unitTypeDetails["description"], $density, $densityType),
-										'percent'=> $percentVolatileWeight
+										'weight'=>$unitTypeConverter->convertToDefault($product->quantity,  $product->unittypeDetails['description'], $product->density, $densityType),
+										'percent'=> $product->getPercentVolatileWeight()
 									);
-									$ArrayWeight[] = $percentAndWeight;
+									$ArrayWeight[] =$percentAndWeight;
 								} else {
-									$errors['isDensityToWeightError'] = true;
+									//echo "<p>not density</p>";
+									$errors['isDensityToWeightError']=true;
 								}
 							}
-							break;
+							break;					
 					}
-
-				} else {
-					$errors['isVocwxOrPercentWarning'][$key]='true';	
-				}				
+				}
 			}
 			
-			if( isset($this->waste) and !empty($this->waste['unittypeID'])){
-				$wasteResult = $this->calculateWastePercent($this->waste['unittypeID'], $this->waste['value'],$unitTypeConverter,$quantitiWeightSum,$quantitiVolumeSum);
-			} else {
-				$wasteResult = 0.0;
-			}
-			
-			$calculator = new Calculator();
-			//echo "<h1>Calculate Voc:</h1>";
-			//var_dump($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult);
-			//echo "End";
-			$this->voc = $calculator->calculateVocNew($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult);	
-			$this->voc = round($this->voc,2);	
-
+			$wasteResult = $this->calculateWastePercent($this->waste['unittypeID'], 
+														$this->waste['value'],
+														$unitTypeConverter,
+														$quantitiWeightSum,
+														$quantitiVolumeSum);
+														
+			$calculator = new Calculator();		
+			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult);
 			$this->waste_percent = $wasteResult['wastePercent'];
-			//$this->currentUsage = $this->voc;
-			//$this->wastePercent = $wasteResult['wastePercent'];
-			
+			$this->currentUsage = $this->voc;
+			$this->wastePercent = $wasteResult['wastePercent'];
 			$errors['isWastePercentAbove100'] = $wasteResult['isWastePercentAbove100'];
 			
-			return $errors;
+			return $errors;			
 		}
 		
 		public function getCurrentUsage() {
@@ -953,14 +1017,11 @@
 			if (!isset($this->mix_id)) return false;
 			$mixID = mysql_escape_string($this->mix_id);
 
-			$query = "SELECT * FROM waste WHERE mix_id = ".$mixID;
-			
-			if(!$isMWS) { // If module MWS disabled - get one waste.
+			$query = "SELECT * FROM waste WHERE mix_id = ".$mixID;			
+			if(!$this->isMWS) { // If module MWS disabled - get one waste.
 				
 				$query .= " AND waste_stream_id IS NULL";
 			}
-			
-			//var_dump($query);
 			
 			$this->db->query($query);
 			

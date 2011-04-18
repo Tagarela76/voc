@@ -18,7 +18,7 @@ class CAccessory extends Controller
 	
 	private function actionConfirmDelete()
 	{		
-		$accessory = new Accessory($this->db); //.deactiveBookmark
+		$accessory = new Accessory($this->db); // viewDetails.tpl
 								
 		foreach ($this->itemID as $ID) 
 		{

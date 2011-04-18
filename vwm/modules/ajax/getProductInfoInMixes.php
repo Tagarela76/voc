@@ -11,14 +11,16 @@ if(isset($_GET['product_id'])){
 	//	Include Class Autoloader
 	require_once('modules/classAutoloader.php');
 	
-	$xnyo = new Xnyo;
+	/*$xnyo = new Xnyo;
 	
 	$xnyo->database_type	= DB_TYPE;
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
 	
-	$xnyo->start();
+	$xnyo->start();*/
+	//	Start xnyo Framework
+	require ('modules/xnyo/startXnyo.php'); 
 	
 	$xnyo->filter_get_var('product_id', 'int');
 	
@@ -38,7 +40,24 @@ if(isset($_GET['product_id'])){
 		$coatName = $db->fetch(0)->coat_desc;
 		//$res["description"]=$description;
 		//$res["coatName"]=$coatName;		
-		$response='{"description":"'.$description.'","coatName":"'.$coatName.'"}';
+		//$response='{"description":"'.$description.'","coatName":"'.$coatName.'"}';
+		
+		try {
+			$intDentisy = intval($data->density);
+			
+			if($intDentisy < 1) {
+				$isSupportWeight = false;
+			} else {
+				$isSupportWeight = true;
+			}
+			
+		}catch(Exception $e) {
+			$isSupportWeight = false;
+		}
+		
+		$response = json_encode(Array("description" => $description, "coatName" => $coatName, "supportWeight" => $isSupportWeight));
+		
+		
 		
 		echo $response;
 	} else

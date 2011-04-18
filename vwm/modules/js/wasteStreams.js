@@ -1,5 +1,6 @@
 var countWasteStreams=0;
 
+
 /*$.ajax({
       		url: "modules/ajax/wasteStreams.php",      		
       		type: "POST",
@@ -23,6 +24,10 @@ $.ajax({
 				//$("#preloader").css("display", "none");											
       		}        		   			   	
 		});*/
+
+var wasteStreamsCollection = new CWasteStreamCollection();
+
+
 		
 function unitTypeListWithoutPollutions(id)
 {	
@@ -46,7 +51,7 @@ function unitTypeListWithoutPollutions(id)
 					"<option value='"+unittypeList[i]['unittype_id']+"'>"+unittypeList[i]['name']+"</option>");					
 				}
 				////	hide preloader
-				//$("#preloader").css("display","none");											
+				//$("#preloader").css("display","none");	 main_block										
       		}        		   			   	
 		});
 }
@@ -71,9 +76,29 @@ function unitTypeList(id,idPollution)
 				{
 					$('select[name=selectWasteUnittype_'+id+'_'+idPollution+']').append(
 					"<option value='"+list[i]['unittype_id']+"'>"+list[i]['name']+"</option>");					
-				}															
+				}	
       		}        		   			   	
 		});
+}
+
+function updatePollutionsUnittype(wasteId, pollutionId) {
+	
+	val = $("#selectWasteUnittype_"+wasteId+"_"+pollutionId+" option:selected").val();
+	
+	waste = wasteStreamsCollection.getWaste(wasteId);
+	
+	if(waste != false) {
+		
+		pollution = waste.getPollution(pollutionId);
+		
+		if(pollution != false) {
+			pollution.setUnittypeId(val);
+		}
+	}
+}
+
+function removePollution(wasteId, pollutionId) {
+	
 }
 	
 	
@@ -111,6 +136,8 @@ function selectOptions2UnitTypeClasses()
 		
 function viewWasteStreams()
 {		
+	
+	//alert(wasteStreamsCollection);
 	countWasteStreams++;
 	var lengthOfwasteStrims=0;
 	var isHiddenAddPollution=false;
@@ -127,7 +154,8 @@ function viewWasteStreams()
 	}		
 		
 		var wsPosition = document.getElementById("wasteStreamCount").value;	
-		
+		//var wsPosition2 = $("#wasteStreamCount").val();
+		//alert(wsPosition + " and " + wsPosition2);
 		var strNewWasteStreams=
 		"<table  class='users' cellpadding='0' cellspacing='0' align='center' id='wasteStreamTable_"+wsPosition+"'>"+		
 		"<input type='hidden'  name='pollutionCount_"+wsPosition+"' value=0>"+
@@ -138,13 +166,12 @@ function viewWasteStreams()
 		"</td>"+
 		"<td id='wasteStreamTd_"+wsPosition+"' class='border_users_r border_users_b'>"+
 		"<input type='hidden' id='selectedValue_"+wsPosition+"' value='noneS' txt='noneS'>"+
-		"	<select  name='wasteStreamSelect_"+wsPosition+"' onCh='"+wsPosition+"' >";			
+		"	<select  name='wasteStreamSelect_"+wsPosition+"' id='wasteStreamSelect_"+wsPosition+"' onCh='"+wsPosition+"' >";			
 		
 		var firstKey;
 		var firstStep=true;
 		for (var key in wasteStreamsWithPollutions)
 		{				
-			
 			var checkValue=true;
 			   $('select[name^=wasteStreamSelect_]').each(function(el)
 		 		{	
@@ -156,6 +183,7 @@ function viewWasteStreams()
 					strNewWasteStreams+=
 					"<option value='"+key+"'>"+wasteStreamsWithPollutions[key]['name']+"</option>";					
 					
+					//Remove the same current option of all wastesStreams
 					if (firstStep==true)
 					{
 						firstKey=key;
@@ -170,7 +198,8 @@ function viewWasteStreams()
 						}
 					}
 					firstStep=false;		
-		 		}			
+		 		}	
+		 		
 		}		
 		
 		strNewWasteStreams+=																		
@@ -184,7 +213,7 @@ function viewWasteStreams()
 		"	</select>"+		
 		"	<select name='selectWasteUnittypeWithoutPollutions_"+wsPosition+"' disabled='true'  style='display:none;' >"+																				
 		"	</select>"+		
-		"	<span style='display:inline-block'>Storage:<select name='selectStorage_"+wsPosition+"'  class='addInventory'></span>"+																				
+		"	<span style='display:inline-block'>Storage:<select name='selectStorage_"+wsPosition+"' id='selectStorage_"+wsPosition+"'  onCh='"+wsPosition+"'  class='addInventory'></span>"+																				
 		"	</select>"+																					
 		"</td>"+				
 		"</tr>"+		
@@ -193,37 +222,197 @@ function viewWasteStreams()
 		$('div[id=wasteStreamDiv]').append(								
 			strNewWasteStreams
 		);		
-		unitTypeListWithoutPollutions(wsPosition);		
+		unitTypeListWithoutPollutions(wsPosition);
+		
+		wasteObj = new wasteStreamsObj();
+		/*Current selected waste's wasteStreamId*/
+		var curWasteStreamId = $("#wasteStreamSelect_"+wsPosition + " option:selected").val();
+		wasteObj.setWasteStreamId(curWasteStreamId);
+		
 		
 		$('#selectedValue_'+wsPosition).attr('value',firstKey);
-		$('#selectedValue_'+wsPosition).attr('txt',wasteStreamsWithPollutions[firstKey]['name']);		
+		$('#selectedValue_'+wsPosition).attr('txt',wasteStreamsWithPollutions[firstKey]['name']);
 		
 		if (isHiddenAddPollution)
 		{
 			$("#quantityText_"+wsPosition).css('display','inline').css('zoom',1);		
-			$("input:text[name=quantityWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false);
-			$("select[name=selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false);
-			$("select[name=selectWasteUnittypeWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false);			
+			$("input:text[name=quantityWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false).attr('id',"quantityWithoutPollutions_"+wsPosition).attr("onCh",wsPosition);
+			$("select[name=selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false);//.attr('id',"selectWasteUnittypeClassWithoutPollutions_"+wsPosition).attr("onCh",wsPosition);
+			$("select[name=selectWasteUnittypeWithoutPollutions_"+wsPosition+"]").css('display','inline').css('zoom',1).attr('disabled',false).attr('id',"selectWasteUnittypeWithoutPollutions_"+wsPosition).attr("onCh",wsPosition);			
 			$('a[id=addPollutions_'+wsPosition+']').css('display','none');
 			$('#divLine_'+wsPosition).css('display','none');
+			
+			$("#quantityWithoutPollutions_"+wsPosition).numeric();
+			wasteObj.setQuantity(0);
+			wasteObj.setUnittypeId($("select[name=selectWasteUnittypeWithoutPollutions_"+wsPosition+"] option:selected").val());
+			
+			wasteObj.setPollutionsDisabled(true);
 		}
 		
 		setStorages(wsPosition);
 		
+		
+		
+		var curStorageId = $("#selectStorage_"+wsPosition + " option:selected").val();
+		wasteObj.setStorageId(curStorageId);
+		//alert("ololo! " + wasteStreamsCollection);
+		wasteStreamsCollection.addWasteStream(wasteObj);
+		//alert("ololo!");
+		//wasteStreamsCollection.toJson();
+		
 		$('#deleteWasteStream_'+wsPosition).click(function (){
 			var val = parseInt ($(this).attr('onCl'));			
-			delWasteStream(val);});
+			delWasteStream(val);
+			return false;
+		});
 		$('#addPollutions_'+wsPosition).click(function(){
+			
 			var val = parseInt($(this).attr('onCl'));
-			addPollution (val);});
+			
+			addPollution (val);
+			return false;
+		});
 		$('select[name=wasteStreamSelect_'+wsPosition+']').change(function(){
 			var val = parseInt($(this).attr('onCh'));
 			viewRowsBySelectWaste(val);
-			setStorages(val);});
-		$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').change(function(){
+			setStorages(val);
+			
+			
+			var value =  $(this).val();
+			
+			wasteStreamsCollection.setWasteStreamId(value, val);
+			
+			var storageId = $("#selectStorage_"+val+" option:selected").val();
+			wasteStreamsCollection.setStorageId(storageId, val);
+			
+			
+			if(isWasteWithPollutions(val)) {
+				
+				//clean pollution
+				wasteStreamsCollection.setUnittypeId(undefined, val);
+				//$("#quantityWithoutPollutions_"+wsPosition).numeric();
+				//alert("with");
+				wasteStreamsCollection.getWaste(val).setPollutionsDisabled(false);
+				
+			} else {
+				wasteStreamsCollection.getWaste(val).setPollutionsDisabled(true);
+				//clean pollutions, init one pollution
+				id = "input:text[name=quantityWithoutPollutions_"+val+"]";
+				
+				//Quantity textbox
+				$("input:text[name=quantityWithoutPollutions_"+val+"]").numeric();
+				$("input:text[name=quantityWithoutPollutions_"+val+"]").attr("onCh",val);
+				
+				//$("input:text[name=quantityWithoutPollutions_"+val+"]").attr("onchange","wasteSetQuantity(this)");
+				$("input:text[name=quantityWithoutPollutions_"+val+"]").change( function() {
+					wasteSetQuantity($(this).get());
+				});
+				//unittype select
+				
+				/*$("#selectStorage_"+wsPosition).change( { "index" : index} ,function(eventObject) {
+					wasteSetStorage(eventObject.data.index);
+				});
+				
+				//$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).attr("onchange","wasteSetUnittypeId(this);");
+				$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).change( function() {
+
+					wasteSetUnittypeId($(this).get());
+				});*/
+				
+				//$('select[name=selectWasteUnittypeClassWithoutPollutions_'+val+']').attr("onchange","wasteSetUnittypeClass(this);");
+				
+				//Init unittype
+				wasteSetUnittypeClass($('select[name=selectWasteUnittypeClassWithoutPollutions_'+val+']').get());
+				$('select[name=selectWasteUnittypeClassWithoutPollutions_'+val+']').change( function() {
+
+					wasteSetUnittypeClass($(this).get());
+				});
+				$("#selectWasteUnittypeWithoutPollutions_"+val).attr("onCh",val);
+				$("#selectWasteUnittypeWithoutPollutions_"+val).change( function() {
+
+					wasteSetUnittypeId($(this).get());
+				});
+				
+				/*$('select[name=selectWasteUnittypeClassWithoutPollutions_'+val+']').change(function(){
+					var onCh = parseInt($(this).attr('onCh'));
+					unitTypeListWithoutPollutions(onCh);
+					
+					var value = $("#selectWasteUnittypeWithoutPollutions_"+onCh+" option:selected").val();
+					
+					wasteStreamsCollection.setUnittypeId(  value, onCh);
+					//wasteStreamsCollection.toJson();
+					//alert('change unittype ' + value + " to " + onCh);
+				});*/
+			}
+			
+			//wasteStreamsCollection.toJson();
+			});
+		//$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').attr("onchange","wasteSetUnittypeClass(this);");
+		$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').change( function() {
+
+			wasteSetUnittypeClass($(this).get());
+		});
+		/*$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').change(function(){
 			var val = parseInt($(this).attr('onCh'));
-			unitTypeListWithoutPollutions(val);});
+			unitTypeListWithoutPollutions(val);
+			
+			var value = $("#selectWasteUnittypeWithoutPollutions_"+val+" option:selected").val();
+			
+			wasteStreamsCollection.setUnittypeId(value, val);
+			//wasteStreamsCollection.toJson();
+			});*/
+		
+		index = $("#selectStorage_"+wsPosition).attr('onCh');
+		//$("#selectStorage_"+wsPosition).attr("onchange","wasteSetStorage("+index+");");
+		
+		$("#selectStorage_"+wsPosition).change( { "index" : index} ,function(eventObject) {
+			wasteSetStorage(eventObject.data.index);
+		});
+		
+		//$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).attr("onchange","wasteSetUnittypeId(this);");
+		$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).change( function() {
+
+			wasteSetUnittypeId($(this).get());
+		});
+		
+		//$("#quantityWithoutPollutions_"+wsPosition).attr("onchange","wasteSetQuantity(this);");
+		$("#quantityWithoutPollutions_"+wsPosition).change( function() {
+
+			wasteSetQuantity($(this).get());
+		});
+		
 		document.getElementById("wasteStreamCount").value++;		
+}
+
+function wasteSetUnittypeId(element) {
+	
+	var index = parseInt($(element).attr('onCh'));
+	var value = $(element).attr('value');
+	
+	wasteStreamsCollection.setUnittypeId(value, index);
+}
+function wasteSetUnittypeClass(element) {
+	
+	var onCh = parseInt($(element).attr('onCh'));
+	unitTypeListWithoutPollutions(onCh);
+	
+	var value = $("#selectWasteUnittypeWithoutPollutions_"+onCh+" option:selected").val();
+	
+	wasteStreamsCollection.setUnittypeId(  value, onCh);
+}
+
+function wasteSetQuantity(element) {
+	
+	var index = parseInt($(element).attr('onCh'));
+	var value = $(element).val();
+	//alert("index: " + index + " value:" + value);
+	wasteStreamsCollection.setQuantity(value, index);
+}
+
+function wasteSetStorage(index) {
+	
+	var value = $("#selectStorage_"+index+" option:selected").val();
+	wasteStreamsCollection.setStorageId(value, index);
 }
 
 $(function()
@@ -245,22 +434,32 @@ $(function()
 	{
 		deletedStorageValidation=eval ("("+deletedStorageValidationString+")");
 	}
-		
+	
+	
+	
 	for (var key in elemsArray)
 	{					
 		viewWasteStreams();
 			
 		var value=elemsArray[key]['id'];
+		
 		$('select[name = wasteStreamSelect_'+key+'] option[value ='+value+']').attr('selected',true);
 		setStorages(key);				
 		$('select[name = selectStorage_'+key+'] option[value ='+elemsArray[key]['storage_id']+']').attr('selected',true);
 		
+		wasteStreamsCollection.getWaste(key).setStorageId(elemsArray[key]['storage_id']);
+		
 		if (elemsArray[key]['unittypeClass']!=null)
 		{
-			$('input[name=quantityWithoutPollutions_'+key+']').attr('value',elemsArray[key]["value"]);
+			$('input[name=quantityWithoutPollutions_'+key+']').attr('value',elemsArray[key]["value"]).attr("onchange","wasteSetQuantity(this)").attr("onch",key);
 			$('select[name = selectWasteUnittypeClassWithoutPollutions_'+key+'] option[value ='+elemsArray[key]["unittypeClass"]+']').attr('selected',true);
 			unitTypeListWithoutPollutions(key);
 			$('select[name = selectWasteUnittypeWithoutPollutions_'+key+'] option[value ='+elemsArray[key]["unittypeID"]+']').attr('selected',true);
+			
+			waste = wasteStreamsCollection.getWaste(key);
+			waste.setQuantity(elemsArray[key]["value"]);
+			waste.setUnittypeId(elemsArray[key]["unittypeID"]);
+			waste.setWasteStreamId(value);
 		}		
 		viewRowsBySelectWaste(key);		
 		
@@ -278,6 +477,11 @@ $(function()
 				{
 					$('#pollution_'+key+"_"+i+' td[id=pollutionValue]').append('<p style="color:red">'+elemsArray[key][i]["validation"]+'</p>');
 				}
+				
+				pol = wasteStreamsCollection.getWaste(key).getPollution(i);
+				pol.setQuantity(elemsArray[key][i]["value"]);
+				pol.setPollutionId(elemsArray[key][i]["id"]);
+				pol.setUnittypeId(elemsArray[key][i]["unittypeID"]);
 			}
 		}
 		if(elemsArray[key]['validation']!='success' && elemsArray[key]['validation']!=null)
@@ -292,44 +496,65 @@ $(function()
 			}
 		}
 	}		
-	$('a[id=addWasteStream]').bind('click',function(){viewWasteStreams();});
+	//$('a[id=addWasteStream]').bind('click',function(){viewWasteStreams();});
+	//$('a[id=addWasteStream]').live('click',function(){viewWasteStreams();});
 	
 	$('select[name^=selectStorage]').each(function(el)
 	{
 		for (key in overflow)
 		{
 			if ($(this).attr('value')==overflow[key])
-				$(this).after('<p style="color:red; display:inline-block"> Storage overflow!</p>') 
+				{
+					$(this).after('<p style="color:red; display:inline-block"> Storage overflow!</p>');
+				}
+				 
 		}	
 	});		
 })
 
 function setStorages(id)
 {
+
 	var idSelectedWasteStream = $('select[name=wasteStreamSelect_'+id+']').attr('value');
 	
 	//SET STORAGES
 	$("select[name=selectStorage_"+id+"]").empty();
 	var strOptions= "<option value='-1'>none</option>";	
+	
 	for (key in storages[idSelectedWasteStream])
 	{
-		var unittype=storages[idSelectedWasteStream][key]['volume_unittype']
-		var empty=storages[idSelectedWasteStream][key]['capacity_volume']-storages[idSelectedWasteStream][key]['current_usage'];				
+		var unittype=storages[idSelectedWasteStream][key]['volume_unittype'];
+		var empty=storages[idSelectedWasteStream][key]['capacity_volume']-storages[idSelectedWasteStream][key]['current_usage'];
 		strOptions+="<option value="+storages[idSelectedWasteStream][key]['storage_id']+">"+storages[idSelectedWasteStream][key]['name']+" (empty: "+empty.toFixed(2)+" "+unittype+")</option>";
 	}	
 	$("select[name=selectStorage_"+id+"]").append(strOptions);	
 }
 
+function isWasteWithPollutions(index) {
+	
+	var idSelectedWasteStream = $('select[name=wasteStreamSelect_'+index+']').attr('value');	
+	
+	if (wasteStreamsWithPollutions[idSelectedWasteStream][0]=='false') {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 function viewRowsBySelectWaste(id)
 {		
 	var idSelectedWasteStream = $('select[name=wasteStreamSelect_'+id+']').attr('value');	
+	
+	if(idSelectedWasteStream == undefined) {
+		return;
+	}
 			
 	if (wasteStreamsWithPollutions[idSelectedWasteStream][0]=='false')
 	{		
 		$("#quantityText_"+id).css('display','inline').css('zoom',1);		
 		$("input:text[name=quantityWithoutPollutions_"+id+"]").css('display','inline').css('zoom',1).attr('disabled',false);
-		$("select[name=selectWasteUnittypeClassWithoutPollutions_"+id+"]").css('display','inline').css('zoom',1).attr('disabled',false);
-		$("select[name=selectWasteUnittypeWithoutPollutions_"+id+"]").css('display','inline').css('zoom',1).attr('disabled',false);			
+		$("select[name=selectWasteUnittypeClassWithoutPollutions_"+id+"]").css('display','inline').css('zoom',1).attr('disabled',false).attr('id',"selectWasteUnittypeClassWithoutPollutions_"+id);
+		$("select[name=selectWasteUnittypeWithoutPollutions_"+id+"]").css('display','inline').css('zoom',1).attr('disabled',false).attr('id',"selectWasteUnittypeWithoutPollutions_"+id);			
 		$('a[id=addPollutions_'+id+']').css('display','none');
 		$('#divLine_'+id).css('display','none');	
 	}
@@ -402,6 +627,9 @@ function renamePollutions(i,j,need)
 function delWasteStream (id)
 {			
 	countWasteStreams--;	
+	
+	wasteStreamsCollection.removeByIndex(id);
+	
 	var selectedValueObj = $('#selectedValue_'+id);
 	var selectedValue=selectedValueObj.attr('value');
 	var selectedText=selectedValueObj.attr('txt');	
@@ -431,13 +659,23 @@ function delWasteStream (id)
 		$('a[id=deleteWasteStream_'+i+']').attr('id','deleteWasteStream_'+need);			
 		$('a[id=addPollutions_'+i+']').attr('onCl',need);
 		$('a[id=addPollutions_'+i+']').attr('id','addPollutions_'+need);		
+		
+		//Waste stream select
 		$('select[name = wasteStreamSelect_'+i+']').attr('onCh',need);
-		$('select[name = wasteStreamSelect_'+i+']').attr('name','wasteStreamSelect_'+need);
-		$("input:text[name=quantityWithoutPollutions_"+i+"]").attr('name','quantityWithoutPollutions_'+need);		
+		$('select[name = wasteStreamSelect_'+i+']').attr('name','wasteStreamSelect_'+need).attr('id','wasteStreamSelect_'+need);
+		
+		//Quantity without pollution
+		$("input:text[name=quantityWithoutPollutions_"+i+"]").attr('name','quantityWithoutPollutions_'+need).attr("id","quantityWithoutPollutions_"+need);
+		$("input:text[name=quantityWithoutPollutions_"+need+"]").attr("onCh",need);
+		
+		//Unittype's checkboxes
 		$("select[name=selectWasteUnittypeClassWithoutPollutions_"+i+"]").attr('onCh',need);
 		$("select[name=selectWasteUnittypeClassWithoutPollutions_"+i+"]").attr('name','selectWasteUnittypeClassWithoutPollutions_'+need);		
-		$("select[name=selectWasteUnittypeWithoutPollutions_"+i+"]").attr('name','selectWasteUnittypeWithoutPollutions_'+need);
-		$("select[name=selectStorage_"+i+"]").attr('name','selectStorage_'+need);
+		$("select[name=selectWasteUnittypeWithoutPollutions_"+i+"]").attr('name','selectWasteUnittypeWithoutPollutions_'+need).attr("id","selectWasteUnittypeWithoutPollutions_"+need).attr("onCh",need);
+		
+		//Select storage
+		$("select[name=selectStorage_"+i+"]").attr('name','selectStorage_'+need).attr("id",'selectStorage_'+need).attr('onCh',need);
+		
 		$('#divLine_'+i).attr('id','divLine_'+need);
 		$('#quantityText_'+i).attr('id','quantityText_'+need);
 		$('#selectedValue_'+i).attr('id','selectedValue_'+need);
@@ -477,13 +715,18 @@ function delPollution(id,idPollution)
 		$('select[name=selectPollution_'+id+'_'+j+']').attr('name','selectPollution_'+id+'_'+need);				
 		$('select[name=selectWasteUnittypeClass_'+id+'_'+j+']').attr('onCh_pol',need);
 		$('select[name=selectWasteUnittypeClass_'+id+'_'+j+']').attr('name','selectWasteUnittypeClass_'+id+'_'+need);		
-		$('select[name=selectWasteUnittype_'+id+'_'+j+']').attr('name','selectWasteUnittype_'+id+'_'+need);
-		$('input[name=quantity_'+id+'_'+j+']').attr('name','quantity_'+id+'_'+need);
+		$('select[name=selectWasteUnittype_'+id+'_'+j+']').attr('name','selectWasteUnittype_'+id+'_'+need).attr('id','selectWasteUnittype_'+id+'_'+need).attr('onch_pol',need);
+		$('input[name=quantity_'+id+'_'+j+']').attr('name','quantity_'+id+'_'+need).attr('id','quantity_'+id+'_'+need).attr("onch_ws",id).attr("onch_pol",need);
 		$('#pollutionSelectedValue_'+id+'_'+j).attr('id','pollutionSelectedValue_'+id+'_'+need);
 	}		
 	
 	pollutionCount--;
 	$('input:hidden[name=pollutionCount_'+id+']').attr('value',pollutionCount)	
+	
+	//alert('remove pollution '+ idPollution  +' by wasteId ' + id);
+	wasteStreamsCollection.getWaste(id).removePollution(idPollution);
+	
+	//return false;
 }
 
 function selectPollution(id,idPollution)
@@ -518,9 +761,9 @@ function addPollution (id)
 		"</td>"+
 		"<td id='pollutionValue' class='border_users_r border_users_b contaminated_by'>"+				
 		"	<select name='selectPollution_"+id+"_"+idPollution+"'  onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>";
-		var firstStep=true;
+		var firstStep = true;
 		var selVal;
-		var countPoll=0;
+		var countPoll = 0;
 		for (key in wasteStreamsWithPollutions[idSelectedWasteStream])
 		{			
 			if (key!='name')
@@ -560,14 +803,14 @@ function addPollution (id)
 		strNewPollution+=																			
 		"	</select>"+	
 		"	<input type='hidden' id='pollutionSelectedValue_"+id+"_"+idPollution+"' value='"+selVal+"' txt='"+wasteStreamsWithPollutions[idSelectedWasteStream][selVal]+"'>"+				
-		" 	Quantity:<input type='text' name = 'quantity_"+id+"_"+idPollution+"'>"+
-		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onChange='unitTypeList("+id+","+idPollution+")' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>";
+		" 	Quantity:<input type='text' name = 'quantity_"+id+"_"+idPollution+"' id='quantity_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>"+
+		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>";
 		
 		strNewPollution+=selectOptions2UnitTypeClasses();		
 		
 		strNewPollution+=																		
 		"	</select>"+		
-		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' >"+																				
+		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' id='selectWasteUnittype_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>"+																				
 		"	</select>"+																						
 		"</td>"+
 	"</tr>";	
@@ -577,20 +820,119 @@ function addPollution (id)
 	$('#deletePollution_'+id+'_'+idPollution).click(function (){
 			var idWs = parseInt ($(this).attr('onCl_ws'));
 			var idPol = parseInt ($(this).attr('onCl_pol'));			
-			delPollution(idWs,idPol);});
-			
+			delPollution(idWs,idPol);
+			return false;
+	});
+	//$('select[name=selectPollution_'+id+'_'+idPollution+']').attr('onchange',"wasteSetPollutionId($(this).attr('onCh_ws'),$(this).attr('onCh_pol'),$(this).attr('value'));");
 	$('select[name=selectPollution_'+id+'_'+idPollution+']').change(function(){
 			var idWs = parseInt ($(this).attr('onCh_ws'));
 			var idPol = parseInt ($(this).attr('onCh_pol'));
-			selectPollution(idWs,idPol);});
+			selectPollution(idWs,idPol);
+			value =  $("option:selected",this).val();
+			//value =  $(this).children("[@selected]").val();
+			//wasteStreamsCollection.getWaste(idWs).getPollution(idPol).setPollutionId(value);
 			
-	$('select[name=selectWasteUnittypeClass_'+id+'_'+idPollution+']').change(function(){
+			wasteSetPollutionId(idWs,idPol,value);
+	});
+			
+	/*$('select[name=selectWasteUnittypeClass_'+id+'_'+idPollution+']').change(function(){
 			var idWs = parseInt ($(this).attr('onCh_ws'));
 			var idPol = parseInt ($(this).attr('onCh_pol'));
-			unitTypeList(idWs,idPol);});
+			unitTypeList(idWs,idPol);
+	});*/
+	
+	//$("#selectWasteUnittype_"+id+"_"+idPollution).attr("onchange",'change_waste_pollution_unittypeId(this)');
+	
+	$("#selectWasteUnittype_"+id+"_"+idPollution).change(function(){
+		//var idWs = parseInt ($(this).attr('onCh_ws'));
+		//var idPol = parseInt ($(this).attr('onCh_pol'));
+		//var val = $("#selectWasteUnittype_"+idWs+"_"+idPol +" option:selected").val();
+		
+		//wasteStreamsCollection.getWaste(idWs).getPollution(idPol).setUnittypeId(val);
+		
+		change_waste_pollution_unittypeId($(this).get());
+	});
+	
+	/*Select Pollutions*/
+	curPollutionId =  $("select[name=selectPollution_"+id+"_"+idPollution+"] option:selected").val();
+	
+	//alert("select[name=selectPollution_"+id+"_"+idPollution+"]"); 
+	
+	
+	/*Unittype*/
+	selectedUnittypeObj = $("#selectWasteUnittype_"+id+"_"+idPollution+" option:selected"); 
+	curUnittypeId = selectedUnittypeObj.val();
+	
+	/*Quantity*/
+	//console.log("#quantity_"+id+"_"+idPollution);
+	qObj = $("#quantity_"+id+"_"+idPollution); 
+	qObj.numeric();
+	//qObj.css("color","red");
+	
+	//qObj.attr('onchange','change_pollution_quantity(this)');
+	
+	qObj.change(function(){
+		//val = $(this).val();
+		//wasteId = $(this).attr('onCh_ws');
+		//pollutionId = $(this).attr('onCh_pol');
+		//alert("onchange wasteId=" + wasteId + " pollutionId="+pollutionId + " value=" + val);
+		//wasteStreamsCollection.getWaste(wasteId).getPollution(pollutionId).setQuantity(val);
+		
+		change_pollution_quantity($(this).get());
+	});
+	
+	curQuantity = qObj.val();
+	/*Init pollution Object*/
+	pollution = new pollutionObj();
+	
+	pollution.setPollutionId(curPollutionId);
+	pollution.setQuantity(curQuantity);
+	pollution.setUnittypeId(curUnittypeId);
+	
+	//console.log("set new pollution:");
+	//console.log(curPollutionId);
+	//console.log(curQuantity);
+	//console.log(curUnittypeId);
+	
+	wasteStreamsCollection.addPollutionToWaste(id, pollution);
 	
 	idPollution++;
 	$('input:hidden[name=pollutionCount_'+id+']').attr('value',idPollution.toString());
+
 }
+
+function change_pollution_quantity(el) {
+	val = $(el).val();
+	wasteId = $(el).attr('onCh_ws');
+	pollutionId = $(el).attr('onCh_pol');
+	//alert("onchange wasteId=" + wasteId + " pollutionId="+pollutionId + " value=" + val);
+	wasteStreamsCollection.getWaste(wasteId).getPollution(pollutionId).setQuantity(val);
+}
+
+function wasteSetPollutionId(idWS,idPOL,value) {
+	
+	selectPollution(idWS,idPOL);
+	wasteStreamsCollection.getWaste(idWS).getPollution(idPOL).setPollutionId(value);
+}
+
+function change_waste_pollution_unittypeId(el) {
+	
+	wasteId = $(el).attr("onch_ws");
+	pollutionId = $(el).attr("onch_pol");
+	value = $("option:selected",el).val();
+	
+	wasteStreamsCollection.getWaste(wasteId).getPollution(pollutionId).setUnittypeId(value);
+}
+
+function change_waste_pollution_unittypeClass(el) {
+	
+	wasteId = $(el).attr("onch_ws");
+	pollutionId = $(el).attr("onch_pol");
+	
+	unitTypeList(wasteId, pollutionId);
+	
+	updatePollutionsUnittype(wasteId, pollutionId);
+}
+
 
 

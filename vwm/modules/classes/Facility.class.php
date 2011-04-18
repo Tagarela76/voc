@@ -274,7 +274,7 @@ class Facility extends FacilityProperties {
 		//$this->db->select_db(DB_NAME);
 		$query = "SELECT * FROM ".TB_FACILITY." WHERE facility_id=".$facilityID;
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() > 0) {
 			$facilityData = $this->db->fetch(0);			
 			$this->facilityID = $facilityData->facility_id;
@@ -284,6 +284,7 @@ class Facility extends FacilityProperties {
 
 			$query = 'SELECT sum(value) total_usage, yyyy, mm FROM '.TB_USAGE_STATS.' WHERE facility_id = '.$facilityID. ' GROUP BY yyyy, mm';
 			$this->db->query($query);
+
 			if ($this->db->num_rows() > 0) {
 				$usageData = $this->db->fetch_all();
 				$annualUsage = array();

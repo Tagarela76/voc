@@ -29,7 +29,6 @@ class Controller
 			
 			$notify = $notifyc->getPopUpNotifyMessage($this->request['notify']);			
 			$this->smarty->assign("notify", $notify);
-			
 		}
 	}
 		

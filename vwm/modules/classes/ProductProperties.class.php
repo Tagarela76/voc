@@ -75,7 +75,7 @@ class ProductProperties {
     public function setProductNR($productNR) {
     	$this->productNR = $productNR;
     }
-    public function getPercentVolatileWeigh() {
+    public function getPercentVolatileWeight() {
     	return $this->perccentVolatileWeight;
     }
     public function getPercentVolatileVolume() {

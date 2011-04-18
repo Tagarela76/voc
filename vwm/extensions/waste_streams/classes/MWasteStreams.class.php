@@ -18,9 +18,68 @@ class MWasteStreams {
     	return new WasteStreams($db);
     }
     
+	/**
+     * Validate wastes (MWS) objects array.
+     * 
+     * @param array of objects $wastesObjArray
+     */
+    public function validateWastes($db,$xnyo, $facilityID, $companyID, $creationTime , $wastesObjArray) {
+    	
+    	$ws = new WasteStreams($db);
+    	$storageObj= new Storage($db);
+    	$isDeletedStorageError='false';
+    	
+    	$storageValidation = array();
+    	$deletedStorageValidation = array(); 
+    	
+    	$wastesCount = count($wastesObjArray);
+    	for($i = 0; $i < $wastesCount; $i++) {
+    		
+    		$waste = $wastesObjArray[$i];
+    		
+    		//Check Storage
+    		if($waste->storageId != -1) {
+	    		$compareResult = $storageObj->compareDateWasteAndDeletedStorage($storage,$date); 
+	    			  			
+	    		if ($compareResult == 1)
+	    		{
+	    			$storageName = $storageObj->getStorageNameByID($waste->storageId);
+	    			$deletedStorageValidation[$i] ="Warning: Storage ($storageName) was remote before $creationTime";
+	    			$isDeletedStorageError='true';
+	    		}
+	    		else
+	    		{
+	    			$deletedStorageValidation[$i] = "false";
+	    		}
+    		}
+    		
+    		
+    		//Check Pollutions
+    		if(!$waste->pollutionsDisabled) {
+    			
+    		}
+    	}
+    	
+    	//Check storage overflow
+    	$storage = new Storage($db);
+    	$storageOverflow = $storage->validateOverflow($wastesObjArray, $creationTime);	
+    	
+    	if ($storageOverflow != false) {
+	    	$result['storageError'] = "Error! Choosen storages are overflow!";
+	    	$result['storageOverflow'] = $storageOverflow;
+	    } else {
+	    	$result = false;
+	    }
+	    //var_dump($storageOverflow);
+	    
+    	return $result;
+    }
+	
     /**
      * function prepare4mixAdd($params) - load waste streams from form to wasteStreams array($this->resultParams['waste']) and prepare params for smarty
-     * @param array $params - $db,( $xnyo - dont needed due no filters for post) $isForm = true/false, $facilityID [, $id - only for edit mix] [, $companyID - now its no needed...]
+     * @param array $params - $db,( $xnyo - dont needed due no filters for post) $isForm = true/false, $facilityID 
+     * [, $id - only for edit mix] [, $companyID - now its no needed...] [, $jmix - decoded mix json from post]
+     * [, $wastes - decoded wastes json from post]
      * @return array for smarty, $this->resultParams['waste']
      */
     public function prepare4mixAdd($params) {
@@ -31,36 +90,42 @@ class MWasteStreams {
     	if (isset($id)) {
     		$this->resultParams['loadedWaste'] = $ws->getWasteStreamsFromMix($id);
     	}
+
     	if ($isForm) {
     		$this->isForm=true;
-    		$date = $_POST['creationTime'];
-    		$wsCount = $_POST['wasteStreamCount'];    		    		
+
+    		$date = $jmix->creationTime;
+    		$wsCount = count($wastes);   
+    			   	
     		$storageValidation = array();
-    		$deletedStorageValidation = array();    				
+    		$deletedStorageValidation = array();  
+
+    		$unittype = new Unittype($db);
+    		
     		for ($i=0;$i<$wsCount;$i++) {
-    			$pollutionCount = $_POST['pollutionCount_'.$i];
-    			$storage = $_POST['selectStorage_'.$i];
+    			$pollutionCount = count($wastes[$i]->pollutions);
+    			$storage = $wastes[$i]->storageId;
     			
+    			//	TODO: test properly
     			$compareResult = $storageObj->compareDateWasteAndDeletedStorage($storage,$date); 
-    			  			
-    			if ($compareResult==1)
-    			{
+    					
+    			if ($compareResult==1) {
+    				//	TODO: not tested
     				$storageName = $storageObj->getStorageNameByID($storage);
     				$deletedStorageValidation[$i] ="Warning: Storage ($storageName) was remote before $date";
     				$isDeletedStorageError='true';
-    			}
-    			else
-    			{
+    			} else {
     				$deletedStorageValidation[$i] = "false";
     			}
-    			     			
+
     			if ($pollutionCount == 0) {
+					//	TODO: not tested
 	    			$wasteData = array (
-	    				"id"			=> $_POST["wasteStreamSelect_$i"],						
-		    			"value"			=> $_POST["quantityWithoutPollutions_$i"],
-						"unittypeClass"	=> $_POST["selectWasteUnittypeClassWithoutPollutions_$i"],
-						"unittypeID"	=> (isset($_POST["selectWasteUnittypeWithoutPollutions_$i"])) ? $_POST["selectWasteUnittypeWithoutPollutions_$i"] : false, //it's no 'false' in any case cause we don't use percent any more in waste streams!
-						'storage_id'	=> $storage
+	    				"id"			=> $wastes[$i]->wasteStreamId,						
+		    			"value"			=> $wastes[$i]->quantity,
+						"unittypeClass"	=> $unittype->getUnittypeClass($wastes[$i]->unittypeId),
+						"unittypeID"	=> $wastes[$i]->unittypeId, //it's no 'false' in any case cause we don't use percent any more in waste streams!
+						'storage_id'	=> $wastes[$i]->storageId
 	    			);	
 	    			//validation for storages!!!	we'll prepare array with storage_id indexes that collected data with values+unittypes witch we'll add to storages	
 	    			if (!isset($storageValidation[$storage][$wasteData['unittypeID']])) {
@@ -68,43 +133,51 @@ class MWasteStreams {
 	    			} else {
 	    				$storageValidation[$storage][$wasteData['unittypeID']] += $wasteData['value'];
 	    			}			
-	    			$unittype = new Unittype($db);
-	    		//	$wasteData["unitTypeList"] = ($wasteData["unittypeID"]) ? (($unittype->getUnittypeListDefaultByCompanyId($companyID,$wasteData["unittypeClass"]))?$unittype->getUnittypeListDefaultByCompanyId($companyID,$wasteData["unittypeClass"]):$unittype->getUnittypeListDefault($wasteData['unittypeClass'])) : false;															
-	    			$this->resultParams['waste'][$i] = $wasteData;   				
+	    																		
+	    			$this->resultParams['waste'][$i] = $wasteData;
+	    			   			
     			} else {
+    				
     				$this->resultParams['waste'][$i] = array();
     				$this->resultParams['waste'][$i]['count'] = $pollutionCount;
     				$this->resultParams['waste'][$i]['storage_id'] = $storage;
-    				$this->resultParams['waste'][$i]['id'] = $_POST["wasteStreamSelect_$i"];
+    				$this->resultParams['waste'][$i]['id'] = $wastes[$i]->wasteStreamId;
+    				
+    				
     				$value = 0;
 	    			for ($j=0;$j<$pollutionCount;$j++) {
 		    			$wasteData = array (
-		    				"id"			=> $_POST["selectPollution_$i".'_'.$j],						
-			    			"value"			=> $_POST["quantity_$i".'_'.$j],
-							"unittypeClass"	=> $_POST["selectWasteUnittypeClass_$i".'_'.$j],
-							"unittypeID"	=> (isset($_POST["selectWasteUnittype_$i".'_'.$j])) ? $_POST["selectWasteUnittype_$i".'_'.$j] : false
-		    			);			
-		    			$unittype = new Unittype($db);
-		    		//	$wasteData["unitTypeList"] = ($wasteData["unittypeID"]) ? $unittype->getUnittypeListDefault($wasteData["unittypeClass"]) : false;															
+		    				"id"			=> $wastes[$i]->pollutions[$j]->pollutionId,						
+			    			"value"			=> $wastes[$i]->pollutions[$j]->quantity,
+							"unittypeID"	=> (isset($wastes[$i]->pollutions[$j]->unittypeId)) ? $wastes[$i]->pollutions[$j]->unittypeId : false
+		    			);	
+		    			
+		    			if ($wasteData['unittypeID']) {
+		    				$wasteData['unittypeClass'] = $unittype->getUnittypeClass($wasteData['unittypeID']);	
+		    			}
+		    					    					    						    																		
 		    			$this->resultParams['waste'][$i][$j] = $wasteData;
 		    			$value += $wasteData['value'];
+		    			
 		    			//validation for storages!!! we'll prepare array with storage_id indexes that collected data with values+unittypes witch we'll add to storages
 		    			if (!isset($storageValidation[$storage][$wasteData['unittypeID']])) {
 		    				$storageValidation[$storage][$wasteData['unittypeID']] = $wasteData['value'];
 		    			} else {
 		    				$storageValidation[$storage][$wasteData['unittypeID']] += $wasteData['value'];
-		    			}
+		    			}		    			
 	    			}
     			}       				
     		}    		   			
     	    $storage = new Storage($db);
-    		$storageOverflow = $storage->validateOverflow($storageValidation, $date, $id);	
+    		$storageOverflow = $storage->validateOverflow($storageValidation, $date, $id);	    		
+    		
     		if ($storageOverflow !== false) {
 	    		$result['storageError'] = "Error! Choosen storages are overflow!";
 	    	}
 	    	$result['storageOverflow'] = json_encode($storageOverflow);
 	    	   	    
     	} else {
+    		//	TODO: not tested
     		$this->isForm=false;
     		if (isset($id)) {
     			$mix = new Mix($db);
@@ -118,44 +191,46 @@ class MWasteStreams {
     	//now we should convert $date from mm-dd-yyyy into yyyy-mm-dd
     	$date = substr($date,-4,4)."-".substr($date,0,2)."-".substr($date,3,2);
 
-		if ($deletedStorageValidation==null)
-		{
-			$result['deletedStorageValidation']='false';
-		}
-		else
-		{
-			$result['deletedStorageValidation']=json_encode($deletedStorageValidation);
-		}
-		$result['isDeletedStorageError']=$isDeletedStorageError;
+    	//	TODO: I'm not sure that it work correctly
+		if ($deletedStorageValidation == null) {
+			$result['deletedStorageValidation'] = 'false';
+		} else {
+			$result['deletedStorageValidation'] = json_encode($deletedStorageValidation);
+		}		
 		
+		$result['isDeletedStorageError']=$isDeletedStorageError;		
     	$result['wasteStreamsList'] = json_encode($ws->getWasteStreamsFullList());
     	$result['wasteStreamsWithPollutions'] = json_encode($ws->getWasteStreamsToPollutionsList());
+
     	$storage = new Storage($db);
     	$result['storages'] = json_encode($storage->getCurrentStoragesGroupedByWaste($facilityID,$date,$id));
+    	
     	return $result;
     }
+    
+    
     
     /**
      * function calculateWaste($params) - check waste steams and calculate total waste for voc calculations
      * @param array $params - $db, $products
      */
-     public function calculateWaste($params) {
+     public function calculateWaste($params) {     	
      	extract($params);
+     	
      	$ws = new WasteStreams($db);
-     	foreach ($products as $product) {
-     		$ws->checkWasteType($product);
+     	foreach ($products as $product) {     		
+     		$ws->checkWasteTypeByObj($product);
      	}
-     	if ($this->isForm && !isset($this->resultParams['waste']))
-     	{
-     		$wasteTotal =0;
-     	}
-     	else
-     	{
+     	     	
+     	if ($this->isForm && !isset($this->resultParams['waste'])) {
+     		$wasteTotal = 0;
+     	} else {     		
 	     	if (!isset($this->resultParams['waste'])) {
 	     		$this->resultParams['waste'] = $this->resultParams['loadedWaste'];
 	     	}
 	     	$wasteTotal = $ws->calculateTotalWaste($this->resultParams['waste']);
      	}
+     	
      	$this->resultParams['waste'] = $ws->wasteData; // in waste streams array we take array with validation from WS class
      	return array(
      		'wasteData' => $wasteTotal,

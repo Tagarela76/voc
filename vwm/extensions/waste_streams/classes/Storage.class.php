@@ -262,41 +262,73 @@ class Storage {
     	}
     }
     
-    public function validateOverflow($ArrayForValidation, $date = null, $mixID = null) {
+    public function validateOverflow($wastes,  $date = null, $mixID = null) {
     	$unittype = new Unittype($this->db);
     	$unittypeConverter = new UnitTypeConverter();
     	$arrayStoragesOverflow = array();
-    	foreach ($ArrayForValidation as $key => $ArrayOfValues) {
-    		if ($key==-1)
-    			continue;
-    		$storage = new Storage($this->db,$key,$date,$mixID);
-//    		$density = $storage->capacity_weight/$storage->capacity_volume;
-//	    	$densityUnitID = 1;
-//	    	$densityType = array (
-//			    	'numerator' => $unittype->getDescriptionByID($storage->weight_unittype),
-//					'denominator' => $unittype->getDescriptionByID($storage->volume_unittype)
-//		    	);
-    		$densityObj = new Density($this->db,$storage->density_unit_id);
-    		$densityUnittypeDetails = array (
-	    		'numerator' => $unittype->getUnittypeDetails($densityObj->getNumerator()),
-				'denominator' => $unittype->getUnittypeDetails($densityObj->getDenominator())
-    		);
-    		$densityType = array (
-	    		'numerator' => $densityUnittypeDetails['numerator']['description'],
-				'denominator' => $densityUnittypeDetails['denominator']['description']
-    		);
-    		$storage->density_type = $densityUnittypeDetails['numerator']['name'].'/'.$densityUnittypeDetails['denominator']['name'];
+    	$storagesValues = array();
+    	
+    	$densityObj = new Density($this->db,$storage->density_unit_id);
+    	$densityUnittypeDetails = array (
+	    	'numerator' => $unittype->getUnittypeDetails($densityObj->getNumerator()),
+			'denominator' => $unittype->getUnittypeDetails($densityObj->getDenominator())
+    	);
+    	$densityType = array (
+	    	'numerator' => $densityUnittypeDetails['numerator']['description'],
+			'denominator' => $densityUnittypeDetails['denominator']['description']
+    	);
+    	$storage->density_type = $densityUnittypeDetails['numerator']['name'].'/'.$densityUnittypeDetails['denominator']['name'];
+    	
+    	
+    	
+    	foreach ($wastes as $waste) {
     		
-	    	$unitTypeDescription = $unittype->getDescriptionByID($storage->volume_unittype);
-    		$value = 0;
-    		foreach ($ArrayOfValues as $unittype_id => $quantity) {
-    			$value += $unittypeConverter->convertFromTo($quantity,$unittype->getDescriptionByID($unittype_id),$unitTypeDescription,$storage->density,$densityType);
+    		if ($waste->storageId == -1)
+    				continue;
+    		
+    		$storage = new Storage($this->db,$waste->storageId,$date,$mixID);
+    		$unitTypeDescription = $unittype->getDescriptionByID($storage->volume_unittype);
+    		
+    		if(!$waste->pollutionsDisabled) {
+    			
+    			
+    			
+    			foreach($waste->pollutions as $pollution) {
+    				
+    				
+    				
+    				
+	    			
+	    			$val = $unittypeConverter->convertFromTo($pollution->quantity,$unittype->getDescriptionByID($pollution->unittypeId),$unitTypeDescription,$storage->density,$densityType);
+	    			//echo "<br/> Value: from: " . $unittype->getDescriptionByID($pollution->unittypeId) . " to: " . $unitTypeDescription . " , quantity: " . $pollution->quantity . " = $val<br/>";
+	    			
+	    			$storagesValues[$waste->storageId]['value'] += $val;
+	    			
+	    			
+	    		}
     		}
-    		if ($storage->current_usage + $value > $storage->capacity_volume) {
-    			//error - storage overflow, $storage->capacity_volume*1.05 cause of 5% - on calculations mistake // without 5% now
-    			$arrayStoragesOverflow []= $key; //$key = storage_id
+    		else {
+    			
+    			$val = $unittypeConverter->convertFromTo($waste->quantity,$unittype->getDescriptionByID($waste->unittypeId),$unitTypeDescription,$storage->density,$densityType);
+	    		//echo "<br/> Value: from: " . $unittype->getDescriptionByID($waste->unittypeId) . " to: " . $unitTypeDescription . " , quantity: " . $waste->quantity . " = $val<br/>";
+	    		$storagesValues[$waste->storageId]['value'] += $val;
+	    		
+	    		
     		}
+    		
+    		//echo "<br/> storageValue: {$storagesValues[$waste->storageId]['value']} + storageCurrentUsage: {$storage->current_usage} > {$storage->capacity_volume} ";
+    		if($storagesValues[$waste->storageId]['value'] + $storage->current_usage > $storage->capacity_volume  ) {
+	    		//echo "<br/> storage " . $waste->storageId . " is overflow<br/>";
+	    		$arrayStoragesOverflow[$waste->storageId]['isOverflow'] = true;
+	    		//echo " <b>YES</b><br/>";
+	    	} else {
+	    		
+	    		//echo " no<br/>";
+	    	}
     	}
+    	
+    	//echo "curent usage: " . $storage->current_usage . " capacity volume: " . $storage->capacity_volume;
+    		
 
     	return (empty($arrayStoragesOverflow))?false:$arrayStoragesOverflow;
     }

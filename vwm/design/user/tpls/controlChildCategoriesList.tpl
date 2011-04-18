@@ -9,7 +9,7 @@
                             <div class="control_panel_center">
                                
 							    <div class="controlCategoriesList" style="display:table;width:100%;">
-							    	
+
 							    	<div style="display:table;" class="floatleft">		
 									{if $request.bookmark=="inventory" && $request.tab==Inventory::PAINT_MATERIAL && $request.category=="department"}
 												{if $permissions.data.add && $permissions.data.delete}

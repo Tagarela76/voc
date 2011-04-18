@@ -17,7 +17,9 @@ class Product extends ProductProperties {
 				$sort .= ', p.product_nr ';
 			}
 		}
+		
 		$products = $this->selectProductsByCompany($companyID, 0, $pagination,$filter, $sort);		
+		
 		if ($products) {			
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
 			if ($pagination) {
@@ -431,7 +433,8 @@ class Product extends ProductProperties {
 			$this->vocwx = $productFields->vocwx;
 			$this->density = $productFields->density;			
 			$this->densityUnitID = $productFields->density_unit_id;	//	density's unit type
-			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;			
+			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;
+			echo "<h2>initializeByID perccentVolatileWeight: {$this->perccentVolatileWeight}</h2>";			
 			$this->perccentVolatileVolume = $productFields->percent_volatile_volume;	//	density's unit type
 			return true;			
 		} else {

@@ -30,7 +30,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.description} 
+                                &nbsp; {$usage->description} 
                             </div>
                         </td>
                     </tr>
@@ -40,7 +40,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.equipment_id} 
+                                &nbsp; {$usage->equipment_id} 
                             </div>
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.rule} 
+                                &nbsp; {$usage->rule} 
                             </div>
                         </td>
                     </tr>
@@ -70,7 +70,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.creationTime} 
+                                &nbsp; {$usage->creation_time} 
                             </div>
                         </td>
                     </tr>
@@ -80,7 +80,7 @@
                         </td>
                         <td>
                             <div align="left">
-                                &nbsp; {$usage.expire} 
+                                &nbsp; {$usage->expire} 
                             </div>
                         </td>
                     </tr>
@@ -105,7 +105,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.exemptRule} 
+                                &nbsp; {$usage->exempt_rule} 
                             </div>
                         </td>
                     </tr>
@@ -124,7 +124,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.waste_percent} %
+                                &nbsp; {$usage->waste_percent} %
                             </div>
                         </td>
                     </tr>
@@ -134,7 +134,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.voc} {$unittypeObj->getNameByID($companyDetails.voc_unittype_id)}
+                                &nbsp; {$usage->voc} {$unittypeObj->getNameByID($companyDetails.voc_unittype_id)}
                             </div>
                         </td>
                     </tr>
@@ -144,7 +144,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.voclx} 
+                                &nbsp; {$usage->voclx} 
                             </div>
                         </td>
                     </tr>
@@ -154,7 +154,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage.vocwx} 
+                                &nbsp; {$usage->vocwx} 
                             </div>
                         </td>
                     </tr>
@@ -231,29 +231,30 @@
                             <b>Unit type</b>
                         </td>
                     </tr>
-                    {section name=i loop=$productCount}
+                    {*section name=i loop=$productCount*}
+                    {foreach from=$usage->products item=product}
                     <tr>
                         <td class="border_users_l border_users_b " height="20" width="20%">
-                            {$usage.products[i].supplier}
+                            {$product->supplier}
                         </td>
                         <td class="border_users_l border_users_b " height="20" width="15%">
-                            {$usage.products[i].product_nr}
+                            {$product->product_nr}
                         </td>
                         <td class="border_users_l border_users_b border_users_r" height="20" width="40%">
-                            {$usage.products[i].description}
+                            {$product->name}
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$usage.products[i].quantity}
+                                &nbsp; {$product->quantity_lbs}
                             </div>
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$unitTypeName[i].name}
+                                &nbsp; {$product->name}
                             </div>
                         </td>
                     </tr>
-                    {/section}
+                    {/foreach}
                 </table>
             </td>
         </tr>        
