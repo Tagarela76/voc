@@ -663,7 +663,7 @@ function initNoMWS() {
 			$("#product_row_" + id).remove();
 			products.removeProduct(id);
 		}
-		alert(products.toJson());
+		//alert(products.toJson());
 		//checkboxes.attr({checked:"checked"});
 	}
 	
