@@ -35,6 +35,7 @@ $.fn.numeric.keypress = function(e)
 	var decimal = $.data(this, "numeric.decimal");
 	var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 	// allow enter/return key (only when in an input box)
+	
 	if(key == 13 && this.nodeName.toLowerCase() == "input")
 	{
 		return true;
@@ -66,21 +67,28 @@ $.fn.numeric.keypress = function(e)
 			allow = false;
 		}
 		// check for other keys that have special purposes
-		if(
-			key != 8 /* backspace */ &&
-			key != 9 /* tab */ &&
-			key != 13 /* enter */ &&
-			key != 35 /* end */ &&
-			key != 36 /* home */ &&
-			key != 37 /* left */ &&
-			key != 39 /* right */ &&
-			key != 46 /* del */
+		
+		if( key != 8  &&
+			key != 9  &&
+			key != 13  &&
+			key != 35  &&
+			key != 36  &&
+			key != 37  &&
+			key != 39  &&
+			key != 46 
 		)
 		{
+			
 			allow = false;
+		}
+		else if(key == 8) {
+			//For Opera..
+			allow = true;
+			//alert("allow true for opera");
 		}
 		else
 		{
+			//alert("key="+key+". key != 8 . charCode: " + e.charCode);
 			// for detecting special keys (listed above)
 			// IE does not support 'charCode' and ignores them in keypress anyway
 			if(typeof e.charCode != "undefined")
@@ -116,6 +124,7 @@ $.fn.numeric.keypress = function(e)
 	{
 		allow = true;
 	}
+	//alert(allow);
 	return allow;
 }
 

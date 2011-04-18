@@ -9,7 +9,13 @@ $(document).ready(function() {
 		$('#selectProduct').change(function(el)
 		{
 			getProductInfo();
-			checkUnittypeWeightWarning();
+			
+			var unitType=$("#selectUnittype").attr('value');
+			var productID = $("#selectProduct").attr('value');
+			
+			checkUnittypeWeightWarning(unitType, productID, $("#errorProductWeight"));
+			
+			checkUnittypeWeightWarning(unitType,productID,$("#errorProductWeight"));
 		});
 		
 		
@@ -23,6 +29,12 @@ $(document).ready(function() {
 				isMixDescriptionUnique(val);
 			} else {
 				mixValidator.mixValid = false;
+			}
+		});
+		
+		$("#quantity").change(function(){
+			if( $(this).val() != "" ) {
+				$("#errorAddProduct").css("display","none");
 			}
 		});
 		
@@ -118,9 +130,13 @@ function initNoMWS() {
 	function addMix() {
 		
 		
-		if(mixValidator.mixValid != true || products.Count() == 0) {
+		
+		if(mixValidator.isValid() != true ) {
 			
-			alert("Mix invalid or products count is 0");
+			//alert("Mix invalid!");
+			return;
+		} else if (products.Count() == 0) {
+			alert("Product count is empty!");
 			return;
 		}
 		
@@ -149,6 +165,9 @@ function initNoMWS() {
 			urlData = {"action" : "editItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "products" : products.toJson() , "mix" : mix.toJson(), "id" : mixID};
 		}
 		
+		//alert("Everything is ok!");
+		//return;
+		
 		$.ajax({
 			url:'/vwm/index.php',
 			type: "GET",
@@ -160,8 +179,8 @@ function initNoMWS() {
       				
       				
       				if(response == 'DONE') {
-      					res = confirm("Mix updated successfully! Do you want browse mixes?");
-      					if(res == true) {
+      					//res = confirm("Mix updated successfully! Do you want browse mixes?");
+      					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
       					}
       				}
@@ -417,11 +436,6 @@ function initNoMWS() {
 		$('#addProductPreloader').css('display', 'block');
 		$("#addProductsContainer").css('display','block');
 		
-		
-		
-		
-		
-		
 		$.ajax({
       		url: "modules/ajax/saveMix.php",      		
       		type: "GET",
@@ -454,6 +468,8 @@ function initNoMWS() {
       			
       			tr.append(td1);
       			
+      			
+      			
       			var resp=eval("("+r+")");
       			
   				var supplier 	= resp['supplier_id'];
@@ -467,8 +483,10 @@ function initNoMWS() {
 				
 				if(editForm == false) {
 					
+					unittypeDescr = $("#selectUnittype option:selected").text();
+					
 					tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(quantity)));
-					tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(unittypeClass)));
+					tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(unittypeDescr)));
 					$("#addedProducts").find("tbody").append( tr );
 				} else {
 					

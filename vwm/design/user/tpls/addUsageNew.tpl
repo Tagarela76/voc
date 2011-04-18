@@ -40,6 +40,7 @@ var unittypes = new Array();
 {if $smarty.request.action == 'edit'}
 var editForm = true;
 var mixID = '{$smarty.request.id}';
+var mixDescription = '{$data->description}';
 {else}
 var editForm = false;
 {/if}
@@ -112,6 +113,7 @@ function createSelectUnittypeClass(id) {
 							<div class="floatleft" >	
 								<input type='text' id="mixDescription" name='description' value='{$data->description}'></div>
 								<div class="error_img"  id="mixDescriptionErrorAlreadyInUse" style="display:none;"><span class="error_text" >Entered name is already in use!</span></div>
+								<div class="error_img"  id="mixDescriptionError" style="display:none;"><span class="error_text" >Error!</span></div>
 							</td>
 							
 						</tr>												
@@ -131,6 +133,7 @@ function createSelectUnittypeClass(id) {
 							</td>
 							<td class="border_users_r border_users_b">
 							<div align="left" ><input type="text" name="creationTime" id="calendar1" value="{$data->creation_time}">
+							<div id="creationTimeError" style="display:none;" class="error_img"><span class="error_text">Error!</span></div>
 								{if $validStatus.summary eq 'false'}
 								{if $validStatus.creationTime eq 'failed'}
 						
@@ -209,7 +212,7 @@ function createSelectUnittypeClass(id) {
 {if $show.waste_streams === true}
 					{include file="tpls:waste_streams/design/wasteStreams.tpl"}
 {else}				
-<a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a>
+<!--  <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> -->
 <a id="addMix" href="" style="display:none;" target="_blank">Add Mix</a>
 
 					<table class="users" cellpadding="0" cellspacing="0" align="center">
