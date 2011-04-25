@@ -86,8 +86,7 @@ try {
 			//if(isset($_GET['category']))			
 				$className="CA".ucfirst($_GET['category']);	
 			//else		
-			//	$className="C".ucfirst($_POST['itemID']);//???
-			
+			//	$className="C".ucfirst($_POST['itemID']);//???			
 			if (class_exists($className))
 			{
 				$controllerObj=new $className($smarty,$xnyo,$db,$user,$action);

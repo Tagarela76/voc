@@ -9,11 +9,19 @@ class CAProduct extends Controller {
 	}
 	
 	function runAction() {
-		$this->runCommon('admin');
-		$functionName='action'.ucfirst($this->action);				
+		$this->runCommon('admin');		
+		$functionName='action'.ucfirst($this->action);						
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
+	
+	
+	
+	protected function actionBrowseCategory($vars) {			
+		$this->bookmarkProduct($vars);
+	}
+	
+	
 	
 	protected function bookmarkProduct($vars) {
 		extract($vars);
@@ -24,8 +32,7 @@ class CAProduct extends Controller {
 		$companyID = $this->getFromRequest('companyID');
 		$supplierID = $this->getFromRequest('supplierID');
 		$companyID = (is_null($companyID) || $companyID == 'All companies')?0:$companyID;
-		$supplierID = (is_null($supplierID) || $supplierID == 'All suppliers')?0:$supplierID;
-		
+		$supplierID = (is_null($supplierID) || $supplierID == 'All suppliers')?0:$supplierID;		
 		
 		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
 			$count = $this->getFromRequest('itemsCount');
@@ -61,7 +68,7 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentSupplier', 0);												
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));
+			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));			
 			$pagination = new Pagination($productCount);
 			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&supplierID=".$this->getFromRequest('supplierID')."&subaction=Filter&category=tables&bookmark=product";
 			$this->smarty->assign('pagination', $pagination);
@@ -70,8 +77,7 @@ class CAProduct extends Controller {
 				$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination,' TRUE ',$sortStr);
 			} else {
 				$productList = $product->getProductList($companyID, $pagination,' TRUE ',$sortStr);	
-			}
-			
+			}			
 			$this->smarty->assign('currentCompany',$companyID);
 			$this->smarty->assign('currentSupplier', $supplierID);
 		}				
@@ -88,6 +94,7 @@ class CAProduct extends Controller {
 		
 		$this->smarty->assign('tpl', 'tpls/productClass.tpl');
 		$this->smarty->assign('pagination', $pagination);
+		
 	}
 	
 	private function actionViewDetails() {

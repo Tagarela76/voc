@@ -169,7 +169,7 @@ function initNoMWS() {
 		//return;
 		
 		$.ajax({
-			url:'/vwm/index.php',
+			url:'index.php',
 			type: "GET",
 			async: true,
 			data: urlData,
@@ -280,7 +280,7 @@ function initNoMWS() {
 		
 		//Check is unit type is weight
 		$.ajax({
-      		url: "/vwm/index.php",      		
+      		url: "index.php",      		
       		type: "GET",
       		async: false,
       		data: {"action":"validateProductAjax", "category" : "mix" , "unittypeID" : unitType, "productID" : productID},      			

@@ -88,7 +88,7 @@
 		
 	{/if}		
 			<div id='hiddens'>	
-			{if $request.category eq 'tables'}
+			{if $request.category eq 'tables'}				
 				<input type="hidden" name="category" value="{$request.bookmark}">
 			{elseif $request.category eq 'issue'}
 				<input type="hidden" name="category" value="{$request.category}">
@@ -112,8 +112,13 @@
 			$('#hiddens').append('<input type="hidden" name="action" value="'+action+'">');
 			{/literal}
 			{if $request.bookmark=="product"}
-			$('#hiddens').append('<input type="hidden" name="sort" value="{$sort}">');
-			{/if}
+			{literal}
+			$('#hiddens').append('<input type="hidden" name="sort" value="{$sort}">');			
+				if (action == 'browseCategory') {
+					$('#hiddens').append('<input type="hidden" name="bookmark" value="product">');					
+					$('input[name="category"]').val('tables'); 
+				}						
+				{/literal}{/if}				
 			{literal}	
 			$('#controlCategoriesList').submit();
 		}	
