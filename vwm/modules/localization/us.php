@@ -37,6 +37,19 @@
     define(LABEL_PAINT_ACCESSORY_BOOKMARK_DEP, 'Accessory or Other Inventory');
     
     
+    //	------------ADMIN INTERFACE------------
+    define(AI_LABEL_APMETHOD_BOOKMARK, 'AP Method');
+    define(AI_LABEL_COAT_BOOKMARK, 'Coat');
+    define(AI_LABEL_PRODUCT_BOOKMARK, 'Products');
+    define(AI_LABEL_COMPOUNDS_BOOKMARK, 'Compounds');
+    define(AI_LABEL_AGENCIES_BOOKMARK, 'Agencies');
+    define(AI_LABEL_COUNTRY_BOOKMARK, 'Country');
+    define(AI_LABEL_RULE_BOOKMARK, 'Rule');
+    define(AI_LABEL_SUBSTRATE_BOOKMARK, 'Substrate');
+    define(AI_LABEL_SUPPLIER_BOOKMARK,'Supplier');
+    define(AI_LABEL_EFACTOR_BOOKMARK,'E Factor');
+    
+    
     //	------------TABLES------------
     
     //	COMPANY LIST
@@ -45,20 +58,5 @@
     define(HEADER_COMPANIES_NAME, 'Company Name');
     define(HEADER_COMPANIES_CONTACT, 'Location/Contact');
     define(NO_COMPANIES_LISTED, 'No companies in the list');
-//    
-//    //	COMPANY DETAILS
-//    define(HEADER_COMPANY_DETAILS_VIEW, 'View details');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_NAME, 'Company Name');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_ADDRESS, 'Address');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_CITY, 'City');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_COUNTY, 'County');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_COUNTRY, 'Country');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_ZIP, '(Zip/Postal code)');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_PHONE, 'Phone');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_FAX, 'Fax');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_EMAIL, 'Email');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_CONTACT, 'Contact');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_TITLE, 'Title');
-//    define(FIRST_COLUMN_COMPANY_DETAILS_VOC_UNITTYPE, 'VOC Unit Type');
     
 ?>

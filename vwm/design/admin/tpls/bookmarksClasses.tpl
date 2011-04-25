@@ -17,7 +17,8 @@
 {if $request.bookmark  eq "type"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "unittype"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "formulas"}  class="bookmark_fon" {/if}
-{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if} >
+{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "tabs"}  class="bookmark_fon" {/if} >
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks_big" style="margin-left:10px">
                 <tr>
                     <td>
@@ -28,7 +29,7 @@
                                 <div class = "activeBookmark_big">
                                     <div class = "activeBookmark_right_big">
                                         {/if}
-                                        AP Method
+                                        {$smarty.const.AI_LABEL_APMETHOD_BOOKMARK}
                                     </div>
                                 </div>
                                 </a>
@@ -41,7 +42,7 @@
                                         <div class = "activeBookmark">
                                             <div class = "activeBookmark_right">
                                                 {/if}
-                                                Coat
+                                                 {$smarty.const.AI_LABEL_COAT_BOOKMARK}
                                             </div>
                                         </div>
                                         </a>
@@ -54,7 +55,7 @@
                                                 <div class="activeBookmark">
                                                     <div class="activeBookmark_right">
                                                         {/if}
-                                                        Product
+                                                       {$smarty.const.AI_LABEL_PRODUCT_BOOKMARK}
                                                     </div>
                                                 </div>
                                                 </a>
@@ -67,7 +68,7 @@
                                                         <div class = "activeBookmark">
                                                             <div class = "activeBookmark_right">
                                                                 {/if}
-                                                                Compounds
+                                                                {$smarty.const.AI_LABEL_COMPOUNDS_BOOKMARK}
                                                             </div>
                                                         </div>
                                                         </a>
@@ -80,7 +81,7 @@
                                                                 <div class = "activeBookmark">
                                                                     <div class = "activeBookmark_right">
                                                                         {/if}
-                                                                        Agencies
+                                                                        {$smarty.const.AI_LABEL_AGENCIES_BOOKMARK}
                                                                     </div>
                                                                 </div>
                                                                 </a>
@@ -106,7 +107,7 @@
                                                                                 <div class = "activeBookmark">
                                                                                     <div class = "activeBookmark_right">
                                                                                         {/if}
-                                                                                        Country
+                                                                                       {$smarty.const.AI_LABEL_COUNTRY_BOOKMARK}
                                                                                     </div>
                                                                                 </div>
                                                                                 </a>
@@ -145,7 +146,7 @@
                                                                                                         <div class = "activeBookmark">
                                                                                                             <div class = "activeBookmark_right">
                                                                                                                 {/if}
-                                                                                                                Rule
+                                                                                                                {$smarty.const.AI_LABEL_RULE_BOOKMARK}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                         </a>
@@ -158,7 +159,7 @@
                                                                                                                 <div class = "activeBookmark">
                                                                                                                     <div class = "activeBookmark_right">
                                                                                                                         {/if}
-                                                                                                                        Substrate
+                                                                                                                         {$smarty.const.AI_LABEL_SUBSTRATE_BOOKMARK}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                                 </a>
@@ -171,7 +172,7 @@
                                                                                                                         <div class = "activeBookmark">
                                                                                                                             <div class = "activeBookmark_right">
                                                                                                                                 {/if}
-                                                                                                                                Supplier
+                                                                                                                                {$smarty.const.AI_LABEL_SUPPLIER_BOOKMARK}
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                         </a>
@@ -225,12 +226,27 @@
     	                                                                                                                                    <div class = "activeBookmark_big">
         	                                                                                                                                    <div class = "activeBookmark_right_big">
                                                                                                                                         {/if}
-                                                                                                                                                E Factor
+                                                                                                                                                 {$smarty.const.AI_LABEL_EFACTOR_BOOKMARK}
                                                                                                                                             	</div>
                                                                                                                                         	</div>
                                                                                                                                     </a>
                                                                                                                                </td>
-                                                                                                                           {/if}     
+                                                                                                                           {/if}    
+                                                                                                                           
+                                                                                                                           <td>
+                                                                                                                                	<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=tabs">
+                                                                                                                                		{if $request.bookmark != "tabs"}
+                                                                                                                                    		<div class="deactiveBookmark">
+	                                                                                                                                        	<div class="deactiveBookmark_right">
+                                                                                                                                        {else}
+    	                                                                                                                                    <div class = "activeBookmark">
+        	                                                                                                                                    <div class = "activeBookmark_right">
+                                                                                                                                        {/if}
+                                                                                                                                                {$smarty.const.AI_LABEL_TABS_BOOKMARK}
+                                                                                                                                            	</div>
+                                                                                                                                        	</div>
+                                                                                                                                    </a>
+                                                                                                                               </td> 
                                                                                                                                             <td width="20px">
                                                                                                                                             </td>
                                                                                                                                             <td>
@@ -275,6 +291,9 @@
                                                                                                                                         
                                                                                                                                         <td {if $request.bookmark  eq "emissionFactor"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
+                                                                                                                                        
+                                                                                                                                        <td {if $request.bookmark  eq "tabs"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        </td>
                                                                                                                                         </tr>
                                                                                                                                     </table>
 																																	
@@ -295,7 +314,8 @@
 {if $request.bookmark  eq "type"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "unittype"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "formulas"}  class="bookmark_fon" {/if}
-{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if} >
+{if $request.bookmark  eq "emissionFactor"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "tabs"}  class="bookmark_fon" {/if} >
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 </table>

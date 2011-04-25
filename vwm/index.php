@@ -58,7 +58,7 @@
 	try 
 	{
 		//	Load localization file
-		$sl = new SL(REGION);
+		$sl = new SL(REGION, $db);
 	
 		if (!isset($_GET["action"])) {
 			if (isset($_POST["action"])) {			

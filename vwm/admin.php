@@ -25,6 +25,9 @@ if (MAINTENANCE) {
 }
 
 try {
+	//	Load localization file
+	$sl = new SL(REGION, $db);
+	
 	if (!isset($_GET["action"])) {
 		if (isset($_POST["action"])) {
 			$user = new User($db, $xnyo, $access, $auth);

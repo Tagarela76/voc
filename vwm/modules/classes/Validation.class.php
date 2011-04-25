@@ -265,6 +265,21 @@ class Validation {
 		return false;
 	}
 	
+	
+	
+	function check_tab_localization_string($string) {
+		if ($string == '') {
+			return false;
+		}
+		
+		if (strlen($string) > 120) {
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 	function check_state($state) {
 		$state = trim ($state);
 		if (strlen($state) <= LEN_STATE && strlen($state)>=0) {
