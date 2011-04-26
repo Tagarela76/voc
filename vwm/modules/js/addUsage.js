@@ -548,7 +548,11 @@ function initNoMWS() {
 					
 					
 					elUnittypeId.attr('id',id).attr('name',id);
-					elUnittypeId.attr("onchange","setProductUnittype("+productID+")");
+					//elUnittypeId.attr("onchange","setProductUnittype("+productID+")");
+					elUnittypeId.change({ "productID" : productID}, function(eventObject){
+						setProductUnittype(eventObject.data.productID);
+						calculateVOC();
+					});
 					
 
 					td.append(elUnittypeId);
