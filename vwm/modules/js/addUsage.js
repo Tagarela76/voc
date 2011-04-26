@@ -588,6 +588,7 @@ function initNoMWS() {
 	
 	function calculateVOC() {
 		mix = getMix();
+		//alert(mix.toJson());
 		$.ajax({
       		url: "index.php",      		
       		type: "GET",
@@ -595,35 +596,42 @@ function initNoMWS() {
       		data: {"action" : "calculateVOCAjax", "category" : "mix", "departmentID": departmentID, "products" : products.toJson() , "mix" : mix.toJson()},      			
       		dataType: "html",
       		success: function (r) {
+      			//alert(r);
+      			//$("#exemptRule").val(r);
+      			
       			var resp=eval("("+r+")");
+      			
+      			
       			
       			$("#VOC").html(resp.currentUsage);
       			
-      			if(resp.dailyLimitExcess) {
+      			
+      			
+      			if(resp.dailyLimitExcess == true) {
       				$("#dailyLimitExceeded").html("<b>YES!</b>");
       			} else {
       				$("#dailyLimitExceeded").html("no");
       			}
       			
-      			if(resp.departmentLimitExceeded) {
+      			if(resp.departmentLimitExceeded == true) {
       				$("#departmentLimitExceeded").html("<b>YES!</b>");
       			} else {
       				$("#departmentLimitExceeded").html("no");
       			}
       			
-      			if(resp.facilityLimitExceeded) {
+      			if(resp.facilityLimitExceeded == true) {
       				$("#facilityLimitExceeded").html("<b>YES!</b>");
       			} else {
       				$("#facilityLimitExceeded").html("no");
       			}
       			
-      			if(resp.facilityAnnualLimitExceeded) {
+      			if(resp.facilityAnnualLimitExceeded == true) {
       				$("#facilityAnnualLimitExceeded").html("<b>YES!</b>");
       			} else {
       				$("#facilityAnnualLimitExceeded").html("no");
       			}
       			
-      			if(resp.departmentAnnualLimitExceeded) {
+      			if(resp.departmentAnnualLimitExceeded == true) {
       				$("#departmentAnnualLimitExceeded").html("<b>YES!</b>");
       			} else {
       				$("#departmentAnnualLimitExceeded").html("no");

@@ -17,7 +17,15 @@ function CMix() {
 	}
 	
 	this.setAPMethod = function(m) {
-		this.APMethod = m;
+
+		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
+			//do nothing
+			//Fuckin IE does not correct understand undefined and this.APMethod will be exist with value 'undefined', that PHP make crazy :D, hate that
+			//
+		} else {
+			this.APMethod = m;
+		}
+		
 	}
 	
 	this.setEquipment = function(e) {

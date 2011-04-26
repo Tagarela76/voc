@@ -61,7 +61,7 @@ $(function()
 
 
 }
-)
+);
 
 function createSelectUnittypeClass(id) {
 	sel = $("<select>").attr("id",id);

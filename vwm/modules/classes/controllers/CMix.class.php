@@ -370,8 +370,11 @@ class CMix extends Controller
 	
 	private function actionCalculateVOCAjax() {
 		
+		
+		
 		if($_REQUEST['debug']) {
 			$debug = true;
+			
 		}
 		
 		if($debug) {
@@ -441,7 +444,8 @@ class CMix extends Controller
 			"departmentLimitExceeded" => $mixValidatorResponse->isDepartmentLimitExceeded(),
 			"facilityLimitExceeded"		=> $mixValidatorResponse->isFacilityLimitExceeded(),
 			"facilityAnnualLimitExceeded" => $mixValidatorResponse->getFacilityAnnualLimitExceeded(),
-			"departmentAnnualLimitExceeded" => $mixValidatorResponse->getDepartmentAnnualLimitExceeded()
+			"departmentAnnualLimitExceeded" => $mixValidatorResponse->getDepartmentAnnualLimitExceeded(),
+			"REQUEST_URI_LEN" => strlen($_SERVER['QUERY_STRING'])
 		);
 		
 		if($debug) {
@@ -449,6 +453,8 @@ class CMix extends Controller
 		}
 		
 		echo json_encode($responce);
+		
+		//echo var_dump($_REQUEST);
 		
 		exit;
 	}
