@@ -285,6 +285,7 @@
 					
 					$currencies = $billing->getCurrenciesList();
 					
+					$billingPlan = $billing->getCustomerPlan($customerID);
 					
 					
 					//active modules
@@ -293,7 +294,6 @@
 					if (!is_null($modulesView['bonus'])) {
 						$smarty->assign('bonusModules',$modulesView['bonus']);
 					}
-
 					
 					$smarty->assign('currencies',$currencies);
 					$smarty->assign('curentCurrency',$currentCurrency['id']);

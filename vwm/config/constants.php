@@ -17,12 +17,12 @@
 			break;			
 		
 		case 'web':
-		//	define('ENVIRONMENT2LOAD','local');			//	LOCAL AREA
+			define('ENVIRONMENT2LOAD','local');			//	LOCAL AREA
 		//	define('ENVIRONMENT2LOAD','work');			//	KTTSOFT AREA
 		//	define('ENVIRONMENT2LOAD','server');		//	DEDICATED SERVER LIVE AREA
 		//	define('ENVIRONMENT2LOAD','sandbox');		//	DEDICATED SERVER SANDBOX AREA
 		//	define('ENVIRONMENT2LOAD','acceptance');	//	LOCAL ACCEPTANCE TESTS AREA
-			define('ENVIRONMENT2LOAD','localEU-UK');	//	LOCAL EUROPE - UNITED KINGDOM AREA
+		//	define('ENVIRONMENT2LOAD','localEU-UK');	//	LOCAL EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','workEU-UK');		//	KTTSOFT EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','serverEU-UK');	//	DEDICATED SERVER LIVE EUROPE - UNITED KINGDOM AREA
 		//	define('ENVIRONMENT2LOAD','sandboxEU-UK');	//	DEDICATED SERVER SANDBOX EUROPE - UNITED KINGDOM AREA
@@ -34,7 +34,7 @@
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'bdevelop');
+				define ('DB_PASS', 'fghbjhysq');
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
 				define ('TRACE_MYSQL', 'off'); 	//	TRACE MYSQL QUERIES
@@ -227,6 +227,7 @@
 	define ('TB_REG_ACTS', 'reg_acts');
 	define ('TB_USERS2REGS', 'users2regs');
 	define ('TB_DATE_FORMAT', 'date_format');
+	define ('TB_NOTIFY_CODE', 'notify_code');
 	
 	//billing system constants
 	define ('TB_VPS_MODULE_BILLING','vps_module_billing');
@@ -342,7 +343,7 @@
 	
 	
 	//	PAGINATION
-	define ('ROW_COUNT', 15);
+	define ('ROW_COUNT', 50);
 	
 	//	AUTOCOMPLETE
 	define ('AUTOCOMPLETE_LIMIT', 15);
@@ -359,5 +360,9 @@
 	define ('AUTH_SENDER', 'authentification');
 	define ('BACKUP_SENDER', 'backup');
 	define ('VPS_SENDER', 'vps');	
+	
+	//	REGUPDATES
+	define ('XML_FILE_REVIEWED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml');
+	define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml');
 	
 ?>

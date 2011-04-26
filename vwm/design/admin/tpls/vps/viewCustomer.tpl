@@ -1,7 +1,7 @@
 <script type="text/javascript" src="modules/js/checkBoxes.js"></script>
 
 
- {*shadow_table*}	
+ <!--{*shadow_table*}	
 	             <table cellspacing="0" cellpadding="0" align="center" width="100%">
                          <tr>
                                <td valign="top" class="report_uploader_t_l_violet"></td>
@@ -11,52 +11,63 @@
 						  <tr>
 							   <td valign="top" class="report_uploader_l_violet"></td>
                                <td valign="top" class="report_uploader_c_violet">
-{*shadow_table*}
+{*shadow_table*}-->
+{*shadow_table*}	
+	             <table cellspacing="0" cellpadding="0" align="center" width="100%">
+                         <tr>
+                               <td valign="top" class="report_uploader_t_l"></td>
+                               <td valign="top" class="report_uploader_t"></td>
+                               <td valign="top" class="report_uploader_t_r"></td>
+						</tr>
+						  <tr>
+							   <td valign="top" class="report_uploader_l"></td>
+                               <td valign="top" class="report_uploader_c">
+	           {*shadow_table*}
 
 {*----------------CUSTOMER_INFO---------------------------*}
-<table align="center" border="0" width="100%">	
-	<tr>
+<table align="center" border="0" width="100%" class="others_vps">	
+	<tr class="other_vps_tr">
 		<td colspan="2"><b>View Customer {$customer.name}</b></td>
 	</tr>	
 	<tr>
-		<td>ID</td>
+		<td class="other_vps_td">ID</td>
 		<td>{$customer.id}</td>
 	</tr>
 	<tr>
-		<td>Name</td>
+		<td class="other_vps_td">Name</td>
 		<td>{$customer.name}</td>
 	</tr>
 	<tr>
-		<td>Contact Person</td>
+		<td class="other_vps_td">Contact Person</td>
 		<td>{$customer.contactPerson}</td>
 	</tr>
 	<tr>
-		<td>Phone</td>
+		<td class="other_vps_td">Phone</td>
 		<td>{$customer.phone}</td>
 	</tr>
 	<tr>
-		<td>E-mail</td>
+		<td class="other_vps_td">E-mail</td>
 		<td>{$customer.email}</td>
 	</tr>
 	<tr>
-		<td>Billing Plan</td>
+		<td class="other_vps_td">Billing Plan</td>
 		<td>{$billingPlan.bplimit} sources {$billingPlan.months_count} months {$billingPlan.type}<input type="button" class="button" onclick="location.href='admin.php?action=vps&vpsAction=showEdit&itemID=customer&what2edit=billing&customerID={$customer.id}'" value="Edit"/></td>
 	</tr>
 	<tr>
-		<td>Trial Period End Date</td>
+		<td class="other_vps_td">Trial Period End Date</td>
 		<td>{$customer.trial_end_date}</td>
 	</tr>
 	<tr>
-		<td>Balance</td>
+		<td class="other_vps_td">Balance</td>
 		<td>{$currencySign} {$customer.balance} <input type="button" class="button" onclick="location.href='admin.php?action=vps&vpsAction=showEdit&itemID=customer&what2edit=balance&customerID={$customer.id}'" value="Edit"/></td>
 		
 	</tr>
 	<tr>
-		<td>Due Date</td>
-		<td>{$customer.dueDate}</td>
+		<td class="other_vps_td">Due Date</td>
+		<td>{$customer.period_end_date}</td>
 	</tr>
 	<tr>
-		<td>Currency</td>
+		<td class="other_vps_td">Currency</td>
 		<td>
 		<form method="POST" action = "admin.php?action=vps&vpsAction=viewDetails&itemID=customer&customerID={$customer.id}">
 			<select name='currencySelect'>
@@ -69,7 +80,7 @@
 			{/foreach}
 			</select>
 			
-			<input type='submit' value='Change Currency' name='btnChangeCurrency' />
+			<input type='submit' value='Change Currency' name='btnChangeCurrency' class='button'/>
 			{if $changeCurrencyStatus}
 			<span style='color:Green;'>{$changeCurrencyStatus}</span>
 			{/if}
@@ -77,7 +88,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Active</td>
+		<td class="other_vps_td">Active</td>
 		{if $customer.status == "on"}
 			<td style="color:green;">yes<input type="button" class="button" onclick="location.href='admin.php?action=vps&vpsAction=showEdit&itemID=customer&what2edit=status&customerID={$customer.id}'" value="Edit"/></td>
 		{elseif $customer.status == "off"}
@@ -89,8 +100,8 @@
 <br>
 
 {*----------------CUSTOMER_MODULES---------------------------*}
-<table align="center" border="0" width="100%">	
-	<tr>
+<table align="center" border="0" width="100%"  class="others_vps">	
+	<tr class="other_vps_tr">
 		<td colspan="6"><b>Activated modules:</b></td>
 	</tr>	
 	<tr>
@@ -127,8 +138,8 @@
 	{/if}		
 </table>
 
-<table align="center" border="0" width="100%">	
-	<tr>
+<table align="center" border="0" width="100%" class="others_vps">	
+	<tr class="other_vps_tr">
 		<td colspan="2"><b>Trial/Bonus modules(not purchased, switched on):</b></td>
 	</tr>	
 	{if $bonusModules}
@@ -151,7 +162,7 @@
 	{/if}
 	<tr>
 	<td>&nbsp</td>
-	<td><input type="button" value="Go to Modules Admin" onClick="location.href='admin.php?action=browseCategory&categoryID=modulars'"></td>
+	<td><input type="button" class='button' value="Go to Modules Admin" onClick="location.href='admin.php?action=browseCategory&category=modulars'"></td>
 	</tr>
 </table>
 
@@ -179,8 +190,8 @@
 	</tr>					
 </table>			
 		
-<table align="center" border="0" width="100%">	
-	<tr>
+<table align="center" border="0" width="100%" class="others_vps">	
+	<tr class="other_vps_tr">
 		<td colspan="13"><b>Invoices</b></td>
 	</tr>	
 	<tr>
@@ -271,7 +282,7 @@
 </form>
 
 
-	      {*/shadow_table*}	
+	<!--        {*/shadow_table*}	
 					         </td>
 					          <td valign="top" class="report_uploader_r_violet"></td>
 			           </tr>
@@ -282,4 +293,16 @@
 				       </tr>
 		      </table>
 		
+		      {*/shadow_table*}-->
 		      {*/shadow_table*}	
+					         </td>
+					          <td valign="top" class="report_uploader_r"></td>
+			           </tr>
+				        <tr>          
+                             <td valign="top" class="report_uploader_b_l"></td>
+                             <td valign="top" class="report_uploader_b"></td>
+                             <td valign="top" class="report_uploader_b_r"></td>                           				
+				       </tr>
+		      </table>
+		
+		      {*/shadow_table*}		

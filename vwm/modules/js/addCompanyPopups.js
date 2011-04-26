@@ -61,7 +61,7 @@
 			//	checkInput.checked = $(this).attr('checked');
 			//	unittypeData.appendChild(checkInput);
 				var checkInput = '<input type="checkbox" name="' + $(this).attr('name') + '" id="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" checked />';
-				$("#apmethod_data").append(checkInput);
+				$("#unittype_data").append(checkInput);
 			}
 		});	
 	}

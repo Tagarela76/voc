@@ -213,7 +213,7 @@ class CDepartment extends Controller
 		
 		$departments = new Department($this->db);
 		
-		$pagination = new Pagination($departments->countDepartments($this->getFromRequest('id'),$filterStr));
+		$pagination = new Pagination($departments->countDepartments($this->getFromRequest('id'),$filterStr));		
 		$pagination->url = "?action=browseCategory&category=".$this->getFromRequest("category")."&id=".$this->getFromRequest("id")."&bookmark=".$this->getFromRequest("bookmark");
 		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr,$sortStr);																		
 		

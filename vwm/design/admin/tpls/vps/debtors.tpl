@@ -11,7 +11,7 @@
 {elseif $action == "notRegisteredCustomer"}
 	{include file="tpls:tpls/vps/editNotRegisteredCustomer.tpl"}
 {else}
- {*shadow_table*}	
+ <!-- {*shadow_table*}	
 	             <table cellspacing="0" cellpadding="0" align="center" width="100%">
                          <tr>
                                <td valign="top" class="report_uploader_t_l_violet"></td>
@@ -21,9 +21,20 @@
 						  <tr>
 							   <td valign="top" class="report_uploader_l_violet"></td>
                                <td valign="top" class="report_uploader_c_violet">
-{*shadow_table*}
-<table align="center" border="0" width="100%" celpadding="0" cellspacing=0>
-	<tr>
+{*shadow_table*} -->
+{*shadow_table*}	
+	             <table cellspacing="0" cellpadding="0" align="center" width="100%">
+                         <tr>
+                               <td valign="top" class="report_uploader_t_l"></td>
+                               <td valign="top" class="report_uploader_t"></td>
+                               <td valign="top" class="report_uploader_t_r"></td>
+						</tr>
+						  <tr>
+							   <td valign="top" class="report_uploader_l"></td>
+                               <td valign="top" class="report_uploader_c">
+	           {*shadow_table*}
+<table align="center" border="0" width="100%" celpadding="0" cellspacing=0  class="others_vps">
+	<tr class="other_vps_tr">
 		<td colspan="6">Customers</td>
 	</tr>
 	{if $customers}
@@ -52,8 +63,8 @@
 	{/if}
 </table>
 <br>
-<table align="center" border="0" width="100%" celpadding="0" cellspacing=0>
-	<tr>
+<table align="center" border="0" width="100%" celpadding="0" cellspacing=0 class="others_vps">
+	<tr class="other_vps_tr">
 		<td colspan="5">Not Registered Customers</td>
 	</tr>
 	{if $notRegisteredCustomers}
@@ -79,7 +90,7 @@
     </tr>
 	{/if}
 </table>
- {*/shadow_table*}	
+ <!-- {*/shadow_table*}	
 					         </td>
 					          <td valign="top" class="report_uploader_r_violet"></td>
 			           </tr>
@@ -90,5 +101,17 @@
 				       </tr>
 		      </table>
 		
-		      {*/shadow_table*}	
+		      {*/shadow_table*} -->
+		       {*/shadow_table*}	
+					         </td>
+					          <td valign="top" class="report_uploader_r"></td>
+			           </tr>
+				        <tr>          
+                             <td valign="top" class="report_uploader_b_l"></td>
+                             <td valign="top" class="report_uploader_b"></td>
+                             <td valign="top" class="report_uploader_b_r"></td>                           				
+				       </tr>
+		      </table>
+		
+		      {*/shadow_table*}			
 {/if}
