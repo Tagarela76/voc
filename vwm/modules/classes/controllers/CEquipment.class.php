@@ -198,7 +198,9 @@ class CEquipment extends Controller
 	private function actionEdit() {
 		$equipment = new Equipment($this->db);
 		$equipmentDetails = $equipment->getEquipmentDetails($this->getFromRequest('id'), true);						
-		$equipmentDetails["expire_date"] = $equipmentDetails["expire"];												
+		$equipmentDetails["expire_date"] = $equipmentDetails["expire"];	
+
+		$equipmentDetails["expire"]->getFromTypeController('getFormatForCalendar');
 		
 		//	Access control
 		if (!$this->user->checkAccess('department', $equipmentDetails['department_id'])) {						
@@ -234,7 +236,7 @@ class CEquipment extends Controller
 				$this->smarty->assign($key,$value);
 			}
 		}																		
-		
+//		var_dump($equipmentDetails['expire']);
 		$this->smarty->assign('data', $equipmentDetails);						
 		
 		$this->setNavigationUpNew('department', $equipmentDetails['department_id']);

@@ -12,18 +12,41 @@
 			}
 		}
 		
-		
-		public function getMixList(Pagination $pagination = null, $filter = ' TRUE ') {
+		/**
+		 * getMixList
+		 * 
+		 * @param Pagination $pagination
+		 * @param unknown_type $filter 
+		 * @param array $mixArr array of mixes to get. <b>default null</b>
+		 */
+		public function getMixList(Pagination $pagination = null, $filter = ' TRUE ', $mixArr = null) {
 			
 			if (!isset($this->departmentID)) return false;
 			$departmentID = mysql_escape_string($this->departmentID);
+			
+			if(!is_null($mixArr) and count($mixArr) > 0) {
+				$sql_param = " AND mix_id IN (";
+				$count = count($mixArr);
+				for($i = 0; $i < $count; $i++) {
+					$sql_param .= $mixArr[$i];
+					if($i < $count-1) {
+						$sql_param .= ", "; 
+					}
+				}
+				$sql_param .= ") ";
+			} else {
+				$sql_param = "";
+			}
+			
+			
 
-			$query = "SELECT * FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND ".$filter." ORDER BY mix_id DESC";
+			$query = "SELECT * FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND ".$filter." $sql_param ORDER BY mix_id DESC";
 
 			if (isset($pagination)) {
 				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 			}
-				
+			
+			
 			$this->db->query($query);
 
 			if ($this->db->num_rows() == 0) return false;

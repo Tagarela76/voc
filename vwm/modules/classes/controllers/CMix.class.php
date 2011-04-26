@@ -200,6 +200,7 @@ class CMix extends Controller
 	protected function bookmarkDMix($vars)
 	{			
 		extract($vars);
+		//var_Dump($vars);
 		
 		$sortStr=$this->sortList('mix',2);
 		$filterStr=$this->filterList('mix');
@@ -240,7 +241,13 @@ class CMix extends Controller
 					(isset($filterData['filterValue'])?"&filterValue=".$filterData['filterValue']:"").
 					(isset($filterData['filterField'])?"&searchAction=filter":"");
 			}
-			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);										
+			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);			
+
+			$usageIDArray = array();
+			foreach($usageList as $u) {
+				$usageIDArray[] = $u['mix_id'];
+			}
+			
 			$this->smarty->assign('pagination',$pagination);
 		}				
 
@@ -294,7 +301,7 @@ class CMix extends Controller
 			//$start = xdebug_time_index();
 			//echo "<h1>MixManager start:$start</h1>";
 			$mixOptimized = new MixManager($this->db, $departmentID);
-			$mixList = $mixOptimized->getMixList($pagination);
+			$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
 			//var_dump($mixList[0]);
 			//$end = xdebug_time_index();
 			//$optimizedDiff = $end - $start;

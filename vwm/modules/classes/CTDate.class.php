@@ -19,8 +19,10 @@ class CTDate extends CType {
     		$this->format = $this->mainFormat;
     		return;
     	}
+    	
     	//step 2: we should get company's date format!
     	$formatDetails = $this->getDateFormatByCompanyID($this->companyID);
+    	
     	$this->format = $formatDetails->format;
     	$this->outputFormat = $formatDetails->description;
     }
@@ -30,6 +32,7 @@ class CTDate extends CType {
     			" WHERE c.company_id = '$companyID' AND " .
     			" c.date_format_id = df.id " .
     			" LIMIT 1";
+    	
     	$this->db->query($query);
     	return $this->db->fetch(0);
     }
@@ -54,7 +57,15 @@ class CTDate extends CType {
     }
     
     public function getFormatForCalendar() {
-    	$calendarFormat = str_replace('yyyy','yy',$this->outputFormat);
+    	
+    	
+    	if($this->outputFormat){
+    		$calendarFormat = str_replace('yyyy','yy',$this->outputFormat);
+    	}
+    	else {
+    		
+    		$calendarFormat = str_replace('Y','yy',$this->mainFormat);
+    	}
     	return $calendarFormat;
     }
 

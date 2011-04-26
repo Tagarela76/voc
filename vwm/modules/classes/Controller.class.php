@@ -39,11 +39,14 @@ class Controller
 		} else {
 			$className="CA".ucfirst($controller);
 		}
+		
+		
 		if (class_exists($className)) {
 			$controllerObj=new $className($this->smarty,$this->xnyo,$this->db,$this->user,$this->action);
 		} else {
 			throw new Exception('404');
 		}
+		
 		if (method_exists($controllerObj,$function))						
 			$controllerObj->$function($vars);
 		else 
