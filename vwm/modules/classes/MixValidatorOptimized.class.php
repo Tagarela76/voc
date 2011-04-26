@@ -91,7 +91,9 @@
 		//	recalc == true	- calculate isFacilityLimitExceeded
 		//	recalc == false - take value from DB
 		private function isFacilityLimitExceeded($mix) {
+			
 			if ($this->recalc) {
+				
 				if ($mix->getEquipment()->isTrackedTowardsFacility()) {
 					
 					if ($mix->getFacility()->getDailyLimit() == 0) {
@@ -108,6 +110,8 @@
 						$totalFacilityUsage = $mix->getFacility()->getAnnualUsage((int)$mixCreationYear, (int)$mixCreationMonth);
 						$this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth] = $totalFacilityUsage;						
 					}
+					
+					
 
 					if (!$mix->isAlreadyExist()) {						
 						$totalFacilityUsage += $mix->getCurrentUsage();

@@ -453,7 +453,7 @@ function createSelectUnittypeClass(id) {
 								VOC:
 							</td>
 							<td class="border_users_r border_users_b">
-							<div align="left" >{$data->voc}</div>
+							<div align="left" id="VOC">{$data->voc}</div>
 								<input type="hidden" name="voc" value="{$data->voc}">
 							</td>
 						</tr>
@@ -482,7 +482,7 @@ function createSelectUnittypeClass(id) {
 								Daily limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left">
+								<div align="left" id="dailyLimitExceeded">
 									{if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
 								</div>
 								
@@ -494,7 +494,7 @@ function createSelectUnittypeClass(id) {
 								Department limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left">
+								<div align="left" id="departmentLimitExceeded">
 									{if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
 								</div>
 								
@@ -506,7 +506,7 @@ function createSelectUnittypeClass(id) {
 								Facility limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left">
+								<div align="left" id="facilityLimitExceeded">
 									{if $facilityLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
 								</div>
 								
@@ -518,7 +518,7 @@ function createSelectUnittypeClass(id) {
 								Facility annual limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left">
+								<div align="left" id="facilityAnnualLimitExceeded">
 									{if $facilityAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
 								</div>
 								
@@ -529,7 +529,7 @@ function createSelectUnittypeClass(id) {
 								Department annual limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left">
+								<div align="left" id="departmentAnnualLimitExceeded">
 									{if $departmentAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
 								</div>
 								

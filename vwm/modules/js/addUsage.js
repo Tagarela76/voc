@@ -503,6 +503,7 @@ function initNoMWS() {
 					//txQ..attr("onchange","setProductQuantity("+productID+")")
 					txQ.change( { "productID" : productID} ,function(eventObject) {
 						setProductQuantity(eventObject.data.productID);
+						calculateVOC();
 					});
 					
 					tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append(txQ));
@@ -533,6 +534,7 @@ function initNoMWS() {
 						setProductUnittype(eventObject.data.productID);
 						setProductUnittypeClass(eventObject.data.productID);
 						
+						calculateVOC();
 					});
 					
 					td = $("<td>").attr({"class":"border_users_r border_users_b"});
@@ -574,8 +576,54 @@ function initNoMWS() {
 				
 				//var encoded = $.toJSON(selectedProducts); 
 				
+				calculateVOC();
 				
-				
+      		}
+		});
+	}
+	
+	function calculateVOC() {
+		mix = getMix();
+		$.ajax({
+      		url: "index.php",      		
+      		type: "GET",
+      		async: true,
+      		data: {"action" : "calculateVOCAjax", "category" : "mix", "departmentID": departmentID, "products" : products.toJson() , "mix" : mix.toJson()},      			
+      		dataType: "html",
+      		success: function (r) {
+      			var resp=eval("("+r+")");
+      			
+      			$("#VOC").html(resp.currentUsage);
+      			
+      			if(resp.dailyLimitExcess) {
+      				$("#dailyLimitExceeded").html("<b>YES!</b>");
+      			} else {
+      				$("#dailyLimitExceeded").html("no");
+      			}
+      			
+      			if(resp.departmentLimitExceeded) {
+      				$("#departmentLimitExceeded").html("<b>YES!</b>");
+      			} else {
+      				$("#departmentLimitExceeded").html("no");
+      			}
+      			
+      			if(resp.facilityLimitExceeded) {
+      				$("#facilityLimitExceeded").html("<b>YES!</b>");
+      			} else {
+      				$("#facilityLimitExceeded").html("no");
+      			}
+      			
+      			if(resp.facilityAnnualLimitExceeded) {
+      				$("#facilityAnnualLimitExceeded").html("<b>YES!</b>");
+      			} else {
+      				$("#facilityAnnualLimitExceeded").html("no");
+      			}
+      			
+      			if(resp.departmentAnnualLimitExceeded) {
+      				$("#departmentAnnualLimitExceeded").html("<b>YES!</b>");
+      			} else {
+      				$("#departmentAnnualLimitExceeded").html("no");
+      			}
       		}
 		});
 	}
@@ -671,6 +719,7 @@ function initNoMWS() {
 			$("#product_row_" + id).remove();
 			products.removeProduct(id);
 		}
+		calculateVOC();
 		//alert(products.toJson());
 		//checkboxes.attr({checked:"checked"});
 	}
