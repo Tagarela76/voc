@@ -56,7 +56,7 @@
 			</a>         	
         </td>
     </tr>
-{if $childCategoryItems|@count > 0}
+{if $childCategoryItems|@is_array and $childCategoryItems|@count > 0}
     {*BEGIN LIST*} 
     {foreach from=$childCategoryItems item=mix} 
 	<!-- Begin Highlighting -->
