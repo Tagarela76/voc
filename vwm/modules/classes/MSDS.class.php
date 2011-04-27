@@ -379,6 +379,8 @@ class MSDS {
 				$msds["productID"] = "NULL";
 			}
 			
+			
+			
 			$query="INSERT INTO ".TB_MSDS_FILE." (name, real_name, company_id, facility_id, department_id, product_id) VALUES ("
 				."'".$msds["name"]."'"
 				.", '".$msds["real_name"]."'"

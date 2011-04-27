@@ -19,7 +19,7 @@
             <center>
                 <h1><b>MSDS UPLOADER</b></h1>
             </center>
-            MSDS sheets will be assigned to products by name. Sample: "17-033-A.pdf" = product 17-033-A.
+            MSDS sheets will be assigned to products by name. Sample: "17-033-A.pdf" = product 17-033-A. 
             <form name="form" enctype="multipart/form-data" action="?action=msdsUploaderBasic&itemID={$request.category}&id={$request.id}" method="post">
                 <input type="hidden" name="MAX_FILE_SIZE" value="52430000" />
                 <table>

@@ -156,6 +156,8 @@ class CCommon extends Controller
 										
 		$msds = new MSDS($this->db);					
 		$result = $msds->upload('basic');
+		
+		
 
 		//titles new!!! {panding}
 		$title = new TitlesNew($this->smarty, $this->db);
@@ -176,6 +178,7 @@ class CCommon extends Controller
 				$unrecognized[] = $msdsResult;
 			}						
 		}
+		
 		//errors
 		foreach($result['filesWithError'] as $fileWithError)
 		{
@@ -203,6 +206,7 @@ class CCommon extends Controller
 		$this->smarty->assign('cnt', $cnt);					
 		$this->smarty->assign('maxCnt', $maxCnt);
 		$this->smarty->assign('recognized', $recognized);
+		
 		$this->smarty->assign('unrecognized', $unrecognized);
 					
 //		$title = new Titles($smarty);
@@ -288,6 +292,7 @@ class CCommon extends Controller
 					}														
 					$assignments[] = $assignment;
 				}
+				
 				//unrecognized sheets
 				$cnt['unrecognized'] = $this->getFromRequest('sheetUnrecCount');						
 				for ($i=0;$i<$cnt['unrecognized'];$i++) 

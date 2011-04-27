@@ -108,8 +108,8 @@
                            {if $productList}				
 								{foreach from=$productList item=productsArr key=supplier}															
 									<optgroup label="{$supplier}">
-										{section name=i loop=$productsArr}
-											<option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data.product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>									
+										{section name=x loop=$productsArr}
+											<option value='{$productsArr[x].product_id}' {if $productsArr[x].product_id eq $data.product_id}selected="selected"{/if}> {$productsArr[x].formattedProduct} </option>									
 										{/section}
 									</optgroup>
 								{/foreach}																										
