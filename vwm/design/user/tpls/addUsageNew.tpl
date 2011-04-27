@@ -256,7 +256,7 @@ function createSelectUnittypeClass(id) {
 
 							<td class="border_users_r border_users_b">
 								<div class="floatleft">	
-								{$data->waste.unittypeClass}
+								
 									<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
 										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
