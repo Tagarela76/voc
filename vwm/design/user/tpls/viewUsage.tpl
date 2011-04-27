@@ -250,7 +250,7 @@
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$product->name}
+                                &nbsp; {$product->unittypeDetails.name}
                             </div>
                         </td>
                     </tr>
