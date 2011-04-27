@@ -379,7 +379,13 @@ function initNoMWS() {
 	      		success: function (response) 
 	      			{
 	      				
-	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);									
+	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);	
+	      				
+	      				productUnittype = products.getProduct(productAddedIdx).selectUnittype;
+	      				
+	      				selector = "#product_selectUnittype_"+productAddedIdx;
+	      				
+						$(selector).val(productUnittype).attr("selected",true);
 	      			}        		   			   	
 				});
 				
@@ -554,6 +560,9 @@ function initNoMWS() {
 						calculateVOC();
 					});
 					
+					
+					//$(id + " option[value="+unittypeId+"]").attr("SELECTED",true).attr('ololo','trololo');
+					
 
 					td.append(elUnittypeId);
 					//<div class="error_img"  id="mixDescriptionErrorAlreadyInUse" style="display:none;"><span class="error_text" >Entered name is already in use!</span></div>
@@ -565,6 +574,8 @@ function initNoMWS() {
 					$("#addedProducts").find("tbody").append( tr );
 					
 					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), companyId, companyEx);
+					
+					
 				}
 				
 				
