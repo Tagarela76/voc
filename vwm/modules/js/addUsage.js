@@ -369,6 +369,11 @@ function initNoMWS() {
 			productAddedIdx = sel.name.substring(28);		
 			$("#product_selectUnittype_"+productAddedIdx).empty();
 			
+			console.log("WRITE UNITTYPE");
+			console.log("sysType = " + sysType);
+			console.log("companyID = " + companyID);
+			console.log("companyEx = " + companyEx);
+			
 			if(sysType.length > 0){			
 				$.ajax({
       			url: "modules/ajax/getUnitTypes.php",      		
@@ -378,9 +383,9 @@ function initNoMWS() {
 	      		dataType: "html",
 	      		success: function (response) 
 	      			{
-	      				
+	      			console.log("response = " + response);
 	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);	
-	      				
+	      				console.log("END OF WRITE UNITTYPE");
 	      				productUnittype = products.getProduct(productAddedIdx).selectUnittype;
 	      				
 	      				selector = "#product_selectUnittype_"+productAddedIdx;
