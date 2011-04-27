@@ -352,6 +352,8 @@ class Unittype {
 				"AND ".TB_UNITTYPE.".system IS NOT NULL AND  ".TB_UNITTYPE.".type_id <> '3'";
 		$this->db->query($query);
 		
+		
+		
 		if ($this->db->num_rows()) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
 				$data=$this->db->fetch($i);

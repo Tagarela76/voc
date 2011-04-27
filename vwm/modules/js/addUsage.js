@@ -52,6 +52,8 @@ function initNoMWS() {
 	});
 	
 	waste.unittype = $("#selectWasteUnittype").attr('value');
+	
+	
 }
 
 	/*$(function()

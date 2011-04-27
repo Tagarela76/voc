@@ -340,6 +340,7 @@
 						"value = '".$wasteData['value']."' " .
 					"WHERE mix_id = ".$wasteData['mixID'];		
 			$this->db->query($query);		
+			//echo $query;
 		}
 		
 		private function insertWaste($wasteData) {
@@ -851,6 +852,7 @@
 			if ($this->products === null) return false; 
 								
 			if(!isset($this->waste)) {
+				
 				$this->iniWaste($isMWS);
 			}
 			
@@ -990,14 +992,29 @@
 				}
 			}
 			
-			$wasteResult = $this->calculateWastePercent($this->waste['unittypeID'], 
+			//var_dump($this->waste);
+			//echo "---------";
+			/*var_dump($this->waste['unitttypeID'], 
+														$this->waste['value'],
+														$unitTypeConverter,
+														$quantitiWeightSum,
+														$quantitiVolumeSum); */
+			
+			$wasteResult = $this->calculateWastePercent($this->waste['unitttypeID'], 
 														$this->waste['value'],
 														$unitTypeConverter,
 														$quantitiWeightSum,
 														$quantitiVolumeSum);
 														
+			//echo "waste result: ";
+			//var_dump($wasteResult);
+														
 			$calculator = new Calculator();		
 			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult);
+			if($this->debug) {
+				echo "<h1>Waste Percent: {$wasteResult['wastePercent']}</h1>";
+			}
+			
 			$this->waste_percent = $wasteResult['wastePercent'];
 			$this->currentUsage = $this->voc;
 			$this->wastePercent = $wasteResult['wastePercent'];
@@ -1065,21 +1082,28 @@
 						'isWastePercentAbove100' => false
 					);
 			$unittype = new Unittype($this->db);
-			$wasteUnitDetails = $unittype->getUnittypeDetails($this->waste['unittypeID']);
+			$uid = $this->waste['unittypeID'] ? $this->waste['unittypeID'] : $this->waste['unitttypeID'];
+			
+			$wasteUnitDetails = $unittype->getUnittypeDetails($uid);
 
 			
 			if (empty($unittypeID)) {
 				//	percent
 				$result['wastePercent']= $value;
 			} else {
-				switch ($unittype->isWeightOrVolume($this->waste['unittypeID'])) {
+				
+				
+				switch ($unittype->isWeightOrVolume($uid)) {
 					
 					case 'volume':
+						
 						$weistVolume = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], 'us gallon');
 						$result['wastePercent'] = $weistVolume/$quantityVolumeSum*100;							
 						break;
 						
-					case 'weight':						
+					case 'weight':
+						//echo "weight";						
+						//echo "value: $value, description: {$wasteUnitDetails["description"]}";
 						$weistWeight = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], "lb");
 						$result['wastePercent'] = $weistWeight/$quantityWeightSum*100;						
 						break;

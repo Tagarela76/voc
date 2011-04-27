@@ -774,7 +774,31 @@ class CMix extends Controller
 			}			
 			$mix->waste = $wasteData;
 			
-		}		
+		}		else {
+			
+			//echo "decoded waste:";
+			$w = $jwaste;
+			//var_dump($w);
+			
+			$mix->iniWaste(false);
+			
+			//echo "loaded waste:";
+			
+			//var_dump($mix->waste);
+			
+			$mix->waste['value'] = $w->value;
+			$mix->waste['unitttypeID'] = $w->unittype;
+			
+			$u = new Unittype($this->db);
+			$unittypeDescr = $u->getUnittypeDetails($w->unittype);
+			
+			//echo "unittypeDescr";
+			//var_dump($unittypeDescr);
+			
+			//var_dump("done");
+			
+			//var_dump($mix->waste);
+		}
 		
 		/*$mix->wasteArray = $wastes;
 		if($debug) {		
@@ -1465,7 +1489,7 @@ class CMix extends Controller
 		//echo "Waste:";
 		//var_dump(json_decode($optMix));
 		
-		//var_dump($optMix->waste[0]);
+		//var_dump($optMix->waste);
 		
 		/*TEST*/
 		//$optMix->waste_json = '[{"0":{"id":"1","value":"1.00","unittypeClass":"USAWght","unittypeID":"12","validation":"success"},"1":{"id":"2","value":"2.00","unittypeClass":"USAWght","unittypeID":"12","validation":"success"},"storage_id":"58","count":2,"id":1},{"id":"3","value":"3.00","unittypeClass":"USAWght","unittypeID":"12","storage_id":"11","validation":"success"}]';
@@ -1857,6 +1881,8 @@ class CMix extends Controller
 		
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
+		
+		
 		
 		$companyEx = 1;
 		if (!$unitTypeEx) {
