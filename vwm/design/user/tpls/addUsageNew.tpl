@@ -212,7 +212,7 @@ function createSelectUnittypeClass(id) {
 {if $show.waste_streams === true}
 					{include file="tpls:waste_streams/design/wasteStreams.tpl"}
 {else}				
-<!--  <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> -->
+ <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> 
 <a id="addMix" href="" style="display:none;" target="_blank">Add Mix</a>
 
 					<table class="users" cellpadding="0" cellspacing="0" align="center">
@@ -256,6 +256,7 @@ function createSelectUnittypeClass(id) {
 
 							<td class="border_users_r border_users_b">
 								<div class="floatleft">	
+								{$data->waste.unittypeClass}
 									<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
 										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
@@ -264,7 +265,8 @@ function createSelectUnittypeClass(id) {
 										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
 										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
 										{/section}
-										<option value='percent' {if 'percent' eq $data->waste.unittypeClass}selected="selected"{/if}>%</option>										
+										<!-- 'percent' eq $data->waste.unittypeClass or  -->
+										<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>										
 									</select>
 									<input type="hidden" id="company" value="{$companyID}">
 									<input type="hidden" id="companyEx" value="{$companyEx}">
