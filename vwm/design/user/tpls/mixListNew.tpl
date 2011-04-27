@@ -26,7 +26,7 @@
         <td class="" width="10%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	ID Number 		
+                	Job No.		
 					{if $sort==1 || $sort==2}<img src="{if $sort==1}images/asc2.gif{/if}{if $sort==2}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a>                       
