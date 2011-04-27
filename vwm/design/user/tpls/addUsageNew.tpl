@@ -212,7 +212,7 @@ function createSelectUnittypeClass(id) {
 {if $show.waste_streams === true}
 					{include file="tpls:waste_streams/design/wasteStreams.tpl"}
 {else}				
- <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> 
+<!--   <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> --> 
 <a id="addMix" href="" style="display:none;" target="_blank">Add Mix</a>
 
 					<table class="users" cellpadding="0" cellspacing="0" align="center">
