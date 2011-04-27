@@ -43,7 +43,7 @@
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'USA' " .
 					"AND t.type_desc in ('Volume Liquid', 'Volume') " .
-					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."')".
+					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."' AND d.subject='unittype')".
 					"ORDER BY ut.unittype_id";	
 			}
 			else {
@@ -60,7 +60,7 @@
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'USA' " .
 					"AND t.type_desc = 'Volume Dry' " .
-					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."')".
+					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."' AND d.subject='unittype')".
 					"ORDER BY ut.unittype_id";
 			}
 			else {
@@ -77,7 +77,7 @@
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'USA' " .
 					"AND t.type_desc = 'Weight' " .
-					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."')".
+					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."' AND d.subject='unittype')".
 					"ORDER BY ut.unittype_id";
 			}
 			else {
@@ -94,7 +94,7 @@
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'metric' " .
 					"AND t.type_desc = 'Volume' " .
-					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."') ".
+					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."' AND d.subject='unittype') ".
 					"ORDER BY ut.unittype_id";
 			}
 			else {
@@ -111,7 +111,7 @@
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'metric' " .
 					"AND t.type_desc = 'Weight' " .
-					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."')".
+					"AND ut.unittype_id IN (SELECT d.id_of_subject FROM ".TB_DEFAULT." d WHERE d.id_of_object='".$companyID."' AND d.subject='unittype')".
 					"ORDER BY ut.unittype_id";
 			}
 			else {
