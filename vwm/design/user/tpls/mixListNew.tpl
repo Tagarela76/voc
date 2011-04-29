@@ -23,10 +23,10 @@
         <td class="users_u_top" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
-        <td class="" width="10%">
+        <td class="" width="20%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Job No.		
+                	Work Order/Job No.	
 					{if $sort==1 || $sort==2}<img src="{if $sort==1}images/asc2.gif{/if}{if $sort==2}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a>                       

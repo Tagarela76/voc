@@ -55,8 +55,7 @@ class CProduct extends Controller
 		$filterStr=$this->filterList('chemicalProduct');							
 		//	search??									
 		if ($this->getFromRequest('searchAction')=='search') 
-		{		
-			echo "searchAction";								
+		{										
 			//$productsToFind = convertSearchItemsToArray($request['q']);														
 			//$productList = $product->searchProducts($productsToFind, $facilityDetails['company_id']);
 			$fields=array(0=>'p.product_nr',1=>'p.name');
