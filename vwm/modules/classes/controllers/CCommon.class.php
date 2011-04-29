@@ -489,6 +489,55 @@ class CCommon extends Controller
 		}											
 	}
 	
+	private function actionChangeMixesCreationDateFromDateToTimestamp() {
+		echo "<p></p>";
+		
+		$this->db->beginTransaction();
+		
+		$query = "select mix_id, creation_time from mix";
+		
+		echo "<p>Get mixes..</p>";
+		
+		$this->db->query($query);
+		
+		$mixes = $this->db->fetch_all_array();
+		$count = count($mixes);
+		
+		echo "<p>Mixes count: $count</p>";
+		
+		$query_drop_column = "ALTER TABLE mix DROP COLUMN creation_time";
+		
+		echo "<p>Drop column creation_time..</p>";
+		
+		$this->db->query($query_drop_column);
+		
+		echo "<p>Dropped</p>";
+		
+		$query_create_column = "ALTER TABLE mix ADD COLUMN creation_time int";
+		
+		echo "<p>Create column creation_time INT...</p>";
+		
+		$this->db->query($query_create_column);
+		
+		echo "<p>Created</p>";
+		
+		echo "<p>Update timestamps to mixes..</p>";
+		
+
+		for($i = 0; $i < $count; $i++) {
+			
+			$timestamp = strtotime($mixes[$i]['creation_time']);
+			
+			$update_query = "UPDATE mix SET creation_time = $timestamp WHERE mix_id = {$mixes[$i]['mix_id']}";
+			//echo "<p>$update_query</p>";
+			$this->db->query($update_query);
+		}
+		
+		echo "<p>Updated</p>";
+		
+		echo "<p><b style='color:Green;'><h1>DONE</h1></b></p>";
+	}
+	
 	private function actionLogout() {
 		$this->user->logout();
 	}	
