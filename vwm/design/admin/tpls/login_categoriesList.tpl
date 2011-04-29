@@ -1,33 +1,6 @@
 <table class="top_block" width="100%" cellpadding="0" cellspacing="0">
 	<tr>
-		<td class="mg_left20" width="40%"  bgcolor="" valign="top">
-		{*ЕРЕСЬ,ПРОВЕРИТЬ_И_УДАЛИТЬ*}									
-			{if $categoryName eq "root"}
-				<div >
-					<h2 class="logininfo" style="font-family:Arial;padding-top:10px;">	Welcome to VOC-WEB-MANAGER!</h2>
-				</div>
-			{elseif $categoryName eq "company"}
-				<a href="{$urlCompanyList}" class="id_company_link ">Company name</a> 
-			{elseif $categoryName eq "facility"}
-				<a href="{$urlCompanyList}" class="id_company_link">Company name</a> > 
-				<a href="{$urlFacilityList}" class="id_company_link">Facility name </a>
-			{elseif $categoryName eq "department"}
-				<a href="{$urlCompanyList}" class="id_company_link ">Company name</a> > 
-				<a href="{$urlFacilityList}" class="id_company_link">Facility name </a>> 
-				<a href="{$urlDepartmentList}" class="id_company_link">Department name</a>
-			{/if}
-			
-			{*========================================*}
-			{*Company name > Faciality name > Department name*}
-			<br><br>
-			{if $categoryName eq "root"}
-			{else}
-				{if $validStatus ne true && $action ne "showAddItem" && $action ne "viewDetails" && $action ne "deleteItem" && $action ne "showEdit"}						
-					{include file="tpls:tpls/controlBrowseCategory.tpl"}
-				{/if}													
-			{/if}
-			{*========================================*}		
-						
+		<td class="mg_left20" width="40%"  bgcolor="" valign="top">		
 		</td>
 						
 		<td align="left">
