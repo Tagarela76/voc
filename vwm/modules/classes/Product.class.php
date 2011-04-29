@@ -150,15 +150,16 @@ class Product extends ProductProperties {
 			$component['rule_id'] = $data[$i]->rule_id;
 			$component['substrate_id'] = $data[$i]->rule_id;
 			
-			$query_2 = "SELECT ".$rule->ruleNrMap[$rule->getRegion()]." FROM ".TB_RULE." WHERE rule_id = ".$data3->rule_id;
-			$this->db->query($query_2);
-			$data4 = $this->db->fetch(0);
-			$component['rule'] = $data4->$rule->ruleNrMap[$rule->getRegion()];
-			
-			$query_2 = "SELECT substrate_desc FROM ".TB_SUBSTRATE." WHERE substrate_id = ".$data3->substrate_id;
-			$this->db->query($query_2);
-			$data4 = $this->db->fetch(0);
-			$component['substrate'] = $data4->substrate_desc;
+			/* DEPRICATED - compounds do not have these properties*/
+//			$query_2 = "SELECT ".$rule->ruleNrMap[$rule->getRegion()]." FROM ".TB_RULE." WHERE rule_id = ".$data3->rule_id;
+//			$this->db->query($query_2);
+//			$data4 = $this->db->fetch(0);
+//			$component['rule'] = $data4->$rule->ruleNrMap[$rule->getRegion()];
+//			
+//			$query_2 = "SELECT substrate_desc FROM ".TB_SUBSTRATE." WHERE substrate_id = ".$data3->substrate_id;
+//			$this->db->query($query_2);
+//			$data4 = $this->db->fetch(0);
+//			$component['substrate'] = $data4->substrate_desc;
 			
 			$components[] = $component;
 		}
