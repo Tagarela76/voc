@@ -30,6 +30,9 @@ class Controller
 			$notify = $notifyc->getPopUpNotifyMessage($this->request['notify']);			
 			$this->smarty->assign("notify", $notify);
 		}
+		
+		//	footer is always up to date :) 
+		$this->smarty->assign('footerYear', date('Y'));
 	}
 		
 	protected function forvard($controller,$function,$vars,$controllerType = 'main')
