@@ -196,12 +196,11 @@ class bulkUploader {
 				 $hazardous_class_id.", " .
 				 $supplier_id.")";*/
 				 
-		$query = "INSERT INTO product (product_nr, name, inventory_id, voclx, vocwx, density, density_unit_id, coating_id, " .
+		$query = "INSERT INTO product (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 					"specialty_coating, aerosol, specific_gravity, boiling_range_from, " . 
 					"boiling_range_to, supplier_id) " .
 			 "VALUES ('".$product['productID']."', '" .
-				 $product['productName']."', " .
-				 $this->inventoryID.", " .
+				 $product['productName']."', " .				 
 				 $product['voclx'].", " .
 				 $product['vocwx'].", " .
 				 $product['density'].", " .
