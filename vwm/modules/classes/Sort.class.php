@@ -12,7 +12,7 @@ class Sort {
     	$this->defaultSortNum=$defaultSortNum;
     }
     
-    public function getSubQuerySort($numSort)
+    public function getSubQuerySort($numSort = null)
     {    	
     	if (!isset($numSort))
     		$numSort=$this->defaultSortNum;

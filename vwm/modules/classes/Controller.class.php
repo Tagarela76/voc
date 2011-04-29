@@ -903,7 +903,7 @@ class Controller
 				);
 	}
 	
-	protected function getFromRequest($key)
+	protected function getFromRequest($key = null)
 	{		
 		if (isset($key))
 		{

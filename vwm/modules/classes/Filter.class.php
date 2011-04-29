@@ -10,7 +10,7 @@ class Filter {
     	$this->tableParent=$tableParent;
     }
     
-    public function getJsonFilterArray($parent)
+    public function getJsonFilterArray()
     {    	
     	$query = "SELECT * FROM ".TB_FILTER." WHERE parent='".$this->tableParent."'";
     	$this->db->query($query);
