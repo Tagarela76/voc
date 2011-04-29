@@ -262,9 +262,17 @@
 			}	
 		}
 	} catch (Exception $e) {
-		var_dump($e);
-		var_dump(xdebug_get_function_stack());
-		exit;
+		//var_dump($e);
+		//var_dump(xdebug_get_function_stack());
+		//exit;
+		
+		ob_start();
+		var_dump($e->getTrace());
+		$trace = ob_get_clean();
+		
+		
+		$additionalMessage = "<br/> File:  " . $e->getFile() . "<br/> Line: " . $e->getLine() . " <br/> <fieldset style='background-color:White;color:Black;'> <legend><h2>Trace:</h2></legend> " . $trace . "</fieldset>";
+		
 		switch ($e->getMessage()) {
 			case '404':						
 				$smarty->display('tpls:errors/404.tpl');
@@ -273,7 +281,7 @@
 				$smarty->display('tpls:errors/deny.tpl');
 				break;
 			default:				
-				$smarty->assign('message', $e->getMessage());
+				$smarty->assign('message', $e->getMessage() . $additionalMessage);
 				$smarty->display('tpls:errors/other.tpl');	
 		}
 	}	
