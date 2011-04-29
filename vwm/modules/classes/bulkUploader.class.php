@@ -62,6 +62,14 @@ class bulkUploader {
 		
 			$products = $validation->productsCorrect;
 			for($i=0;$i<count($products);$i++) {
+								
+				//	try to calculate density from specific gravity if needed
+				if ($products[$i]['density'] == '' || (int)$products[$i]['density'] == 0) {
+					$density = $this->getDensityBySpecificGravity($products[$i]['gavity']);					
+					if ($density) {
+						$products[$i]['density'] = $density;											
+					}					
+				}
 				
 				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i]['productID'] . "'");
 				$r=$this->db->fetch(0);				
@@ -99,9 +107,7 @@ class bulkUploader {
 		}		
 		$validationLogFile = fopen("../voc_logs/validation.log","a");
 		fwrite($validationLogFile,$errorLog);
-		fclose($validationLogFile);	
-		echo $errorLog;
-		
+		fclose($validationLogFile);					
     }
     
     //--------------private functions-------------------------------------
@@ -477,6 +483,26 @@ class bulkUploader {
 		$hazardousClasses[] = $data->id;
 				
 		return $hazardousClasses; 
+	}
+	
+	
+	/**
+	 * 
+	 * Try to get density by Spec Gravity using following
+	 * ρ = SG · ρH2O
+	 * ρ - density
+	 * SG - Specific Gravity
+	 * ρH2O - water density (usually 4 ºC, see MSDS to insure) = 999.972024 kg/m3 or 8.345171 pounds/gallon (US)
+	 * 
+	 * @param array $product
+	 * @return mixed density value, false - no changes
+	 */
+	private function getDensityBySpecificGravity($specificGravity) {				
+		if ($specificGravity == "" || (int)$specificGravity == 0) {
+			//	specific gravity is empty. Cannot apply changes
+			return false;
+		}		
+		return $specificGravity * 8.34;					
 	}
 			
 }
