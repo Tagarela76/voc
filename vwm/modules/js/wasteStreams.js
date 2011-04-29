@@ -31,6 +31,7 @@ var wasteStreamsCollection = new CWasteStreamCollection();
 		
 function unitTypeListWithoutPollutions(id)
 {	
+	
 	var unittypeList= new Array();
 	
 	var selectedClassValue=$('select[name=selectWasteUnittypeClassWithoutPollutions_'+id+'] option:selected').attr('value');
@@ -41,7 +42,8 @@ function unitTypeListWithoutPollutions(id)
       		async: false,
       		data: { "action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue },      			
       		dataType: "html",
-      		success: function (UTList) {      			
+      		success: function (UTList) {      		
+      			
       			unittypeList=eval("("+UTList+")");   		      												
 				$('select[name=selectWasteUnittypeWithoutPollutions_'+id+'] option').remove();
 				
@@ -468,7 +470,8 @@ $(function()
 			for (var i=0;i<elemsArray[key]["count"];i++)
 			{
 				addPollution(key);
-				$('select[name = selectPollution_'+key+'_'+i+'] option[value ='+elemsArray[key][i]["id"]+']').attr('selected',true);				
+				$('select[name = selectPollution_'+key+'_'+i+'] option[value ='+elemsArray[key][i]["id"]+']').attr('selected',true);		
+				
 				$('select[name=selectWasteUnittypeClass_'+key+'_'+i+'] option[value ='+elemsArray[key][i]["unittypeClass"]+']').attr('selected',true);
 				unitTypeList(key,i);
 				$('select[name=selectWasteUnittype_'+key+'_'+i+'] option[value ='+elemsArray[key][i]["unittypeID"]+']').attr('selected',true);
@@ -835,11 +838,12 @@ function addPollution (id)
 			wasteSetPollutionId(idWs,idPol,value);
 	});
 			
-	/*$('select[name=selectWasteUnittypeClass_'+id+'_'+idPollution+']').change(function(){
-			var idWs = parseInt ($(this).attr('onCh_ws'));
-			var idPol = parseInt ($(this).attr('onCh_pol'));
-			unitTypeList(idWs,idPol);
-	});*/
+	$('select[name=selectWasteUnittypeClass_'+id+'_'+idPollution+']').change(function(){
+			//var idWs = parseInt ($(this).attr('onCh_ws'));
+			//var idPol = parseInt ($(this).attr('onCh_pol'));
+			//unitTypeList(idWs,idPol);
+			change_waste_pollution_unittypeClass($(this).get());
+	});
 	
 	//$("#selectWasteUnittype_"+id+"_"+idPollution).attr("onchange",'change_waste_pollution_unittypeId(this)');
 	

@@ -100,9 +100,26 @@
 						return false;
 					}
 
-					$mixCreationMonth = substr($mix->getCreationTime(),3,2);	//	be careful with this
-					$mixCreationYear = substr($mix->getCreationTime(),-4);
+					//$mixCreationMonth = substr($mix->getCreationTime(),3,2);	//	be careful with this
+					//$mixCreationYear = substr($mix->getCreationTime(),-4);
+					
+					//I was careful with that, and remade it =)
+					//echo $mix->getCreationTime();
+					//echo "<br/>DateFormat:" . $mix->dateFormat;
+					
+					$date = DateTime::createFromFormat($mix->dateFormat, $mix->getCreationTime());
 
+					//echo "dates:";
+					//var_dump($date);
+					
+					//var_dump($mix->dateFormat, $mix->getCreationTime());
+					
+					$mixCreationMonth = date("m", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
+					$mixCreationYear = date("Y", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
+					
+
+					//var_dump($mixCreationMonth,$mixCreationYear);
+					//exit;
 					//$totalFacilityUsage = $mix->getFacility()->getCurrentUsageOptimized((int)$mixCreationMonth, (int)$mixCreationYear);
 					if ($this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth]) {
 						$totalFacilityUsage = $this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth];

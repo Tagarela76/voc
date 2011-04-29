@@ -66,7 +66,14 @@ class CTDate extends CType {
     		
     		$calendarFormat = str_replace('Y','yy',$this->mainFormat);
     	}
+    	
     	return $calendarFormat;
+    	
+    }
+    
+    public function getFormat() {
+    	
+    	return $this->format;
     }
 
 

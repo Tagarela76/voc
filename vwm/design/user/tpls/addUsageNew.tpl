@@ -129,7 +129,7 @@ function createSelectUnittypeClass(id) {
 																	
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
-								Mix Date (mm-dd-yyyy):
+								Mix Date ({$data->dateFormatForCalendar}):
 							</td>
 							<td class="border_users_r border_users_b">
 							<div align="left" ><input type="text" name="creationTime" id="calendar1" value="{$data->creation_time}">
@@ -150,7 +150,7 @@ function createSelectUnittypeClass(id) {
 							    }
 							    
 							    $(document).ready(function(){	
-									 $('#calendar1').datepicker({ dateFormat: 'mm-dd-yy' }); 
+									 $('#calendar1').datepicker({ dateFormat: '{/literal}{$data->dateFormatForCalendar}{literal}' }); 
 							    });
 							   
 							</script>

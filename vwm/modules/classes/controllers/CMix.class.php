@@ -475,6 +475,9 @@ class CMix extends Controller
 		}
 		
 		$mix = new MixOptimized($this->db, $form['id']);
+		
+		
+		
 		if($debug) {
 			var_dump($mix);
 		}
@@ -540,10 +543,10 @@ class CMix extends Controller
 			//	OK, this company has access to waste streams module, so let's setup..
 			//$mWasteStreams = new MWasteStreams();
 			
-			$result = $mWasteStreams->validateWastes($this->db, $this->xnyo, $facilityID, $companyID, '03-29-2011' , $wastes);	
+			$result = $mWasteStreams->validateWastes($this->db, $this->xnyo, $facilityID, $companyID, date("Y-m-d") , $wastes);	
 			if($debug) {
 				echo "<h1>validateWastes</h1>";
-				var_Dump($mWasteStreams);
+				var_Dump($result);
 				//var_dump($wastes);
 			}			
 			if($result != false){
@@ -761,9 +764,11 @@ class CMix extends Controller
 			);
 			if($debug) {
 				echo "<h3>calculateWaste</h3>";
-				var_dump($mWasteStreams);
+				var_dump($mWasteStreams->resultParams);
 			}
-			$result = $mWasteStreams->calculateWaste($params);			
+			$result = $mWasteStreams->calculateWaste($params);	
+			
+			//var_dump($result);		
 			extract($result); //here extracted $wasteData, $wasteArr and $ws_error
 			if ($ws_error) {
 //				$validStatus['summary'] = 'false';
@@ -771,6 +776,12 @@ class CMix extends Controller
 //					//$ws->error not 'true' its a error message!
 //					$validStatus['waste']['error'] = $ws_error;
 //				}
+				if($debug) {
+					echo "<p>Waste Error</p>";
+					var_dump($ws_error);
+				}		
+				echo json_encode(array('waste_error' => $ws_error));
+				exit;
 			}			
 			$mix->waste = $wasteData;
 			
@@ -893,7 +904,9 @@ class CMix extends Controller
 		return $optMix;
 	}
 	
-	private function updateMixByForm($basemix,$formMix) {
+	private function updateMixByForm(MixOptimized $basemix,$formMix) {
+		
+		
 		
 		$basemix->equipment_id 	= $formMix->equipment;		
 		$basemix->description	= $formMix->description;
@@ -1439,6 +1452,7 @@ class CMix extends Controller
 	}
 	
 	private function showEdit($optMix,$isMWS) {
+		
 		
 		
 		$optMix->setTrashRecord(new Trash($this->db));

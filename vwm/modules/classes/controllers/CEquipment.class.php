@@ -171,6 +171,7 @@ class CEquipment extends Controller
 		
 		$DateType = new DateTypeConverter($this->db);
 		$categoryDetails['date_type'] = $DateType->getDatetype($department->getFacilityID()); 	
+		var_dump($categoryDetails);
 		$categoryDetails['expire'] = new TypeChain(null,'date',$this->db,$this->getFromRequest('departmentID'),'department');						
 		$this->smarty->assign('data', $categoryDetails);
 		

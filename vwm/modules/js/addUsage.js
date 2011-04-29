@@ -183,7 +183,7 @@ function initNoMWS() {
       				if(response == 'DONE') {
       					//res = confirm("Mix updated successfully! Do you want browse mixes?");
       					if( true) {
-      						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
+      						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix"; 
       					}
       				}
       				else if(response!='false') {

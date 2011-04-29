@@ -14,7 +14,7 @@
 		public $voc;
 		public $voclx;
 		public $vocwx;
-		public $creation_time;
+		private  $creation_time;
 		public $rule_id;
 		public $exempt_rule;
 		public $apmethod_id;
@@ -41,7 +41,11 @@
 		public $waste_calculated; //Total Waste value voc
 		
 		private $trashRecord;
+		
+		public $dateFormatForCalendar;
+		public $dateFormat;
 		 
+		private $ololo;
 		
 		const MIX_IS_VALID = 'valid';
 		const MIX_IS_INVALID = 'invalid';
@@ -52,12 +56,112 @@
 		
 		public function __construct($db, $mix_id = null) {
 			$this->db = $db;
+			
 			if (isset($mix_id)) {
 				$this->mix_id = $mix_id;	
 				$this->_load();			
 			}
 		}
-					
+		
+		/**
+		 * 
+		 * Overvrite get property if property is not exists or private.
+		 * @param unknown_type $name - property name. method call method get_%property_name%, if method does not exists - return property value; 
+		 */
+		public function __get($name) {
+	        
+
+        	if(method_exists($this, "get_".$name)) {
+        		$methodName = "get_".$name;
+        		$res = $this->$methodName();
+        		return $res;
+        	}
+	        else {
+	        	return $this->$name;
+	        }
+	    }
+	    
+	    /**
+	     * 
+	     * Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
+	     * @param unknown_type $name - name of property
+	     * @param unknown_type $value - value to set
+	     */
+	    public function __set($name,$value) {
+	        
+	    	//echo "<p>set: $name value: $value</p>";
+	    	
+	    	
+	    	
+	    	/*Call setter only if setter exists*/
+	        if(method_exists($this, "set_".$name)) {
+        		$methodName = "set_".$name;
+        		$this->$methodName($value);
+        	}
+        	/**
+        	 * Set property value only if property does not exists (in order to do not revrite privat or protected properties), 
+        	 * it will craete dynamic property, like usually does PHP
+        	*/
+	        else if(!property_exists($this,$name)){
+	        	
+	        	$this->$name = $value;
+	        }
+	        /***
+	         * property exists and private or protected, do not touch. Keep OOP
+	         */ 
+	        else {
+	        	//Do nothing
+	        }
+	    }
+
+		private function get_creation_time() {
+	    	
+	    	if(!isset($this->dateFormat)) {
+	    		throw new Exception("Date format does not exists!");
+	    	}
+	    	//echo "from $this->creation_time ";
+	    	$date = date($this->dateFormat, $this->creation_time);
+	    	return $date;
+	    }
+	    
+	    private function set_creation_time($value) {
+	    	
+	    	
+	    	
+	    	if(!isset($this->dateFormat)) {
+	    		$this->iniDateFormat();
+	    		//throw new Exception("Date format does not exists!");
+	    		
+	    		if(!isset($this->dateFormat)) {
+	    			echo "Date format does not exists!";
+	    			return;
+	    		}
+	    	} else if (!isset($value)) {
+	    		throw new Exception("\$value is not set!");
+	    	}
+	    	
+	    	/**
+	    	 * If value is already timestamp  - just set value
+	    	 */
+	    	if(strlen($value) == 10 and is_numeric($value)) {
+	    		$this->creation_time = $value;
+	    	} else {
+	    	
+		    	$date = DateTime::createFromFormat($this->dateFormat, $value);
+				//echo "{$this->dateFormat}, $value<br/>";
+				//var_dump($value);
+		    	if(!$date) {
+		    		//var_Dump(DateTime::getLastErrors());
+		    		return;
+		    	}
+				//var_dump($date);
+				$timestamp = $date->getTimestamp();
+				
+				//echo "Set creation_time $value converted to $timestamp by format {$this->dateFormat}";
+				
+				$this->creation_time = $timestamp;
+	    	}
+	    }
 		
 		public function setDepartment(Department $department) {
 			$this->department = $department;
@@ -122,7 +226,11 @@
 		
 		public function getCreationTime() {
 			//TODO: dates
-			return date('m-d-Y', strtotime($this->creation_time));
+			//var_dump($this->creation_time);
+			//$chain = new TypeChain(date('Y-m-d',$equipmentDetails['expire']),'date',$this->db,$equipmentDetails['department_id'],'department');
+			
+			return date($this->dateFormat, strtotime($this->creation_time));
+			//return $this->creation_time;
 		}
 		
 		
@@ -131,6 +239,13 @@
 		 * 
 		 */
 		public function save($isMWS,$mix = null) {
+			
+			
+//			echo "<h1>Just creation time: {$this->creation_time}</h1>";
+			
+			//echo "<h1>Formatted:" . $this->get_creation_time() ."</h1>";
+			
+			//exit;
 			
 			if(!isset($this->mix_id)) {
 				$mixID = $this->addNewMix($isMWS);
@@ -198,6 +313,8 @@
 			}
 			
 			$updateMixQuery = $this->getUpdateMixQuery();
+			//echo $updateMixQuery;
+			//exit;
 			
 			if($this->debug) {
 				echo "<h1>UpdateMixQuery:</h1>";
@@ -245,11 +362,14 @@
 			$query .= "description='{$this->description}', ";
 			$query .= "rule_id={$this->rule_id}, ";
 			$query .= (empty($this->exempt_rule)) ? "exempt_rule = NULL, " : "exempt_rule ='".$this->exempt_rule."', ";			
-			if (empty($this->creation_time)) {
+			/*
+			 * DEPRECATED , now mix creation_time is timestump
+			 * if (empty($this->creation_time)) {
 				$query .= "creation_time = '".date('Y-m-d')."' ";
 			} else {
 				$query .= "creation_time = STR_TO_DATE('{$this->creation_time}', '%m-%d-%Y') ";
-			}		
+			}*/
+			$query .= " creation_time = {$this->creation_time}";		
 			$query .= " WHERE mix_id =".$this->mix_id;
 			
 			return $query;
@@ -444,7 +564,14 @@
 			$this->voc = isset($this->voc) ? $this->voc : "0.00";
 			$this->voclx = isset($this->voclx) ? $this->voclx : "0.00";
 			$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
-			$creation_time = isset($this->creation_time) ? " STR_TO_DATE('{$this->creation_time}', '%m-%d-%Y') " : "'".date('Y-m-d')."'";//Warning: quotes!
+			
+			/***
+			 * DEPRECATED now creation_time is timestamp
+			 */
+			//$creation_time = isset($this->creation_time) ? " STR_TO_DATE('{$this->creation_time}', '%m-%d-%Y') " : "'".date('Y-m-d')."'";//Warning: quotes!
+			
+			$creation_time = isset($this->creation_time) ? $this->creation_time : time();
+			
 			$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
 			$this->apmethod_id = isset($this->apmethod_id) ? "'{$this->apmethod_id}'" : "NULL";//Warning: quotes!
 			$this->exempt_rule = isset($this->exempt_rule) ? "'{$this->exempt_rule}'" : "NULL";//Warning: quotes!
@@ -532,9 +659,12 @@
 			
 			foreach ($mixData as $property =>$value) {
 				if (property_exists($this,$property)) {
+					
 					$this->$property = $mixData->$property;
 				}
 			}
+			
+			$this->iniDateFormat();
 			
 			$query = "SELECT expire FROM ".TB_EQUIPMENT." WHERE equipment_id=".$this->equipment_id;
 		
@@ -544,13 +674,40 @@
 			
 			$this->expire = date($DateType->getDatetypebyID($this->equipment_id), $exp);
 			
-			$timestamp = strtotime($this->creation_time);
+			
 			//echo "<h2>Load: {$this->creation_time}</h2>";
-			$this->creation_time = date("m-d-Y",$timestamp);
+			
+			
+			//echo $this->dateFormatForCalendar . " - " . $this->dateFormat;
+			
+			//$this->creation_time = date($this->dateFormat,$this->creation_time);
+			
+			//echo "   <br/>creation time:" . $this->creation_time;
 			//echo "<h2>Load: {$this->creation_time}</h2>";
 
 			$this->loadProducts();
 		}
+		
+		private function iniDateFormat($departmentID = null) {
+			
+			$dID = $departmentID ? $departmentID : $this->department_id;
+			
+			if(!$dID or $dID == NULL or !isset($dID)) {
+				throw new Exception("Cannot get date format for mix, because deparment id is not set!");
+			}
+			
+			$chain = new TypeChain(null,'Date',$this->db,$dID,'department');
+			$this->dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
+			
+			$this->dateFormat = $chain->getFromTypeController('getFormat');
+			
+			//echo "Init date format ";
+			//echo $this->creation_time . "<br/>";
+		}
+		
+		
+	    
+	    
 		
 		private function loadCompany() {
 			
@@ -1070,24 +1227,30 @@
 				$waste = $unitTypeConverter->convertToDefault($value, $unitTypeDetails["description"],$mixDensity);
 			}
 			$waste = round($waste, 2); 
+			
 			return $waste;
 		}	
 		
 		
 		
 		private function calculateWastePercent($unittypeID, $value, UnitTypeConverter $unitTypeConverter, $quantityWeightSum = 0, $quantityVolumeSum = 0) {
+			if($this->debug) {
+				echo "<p>".__FUNCTION__."</p>";
+			}
 			$result = array(
 						'wastePercent' => 0,
 						'isWasteError' => false,
 						'isWastePercentAbove100' => false
 					);
 			$unittype = new Unittype($this->db);
+			// TODO: хрень с тремя буквами unitttypeID, когда MWS выключен - с тремя буквами, когда включен - с одной
 			$uid = $this->waste['unittypeID'] ? $this->waste['unittypeID'] : $this->waste['unitttypeID'];
 			
 			$wasteUnitDetails = $unittype->getUnittypeDetails($uid);
 
+			//var_dump($unittypeID, $uid);
 			
-			if (empty($unittypeID)) {
+			if (empty($uid)) {
 				//	percent
 				$result['wastePercent']= $value;
 			} else {
@@ -1118,8 +1281,11 @@
 				$result['wastePercent'] = 0;
 				$result['isWastePercentAbove100'] = true;
 			}
-			
-			return $result;
+			if($this->debug) {
+				var_dump($result);
+			}
+			$result['wastePercent'] = round($result['wastePercent'],2);
+			return  $result;
 		}
 		
 		//	Tracking System
