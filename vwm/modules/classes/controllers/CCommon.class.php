@@ -23,6 +23,11 @@ class CCommon extends Controller
 			throw new Exception('404');
 	}
 	
+	
+	/**
+	 * 
+	 * Refresh usage stats. Useful when unsync happens
+	 */
 	private function actionPersic2()
 	{
 		$query = 'TRUNCATE TABLE '.TB_USAGE_STATS.'';
