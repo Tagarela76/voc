@@ -60,7 +60,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->rule} 
+                                &nbsp; {$usage->exempt_rule} 
                             </div>
                         </td>
                     </tr>

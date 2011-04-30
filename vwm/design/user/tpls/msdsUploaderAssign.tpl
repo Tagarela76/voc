@@ -67,6 +67,7 @@
                     {section name=i loop=$maxCnt}
                     <tr>
                         <td>
+                        
                             {if $recognized[i].name} 
                             {$recognized[i].name} 
                             <select name="product2sheetRec_{$smarty.section.i.index}"  class="addInventory">                            	
@@ -77,8 +78,8 @@
                             {if $productList}				
 								{foreach from=$productList item=productsArr key=supplier}															
 									<optgroup label="{$supplier}">
-										{section name=i loop=$productsArr}
-											<option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data.product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>									
+										{section name=j loop=$productsArr}
+											<option value='{$productsArr[j].product_id}' {if $productsArr[j].product_id eq $data.product_id}selected="selected"{/if}> {$productsArr[j].formattedProduct} </option>									
 										{/section}
 									</optgroup>
 								{/foreach}																										
@@ -93,6 +94,7 @@
                                 </font>
                             </div>
                             	{/if}
+                            	
 							<input type="hidden" name="sheetRec_{$smarty.section.i.index}" value="{$recognized[i].name}">
 							<input type="hidden" name="sheetRecRealName_{$smarty.section.i.index}" value="{$recognized[i].real_name}">
 							{/if}

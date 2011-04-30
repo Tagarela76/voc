@@ -11,8 +11,7 @@ class CMix extends Controller
 	function runAction()
 	{
 		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);	
-		echo $functionName;			
+		$functionName='action'.ucfirst($this->action);			
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
@@ -71,6 +70,8 @@ class CMix extends Controller
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
 		
+		
+		
 		//var_dump($mixOptimized);
 		
 		//if (!isset($this->getFromRequest('departmentID')) || empty($request['departmentID'])) {
@@ -81,7 +82,7 @@ class CMix extends Controller
 			throw new Exception('deny');
 		}				
 
-		$mixOptimized->rule = $ruleDetails["rule_nr"];
+		//$mixOptimized->rule = $ruleDetails["rule_nr"];
 //																		
 //		$usage = new Mix($db);						
 //		$usageDetails = $usage->getMixDetails($request["id"]);
@@ -119,6 +120,8 @@ class CMix extends Controller
 		//var_dump($mixOptimized->products[0]);
 		
 		$this->smarty->assign("usage", $mixOptimized);
+		
+		//var_Dump($mixOptimized);
 
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
@@ -225,7 +228,7 @@ class CMix extends Controller
 				$pagination->url = "?q=".urlencode($this->getFromRequest('q'))."&action=browseCategory&category=".$this->getFromRequest('category')."&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark')."&searchAction=search";
 			}																						
 			$usageList = $usages->searchMixes($mixesToFind, 'description', $this->getFromRequest('id'), $pagination);
-			
+			//msdsUploader
 			$usageIDArray = array();
 			foreach($usageList as $u) {
 				$usageIDArray[] = $u['mix_id'];
@@ -1043,6 +1046,8 @@ class CMix extends Controller
 		if($action == "edit" or $action == "EditAddItem") { 
 			$mixID = $this->getFromRequest("id");
 			$optMix = new MixOptimized($this->db, $mixID);
+			
+			//var_dump($optMix->exempt_rule);
 			//var_dump($optMix->products[0]->unitTypeList);
 			$optMix->isMWS = $isMWS;
 			$optMix->getDepartment();

@@ -152,6 +152,7 @@ class CCommon extends Controller
 		
 	private function actionMsdsUploaderBasic()
 	{
+		
 		//little hack
 		$request = array('category'=>$this->getFromRequest('itemID'), 'id'=>$this->getFromRequest('id'));
 		$this->smarty->assign('request', $request);
@@ -223,6 +224,7 @@ class CCommon extends Controller
 	
 	private function actionMsdsUploader()
 	{
+		
 		if ($this->getFromRequest('button') != "Back") 
 		{
 			$step = $this->getFromRequest('step');
@@ -356,13 +358,18 @@ class CCommon extends Controller
 					$step = "assign";											
 					foreach($assignments as $assignment) 
 					{
+						
 						if (!empty($assignment['productID']))
 						{
+							
 							$sheet['name'] = $assignment['msdsName'];
 							$sheet['real_name'] = $assignment['realName'];
 							$sheet['product_id'] = $assignment['productID'];
 							$sheet['failed'] = $assignment['failed'];
+							
 							$recognized[] = $sheet;
+							
+							
 						} 
 						else 
 						{
