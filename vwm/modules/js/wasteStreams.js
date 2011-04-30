@@ -843,6 +843,8 @@ function addPollution (id)
 			//var idPol = parseInt ($(this).attr('onCh_pol'));
 			//unitTypeList(idWs,idPol);
 			change_waste_pollution_unittypeClass($(this).get());
+			
+			
 	});
 	
 	//$("#selectWasteUnittype_"+id+"_"+idPollution).attr("onchange",'change_waste_pollution_unittypeId(this)');

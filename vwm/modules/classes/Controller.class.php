@@ -37,6 +37,7 @@ class Controller
 		
 	protected function forvard($controller,$function,$vars,$controllerType = 'main')
 	{
+		
 		if ($controllerType != 'admin') {
 			$className="C".ucfirst($controller);
 		} else {

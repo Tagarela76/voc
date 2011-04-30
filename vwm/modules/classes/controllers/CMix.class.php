@@ -5,13 +5,14 @@ class CMix extends Controller
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='mix';
-		$this->parent_category='department';			
+		$this->parent_category='department';	
 	}
 	
 	function runAction()
 	{
 		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
+		$functionName='action'.ucfirst($this->action);	
+		echo $functionName;			
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
@@ -206,11 +207,12 @@ class CMix extends Controller
 		$filterStr=$this->filterList('mix');
 		
 		$usages = new Mix($this->db);								
-									
+			
 		//	search??									
 		if ($this->getFromRequest('searchAction')=='search') 
 		{
 			$mixesToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			
 			if (!is_null($this->getFromRequest('export'))) 
 			{
 				$pagination = null;											
@@ -218,11 +220,17 @@ class CMix extends Controller
 			else 
 			{									
 				$searchedMixesCount = $usages->countSearchedMixes($mixesToFind, 'description', $this->getFromRequest('id'));
+				
 				$pagination = new Pagination($searchedMixesCount);
 				$pagination->url = "?q=".urlencode($this->getFromRequest('q'))."&action=browseCategory&category=".$this->getFromRequest('category')."&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark')."&searchAction=search";
 			}																						
 			$usageList = $usages->searchMixes($mixesToFind, 'description', $this->getFromRequest('id'), $pagination);
-																																	
+			
+			$usageIDArray = array();
+			foreach($usageList as $u) {
+				$usageIDArray[] = $u['mix_id'];
+			}
+			
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination',$pagination);
 		} 
