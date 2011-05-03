@@ -21,7 +21,7 @@
                 <table class="mix_id" width="100%" height="141px" cellpadding="0" cellspacing="0">
                     <tr>
                         <td colspan="2" style="border-width:0px;" height="20px">
-                            <b>Mix id</b>
+                            <b>Work Order/Job No. {$usage->mix_id}</b>
                         </td>
                     </tr>
                     <tr>
