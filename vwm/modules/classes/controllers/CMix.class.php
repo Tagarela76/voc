@@ -117,7 +117,8 @@ class CMix extends Controller
 		//echo "<h1>Usage Details product1:</h1>";
 		//var_dump($usageDetails['products'][0]);
 		//echo "<h1>Mix Optimized product1:</h1>";
-		//var_dump($mixOptimized->products[0]);
+		$mixOptimized->getRule();
+		//var_dump($mixOptimized);
 		
 		$this->smarty->assign("usage", $mixOptimized);
 		
@@ -293,9 +294,22 @@ class CMix extends Controller
 							'voc' => 'VOC',
 							'creation_time' => 'Creation Date'																	
 							);
+							
+			$departmentID = $this->getFromRequest('id');
+			$mixOptimized = new MixManager($this->db, $departmentID);
+			$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
+			
+			$goodUsageList = array();
+			
+			foreach($mixList as $m) {
+				$tmp = array("mix_id" => $m->mix_id, "description" => $m->description, "voc" => $m->voc, "creation_time" => $m->creation_time);
+				$goodUsageList[] = $tmp;
+			}
+			
+			
 			$exporter->setColumnsWidth($widths);
 			$exporter->setThead($header);										
-			$exporter->setTbody($usageList);
+			$exporter->setTbody($goodUsageList);
 			$exporter->export();
 			die();
 									
