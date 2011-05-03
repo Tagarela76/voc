@@ -7,6 +7,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 	private $rule;
 	private $data;
 	
+	private $dateFormat;
+	
 	function RvocLogs($db, $reportRequest = null) {
 		$this->db = $db;
 		if (!is_null($reportRequest)) {
@@ -16,7 +18,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 			$this->dateEnd = $reportRequest->getDateEnd();
 			$extraVar = $reportRequest->getExtraVar();
 			$this->rule = $extraVar['rule'];
-			$this->data = $extraVar['data'];	
+			$this->data = $extraVar['data'];
+			$this->dateFormat = $reportRequest->getDateFormat();	
 		}
 	}
 	
@@ -31,6 +34,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		//and get them too
 		$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
 	    $dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
+	    
 		$extraVar['rule'] = $_REQUEST['logs'];
 		
 		$data['responsiblePerson'] = (($_REQUEST['responsiblePerson'] == "[Responsible Person]") ? "" : $_REQUEST['responsiblePerson']);
@@ -48,8 +52,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 			if (strstr($extraVar['textDelimiter'],"\\")) {								
 				$extraVar['textDelimiter'] = str_replace("\\","",$extraVar['textDelimiter']); 
 			}
-		}
-		
+		}				
+				
 		//finally: lets get	reportRequest object!
 		$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id']);							
 		return $reportRequest;
@@ -191,9 +195,13 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		);
 		$pageTag->appendChild( $titleTag );
 		
+		//$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
+	    //$dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
+	    
 		$periodTag = $doc->createElement( "period" );
 		$periodTag->appendChild(
-			$doc->createTextNode("PERIOD: " . date('m.d.Y',min($days)) . " TO " . date('m.d.Y',max($days)) )
+			//$doc->createTextNode("PERIOD: " . date('m.d.Y',min($days)) . " TO " . date('m.d.Y',max($days)) )
+			$doc->createTextNode("PERIOD: " . $this->dateBegin . " TO " . $this->dateEnd )
 		);
 		$pageTag->appendChild( $periodTag );
 		
@@ -276,11 +284,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		$unittype = new Unittype($this->db);
 		$unitTypeConverter = new UnitTypeConverter("us gallon");
 		
-		$mixObj = new Mix($this->db);
-		
-		
-		foreach ($equipments as $equipment) {
-			
+		$mixObj = new Mix($this->db);		
+		foreach ($equipments as $equipment) {			
 			$summaryEquipmentQty = 0;
 			$summaryEquipmentVoc3 = 0;
 			$summaryEquipmentTotalVoc = 0;			
@@ -312,7 +317,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				
 				$dateDay = $doc->createAttribute("day");
 				$dateDay->appendChild(
-					$doc->createTextNode( date('m.d.Y',$day) )
+					$doc->createTextNode( date($this->dateFormat,$day) )
 				);
 				$dateTag->appendChild($dateDay);
 				$cnt = 0;
@@ -320,7 +325,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				$totalVoc3 = 0;
 				$totalVoc = 0;
 				
-				$dayTmp = date("m-d-Y", $day);
+				$dayTmp = date($this->dateFormat, $day);				
 				if(isset($equipment['mixes'][$dayTmp]))
 				{
 					/*Equipment существует*/
@@ -333,73 +338,69 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					$mixRatio = "";
 					$coatAsApplied = 0;
 					$ratioSum = 0;
-					$isToday = true;//раньше было false (!)
+					$isToday = true;//раньше было false (!)					
 					
 					foreach($mixesByDay as $mix)
 					{
 						
-						$mix['creationTime'] = str_replace('-','/',$mix['creationTime']);
-						
-						foreach ($mix['products'] as $product) {
-							
+						//$mix['creationTime'] = str_replace('-','/',$mix['creationTime']);						
+						foreach ($mix->products as $product) {		
 								$cnt++;																					
 								$productTag = $doc->createElement("product" );
 								
 								$supplierTag = $doc->createElement("supplier" );
 								$supplierTag->appendChild(
-									$doc->createTextNode( html_entity_decode ($product["supplier"]))							
+									$doc->createTextNode( html_entity_decode ($product->supplier))							
 								);
 								$productTag->appendChild( $supplierTag );
 								
 								$product_nrTag = $doc->createElement("productNo" );
 								$product_nrTag->appendChild(
-									$doc->createTextNode( html_entity_decode ($product["product_nr"]))
+									$doc->createTextNode( html_entity_decode ($product->product_nr))
 								);
 								$productTag->appendChild( $product_nrTag );
 								
 								$product_nameTag = $doc->createElement("coatingSingle" );
 								$product_nameTag->appendChild(
-									$doc->createTextNode( html_entity_decode ($product["description"]." ".$product["coatDesc"]))
+									$doc->createTextNode( html_entity_decode ($product->name." ".$product->coatDesc))
 								);
 								$productTag->appendChild( $product_nameTag );
 								
 								$voclxTag = $doc->createElement("vocOfMaterial" );
 								$voclxTag->appendChild(
-									$doc->createTextNode($product["voclx"])
+									$doc->createTextNode($product->voclx)
 								);
 								$productTag->appendChild( $voclxTag );
 								
 								$vocwxTag = $doc->createElement("voc2" );
 								$vocwxTag->appendChild(
-									$doc->createTextNode($product["vocwx"])
+									$doc->createTextNode($product->vocwx)
 								);
 								$productTag->appendChild( $vocwxTag );
 								
 								$quantityTag = $doc->createElement("qtyUsed" );
 								
-								$unitypeDetails = $unittype->getUnittypeDetails($product['unittype']);								
-								$qty = $unitTypeConverter->convertToDefault($product['quantity'], $unitypeDetails['description']);
+								//$unitypeDetails = $unittype->getUnittypeDetails($product['unittype']);								
+								$qty = $unitTypeConverter->convertToDefault($product->quantity, $product->unitypeDetails['description']);
 								$qty = round($qty,2);
 								
 								$sumQty += $qty; 							
 								$qtyRatio[]= $qty*100;
-								$vocwx[]= $product['vocwx'];
+								$vocwx[]= $product->vocwx;
 								
 								$quantityTag->appendChild(							
 									$doc->createTextNode($qty)
 								);				
-								$productTag->appendChild( $quantityTag );
-								
-								$voc = $mix['voc'];					//	move down
-								$exemptRule = $mix['exemptRule'];	//	move down
+								$productTag->appendChild( $quantityTag );								
+								$voc = $mix->voc;					//	move down
+								$exemptRule = $mix->exempt_rule;	//	move down
 								
 								$dateTag->appendChild( $productTag );
 						}						
 
 						if ($cnt != 0) {
 							
-							if ($isToday) {
-								
+							if ($isToday) {								
 								$lcm = $this->lcm_nums($qtyRatio);
 								
 								for($j=0;$j < count($qtyRatio);$j++) {	
@@ -411,11 +412,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 								$mixRatio = substr($mixRatio,0,-1);												
 								$coatAsApplied = $coatAsApplied/$ratioSum;
 								
-								$totalOnProjectTag = $doc->createElement("totalOnProject" );					
-								
+								$totalOnProjectTag = $doc->createElement("totalOnProject" );													
 								$labelAttr = $doc->createAttribute("label" );					
 								$labelAttr->appendChild(								
-									$doc->createTextNode("Total Used on Project# ". html_entity_decode ($mix['description']))
+									$doc->createTextNode("Total Used on Project# ". html_entity_decode ($mix->description))
 								);
 								$totalOnProjectTag->appendChild( $labelAttr );
 								
@@ -519,14 +519,16 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 						$doc->createTextNode("0.00")
 					);
 					$totalOnProjectTag->appendChild( $qtyAttr );
-					$totalQty += $sumQty;
+					//$totalQty += $sumQty;
+					$totalQty += 0;
 					
 					$voc3Attr = $doc->createAttribute("voc3" );					
 					$voc3Attr->appendChild(
 						$doc->createTextNode("0.00")
 					);
 					$totalOnProjectTag->appendChild( $voc3Attr );
-					$totalVoc3 += $coatAsApplied;
+					//$totalVoc3 += $coatAsApplied;
+					$totalVoc3 += 0;
 					
 					$totalVocAttr = $doc->createAttribute("totalVoc" );					
 					$totalVocAttr->appendChild(
@@ -549,7 +551,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				);
 				$dateTag->appendChild( $totalQtyTag );
 				
-				$summaryEquipmentQty += $totalQty;
+				$summaryEquipmentQty += $totalQty;				
 				
 				$totalVoc3Tag = $doc->createElement("totalVoc3" );					
 				$totalVoc3Tag->appendChild(
@@ -557,7 +559,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				);
 				$dateTag->appendChild( $totalVoc3Tag );
 				
-				$summaryEquipmentVoc3 += $totalVoc3;
+				$summaryEquipmentVoc3 += $totalVoc3;				
 				
 				$totalTotalVocTag = $doc->createElement("totalTotalVoc" );					
 				$totalTotalVocTag->appendChild(
@@ -565,7 +567,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				);
 				$dateTag->appendChild( $totalTotalVocTag );
 				
-				$summaryEquipmentTotalVoc += $totalVoc;
+				$summaryEquipmentTotalVoc += $totalVoc;				
 				
 				$equipmentTag -> appendChild($dateTag);
 			}
@@ -659,9 +661,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		$doc->save($fileName);
 	}
 	
-	private function group($query, $dateBegin, $dateEnd, $ruleID) {
-		$mixObj = new Mix($this->db);
-		
+	private function group($query, $dateBegin, $dateEnd, $ruleID) {						
 		$this->db->query($query);
 	
 		if ($this->db->num_rows()) {
@@ -673,22 +673,18 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					'permit'			=>	$equipmentData->permit,										
 					'epa'				=>	$equipmentData->epa
 				);
-				$query = "SELECT mix_id FROM mix WHERE equipment_id = ".$equipment['id']." AND rule_id = ".$ruleID;
+				$query = "SELECT mix_id FROM ".TB_USAGE." WHERE equipment_id = ".$equipment['id']." AND rule_id = ".$ruleID;
 				$this->db->query($query);
 				
 				if ($this->db->num_rows()) {
 					
-					$mixesData = $this->db->fetch_all();
-					$c = count($mixesData);
+					$mixesData = $this->db->fetch_all();					
 					
-					foreach ($mixesData as $mixData) {	
+					foreach ($mixesData as $mixData) {							
+						$mix = new MixOptimized($this->db, $mixData->mix_id);						
+						$creationTime = $mix->creation_time;						
 						
-						$mix = $mixObj->getMixDetails($mixData->mix_id);
-						
-						$creationTime = $mix['creationTime'];
-						
-						if(!isset($equipment['mixes'][$creationTime]))
-						{
+						if(!isset($equipment['mixes'][$creationTime])) {
 							$equipment['mixes'][$creationTime] = array();
 						}
 						
@@ -699,8 +695,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				}							
 			}
 						
-		}	
-		
+		}			
 		
 		//	create day list		
 		$days[0] = strtotime($dateBegin);		
@@ -711,8 +706,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		}	
 	
 		$out['equipments'] = $equipments;
-		$out['days'] = $days;
-echo "<h1>out</h1>";
+		$out['days'] = $days;		
 		return $out;
 	}
 		

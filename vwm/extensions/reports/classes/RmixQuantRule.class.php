@@ -1,14 +1,202 @@
 <?php
 
 class RmixQuantRule extends ReportCreator implements iReportCreator {
+	
+	private $dateBegin;
+	private $dateEnd;
 
 	function RmixQuantRule($db, $reportRequest) {
 		$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
-		$this->categoryID = $reportRequest->getCategoryID(); 	
+		$this->categoryID = $reportRequest->getCategoryID();
+		$this->dateBegin = $reportRequest->getDateBegin();
+		$this->dateEnd = $reportRequest->getDateEnd(); 	 	
 	}
 	
+	
+	
 	public function buildXML($fileName) {
+		$rule = new Rule($this->db);
+		$rule_nr_byRegion = $rule->ruleNrMap[$rule->getRegion()];
+		switch ($this->categoryType) {
+		
+			case "company":
+				$facility = new Facility($this->db);
+				$facilityList = $facility->getFacilityListByCompany($this->categoryID);						
+				foreach ($facilityList as $value) {
+					$facilityString .= $value['id']. ","; 
+				}		
+				$facilityString = substr($facilityString,0,-1);
+				
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
+					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
+					"WHERE cg.product_id = p.product_id " .
+					"AND p.product_id = mg.product_id " .
+					"AND mg.mix_id = m.mix_id " .
+					"AND m.department_id = d.department_id " .
+					"AND cg.rule_id = r.rule_id " .
+					"AND p.supplier_id = s.supplier_id " .
+					"AND d.facility_id IN  (" . $facilityString . ") " .
+					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";
+
+				//getting company name
+				$company = new Company($this->db);
+				$companyDetails = $company -> getCompanyDetails($this->categoryID);
+				$orgDetails['company'] = $companyDetails;
+				
+				$in = $this->group($query,$this->categoryType,$this->categoryID);
+				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);			
+				break;
+				
+			case "facility":
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
+					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
+					"WHERE cg.product_id = p.product_id " .
+					"AND p.product_id = mg.product_id " .
+					"AND mg.mix_id = m.mix_id " .
+					"AND m.department_id = d.department_id " .
+					"AND cg.rule_id = r.rule_id " .
+					"AND p.supplier_id = s.supplier_id " .
+					"AND d.facility_id = " . $this->categoryID . " " .
+					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";										
+
+				//getting company name
+				$facility = new Facility($this->db);    				
+				$facilityDetails = $facility->getFacilityDetails($this->categoryID);
+				
+				$company = new Company($this->db);
+				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);						
+				$orgDetails['company'] = $companyDetails;
+				$orgDetails['facility'] = $facilityDetails;	
+				
+				$in = $this->group($query,$this->categoryType,$this->categoryID);
+				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);																
+				break;
+				
+			case "department":
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
+					"FROM product p, components_group cg, mixgroup mg, mix m, rule r, supplier s " .
+					"WHERE cg.product_id = p.product_id " .
+					"AND p.product_id = mg.product_id " .
+					"AND mg.mix_id = m.mix_id " .								
+					"AND cg.rule_id = r.rule_id " .
+					"AND p.supplier_id = s.supplier_id " .
+					"AND m.department_id = " . $this->categoryID . " " .
+					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";											
+				$this->db->query($query);						
+				
+				if ($this->db->num_rows()) {
+					for ($i=0; $i<$this->db->num_rows(); $i++) {
+						$data=$this->db->fetch($i);																								
+						$result = array (
+							'supplier'		=>	$data->supplier,
+							'product_id'	=>	$data->product_id,
+							'product_nr'	=>	$data->product_nr,
+							'product_name'	=>	$data->product_name,
+							'rule_nr'		=>	$data->rule_nr,
+							'qtyRule'		=>	$data->qtyRule,
+							'used'			=>	$data->used,							
+							'unitType'		=>	$data->unit_type	
+						);
+						$results[] = $result;																						
+					}
+				}
+				//conversion
+				$unittype = new Unittype($this->db);
+				$unitTypeConverter = new UnitTypeConverter("us gallon");						
+				
+				$products[0]['supplier'] = $results[0]['supplier'];
+				$products[0]['product_id'] = $results[0]['product_id'];
+				$products[0]['product_nr'] = $results[0]['product_nr'];
+				$products[0]['product_name'] = $results[0]['product_name'];
+				$products[0]['used'] = $results[0]['used'];
+				
+				$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
+				
+				$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
+				$results[0]['qtyRule'] = $qtyRule;
+				
+				$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
+				$products[0]['used'] = $used;
+				//end of conversion
+				
+				$k=0;											
+				for($i=1; $i < count($results); $i++) {
+					$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+					$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
+					$results[$i]['qtyRule'] = $qtyRule;							
+					if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
+						$k++;
+						$products[$k]['supplier'] = $results[$i]['supplier'];
+						$products[$k]['product_id'] = $results[$i]['product_id'];
+						$products[$k]['product_nr'] = $results[$i]['product_nr'];
+						$products[$k]['product_name'] = $results[$i]['product_name'];
+						
+						$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+						$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
+						$products[$k]['used'] = $used;																	
+					}
+				}
+				
+				$department = new Department($this->db);
+				$departmentDetails = $department -> getDepartmentDetails($this->categoryID);
+				
+				$facility = new Facility($this->db);
+				$facilityDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
+				
+				$company = new Company($this->db);
+				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);
+				
+				$orgDetails['company'] = $companyDetails;
+				$orgDetails['facility'] = $facilityDetails;
+				$orgDetails['department'] = $departmentDetails;
+				
+				//getting product quantities in inventory
+				foreach ($products as $value) {
+					$productString .= $value['product_id']. ","; 
+				}		
+				$productString = substr($productString,0,-1);												
+				
+				$query = "SELECT pg.product_id, sum( pg.quantity ) quantity " .
+					"FROM inventory i, productgroup pg " .
+					"WHERE i.inventory_id = pg.inventory_id " .
+					"AND i.facility_id = " . $departmentDetails['facility_id'] . " " .
+					"AND pg.product_id IN (" . $productString . ")" .
+					"GROUP BY pg.product_id";
+				$this->db->query($query);												
+				if ($this->db->num_rows()) {
+					for ($i=0; $i<$this->db->num_rows(); $i++) {
+						$data=$this->db->fetch($i);																								
+						$inventoryQty = array (									
+							'product_id'	=>	$data->product_id,
+							'quantity'	=>	$data->quantity																							
+						);
+						$inventoryQties[] = $inventoryQty;																						
+					}
+				}											
+				//group data
+				for ($i=0; $i<count($products); $i++) {						
+					$diff = 0;
+					foreach ($inventoryQties as $inventoryQty) {
+						if ($inventoryQty['product_id'] == $products[$i]['product_id']) {
+							$diff = $inventoryQty['quantity'] - $products[$i]['used'];
+						}	
+					}
+					if ($diff > 0) {
+						$products[$i]['notUsed'] = $diff;
+					} else {
+						$products[$i]['notUsed'] = 0;
+					}														
+				}
+				
+				$this -> createXML($products,$results,$orgDetails,$fileName);					
+				break;
+		}
+	}
+	
+	
+	
+	public function buildXMLDeprecated($fileName) {
 		$rule = new Rule($this->db);
 		$rule_nr_byRegion = $rule->ruleNrMap[$rule->getRegion()];
 		switch ($this->categoryType) {

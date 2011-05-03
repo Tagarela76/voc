@@ -10,6 +10,7 @@ class ReportRequest {
 	private $dateEnd;
 	private $extraVar;
 	private $userID;
+	private $dateFormat;
 
     function ReportRequest($reportType, $categoryType, $categoryID, $frequency, $format, TypeChain $dateBegin, TypeChain $dateEnd, $extraVar, $userID) {
     	$this->reportType	= $reportType;
@@ -21,6 +22,8 @@ class ReportRequest {
     	$this->dateEnd  	= $dateEnd;
     	$this->extraVar  	= $extraVar;
     	$this->userID  		= $userID;
+    	
+    	$this->dateFormat =$dateBegin->getFromTypeController('getFormat');
     }
     
     public function getReportType() {
@@ -43,12 +46,12 @@ class ReportRequest {
     	return $this->format;
     }
     
-    public function getDateBegin() {//TODO cut out ->FormatInput() and make all nessesary changes in Report Creators
-    	return $this->dateBegin->FormatInput();    	//input - because of there are calculations with dates!
+    public function getDateBegin() {    
+    	return $this->dateBegin->formatOutput();
     }
     
     public function getDateEnd() {
-    	return $this->dateEnd->FormatInput();    	
+    	return $this->dateEnd->formatOutput();
     }
     
     public function getExtraVar() {
@@ -57,6 +60,10 @@ class ReportRequest {
     
     public function getUserID() {
     	return $this->userID;    	
+    }
+    
+    public function getDateFormat() {
+    	return $this->dateFormat;
     }
 }
 ?>

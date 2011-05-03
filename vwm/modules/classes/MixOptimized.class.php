@@ -321,9 +321,7 @@
 			}
 			
 			$updateMixQuery = $this->getUpdateMixQuery();
-			//echo $updateMixQuery;
-			//exit;
-			
+
 			if($this->debug) {
 				echo "<h1>UpdateMixQuery:</h1>";
 				echo "<h3>$updateMixQuery</h3>";

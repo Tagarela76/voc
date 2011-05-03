@@ -246,7 +246,7 @@
 
 
 
-		private function isFacilityAnnualLimitExceeded(Mix $mix) {
+		private function isFacilityAnnualLimitExceeded(MixOptimized $mix) {
 
 			if ($this->recalc) {
 				if ($mix->getEquipment()->isTrackedTowardsFacility()) {
@@ -281,7 +281,7 @@
 		}
 
 
-		private function isDepartmentAnnualLimitExceeded(Mix $mix) {
+		private function isDepartmentAnnualLimitExceeded(MixOptimized $mix) {
 
 			if ($this->recalc) {
 				if ($mix->getEquipment()->isTrackedTowardsDepartment()) {
