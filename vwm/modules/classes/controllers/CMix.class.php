@@ -118,8 +118,7 @@ class CMix extends Controller
 		//var_dump($usageDetails['products'][0]);
 		//echo "<h1>Mix Optimized product1:</h1>";
 		$mixOptimized->getRule();
-		//var_dump($mixOptimized);
-		var_dump($mixOptimized);
+		//var_dump($mixOptimized);		
 		$this->smarty->assign("usage", $mixOptimized);
 		
 		//var_Dump($mixOptimized);

@@ -546,7 +546,7 @@ function createSelectUnittypeClass(id) {
 		{if $request.action eq "edit"}
 			<input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()"/>
 		{else}
-			<input type='button' id="btnSave" name='save' class="button" value='Add' onclick="addMix()"/>
+			<input type='button' id="btnSave" name='save' class="button" value='Total' onclick="addMix()"/>
 		{/if}
 		
 		</div>
