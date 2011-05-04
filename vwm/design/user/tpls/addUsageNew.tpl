@@ -97,7 +97,7 @@ function createSelectUnittypeClass(id) {
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" width="30%">
 				
-					<span >{if $smarty.request.action==addItem}Adding for a new Work Order/Job{else}Editing Work Order/Job No. {$data->mix_id}{/if}</span>
+					<span >{if $smarty.request.action==addItem}Adding for a new usage{else}Editing usage{/if}</span>
 				</td>
 				<td class="users_u_top_r">
 					&nbsp;
@@ -108,7 +108,7 @@ function createSelectUnittypeClass(id) {
 
 {*MIXDETAILS*}		
 							<td class="border_users_r border_users_l border_users_b" height="20">
-								Work Order/Job description:
+								Work Order/Job No.: 
 							</td>
 							<td class="border_users_r border_users_b">
 							<div class="floatleft" >	
