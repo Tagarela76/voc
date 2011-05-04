@@ -22,6 +22,7 @@ class XMLBuilder {
 			'fileName' => $fileName
 		);
 	//	$debug->printMicrotime(__LINE__,__FILE__);
+	
 		$mReports->makeXml($params);
 	//	$debug->printMicrotime(__LINE__,__FILE__);
 		return $fileName;

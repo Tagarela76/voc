@@ -28,6 +28,7 @@ class MReports {
     		//echo "$reportClassName -> buildXML"; exit;
     		$reportCreator = new $reportClassName($db,$reportRequest);
     		//$debug->printMicrotime(__LINE__,__FILE__);
+    		
     		$reportCreator->buildXML($fileName);
     		//$debug->printMicrotime(__LINE__,__FILE__);
     	} else {
@@ -136,6 +137,7 @@ class MReports {
 	    	$xnyo->filter_get_var("date_end","text");
 	    	$dateBegin = new TypeChain($_GET['date_begin'],'date',$db,$companyID,'company');
 	    	$dateEnd = new TypeChain($_GET['date_end'],'date',$db,$companyID,'company');
+	    	
 	//    	$debug->printMicrotime(__LINE__,__FILE__);
 	    	if ($format == "csv") {
 		    	$xnyo->filter_get_var("commaSeparator","text");

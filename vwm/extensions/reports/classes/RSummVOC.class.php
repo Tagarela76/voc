@@ -76,8 +76,10 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 		$ruleQuery = "SELECT r.rule_id, r.$rule_nr_byRegion as rule_nr ".
 			"FROM rule r";		
 		
+		
+		
 		$voc_arr= $this->group($query, $ruleQuery, $this->dateBegin, $this->dateEnd);
-		$DatePeriod = "From ".date("Y-m-d",strtotime($this->dateBegin))." To ".date("Y-m-d",strtotime($this->dateEnd));
+		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 		
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
 	}
