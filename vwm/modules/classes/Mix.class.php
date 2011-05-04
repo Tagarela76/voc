@@ -521,7 +521,12 @@ class Mix extends MixProperties {
 			case "mix_id":
 			default:
 				$usageData = $this->getMixDetails($id);	
-			
+				//var_Dump($usageData);
+				$date = new DateTime();
+				$date->setTimestamp($usageData['creation_time']);
+				
+			//var_dump($usageData);
+			//exit;
 				//if company use module ReductionScheme we should check and correct solvent outputs
 				$this->department = new Department($this->db);
 				$this->department->initializeByID($usageData['department_id']);
@@ -530,11 +535,28 @@ class Mix extends MixProperties {
 				$facilityDetails = $facility->getFacilityDetails($this->department->getFacilityID());
 				
 				if($user->checkAccess('reduction', $facilityDetails['company_id'])) {
-					if(!empty($usageData['creationTime'])) {
-						//date in format mm-dd-yyyy
-						$mm = substr($usageData['creationTime'],0,2);
-						$yyyy = substr($usageData['creationTime'],-4);
-						if ($yyyy < substr(date('Y-m-d'),0,4) || $mm < substr(date('m-d-Y'),0,2) ) {
+					if(!empty($usageData['creation_time'])) {
+						//date in format mm-dd-yyyy DEPRECATED ↓
+						//Now date format is various, defined in company settings =)
+						//var_dump($usageData['creation_time']);
+						//echo "CreationTime:" . $usageData['creation_time'];
+						
+						/***
+						 * Now creation_time in unix - timestump
+						 */
+						
+						//var_Dump(DateTime::getLastErrors());
+						//echo "<br/>Date:";
+						
+						//var_Dump($date);
+						$mm =  $date->format("m"); //substr($usageData['creationTime'],0,2);
+						$yyyy = $date->format("Y"); //substr($usageData['creationTime'],-4);
+						
+						//var_dump($mm,$yyyy);
+						
+						
+						if ($yyyy < date('Y') || $mm < date('m') ) {
+							
 							$ms = new ModuleSystem($this->db);
 							$moduleMap = $ms->getModulesMap();
 							$mRedaction = new $moduleMap['reduction'];
@@ -545,8 +567,12 @@ class Mix extends MixProperties {
 								'year' => $yyyy,
 								'newVOC' => -$usageData['voc']
 							);
+							
 							$mRedaction->prepareMixSave($params);
+						} else {
+							
 						}
+						
 					}
 				}
 				
@@ -556,10 +582,10 @@ class Mix extends MixProperties {
 				$this->db->query($query);					
 			
 				//	add usage stats
-				$creationMonth = substr($usageData['creationTime'],0,2);
-				$creationYear = substr($usageData['creationTime'],-4);
+				$creationMonth = $date->format("m");//substr($usageData['creationTime'],0,2);
+				$creationYear = $date->format("Y");//substr($usageData['creationTime'],-4);
 				$department = new Department($this->db);
-			
+			//var_dump($creationMonth, $creationYear, $usageData['voc'], $usageData['department_id']);
 				$department->decrementUsage($creationMonth, $creationYear, $usageData['voc'], $usageData['department_id']);
 				//	Calculate and save mix limits		
 				//$this->_recalcLimits($usageData['creationTime'], $usageData['department_id']);		

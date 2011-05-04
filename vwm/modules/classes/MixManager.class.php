@@ -139,4 +139,8 @@
 				return false;
 			}				
 		}
+		
+		public function deleteMixList($mixIDarr) {
+			
+		}
 	}

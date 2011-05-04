@@ -18,6 +18,7 @@ class CMix extends Controller
 	
 	private function actionConfirmDelete()
 	{		
+		echo "Action comfirm delete"; 
 		$usage = new Mix($this->db, $trashRecord);
 																				
 		foreach ($this->itemID as $ID)
@@ -26,6 +27,7 @@ class CMix extends Controller
 			$usage->setTrashRecord(new Trash($this->db));
 			$usageDetails=$usage->getMixDetails($ID);
 			$itemForDeleteName[]=	$usageDetails["description"];
+			//$this->db->beginTransaction();//For Debugging
 			$usage->deleteUsage($ID);
 		}		
 		

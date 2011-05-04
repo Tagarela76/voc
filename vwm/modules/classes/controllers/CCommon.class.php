@@ -30,6 +30,7 @@ class CCommon extends Controller
 	 */
 	private function actionPersic2()
 	{
+		echo "<h1>Start Presic2 =) (Recalc Usage_stats)</h1>";
 		$query = 'TRUNCATE TABLE '.TB_USAGE_STATS.'';
 		$this->db->exec($query);
 					
@@ -39,10 +40,14 @@ class CCommon extends Controller
 		$mixList = $this->db->fetch_all();
 		foreach ($mixList as $mix) 
 		{
-			$mixCreationMonth = substr($mix->creation_time,5,2);
-			$mixCreationYear = substr($mix->creation_time,0,4);						
+			$date = new DateTime();
+			$date->setTimestamp($mix->creation_time);
+			$mixCreationMonth =  $date->format('m');//substr($mix->creation_time,5,2);
+			$mixCreationYear = $date->format('Y');//substr($mix->creation_time,0,4);	
+								
 			$department->incrementUsage($mixCreationMonth, $mixCreationYear, $mix->voc, $mix->department_id);	
 		}
+		echo "<h1>DONE</h1>";
 	}	
 	
 	private function actionLedokol()

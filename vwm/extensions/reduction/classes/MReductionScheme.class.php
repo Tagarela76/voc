@@ -179,8 +179,10 @@ class MReductionScheme {
 				'facilityID' => $facilityID,
 				'voc' => $voc
 			);
+			
 			$this->saveOutputsForMix($paramsForSave);
 		} else {
+			
 			$paramsForSave = array(
 				'db' => $db,
 				'month' => $monthOld,
@@ -196,7 +198,7 @@ class MReductionScheme {
 				'facilityID' => $facilityID,
 				'voc' => $newVOC
 			);
-			$this->saveOutputsForMix($paramsForSave);
+			$this->saveOutputsForMix($paramsForSave); 
 		}
     }
     
@@ -242,12 +244,14 @@ class MReductionScheme {
      * @param array params - $db, $facilityID, $month, $year, $voc(it can be negative in case voc is old)
      */    
     private function saveOutputsForMix($params) {
+    	
     	extract($params);
     	$lastSolvents = new SolventManagement($db, $facilityID);
     	$currentDate = getdate();
     	if ($year > $currentDate['year'] || ($year == $currentDate['year'] && $month >=$currentDate['mon'])) return; // we dont save outputs for current and future monthes!
 		$last = $lastSolvents->getMonthlyOutputs($month, $year);
 		$fields = $this->getFields();
+		
 		if (!$last) {
 			//there are no monthly outputs
 			//in that case we should ignore changes of voc... it all'll be set on edit solvent plan
