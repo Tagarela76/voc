@@ -5,12 +5,15 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 	private $dateBegin;
 	private $dateEnd;
 	
-	function RVOCbyRules($db, $reportRequest) {
+	private $dateFormat;
+	
+	function RVOCbyRules($db, ReportRequest $reportRequest) {
 		$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
 		$this->categoryID = $reportRequest->getCategoryID();
 		$this->dateBegin = $reportRequest->getDateBegin();
 		$this->dateEnd = $reportRequest->getDateEnd(); 	
+		$this->dateFormat = $reportRequest->getDateFormat();
 	}
 	
 	public function buildXML($fileName) {
@@ -77,7 +80,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 			"FROM rule r";
 		
 		$voc_arr = $this->group($query, $ruleQuery, $this->dateBegin, $this->dateEnd);
-		$DatePeriod = "From ".date("Y-m-d",strtotime($this->dateBegin))." To ".date("Y-m-d",strtotime($this->dateEnd));
+		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 		
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
 	}
@@ -130,7 +133,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Summary for each rule number") 
+			$doc->createTextNode("Summary for Each Rule Number ") 
 		);
 		$page->appendChild( $title );
 		
@@ -263,28 +266,34 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 				$rule[$i] = $data->rule_id;
 				$rule_nr[$i] = $data->rule_nr;
 			}	
-		}	
-
-		for ($i = 0; $i<count($rule); $i++) {
+		}
+		$ruleCount = count($rule);	
+		for ($i = 0; $i<$ruleCount; $i++) {
 			/*
 			 * $tmpYear, $tmpMonth, $tmpDay - values of year, month and day of current time period for temporary query
 			 * it need for generating $tmpDate and $tmpDateEnd
 			 * $endYear, $endMonth - values of year and month of the end date for query
 			 */
 			$totalByRule = 0;
-			$tmpYear = substr(date("Y-m-d", strtotime($dateBegin)), 0, 4);
-			$tmpMonth = substr(date("Y-m-d", strtotime($dateBegin)), 5, 2);
+
+			$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $dateBegin);
+			$dateEndObj = DateTime::createFromFormat($this->dateFormat, $dateEnd);
+						
+			$tmpYear = $dateBeginObj->format('Y');			
+			$tmpMonth = $dateBeginObj->format('m');
 			$tmpDay = 1;
 			$tmpDate = date("Y-m-d", strtotime($dateBegin));
-			$endYear = substr(date("Y-m-d", strtotime($dateEnd)), 0, 4);
-			$endMonth = substr(date("Y-m-d", strtotime($dateEnd)), 5, 2);
+			//$endYear = substr(date("Y-m-d", strtotime($dateEnd)), 0, 4);
+			$endYear = $dateEndObj->format('Y');
+			$endMonth = $dateEndObj->format('m');
 			$total = 0;
 			$tmpResults = array();
 			$results = array();
+		
 			while ((((int)$tmpYear == (int)$endYear)&&((int)$tmpMonth <= (int)$endMonth))||
 					( (int)$tmpYear<(int)$endYear))	{
 				if (((int)$tmpMonth == (int)$endMonth)&&((int)$tmpYear == (int)$endYear)) {
-					$tmpDateEnd = $dateEnd;
+					$tmpDateEndObj = $dateEndObj;
 				} else {
 					if ( $tmpMonth==12 ) {
 						$tmpYear +=1;
@@ -292,11 +301,12 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 					} else {
 						$tmpMonth += 1; 
 					}
-					$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
+					$tmpDateEndObj = new DateTime(date('Y-m-d',mktime(0, 0, 0, $tmpMonth, $tmpDay, $tmpYear)));
 				}
 
-				$tmpQuery = $query."AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDate)). "','%Y-%m-%d') " .
-					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDateEnd)). "','%Y-%m-%d') ";	
+				//$tmpQuery = $query."AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDate)). "','%Y-%m-%d') " .
+				//	"AND DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDateEnd)). "','%Y-%m-%d') ";
+				$tmpQuery = $query."AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
 				$tmpQuery .= "AND m.rule_id = ".$rule[$i]." ";	
 
 				$this->db->query($tmpQuery);
@@ -312,23 +322,25 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 					$total += $VOCresult; 
 
 					$result = array(
-						'month' => substr(date("Y-M-d", strtotime($tmpDate)), 5, 3),
-
+						//'month' => substr(date("Y-M-d", strtotime($tmpDate)), 5, 3),
+						'month' => $dateBeginObj->format('M'),
 						'voc' => $VOCresult
 					);		
 				} else {
 					$result = array(
-					    'month' => substr(date("Y-M-d", strtotime($tmpDate)), 5, 3),
-
+					    //'month' => substr(date("Y-M-d", strtotime($tmpDate)), 5, 3),
+					    $dateBeginObj->format('M'),
 						'voc' => 0
 					);
 				}
-				if ((int)substr(date("Y-m-d", strtotime($tmpDate)), 0, 4) == (int)$tmpYear) {
+				//if ((int)substr(date("Y-m-d", strtotime($tmpDate)), 0, 4) == (int)$tmpYear) {
+				if ((int)$dateBeginObj->format('Y') == (int)$tmpYear) {
 						$tmpResults[] = $result;
 					} else {
 						$tmpResults[] = $result;
 						$results1 = array(
-							'year' => substr(date("Y-m-d", strtotime($tmpDate)), 0, 4),
+							//'year' => substr(date("Y-m-d", strtotime($tmpDate)), 0, 4),
+							'year' => $dateBeginObj->format('Y'),
 							'total' => $total,
 							'data' => $tmpResults
 						);
@@ -336,15 +348,17 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 						$tmpResults = array();
 						$totalByRule += $total;
 						$total = 0;
-					}		
-				$tmpDate = $tmpDateEnd;
-				if ($tmpDate == $dateEnd) {
+					}
+				//	TODO:			
+				$dateBeginObj = $tmpDateEndObj;
+				if ($dateBeginObj == $tmpDateEndObj) {
 					break;
 				}
 			}	
 			if (count($tmpResults)!=0) {
 				$results[]= array(
-					'year' => substr(date("Y-m-d", strtotime($tmpDate)), 0, 4),
+					//'year' => substr(date("Y-m-d", strtotime($tmpDate)), 0, 4),
+					'year' => $dateBeginObj->format('Y'),
 					'total' => $total,
 					'data' => $tmpResults
 				);
@@ -358,6 +372,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 				);
 			}
 		}
+		
 		return $resultsByRules;		
 	}
 }
