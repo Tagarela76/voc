@@ -2,13 +2,25 @@
 
 class RchemClass extends ReportCreator implements iReportCreator {
 	
+	private $dateBegin;
+	private $dateEnd;
+	private $dateFormat;
+	
 	function RchemClass($db, $reportRequest) {
 		$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
-		$this->categoryID = $reportRequest->getCategoryID(); 	
+		$this->categoryID = $reportRequest->getCategoryID(); 
+
+		$this->dateBegin = $reportRequest->getDateBegin();
+		$this->dateEnd = $reportRequest->getDateEnd();
+		$this->dateFormat = $reportRequest->getDateFormat();	
+		
 	}
 	
 	public function buildXML($fileName) {
+		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);    	
+		
 		switch ($this->categoryType) {
 		
 			case "company":
@@ -29,6 +41,7 @@ class RchemClass extends ReportCreator implements iReportCreator {
 					"AND p.product_id = p2cc.product_id " .
 					"AND p2cc.chemical_class_id = cc.id " .							
 					"AND d.facility_id IN (" . $facilityString . ") " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"group by cc.name, p.product_nr, p.name, mg.unit_type";
 				
 				$in = $this->group($query,$this->categoryType,$this->categoryID);										
@@ -52,6 +65,7 @@ class RchemClass extends ReportCreator implements iReportCreator {
 					"AND p.product_id = p2cc.product_id " .
 					"AND p2cc.chemical_class_id = cc.id " .
 					"AND d.facility_id = " . $this->categoryID . " " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"group by cc.name, p.product_nr, p.name, mg.unit_type, d.name";
 				
 				$in = $this->group($query,$this->categoryType,$this->categoryID);						
@@ -79,6 +93,7 @@ class RchemClass extends ReportCreator implements iReportCreator {
 					"AND p.product_id = p2cc.product_id " .
 					"AND p2cc.chemical_class_id = cc.id " .
 					"AND d.department_id =" .$this->categoryID. " " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"GROUP BY cc.name, p.product_nr, p.name, mg.unit_type, m.description";							
 				$this->db->query($query);    				        						    			
 				

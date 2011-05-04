@@ -289,7 +289,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 			$total = 0;
 			$tmpResults = array();
 			$results = array();
-		
+			
 			while ((((int)$tmpYear == (int)$endYear)&&((int)$tmpMonth <= (int)$endMonth))||
 					( (int)$tmpYear<(int)$endYear))	{
 				if (((int)$tmpMonth == (int)$endMonth)&&((int)$tmpYear == (int)$endYear)) {
@@ -329,7 +329,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 				} else {
 					$result = array(
 					    //'month' => substr(date("Y-M-d", strtotime($tmpDate)), 5, 3),
-					    $dateBeginObj->format('M'),
+					    'month' => $dateBeginObj->format('M'),
 						'voc' => 0
 					);
 				}
@@ -351,10 +351,10 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 					}
 				//	TODO:			
 				$dateBeginObj = $tmpDateEndObj;
-				if ($dateBeginObj == $tmpDateEndObj) {
+				if ($dateBeginObj == DateTime::createFromFormat($this->dateFormat, $dateEnd)) {
 					break;
 				}
-			}	
+			}				
 			if (count($tmpResults)!=0) {
 				$results[]= array(
 					//'year' => substr(date("Y-m-d", strtotime($tmpDate)), 0, 4),
@@ -372,7 +372,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 				);
 			}
 		}
-		
+
 		return $resultsByRules;		
 	}
 }
