@@ -1,13 +1,24 @@
 <?php
 class RtoxicCompounds extends ReportCreator implements iReportCreator {
+	
+	private $dateBegin;
+	private $dateEnd;
+	
+	private $dateFormat;
 
     function RtoxicCompounds($db, $reportRequest) {
     	$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
-		$this->categoryID = $reportRequest->getCategoryID();   	
+		$this->categoryID = $reportRequest->getCategoryID();
+
+		$this->dateBegin = $reportRequest->getDateBegin();
+		$this->dateEnd = $reportRequest->getDateEnd(); 	
+		$this->dateFormat = $reportRequest->getDateFormat();
     }
     
     public function buildXML($fileName) {
+    	$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);    	
 	    switch ($this->categoryType) {
 		    case "company":
 			    $facility = new Facility($this->db);
@@ -21,11 +32,12 @@ class RtoxicCompounds extends ReportCreator implements iReportCreator {
 				    "FROM product p, components_group cg, component c, mixgroup mg, mix m, department d, equipment e " .
 					"WHERE cg.product_id = p.product_id " .
 					"AND p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .
+					"AND mg.mix_id = m.mix_id " .			    	
 					"AND m.department_id = d.department_id " .
 					"AND cg.component_id = c.component_id " .
 					"AND m.equipment_id = e.equipment_id " .
 					"AND d.facility_id IN (" . $facilityString . ") " .
+			    	"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"GROUP BY m.equipment_id, c.description, c.cas";
 
 			    //getting company name
@@ -44,6 +56,7 @@ class RtoxicCompounds extends ReportCreator implements iReportCreator {
 					"AND cg.component_id = c.component_id " .
 					"AND m.equipment_id = e.equipment_id " .
 					"AND d.facility_id = " . $this->categoryID . " " .
+			    	"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"GROUP BY m.equipment_id, c.description, c.cas";
 
 			    $facility = new Facility($this->db);    				
@@ -64,6 +77,7 @@ class RtoxicCompounds extends ReportCreator implements iReportCreator {
 					"AND cg.component_id = c.component_id " .
 					"AND m.equipment_id = e.equipment_id " .
 					"AND m.department_id = " . $this->categoryID . " " .
+			    	"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"GROUP BY m.equipment_id, c.description, c.cas";						
 
 			    $department = new Department($this->db);
