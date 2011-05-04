@@ -74,6 +74,8 @@ class Mix extends MixProperties {
 		
 		$query = "SELECT mix_id, description, voc, creation_time FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND $filter $sort ";
 		
+		
+		
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}		

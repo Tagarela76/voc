@@ -47,20 +47,48 @@ class Filter {
    		$filter=(($pseudonymTable!=null)?$pseudonymTable.".":"");
    		
    		
+   		if(isset($filterData['dateFormat']) and $filterData['filterField'] == 'creation_time') {
+   			
+   			$beginDay = DateTime::createFromFormat($filterData['dateFormat'], $value);
+   			$beginDay->setTime("00","00","00");
+   					
+   			$endDay = DateTime::createFromFormat($filterData['dateFormat'], $value);
+   			$endDay->setTime("23","59","59");
+   		}
    			
    		switch ($filterData['filterCondition'])
    		{
-   			case 'dateEquals': $filter.= $field."= (DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateEquals':
+   					//$filter.= $field." = (DATE_FORMAT('$value','%Y-%m-%d'))";
+   					$filter.= $field." BETWEEN {$beginDay->getTimestamp()} AND {$endDay->getTimestamp()}";
+   					
    				break;
-   			case 'dateNotEquals': $filter.= $field."<>(DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateNotEquals': 
+   					
+   					
+   					//$filter.= $field."<>(DATE_FORMAT('$value','%Y-%m-%d'))";
+   					$filter.= $field." < {$beginDay->getTimestamp()} OR creation_time > {$endDay->getTimestamp()}";
+   					
+   					echo $filter;
    				break;
-   			case 'dateLessThan': $filter.= $field."<(DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateLessThan':		
+   					$filter.= $field."< {$endDay->getTimestamp()}";
+   					//$filter.= $field."<(DATE_FORMAT('$value','%Y-%m-%d'))";
    				break;
-   			case 'dateGreaterThan': $filter.= $field.">(DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateGreaterThan':
+   					//$filter.= $field.">(DATE_FORMAT('$value','%Y-%m-%d'))";
+   					$filter.= $field." > {$endDay->getTimestamp()}";
+   					
    				break;
-   			case 'dateLessThanOrEqual': $filter.= $field."<=(DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateLessThanOrEqual': 
+   					
+   					//$filter.= $field."<=(DATE_FORMAT('$value','%Y-%m-%d'))";
+   					$filter.= $field." < {$endDay->getTimestamp()}";
+   					
    				break;
-   			case 'dateGreaterThanOrEqual': $filter.= $field.">=(DATE_FORMAT('$value','%Y-%m-%d'))";
+   			case 'dateGreaterThanOrEqual':
+   					$filter.= $field." > {$beginDay->getTimestamp()}";
+   					//$filter.= $field.">=(DATE_FORMAT('$value','%Y-%m-%d'))";
    				break;
    			case 'equals': $filter.= $field."= $value";
    				break;

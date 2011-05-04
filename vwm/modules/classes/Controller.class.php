@@ -74,7 +74,7 @@ class Controller
 			$this->$functionName();		
 	}
 	
-	protected function filterList($category)
+	protected function filterList($category,$dateFormat = false)
 	{									
 		$this->filter=new Filter($this->db,$category);								
 		$this->smarty->assign('filterArray',$this->filter->getJsonFilterArray());
@@ -83,12 +83,15 @@ class Controller
 		(
 			'filterField'		=>$this->getFromRequest('filterField'),
 			'filterCondition'	=>$this->getFromRequest('filterCondition'),
-			'filterValue'		=>$this->getFromRequest('filterValue')
+			'filterValue'		=>$this->getFromRequest('filterValue'),
+			'dateFormat'		=>$dateFormat
 		);
+		
+		
 												
 		if ($this->getFromRequest('searchAction')=='filter')
 		{										
-			$this->smarty->assign('filterData',$filterData);
+			$this->smarty->assign('filterData',$filterData);// = 11/05/2010 00:00:00 and 11/05/2010 23:59:59
 			$this->smarty->assign('searchAction','filter');										
 		}
 		$filterStr = $this->filter->getSubQuery($filterData);

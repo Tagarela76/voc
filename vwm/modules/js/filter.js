@@ -135,7 +135,7 @@ function setConditionsAndValue()
 			$('#filterValueDate').attr('disabled',false);
 			$('#filterValue').css('display','none');
 			$('#filterValue').attr('disabled',true);
-			$('#filterValueDate').datepicker({ dateFormat: 'yy-mm-dd',changeYear: true,changeMonth: true}); 
+			$('#filterValueDate').datepicker({ dateFormat: filterDateFormat,changeYear: true,changeMonth: true}); 
 		}
 		else
 		{

@@ -206,10 +206,23 @@ class CMix extends Controller
 	protected function bookmarkDMix($vars)
 	{			
 		extract($vars);
-		//var_Dump($vars);
+		
+		/**
+		 * 
+		 * Fuck the extract!
+		 * @departmentID int
+		 */
+		$departmentID = $vars['departmentDetails']['department_id'];
+		
+		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
+		$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
+		
+		$this->smarty->assign("dateFormat",$dateFormatForCalendar);
+		$dateFormat = $chain->getFromTypeController('getFormat');; 
 		
 		$sortStr=$this->sortList('mix',2);
-		$filterStr=$this->filterList('mix');
+		$filterStr=$this->filterList('mix',$dateFormat);
+		
 		
 		$usages = new Mix($this->db);								
 			
@@ -217,6 +230,8 @@ class CMix extends Controller
 		if ($this->getFromRequest('searchAction')=='search') 
 		{
 			$mixesToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			
+			
 			
 			if (!is_null($this->getFromRequest('export'))) 
 			{
@@ -254,6 +269,7 @@ class CMix extends Controller
 					(isset($filterData['filterValue'])?"&filterValue=".$filterData['filterValue']:"").
 					(isset($filterData['filterField'])?"&searchAction=filter":"");
 			}
+			
 			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);			
 
 			$usageIDArray = array();
