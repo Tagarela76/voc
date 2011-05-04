@@ -4,6 +4,8 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 	
 	private $dateBegin;
 	private $dateEnd;
+	
+	private $dateFormat;
 
 	function RmixQuantRule($db, $reportRequest) {
 		$this->db = $db;
@@ -11,6 +13,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 		$this->categoryID = $reportRequest->getCategoryID();
 		$this->dateBegin = $reportRequest->getDateBegin();
 		$this->dateEnd = $reportRequest->getDateEnd(); 	 	
+		$this->dateFormat = $reportRequest->getDateFormat();
 	}
 	
 	
@@ -18,6 +21,10 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 	public function buildXML($fileName) {
 		$rule = new Rule($this->db);
 		$rule_nr_byRegion = $rule->ruleNrMap[$rule->getRegion()];
+		
+		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);    	
+		
 		switch ($this->categoryType) {
 		
 			case "company":
@@ -28,16 +35,16 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				}		
 				$facilityString = substr($facilityString,0,-1);
 				
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
+					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .
 					"AND m.department_id = d.department_id " .
-					"AND cg.rule_id = r.rule_id " .
+					"AND m.rule_id = r.rule_id " .
 					"AND p.supplier_id = s.supplier_id " .
 					"AND d.facility_id IN  (" . $facilityString . ") " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";
 
 				//getting company name
 				$company = new Company($this->db);
@@ -49,16 +56,16 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				break;
 				
 			case "facility":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
+					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .
 					"AND m.department_id = d.department_id " .
-					"AND cg.rule_id = r.rule_id " .
+					"AND m.rule_id = r.rule_id " .
 					"AND p.supplier_id = s.supplier_id " .
 					"AND d.facility_id = " . $this->categoryID . " " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";										
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";										
 
 				//getting company name
 				$facility = new Facility($this->db);    				
@@ -70,21 +77,22 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$orgDetails['facility'] = $facilityDetails;	
 				
 				$in = $this->group($query,$this->categoryType,$this->categoryID);
+
 				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);																
 				break;
 				
 			case "department":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+					"FROM product p, mixgroup mg, mix m, rule r, supplier s " .
+					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .								
-					"AND cg.rule_id = r.rule_id " .
+					"AND m.rule_id = r.rule_id " .
 					"AND p.supplier_id = s.supplier_id " .
 					"AND m.department_id = " . $this->categoryID . " " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";											
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";											
 				$this->db->query($query);						
-				
+
 				if ($this->db->num_rows()) {
 					for ($i=0; $i<$this->db->num_rows(); $i++) {
 						$data=$this->db->fetch($i);																								
@@ -96,35 +104,40 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 							'rule_nr'		=>	$data->rule_nr,
 							'qtyRule'		=>	$data->qtyRule,
 							'used'			=>	$data->used,							
-							'unitType'		=>	$data->unit_type	
+							'unitType'		=>	$data->unit_type,	
+							'quantity_lbs'	=>	$data->quantity_lbs
 						);
 						$results[] = $result;																						
 					}
 				}
 				//conversion
-				$unittype = new Unittype($this->db);
-				$unitTypeConverter = new UnitTypeConverter("us gallon");						
+				//$unittype = new Unittype($this->db);
+				//$unitTypeConverter = new UnitTypeConverter("us gallon");						
 				
 				$products[0]['supplier'] = $results[0]['supplier'];
 				$products[0]['product_id'] = $results[0]['product_id'];
 				$products[0]['product_nr'] = $results[0]['product_nr'];
 				$products[0]['product_name'] = $results[0]['product_name'];
-				$products[0]['used'] = $results[0]['used'];
+				//$products[0]['used'] = $results[0]['used'];
 				
-				$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
+				//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
 				
-				$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-				$results[0]['qtyRule'] = $qtyRule;
+				//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
+				//$results[0]['qtyRule'] = $qtyRule;
 				
-				$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-				$products[0]['used'] = $used;
+				//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
+				//$products[0]['used'] = $used;
+				$products[0]['used'] = $results[0]['quantity_lbs'];
+				
+				//	TODO: add inventory support later 
+				$products[0]['notUsed'] = '--';
 				//end of conversion
 				
 				$k=0;											
 				for($i=1; $i < count($results); $i++) {
-					$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-					$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-					$results[$i]['qtyRule'] = $qtyRule;							
+					//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+					//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
+					//$results[$i]['qtyRule'] = $qtyRule;							
 					if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
 						$k++;
 						$products[$k]['supplier'] = $results[$i]['supplier'];
@@ -132,9 +145,13 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 						$products[$k]['product_nr'] = $results[$i]['product_nr'];
 						$products[$k]['product_name'] = $results[$i]['product_name'];
 						
-						$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-						$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-						$products[$k]['used'] = $used;																	
+						//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+						//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
+						//$products[$k]['used'] = $used;					
+						$products[$k]['used'] = $results[$i]['quantity_lbs'];
+
+						//	TODO: add inventory support later 
+						$products[$k]['notUsed'] = '--';												
 					}
 				}
 				
@@ -152,7 +169,8 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$orgDetails['department'] = $departmentDetails;
 				
 				//getting product quantities in inventory
-				foreach ($products as $value) {
+				//	TODO: add inventory suppport later
+			/*	foreach ($products as $value) {
 					$productString .= $value['product_id']. ","; 
 				}		
 				$productString = substr($productString,0,-1);												
@@ -187,8 +205,8 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 					} else {
 						$products[$i]['notUsed'] = 0;
 					}														
-				}
-				
+				}*/
+		
 				$this -> createXML($products,$results,$orgDetails,$fileName);					
 				break;
 		}
@@ -255,7 +273,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				break;
 				
 			case "department":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
+				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
 					"FROM product p, components_group cg, mixgroup mg, mix m, rule r, supplier s " .
 					"WHERE cg.product_id = p.product_id " .
 					"AND p.product_id = mg.product_id " .
@@ -289,23 +307,27 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$products[0]['supplier'] = $results[0]['supplier'];
 				$products[0]['product_id'] = $results[0]['product_id'];
 				$products[0]['product_nr'] = $results[0]['product_nr'];
-				$products[0]['product_name'] = $results[0]['product_name'];
-				$products[0]['used'] = $results[0]['used'];
+				$products[0]['product_name'] = $results[0]['product_name'];				
+				//$products[0]['used'] = $results[0]['used'];
+				$products[0]['used'] = $results[0]['quantity_lbs'];
 				
-				$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
+				//	TODO: add inventory support later 
+				$products[$i]['notUsed'] = 0;
 				
-				$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-				$results[0]['qtyRule'] = $qtyRule;
+				//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
 				
-				$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-				$products[0]['used'] = $used;
+				//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
+				//$results[0]['qtyRule'] = $qtyRule;
+				
+				//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
+				//$products[0]['used'] = $used;
 				//end of conversion
 				
 				$k=0;											
 				for($i=1; $i < count($results); $i++) {
-					$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-					$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-					$results[$i]['qtyRule'] = $qtyRule;							
+					//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+					//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
+					//$results[$i]['qtyRule'] = $qtyRule;							
 					if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
 						$k++;
 						$products[$k]['supplier'] = $results[$i]['supplier'];
@@ -313,9 +335,13 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 						$products[$k]['product_nr'] = $results[$i]['product_nr'];
 						$products[$k]['product_name'] = $results[$i]['product_name'];
 						
-						$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-						$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-						$products[$k]['used'] = $used;																	
+						//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+						//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
+						//$products[$k]['used'] = $used;																	
+						$products[$k]['used'] = $results[$i]['quantity_lbs'];
+
+						//	TODO: add inventory support later 
+						$products[$i]['notUsed'] = 0;
 					}
 				}
 				
@@ -333,7 +359,8 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$orgDetails['department'] = $departmentDetails;
 				
 				//getting product quantities in inventory
-				foreach ($products as $value) {
+				//	TODO: add inventory suppport later
+		/*		foreach ($products as $value) {
 					$productString .= $value['product_id']. ","; 
 				}		
 				$productString = substr($productString,0,-1);												
@@ -368,7 +395,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 					} else {
 						$products[$i]['notUsed'] = 0;
 					}														
-				}
+				}*/
 				
 				$this -> createXML($products,$results,$orgDetails,$fileName);					
 				break;
@@ -543,35 +570,40 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 					'rule_nr'		=>	$data->rule_nr,
 					'qtyRule'		=>	$data->qtyRule,
 					'used'			=>	$data->used,							
-					'unitType'		=>	$data->unit_type	
+					'unitType'		=>	$data->unit_type,	
+					'quantity_lbs'	=>	$data->quantity_lbs
 				);
 				$results[] = $result;																						
 			}
 		}
 		//conversion
-		$unittype = new Unittype($this->db);
-		$unitTypeConverter = new UnitTypeConverter("us gallon");						
+		//$unittype = new Unittype($this->db);
+		//$unitTypeConverter = new UnitTypeConverter("us gallon");						
 		
 		$products[0]['supplier'] = $results[0]['supplier'];
 		$products[0]['product_id'] = $results[0]['product_id'];
 		$products[0]['product_nr'] = $results[0]['product_nr'];
 		$products[0]['product_name'] = $results[0]['product_name'];
-		$products[0]['used'] = $results[0]['used'];
+		//$products[0]['used'] = $results[0]['used'];
+		$products[0]['used'] = $results[0]['quantity_lbs'];
+				
+		//	TODO: add inventory support later 
+		$products[0]['notUsed'] = '--';
 		
-		$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
+		//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
 		
-		$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-		$results[0]['qtyRule'] = $qtyRule;
+		//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
+		//$results[0]['qtyRule'] = $qtyRule;
 		
-		$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-		$products[0]['used'] = $used;
+		//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
+		//$products[0]['used'] = $used;
 		//end of conversion
 		
 		$k=0;											
 		for($i=1; $i < count($results); $i++) {
-			$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-			$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-			$results[$i]['qtyRule'] = $qtyRule;							
+			//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+			//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
+			//$results[$i]['qtyRule'] = $qtyRule;							
 			if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
 				$k++;
 				$products[$k]['supplier'] = $results[$i]['supplier'];
@@ -579,13 +611,16 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$products[$k]['product_nr'] = $results[$i]['product_nr'];
 				$products[$k]['product_name'] = $results[$i]['product_name'];
 				
-				$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-				$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-				$products[$k]['used'] = $used;																	
+				//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
+				//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
+				//$products[$k]['used'] = $used;																	
+				$products[$k]['used'] = $results[$i]['quantity_lbs'];
 			}
 		}
+		
 		//getting product quantities in inventory
-		foreach ($products as $value) {
+		//TODO: LATER
+		/*foreach ($products as $value) {
 			$productString .= $value['product_id']. ","; 
 		}		
 		$productString = substr($productString,0,-1);
@@ -641,7 +676,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 			} else {
 				$products[$i]['notUsed'] = 0;
 			}							 
-		}
+		}*/
 		
 		$out['products'] = $products;
 		$out['results'] = $results;
