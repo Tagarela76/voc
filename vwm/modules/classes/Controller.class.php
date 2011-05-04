@@ -215,6 +215,7 @@ class Controller
 	
 	private function actionSendReportCommon()
 	{		
+		
 		$request = $this->getFromRequest();	
 		$this->smarty->assign("request", $request);
 		$this->noname();
@@ -248,7 +249,12 @@ class Controller
 					
 		$ms = new ModuleSystem($this->db);	//	TODO: show?
 		$moduleMap = $ms->getModulesMap();
+		
+		
+		
 		$mReport = new $moduleMap['reports'];
+		
+		
 		
 		$params = array(
 						'db' => $this->db,								
@@ -256,8 +262,10 @@ class Controller
 						'companyID' => $companyID,
 						'request' => $request
 						);
+						
 		$result = $mReport->prepareSendReport($params);
-		
+		//var_dump($result);
+		//exit;
 		foreach($result as $key => $data) 
 		{
 			$this->smarty->assign($key,$data);												

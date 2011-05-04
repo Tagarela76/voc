@@ -6,6 +6,7 @@ class MReports {
     	$this->isSetCurrentList = false;
     	define ('TB_REPORT', 'report');
     	define ('TB_REPORT2COMPANY', 'report2company');
+    	
     }
     
     /**
@@ -13,6 +14,7 @@ class MReports {
      * @param array $params - $db, $reportRequest, $fileName
      */
     public function makeXml($params) {
+    	
     	extract($params);
     	//$debug = new Debug();
     	//$debug->printMicrotime(__LINE__,__FILE__);
@@ -23,6 +25,7 @@ class MReports {
     	if (class_exists($reportClassName)) {
     		//ECHO "Class name: $reportClassName";
     		//$debug->printMicrotime(__LINE__,__FILE__);
+    		//echo "$reportClassName -> buildXML"; exit;
     		$reportCreator = new $reportClassName($db,$reportRequest);
     		//$debug->printMicrotime(__LINE__,__FILE__);
     		$reportCreator->buildXML($fileName);
@@ -39,14 +42,17 @@ class MReports {
      */
     public function prepareSendReport($params) {
     	extract($params);
+    	
     	//at first we should check if exist this reportType for company:
     	$reportsList = $this->getAvailableReportsList($db,$companyID);
+    	
     	if (isset($reportsList[$reportType])) {
     		//ok! company has this report
     		$result["reportName"] = $reportsList[$reportType];
     	} else {
     		throw new Exception ('deny'); 
     	}
+    	
     	
 	    // getting rule list				
 	    $rule = new Rule($db);				
@@ -82,6 +88,7 @@ class MReports {
 		    $result["supplierList"] = $supplierList;
 	    }
 	    
+	    
 	    return $result;
     }
     
@@ -94,6 +101,7 @@ class MReports {
      * @param array $params - $db, $xnyo, $request, $companyID
      */
     public function prepareSendSubReport($params) {
+    	
     	extract($params);
     	$reportType = $request['reportType'];
     	
@@ -145,7 +153,8 @@ class MReports {
 	//    	$debug->printMicrotime(__LINE__,__FILE__);
 	    	
 	    	try{
-	    	$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id']);
+	    		//var_Dump($_SESSION['user_id']);
+	    		$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id']);
 	    	}catch(Exception $e){
 	    		throw new Exception("Error Create Report!! ");
 	    	}
@@ -161,10 +170,13 @@ class MReports {
 	    		$reportRequest = $reportCreator->getReportRequestByGetVars($companyID);
 	    	}
     	}
-  //  	$debug->printMicrotime(__LINE__,__FILE__);
-
+    	//$debug->printMicrotime(__LINE__,__FILE__);
+  		//var_dump($reportRequest); 
+    	//exit;
     	$result = new Report($reportRequest,$db);
-  //  	$debug->printMicrotime(__LINE__,__FILE__);
+
+    	//var_dump($reportRequest); 
+    	//exit;
     	return $result;
     }
     

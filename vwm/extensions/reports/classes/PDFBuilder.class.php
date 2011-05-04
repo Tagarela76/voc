@@ -36,7 +36,7 @@ class PDFBuilder {
 //				require( "modules/xml2pdf/SummVOC2pdf.php");
 //				break;
 //		}		
-		
+		//echo "PDF builder"; exit;
 		//if we get here we can use module Reports and selected report for sure, so we dont need to check it again
 		$ms = new ModuleSystem($this->db);
 		$map = $ms->getModulesMap();

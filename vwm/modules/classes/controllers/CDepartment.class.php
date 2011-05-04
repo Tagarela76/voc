@@ -10,8 +10,9 @@ class CDepartment extends Controller
 	
 	function runAction()
 	{
+		
 		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
+		$functionName='action'.ucfirst($this->action);	
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}

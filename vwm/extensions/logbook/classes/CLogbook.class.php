@@ -240,6 +240,8 @@ class CLogbook extends Controller
 	{			
 		extract($vars);
 		
+		
+		
 		$sortStr=$this->sortList('logbook',2);
 		$filterStr=$this->filterList('logbook');	
 		
@@ -283,6 +285,8 @@ class CLogbook extends Controller
 						'sort' => $sortStr
 						);
 		$result = $mLogbook->prepareBrowse($params);
+		
+		
 									
 		foreach($result as $key => $data) 
 		{

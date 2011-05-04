@@ -16,6 +16,9 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 	public function buildXML($fileName) {
 		$rule = new Rule($this->db);
 		$rule_nr_byRegion = $rule->ruleNrMap[$rule->getRegion()];
+		
+		//var_dump($this->categoryType); exit;
+		
 		switch ($this->categoryType) {
 			case "company":
 				$company = new Company($this->db);						
@@ -77,8 +80,13 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			"FROM rule r";		
 		
 		$voc_arr= $this->group($query, $ruleQuery, $this->dateBegin, $this->dateEnd);
-		$DatePeriod = "From ".date("Y-m-d",strtotime($this->dateBegin))." To ".date("Y-m-d",strtotime($this->dateEnd));
 		
+		var_dump($voc_arr);
+		exit;
+		
+		//var_dump($voc_arr['data']); exit;
+		$DatePeriod = "From ".date("Y-m-d",strtotime($this->dateBegin))." To ".date("Y-m-d",strtotime($this->dateEnd));
+		//var_dump($voc_arr['data'][0]); exit;
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
 	}
 	
@@ -293,45 +301,183 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 		 * it need for generating $tmpDate and $tmpDateEnd
 		 * $endYear, $endMonth - values of year and month of the end date for query
 		 */
-		$tmpYear = date("Y", strtotime($dateBegin));
-		$tmpMonth = date("m", strtotime($dateBegin));
-		$tmpDay = 1;
-		$tmpDate = date("Y-m-d", strtotime($dateBegin));
-		$endYear = date("Y", strtotime($dateEnd));
-		$endMonth = date("m", strtotime($dateEnd));
+		//var_dump($dateBegin);
+		
+		//$dateBeginTimeStump = strtorime();
+		$cdateBegin = DateTime::createFromFormat("Y-m-d", $dateBegin);
+		
+		$cdateEnd = DateTime::createFromFormat("Y-m-d", $dateEnd);
+		
+		
 		$total = 0;
 		$tmpResults = array();
 		$results = array();
 		$fullTotal = 0;
+		$interval = new DateInterval('P1M'); // Interval - 1 month
+		$dateFormat = "Y-m-d H:i";
+		$datetime1 = DateTime::createFromFormat($dateFormat, "2009-01-10 00:00");
+		$datetime2 = DateTime::createFromFormat($dateFormat, "2010-04-05 00:00");
 		
-		//var_dump($tmpYear, $tmpMonth, $tmpDate, $endYear, $endMonth);
-		//exit;
+		var_dump($datetime1);
+		var_dump($datetime2);
+		//$interval = $datetime1->diff($datetime2);
+		echo "Start test";
+		/*for($i=0; $i < 5; $i++) {
+			var_dump($datetime1);
+			$iv = $datetime1->diff($datetime2);
+			var_dump($iv);
+			$datetime1->add($interval);
+		}*/
 		
-		while ((((int)$tmpYear == (int)$endYear)&&((int)$tmpMonth <= (int)$endMonth))||
-				( (int)$tmpYear<(int)$endYear))	{
+		$i = 0;
+		
+		$diff = $datetime1->diff($datetime2);
+		
+		$firstIter = true; // if first iteration - we're get date difference between begin to end of current month of begin. else - we calc by monthly.
+
+		while(($diff->m >= 0 or $diff->y >= 0) or $i < 20){
+			
+			//echo "date from:";
+			//var_Dump($dateFrom);
+			
+			$i++;
+			if($i > 10) {break;}
+			
+			//$dateFrom 	= null; //Reset values
+			//$dateTo		= null;
+			//$dateEndOfMonth = null;
+			
+			if($firstIter)
+			{
+				echo "Last day of current month: ";
+				$lastday = $datetime1->format("t"); //date('t',strtotime('3/1/2009'));
+				echo $lastday . "<br/>";
+				
+				$dateEndOfMonth = DateTime::createFromFormat($dateFormat, $datetime1->format("Y-m-$lastday H:i"));
+				
+				echo "dateEndOfMonth: ". $dateEndOfMonth->format($dateFormat);
+				
+				$dateTo = $dateEndOfMonth;
+				//$dateFrom = $datetime1;
+				
+				$firstIter = false;
+				
+				
+			}
+			else {
+			
+				if($diff->m == 0 and $diff->y == 0) {
+					
+					echo "<br/>diff->m == 0 and diff->y == 0";
+					
+					//Calculate days..
+					$dateFrom = DateTime::createFromFormat($dateFormat,$datetime1->format("Y-m-d H:i")); //This is copy of object.. i didnt found method copy or something.. =(
+					
+					echo "<br/> Add {$diff->d} days";
+					$dateTo = $dateFrom->add(new DateInterval("P{$diff->d}D"));
+					//echo "<br/> Get some between {$datetime1->format($dateFormat)} and {$dateTo->format($dateFormat)}";
+					
+					//$datetime1->add(new DateInterval("P{$diff->d}D"));
+					
+					echo "<br/> Get some between {$datetime1->format($dateFormat)} and {$dateTo->format($dateFormat)}";
+					break;
+					
+				} else {
+					
+					
+					echo "<br/><b>datetime1:</b>{$datetime1->format($dateFormat)}";
+					
+					$dateFrom = DateTime::createFromFormat($dateFormat,$datetime1->format($dateFormat)); //This is copy of object.. i didnt found method copy or something.. =(
+					//echo "<br/>dateFrom add 1month: {$dateFrom->format($dateFormat)}";
+					
+					//echo "<br/>datetime1 before add 1month: {$datetime1->format($dateFormat)}";
+					
+					//Add Month
+					
+					
+					$dateTo = $dateFrom->add($interval);
+					
+					/*$curM = $dateFrom->format("m");
+					
+					$nextMonth = $curM == 12 ? '01' : sprintf('%02d', $curM + 1);// $curM + 1;
+					
+					echo "<br/>curMonth: $curM, nextMonth: $nextMonth";
+					
+					$day = $dateFrom->format("d");
+					
+					$year = intval($dateFrom->format("Y"));
+					
+					
+					$year = $curM == 12 ? $year+1 : $year;
+					
+					$dateTo = DateTime::createFromFormat($dateFormat,"$year-$nextMonth-$day 00:00");//$dateFrom->format("Y-m-d H:i");
+					
+					$dateTo->setDate($year,$month,$day); */
+					
+					//echo "<br/>dateTo add 1month: {$dateTo->format($dateFormat)}";
+					
+					//echo "<br/> Get some between {$dateFrom->format($dateFormat)} and {$dateTo->format($dateFormat)}";
+					
+					//$datetime1->add($interval);
+					
+				}
+			}
+			
+			echo "<br/> Get some between {$datetime1->format($dateFormat)} and {$dateTo->format($dateFormat)}";
+			
+			
+			$datetime1 = DateTime::createFromFormat($dateFormat, $dateTo->format($dateFormat));
+			//$datetime1->add(new DateInterval("P1D"));
+			//$datetime1 = $dateTo;
+			//$datetime1->add($interval);
+			//echo "date from:";
+			//var_Dump($dateFrom);
+			
+			$diff = $datetime1->diff($datetime2);
+			
+			var_dump($diff->y);	
+			
+		}
+		echo "End Test";
+		
+		//var_Dump($interval);
+		
+		$cdateBegin = DateTime::createFromFormat("Y-m-d", $dateBegin);
+		
+		$cdateEnd = DateTime::createFromFormat("Y-m-d", $dateEnd);
+		
+		$diff = $cdateBegin->diff($cdateEnd);
+		
+		while ($diff->m >= 0)	{
+
+			
 			if (((int)$tmpMonth == (int)$endMonth)&&((int)$tmpYear == (int)$endYear)) {
 				$tmpDateEnd = $dateEnd;
 			} else {
 				if ( $tmpMonth==12 ) {
-					$tmpYear +=1;
+					$tmpYear += 1;
 					$tmpMonth = 1;
 				} else {
 					$tmpMonth += 1; 
 				}
 				$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
 			}
+			echo "<h1>tmpDateEnd $tmpDateEnd</h1>";
 			$results = array();
 			$WasARule = false;
 			for ($i = 0; $i<count($rule); $i++) {
+				/*$tmpQuery = $query." AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDate)). "','%Y-%m-%d') " .
+					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDateEnd)). "','%Y-%m-%d') "; */
+
+				$tmpQuery = $query." AND m.creation_time BETWEEN $dateBeginTimeStump " .
+					"AND $dateEndTimeStump ";
 				
-				//$tmpTimestamp = mktime(0, 0, 0, int month, int day, int year, int [is_dst] );
-				
-				$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " ."AND " . strtotime($tmpDateEnd). " ";	
 				$tmpQuery .= "AND m.rule_id = ".$rule[$i]." ";	
 
+				
+				
+				
 				$this->db->query($tmpQuery);
-				
-				
 
 				$result = array();
 				if ($this->db->num_rows()) {
@@ -339,9 +485,13 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 
 					for ($j=0; $j<$this->db->num_rows(); $j++) {
 						$data = $this->db->fetch($j);	
+						var_dump($data);
 						$VOCresult += $data->voc;			
 					}
 					$total += $VOCresult; 
+					
+					//echo "TOTAL:";
+					//var_dump($total);
 
 					$result = array(
 						'rule' => $rule_nr[$i],
@@ -357,9 +507,16 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			}
 			$WasAnExemptRule = false;
 			for ($i = 0; $i<count($exempt); $i++) {
-				$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " . "AND " . strtotime($tmpDateEnd). " ";	
-				$tmpQuery .= "AND m.exempt_rule = '".$exempt[$i]."' ";	
+				/*$tmpQuery = $query."AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDate)). "','%Y-%m-%d') " .
+					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($tmpDateEnd)). "','%Y-%m-%d') "; */
 
+				$tmpQuery = $query." AND m.creation_time BETWEEN $dateBeginTimeStump " .
+					"AND $dateEndTimeStump";
+				
+				$tmpQuery .= " AND m.exempt_rule = '".$exempt[$i]."' ";	
+
+				//var_dump($tmpQuery);
+				
 				$this->db->query($tmpQuery);
 
 				$result = array();
@@ -384,17 +541,16 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			if ($WasAnExemptRule == false) {
 				$results [] = $emptyData[1];
 			}	
-			
 				//result:
 				$resultByMonth [] = array(
-					'month' => substr(date("M  Y d", strtotime($tmpDate)), 0, 9),
+					'month' => date("M, Y", strtotime($tmpDate)),
 					'total' => $total,
 					'data' => $results
 				);
+				echo "<h1>Total: $total</h1>";
 				$fullTotal += $total;
 				$total = 0;
-				//var_dump($resultByMonth);
-				
+
 			$tmpDate = $tmpDateEnd;
 			if ($tmpDate == $dateEnd) {
 				break;
@@ -404,6 +560,8 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			'total' => $fullTotal,
 			'data' => $resultByMonth
 		); 
+		
+		
 
 		return $totalResults;			
 	}

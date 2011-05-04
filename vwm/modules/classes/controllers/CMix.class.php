@@ -1458,8 +1458,15 @@ class CMix extends Controller
 		//if($isMWS) { //IF MWS disabled
 			$mix = new MixOptimized($this->db);
 			$mix->iniWaste(false);
+			$mix->department_id = $departmentID;
+			
+			$mix->creation_time = strtotime("now");
+			//var_Dump($mix->creation_time);
 		//}
 		
+		$data->creation_time = $mix->creation_time;
+		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
+			
 		$data->waste = $mix->waste;
 		
 		$this->smarty->assign('data',$data);
@@ -1519,6 +1526,8 @@ class CMix extends Controller
 		$typeEx = $res['typeEx'];
 		$companyEx = $res['companyEx'];
 		$unitTypeEx = $res['unitTypeEx'];
+		
+		
 		
 		//var_dump($optMix->waste);
 		

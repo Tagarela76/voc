@@ -17,7 +17,9 @@ class Report {
     	$xmlFileName = 'tmp/reportByUser'.$userID.'.xml';
     	$xml = new XMLBuilder($db);
    // 	$debug->printMicrotime(__LINE__,__FILE__);
-    	$xml->BuildXML($reportRequest, $xmlFileName);var_dump($xml);
+    	$xml->BuildXML($reportRequest, $xmlFileName);
+    	//var_dump($xml);
+    	//exit;
   //  	$debug->printMicrotime(__LINE__,__FILE__);
     	
     	//	Report Building

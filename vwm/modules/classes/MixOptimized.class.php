@@ -45,7 +45,6 @@
 		public $dateFormatForCalendar;
 		public $dateFormat;
 		 
-		private $ololo;
 		
 		const MIX_IS_VALID = 'valid';
 		const MIX_IS_INVALID = 'invalid';
@@ -116,24 +115,35 @@
 
 		private function get_creation_time() {
 	    	
-	    	if(!isset($this->dateFormat)) {
-	    		throw new Exception("Date format does not exists!");
+	    	if(!isset($this->dateFormat) && isset($this->department_id)) {
+	    		$this->iniDateFormat();
+	    	} else if(!isset($this->dateFormat) and !isset($this->department_id)) {
+	    		throw new Exception("Date format does not exists! And department_id is not set!");
 	    	}
+	    	
 	    	//echo "from $this->creation_time ";
 	    	$date = date($this->dateFormat, $this->creation_time);
 	    	return $date;
 	    }
 	    
+	    
+	    
 	    private function set_creation_time($value) {
 	    	
 	    	
 	    	
+	    	
 	    	if(!isset($this->dateFormat)) {
+	    		
+	    		
 	    		$this->iniDateFormat();
+	    		
+	    		
+	    		
 	    		//throw new Exception("Date format does not exists!");
 	    		
 	    		if(!isset($this->dateFormat)) {
-	    			echo "Date format does not exists!";
+	    			
 	    			return;
 	    		}
 	    	} else if (!isset($value)) {
@@ -144,7 +154,9 @@
 	    	 * If value is already timestamp  - just set value
 	    	 */
 	    	if(strlen($value) == 10 and is_numeric($value)) {
+	    		
 	    		$this->creation_time = $value;
+	    		
 	    	} else {
 	    	
 		    	$date = DateTime::createFromFormat($this->dateFormat, $value);
@@ -161,6 +173,7 @@
 				
 				$this->creation_time = $timestamp;
 	    	}
+	    	
 	    }
 		
 		public function setDepartment(Department $department) {

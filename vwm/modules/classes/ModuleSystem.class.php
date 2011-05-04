@@ -388,6 +388,7 @@ class ModuleSystem {
     } 
     
     public function getModulesMap() {
+    	
     	return $this->map;
     }        
     
