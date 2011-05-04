@@ -33,7 +33,7 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 				}		
 				$facilityString = substr($facilityString,0,-1);
 				
-				$query = "SELECT m.voc, r.$rule_nr_byRegion as rule_nr ".
+				$query = "SELECT m.mix_id, m.voc, r.$rule_nr_byRegion as rule_nr ".
 					"FROM mix m, department d, rule r ".
 					"WHERE d.facility_id in (".$facilityString.") ".
 					"AND d.department_id = m.department_id ".
@@ -48,7 +48,7 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 				
-				$query="SELECT m.voc, r.$rule_nr_byRegion as rule_nr ".
+				$query="SELECT m.mix_id, m.voc, r.$rule_nr_byRegion as rule_nr ".
 					"FROM mix m, department d, rule r ".
 					"WHERE d.facility_id = ".$this->categoryID." ".
 					"AND d.department_id = m.department_id ".
@@ -66,7 +66,7 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 					'name' => $departmentDetails['name'],
 					'notes' => ""
 				); 
-				$query="SELECT m.voc, r.$rule_nr_byRegion as rule_nr ".
+				$query="SELECT m.mix_id, m.voc, r.$rule_nr_byRegion as rule_nr ".
 					"FROM mix m, rule r ".
 					"WHERE m.department_id = ".$this->categoryID." ".
 					"AND m.rule_id = r.rule_id ";
@@ -132,7 +132,7 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Monthly Summary Report of total VOC usage") 
+			$doc->createTextNode("Monthly Summary Report of Total VOC Usage") 
 		);
 		$page->appendChild( $title );
 		
@@ -324,7 +324,9 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			}
 			$results = array();
 			$WasARule = false;
-			for ($i = 0; $i<count($rule); $i++) {
+			//var_dump($ruleCount,$rule);
+			$ruleCount = count($rule);
+			for ($i = 0; $i<$ruleCount; $i++) {
 				
 				//$tmpTimestamp = mktime(0, 0, 0, int month, int day, int year, int [is_dst] );
 				
@@ -341,9 +343,13 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 
 					for ($j=0; $j<$this->db->num_rows(); $j++) {
 						$data = $this->db->fetch($j);	
+						
+						$alreadyRuleCalculatedVoc[$data->mix_id] = 'true';
 						$VOCresult += $data->voc;			
 					}
 					$total += $VOCresult; 
+					
+					
 
 					$result = array(
 						'rule' => $rule_nr[$i],
@@ -357,27 +363,48 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			if ($WasARule == false) {
 				$results [] = $emptyData[0];
 			}
+			
+			//var_dump($exempt);
+			
 			$WasAnExemptRule = false;
 			for ($i = 0; $i<count($exempt); $i++) {
+				
 				$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " . "AND " . strtotime($tmpDateEnd). " ";	
 				$tmpQuery .= "AND m.exempt_rule = '".$exempt[$i]."' ";	
 
+				
+				
 				$this->db->query($tmpQuery);
 
 				$result = array();
 				if ($this->db->num_rows()) {
+					
+					//var_dump($tmpQuery);	
 					$VOCresult = 0;
+					$VOCresultForExcemptRuleRowOnlyForReadAndNoCalculate = 0;
 
 					for ($j=0; $j<$this->db->num_rows(); $j++) {
-						$data = $this->db->fetch($j);	
-						$VOCresult += $data->voc;			
+						$data = $this->db->fetch($j);
+
+						if(!isset($alreadyRuleCalculatedVoc[$data->mix_id])) {
+							$VOCresult += $data->voc;
+							echo "<br/>Not calculated, += total VOC";
+						} else {
+							echo "<br/>This mix is already calculated, skip..";
+						}		
+						
+						$VOCresultForExcemptRuleRowOnlyForReadAndNoCalculate += $data->voc;
 					}
+					
+					
 					$total += $VOCresult; 
+					
+					//var_dump($exempt[$i]);
 
 					$result = array(
 						'exempt' => $exempt[$i],
 
-						'voc' => $VOCresult
+						'voc' => $VOCresultForExcemptRuleRowOnlyForReadAndNoCalculate ? $VOCresultForExcemptRuleRowOnlyForReadAndNoCalculate : 'none'
 					);		
 					$WasAnExemptRule = true;
 					$results [] = $result;
@@ -387,9 +414,10 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 				$results [] = $emptyData[1];
 			}	
 			
+			var_dump($results);
 				//result:
 				$resultByMonth [] = array(
-					'month' => substr(date("M  Y d", strtotime($tmpDate)), 0, 9),
+					'month' => date("M", strtotime($tmpDate)),
 					'total' => $total,
 					'data' => $results
 				);
@@ -406,7 +434,7 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			'total' => $fullTotal,
 			'data' => $resultByMonth
 		); 
-
+//exit;
 		return $totalResults;			
 	}
 }
