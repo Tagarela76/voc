@@ -9,6 +9,17 @@ class EmissionLog {
     }
     
     function getEmissionLog($year,$category,$categoryID) {
+    	
+    	$beginDate = DateTime::createFromFormat("Y-m-d H:i", "$year-01-01 00:00");
+    	
+    	$endDateTmp = DateTime::createFromFormat("Y-m-d H:i", "$year-12-01 23:59");
+    	$lastDayInMonth = $endDateTmp->format("t");
+    	
+    	$endDate = DateTime::createFromFormat("Y-m-d H:i", "$year-12-$lastDayInMonth 23:59");
+    	
+    	$beginStamp = $beginDate->getTimestamp();
+    	$endStamp = $endDate->getTimestamp();
+    	
     	switch ($category) {
     		case 'department':
     			$query = "SELECT  f.`voc_annual_limit` ,  f.`voc_limit`, f.`facility_id` FROM  `".TB_FACILITY."` f, `".TB_DEPARTMENT."` d " .
@@ -16,10 +27,10 @@ class EmissionLog {
 		    	$this->db->query($query);
 		    	$limit = $this->db->fetch(0);
 		    	$fac_limit = array('monthly' => $limit->voc_limit, 'annual' => $limit->voc_annual_limit);
-		    	$query = "SELECT sum(m.`voc`) AS voc, MONTH(m.`creation_time`) AS month, m.`department_id`  FROM `".TB_USAGE."` m, `".TB_DEPARTMENT."` d " .
-		    			"WHERE YEAR(m.`creation_time`) = '$year' AND d.`facility_id` = '$limit->facility_id' " .
+		    	$query = "SELECT sum(m.`voc`) AS voc, MONTH( FROM_UNIXTIME(m.`creation_time`) ) AS month, m.`department_id`  FROM `".TB_USAGE."` m, `".TB_DEPARTMENT."` d " .
+		    			"WHERE YEAR( FROM_UNIXTIME(m.`creation_time`) ) = '$year' AND d.`facility_id` = '$limit->facility_id' " .
 		    			"AND d.`department_id` = m.`department_id` " .
-		    			"GROUP BY (concat(m.`department_id`,MONTH(m.`creation_time`))) ORDER BY MONTH(m.`creation_time`)";
+		    			"GROUP BY (concat(m.`department_id`, MONTH( FROM_UNIXTIME(m.`creation_time`)))) ORDER BY MONTH(m.`creation_time`)";
 		    	break;
 		    case 'facility':
 		    	$query = "SELECT  `voc_annual_limit` ,  `voc_limit` FROM  `".TB_FACILITY."` WHERE  `facility_id` =  '$categoryID' LIMIT 1";
@@ -33,6 +44,9 @@ class EmissionLog {
 		    default:
 		    	return false;
     	}
+    	
+    	//echo "<p>".$query;
+    	
     	$this->db->query($query);
     	if ($this->db->num_rows() > 0) {
 	    	$data = $this->db->fetch_all();

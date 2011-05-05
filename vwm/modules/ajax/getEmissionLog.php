@@ -1,5 +1,10 @@
 <?php
-if(isset($_POST['year']))
+
+$form = $_GET['debug'] ? $_REQUEST : $_POST;
+
+//var_Dump($form);
+
+if(isset($form['year']))
 {
 	chdir('../..');	
 
@@ -21,12 +26,16 @@ if(isset($_POST['year']))
 	
 	$xnyo->start();
 	
+	
+	
 	$xnyo->filter_post_var('year', 'int');
 	$xnyo->filter_post_var('category', 'text');
 	$xnyo->filter_post_var('category_id', 'int');
 	
 	$emissionLog = new EmissionLog ($db);
-	echo json_encode($emissionLog->getEmissionLog($_POST['year'],$_POST['category'],$_POST['category_id']));			
+	$log = $emissionLog->getEmissionLog($form['year'],$form['category'],$form['category_id']);
+	echo json_encode($log);			
 	
 }
+
 ?> 
