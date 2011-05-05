@@ -319,6 +319,7 @@ class MWasteStreams {
     		}
     	}
     	//$url = "?action=browseCategory&category=facility&id=$facilityID&bookmark=wastestorage&tab=".(($status == 'active')?"active":"removed");
+    	
      	return array(
 			'data' => $storageList,
 			//'pageCount' => $pageCount,

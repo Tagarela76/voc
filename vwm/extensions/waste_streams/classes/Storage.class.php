@@ -45,10 +45,10 @@ class Storage {
 					"WHERE w.storage_id = s.storage_id " .
 					"AND m.mix_id = w.mix_id " .
 					"AND m.creation_time >= IFNULL(( " .
-					"SELECT date " .
+					"SELECT `date` " .
 					"FROM ".TB_STORAGE_EMPTY." " .
 					"WHERE storage_id = s.storage_id " .
-					"ORDER BY date DESC " .
+					"ORDER BY `date` DESC " .
 					"LIMIT 1 ),0) " .
 					"ORDER BY creation_time ASC " .
 					"LIMIT 1) AS use_date " .
@@ -77,9 +77,11 @@ class Storage {
     			//take current usage and correct date_use
     			$query = "SELECT sum(w.value) AS summ, w.unittype_id FROM ".TB_WASTE." w, ".TB_USAGE." m WHERE w.storage_id = '$record->storage_id' AND m.mix_id = w.mix_id " .
     					"AND m.department_id IN (SELECT department_id FROM department WHERE facility_id = '$facilityID') " .
-    					"AND (m.creation_time BETWEEN DATE_FORMAT('" .$record->use_date. "','%Y-%m-%d') AND DATE_FORMAT('" . date("Y-m-d"). "','%Y-%m-%d')) " .
+    					//"AND (m.creation_time BETWEEN DATE_FORMAT('" .$record->use_date. "','%Y-%m-%d') AND DATE_FORMAT('" . date("Y-m-d"). "','%Y-%m-%d')) " .
+    					"AND (m.creation_time BETWEEN " .$record->use_date. " AND ".time().") " .
     					"GROUP BY w.unittype_id ";
     			$this->db->query($query);
+    			
     			$usageData = $this->db->fetch_all();
     			$value = 0;
     			$unittypeConverter = new UnitTypeConverter();
@@ -101,6 +103,7 @@ class Storage {
 				);
 				$storage->density_type = $densityUnittypeDetails['numerator']['name'].'/'.$densityUnittypeDetails['denominator']['name'];
 		    	$unitTypeDescription = $unittype->getDescriptionByID($storage->volume_unittype);
+		    	
     			foreach ($usageData as $usageRecord) {
     				$value += $unittypeConverter->convertFromTo($usageRecord->summ,$unittype->getDescriptionByID($usageRecord->unittype_id),$unitTypeDescription,$storage->density,$densityType);
     			}
@@ -114,6 +117,7 @@ class Storage {
     		}
     		$storageList []= $storage;	
     	}
+    	
     	return $storageList;
     }
     
