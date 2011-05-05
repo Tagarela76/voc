@@ -37,9 +37,9 @@ class EmissionLog {
 		    	$this->db->query($query);
 		    	$limit = $this->db->fetch(0);
 		    	$fac_limit = array('monthly' => $limit->voc_limit, 'annual' => $limit->voc_annual_limit);
-		    	$query = "SELECT sum(m.`voc`) AS voc, MONTH(m.`creation_time`) AS month, m.`department_id`  FROM `".TB_USAGE."` m, `".TB_DEPARTMENT."` d " .
-		    			"WHERE YEAR(m.`creation_time`) = '$year' AND d.`facility_id` = '$categoryID' AND d.`department_id` = m.`department_id` " .
-		    			"GROUP BY (concat(m.`department_id`,MONTH(m.`creation_time`))) ORDER BY MONTH(m.`creation_time`)";
+		    	$query = "SELECT sum(m.`voc`) AS voc, MONTH( FROM_UNIXTIME(m.`creation_time`) ) AS month, m.`department_id`  FROM `".TB_USAGE."` m, `".TB_DEPARTMENT."` d " .
+		    			"WHERE YEAR( FROM_UNIXTIME(m.`creation_time`) ) = '$year' AND d.`facility_id` = '$categoryID' AND d.`department_id` = m.`department_id` " .
+		    			"GROUP BY (concat(m.`department_id`,MONTH( FROM_UNIXTIME(m.`creation_time`)))) ORDER BY MONTH( FROM_UNIXTIME(m.`creation_time`) )";
 		    	break;
 		    default:
 		    	return false;
