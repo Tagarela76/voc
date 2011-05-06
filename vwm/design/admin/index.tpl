@@ -38,7 +38,9 @@
 												{if $request.category == 'tables'}																						
 													{include file="tpls:tpls/bookmarksClasses.tpl"}
 												{elseif $request.category == 'users'}
-													{include file="tpls:tpls/bookmarksUsers.tpl"}																
+													{include file="tpls:tpls/bookmarksUsers.tpl"}	
+												{elseif $request.category == 'salescontacts'}	
+													{include file="tpls:tpls/bookmarkSales.tpl"}
 												{/if}
 											{/if}
 											{*SORT*}

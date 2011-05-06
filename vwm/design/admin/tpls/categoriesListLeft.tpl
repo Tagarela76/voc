@@ -83,6 +83,16 @@
 					</div>
 				{/if}
 				
+				<div align="left" width="100%"  class="{if $parent == 'salescontacts'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+						<li>
+							<a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts" class="id_company">Sales</a>
+						</li>
+						</ul>
+					</div>
+				</div>
+				
 			</td>
 		</tr>
 	</table>

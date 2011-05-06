@@ -50,6 +50,31 @@ class CCommon extends Controller
 		echo "<h1>DONE</h1>";
 	}	
 	
+	private function actionCreateSales() {
+		
+		$query = "DROP TABLE IF EXISTS `Contacts`;
+					CREATE TABLE IF NOT EXISTS `Contacts` (
+					  `id` int(11) NOT NULL AUTO_INCREMENT,
+					  `company` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `contact` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `phone` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `fax` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `email` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `title` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `government_agencies` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `affiliations` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `industry` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `comments` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `state` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `zip_code` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+					  `country_id` int(11) DEFAULT NULL,
+					  `state_id` int(11) DEFAULT NULL,
+					  PRIMARY KEY (`id`)
+					) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+		
+		$this->db->query($query);
+	}
+	
 	private function actionLedokol()
 	{
 		$query = 	"INSERT INTO emission_factor (name, unittype_id, emission_factor) VALUES " .

@@ -34,7 +34,8 @@
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'fghbjhysq');
+				define ('DB_PASS', 'bdevelop');
+				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
 				define ('TRACE_MYSQL', 'off'); 	//	TRACE MYSQL QUERIES
@@ -253,7 +254,7 @@
 	define ('TB_VPS_MODULE2CURRENCY','vps_module2currency');
 	define ('TB_VPS_LIMIT_PRICE2CURRENCY','vps_limit_price2currency'); 
 	
-	
+	define ('TB_CONTACTS','Contacts');
 			
 	//	XNYO CONSTANTS
 	define ('AUTH_TYPE', 'sql');

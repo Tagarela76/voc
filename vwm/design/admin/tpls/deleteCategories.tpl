@@ -117,7 +117,9 @@
 <div align="center">
 <div style="width:650px;" align="right">
 	{if $itemsCount > 0}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
+	
+	<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark=apmethod'">
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
 

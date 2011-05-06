@@ -35,6 +35,13 @@
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem"  >
 			</div>
+		{elseif $request.category=="salescontacts" && $request.bookmark == "contacts"}
+			<div class="add_button button_alpha">
+				<input type="submit" name="action" value="addItem"  >
+			</div>
+			
+			
+			
 		{/if}
 		
 		</div>
@@ -92,6 +99,10 @@
 				<input type="hidden" name="category" value="{$request.bookmark}">
 			{elseif $request.category eq 'issue'}
 				<input type="hidden" name="category" value="{$request.category}">
+			{elseif $request.category == 'salescontacts' and $request.bookmark == 'contacts'}
+				<input type="hidden" name="category" value="contacts">
+				<input type="hidden" name="bookmark" value="contacts">
+				<!--  <input type="hidden" name="category" value="{$request.category}"> -->
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
 				<input type="hidden" name="bookmark" value="{$request.bookmark}">
