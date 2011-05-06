@@ -86,7 +86,7 @@ class ProductProperties {
     public function setPercentVolatileVolume($perccentVolatileVolume) {
     	$this->perccentVolatileVolume = $perccentVolatileVolume;
     }
-    public function getPercentVolatileWeigh() {
+    public function getPercentVolatileWeight() {
     	return $this->perccentVolatileWeight;
     }
     public function getPercentVolatileVolume() {

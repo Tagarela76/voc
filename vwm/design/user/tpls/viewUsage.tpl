@@ -245,7 +245,7 @@
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$product->quantity_lbs}
+                                &nbsp; {$product->quantity}
                             </div>
                         </td>
                         <td class=" border_users_b border_users_r">
