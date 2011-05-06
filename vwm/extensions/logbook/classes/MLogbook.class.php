@@ -20,6 +20,11 @@ class MLogbook {
     	$pagination = new Pagination($logbook->countLogbookRecords($toFind, $filter));
     	if(!$toFind) {
     		$actionList = $logbook->getActionList($pagination,$filter,$sort);
+    		
+    		foreach($actionList as $ac) {
+    			
+    		}
+    		
     		$pagination->url = "?action=browseCategory&category=facility&id=".$facilityID."&bookmark=logbook".
     		(isset($filterData['filterField'])?"&filterField=".$filterData['filterField']:"").
     		(isset($filterData['filterCondition'])?"&filterCondition=".$filterData['filterCondition']:"").
@@ -95,7 +100,9 @@ class MLogbook {
 	    		$validation['summary'] = 'failed';
     			$validation['date'] = 'Error! Please enter date!';
     		}
+    		//echo "set date"; 
 	    	$logbookItem->date = date("Y-m-d",strtotime($date));
+	    	//echo $logbookItem->date . " - " . date("Y-m-d",strtotime($date)) . " - " . $date; exit;
 	    	$logbookItem->facility_id = $facilityID;
 	    	switch ($logbookType) {
 	    		case LogbookAction::ACTION_INSPECTION:
@@ -184,6 +191,7 @@ class MLogbook {
 	    			throw new Exception('deny');
 	    	}
 	    	if ($validation['summary'] == 'success') {
+	    		//var_Dump($logbookItem); exit;
 	    		$logbookItem->save();
 	    		return true;
 	    	}

@@ -49,6 +49,18 @@
 					$logbookList []= $logbookAction; 
 				}
 			}
+			
+			
+			$chain = new TypeChain(null,'Date',$this->db,$this->facility_id,'facility');
+			$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
+			$dateFormat = $chain->getFromTypeController('getFormat');
+			
+			
+			foreach($logbookList as $l) {
+				$date = DateTime::createFromFormat("Y-m-d",$l->date);
+				$l->date = $date->format($dateFormat);
+			}
+			
 			return $logbookList;
     	} 
     	
@@ -71,6 +83,18 @@
 	    			$logbookAction->installed = ($logbookAction->action == 'installed')?true:false;
 					$logbookAction->removed = ($logbookAction->action == 'removed')?true:false;
 	    		}
+	    		
+	    		
+	    		$chain = new TypeChain(null,'Date',$this->db,$logbookAction->facility_id,'facility');
+				$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
+				$dateFormat = $chain->getFromTypeController('getFormat');
+				
+				
+				
+				$date = DateTime::createFromFormat("Y-m-d",$logbookAction->date);
+				$logbookAction->date = $date->format($dateFormat);
+				
+	    		
 	    		return $logbookAction;
     		} else return false;
     	}

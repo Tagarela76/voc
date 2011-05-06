@@ -23,6 +23,7 @@
     			$query = "INSERT INTO logbook (id, facility_id, date, department_id, equipment_id, description, operator, type) " .
     					"VALUES (NULL, '$this->facility_id', '$this->date', '$this->department_id', '$this->equipment_id', '$this->description', '$this->operator', '$this->type')";
     		}
+    		//echo $query; exit;
     		$this->db->query($query);
     	}
     	
