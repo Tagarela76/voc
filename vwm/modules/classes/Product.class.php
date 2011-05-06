@@ -672,9 +672,11 @@ class Product extends ProductProperties {
 							"m.department_id = '$categoryID' ") . 
 					"AND p.product_id = mg.product_id " .
 					"AND m.mix_id = mg.mix_id " .
-					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."' " .
 				" GROUP BY mg.product_id, m.creation_time " .
 				" ORDER BY p.product_id ";
+		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+		
 		$this->db->query($query);
 		$productUsageData = $this->db->fetch_all();
 		$result = array();
@@ -706,10 +708,15 @@ class Product extends ProductProperties {
 		foreach($productList as $data) {
 			$result[$data] = $emptyProductData;
 		}
+		
+		
 
 		foreach ($productUsageData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
-			$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
+			//$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
+			//$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
+			$key = round($data->creation_time - $beginDate->getTimestamp()/$day, 2);
+			$key = intval(date("d",$key));
+			$result[$data->product_nr][$key][1] = $data->sum;
 		}
 		
 		return $result;

@@ -463,15 +463,26 @@ class Equipment extends EquipmentProperties {
 	
 	
 	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
+		
+		//var_Dump($beginDate);
+		//var_Dump($endDate);
+		
+		$beginstamp = $beginDate->getTimestamp();
+		$endstamp = $endDate->getTimestamp();
+		
+		
+		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+		
 		$query = "SELECT sum(m.voc) as voc, eq.equip_desc, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
 							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " : 
 							"eq.department_id = '$categoryID' ") . 
 					"AND m.equipment_id = eq.equipment_id " .
-					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY m.equipment_id, m.creation_time " .
 				" ORDER BY m.equipment_id ";
+		
 		$this->db->query($query);
 		$dailyEmissionsData = $this->db->fetch_all();
 		$result = array();
@@ -499,9 +510,18 @@ class Equipment extends EquipmentProperties {
 			$result[$data->equip_desc] = $emptyEquipmentData;
 		}
 		
+		
+		
 		foreach ($dailyEmissionsData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
-			$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
+			//$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
+			
+			
+			$key = round($data->creation_time - $beginDate->getTimestamp()/$day, 2); //$key == day from the begin date
+			$key = intval(date("d",$key));
+			
+			//$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
+			//$result[$data->equip_desc][$key][1] = array($data->creation_time*1000, $data->voc);
+			$result[$data->equip_desc][$key][1] = $data->voc;
 		}
 		
 		return $result;

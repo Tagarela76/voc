@@ -60,10 +60,12 @@ class CEmissionGraphs extends Controller {
 	    //Daily Emissions Graph
 	    $equip = new Equipment($this->db);
 	    $data = $equip->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);  
+	    
 	    $this->smarty->assign('dataDE',$this->performDataForGraph($data));//var_dump($data);
 	    //Product Usage Graph
 	    $product = new Product($this->db);
 	    $data = $product->getProductUsageByDays($beginDate,$endDate,$category,$id);
+	    
 	    $this->smarty->assign('legendPUheight',count($product->getProductNR())*18);
 	    $this->smarty->assign('dataPU',$this->performDataForGraph($data));//var_dump($data);
 	    

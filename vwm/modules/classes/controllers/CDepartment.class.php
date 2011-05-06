@@ -132,7 +132,9 @@ class CDepartment extends Controller
 		
 		//	voc indicator
 		$departments->initializeByID($this->getFromRequest('id'));
-		$this->setIndicator($departmentDetails['voc_limit'], $departments->getCurrentUsage());
+		$usage = $departments->getCurrentUsage();
+		
+		$this->setIndicator($departmentDetails['voc_limit'], $usage);
 		$vars=array	(	
 			'departmentDetails'	=>$departmentDetails,
 			'facilityDetails'  	=>$facilityDetails,

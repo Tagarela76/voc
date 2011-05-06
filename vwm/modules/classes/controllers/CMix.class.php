@@ -395,7 +395,10 @@ class CMix extends Controller
 			//var_dump($usageList[0]);
 			//var_dump($mixList[0]);
 			//exit;
-											
+			$department = new Department($this->db);
+			$department->initializeByID($departmentID);
+			$curUsage = $department->getCurrentUsage();
+			$this->smarty->assign('currentUsage', $curUsage);								
 			$this->smarty->assign('childCategoryItems', $mixList);
 											
 			//	set js scripts

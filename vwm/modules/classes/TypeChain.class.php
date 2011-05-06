@@ -30,13 +30,14 @@ class TypeChain {
     	}
     	$typeC_className = 'CT'.ucfirst($type);
     	if (class_exists($typeC_className)) {
+    		
     		$this->typeC = new $typeC_className($db, $this->companyID);
     	}
     	
     	if (!is_null($this->typeC) && !is_null($this->value)) {
     		//we should check it for its format and try to convert to main Format
     		$this->mainValue = $this->typeC->convert($this->value,true);
-    	} 
+    	}
     }
     
     public function setValue($value) {
@@ -60,6 +61,14 @@ class TypeChain {
     	} else {
     		return '';
     	}
+    }
+    
+    public function getTimestamp() {
+    	$c = false;
+    	try{
+    		$c = $this->typeC->getLastStamp(); 
+    	} catch(Exception $e) {}
+    	return $c;
     }
     
     public function getWarnings() {

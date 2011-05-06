@@ -51,8 +51,9 @@ class Controller
 			throw new Exception('404');
 		}
 		
-		if (method_exists($controllerObj,$function))						
+		if (method_exists($controllerObj,$function))	{
 			$controllerObj->$function($vars);
+		}
 		else 
 			throw new Exception('404');
 	
