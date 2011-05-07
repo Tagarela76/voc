@@ -111,7 +111,7 @@ class SalesContactsManager
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
 			$query .= " )";
-			$query = mysql_escape_string($query);
+			
 			//For Debug
 			//$this->db->beginTransaction(); 
 			$this->db->query($query);
