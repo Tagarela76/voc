@@ -2,7 +2,7 @@
 
 class MWasteStreams {
 	
-	public $resultParams; // we collect wasteSteans array in $this->resultParams['waste'] !!!
+	public $resultParams; // we collect wasteSteans array in $this->resultParams['waste'] !!! Why? Its not obviously and looks stupid (Ilya) 7/05/2011
 	
 	private $isForm;
 	
@@ -95,6 +95,8 @@ class MWasteStreams {
     		$this->isForm=true;
 
     		$date = $jmix->creationTime;
+    		var_Dump($jmix);
+    		
     		$wsCount = count($wastes);   
     			   	
     		$storageValidation = array();
@@ -169,8 +171,11 @@ class MWasteStreams {
     			}       				
     		}    		   			
     	    $storage = new Storage($db);
-    		$storageOverflow = $storage->validateOverflow($storageValidation, $date, $id);	    		
+    	    
+    		$storageOverflow = $storage->validateOverflow($storageValidation, $date, $id);	   
     		
+    		echo "Validating overflow";
+    		var_dump($storageValidation,$date,$id);
     		if ($storageOverflow !== false) {
 	    		$result['storageError'] = "Error! Choosen storages are overflow!";
 	    	}
@@ -188,8 +193,18 @@ class MWasteStreams {
     		}
     		$result['storageOverflow'] = json_encode(false);
     	}
-    	//now we should convert $date from mm-dd-yyyy into yyyy-mm-dd
-    	$date = substr($date,-4,4)."-".substr($date,0,2)."-".substr($date,3,2);
+    	
+    	//echo "<br/>now we should convert $date from mm-dd-yyyy into yyyy-mm-dd";
+    	//echo "$date";
+    	
+    	//$date = substr($date,-4,4)."-".substr($date,0,2)."-".substr($date,3,2);
+    	
+    	$dateO = DateTime::createFromFormat($jmix->dateFormat,$jmix->creationTime);
+    	
+    	$date = $dateO->format("Y-m-d");
+    	
+    	//echo "<br/>$date";
+    	//exit;
 
     	//	TODO: I'm not sure that it work correctly
 		if ($deletedStorageValidation == null) {
@@ -271,6 +286,7 @@ class MWasteStreams {
      public function prepareViewStorage ($params) {
      	extract($params);
      	$storageObj=new Storage($db,$storage_id);
+     	
      	$unittypeObj = new Unittype($db); 
      	$wasteStreamObj = new WasteStreams($db); 
      	    	   	
@@ -335,14 +351,14 @@ class MWasteStreams {
      }
      
       /**
-     * function prepareAddStorage($params)
+     * function prepareAddStorage($params) Comment by Ilya: Adding, saving, validating, prepare for smarty view in one function - IT IS BOOL SHIT, that is why func accept so many params, million params in one func - its BOOL SHIT TOO, TODO: need split this function on add, save, validate. When we will have time...
      * @param array params - $db, $facilityID, $companyID, $save, $action, $capacity_volume, [$capacity_weight], $max_period,
      * 						$name,$selectSuitability, $volume_unittype, [$weight_unittype], density, density_unit_id $isDocs = true/false
-     * 						if (edit){$storage_id} if (isDocs){$document_id}
+     * 						if (edit){$storage_id} if (isDocs){$document_id} (Params are fuckin' shit)
      * @return array for smarty
      */
      public function prepareAddStorage ($params) {
-     	extract($params);     	
+     	extract($params);     	//Fuckin' extract, shitcode
      	$storageObj=new Storage($db,$storage_id); 
      	$unittypeObj = new Unittype($db); 
      	$wastStreamObj= new WasteStreams($db);     	

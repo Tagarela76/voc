@@ -127,6 +127,7 @@ class CMix extends Controller
 
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
+		
 		$this->smarty->assign('apMethodDetails',$apMethodDetails);											
 		//$usageDetails = $usage->getMixDetails($this->getFromRequest('id'), true);
 		//$this->smarty->assign("productCount", count($usageDetails["products"]));				
@@ -674,8 +675,13 @@ class CMix extends Controller
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
 		$facilityID = $departmentDetails['facility_id'];
 		
+		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
+		$mixDateFormat = $chain->getFromTypeController('getFormat');
+		//echo "<br/>mixDateformat: $mixDateFormat<br/>";
+		
 		//	Extractt from json
 		$jmix = json_decode($form['mix']);
+		$jmix->dateFormat = $mixDateFormat;
 		$wastes = json_decode($form['wasteJson']);
 		
 		//	Start processing waste						
@@ -705,6 +711,10 @@ class CMix extends Controller
 			);
 			
 			$result = $mWasteStreams->prepare4mixAdd($params);
+			
+			//var_dump($result);
+			//exit;
+			
 			foreach ($result as $key=>$value) {										
 				$this->smarty->assign($key,$value);
 			}

@@ -204,6 +204,7 @@ class Storage {
     }
     
     public function save() {
+    	
     	if (is_null($this->storage_id)) {
     		$query = "INSERT INTO `".TB_STORAGE."` (facility_id, name, capacity_volume, capacity_weight, max_period, suitability, use_date, volume_unittype, weight_unittype," .
     				" density, density_unit_id".((is_null($this->document_id))?"":", document_id ").") VALUES " .
@@ -351,23 +352,39 @@ class Storage {
 			"ORDER BY creation_time ASC LIMIT 1) AS use_date " .
 			"FROM  `".TB_STORAGE."` s " .
 			"WHERE  storage_id = '$this->storage_id' LIMIT 1 ";
+    	
     	$this->db->query($query);
     	if ($this->db->num_rows() == 0) return false;
     	
+    	//echo $query;
     	$record = $this->db->fetch(0);
+    	//var_dump($record);
     	foreach ($record as $property =>$value) {
 	    	if (property_exists($this,$property)) {
 		    	$this->$property = $record->$property;
 	    	}
     	} 
-    	$query = "SELECT sum(w.value) AS summ, w.unittype_id FROM ".TB_WASTE." w, ".TB_USAGE." m WHERE w.storage_id = '$record->storage_id' AND m.mix_id = w.mix_id " .
+    	/*$query = "SELECT sum(w.value) AS summ, w.unittype_id FROM ".TB_WASTE." w, ".TB_USAGE." m WHERE w.storage_id = '$record->storage_id' AND m.mix_id = w.mix_id " .
     		((is_null($curMix))?" ":" AND m.mix_id != '$curMix' "). //if $curMix != null we load storage without waste of that mix in it...
 	    	"AND m.department_id IN (SELECT department_id FROM department WHERE facility_id = '$record->facility_id') " .
 			"AND (m.creation_time BETWEEN IFNULL((SELECT date FROM `storage_empty` WHERE storage_id = '$record->storage_id' AND date <= '$date' ORDER BY date DESC LIMIT 1),0) " .
 			"AND IFNULL((SELECT date FROM `storage_empty` WHERE storage_id = '$record->storage_id' AND date > '$date' ORDER BY date ASC LIMIT 1),'".date("Y-m-d")."')) " .
-			"GROUP BY w.unittype_id ";
+			"GROUP BY w.unittype_id "; */
+    	//take current usage and correct date_use
+    			$query = "SELECT sum(w.value) AS summ, w.unittype_id FROM ".TB_WASTE." w, ".TB_USAGE." m WHERE w.storage_id = '$record->storage_id' AND m.mix_id = w.mix_id " .
+    					"AND m.department_id IN (SELECT department_id FROM department WHERE facility_id = '{$record->facility_id}') " .
+    					//"AND (m.creation_time BETWEEN DATE_FORMAT('" .$record->use_date. "','%Y-%m-%d') AND DATE_FORMAT('" . date("Y-m-d"). "','%Y-%m-%d')) " .
+    					"AND (m.creation_time BETWEEN " .$record->use_date. " AND ".time().") " .
+    					"GROUP BY w.unittype_id ";
     	$this->db->query($query);
+    	//echo $query;
+    	/*
+    	 
+    					
+    		//OLD query
+    	*/
     	$usageData = $this->db->fetch_all();
+    	//var_dump($usageData);
     	if ($this->active == 0) {
     		$query = "SELECT date FROM ".TB_STORAGE_DELETED." WHERE storage_id = '$this->storage_id' LIMIT 1 ";
     		$this->db->query($query);
@@ -398,13 +415,35 @@ class Storage {
 	    	$value += $unittypeConverter->convertFromTo($usageRecord->summ,$unittype->getDescriptionByID($usageRecord->unittype_id),$unitTypeDescription,$this->density,$densityType);
     	}
     	
+    	$dateNow = new DateTime();
+    	$dateStorage = new DateTime();
+    	$dateStorage->setTimestamp($this->use_date);
+    	
+    	
+    	$dateDeadLine = new DateTime();
+    	$dateDeadLine->setTimestamp($this->use_date);
+    	$dateDeadLine->add(new DateInterval("P{$this->max_period}D")); //Add max period days to date
+    	
+    	//var_dump($dateDeadLine->format("d"));
+    	
+    	$diff = $dateDeadLine->diff($dateNow);
+    	//echo "diff";
+    	//var_dump($diff->format());
+    	$this->days_left = $diff->days;
+    	
     	$this->current_usage = round($value, 2); 
     	if (!is_null($this->use_date)) {
-    		$time = time() - strtotime($this->use_date);
-    		$this->days_left = floor($time/ (3600 * 24));  	
+    		//echo time()." - " . $this->use_date;
+    		//$time = time() - $this->use_date;//time() - strtotime($this->use_date); 10865
+    		//$this->days_left = floor($time/ (3600 * 24));  	
     	} else {
     		$this->days_left = 0;
     	}
+    	
+    	$chain = new TypeChain(null,'Date',$this->db,$this->facility_id,'facility');
+		$this->dateFormat = $chain->getFromTypeController('getFormat');
+    	
+    	$this->use_date = date($this->dateFormat,$this->use_date);
     }
 }
 ?>

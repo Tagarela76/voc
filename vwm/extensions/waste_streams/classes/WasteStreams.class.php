@@ -111,7 +111,7 @@ class WasteStreams {
 		    		", $storage " .		// storage_id (Storage.class.php)
 		    		" ) ";
 	    }
-	    //echo "<p>$query</p>";
+	    
 	    $this->db->query($query);
     }
     

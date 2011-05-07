@@ -370,12 +370,14 @@ class CWastestorage extends Controller
 							'id' => $result['data']->document_id
 							);
 			$mDocs = new $moduleMap['docs'];
+			
 			$result_doc = $mDocs->prepareStorageView($params);
 			foreach($result_doc as $key => $data) 
 			{
 				$this->smarty->assign($key,$data);
 			}
 		}	
+		
 		$this->smarty->assign('editUrl',"?action=edit&category=wastestorage&facilityID=".$this->getFromRequest('facilityID')."&id=".$this->getFromRequest('id')."");
 		$this->smarty->assign('deleteUrl',"?action=deleteItem&category=wastestorage&facilityID=".$this->getFromRequest('facilityID')."&id=".$this->getFromRequest('id')."&delete=1");
 		$this->smarty->assign('emptyUrl',"?action=deleteItem&category=wastestorage&facilityID=".$this->getFromRequest('facilityID')."&id=".$this->getFromRequest('id')."&empty=1");
@@ -421,6 +423,8 @@ class CWastestorage extends Controller
 						);								
 									
 		$result = $mWastestreams-> prepareBrowseStorage($params);
+		
+		
 
 		foreach($result as $key => $data) {
 			$this->smarty->assign($key,$data);
