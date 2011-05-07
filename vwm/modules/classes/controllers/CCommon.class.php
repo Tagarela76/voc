@@ -194,7 +194,7 @@ jgypsyn@gyantgroup.com
 			 */
 								
 			$to = array ("denis.nt@kttsoft.com",										
-				"dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ", "ilya.iz@kttsoft.com"
+				"dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com "
 			);
 			
 			//$from = "authentification@vocwebmanager.com";
