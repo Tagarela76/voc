@@ -1,7 +1,109 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+<script type="text/javascript">
+	$(function() {
+	 	$("#name").focus(function(){
+	 		if($(this).val() == "Your name:") {
+	 			$(this).val("");
+	 		}
+	 	});
+	 	
+	 	$("#name").focusout(function(){
+	 		if($(this).val() == "") {
+	 			$(this).val("Your name:");
+	 		}else {
+	 			$("#name_err").html('');
+	 		}
+	 	});
+	 	
+	 	$("#email").focus(function(){
+	 		if($(this).val() == "E-mail address:") {
+	 			$(this).val("");
+	 		}
+	 	});
+	 	
+	 	$("#email").focusout(function(){
+	 		if($(this).val() == "") {
+	 			$(this).val("E-mail address:");
+	 		}else {
+	 			$("#email_err").html('');
+	 		}
+	 	});
+	 	
+	 	$("#phone").focus(function(){
+	 		if($(this).val() == "Phone:") {
+	 			$(this).val("");
+	 		}
+	 	});
+	 	
+	 	$("#phone").focusout(function(){
+	 		if($(this).val() == "") {
+	 			$(this).val("Phone:");
+	 		}else {
+	 			$("#phone_err").html('');
+	 		}
+	 	});
+	 	
+	 	$("#comment").focus(function(){
+	 		if($(this).val() == "Your message:") {
+	 			$(this).val("");
+	 		}
+	 	});
+	 	
+	 	$("#comment").focusout(function(){
+	 		if($(this).val() == "") {
+	 			$(this).val("Your message:");
+	 		}else {
+	 			$("#comment_err").html('');
+	 		}
+	 	});
+	 	
+	 	$("#submitButton").click(function(){
+	 		err = false;
+	 		if($("#name").val() == "" || $("#name").val() == "Your name:") {
+	 			$("#name_err").html('Enter your name!');
+	 			err = true;
+	 		} 
+	 		
+	 		if($("#email").val() == "" || $("#email").val() == "Phone:") {
+	 			$("#email_err").html('Enter your email!');
+	 			err = true;
+	 		}
+	 		
+	 		if(!isValidEmail($("#email").val())) {
+	 			$("#email_err").html('Email is wrong!');
+	 			err = true;
+	 		}
+	 		
+	 		if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
+	 			$("#phone_err").html('Enter your phone!');
+	 			err = true;
+	 		} 
+	 		
+	 		if($("#comment").val() == "" || $("#comment").val() == "Your message:") {
+	 			$("#comment_err").html('Enter message!');
+	 			err = true;
+	 		} 
+	 		
+	 		if(err != true) {
+	 			document.getElementById("form1").submit();
+	 		}
+	 	});
+	});
+	
+	function isValidEmail(strEmail){
+		  validRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
+		   // search email text for regular exp matches
+		    if (strEmail.search(validRegExp) == -1) 
+		   {
+		      return false;
+		    } 
+		    return true; 
+	}
+</script>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>contact us</title>
 
@@ -179,18 +281,19 @@ China
 
 <p class="m_bot0">
 North America	<br> 
+tel: (00) 1 949 495-0999
+<br>
+email: info@vocwebmanager.com<br/>
      	<span class="text1page3">
 23974 ALISO CREEK ROAD, 
 SUITE 280
 <br>
+31, Rancho Circle, Lake Forest, CA 92630
+<br/>
 LAGUNA NIGUEL, CA 92677
 <br>
 </span>
-tel: (00) 1 949 495-0999
-<br>
-fax: (00) 1 949 495-3410
-<br>
-email: info@vocwebmanager.com
+
 
  </p>
  
@@ -232,20 +335,25 @@ tel: (044) 0 207  589-2389
 
 </div>
 
+<form method="POST" action="/vwm/?action=sendContactEmail&category=common" id="form1">
 	<h3 class="mg_top20">
 		contact form</h3>
-	<table border="0" class="cell1 "><tr><td  class="message" >	
- <input type="text" value="Your name:">
- <BR> <br>
-  <input type="text" value="E-mail address:">
-  <br> <br>
-  <input type="text"  value="Phone:" >
-</td>
-<td>
-<textarea name="comment"  rows="40" class="message"  cols="20" wrap="hard" strolling="yes">Your message:</textarea>
-</td>
-</tr></table>
-<div style="margin:10 0 0 302"><input type="submit" value="submit" class="button" ></div>
+<table border="0" class="cell1 ">
+	<tr>
+	<td  class="message" >	
+ 		<input type="text" value="Your name:" name="name" id="name"> <span id="name_err"></span>
+		 <BR> <br>
+  		<input type="text" value="E-mail address:" name="email" id="email">  <span id="email_err"></span>
+  	<br> <br>
+  		<input type="text"  value="Phone:"  name="phone" id="phone">  <span id="phone_err"></span>
+	</td>
+	<td>
+		<textarea name="comment" id="comment"  rows="40" class="message"  cols="20" wrap="hard" strolling="yes">Your message:</textarea>  <span id="comment_err"></span>
+	</td>
+	</tr>
+</table>
+<div style="margin:10 0 0 302"><input type="button" value="submit" class="button" id="submitButton" ></div>
+</form>
 
 	<br>		<br>	
 		
@@ -290,7 +398,7 @@ tel: (044) 0 207  589-2389
 										
 						
 							
-										<b>Copyright. 2010</b> &copy; Business Company. All rights reserved. Privacy policy | Terms of Use<br><a href="http://kttsoft.com/" style="color:#8892a2;text-decoration:none;">powered by KaTeT-Software</a>
+										<b>Copyright. 2011</b> &copy; Business Company. All rights reserved. Privacy policy | Terms of Use<br><a href="http://kttsoft.com/" style="color:#8892a2;text-decoration:none;">powered by KaTeT-Software</a>
 								</td>
 							  </tr>
 		</table>

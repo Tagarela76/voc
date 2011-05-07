@@ -179,6 +179,40 @@ class CCommon extends Controller
 						);
 		$report = $mReport->prepareSendSubReport($params);
 	}
+	
+	private function actionSendContactEmail() {
+		
+		
+			$cemail = new EMail();
+								
+			$to = array ("ilyz.iz@kttsoft.com",										
+				"denis.nt@kttsoft.com"
+			);
+			
+			//$from = "authentification@vocwebmanager.com";
+			$from = AUTH_SENDER."@".DOMAIN;
+			
+			$name = strip_tags($_POST['name']);
+			$email = strip_tags($_POST['email']);
+			$phone = strip_tags($_POST['phone']);
+			$comment = strip_tags($_POST['comment']);
+			
+			
+			
+			$theme = "Contact form from ".DOMAIN." by ".$name;
+			
+			
+			$message .= "Name: $name \r\n\r\n";
+			$message .= "Email: $email \r\n\r\n";
+			$message .= "Phone: $phone \r\n\r\n";
+			$message .= "Comment: $comment \r\n\r\n";
+			
+			
+			
+			$cemail->sendMail($from, $to, $theme, $message);
+			
+			echo '<html><head><meta http-equiv="refresh" content="3; url=/voc_web_manager.html"><title>mail result</title></head><body>' . "Mail sent successfully. Redirect to main page in 3 seconds." . '</body></html>';
+	}
 		
 	private function actionMsdsUploaderBasic()
 	{
