@@ -226,7 +226,8 @@ span.textbold {
 }
 
 .logo {
-    background: url(images/logo.png) no-repeat;
+    /*background: url(images/logo.png) no-repeat;*/
+    background: url(images/gyantcompliance_small.png) no-repeat;
 }
 
 .logo_site_green {

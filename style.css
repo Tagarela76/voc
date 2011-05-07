@@ -25,7 +25,7 @@ span.textbold{color:#aebacd;font-weight:bold;}
  .line li{line-height:18px;}
 /*******************�����*********************************/
 .bgtop{background-image:url(images/bg_top.gif);background-repeat:repeat-x}
-.logo{background:url(images/logo6.png) no-repeat 0% 25px;}
+/*.logo{background:url(images/logo6.png) no-repeat 0% 25px;}*/.logo{background:url(images/gyantcompliance.png) no-repeat 0% 25px;}
 span.blue{color:#00ccff;}
 p.m_bot0{margin-bottom:0px}
 
