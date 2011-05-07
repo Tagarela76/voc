@@ -71,6 +71,9 @@ class XML2PDF extends PDF_MC_Table
 	
 	var $equipment;
 	
+	var $quantityUnittype = 'gal';
+	var $vocUnittype = 'Lbs';
+	
 	//Class initializer.  the XML filename and optionally enable debug (set to 1)
 	//Also sends PDF content-type header;
 	function XML2PDF( $debug=FALSE )
@@ -292,7 +295,7 @@ class XML2PDF extends PDF_MC_Table
 				break;						
 			
 			case 'FACILITYNAME':				
-				break;				
+				break;					
 			
 			case 'EQUIPMENT':				
 				//if ($this->PageNo() != 1) {
@@ -316,10 +319,10 @@ class XML2PDF extends PDF_MC_Table
 				$this->rows[4] = 'VOC of Material';
 				$this->rows[5] = 'VOC of Coating';
 				$this->rows[6] = 'Mix Ratio';
-				$this->rows[7] = 'Qty Used (gal)';
+				$this->rows[7] = 'Qty Used ('.$this->quantityUnittype.')';
 				$this->rows[8] = 'Coating as Applied';
 				$this->rows[9] = 'Rule Exemption';
-				$this->rows[10] = 'Total Lbs VOC';
+				$this->rows[10] = 'Total '.$this->vocUnittype.' VOC';				
 				$this->Row($this->rows);
 				
 				for ($i=0;$i<count($this->rows);$i++) {
@@ -357,10 +360,10 @@ class XML2PDF extends PDF_MC_Table
 				$this->rows[3] = 'VOC of Material';
 				$this->rows[4] = 'VOC of Coating';
 				$this->rows[5] = 'Mix Ratio';
-				$this->rows[6] = 'Qty Used (gal)';
+				$this->rows[6] = 'Qty Used ('.$this->quantityUnittype.')';
 				$this->rows[7] = 'Coating as Applied';
 				$this->rows[8] = 'Rule Exemption';
-				$this->rows[9] = 'Total Lbs VOC';
+				$this->rows[9] = 'Total '.$this->vocUnittype.' VOC';
 				$this->Row($this->rows);								
 				
 				$this->SetX(10);
@@ -652,6 +655,14 @@ class XML2PDF extends PDF_MC_Table
 				
 			case 'NOTES':
 				$this->header['NOTES'] = $data;				
+				break;
+				
+			case 'QUANTITYUNITTYPE':
+				$this->quantityUnittype = $data;
+				break;
+				
+			case 'VOCUNITTYPE':
+				$this->vocUnittype = $data;
 				break;
 				
 			case 'SUPPLIER':

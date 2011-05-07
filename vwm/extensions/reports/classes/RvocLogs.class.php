@@ -107,7 +107,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					
 				$facility = new Facility($this->db);
 				$orgDetails = $facility->getFacilityDetails($this->categoryID);
-				$orgDetails["type"] = "facility";																															
+				$company = new Company($this->db);
+				$companyDetails = $company->getCompanyDetails($orgDetails['company_id']);				
+				$orgDetails["type"] = "facility";
+				$orgDetails["voc_unittype_id"] = $companyDetails["voc_unittype_id"]; 																															
 				break;
 				
 			case "department":
@@ -127,7 +130,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				$orgDetails["dep"] = $departmentDetails;
 				$facility = new Facility($this->db);
 				$orgDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
+				$company = new Company($this->db);
+				$companyDetails = $company->getCompanyDetails($orgDetails['company_id']);						
 				$orgDetails["type"] = "facility";												
+				$orgDetails["voc_unittype_id"] = $companyDetails["voc_unittype_id"]; 					
 				break;
 		}
 		
@@ -135,8 +141,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		$in = $this->group($query, $this->dateBegin, $this->dateEnd, $this->rule);	
 		//$debug->printMicrotime(__LINE__,__FILE__);
 		
-		//xml generation
-		
+		//xml generation		
 		$this->createXML($orgDetails, $rule, $in['equipments'], $in['days'], $fileName, $reportData);
 		//$debug->printMicrotime(__LINE__,__FILE__);
 	}
@@ -282,7 +287,25 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		$pageTag->appendChild( $titleManualTag );
 		
 		$unittype = new Unittype($this->db);
-		$unitTypeConverter = new UnitTypeConverter("us gallon");
+		$quantityUnittypeTag = $doc->createElement("quantityUnittype");
+		if (REGION == 'eu_uk') {
+			$unitTypeConverter = new UnitTypeConverter("cm3");
+			$quantityUnittypeTag->appendChild(
+				$doc->createTextNode( 'cm3' )
+			);						 	
+		} else {
+			$unitTypeConverter = new UnitTypeConverter("us gallon");
+			$quantityUnittypeTag->appendChild(
+				$doc->createTextNode( 'gal' )
+			);						 	
+		}
+		$pageTag->appendChild( $quantityUnittypeTag );	
+
+		$vocUnittypeTag = $doc->createElement("vocUnittype");
+		$vocUnittypeTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($unittype->getNameByID($orgDetails['voc_unittype_id'])))
+		);						 
+		$pageTag->appendChild( $vocUnittypeTag );
 		
 		$mixObj = new Mix($this->db);		
 		foreach ($equipments as $equipment) {			
@@ -342,7 +365,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					
 					foreach($mixesByDay as $mix)
 					{
-						
+						var_dump($mix->products);
+						die();
 						//$mix['creationTime'] = str_replace('-','/',$mix['creationTime']);						
 						foreach ($mix->products as $product) {		
 								$cnt++;																					
@@ -380,8 +404,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 								
 								$quantityTag = $doc->createElement("qtyUsed" );
 								
-								//$unitypeDetails = $unittype->getUnittypeDetails($product['unittype']);								
-								$qty = $unitTypeConverter->convertToDefault($product->quantity, $product->unitypeDetails['description']);
+								//$unitypeDetails = $unittype->getUnittypeDetails($product['unittype']);		
+								$densityObj = new Density($this->db, $product->density_unit_id);
+								$densityType = array('numerator'=>$densityObj->getNumerator(), 'denominator'=>$densityObj->getDenominator());								
+								$qty = $unitTypeConverter->convertToDefault($product->quantity, $product->unittypeDetails['description'], $product->density, $densityType);
 								$qty = round($qty,2);
 								
 								$sumQty += $qty; 							
@@ -698,15 +724,18 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		}			
 		
 		//	create day list		
-		$days[0] = strtotime($dateBegin);		
-		$i=1;		
-		while ($days[$i-1] < strtotime($dateEnd.' -1 day') ) {
+		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);		
+		$days[0] = $dateBeginObj->getTimestamp();
+		$i = 1;
+		while ($days[$i-1] < $dateEndObj->getTimestamp()) {
 			$days[$i] = $days[$i-1] + 86400;	//60*60*24 - seconds in one day			
 			$i++;
-		}	
+		}		
 	
 		$out['equipments'] = $equipments;
-		$out['days'] = $days;		
+		$out['days'] = $days;				
+		
 		return $out;
 	}
 		
