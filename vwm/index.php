@@ -71,7 +71,8 @@
 				}
 				
 				$user=new User($db, $xnyo, $access, $auth);
-				if (!($user->isLoggedIn()) && !($_POST["action"] == 'auth' || $_POST["action"] == "msdsUploaderMain") ) 
+				if (!($user->isLoggedIn()) && !($_POST["action"] == 'auth' || $_POST["action"] == "msdsUploaderMain" ||
+						($_POST['action'] == "sendContactEmail" and $_POST['category'] == "common")) ) 
 				{ 
 					echo 'Location '.$xnyo->logout_redirect_url;
 					header ('Location: '.$xnyo->logout_redirect_url.'?error=timeout');
