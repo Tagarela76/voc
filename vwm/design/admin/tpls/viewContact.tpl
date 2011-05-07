@@ -95,7 +95,7 @@
 					Comments:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->comments}</div>								
+					<div align="left" >&nbsp;{$contact->getCommentsHTML()}</div>								
 				</td>
 			</tr>
 			

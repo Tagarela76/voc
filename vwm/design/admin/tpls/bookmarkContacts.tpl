@@ -106,7 +106,7 @@
 			
 			
 			<td class="border_users_b border_users_l border_users_r" >
-				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->comments}</div ></a>
+				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->getCommentsHTML()}</div ></a>
 			</td>				
 	</tr>
 {/section}		 

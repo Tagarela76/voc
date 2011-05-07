@@ -208,7 +208,7 @@
 						<input type="hidden" name="state_select_type" id="state_select_type" {if $isUsa}value="select"{else}value="text"{/if} />
 						<span style='color:Red;'>*</span>
 					</div>
-					{if $data->errors.state}
+					{if $data->errors.state and !$isUsa}
 					
 						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
 									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.state}</font>
@@ -225,6 +225,7 @@
 					<div align="left" style='display:inline; float:left;'>
 						<input type='text' name='zip_code' value='{$data->zip_code}'>
 					</div>
+					<span style='color:Red;'>*</span>
 					{if $data->errors.zip_code}
 					
 						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">

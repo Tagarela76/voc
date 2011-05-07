@@ -13,7 +13,7 @@ class SalesContactsManager
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-		
+		$query = mysql_escape_string($query);
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$contacts = array();
@@ -37,7 +37,7 @@ class SalesContactsManager
 	
 	public function deleteSalesContact($contactID) {
 		$query = "DELETE FROM ". TB_CONTACTS . " WHERE id = $contactID";
-		
+		$query = mysql_escape_string($query);
 		$this->db->query($query);
 			
 		if(mysql_error() == '') {
@@ -83,6 +83,7 @@ class SalesContactsManager
 					WHERE id = {$c->id}";
 		
 		
+		
 		$this->db->query($query);
 			
 		if(mysql_error() == '') {
@@ -110,7 +111,7 @@ class SalesContactsManager
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
 			$query .= " )";
-			
+			$query = mysql_escape_string($query);
 			//For Debug
 			//$this->db->beginTransaction(); 
 			$this->db->query($query);

@@ -28,6 +28,8 @@ class CAContacts extends Controller {
 		
 		$contactsList = $manager->getContactsList($pagination);
 		
+		
+		
 		/*$apmethodList=$apmethod->getApmethodList($pagination);
 		$field='apmethod_id';
 		$list = $apmethodList;
@@ -50,7 +52,9 @@ class CAContacts extends Controller {
 	private function actionViewDetails() {
 		
 		$manager = new SalesContactsManager($this->db);
+		
 		$contact = $manager->getSalesContact($this->getFromRequest('id'));
+		
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -64,6 +68,7 @@ class CAContacts extends Controller {
 		
 		$contactsManager = new SalesContactsManager($this->db);
 		$contact = $contactsManager->getSalesContact($id);
+		
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
 		$usaID = $country->getCountryIDByName('USA');

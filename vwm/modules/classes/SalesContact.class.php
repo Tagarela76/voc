@@ -22,6 +22,7 @@ class SalesContact
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
 	
+	
 	private $viewDetailsUrl; // Url for smarty. Builds dynamicly
 	
 	public $errors;
@@ -49,6 +50,14 @@ class SalesContact
 	/**
 	 * GETTERS
 	 */
+	
+	
+	
+	public function getCommentsHTML() {
+		//$value = nl2br( $this->comments);
+		$value = str_replace ("\r\n", "<br/>" ,  $this->comments); //Escaped by any setter
+		return $value;
+	}
 	
 	public function get_viewDetailsUrl() {
 		return "admin.php?action=viewDetails&category=contacts&id={$this->id}";
@@ -176,6 +185,9 @@ class SalesContact
 			throw new Exception("affiliations cannot be empty!");
 		}
 	}*/
+	
+	
+	
 	private function set_industry($value) {
 		try {
 			$value = $this->escapeValue($value);
@@ -187,7 +199,12 @@ class SalesContact
 	}
 	private function set_comments($value) {
 		try {
+			
 			$value = $this->escapeValue($value);
+			
+			
+			//nl2br($value);
+			
 			$this->comments = $value;
 		} catch(Exception $e) {
 		}
@@ -254,7 +271,9 @@ class SalesContact
 	}
 	
 	private function escapeValue($value) {
-		return mysql_escape_string($value);
+		$value = strip_tags($value);
+		//$value = mysql_escape_string($value);
+		return $value;
 	}
 	
 	private function checkEmail($value) {
