@@ -282,7 +282,7 @@ class RVOCbyRules extends ReportCreator implements iReportCreator {
 			$tmpYear = $dateBeginObj->format('Y');			
 			$tmpMonth = $dateBeginObj->format('m');
 			$tmpDay = 1;
-			$tmpDate = date("Y-m-d", strtotime($dateBegin));
+			
 			//$endYear = substr(date("Y-m-d", strtotime($dateEnd)), 0, 4);
 			$endYear = $dateEndObj->format('Y');
 			$endMonth = $dateEndObj->format('m');

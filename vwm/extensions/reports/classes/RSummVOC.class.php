@@ -5,12 +5,15 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 	private $dateBegin;
 	private $dateEnd;
 	
-	function RSummVOC($db, $reportRequest) {
+	private $dateFormat;
+	
+	function RSummVOC($db, ReportRequest $reportRequest) {
 		$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
 		$this->categoryID = $reportRequest->getCategoryID();
 		$this->dateBegin = $reportRequest->getDateBegin();
-		$this->dateEnd = $reportRequest->getDateEnd();	
+		$this->dateEnd = $reportRequest->getDateEnd();
+		$this->dateFormat = $reportRequest->getDateFormat();	
 	}
 	
 	public function buildXML($fileName) {
@@ -295,12 +298,23 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 		 * it need for generating $tmpDate and $tmpDateEnd
 		 * $endYear, $endMonth - values of year and month of the end date for query
 		 */
+		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $dateEnd);				
+		
+		$tmpYear = $dateBeginObj->format('Y');			
+		$tmpMonth = $dateBeginObj->format('m');
+		$tmpDay = 1;
+		
+		$endYear = $dateEndObj->format('Y');
+		$endMonth = $dateEndObj->format('m');
+
+		/*
 		$tmpYear = date("Y", strtotime($dateBegin));
 		$tmpMonth = date("m", strtotime($dateBegin));
 		$tmpDay = 1;
 		$tmpDate = date("Y-m-d", strtotime($dateBegin));
 		$endYear = date("Y", strtotime($dateEnd));
-		$endMonth = date("m", strtotime($dateEnd));
+		$endMonth = date("m", strtotime($dateEnd));*/
 		$total = 0;
 		$tmpResults = array();
 		$results = array();
@@ -312,7 +326,8 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 		while ((((int)$tmpYear == (int)$endYear)&&((int)$tmpMonth <= (int)$endMonth))||
 				( (int)$tmpYear<(int)$endYear))	{
 			if (((int)$tmpMonth == (int)$endMonth)&&((int)$tmpYear == (int)$endYear)) {
-				$tmpDateEnd = $dateEnd;
+				//$tmpDateEnd = $dateEnd;
+				$tmpDateEndObj = $dateEndObj;
 			} else {
 				if ( $tmpMonth==12 ) {
 					$tmpYear +=1;
@@ -320,7 +335,8 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 				} else {
 					$tmpMonth += 1; 
 				}
-				$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
+				//$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
+				$tmpDateEndObj = new DateTime(date('Y-m-d',mktime(0, 0, 0, $tmpMonth, $tmpDay, $tmpYear)));
 			}
 			$results = array();
 			$WasARule = false;
@@ -330,8 +346,10 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 				
 				//$tmpTimestamp = mktime(0, 0, 0, int month, int day, int year, int [is_dst] );
 				
-				$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " ."AND " . strtotime($tmpDateEnd). " ";	
-				$tmpQuery .= "AND m.rule_id = ".$rule[$i]." ";	
+				//$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " ."AND " . strtotime($tmpDateEnd). " ";	
+				//$tmpQuery .= "AND m.rule_id = ".$rule[$i]." ";
+				$tmpQuery = $query."AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
+				$tmpQuery .= "AND m.rule_id = ".$rule[$i]." ";		
 
 				$this->db->query($tmpQuery);
 				
@@ -369,9 +387,10 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			$WasAnExemptRule = false;
 			for ($i = 0; $i<count($exempt); $i++) {
 				
-				$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " . "AND " . strtotime($tmpDateEnd). " ";	
-				$tmpQuery .= "AND m.exempt_rule = '".$exempt[$i]."' ";	
-
+				//$tmpQuery = $query."AND m.creation_time BETWEEN " . strtotime($tmpDate). " " . "AND " . strtotime($tmpDateEnd). " ";	
+				//$tmpQuery .= "AND m.exempt_rule = '".$exempt[$i]."' ";	
+				$tmpQuery = $query."AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
+				$tmpQuery .= "AND m.exempt_rule = '".$exempt[$i]."' ";
 				
 				
 				$this->db->query($tmpQuery);
@@ -413,20 +432,22 @@ class RSummVOC extends ReportCreator implements iReportCreator {
 			if ($WasAnExemptRule == false) {
 				$results [] = $emptyData[1];
 			}	
-			
-			var_dump($results);
-				//result:
-				$resultByMonth [] = array(
-					'month' => date("M", strtotime($tmpDate)),
-					'total' => $total,
-					'data' => $results
-				);
-				$fullTotal += $total;
-				$total = 0;
-				//var_dump($resultByMonth);
-				
-			$tmpDate = $tmpDateEnd;
+
+			$resultByMonth [] = array(
+				//'month' => date("M", strtotime($tmpDate)),
+				'month' => $dateBeginObj->format('M'),
+				'total' => $total,
+				'data' => $results
+			);
+			$fullTotal += $total;
+			$total = 0;
+
+			/*$tmpDate = $tmpDateEnd;
 			if ($tmpDate == $dateEnd) {
+				break;
+			}*/
+			$dateBeginObj = $tmpDateEndObj;
+			if ($dateBeginObj == DateTime::createFromFormat($this->dateFormat, $dateEnd)) {
 				break;
 			}
 		}	
