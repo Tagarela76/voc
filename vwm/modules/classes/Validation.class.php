@@ -1962,7 +1962,7 @@ class Validation {
 			$issue["title"] = trim($issue["title"]);
 			$titleLength = strlen($issue["title"]);
 			
-			if ($titleLength > 0 && $titleLength < 20) {
+			if ($titleLength > 0 && $titleLength < 120) {
 				$result["title"] = "success";
 			} else {
 				$result["summary"] = "false";
