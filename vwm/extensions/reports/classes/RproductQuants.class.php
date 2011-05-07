@@ -4,17 +4,22 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 
 	private $dateBegin;
 	private $dateEnd;
+	private $dateFormat;
 
-    function RproductQuants($db, $reportRequest) {
+    function RproductQuants($db, ReportRequest $reportRequest) {
     	$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
 		$this->categoryID = $reportRequest->getCategoryID();
 		$this->dateBegin = $reportRequest->getDateBegin();
 		$this->dateEnd = $reportRequest->getDateEnd();
+		$this->dateFormat = $reportRequest->getDateFormat();
     }
     
     public function buildXML($fileName) {
-	    $agencyStr = "1, 30"; //CAOSHA and SCAQMD
+	    //$agencyStr = "1, 30"; //CAOSHA and SCAQMD
+	    $dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
+		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);    	
+    	
 	    switch ($this->categoryType) {    
 		    case "company":
 			    $facility = new Facility($this->db);
@@ -25,17 +30,19 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 			    $facilityString = substr($facilityString,0,-1);
 			    
 			    $query = "SELECT p.product_id, p.product_nr, p.name product_name, p.vocwx, p.voclx " .
-				    "FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    //"FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    "FROM mix m, mixgroup mg, department d, facility f, product p " .
 					"WHERE m.mix_id = mg.mix_id and " .
 					"m.department_id = d.department_id and " .
 					"mg.product_id = p.product_id and " .
-					"d.facility_id = f.facility_id and " .
-					"p.product_id = cg.product_id " .
-					"AND cg.component_id = ab.component_id " .												
-					"AND ab.agency_id IN (" . $agencyStr . ") " .				
+					"d.facility_id = f.facility_id " .
+					//" AND p.product_id = cg.product_id " .
+					//"AND cg.component_id = ab.component_id " .												
+					//"AND ab.agency_id IN (" . $agencyStr . ") " .				
 					"AND f.facility_id IN (" . $facilityString . ") " .
-					"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
-					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .													
+					//"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					//"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .													
 					"group by p.product_id, p.product_nr, p.name, p.vocwx, p.voclx";
 
 			    //getting company name
@@ -46,17 +53,19 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 			    
 		    case "facility":
 			    $query = "SELECT p.product_id, p.product_nr, p.name product_name, p.vocwx, p.voclx " .
-				    "FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    //"FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    "FROM mix m, mixgroup mg, department d, facility f, product p " .
 					"WHERE m.mix_id = mg.mix_id and " .
 					"m.department_id = d.department_id and " .
 					"mg.product_id = p.product_id and " .
-					"d.facility_id = f.facility_id and " .
-					"p.product_id = cg.product_id " .
-					"AND cg.component_id = ab.component_id " .												
-					"AND ab.agency_id IN (" . $agencyStr . ") " .		
+					"d.facility_id = f.facility_id " .
+					//"AND p.product_id = cg.product_id " .
+					//"AND cg.component_id = ab.component_id " .												
+					//"AND ab.agency_id IN (" . $agencyStr . ") " .		
 					"AND f.facility_id = " . $this->categoryID . " " .
-					"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
-					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .						
+					//"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					//"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .						
 					"group by p.product_id, p.product_nr, p.name, p.vocwx, p.voclx";
 
 			    //getting company name
@@ -71,17 +80,19 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 			    
 		    case "department":
 			    $query = "SELECT p.product_id, p.product_nr, p.name product_name, p.vocwx, p.voclx " .
-				    "FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    //"FROM mix m, mixgroup mg, department d, facility f, product p, components_group cg, agency_belong ab " .
+				    "FROM mix m, mixgroup mg, department d, facility f, product p " .
 					"WHERE m.mix_id = mg.mix_id and " .
 					"m.department_id = d.department_id and " .
 					"mg.product_id = p.product_id and " .
-					"d.facility_id = f.facility_id and " .
-					"p.product_id = cg.product_id " .
-					"AND cg.component_id = ab.component_id " .													
-					"AND ab.agency_id IN (" . $agencyStr . ") " .
+					"d.facility_id = f.facility_id " .
+					//"AND p.product_id = cg.product_id " .
+					//"AND cg.component_id = ab.component_id " .													
+					//"AND ab.agency_id IN (" . $agencyStr . ") " .
 					"AND d.department_id = " . $this->categoryID . " " .
-					"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
-					"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .			
+					//"AND m.creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateBegin)). "','%Y-%m-%d') " .
+					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
+					//"AND DATE_FORMAT('" . date("Y-m-d", strtotime($this->dateEnd)). "','%Y-%m-%d') " .			
 					"group by p.product_id, p.product_nr, p.name, p.vocwx, p.voclx";
 
 			    $department = new Department($this->db);
@@ -98,6 +109,7 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 			    $orgDetails['department'] = $departmentDetails;
 			    break;
 	    }
+	    
 	    $in = $this->group($query);	
 	    $this->createXML($in['mps'],$in['results'],$orgDetails,$this->dateBegin,$this->dateEnd,$fileName);			
     }
@@ -159,7 +171,8 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 		
 		$periodTag = $doc->createElement( "period" );
 		$periodTag->appendChild(
-			$doc->createTextNode("From ".date("Y-m-d", strtotime($dateBegin))." To ".date("Y-m-d", strtotime($dateEnd)))
+			//$doc->createTextNode("From ".date("Y-m-d", strtotime($dateBegin))." To ".date("Y-m-d", strtotime($dateEnd)))
+			$doc->createTextNode("From ".$this->dateBegin." To ".$this->dateEnd)
 		);
 		$page->appendChild( $periodTag );
 		
