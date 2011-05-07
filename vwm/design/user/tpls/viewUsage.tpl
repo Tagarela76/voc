@@ -60,7 +60,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->rule} 
+                                &nbsp; {$usage->rule.rule_nr_us} 
                             </div>
                         </td>
                     </tr>

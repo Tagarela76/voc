@@ -248,9 +248,9 @@
 		
 		public function getRule() {
 			if(isset($this->rule_id)) {
-				$this->db->query("select rule_desc from rule where rule_id = ". $this->rule_id);
+				$this->db->query("select * from rule where rule_id = ". $this->rule_id);
 				$a = $this->db->fetch_array(0);
-				$this->rule = $a['rule_desc'];
+				$this->rule = $a;
 			}
 		}
 		
