@@ -184,9 +184,17 @@ class CCommon extends Controller
 		
 		
 			$cemail = new EMail();
+			
+			/**
+			 * denis.nt@kttsoft.com
+dmitry.vd@kttsoft.com
+jgypsyn@gyantgroup.com 
+			 * 
+			 * 
+			 */
 								
-			$to = array ("ilyz.iz@kttsoft.com",										
-				"denis.nt@kttsoft.com"
+			$to = array ("denis.nt@kttsoft.com",										
+				"dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ", "ilya.iz@kttsoft.com"
 			);
 			
 			//$from = "authentification@vocwebmanager.com";
