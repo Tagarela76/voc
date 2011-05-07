@@ -539,6 +539,12 @@ class CMix extends Controller
 		
 		//	Extractt from json
 		$jmix = json_decode($form['mix']);
+		
+		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
+		$mixDateFormat = $chain->getFromTypeController('getFormat');
+		
+		$jmix->dateFormat = $mixDateFormat;
+		
 		$wastes = json_decode($form['wasteJson']);
 		
 		//	Start processing waste						

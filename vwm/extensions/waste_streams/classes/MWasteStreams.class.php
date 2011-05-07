@@ -198,6 +198,8 @@ class MWasteStreams {
     	
     	//$date = substr($date,-4,4)."-".substr($date,0,2)."-".substr($date,3,2);
     	
+    	
+    	
     	$dateO = DateTime::createFromFormat($jmix->dateFormat,$jmix->creationTime);
     	
     	$date = $dateO->format("Y-m-d");
