@@ -365,8 +365,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					
 					foreach($mixesByDay as $mix)
 					{
-						var_dump($mix->products);
-						die();
+						
 						//$mix['creationTime'] = str_replace('-','/',$mix['creationTime']);						
 						foreach ($mix->products as $product) {		
 								$cnt++;																					
