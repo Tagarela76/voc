@@ -95,7 +95,7 @@ class MWasteStreams {
     		$this->isForm=true;
 
     		$date = $jmix->creationTime;
-    		var_Dump($jmix);
+    		//var_Dump($jmix);
     		
     		$wsCount = count($wastes);   
     			   	
@@ -174,8 +174,7 @@ class MWasteStreams {
     	    
     		$storageOverflow = $storage->validateOverflow($storageValidation, $date, $id);	   
     		
-    		echo "Validating overflow";
-    		var_dump($storageValidation,$date,$id);
+    		
     		if ($storageOverflow !== false) {
 	    		$result['storageError'] = "Error! Choosen storages are overflow!";
 	    	}
