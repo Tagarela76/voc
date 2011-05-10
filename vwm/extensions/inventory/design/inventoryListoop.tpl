@@ -122,7 +122,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="4" class="border_users_l border_users_r" align="center">
+        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r" align="center">
             No inventories in the facility
         </td>
     </tr>

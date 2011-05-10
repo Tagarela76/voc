@@ -1556,7 +1556,13 @@ class CMix extends Controller
 		
 		$unittypeList = $this->getUnitTypeList($optMix->company->company_id);
 		
-		$APMethod = $this->getDefaultApMethod($optMix->company->company_id);
+		//$APMethod = $this->getDefaultApMethod($optMix->company->company_id);
+		
+		$apmethodObject = new Apmethod($this->db);
+		$APMethod=$apmethodObject->getDefaultApmethodDescriptions($optMix->company->company_id);
+		if(!isset($APMethod) or empty($APMethod)) {
+			$APMethod = $apmethodObject->getApmethodList(null);
+		}
 		
 		$res = $this->getDefaultTypesAndUnitTypes($optMix->company->company_id);		
 		$typeEx = $res['typeEx'];
@@ -1586,6 +1592,7 @@ class CMix extends Controller
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount',count($optMix->products));						
 		$this->smarty->assign('productsAdded',$optMix->products);
+		
 		$this->smarty->assign('APMethod',$APMethod);
 		//exit;
 		

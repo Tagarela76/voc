@@ -44,7 +44,8 @@ class CCommon extends Controller
 			$date->setTimestamp($mix->creation_time);
 			$mixCreationMonth =  $date->format('m');//substr($mix->creation_time,5,2);
 			$mixCreationYear = $date->format('Y');//substr($mix->creation_time,0,4);	
-								
+			
+			echo $mixCreationYear . "<br/>";
 			$department->incrementUsage($mixCreationMonth, $mixCreationYear, $mix->voc, $mix->department_id);	
 		}
 		echo "<h1>DONE</h1>";
@@ -77,14 +78,31 @@ class CCommon extends Controller
 		
 		$this->db->query($query);
 		
-		$query = "DROP TABLE IF EXISTS `contacts_type`;
-				CREATE TABLE IF NOT EXISTS `contacts_type` (
-				  `id` int(11) NOT NULL AUTO_INCREMENT,
-				  `name` varchar(50) CHARACTER SET utf8 NOT NULL,
-				  PRIMARY KEY (`id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;";
+		$error = mysql_error();
+		if($error) {
+			echo "<b>MySQL Error:</b><br/>$error<br/>In query:<br/>$query";
+		}
 		
-		$this->db->query($query);
+		$query = "DROP TABLE IF EXISTS `contacts_type`;# MySQL returned an empty result set (i.e. zero rows).
+
+CREATE TABLE IF NOT EXISTS `contacts_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;# MySQL returned an empty result set (i.e. zero rows).
+
+
+INSERT INTO `contacts_type` (`id`, `name`) VALUES
+(1, 'contacts'),
+(2, 'government'),
+(3, 'affiliations');# Affected rows: 3";
+		
+		$error = mysql_error();
+		if($error) {
+			echo "<br/><b>MySQL Error:</b><br/>$error<br/>In query:<br/>$query";
+		}
+		
+		
 		
 		echo "DONE";
 	}
