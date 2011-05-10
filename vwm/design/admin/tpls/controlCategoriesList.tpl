@@ -103,6 +103,10 @@
 				<input type="hidden" name="category" value="contacts">
 				<input type="hidden" name="bookmark" value="contacts">
 				<!--  <input type="hidden" name="category" value="{$request.category}"> -->
+				{if $smarty.request.subBookmark}
+					<input type="hidden" name="subBookmark" value="{$smarty.request.subBookmark}">
+				{/if}
+				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
 				<input type="hidden" name="bookmark" value="{$request.bookmark}">

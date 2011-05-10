@@ -254,7 +254,8 @@
 	define ('TB_VPS_MODULE2CURRENCY','vps_module2currency');
 	define ('TB_VPS_LIMIT_PRICE2CURRENCY','vps_limit_price2currency'); 
 	
-	define ('TB_CONTACTS','Contacts');
+	define ('TB_CONTACTS','contacts');
+	define ('TB_CONTACTS_TYPE','contacts_type');
 			
 	//	XNYO CONSTANTS
 	define ('AUTH_TYPE', 'sql');

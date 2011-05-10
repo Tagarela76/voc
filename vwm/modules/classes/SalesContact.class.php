@@ -18,6 +18,9 @@ class SalesContact
 	private $zip_code;
 	private $country_id;
 	private $state_id;  
+	private $mail;
+	private $cellphone;
+	private $type; //Contacts, Government or Affiliations (table contacts_type)
 	
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
@@ -92,6 +95,30 @@ class SalesContact
 		$this->$property = $value;
 	}
 	
+	private function set_type($value) {
+		try {
+			$this->type = $value;
+		} catch(Exception $e) {
+			throw new Exception("Contact Type: " . $e->getMessage());
+		}
+	}
+	
+	private function set_mail($value) {
+		try {
+			$this->mail = $value;
+		} catch(Exception $e) {
+			throw new Exception("Contact Mail: " . $e->getMessage());
+		}
+	}
+	
+	private function set_cellphone($value) {
+		try {
+			$this->cellphone = $value;
+		} catch(Exception $e) {
+			throw new Exception("Contact Cellphone: " . $e->getMessage());
+		}
+	}
+	
 	private function set_id($value) {
 		try {
 			$this->id = $value;
@@ -102,7 +129,7 @@ class SalesContact
 	
 	private function set_company($value) {
 		try {
-			$this->checkEmpty($value);
+			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->company = $value;
 		} catch(Exception $e) {
@@ -127,8 +154,10 @@ class SalesContact
 	
 	private function set_phone($value) {
 		try {
-			$this->checkEmpty($value);
-			$this->checkPhone($value);
+			//$this->checkEmpty($value);
+			if(isset($value) and !empty($value)) {
+				$this->checkPhone($value);
+			}
 			$value = $this->escapeValue($value);
 			$this->phone = $value;
 		} catch(Exception $e) {
@@ -138,7 +167,7 @@ class SalesContact
 	}
 	private function set_fax($value) {
 		try {
-			$this->checkEmpty($value);
+			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->fax = $value;
 		} catch(Exception $e) {
@@ -148,8 +177,10 @@ class SalesContact
 	}
 	private function set_email($value) {
 		try {
-			$this->checkEmpty($value);
-			$this->checkEmail($value);
+			//$this->checkEmpty($value);
+			if(isset($value) and !empty($value)) {
+				$this->checkEmail($value);
+			}
 			$value = $this->escapeValue($value);
 			$this->email = $value;
 		} catch(Exception $e) {
@@ -159,7 +190,7 @@ class SalesContact
 	}
 	private function set_title($value) {
 		try {
-			$this->checkEmpty($value);
+			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->title = $value;
 		} catch(Exception $e) {
@@ -211,7 +242,7 @@ class SalesContact
 	}
 	private function set_state($value) {
 		try {
-			$this->checkEmpty($value);
+			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->state = $value;
 		} catch(Exception $e) {
@@ -221,7 +252,7 @@ class SalesContact
 	}
 	private function set_zip_code($value) {
 		try {
-			$this->checkEmpty($value);
+			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->zip_code = $value;
 		} catch(Exception $e) {

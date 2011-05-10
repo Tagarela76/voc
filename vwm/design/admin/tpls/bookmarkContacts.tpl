@@ -24,7 +24,9 @@
 			<td  class="">Company</td>
 			<td  class="">Contact</td>
 			<td  class="">Phone</td>
+			<td  class="">Cell/mobile phone</td>
 			<td  class="">Email</td>
+			<td  class="">Mailing address</td>
 			<td  class="">Fax</td>
 			<td  class="">Title</td>
 			
@@ -66,7 +68,15 @@
 			</td>
 			
 			<td class="border_users_b border_users_l" >
+				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->cellphone}</div ></a>
+			</td>
+			
+			<td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->email}</div ></a>
+			</td>
+			
+			<td class="border_users_b border_users_l" >
+				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->mail}</div ></a>
 			</td>
 			
 			<td class="border_users_b border_users_l" >

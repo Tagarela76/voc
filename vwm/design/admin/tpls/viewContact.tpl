@@ -38,6 +38,15 @@
 			
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
+					Cell/mobile phone:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->cellphone}</div>								
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
 					Fax:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
@@ -51,6 +60,15 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" >&nbsp;{$contact->email}</div>								
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Mailing address:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->mail}</div>								
 				</td>
 			</tr>
 			

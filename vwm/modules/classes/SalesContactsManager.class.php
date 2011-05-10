@@ -7,13 +7,16 @@ class SalesContactsManager
 		$this->db=$db;
 	}
 	
-	public function getContactsList(Pagination $pagination = null) {
-		$query = "SELECT * from " . TB_CONTACTS;
-		
+	public function getContactsList(Pagination $pagination = null,$contacts_type_name) {
+		$query = "SELECT c.* from " . TB_CONTACTS . " c ";
+		$contacts_type_name = mysql_escape_string($contacts_type_name);
+		if(isset($contacts_type_name)) {
+			$query .=  ", " . TB_CONTACTS_TYPE . " ct ";
+			$query .= " WHERE c.type = ct.id AND ct.name = '$contacts_type_name' ";
+		}
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-		$query = mysql_escape_string($query);
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$contacts = array();
@@ -79,7 +82,9 @@ class SalesContactsManager
 					state			= '{$c->state}',
 					zip_code		= '{$c->zip_code}',
 					country_id		= '{$c->country_id}',
-					state_id		= $state_id
+					state_id		= $state_id,
+					mail			= '{$c->mail}',
+					cellphone		= '{$c->cellphone}'
 					WHERE id = {$c->id}";
 		
 		
@@ -96,7 +101,7 @@ class SalesContactsManager
 	public function addContact(SalesContact $c) {
 		if(!$c->errors) {
 
-			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,zip_code,country_id,state_id) VALUES (
+			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,zip_code,country_id,state_id,mail,cellphone,type) VALUES (
 						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}', '{$c->title}', '{$c->government_agencies}',  
 						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->zip_code}'  
 						";
@@ -110,10 +115,15 @@ class SalesContactsManager
 			$query .= isset($country_id) ? " , ".$c->country_id : " , NULL ";
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
+			$query .= " , '{$c->mail}', '{$c->cellphone}' ,";
+			
+			$query .= " (select id from contacts_type where name = '{$c->type}' limit 1) ";
+			
 			$query .= " )";
 			
 			//For Debug
 			//$this->db->beginTransaction(); 
+			//echo $query; exit;
 			$this->db->query($query);
 			
 			if(mysql_error() == '') {

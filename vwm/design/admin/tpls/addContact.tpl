@@ -5,7 +5,7 @@
 		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$error_message}
 {/if}
 <div style="padding:7px;">
-<form method='POST' action='admin.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}'>
+<form method='POST' action='admin.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}&subBookmark={if $smarty.request.subBookmark}{$smarty.request.subBookmark}{else}contacts{/if}'>
 		<table class="users rd" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">
@@ -22,7 +22,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>	
-						<input type='text' name='company' value='{$data->company}'> <span style='color:Red;'>*</span>
+						<input type='text' name='company' value='{$data->company}'> 
 					</div>
 					
 					{if $data->errors.company}
@@ -59,7 +59,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='phone' value='{$data->phone}'>  <span style='color:Red;'>*</span>
+						<input type='text' name='phone' value='{$data->phone}'>  
 					</div>
 					{if $data->errors.phone}
 					
@@ -72,11 +72,28 @@
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
+						Cell/mobile phone:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='cellphone' value='{$data->cellphone}'>  
+					</div>
+					{if $data->errors.cellphone}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.cellphone}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
 						Fax:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='fax' value='{$data->fax}'>  <span style='color:Red;'>*</span>
+						<input type='text' name='fax' value='{$data->fax}'>  
 					</div>
 					{if $data->errors.fax}
 					
@@ -93,7 +110,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='email' value='{$data->email}'>  <span style='color:Red;'>*</span>
+						<input type='text' name='email' value='{$data->email}'>  
 					</div>
 					{if $data->errors.email}
 					
@@ -106,11 +123,28 @@
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
+						Mailing address:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='mail' value='{$data->mail}'>  
+					</div>
+					{if $data->errors.mail}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.mail}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
 						Title:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='title' value='{$data->title}'>  <span style='color:Red;'>*</span>
+						<input type='text' name='title' value='{$data->title}'> 
 					</div>
 					{if $data->errors.title}
 					
@@ -172,7 +206,7 @@
 								<option value="{$country.id}" {if $country.id == $data->country_id}selected="selected"{/if}>{$country.name}</option>
 							{/foreach}
 						</select>	
-						  <span style='color:Red;'>*</span>
+						  
 						  
 					</div>
 					{if $data->errors.country}
@@ -206,7 +240,7 @@
 						<input type='text' name='txState' id="txState" value='{$data->state}' {if $isUsa}style="display:none;"{/if}>
 						  
 						<input type="hidden" name="state_select_type" id="state_select_type" {if $isUsa}value="select"{else}value="text"{/if} />
-						<span style='color:Red;'>*</span>
+						
 					</div>
 					{if $data->errors.state and !$isUsa}
 					
@@ -225,7 +259,7 @@
 					<div align="left" style='display:inline; float:left;'>
 						<input type='text' name='zip_code' value='{$data->zip_code}'>
 					</div>
-					<span style='color:Red;'>*</span>
+					
 					{if $data->errors.zip_code}
 					
 						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">

@@ -26,7 +26,14 @@ class CAContacts extends Controller {
 		$pagination = new Pagination($totalCount);
 		$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
 		
-		$contactsList = $manager->getContactsList($pagination);
+		
+		$sub = $this->getFromRequest("subBookmark");
+		
+		if(!isset($sub)) {
+			$sub = "contacts";
+		}
+		
+		$contactsList = $manager->getContactsList($pagination,strtolower($sub));
 		
 		
 		
@@ -132,6 +139,13 @@ class CAContacts extends Controller {
 		if ($this->getFromPost('save') == 'Save') {
 			
 			$contact = $this->createContactByForm($_POST);
+			
+			$sub = $this->getFromRequest("subBookmark");
+			
+			if(!isset($sub)) {
+				$sub = "contacts";
+			}
+			$contact->type = $sub;
 		
 			if(!empty($contact->errors)) {
 				
@@ -140,7 +154,7 @@ class CAContacts extends Controller {
 				$contactsManager = new SalesContactsManager($this->db);
 				$result = $contactsManager->addContact($contact);
 				if($result == true) {
-					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
+					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=$sub");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());
 				}
