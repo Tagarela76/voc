@@ -350,7 +350,8 @@ class CInventory extends Controller
 	 * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
 	 */       
 	protected function bookmarkInventory($vars)
-		{			
+	{
+					
 		extract($vars);	
 		
 		$sortStr=$this->sortList('inventory',3);		
@@ -415,14 +416,15 @@ class CInventory extends Controller
 			$jsSources = array('modules/js/checkBoxes.js');
 			$this->smarty->assign('jsSources', $jsSources);
 		}	
-		}
+	}
 	
 	/**
 	 * bookmarkDInventory($vars)     
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */       
 	protected function bookmarkDInventory($vars)
-		{			
+	{
+					
 		extract($vars);		
 		$sortStr=$this->sortList('inventory',3);
 		$this->smarty->assign('tab',$this->getFromRequest('tab'));

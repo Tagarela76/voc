@@ -1,3 +1,6 @@
+{if $smarty.request.tab == 'accessory'}
+	{assign var='accessory' value=true}
+{/if}
 <div class="padd7">
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_violet" height="27px">
@@ -20,7 +23,7 @@
 				</div>					
 			</a> 
         </td>
-        <td class="users_u_top_r_violet">
+        <td class="{if !$accessory}users_top_violet{else}users_u_top_r_violet{/if}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Inventory description 	
@@ -28,6 +31,33 @@
 				</div>					
 			</a> 
         </td>
+        {if !$accessory}
+        <td class="users_top_violet">
+           
+            	<div style='width:100%;  color:white;'>						
+                	Supplier	
+						
+				</div>					
+			 
+        </td>
+        <td class="users_top_violet">
+            
+            	<div style='width:100%;  color:white;'>						
+                	Product NR 	
+								
+				</div>					
+			
+        </td>
+        <td class="users_u_top_r_violet">
+            
+            	<div style='width:100%;  color:white;'>						
+                	Product Description 	
+							
+				</div>					
+			
+        </td>
+        {/if}
+        
     </tr>
 
 {if $childCategoryItems|@count > 0}  
@@ -51,17 +81,40 @@
                 </div>
             </a>
         </td>
-        <td class="border_users_b border_users_r">
+        <td class="border_users_r border_users_b">
             <a href="{$inventory->url}" class="id_company1">
                 <div style="width:100%;">
                     {$inventory->getDescription()}
                 </div>
             </a>
         </td>
+        {if !$accessory}
+        <td class="border_users_r border_users_b">
+            <a href="{$inventory->url}" class="id_company1">
+                <div style="width:100%;">
+                    {$inventory->getSupplier()}
+                </div>
+            </a>
+        </td>
+        <td class="border_users_r border_users_b">
+            <a href="{$inventory->url}" class="id_company1">
+                <div style="width:100%;">
+                    {$inventory->getProductNR()}
+                </div>
+            </a>
+        </td>
+        <td class="border_users_b border_users_r">
+            <a href="{$inventory->url}" class="id_company1">
+                <div style="width:100%;">
+                    {$inventory->getProductDescription()}
+                </div>
+            </a>
+        </td>
+        {/if}
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="4" class="border_users_l border_users_r">
+        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -78,7 +131,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="2" height="15" class="border_users">
+        <td colspan="{if !$accessory}5{else}2{/if}" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

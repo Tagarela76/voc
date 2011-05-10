@@ -40,6 +40,7 @@
 				$inventory->url = "?action=viewDetails&category=inventory&id=".$inventory->getID()."&".$request['category']."ID=".$request['id'];																					
 			}	
 			$result['tpl'] = 'inventory/design/inventoryListoop.tpl';
+			
 			return $result;
 		}
 		

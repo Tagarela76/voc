@@ -27,6 +27,7 @@ class PaintAccessory extends Accessory implements iPaintAccessory {
     	if (isset($id)) {
     		$this->setID($id);
     		$this->_load();
+    		
     	}    	
     }
     

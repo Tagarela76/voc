@@ -21,6 +21,10 @@ interface iInventory {
     
     public function delete();
     public function validateProduct();        
+    
+    public function getSupplier();
+    public function getProductNR();
+    public function getProductDescription();
 }
 
 
@@ -66,6 +70,84 @@ class Inventory implements iInventory {
     	}
     }
     
+    public function getSupplier() {
+    	if(empty($this->products)) {
+    		$this->_load(true);
+    	}
+    	if(!empty($this->products) and count($this->products) > 0) {
+
+    		$result = array();
+    		$count = count($this->products);
+    		$limit = 3;
+    		$str = "";
+    		
+    		for($i=0; $i<$count and $i < $limit; $i++) {
+    			$result[$this->products[$i]->getSupplier()] = true;
+    			
+    		}
+    		foreach($result as $key => $val) {
+    			$str .= $key . " , ";
+    		}
+    		
+    		$str = substr_replace($str,"",strlen($str)-3);
+    		return $str;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    public function getProductNR() {
+    	if(empty($this->products)) {
+    		$this->_load(true);
+    	}
+    	if(!empty($this->products) and count($this->products) > 0) {
+
+    		$result = array();
+    		$count = count($this->products);
+    		$limit = 3;
+    		$str = "";
+    		
+    		for($i=0; $i<$count and $i < $limit; $i++) {
+    			$result[$this->products[$i]->getProductNR()] = true;
+    			
+    		}
+    		foreach($result as $key => $val) {
+    			$str .= $key . " , ";
+    		}
+    		
+    		$str = substr_replace($str,"",strlen($str)-3);
+    		return $str;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    public function getProductDescription() {
+    	if(empty($this->products)) {
+    		$this->_load(true);
+    	}
+    	if(!empty($this->products) and count($this->products) > 0) {
+
+    		$result = array();
+    		$count = count($this->products);
+    		$limit = 3;
+    		$str = "";
+    		
+    		for($i=0; $i<$count and $i < $limit; $i++) {
+    			$result[$this->products[$i]->getName()] = true;
+    			
+    		}
+    		foreach($result as $key => $val) {
+    			$str .= $key . " , ";
+    		}
+    		
+    		$str = substr_replace($str,"",strlen($str)-3);
+    		return $str;
+    	}
+    	else {
+    		return false;
+    	}
+    }
     
     public function setID($id) {
     	
