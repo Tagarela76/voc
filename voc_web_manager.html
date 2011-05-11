@@ -1,13 +1,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-
+<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+<script type="text/javascript">
+$(function() {
+	$("a[name='leftMenuLink']").click(function(){
+		alert("Updating information");
+		return false;
+	});
+});
+</script>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>voc web manager</title>
 
 <link href="style.css" rel="stylesheet" type="text/css">
-<link rel="shortcut icon" href="vwm/images/vocicon.ico" type="image/x-icon">
-<script type="text/javascript">
+<script type="text/javascript">		
 	function iniEverything() {
 		setfocus();
 		
@@ -22,7 +29,7 @@
 		} else {
 			document.getElementById('error').style.display = 'none';
 		}
-		 
+		document.getElementById('url').value = getVars['url'];	 
 	}
 	
 	function setfocus() {
@@ -36,7 +43,7 @@
 			map[key] = value;
 		});
 		return map;
-	}
+}
 </script>
 </head>
 
@@ -64,11 +71,11 @@
 						<table >
 						     <tr>	
 						<td>
-<a href="http://vocwebmanager.com/" alt="" >
+<a href="/" title="Home" >
 <img alt="" src="images/s1.gif" ></a>
 							</td>
 							<td>
-<a href="http://vocwebmanager.com/contact_us.html" alt="" >							
+<a href="/contact_us.html" title="Contact Us" >							
 <img alt="" src="images/s2.gif" >
 </a>
 							</td>
@@ -161,17 +168,17 @@
 					 
 				<div align="left" class="margin7 padd_b10 " >					
 				  <ul class="link" 	>
-					 <li><a href="#">News</a>
+					 <li><a href="#" name="leftMenuLink">News</a>
 					 </li>
-					 <li><a href="#">Special offers</a>
+					 <li><a href="#" name="leftMenuLink">Special offers</a>
 					 </li>
-					 <li><a href="#">New services</a>
+					 <li><a href="#" name="leftMenuLink">New services</a>
 					  </li>
-					   <li><a href="#">On-line support</a>
+					   <li><a href="#" name="leftMenuLink">On-line support</a>
 					  </li>
-					   <li><a href="#">Partners</a>
+					   <li><a href="#" name="leftMenuLink">Partners</a>
 					  </li>
-					   <li><a href="#">Related sites</a>
+					   <li><a href="#" name="leftMenuLink">Related sites</a>
 					  </li> 
 					 
 				  </ul>
@@ -226,30 +233,31 @@
 				<form method='POST' action='vwm/' name='loginForm'>
 					 <table  class="login_text bigtext login_table2" style="margin-top:15px;" align="center" border="0">
 					 <tr>
-					 <td height="50" class="padd_b10 mg_left20" >
-					 name:<span class="mintext"style="font-size:10px;"> (access name)</span>
-					 </td>
-					 <td  class="bg" height="40" style="padding:0 5 0 5">
-					 <input type="text" name='accessname'>
-					 </td>
+					 	<td height="50" class="padd_b10 mg_left20" >
+					 	name:<span class="mintext"style="font-size:10px;"> (access name)</span>
+					 	</td>
+					 	<td  class="bg" height="40" style="padding:0 5 0 5">
+					 	<input type="text" name='accessname'>
+					 	</td>
 					 </tr>
 					 <tr>					 
-					 <td  valign="top" class="mg_left20">
-					 password: <span class="mintext">(pw)</span>
-					  </td>
-					 <td  class="bg" valign="top"style="padding:0 5 0 5" >
-					 <input type="password" name='password'>
-					 </td>
+					 	<td  valign="top" class="mg_left20">
+					 	password: <span class="mintext">(pw)</span>
+					  	</td>
+					 	<td  class="bg" valign="top"style="padding:0 5 0 5" >
+					 	<input type="password" name='password'>
+					 	</td>
 					 </tr>
-					<!--Wrong login or password-->
+					 <!--Wrong login or password-->
 					 <tr>					 
 					 	<td colspan="2">
 							<div id="error" style="display:block;color:#00ccff;text-align:center;"></div>
 					 	</td>
 					 </tr>
-					<!--/Wrong login or password-->									
+					<!--/Wrong login or password-->		
 					 </table>
 					 <input type='hidden' name='action' value='auth'>
+					 <input type='hidden' id='url' name='url' value="">
 				
 						
 <br><div align="center">
