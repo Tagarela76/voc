@@ -22,6 +22,7 @@ function CMix() {
 			//do nothing
 			//Fuckin IE does not correct understand undefined and this.APMethod will be exist with value 'undefined', that PHP make crazy :D, hate that
 			//
+			this.APMethod = m;
 		} else {
 			this.APMethod = m;
 		}
