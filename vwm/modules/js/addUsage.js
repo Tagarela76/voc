@@ -120,6 +120,7 @@ function initNoMWS() {
 		mixObj.setDescription($("#mixDescription").val());
 		mixObj.setExcemptRule($("#exemptRule").val());
 		mixObj.setMixDate($("#calendar1").val());
+		
 		mixObj.setAPMethod($("#selectAPMethod option:selected").val());
 		mixObj.setEquipment($("#selectEquipment option:selected").val());
 		mixObj.setRule($("#rule option:selected").val());
@@ -153,6 +154,11 @@ function initNoMWS() {
 		}
 		
 		mix = getMix();
+		/*
+		 * Эники беники ели вареники
+		 */
+		//alert(mix.toJson() + " CONTINUE");
+		//return;
 		
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
@@ -160,6 +166,8 @@ function initNoMWS() {
 			waste = $.toJSON(waste);
 			
 		}
+		
+		
 		
 		if(editForm == false) {
 			urlData = {"action" : "addItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "products" : products.toJson() , "mix" : mix.toJson()};

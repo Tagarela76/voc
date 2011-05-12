@@ -1180,7 +1180,7 @@ class CMix extends Controller
 			'modules/js/mixValidator.js',
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
-			'modules/js/mixObj.js',
+			'modules/js/mixObj.js?key=1234ajSDKFJSDKFJ&rev=11052011',
 			'modules/js/addUsage.js',
 	    	'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js'
 	    );
