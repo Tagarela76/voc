@@ -81,7 +81,7 @@ div.border_table {border:1px solid #555c68;padding:10px;margin:7px 7px 7px 0px;}
 
 /**************left menu*************************/
 ul.link{list-style-position:outside;text-transform:lowercase;
-list-style-image:url(images/square1.gif);padding-left:20px;}
+list-style-image:url(images/square1.gif);padding-left:20px;}ul.link_no_images { list-style-image:none; list-style-type:none;}
 .link li{color:#aebacd;font-size:10px;text-transform:uppercase ;}
 /*.link li:first-letter {text-transform:uppercase ;
  font-size: 11px; /* ������ ������ ������� */

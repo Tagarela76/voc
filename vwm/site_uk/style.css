@@ -91,6 +91,10 @@ list-style-image:url(images/square1.gif);padding-left:20px;}
  /*  padding: 3px;���� ����� �������� � ������� */
 /* margin-top: 3px;  ������ ������ 
 } */
+ul.link_no_images {
+ list-style-image:none;
+ list-style-type:none;
+}
 
 .lmenu_pdd{padding-top:50px}
 
