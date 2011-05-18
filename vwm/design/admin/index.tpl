@@ -102,7 +102,7 @@
 											{if !$doNotShowControls}
 												{if $request.action == 'browseCategory'}
 													{include file="tpls:tpls/controlCategoriesList.tpl"}
-												{elseif $request.action == 'viewDetails'}
+												{elseif $request.action == 'viewDetails' || $request.action == 'viewPFPDetails'}
 													{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 												{/if}
 											{/if}						

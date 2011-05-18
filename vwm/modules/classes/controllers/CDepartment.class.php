@@ -139,7 +139,8 @@ class CDepartment extends Controller
 			'departmentDetails'	=>$departmentDetails,
 			'facilityDetails'  	=>$facilityDetails,
 			'companyDetails'	=>$companyDetails,						
-			'moduleMap'			=>$moduleMap
+			'moduleMap'			=>$moduleMap,
+			'tab'				=>$this->getFromRequest("tab")
 		);		
 		$this->forvard($this->getFromRequest('bookmark'),'bookmarkD'.ucfirst($this->getFromRequest('bookmark')),$vars);		
 		$this->smarty->display("tpls:index.tpl");

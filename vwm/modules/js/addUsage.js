@@ -747,7 +747,7 @@ function initNoMWS() {
 			if(this.checked) {
 				//$("#product_row_"+id).remove();
 				rowsToRemove.push(id);
-				$("#selectProduct option[value='"+id+"']").removeAttr('disabled')
+				$("#selectProduct option[value='"+id+"']").removeAttr('disabled');
 			}
 			
 		});

@@ -36,6 +36,10 @@
     define(LABEL_PAINT_PRODUCT_BOOKMARK_DEP, 'Paint Products');
     define(LABEL_PAINT_ACCESSORY_BOOKMARK_DEP, 'Accessory or Other Inventory');
     
+    // Mixes SUBBOOKMARKS
+    define(LABEL_MIXES_MIXES_SUBBOOKMARK,"Mixes");
+    define(LABEL_MIXES_PFP_SUBBOOKMARK,"Pre formulated products");
+    
     
     //	------------ADMIN INTERFACE------------
     define(AI_LABEL_APMETHOD_BOOKMARK, 'AP Method');

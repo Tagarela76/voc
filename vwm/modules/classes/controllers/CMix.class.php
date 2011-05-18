@@ -11,6 +11,7 @@ class CMix extends Controller
 	function runAction()
 	{
 		$this->runCommon();
+		
 		$functionName='action'.ucfirst($this->action);			
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
@@ -18,7 +19,7 @@ class CMix extends Controller
 	
 	private function actionConfirmDelete()
 	{		
-		echo "Action comfirm delete"; 
+		//echo "Action comfirm delete"; 
 		$usage = new Mix($this->db, $trashRecord);
 																				
 		foreach ($this->itemID as $ID)
@@ -199,6 +200,295 @@ class CMix extends Controller
 		$this->smarty->assign('tpl', 'tpls/viewUsage.tpl');			
 		$this->smarty->display("tpls:index.tpl");	
 	}
+	
+	private function actionAddPFPItem() {
+		
+		//	Access control
+		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {						
+			throw new Exception('deny');
+		}			
+			
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');
+		
+		$departmentID = $this->getFromRequest("departmentID");
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		//	Getting Product list
+		$productsListGrouped = $this->getProductsListGrouped($companyID);
+		$this->smarty->assign('products', $productsListGrouped);
+		
+		
+		$jsSources = array (										
+		    'modules/js/flot/jquery.flot.js',
+			'modules/js/addPFP.js',
+	    	'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js'
+	    );
+	    $this->smarty->assign('jsSources',$jsSources);
+		
+	    $this->smarty->assign("sendFormAction","?action=confirmAddPFP&category=mix&departmentID=$departmentID");
+	    $this->smarty->assign("request",$_GET);
+		$this->smarty->assign('tpl', 'tpls/addPFP.tpl');	
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	private function actionConfirmAddPFP() {
+		
+		
+		
+		$formGet = $this->getFromRequest();
+		$form = $this->getFromPost();
+		
+		
+		
+		
+		$productCount = intval($form['productCount']);
+		$departmentID = intval($formGet['departmentID']);
+		$descr = $form['pfp_description'];
+		$products = array();
+		
+		for($i=0; $i<$productCount; $i++) {
+			$productID = $form["product_{$i}_id"];
+			$ratio = $form["product_{$i}_ratio"];
+			
+			$product = new PFPProduct($this->db);
+			$product->setRatio($ratio);
+			$product->initializeByID($productID);
+			
+			$products[] = $product;
+		}
+		
+		$pfp = new PFP($products);
+		
+		$pfp->setDescription($descr);
+		
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		
+		$manager = new PFPManager($this->db);
+		$manager->add($pfp, $companyID);
+		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
+	}
+	
+	private function actionViewPFPDetails() {
+		//	Access control
+		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {						
+			throw new Exception('deny');
+		}			
+		
+		$manager = new PFPManager($this->db);
+		
+		$pfp = $manager->getPFP($this->getFromRequest("id"));
+		
+			
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');
+		
+		$this->smarty->assign("deleteUrl","?action=deletePFPItem&category=mix&id={$this->getFromRequest("id")}&departmentID={$this->getFromRequest('departmentID')}");
+		$this->smarty->assign("editUrl","?action=editPFP&category=mix&id={$_GET['id']}&departmentID={$_GET['departmentID']}");
+		$this->smarty->assign("pfp",$pfp);
+		$this->smarty->assign("request",$this->getFromRequest());
+		$this->smarty->assign('tpl', 'tpls/viewPFPDetails.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	private function actionEditPFP() {
+		//	Access control
+		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {						
+			throw new Exception('deny');
+		}			
+			
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');
+		
+		$departmentID = $this->getFromRequest("departmentID");
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		//	Getting Product list
+		$productsListGrouped = $this->getProductsListGrouped($companyID);
+		$this->smarty->assign('products', $productsListGrouped);
+		
+		$manager = new PFPManager($this->db);
+		
+		$id = $this->getFromRequest("id");
+		$pfp = $manager->getPFP($id);
+		
+		$jsSources = array (										
+		    'modules/js/flot/jquery.flot.js',
+			'modules/js/addPFP.js',
+	    	'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js'
+	    );
+	    $this->smarty->assign('jsSources',$jsSources);
+		
+	    $this->smarty->assign("pfp",$pfp);
+	    $this->smarty->assign("edit",true);
+	    $this->smarty->assign("sendFormAction","?action=confirmEditPFP&category=mix&departmentID=$departmentID&id=$id");
+	    $this->smarty->assign("request",$_GET);
+		$this->smarty->assign('tpl', 'tpls/addPFP.tpl');	
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	private function actionConfirmEditPFP() {
+		$formGet = $this->getFromRequest();
+		$form = $this->getFromPost();
+		var_Dump($form);
+		
+		$productCount = intval($form['productCount']);
+		$departmentID = intval($formGet['departmentID']);
+		$descr = $form['pfp_description'];
+		$products = array();
+		
+		for($i=0; $i<$productCount; $i++) {
+			$productID = $form["product_{$i}_id"];
+			$ratio = $form["product_{$i}_ratio"];
+			
+			$product = new PFPProduct($this->db);
+			$product->setRatio($ratio);
+			$product->initializeByID($productID);
+			
+			$products[] = $product;
+		}
+		
+		$manager = new PFPManager($this->db);
+		
+		$pfpOld = $manager->getPFP($this->getFromRequest('id'));
+		
+		$pfp = new PFP($products);
+		
+		$pfp->setDescription($descr);
+		$pfp->setID($this->getFromRequest('id'));
+		
+		
+		
+		$manager->update($pfpOld, $pfp);
+		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
+	}
+	
+	private function actionConfirmDeletePFP() {
+		
+		if (!$this->user->checkAccess('department', $this->getFromPost('departmentID'))) {						
+			throw new Exception('deny');
+		}
+		
+		$departmentID = $this->getFromPost("departmentID");
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		
+		$itemsCount = $this->getFromPost('itemsCount');
+		var_Dump($itemsCount); exit;
+		if($itemsCount){
+			
+			for ($i=0; $i<$itemsCount; $i++) 
+			{
+				if (!is_null($this->getFromPost('item_'.$i))) 
+				{
+					$itemID[] = $this->getFromPost('item_'.$i);
+				}
+			}
+		} else {
+			$id = $this->getFromRequest('id');
+			$itemID[] = $id;
+		}
+		
+		$manager = new PFPManager($this->db);
+		$pfpList = $manager->getList($companyID,null,$itemID);
+		$manager->removeList($pfpList);
+		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
+	}
+	
+	private function actionDeletePFPItem() {
+		//var_dump($_GET);
+		
+		$departmentID = $this->getFromRequest("departmentID");
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		
+		$manager = new PFPManager($this->db);
+		$idArray = is_array($this->getFromRequest("id")) ? $this->getFromRequest("id") : array($this->getFromRequest("id"));
+		
+		
+		
+		$pfps = $manager->getList($companyID,null,$idArray);
+		
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=department&id={$this->getFromRequest('departmentID')}&bookmark=mix&tab=pfp");
+							
+		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {						
+			throw new Exception('deny');
+		}
+		
+		foreach ($pfps as $p) {
+				$delete["id"] =	$p->getId();
+				$delete["description"] = $p->getDescription();								
+				$itemForDelete[] = $delete;
+		}
+		
+		//var_dump($itemForDelete);
+		//exit;
+							
+		//set permissions				
+		$this->smarty->assign("departmentID",$departmentID);			
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');		
+		$count = count($itemForDelete);
+		$this->smarty->assign("action","?action=confirmDeletePFP");
+		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,"pfp");
+	}
+	
+	private function actionIsPFPUnique() {
+		
+		$form = $this->getFromRequest();
+		
+		
+		
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($form['departmentID']);
+		
+		
+		
+		
+		$manager = new PFPManager($this->db);
+		
+		$isUnique = $manager->isUnique($form['descr'],$companyID);
+		
+		echo $isUnique ? "TRUE" : "FALSE";
+		exit;
+	}
+	
+	//Calls from bookmarkDMix
+	protected  function bookmarkDpfp($vars) {
+		
+		$departmentID = $this->getFromRequest("id");
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+		
+		$manager = new PFPManager($this->db);
+		$pfpCount = $manager->countPFP($companyID);
+		
+		$pagination = new Pagination((int)$pfpCount);
+		$pagination->url = "?action=browseCategory&category=department&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark'). "&tab=pfp";
+		
+		$pfps = $manager->getList($companyID, $pagination);
+		
+		//var_dump($pfps);
+		
+		$jsSources = array  (
+								'modules/js/checkBoxes.js',										
+								'modules/js/autocomplete/jquery.autocomplete.js',
+								);
+		$this->smarty->assign('jsSources', $jsSources);
+		
+		$this->smarty->assign('pfps', $pfps);
+		$this->smarty->assign('childCategoryItems', $pfps);
+		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
+	}
 
 	/**
      * bookmarkDMix($vars)     
@@ -213,6 +503,11 @@ class CMix extends Controller
 		 * Fuck the extract!
 		 * @departmentID int
 		 */
+		
+		if($tab == "pfp") {
+			$this->bookmarkDpfp($vars);
+		} else {
+		
 		$departmentID = $vars['departmentDetails']['department_id'];
 		
 		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
@@ -270,6 +565,7 @@ class CMix extends Controller
 					(isset($filterData['filterValue'])?"&filterValue=".$filterData['filterValue']:"").
 					(isset($filterData['filterField'])?"&searchAction=filter":"");
 			}
+			
 			
 			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);			
 
@@ -412,6 +708,7 @@ class CMix extends Controller
 			//	set tpl
 			$this->smarty->assign('tpl', 'tpls/mixListNew.tpl');
 		}			
+		}
 	}
 	
 	private function actionCalculateVOCAjax() {

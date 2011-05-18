@@ -31,7 +31,13 @@
                                             	
 											<div class="button_float_left">	
                                             <div class="button_alpha add_button">
-                                                <input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
+                                            	{if $request.tab == "pfp"}
+                                            	
+                                            		<input type="submit" name="action" value="addPFPItem" {if $vpsSaysNo}disabled{/if}>
+                                            	{else}
+                                            	
+                                                	<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
+                                                {/if}
                                             </div>
 											</div>
 											{/if}
@@ -56,7 +62,11 @@
                                             		$permissions.deleteItem}
 											<div class="button_float_left">	
                                            			<div class="button_alpha delete_button">
+                                           			{if $smarty.request.tab != 'pfp'}
                                                			 <input type="submit" name="action" value="deleteItem">
+                                               		{else}
+                                               			 <input type="submit" name="action" value="deletePFPItem">
+                                               		{/if}
                                            			</div>
 											</div>	
 												{/if}
@@ -123,6 +133,7 @@
 												<input type="hidden" name="tab" value="{$request.tab}">
 											{/if}
 										{else}
+										
 											<input type="hidden" name="action" value="browseCategory" />
 											<input type="hidden" name="category" value="{$request.category}" />
 											<input type="hidden" name="id" value="{$request.id}" />

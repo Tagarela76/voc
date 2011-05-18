@@ -256,6 +256,10 @@
 	
 	define ('TB_CONTACTS','contacts');
 	define ('TB_CONTACTS_TYPE','contacts_type');
+	
+	define('TB_PFP2PRODUCT','pfp2product');
+	define('TB_PFP','preformulated_products');
+	
 			
 	//	XNYO CONSTANTS
 	define ('AUTH_TYPE', 'sql');

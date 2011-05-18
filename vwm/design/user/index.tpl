@@ -82,7 +82,11 @@
 													$request.bookmark == 'wastestorage'||
 													$request.bookmark == 'mix' ||
 													$request.bookmark == 'solventplan'}
-													{include file="tpls:tpls/sort.tpl"}
+													
+													
+													{if $request.tab != "pfp"}
+														{include file="tpls:tpls/sort.tpl"}
+													{/if}
 												{/if}
 											{*/SORT*}							
 											
@@ -90,18 +94,20 @@
 												<tr>
 													<td>
 													{*FILTER*}
-														{if $request.bookmark == 'department' || 
+														{if $request.tab != "pfp" and ($request.bookmark == 'department' || 
 															$request.bookmark == 'logbook'||
 															$request.bookmark == 'product'||
-															$request.bookmark == 'mix'}
+															$request.bookmark == 'mix')}
+															
 															{include file="tpls:tpls/filter.tpl"}
+															
 														{/if}
 													{*/FILTER*}
 													</td>
 													<td align='right'>
 														<br>																																	
 													{*SEARCH*}																																	
-														{if $request.bookmark == 'mix' || $request.bookmark == 'product' || $request.bookmark == 'logbook' || $request.bookmark == 'accessory'}
+														{if $request.tab != 'pfp' and ($request.bookmark == 'mix' || $request.bookmark == 'product' || $request.bookmark == 'logbook' || $request.bookmark == 'accessory')}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 																{literal}
 																	<script>
@@ -129,7 +135,7 @@
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 											
-											{if $request.action == 'viewDetails'}
+											{if $request.action == 'viewDetails' || $request.action == 'viewPFPDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
 								

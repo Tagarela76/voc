@@ -69,7 +69,7 @@
                     {/if}
                     {if $permissions.data.view}
                     <td>
-                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=mix">{if $request.bookmark != "mix"}
+                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=mix&tab=mixes">{if $request.bookmark != "mix"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
                                     {$smarty.const.LABEL_MIX_BOOKMARK}&nbsp;

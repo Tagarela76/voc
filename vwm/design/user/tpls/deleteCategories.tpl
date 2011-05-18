@@ -8,7 +8,7 @@
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 
-<form method="POST" action="?action=confirmDelete" style="margin:0px">
+<form method="POST" action="{if !$action}?action=confirmDelete{else}{$action}{/if}" style="margin:0px">
     {*shadow
     <div class="shadow">
         <div class="shadow_top">

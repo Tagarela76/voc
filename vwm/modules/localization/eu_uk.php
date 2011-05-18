@@ -36,7 +36,6 @@
     define(LABEL_PAINT_PRODUCT_BOOKMARK_DEP, 'Paint Products');
     define(LABEL_PAINT_ACCESSORY_BOOKMARK_DEP, 'Accessory or Other Inventory');
     
-    
     //	------------TABLES------------
     
     //	COMPANY LIST
