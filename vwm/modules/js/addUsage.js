@@ -1,5 +1,29 @@
 
 $(document).ready(function() {
+	
+	$("tr[name='pfp_row']").click(function(e){
+		
+		//$("#pfpdetails").after($(this));
+		$("tr[name='pfp_details']").css("display","none");
+		$("tr[name='pfp_row']").attr('class','');
+		
+		
+		$("table[name='pfp_details_products']").remove();
+		id = $(this).attr('id');
+		//alert("table row len: " + $("#"+id+"_details").length);
+		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
+			//alert("IE!!");
+			$("#"+id+"_details").css("display","block");
+		} else {
+			$("#"+id+"_details").css("display","table-row");
+		}
+		
+		$("#"+id+"_details .preloader").css("display","block");
+		loadPFPDetails(id);
+		//$(this).simpletip({ content: 'My Simpletip', fixed: false });
+		//alert(e.pageX + ":" + e.pageY);
+		//$("#pfpdetails").css("left",e.pageX).css("top",e.pageY);
+	});
 		
 		if(noMWS == true) {
 			initNoMWS();
@@ -40,6 +64,23 @@ $(document).ready(function() {
 		
 		/*AAAAAAAAAAAAAAAA*/
 });
+
+function loadPFPDetails(pfp_id) {
+	urlData = {"action" : "getPFPDetailsAjax", "category" : "mix", "departmentID": departmentID, "pfp_id" : pfp_id};
+	$.ajax({
+		url:'index.php',
+		type: "GET",
+		async: true,
+		data: urlData,
+		dataType: "html",
+  		success: function (response) 
+  			{  
+  				//alert("len:"+$("#"+id+"_details .preloader").length);
+  				$("#"+id+"_details .preloader").css("display","none").after(response);
+  				$("#"+id).attr('class','pfpListItemSelected');
+  			}
+	});
+}
 
 var mixValidator = new CMixValidator();
 

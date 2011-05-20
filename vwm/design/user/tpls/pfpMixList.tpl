@@ -23,6 +23,7 @@
         <td class="users_u_top" width="60px">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
+        
         <td class="" width="60px">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
@@ -76,6 +77,7 @@
         <td class="border_users_b border_users_l border_users_r" >
 			<input type="checkbox" value="{$pfp->getId()}" name="id[]">
         </td>
+        
         <td class="border_users_b border_users_r" >
             <a href="{$url}" class="id_company1" title="{$pfp->getDescription()}">
                 <div style="width:100%;">

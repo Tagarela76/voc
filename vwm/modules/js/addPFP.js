@@ -2,6 +2,7 @@ $(function() {
 	
 	
 	$("#addProduct").click(function(){
+		
 		productID = $("#selectProduct").val();
 		ratio = $("#ratio").val();
 		
@@ -133,12 +134,21 @@ function isValid() {
 		$("#products_error span").text("Error! Products count less than 2!");
 	}
 	
+	if($("input[name='pfp_primary']").filter(":checked").length == 0) {
+		valid = false;
+		alert("Select primary product!");
+	}
+	/*if($("input[name='pfp_primary'] :checked").length) {
+		
+	}*/
+	//return false;
 	return valid;
 }
 
 
 function addProductToList(productID,ratio) {
 	
+	//?action=getPFPProductInfo&category=mix&id=64&json=true
 	$.ajax({
   		url: "modules/ajax/saveMix.php",      		
   		type: "GET",
@@ -178,6 +188,7 @@ function addProductToList(productID,ratio) {
 			var productNR 	= resp['product_nr'];
 			var descr 		= resp['name'];
 			
+			tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<input type='radio' name='pfp_primary' value='"+productID+"'>")));
 			tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(supplier)));
 			tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(productNR)));
 			tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(descr)));

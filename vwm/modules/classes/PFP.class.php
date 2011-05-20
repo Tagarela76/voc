@@ -35,7 +35,11 @@ class PFP
 		
 		$count = $this->getProductsCount();
 		for($i=0; $i<$count; $i++) {
-			$res .= $this->products[$i]->getRatio();
+			if($this->products[$i]->isPrimary()){
+				$res .= "<b>".$this->products[$i]->getRatio()."</b>";
+			} else {
+				$res .= $this->products[$i]->getRatio();
+			}
 			if($i < $count -1) {
 				$res .= ":";
 			}
@@ -52,7 +56,8 @@ class PFP
 	}
 	
 	public function toJson() {
-		
+		$arr = array("descrtiption"=>$this->description, "id" => $this->id, "ratio" => $this->getRatio(), "products" => $this->products);
+		return json_encode($arr);
 	}
 }
 ?>

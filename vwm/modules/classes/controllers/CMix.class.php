@@ -5,7 +5,9 @@ class CMix extends Controller
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='mix';
-		$this->parent_category='department';	
+		$this->parent_category='department';
+
+		
 	}
 	
 	function runAction()
@@ -241,7 +243,7 @@ class CMix extends Controller
 		
 		$formGet = $this->getFromRequest();
 		$form = $this->getFromPost();
-		
+		$pfp_primary_product_id = $form['pfp_primary'];
 		
 		
 		
@@ -257,6 +259,11 @@ class CMix extends Controller
 			$product = new PFPProduct($this->db);
 			$product->setRatio($ratio);
 			$product->initializeByID($productID);
+			if($productID == $pfp_primary_product_id) {
+				$product->setIsPrimary(true);
+			} else {
+				$product->setIsPrimary(false);
+			}
 			
 			$products[] = $product;
 		}
@@ -271,6 +278,18 @@ class CMix extends Controller
 		$manager = new PFPManager($this->db);
 		$manager->add($pfp, $companyID);
 		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
+	}
+	
+	private function actionGetPFPDetailsAjax() {
+		
+		$manager = new PFPManager($this->db);
+		
+		$pfp = $manager->getPFP($this->getFromRequest("pfp_id"));
+		//$json = $pfp->toJson();
+		//echo $json;
+		$this->smarty->assign("pfp",$pfp);
+		echo $this->smarty->fetch("tpls/pfpMini.tpl");
+		exit;
 	}
 	
 	private function actionViewPFPDetails() {
@@ -296,6 +315,19 @@ class CMix extends Controller
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
+	private function actionGetPFPProductInfo() {
+		$id = $this->getFromRequest("id");
+		
+		$pfpProduct = new PFPProduct($this->db,$id);
+		if($this->getFromRequest("json")) {
+			echo $pfpProduct->toJson();
+		} else {
+			
+		}
+		
+		exit;
+	}
+	
 	private function actionEditPFP() {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {						
@@ -309,14 +341,25 @@ class CMix extends Controller
 		$departmentID = $this->getFromRequest("departmentID");
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
-		//	Getting Product list
-		$productsListGrouped = $this->getProductsListGrouped($companyID);
-		$this->smarty->assign('products', $productsListGrouped);
+		
 		
 		$manager = new PFPManager($this->db);
 		
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
+		//var_Dump($pfp);
+		
+		//	Getting Product list
+		$productsIDArray = array();
+		foreach($pfp->products as $p) {
+			$productsIDArray[] = $p->product_id;
+		}
+		
+		$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);
+		$this->smarty->assign('products', $productsListGrouped);
+		
+		
+		//var_dump($productsListGrouped);
 		
 		$jsSources = array (										
 		    'modules/js/flot/jquery.flot.js',
@@ -327,6 +370,7 @@ class CMix extends Controller
 	    );
 	    $this->smarty->assign('jsSources',$jsSources);
 		
+	    $this->smarty->assign("productCount",$pfp->getProductsCount());
 	    $this->smarty->assign("pfp",$pfp);
 	    $this->smarty->assign("edit",true);
 	    $this->smarty->assign("sendFormAction","?action=confirmEditPFP&category=mix&departmentID=$departmentID&id=$id");
@@ -338,7 +382,10 @@ class CMix extends Controller
 	private function actionConfirmEditPFP() {
 		$formGet = $this->getFromRequest();
 		$form = $this->getFromPost();
-		var_Dump($form);
+		//var_Dump($form);
+		//exit;
+		
+		$pfp_primary_product_id = $form['pfp_primary'];
 		
 		$productCount = intval($form['productCount']);
 		$departmentID = intval($formGet['departmentID']);
@@ -352,6 +399,11 @@ class CMix extends Controller
 			$product = new PFPProduct($this->db);
 			$product->setRatio($ratio);
 			$product->initializeByID($productID);
+			if($productID == $pfp_primary_product_id) {
+				$product->setIsPrimary(true);
+			} else {
+				$product->setIsPrimary(false);
+			}
 			
 			$products[] = $product;
 		}
@@ -382,7 +434,9 @@ class CMix extends Controller
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 		
 		$itemsCount = $this->getFromPost('itemsCount');
-		var_Dump($itemsCount); exit;
+		
+		
+		
 		if($itemsCount){
 			
 			for ($i=0; $i<$itemsCount; $i++) 
@@ -477,7 +531,7 @@ class CMix extends Controller
 		
 		$pfps = $manager->getList($companyID, $pagination);
 		
-		//var_dump($pfps);
+		//var_dump($pfps[0]);
 		
 		$jsSources = array  (
 								'modules/js/checkBoxes.js',										
@@ -496,6 +550,10 @@ class CMix extends Controller
      */       
 	protected function bookmarkDMix($vars)
 	{			
+		if(!isset($_GET['tab'])) {
+			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes") ;
+		}
+		
 		extract($vars);
 		
 		/**
@@ -1371,6 +1429,11 @@ class CMix extends Controller
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 		
+		$pfpmanager = new PFPManager($this->db);
+		$pfps = $pfpmanager->getList($companyID);
+		
+		$this->smarty->assign("pfps",$pfps);
+		
 		$department = new Department($this->db);
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
 		$facilityID = $departmentDetails['facility_id'];
@@ -1473,6 +1536,7 @@ class CMix extends Controller
 		}
 		
 		$jsSources = array (										
+			'modules/js/jquery.simpletip-1.3.1.pack.js',
 		    'modules/js/flot/jquery.flot.js',
 			'modules/js/mixValidator.js',
 			'modules/js/productObj.js',
@@ -2316,14 +2380,33 @@ class CMix extends Controller
 		return $APMethod;
 	}
 	
-	private function getProductsListGrouped($companyID) {
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param unknown_type $companyID
+	 * @param unknown_type $apelsin - array of id, to add property to product - disabled (for smarty in addPFP.tpl)
+	 */
+	private function getProductsListGrouped($companyID,$apelsin=null) {
 		
 	// get product list
 		$product = new Product($this->db);						
 		$productList = $product->getFormatedProductList($companyID);
-
+//var_dump($apelsin);
 		//	NICE PRODUCT LIST 
+
+		if(isset($apelsin)) {
+			$isApelsin = true;
+	//		echo "APELSIN";
+		}
+
 		foreach ($productList as $oneProduct) {
+			if($isApelsin) {
+				if(in_array($oneProduct['product_id'],$apelsin)) {
+					
+					$oneProduct['disabled'] = true;
+		//			var_dump($oneProduct);
+				}
+			}
 			$productListGrouped[$oneProduct['supplier']][] = $oneProduct;
 		}
 		return $productListGrouped;

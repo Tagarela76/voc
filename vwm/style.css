@@ -3180,3 +3180,40 @@ div:hover.category_folder_hover{cursor:pointer;}
 #notifyClose {
 	margin:3px;	
 }
+
+.pfpList td
+{
+	height:20px;
+}
+.pfpList tr:hover
+{
+	background-color:#D8D8D8;
+	/*cursor: pointer;*/
+}
+.pfpList #title td {
+	background-color:#B9ADAD;
+	
+}
+.pfpListItemSelected
+{
+	background-color:#D8D8D8;
+	border:5px ridge #BFB8B8;
+	/*border-left:5px solid #BFB8B8;
+	border-right:5px solid #BFB8B8;*/
+}
+
+.pfpListItemSelectedPrimary
+{
+	background-color:#BFB8B8 !important;
+}
+/*.pfpList .pfpListItemSelectedPrimary:hover
+{
+	background-color:#BFB8B8;
+}*/
+
+
+
+
+
+
+

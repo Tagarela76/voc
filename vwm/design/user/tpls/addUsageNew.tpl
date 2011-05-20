@@ -7,6 +7,8 @@
 	{if $color eq "blue"}
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
+
+
 	
 <script type="text/javascript">
 
@@ -290,11 +292,29 @@ function createSelectUnittypeClass(id) {
 {/if}
 {*/WASTE*}
 
+
 {*ADDPRODUCT*}
+{literal}
+  <script>
+  $(document).ready(function() {
+    $("#tabs").tabs();
+    $("#tabs").tabs( "select" , "fragment-2" )
+  });
+  </script>
+<div id="tabs" style="width:98%;margin:0px 0px  0px 10px;" align="center">
+    <ul>
+        <li><a href="#fragment-1"><span>Single Product</span></a></li>
+        <li><a href="#fragment-2"><span>Pre-formulated products</span></a></li>
+    </ul>
+    <div id="fragment-1" style=" padding:0px;">
+{/literal}
+
+    
+
 										
 	
 					
-					<table class="users" cellpadding="0" cellspacing="0" align="center" >
+					<table class="users" style="width:100%;" cellpadding="0" cellspacing="0" align="center" >
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Add product</td>
 						</tr>												
@@ -444,6 +464,39 @@ function createSelectUnittypeClass(id) {
 							</td>
 						</tr>
 					</table>
+
+</div>
+    <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
+    
+      <table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
+      	<tr id="title">
+      		<td>Description</td>
+      		<td>Products</td>
+      		<td>Ratio</td>
+      		<td>Supplier</td>
+      	</tr>
+      	{foreach from=$pfps item=pfp}
+      		<tr id="{$pfp->getId()}" name="pfp_row">
+      			<td>{$pfp->getDescription()}</td>
+	      		<td>{$pfp->getProductsCount()}</td>
+	      		<td>{$pfp->getRatio()}</td>
+	      		<td>Supplier</td>
+      		</tr>
+      		<tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
+      			<td colspan="4" style="text-align:center;"><img src="images/ajax-loader.gif" class="preloader" />
+      				
+      			</td>
+      		</tr>
+      	{/foreach}
+      </table>
+      
+      
+    </div>
+</div>
+<!--  <div  style="width:200px; display:none; height:200px; position:absolute; background-color:Green; left:250px; top:500px;">
+      		details
+      </div>
+-->
 {*/ADDPRODUCT*}
 
 {*MIXLIMITS*}					

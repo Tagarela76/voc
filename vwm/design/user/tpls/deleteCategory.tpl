@@ -8,7 +8,7 @@
 {if $color eq "blue"}
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
-<form method="POST" action="?action=confirmDelete">
+<form method="POST" action="{if !$action}?action=confirmDelete{else}{$action}{/if}">
     {*shadow*
     <div class="shadow">
         <div class="shadow_top">

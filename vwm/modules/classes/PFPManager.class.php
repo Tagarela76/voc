@@ -83,6 +83,7 @@ class PFPManager
 				$prodtmp = new PFPProduct($this->db); 
 				$prodtmp->setRatio($p['ratio']);
 				$prodtmp->initializeByID($p['product_id']);
+				$prodtmp->setIsPrimary($p['isPrimary']);
 				$PFPProductsArray[] = $prodtmp;
 			}
 			
@@ -114,10 +115,11 @@ class PFPManager
 		$pfpID = $this->db->getLastInsertedID();
 		
 		
-		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id) VALUES ";
+		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary) VALUES ";
 		for($i=0; $i<$count; $i++) {
+			$isPrimary = $product->products[$i]->isPrimary() ? "true" : "false";
 			$queryInsertPFPProducts .= " ( " . $product->products[$i]->getRatio() .
-										", " .$product->products[$i]->product_id. " , $pfpID ) ";
+										", " .$product->products[$i]->product_id. " , $pfpID , $isPrimary) ";
 			if($i < $count-1) {
 				$queryInsertPFPProducts .= " , ";
 			}
@@ -160,10 +162,11 @@ class PFPManager
 		$this->db->query($updatePFPQuery);
 		
 		$count = count($to->products);
-		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id) VALUES ";
+		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary) VALUES ";
 		for($i=0; $i<$count; $i++) {
+			$isPrimary = $to->products[$i]->isPrimary() ? "true" : "false";
 			$queryInsertPFPProducts .= " ( " . $to->products[$i]->getRatio() .
-										", " .$to->products[$i]->product_id. " , {$from->getId()} ) ";
+										", " .$to->products[$i]->product_id. " , {$from->getId()}, $isPrimary ) ";
 			if($i < $count-1) {
 				$queryInsertPFPProducts .= " , ";
 			}
@@ -171,8 +174,8 @@ class PFPManager
 		
 		//echo "<br/>$queryInsertPFPProducts";
 		$this->db->query($queryInsertPFPProducts);
-		
-		$this->db->commitTransaction();
+		//exit;
+		//$this->db->commitTransaction();
 	}
 	
 	private function removeProducts($pfpID) {
@@ -203,6 +206,8 @@ class PFPManager
 		foreach($products as $p) {
 			$prodtmp = new PFPProduct($this->db); 
 			$prodtmp->setRatio($p['ratio']);
+			$prodtmp->setIsPrimary($p['isPrimary']);
+			$prodtmp->setId($p['id']);
 			$prodtmp->initializeByID($p['product_id']);
 			$PFPProductsArray[] = $prodtmp;
 		}
@@ -214,6 +219,10 @@ class PFPManager
 		$pfp->products = $PFPProductsArray;
 		
 		return $pfp;
+	}
+	public function getPFPProduct($id) {
+		$prodtmp = new PFPProduct($this->db); 
+		
 	}
 }
 ?>

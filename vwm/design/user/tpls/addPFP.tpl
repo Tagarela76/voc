@@ -21,7 +21,7 @@ $(function() {
 	{/literal}
 	{foreach from=$pfp->products item=product}
 	
-		addProduct({$product->product_id},{$product->getRatio()});
+		//addProduct({$product->getId()},{$product->getRatio()});
 	
 	{/foreach}
 	{literal}
@@ -93,17 +93,7 @@ var pfp_descr = "";
 										{foreach from=$products item=productsArr key=supplier}															
 										<optgroup label="{$supplier}">
 											{section name=i loop=$productsArr}
-												{assign var=isAdded value=0}
-												{section name=j loop=$productsAdded} 
-		                            				{if $productsAdded[j]->product_id eq $productsArr[i].product_id}
-		                            					{assign var=isAdded value=1}
-		                            				{/if}
-		                            			{/section}
-                            					{if $isAdded eq 0}                            				
-													<option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data->product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>
-												{else}
-													<option value='{$productsArr[i].product_id}' disabled="disabled"> {$productsArr[i].formattedProduct} </option>
-												{/if}
+												<option value='{$productsArr[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$productsArr[i].formattedProduct} </option>
 											{/section}
 										</optgroup>
 										{/foreach}																			
@@ -145,11 +135,46 @@ var pfp_descr = "";
 <tbody>
 	<tr class="users_u_top_size users_top_lightgray">
 		<td  class="border_users_l"   width="10%" > Select</td>
+		<td width="10%">Primary</td>
 		<td>Supplier</td>
 		<td>Product NR</td>
 		<td>Description</td>
 		<td class="border_users_r">Ratio</td>
 	</tr>	
+	{assign var=count value=0}
+	{foreach from=$pfp->products item=product}
+	
+		<tr id="product_row_{$count}">
+			<td class="border_users_r border_users_b border_users_l">
+				<input type='checkbox' value='{$count}' CHECKED>
+			</td>
+			
+			<td class="border_users_r border_users_b">
+				<input type='radio' name='pfp_primary' value='{$product->product_id}' {if $product->isPrimary()}checked="checked"{/if}>
+			</td>
+			
+			<td class="border_users_r border_users_b">
+				<span>{$product->supplier}</span>
+			</td>
+			
+			<td class="border_users_r border_users_b">
+				<span>{$product->product_nr}</span>
+			</td>
+			
+			<td class="border_users_r border_users_b">
+				<span>{$product->name}</span>
+			</td>
+			
+			<td class="border_users_r border_users_b">
+				<input type="text" name="product_{$count}_ratio" id="product_{$count}_ratio" value="{$product->getRatio()}" />
+			</td>
+			
+			<input type='hidden' name="product_{$count}_id" id="product_{$count}_id" value="{$product->product_id}" />
+		</tr>
+		
+		
+	{assign var=count value=$count+1}
+	{/foreach}
 </tbody>	
 <tfoot>
 	<tr class="">
@@ -168,16 +193,7 @@ var pfp_descr = "";
 </tfoot>														
 </table>			
 		
-	
-		
-		
-		{if $request.action eq "addItem"}
-			{section name=i loop=$productCount}			
-			<input type='hidden' name='quantity_{$smarty.section.i.index}' value='{$productsAdded[i]->quantity}'>
-			<input type='hidden' name='unittype_{$smarty.section.i.index}' value='{$productsAdded[i]->unittype}'>
-			{/section}
-		{/if}		
-			<input id="productCount" type='hidden' name='productCount' value='{if $productCount}{$productCount}{else}0{/if}'>									
+		<input id="productCount" type='hidden' name='productCount' value='{if $productCount}{$productCount}{else}0{/if}'>									
 		{if $request.action eq "addPFPItem"}
 			<input type='hidden' name='department_id' id="department_id" value='{$request.departmentID}'>
 		{/if}	
