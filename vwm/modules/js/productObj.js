@@ -9,6 +9,9 @@ function CProductObj (_pID,_Q,_Unittype,_unittypeClass) {
 	this.selectUnittype = _Unittype;
 	this.unittypeClass = _unittypeClass;
 	
+	this.ratio;
+	this.isPrimary;
+	
 	this.setUnittypeClass = function(uC) {
 		
 		this.unittypeClass = uC;

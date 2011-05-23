@@ -13,6 +13,17 @@ function CProductCollectionObj() {
 		this.products.push(product);
 	}
 	
+	this.addPFPProduct = function(productID, quantity, selectUnittype, unittypeCLass, ratio, isPrimary) {
+		
+		
+		product = new CProductObj(productID, quantity, selectUnittype, unittypeCLass);
+		product.ratio = ratio;
+		product.isPrimary = isPrimary;
+		
+		
+		this.products.push(product);
+	}
+	
 	this.Count = function() {
 		return this.products.length;
 	}
