@@ -14,7 +14,8 @@ class CCommon extends Controller
 		}catch (Exception $e){
 			throw new Exception("My Defined Exception! $e");
 		}
-		$functionName='action'.ucfirst($this->action);				
+		$functionName='action'.ucfirst($this->action);	
+				
 		if (method_exists($this,$functionName))
 		{			
 			$this->$functionName();
@@ -23,6 +24,37 @@ class CCommon extends Controller
 			throw new Exception('404');
 	}
 	
+	private function actionCreatePFP() {
+		
+		$query = "
+			CREATE TABLE IF NOT EXISTS `preformulated_products` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+			  `company_id` int(11) DEFAULT NULL,
+			  PRIMARY KEY (`id`)
+			)
+		";
+		
+		echo "Create table preformulated_products.. ";
+		$this->db->query($query);
+		echo "done<br/>";
+		
+		$query = "
+		CREATE TABLE IF NOT EXISTS `pfp2product` (
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `ratio` int(10) unsigned NOT NULL,
+		  `product_id` int(11) DEFAULT NULL,
+		  `preformulated_products_id` int(11) DEFAULT NULL,
+		  `isPrimary` tinyint(1) NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`id`)
+		)
+		";
+		echo "Create table pfp2product.. ";
+		$this->db->query($query);
+		echo "done<br/>";
+		
+		
+	}
 	
 	/**
 	 * 
