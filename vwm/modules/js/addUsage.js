@@ -619,7 +619,7 @@ function initNoMWS() {
 				tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(descr)));
 				
 				
-				if(editForm == false) {
+				if(editForm == false && 1==2) {
 					
 					unittypeDescr = $("#selectUnittype option:selected").text();
 					

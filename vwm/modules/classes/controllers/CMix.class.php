@@ -22,6 +22,7 @@ class CMix extends Controller
 	private function actionConfirmDelete()
 	{		
 		//echo "Action comfirm delete"; 
+		
 		$usage = new Mix($this->db, $trashRecord);
 																				
 		foreach ($this->itemID as $ID)
@@ -33,6 +34,7 @@ class CMix extends Controller
 			//$this->db->beginTransaction();//For Debugging
 			$usage->deleteUsage($ID);
 		}		
+		
 		
 		if ($this->successDeleteInventories)											
 			header("Location: ?action=browseCategory&category=department&id=".$usageDetails['department_id']."&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));										
@@ -1269,6 +1271,15 @@ class CMix extends Controller
 				echo "<h1>Waste Streams saved to mix #$newMixID!</h1>";
 			}
 		}
+		
+		//Increment department usage
+		
+		$departmentID = $_REQUEST['departmentID'];
+		$department = new Department($this->db);
+		$department->incrementUsage(date("m"), date("Y"), $mix->voc, $departmentID);
+		//exit;
+		//incrementUsage($mm, $yyyy, $value, $departmentID = null)
+		
 		if($debug) {
 			echo "<h1>DONE!</h1>";
 		}

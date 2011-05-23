@@ -248,7 +248,8 @@ class Mix extends MixProperties {
 		$this->db->query($query);
 				
 		$usageDetails = $this->db->fetch_array(0);
-		$usageDetails['creationTime'] = date('m-d-Y', strtotime($usageDetails['creationTime']));
+		//var_dump($usageDetails,$query);
+		$usageDetails['creationTime'] = date('m-d-Y', $usageDetails['creationTime']);//strtotime($usageDetails['creationTime']));
 
 		
 		/*$usageDetails = array (
@@ -525,6 +526,7 @@ class Mix extends MixProperties {
 				$usageData = $this->getMixDetails($id);	
 				//var_Dump($usageData);
 				$date = new DateTime();
+				
 				$date->setTimestamp($usageData['creation_time']);
 				
 			//var_dump($usageData);
@@ -588,6 +590,7 @@ class Mix extends MixProperties {
 				$creationYear = $date->format("Y");//substr($usageData['creationTime'],-4);
 				$department = new Department($this->db);
 			//var_dump($creationMonth, $creationYear, $usageData['voc'], $usageData['department_id']);
+			//var_dump($creationMonth, $creationYear, $usageData['voc'], $usageData['department_id']); exit;
 				$department->decrementUsage($creationMonth, $creationYear, $usageData['voc'], $usageData['department_id']);
 				//	Calculate and save mix limits		
 				//$this->_recalcLimits($usageData['creationTime'], $usageData['department_id']);		

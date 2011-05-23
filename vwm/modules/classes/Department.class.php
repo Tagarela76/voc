@@ -563,6 +563,7 @@ class Department extends DepartmentProperties {
 					''.$input['departmentID'].', ' .
 					''.$input['facilityID'].')';			
 			
+			//echo "<br/>add Usage stats $query";
 			$this->db->exec($query);			
 			return $value;
 			
@@ -573,7 +574,7 @@ class Department extends DepartmentProperties {
 					 'value = '.$newValue.' ' .
 					 'WHERE mm = '.$input['mm'].' AND yyyy = '.$input['yyyy'].' AND department_id = '.$input['departmentID'].'';
 			$this->db->exec($query);
-			
+			//echo "<br/>add new Usage stats $query";
 			return $newValue;
 		}	
 	}
@@ -581,7 +582,9 @@ class Department extends DepartmentProperties {
 	public function decrementUsage($mm, $yyyy, $value, $departmentID = null) {			
 		$input = $this->_prepareUsageStatsEditing($mm, $yyyy, $value, $departmentID);
 		
-		if (false === ($currentValue = $this->_isUsageStatExist($mm, $yyyy, $departmentID))) {
+		$currentValue = $this->_isUsageStatExist($mm, $yyyy, $departmentID);
+		
+		if (false === $currentValue) {
 			//	decrement unexisted usage. wtf?
 			throw new Exception('Something wrong. I cannot reduce usage for Department ID '.$departmentID.' ( period: '.$yyyy.'-'.$mm.') ');
 			
