@@ -41,10 +41,13 @@
 			
 
 			$query = "SELECT * FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND ".$filter." $sql_param ORDER BY mix_id DESC";
+			
+			
 
-			if (isset($pagination)) {
+			if (isset($pagination) and is_null($mixArr)) {
 				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 			}
+			
 			
 			
 			$this->db->query($query);

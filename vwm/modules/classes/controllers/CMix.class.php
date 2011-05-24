@@ -701,7 +701,7 @@ class CMix extends Controller
 			//echo "<h1>MixManager start:$start</h1>";
 			$mixOptimized = new MixManager($this->db, $departmentID);
 			$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
-			//var_dump($mixList[0]);
+			//var_dump($mixList);
 			//$end = xdebug_time_index();
 			//$optimizedDiff = $end - $start;
 			//echo "<h1>MixManager end $end. Difference: $optimizedDiff</h1>";
