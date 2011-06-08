@@ -34,7 +34,7 @@ class Invoice {
      * @param array() $multiInvoiceData
      * @param status = due. if not due = autopay is disabled
      */
-    public function createMultiInvoiceForNewCustomer($customerID,$periodStartDate,$billingID,$multiInvoiceData,$status = 'due') {    	
+    public function createMultiInvoiceForNewCustomer($customerID,DateTime $periodStartDate,$billingID,$multiInvoiceData,$status = 'due') {    	
     	
     	$billing = new Billing($this->db);
     	$currencyDetails = $billing->getCurrencyByCustomer($customerID);
@@ -42,7 +42,7 @@ class Invoice {
     	$billingPlanDetails = $billing->getBillingPlanDetails($billingID, $customerID, $currencyDetails['id']);
     	$amount = $billingPlanDetails['price'];	
     	
-    	$suspesionDate = $periodStartDate;
+    	$suspesionDate = clone $periodStartDate;
 		$billingInfo = "'Sources: ".$billingPlanDetails['bplimit']."," .
 						" Months: ".$billingPlanDetails['months_count'].
 						", Type: ".$billingPlanDetails['type']."'";
@@ -68,6 +68,9 @@ class Invoice {
 			throw new Exception('No currency for customer '.$customerID);
 		}
 		
+        $periodEndDate = clone $periodStartDate;
+        $periodEndDate->add( new DateInterval("P" . intval($billingPlanDetails['months_count']) . "M" ) ); //+ month count
+        
 		$invoiceData = array (
 			'customerID' 		=> $customerID,
 			'oneTimeCharge'		=> $oneTimeCharge,
@@ -76,10 +79,10 @@ class Invoice {
 			'total'				=> $total,
 			'paid'				=> 0,								//always $0.00 when creating new invoice
 			'due'				=> $total,							//due is always == total when creating new invoice
-			'generationDate'	=> $this->currentDate,
-			'suspensionDate'	=> $suspesionDate,
-			'periodStartDate'	=> "'".$periodStartDate."'",			
-			'periodEndDate'		=> "'".date('Y-m-d',strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"))."'",
+			'generationDate'	=> mktime(),
+			'suspensionDate'	=> $suspesionDate->getTimestamp(),
+			'periodStartDate'	=> $periodStartDate->getTimestamp(),			
+			'periodEndDate'		=> $periodEndDate->getTimestamp(),//"'".date('Y-m-d',strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"))."'",
 			'billingInfo'		=> $billingInfo,
 			'limitInfo'			=> "NULL",
 			'customInfo'		=> "NULL",
@@ -88,8 +91,7 @@ class Invoice {
 			'suspensionDisable'	=> 1,
 			'currency_id'		=> $currencyDetails['id']			
 		);
-		//	TODO: start transaction from controller 
-		//$this->db->beginTransaction(); // Start Transaction
+		//var_dump($invoiceData);
 		
 		if($status != "due")
 		{
@@ -107,7 +109,7 @@ class Invoice {
 		}
 		
 		$modulesToBilling = array();
-		echo "insert multiinvoicedata:<br/>";
+		//echo "insert multiinvoicedata:<br/>";
 
 		foreach($multiInvoiceData['appliedModules'] as $module) {	
 			$moduleData = array (
@@ -132,13 +134,18 @@ class Invoice {
     		
     		$config = $this->loadConfig();
  
-    		$suspensionDate = date('Y-m-d',strtotime($periodStartDate." + ".$config['limit_suspension_period']." days"));
+    		$suspensionDate = clone $periodStartDate; //date('Y-m-d',strtotime($periodStartDate." + ".$config['limit_suspension_period']." days"));
+            $suspensionDate->add( new DateInterval("P" . intval($config['limit_suspension_period']) . "D" ) );
     		
     		$discount = $this->calculateDiscount($oneTimeCharge, $amount, $customerID, 0);// $backToCustomer = 0
     			
     		$total = $this->calculateTotal($oneTimeCharge, $amount, $discount);
     		$status = "due";
     		
+            $periodEndDate = new DateTime();
+            $periodEndDate->add(new DateInterval("P{$module['month_count']}M"));
+            $periodEndDate->sub(new DateInterval("P1D"));
+            
     		$invoiceData = array (
 				'customerID' 		=> $customerID,
 				'oneTimeCharge'		=> $oneTimeCharge,
@@ -147,10 +154,10 @@ class Invoice {
 				'total'				=> $amount,
 				'paid'				=> 0,								//always $0.00 when creating new invoice
 				'due'				=> $total,							//due is always == total when creating new invoice
-				'generationDate'	=> $this->currentDate,
-				'suspensionDate'	=> "".$suspensionDate."",
-				'periodStartDate'	=> "'".$periodStartDate."'",			
-				'periodEndDate'		=> "'".date('Y-m-d',strtotime($periodStartDate." + ".$module['month_count']." months") - 86400)."'",	//end_date = start_date + months - 1 day
+				'generationDate'	=> mktime(),
+				'suspensionDate'	=> $suspensionDate->getTimestamp(),
+				'periodStartDate'	=> $periodStartDate->getTimestamp(),			
+				'periodEndDate'		=> $periodEndDate->getTimestamp(),	//end_date = start_date + months - 1 day
 				'billingInfo'		=> "NULL",
 				'limitInfo'			=> "NULL",
 				'customInfo'		=> "NULL",
@@ -160,6 +167,7 @@ class Invoice {
     			'currency_id'		=> 	$currencyDetails['id']		
     		);
     		
+            //var_dump($invoiceData);
     		$this->insertInvoice($invoiceData,$autopay);
     		
     		$modulesToBilling []= $module['id'];
@@ -183,7 +191,7 @@ class Invoice {
      * @param startDate
      * @param moduleBillingPlanID - can be an array and an integer
      */
-    public function createInvoiceForModule($customerID,$startDate,$moduleBillingPlanID,$status = "due") {
+    public function createInvoiceForModule($customerID,DateTime $startDate,$moduleBillingPlanID,$status = "due") {
     	//if $moduleBillingPlanID is a number(only one id) its should be in array too
     	
     	$billing = new Billing($this->db);
@@ -222,13 +230,19 @@ class Invoice {
     		$oneTimeCharge = 0;
     		
     		$config = $this->loadConfig();
-    		$suspensionDate = date('Y-m-d',strtotime($startDate." + ".$config['limit_suspension_period']." days"));
+            
+            $suspensionDate = new DateTime();
+            $suspensionDate->add(new DateInterval("P{$config['limit_suspension_period']}D"));
+            
+    		//$suspensionDate = date('Y-m-d',strtotime($startDate." + ".$config['limit_suspension_period']." days"));
     		
     		$discount = $this->calculateDiscount($oneTimeCharge, $total, $customerID, 0);// $backToCustomer = 0
     			
     		$total = $this->calculateTotal($oneTimeCharge, $total, $discount);
     		
-    		
+    		$period_end_date = clone $startDate;
+            $period_end_date->add(new DateInterval("P{$billingPlanDetailsForMainInvoice['month_count']}M"));
+            $period_end_date->sub("P1D");
     		
     		$invoiceData = array (
 				'customerID' 		=> $customerID,
@@ -238,10 +252,10 @@ class Invoice {
 				'total'				=> $total,
 				'paid'				=> 0,								//always $0.00 when creating new invoice
 				'due'				=> $total,							//due is always == total when creating new invoice
-				'generationDate'	=> $this->currentDate,
-				'suspensionDate'	=> "".$suspensionDate."",
-				'periodStartDate'	=> "'".$startDate."'",			
-				'periodEndDate'		=> "'".date('Y-m-d',strtotime($startDate." + ".$billingPlanDetailsForMainInvoice['month_count']." months") - 86400)."'",	//end_date = start_date + months - 1 day
+				'generationDate'	=> mktime(),
+				'suspensionDate'	=> $suspensionDate->getTimestamp(),
+				'periodStartDate'	=> $startDate->getTimestamp(),			
+				'periodEndDate'		=> $period_end_date->getTimestamp(),	// "'".date('Y-m-d',strtotime($startDate." + ".$billingPlanDetailsForMainInvoice['month_count']." months") - 86400)."'" //end_date = start_date + months - 1 day
 				'billingInfo'		=> "NULL",
 				'limitInfo'			=> "NULL",
 				'customInfo'		=> "NULL",
@@ -402,7 +416,7 @@ class Invoice {
     
     
     
-	public function createInvoiceForBilling($customerID,$periodStartDate,$billingID, $asap = false) {	
+	public function createInvoiceForBilling($customerID,DateTime $periodStartDate,$billingID, $asap = false) {	
 		
 		$billing = new Billing($this->db);
 		$currencyDetails = $billing->getCurrencyByCustomer($customerID);
@@ -420,8 +434,9 @@ class Invoice {
 			//echo "currentInvoice!<br/>";
 			//cancel invoice for future period if exist
 			$invoiceForFutureBP = $this->getInvoiceForFuturePeriod($customerID);
-			//echo "invoiceForFutureBD<br/>";
-			//var_dump($invoiceForFutureBP);
+			echo "invoiceForFutureBD<br/>";
+			var_dump($invoiceForFutureBP);
+            //exit;
 			if ($invoiceForFutureBP) {
 				$this->cancelInvoice($invoiceForFutureBP['invoiceID']);
 			}
@@ -429,7 +444,7 @@ class Invoice {
 			
 			$amount = $billingPlanDetails['price'];			
 			if (!$asap) {				
-				$suspesionDate = $periodStartDate;
+				$suspesionDate = clone $periodStartDate;
 				$billingInfo = "'Sources: ".$billingPlanDetails['bplimit'].", Months: ".$billingPlanDetails['months_count'].", Type: ".$billingPlanDetails['type']."'";
 			} else {
 				//partial refund
@@ -446,13 +461,32 @@ class Invoice {
 				//echo "<h3>back to customer: $backToCustomer</h3>";	
 				
 				//echo "<br/><b>Partial Refund!</b><br/>";
-				$newEndDateTimestamp = strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"); 			
-				if ($newEndDateTimestamp > strtotime($currentInvoice['periodEndDate'])) {					
-					$suspesionDate = $currentInvoice['periodEndDate'];
-				} else {					
-					$suspesionDate = date('Y-m-d', $newEndDateTimestamp);
+                //echo "period start date: " . $periodStartDate->format("m o n t h ");
+                
+				//$newEndDateTimestamp = strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"); 	
+                $newEndDateTimestamp = clone $periodStartDate;
+                $newEndDateTimestamp->add(new DateInterval("P".intval($billingPlanDetails['months_count'])."M")); //Add month count
+                //echo "currentInvoice['periodEndDate']";
+                //var_dump($currentInvoice['periodEndDate']);
+                
+                //echo "newEndDateTimestamp";
+                //var_dump($newEndDateTimestamp);
+                $currentInvoicePeriodEndDate = new DateTime();
+                $currentInvoicePeriodEndDate->setTimestamp($currentInvoice['periodEndDate']);
+                //echo "periodEndDate";
+               // var_dump($currentInvoicePeriodEndDate);
+                
+                
+				//if ($newEndDateTimestamp > strtotime($currentInvoice['periodEndDate'])) {					
+                if($newEndDateTimestamp->diff($currentInvoicePeriodEndDate)->invert == true){
+                    
+					$suspesionDate = $currentInvoicePeriodEndDate;
+				} else {				
+                    //echo "not more";
+					$suspesionDate = clone $newEndDateTimestamp;//date('Y-m-d', $newEndDateTimestamp);
 				}						
-				
+				//var_dump($suspesionDate);
+                //exit;
 				//echo "suspensionDate = " . $suspesionDate;
 				//end createInvoiceForBilling			
 				$billingInfo = "'Sources: ".$billingPlanDetails['bplimit'].", Months: ".$billingPlanDetails['months_count'].", Type: ".$billingPlanDetails['type'].", ASAP'";
@@ -472,7 +506,7 @@ class Invoice {
 			
 			$amount = $billingPlanDetails['price'];
 			if (!$asap) {	
-				$suspesionDate = $periodStartDate;
+				$suspesionDate = clone $periodStartDate;
 				$billingInfo = "'Sources: ".$billingPlanDetails['bplimit'].", Months: ".$billingPlanDetails['months_count'].", Type: ".$billingPlanDetails['type']."'";
 			} else {
 				
@@ -485,8 +519,8 @@ class Invoice {
 										'Please report denis.nt@kttsoft.com. Today is '.$this->currentDate.'.');				
 				}		
 				
-				$suspesionDate = $invoiceForFutureBP['suspensionDate'];
-				$periodStartDate = $invoiceForFutureBP['periodStartDate'];
+				$suspesionDate = DateTime::setTimestamp($invoiceForFutureBP['suspensionDate']);
+				$periodStartDate = DateTime::setTimestamp($invoiceForFutureBP['periodStartDate']);
 				$billingInfo = "'Sources: ".$billingPlanDetails['bplimit'].", Months: ".$billingPlanDetails['months_count'].", Type: ".$billingPlanDetails['type'].", ASAP'";									
 			}			
 		}
@@ -507,6 +541,8 @@ class Invoice {
 			throw new Exception('No currency for customer '.$customerID);
 		}
 		
+        $periodEndDate = clone $periodStartDate;
+        $periodEndDate->add( new DateInterval("P".intval($billingPlanDetails['months_count'])."M") );
 		$invoiceData = array (
 			'customerID' 		=> $customerID,
 			'oneTimeCharge'		=> $oneTimeCharge,
@@ -515,10 +551,10 @@ class Invoice {
 			'total'				=> $total,
 			'paid'				=> 0,								//always $0.00 when creating new invoice
 			'due'				=> $total,							//due is always == total when creating new invoice
-			'generationDate'	=> $this->currentDate,
-			'suspensionDate'	=> $suspesionDate,
-			'periodStartDate'	=> "'".$periodStartDate."'",			
-			'periodEndDate'		=> "'".date('Y-m-d',strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"))."'",
+			'generationDate'	=> mktime(),
+			'suspensionDate'	=> $suspesionDate->getTimestamp(),
+			'periodStartDate'	=> $periodStartDate->getTimestamp(),			
+			'periodEndDate'		=> $periodEndDate->getTimestamp(),//"'".date('Y-m-d',strtotime($periodStartDate." + ".$billingPlanDetails['months_count']." months"))."'",
 			'billingInfo'		=> $billingInfo,
 			'limitInfo'			=> "NULL",
 			'customInfo'		=> "NULL",
@@ -528,6 +564,9 @@ class Invoice {
 			'currency_id'		=> $currencyDetails['id']				
 		);
 		
+        //echo "invoiceData:";
+        //var_dump($invoiceData);
+        //exit;
 		//echo "ahead insertInvoice";
 		
 		$this->insertInvoice($invoiceData);
@@ -635,7 +674,9 @@ class Invoice {
 		if (!$currencyDetails) {
 			throw new Exception('No currency for customer '.$customerID);
 		}		
-		
+		$now = new DateTime("now");
+        //$now->setTime(0, 0, 0);
+        
 		$invoiceData = array (
 			'customerID' 		=> $customerID,
 			'oneTimeCharge'		=> 0,
@@ -644,7 +685,7 @@ class Invoice {
 			'total'				=> $total,
 			'paid'				=> 0,								//always $0.00 when creating new invoice
 			'due'				=> $total,							//due is always == total when creating new invoice
-			'generationDate'	=> date('Y-m-d'),
+			'generationDate'	=> $now->getTimestamp(),
 			'suspensionDate'	=> $suspensionDate,
 			'periodStartDate'	=> "NULL",			
 			'periodEndDate'		=> "NULL",
@@ -657,6 +698,9 @@ class Invoice {
 			'currency_id'		=> $currencyDetails['id']					
 		);
 		
+        //var_dump($now);
+        //var_dump($invoiceData);
+        //exit;
     	$id = $this->insertInvoice($invoiceData);
     	return $id;
     }    
@@ -872,29 +916,15 @@ class Invoice {
     /*
      * UPDATED 9/12/2010
      */
-    public function getInvoiceDetails($invoiceID) {
-    	//echo "<br/>getInvoiceDetails";
-    	//$this->db->select_db(DB_NAME);    	    	
+    public function getInvoiceDetails($invoiceID,$convertDates = false) {
     	
-    	/*
-    	 * DEPRECATED
-    	 * 
-    	 * $query = "SELECT *, DATEDIFF(period_end_date, CURDATE()) end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP " .
-    			 "FROM ".TB_VPS_INVOICE." " .
-    			 "WHERE invoice_id = ".$invoiceID;*/
     	
     	$query = "SELECT inv.*,
-    			 item.*, item.billing_info as 'item_billing_info',
-    			  DATEDIFF(period_end_date, '".$this->currentDate."') end_BP_days_left, DATEDIFF(period_end_date, period_start_date) days_count_at_BP, cur.sign  
+    			 item.*, item.billing_info as 'item_billing_info', cur.sign  
     			 FROM ".TB_VPS_INVOICE." inv, " . TB_VPS_INVOICE_ITEM . " item, " . TB_VPS_CURRENCY . " cur " .
     			 "WHERE inv.invoice_id = $invoiceID AND item.invoice_id = inv.invoice_id AND cur.id = inv.currency_id";
 
-    	/*$query = "SELECT * FROM ".TB_VPS_INVOICE . " WHERE invoice_id = $invoiceID";
-    	$this->db->query($query);
-    	$data = $this->db->fetch_array(0);
-    	var_dump($data);
-    	exit;*/
-    	//echo $query;
+    	
     	
     	$this->db->query($query);
     	
@@ -912,6 +942,24 @@ class Invoice {
 		    	
 	    	foreach($data as $row)
 	    	{
+                //var_dump($row);
+                
+                $period_start_date = new DateTime();
+                $period_start_date->setTimestamp($row['period_start_date']);
+                $period_end_date = new DateTime();
+                $period_end_date->setTimestamp($row['period_end_date']);
+                $now = new DateTime("now");
+                
+                
+                
+                $daysLeft2BPEnd = $period_end_date->diff($now)->days;
+                //echo "days left to billing period end: $daysLeft2BPEnd";
+                
+                $daysCountAtBP = $period_end_date->diff($period_start_date)->days;
+                
+               // echo "<br/>days count of billing period: $daysCountAtBP";
+                
+                
 	    		if($flag)
 	    		{
 	    			$invoiceDetails = array (    		
@@ -935,13 +983,21 @@ class Invoice {
 					'status'			=> $row['status'],
 	    			'currency_id'		=> $row['currency_id'],
 					'suspensionDisable'	=> $row['suspension_disable'],
-					'daysLeft2BPEnd'	=> $row['end_BP_days_left'],
-					'daysCountAtBP'		=> $row['days_count_at_BP'],
+					'daysLeft2BPEnd'	=> $daysLeft2BPEnd,
+					'daysCountAtBP'		=> $daysCountAtBP,
 	    			'sign'				=> $row['sign']
 		    		);
 		    		$flag = false;
+                    
+                    if($convertDates){
+                        $invoiceDetails['generationDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['generationDate'], false);
+                        $invoiceDetails['suspensionDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['suspensionDate'], false);
+                        $invoiceDetails['periodStartDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodStartDate'], false);
+                        $invoiceDetails['periodEndDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodEndDate'], false);
+                    }
 	    		}
 	    		
+               
 	    		if( isset($row['module_id']) )
 	    		{
 	    			$invoiceDetails['modules'][] = array('moduleID' => $row['module_id']);
@@ -1068,6 +1124,7 @@ class Invoice {
     			 AND i.status IN ('paid', 'due') 
     			  LIMIT 1";   	
     	
+        
     	$this->db->query($query);
     	
     	
@@ -1969,6 +2026,7 @@ class Invoice {
 		$query = "UPDATE ".TB_VPS_INVOICE. " " .
 			"SET status = '$type' " .
 			"WHERE invoice_id = ".$invoiceDetails['invoiceID'];
+        
 		$this->db->query($query);							
 		
 		$payment = (isset($this->payment)) ? $this->payment : new Payment($this->db);		
@@ -2164,15 +2222,16 @@ class Invoice {
     			 "'".$invoiceData['total']."', " .
     			 "'".$invoiceData['paid']."', " .
     			 "'".$invoiceData['due']."', " .    			 
-    			 "'".$invoiceData['generationDate']."', " .
-    			 "'".$invoiceData['suspensionDate']."', " .    			 
-    			 "".$invoiceData['periodStartDate'].", " .
-    			 "".$invoiceData['periodEndDate'].", " . 			 
+    			 $invoiceData['generationDate'].", " .
+    			 $invoiceData['suspensionDate'].", " .    			 
+    			 $invoiceData['periodStartDate'].", " .
+    			 $invoiceData['periodEndDate'].", " . 			 
     			 "'".$invoiceData['status']."', " .
     			 "".$invoiceData['suspensionDisable'].", " .
 				 "".$invoiceData['currency_id'].")";
 
     	//$this->db->getLastInsertedID();
+        
     	$this->db->query($query);
     	
     	if(mysql_error())
@@ -2319,16 +2378,20 @@ class Invoice {
 		//$oneDayCost = round(floatval($currentInvoice['total'])/intval($currentInvoice['daysCountAtBP']), 2);
 		//$backToCustomer = $oneDayCost * intval($currentInvoice['daysLeft2BPEnd']);
 		
-		//	new correct. I'm rounding end result ($backToCustomer) here!
+		//new correct. I'm rounding end result ($backToCustomer) here!
 		
 		/**
 		 * If parameters is not correct, add info and stack to dump file
 		 */
 		 
-		$curtime = mktime();		
+		
+        $now = new DateTime("now");
+        $period_start_date = new DateTime();
+        $period_start_date->setTimestamp($currentInvoice["periodStartDate"]);
+        
 		 
 		if(!$currentInvoice && !$currentInvoice['total'] && !$currentInvoice['daysCountAtBP'] && !$currentInvoice['daysLeft2BPEnd'] and
-			$curtime > strtotime($currentInvoice["periodStartDate"])) //If period start date exists in future..
+			$now->diff($period_start_date) == true) //If period start date exists in future..
 		{
 			
 			$funcs = xdebug_get_function_stack();
@@ -2339,15 +2402,6 @@ class Invoice {
 			$oneDayCost = floatval($currentInvoice['total'])/intval($currentInvoice['daysCountAtBP']);
 			$backToCustomer = round($oneDayCost * intval($currentInvoice['daysLeft2BPEnd']), 2);
 			return floatval($backToCustomer);
-			
-			/*
-			 * SHIT =)
-			 * if($currentInvoice) {
-				var_dump($currentInvoice['total']);
-				return floatval($currentInvoice['total']);
-			} else {
-				return floatval("0.0");
-			}*/
 		}
 	}
 	

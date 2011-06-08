@@ -101,7 +101,7 @@ class Payment {
 			"paid"				=> $invoiceDetails['paid'],	//if customer pay entire amount
 			"due"				=> $invoiceDetails['due'],
 			"balance"			=> $balance,
-			"paymentDate"		=> $this->currentDate,
+			"paymentDate"		=> mktime(),
 			"status"			=> "Completed",
 			"paymentMethodID"	=> "NULL"	
 		);				
@@ -180,7 +180,7 @@ class Payment {
     			 "'".$paymentData['paid']."', " .
     			 "'".$paymentData['due']."', " .
     			 "'".$paymentData['balance']."', " .    			 
-    			 "'".$paymentData['paymentDate']."', " .
+    			 "".$paymentData['paymentDate'].", " .
     			 "'".$paymentData['status']."', " .
     			 "".$paymentData['paymentMethodID'].")";
     			     	

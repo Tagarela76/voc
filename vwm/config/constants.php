@@ -42,6 +42,7 @@
 				define ('REGION', 	'us');
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);	//	USD
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	KTTSOFT AREA	
@@ -57,6 +58,7 @@
 				define ('REGION', 	'us');	
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);//	USD
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	DEDICATED SERVER LIVE AREA
@@ -72,6 +74,7 @@
 				define ('REGION', 	'us');
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);//	USD
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	DEDICATED SERVER SANDBOX AREA
@@ -87,6 +90,7 @@
 				define ('REGION', 	'us');
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);//	USD
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	LOCAL ACCEPTANCE TESTS AREA
@@ -101,6 +105,7 @@
 				define ('REGION', 	'us');
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);//	USD
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	LOCAL EUROPE - UNITED KINGDOM AREA
@@ -116,6 +121,7 @@
 				define ('REGION', 	'eu_uk');
 				define ('DOMAIN', 	'vocwebmanager.co.uk');
 				define ('DEFAULT_CURRENCY', 2);//	GBP
+                define ('DEFAULT_DATE_FORMAT',"d/m/Y"); // Europe date format
 				break;				
 			
 			//	WORK EUROPE - UNITED KINGDOM AREA
@@ -131,6 +137,7 @@
 				define ('REGION', 	'eu_uk');
 				define ('DOMAIN', 	'vocwebmanager.co.uk');
 				define ('DEFAULT_CURRENCY', 2);//	GBP
+                define ('DEFAULT_DATE_FORMAT',"d/m/Y"); // Europe date format
 				break;				
 				
 			//	DEDICATED SERVER LIVE EUROPE - UNITED KINGDOM AREA
@@ -146,6 +153,7 @@
 				define ('REGION', 	'eu_uk');
 				define ('DOMAIN', 	'vocwebmanager.co.uk');
 				define ('DEFAULT_CURRENCY', 2);//	GBP
+                define ('DEFAULT_DATE_FORMAT',"d/m/Y"); // Europe date format
 				break;				
 				
 			//	DEDICATED SERVER SANDBOX EUROPE - UNITED KINGDOM AREA			
@@ -161,6 +169,7 @@
 				define ('REGION', 	'eu_uk');
 				define ('DOMAIN', 	'vocwebmanager.co.uk');
 				define ('DEFAULT_CURRENCY', 2);//	GBP
+                define ('DEFAULT_DATE_FORMAT',"d/m/Y"); // Europe date format
 				break;			
 		}	
 		break;

@@ -20,6 +20,7 @@ function __autoload($class_name) {
 	$filename .= $class_name.'.class.php';
 	
 	$controllersFilePath.=$filename;
+    //echo $filename;
 	
 	if ($subDir == '') {
 		$filePath .= $filename;
@@ -28,8 +29,10 @@ function __autoload($class_name) {
 		$filePath .= $subDir.DIRSEP.$filename;
 		$localizedFilePath .= $subDir.DIRSEP.$filename;
 	}
-		
+		//echo "<br/>Controller: ".$controllersFilePath . "<br/>";
+        //
 	
+    
 	//	TRY TO LOAD CONTROLLER CLASS
 	if (file_exists($controllersFilePath) == false)	{	
 		//	TRY TO LOAD LOCALIZED CLASS
@@ -45,12 +48,14 @@ function __autoload($class_name) {
 					return false;
 				}
 			} else {
+                
 				include ($filePath);			
 			}				
 		} else {
 			include ($localizedFilePath);
 		}
 	}else {		
+        //echo "yes<br/>";
 		include ($controllersFilePath);
 	}
 	//echo($filePath.$localizedFilePath.$controllersFilePath.'+');

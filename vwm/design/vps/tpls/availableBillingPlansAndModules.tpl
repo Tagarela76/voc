@@ -87,8 +87,8 @@
 			<input type="hidden" name="category" value="billing">
 			<input type="hidden" name="action" value="editCategory">
 		{else}			
-			<input type="hidden" name="action" value="addUser">
-			<input type="hidden" name="step" value="second">
+			<input type="hidden" name="action" value="second">
+			<input type="hidden" name="category" value="myInfo">
 		{/if}		
 		
 	
@@ -179,7 +179,7 @@
 								<input type="checkbox" name="bindToBP"  value="yes" disabled> Bind to the current Billing Plan
 							</td>
 							<td>&nbsp;</td>
-							<td>Begin Date of module use<input type="text" name="startDate" value="{$date}"></td><td>&nbsp;</td>
+							<td>Begin Date of module use<input type="text" name="startDate" id="startDate" value="{$date}"></td><td>&nbsp;</td>
 				<td><!--Price<input id="price" type="text" value="" disabled> -->
 				 
 				<span style='font-size:15px;'>Total modules price: {$currentCurrency.sign} <span id="price" style='font-weight:bold;'>0</span></span></td>
@@ -205,6 +205,19 @@
                              <td valign="top" class="billing_b_r_yellowgreen"></td>                           				
 				       </tr>
 		      </table>
+
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript">
+    dateFormatJS = '{$jsdateformat}';
+    {literal}
+    $(document).ready(function(){	
+         $("#startDate").datepicker({ dateFormat: dateFormatJS }); 
+    });
+    {/literal}
+</script>
+
 		<script type="text/javascript" src="modules/js/vps_modules.js"></script>
 		      {*/shadow_table*}	
 </form>

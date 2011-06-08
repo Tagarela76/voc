@@ -3,7 +3,7 @@
 {else}
 	<center><h1>Are you sure you want to apply following Billing Plan?</h1></center>
 	<center><h1>Attention! Invoice for setup and first billing period will be generated now.</h1></center>
-	<form action="vps.php?action=addUser&step=third" method="post">
+	<form action="vps.php?category=myInfo&action=third" method="post">
 {/if}
 
 {*notifications*}

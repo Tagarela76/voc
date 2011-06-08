@@ -10,9 +10,23 @@ class CurrencyConvertor
 	
 	function CurrencyConvertor()
 	{
+        
+        $filename = date("d_m_Y")."_currency.xml";
+        $tmpdir = "/tmp/";
+        $fullfilenpath = getcwd().$tmpdir.$filename;
+        
+        if(!is_file($fullfilenpath)) {
+            $res = copy("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",$fullfilenpath);
+            if($res) {
+            
+            } else {
+               
+            }
+        }
+        
 		try
 		{
-			$xml = new SimpleXMLElement("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",0,true);
+			$xml = new SimpleXMLElement($fullfilenpath,0,true);
 		}
 		catch(Exception $e)
 		{
@@ -52,6 +66,7 @@ class CurrencyConvertor
 	 */
 	public function Sum($valuts,$returnType = "USD")
 	{
+        
 		if( empty($valuts))
 		{
 			throw new Exception("Valuts is empty!");

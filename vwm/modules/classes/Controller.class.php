@@ -38,12 +38,22 @@ class Controller
 	protected function forvard($controller,$function,$vars,$controllerType = 'main')
 	{
 		
-		if ($controllerType != 'admin') {
-			$className="C".ucfirst($controller);
-		} else {
+		
+        if($controllerType == 'vps') {
+            $className="CV".ucfirst($controller);
+        }
+        
+        else if($controllerType == 'admin') {
 			$className="CA".ucfirst($controller);
 		}
-		
+		else {
+			$className="C".ucfirst($controller);
+        
+		}
+        
+        //echo $className;
+        //echo $function;
+        //exit;
 		
 		if (class_exists($className)) {
 			$controllerObj=new $className($this->smarty,$this->xnyo,$this->db,$this->user,$this->action);
@@ -54,8 +64,10 @@ class Controller
 		if (method_exists($controllerObj,$function))	{
 			$controllerObj->$function($vars);
 		}
-		else 
+		else {
+            
 			throw new Exception('404');
+        }
 	
 		return $controllerObj;
 	}
@@ -67,9 +79,11 @@ class Controller
 		
 		if ($controllerType != 'admin') {
 			$functionName='action'.ucfirst($this->action).'Common';
-		} else {
+		} elseif ($controllerType == 'admin') {
 			$functionName='action'.ucfirst($this->action).'ACommon';
-		}
+		} elseif ($controllerType == 'vps') {
+            $functionName='action'.ucfirst($this->action).'VCommon';
+        }
 		
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
@@ -944,5 +958,35 @@ class Controller
 		else 
 			return $this->post;
 	}	
+    
+    function setBookmarks($category) {
+		switch ($category) {
+			case "invoices":
+			
+				$subCategoryList = array('All','Paid','Canceled','Due');
+				foreach ($subCategoryList as $subCategoryName) {
+					$bookmark['label'] = $subCategoryName;
+					$bookmark['name'] = $subCategoryName;
+					$bookmark['url'] = "vps.php?action=viewList&category=invoices&subCategory=".$subCategoryName;
+					$bookmarks[] = $bookmark;						
+				}						
+				$this->smarty->assign("bookmark",$bookmarks);
+				
+				break;
+				
+			case "billing":
+			
+				$subCategoryList = array('My Billing Plan','Available Billing Plans');
+					foreach ($subCategoryList as $subCategoryName) {
+						$bookmark['label'] = $subCategoryName;
+						$bookmark['name'] = str_replace(" ","",$subCategoryName);
+						$bookmark['url'] = "vps.php?action=viewDetails&category=billing&subCategory=".$bookmark['name'];
+						$bookmarks[] = $bookmark;						
+					}						
+				$this->smarty->assign("bookmark",$bookmarks);
+			
+				break;	
+		}		
+	}
 }
 ?>

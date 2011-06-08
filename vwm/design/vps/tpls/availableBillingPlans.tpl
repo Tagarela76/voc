@@ -142,7 +142,8 @@
 								<input type="radio" name="selectedModulePlan_{$module_id}"  value="{$plan.gyant.$curMonth.id}" {if 'gyant' neq $billingPlan.type} disabled {/if} onclick="setPrice('{$plan.gyant.$curMonth.price}', '{$module_id}', {$ids})">{$currentCurrency.sign} {$plan.gyant.$curMonth.price}																														
 							</td>
 					{/section}	
-					<td class="billingPlans_bot"><input type="button" value="X" onClick="deselectModule({$module_id},{$ids})" style="width:5px;" title="Clear selection">
+					<td class="billingPlans_bot">
+                        <input type="button" value="X" onClick="deselectModule({$module_id},{$ids})" style="width:5px;" title="Clear selection">
 					&nbsp;{if $plan.applied}/<input type="button" value="Delete" onclick="location.href='vps.php?category=billing&action=editCategory&subCategory=modules&module={$module_id}&total=delete&status=delete_all'" title="Delete all plans for module(deactivate module)">{/if}
 					<input type="hidden" id="price_{$module_id}" value="0">
 					</td>							
@@ -236,6 +237,17 @@
 		      </table>
 		
 		      {*/shadow_table*}	
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript">
+    dateFormatJS = '{$dateFormatJS}';
+    {literal}
+    $(document).ready(function(){	
+         $("input[name='startDate']").datepicker({ dateFormat: dateFormatJS }); 
+    });
+    {/literal}
+</script>
 		      <script type="text/javascript" src="modules/js/vps_modules.js"></script>
  
 {else} <!-- NEW USER IS CHOISING NEW BILLING AND MODULES -->
@@ -244,3 +256,4 @@
 		
 		
 {/if}
+    

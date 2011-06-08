@@ -1,10 +1,15 @@
-	<div class="padd_top20">
+<div class="padd_top20">
 {*notifications*}
 	{if $message }
 		{include file="tpls:../user/tpls/notify/greenNotify.tpl" text=$message}		
 	{/if}
 {**}
-	<form action="vps.php" method="GET">		
+{if $action}
+    <form action="{$action}" method="POST">		
+{else}
+    <form action="vps.php?category=myInfo&action=editCategory" method="POST">		
+{/if}
+        
 	<div class="padd7 ">
 			    {*shadow*}
 	<div class="shadow">
@@ -172,8 +177,8 @@
                 <input type="submit" value="Save" class="button">
             </div>
         </div>
-		<input type="hidden" name="action" value="{$action}">
-		<input type="hidden" name="category" value="{$category}">
+		<!--<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="category" value="{$category}"> -->
 		
 		{if $userData.showAddUser} {* adding new user when he is registered at VOC*}
 			<input type="hidden" name="step" value="first">			

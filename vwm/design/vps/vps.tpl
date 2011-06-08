@@ -3,6 +3,9 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<title>{$title}</title>
 		<link href="style.css" rel="stylesheet" type="text/css">
+        <link rel="SHORTCUT ICON" href="images/money-dollar-icon.png" />
+        <script type="text/javascript" src='modules/js/jquery-1.5.2.js'></script>
+        
 	</head>
 	
 	<body>
@@ -42,6 +45,8 @@
 						
 																				<td valign="top" class="foot_block">
 {*Categories List*}
+                                                                                    
+                                                                                    
 
 {include file="tpls:top.tpl"}
 {if $category eq "dashboard"}

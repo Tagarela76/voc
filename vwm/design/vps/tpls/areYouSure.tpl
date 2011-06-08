@@ -2,9 +2,9 @@
 <div style="padding:7px;">
 
 {if $currentBookmark eq "payInvoice"}
-<form action="vps.php?action=confirmEdit&category={$currentBookmark}&invoiceID={$invoice.invoiceID}" method="post">
+<form action="vps.php?action=confirmPayInvoice&category=invoices&invoiceID={$invoice.invoiceID}" method="post">
 {else}
-<form action="vps.php?action=confirmEdit&category={$category}" method="post">
+<form action="vps.php?action=confirmEdit&category={$category}{if $smarty.request.subCategory}&subCategory={$smarty.request.subCategory}{/if}" method="post">
 {/if}
 
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
@@ -215,10 +215,10 @@
 							{$oldPlan.month_count} {if $plan.month_count >1}Months{else}Month{/if}
 						</td>
 						<td class="border_users_r border_users_b">
-							{$oldPlan.currentInvoice.periodStartDate}&nbsp;
+							{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($oldPlan.currentInvoice.periodStartDate)}&nbsp;
 						</td>
 						<td class="border_users_r border_users_b">
-							{$oldPlan.currentInvoice.periodEndDate}&nbsp;
+							{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($oldPlan.currentInvoice.periodEndDate)}&nbsp;
 						</td>
 						<td class="border_users_r border_users_b">
 							{$currentCurrency.sign} {$oldPlan.price}&nbsp;
@@ -275,7 +275,7 @@
 	{/if}
 {/foreach}
 <tr>
-						<td  height="25" class="users_u_bottom">							
+						<td  height="25" class="users_u_bottom">				
 						</td>
 						<td height="25" colspan="6" class="users_u_bottom_r" align="right">
 							&nbsp;
@@ -332,10 +332,10 @@
 							{$plan.month_count} {if $plan.month_count >1}Months{else}Month{/if}
 						</td>
 						<td class="border_users_r border_users_b">
-							{$plan.currentInvoice.periodStartDate}&nbsp;
+							{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($plan.currentInvoice.periodStartDate)}&nbsp;
 						</td>
 						<td class="border_users_r border_users_b">
-							{$plan.currentInvoice.periodEndDate}&nbsp;
+							{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($plan.currentInvoice.periodEndDate)}&nbsp;
 						</td>
 						<td class="border_users_r border_users_b">
 							{$currentCurrency.sign} {$plan.price}&nbsp;

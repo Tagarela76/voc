@@ -191,7 +191,9 @@ class Billing {
     	//$this->db->select_db(DB_NAME);    	    	
     	//echo "setScheduledPlan function<br/>";
     	$scheduledBillingPlan = $this->getScheduledPlanByCustomer($customerID);	
-    	//echo "scheduledBillingPlan $scheduledBillingPlan<br/>";
+    	//echo "scheduledBillingPlan <br/>";
+        //var_dump($scheduledBillingPlan);
+        //exit;
     	
 		if (!$scheduledBillingPlan) {
 			//	no scheduled billing plans, so add new plan to schedule
@@ -245,32 +247,33 @@ class Billing {
 		$invoice = new Invoice($this->db);
 		$invoice->currentDate = $this->currentDate;
 		
+        $periodStartDate = new DateTime();
 		if ($type == "bpEnd") {
 			$currentInvoice = $invoice->getCurrentInvoice($customerID);					
 			if ($currentInvoice) {
-				$periodStartDate = $currentInvoice['periodEndDate'];
+				$periodStartDate->setTimestamp($currentInvoice['periodEndDate']);
 			} else {
 				//	*Try to take trial period end. Try do not use first invoice case 
 				$firstInvoice = $invoice->getInvoiceWhenTrialPeriod($customerID);
 				if ($firstInvoice) {
-					$periodStartDate = $firstInvoice['periodStartDate'];
+					$periodStartDate->setTimestamp($firstInvoice['periodStartDate']);
 				} else {
 					//	Trial period end
 					$vps2voc = new VPS2VOC($this->db);
 					$customerDetails = $vps2voc->getCustomerDetails($customerID);
 					
-					$periodStartDate = $customerDetails['trial_end_date'];
+					$periodStartDate->setTimestamp($customerDetails['trial_end_date']);
 				}	
 				//$firstInvoice = $invoice->getInvoiceWhenTrialPeriod($customerID);
 				//$periodStartDate = ($firstInvoice) ? $firstInvoice['periodStartDate'] : null;	
 			}									
 			$asap = false;								
 		} else {
-			$periodStartDate = $this->currentDate;			
+			$periodStartDate = new DateTime("now");			
 			$asap = true;
 		}
 		echo "createInvoiceForBilling<br/>";
-		echo " ($customerID, $periodStartDate, $billingID, $asap)";
+		//echo " ($customerID, $periodStartDate, $billingID, $asap)";
 		$invoice->createInvoiceForBilling($customerID, $periodStartDate, $billingID, $asap);
 		//echo "createdInvocieForBilling<br/>";
 		return $action;
@@ -488,7 +491,7 @@ class Billing {
     public function applyModuleBillingPlan($customerID, $moduleBillingPlanIDs, $startDate = null) {
     	//	default start date is today
     	if (is_null($startDate)) {
-    		$startDate = date('Y-m-d');
+    		$startDate = new DateTime("now");
     	}    	    	
     	
     	//	if exist already exist? - ?? if we want to add it for future it's a fail - we can't!
@@ -515,14 +518,26 @@ class Billing {
 	    	$moduleBillingDetails = $this->getModuleBillingPlans($moduleBillingPlanID);
 	    	$moduleBPIDsByMonthCount [$moduleBillingDetails[0]['month_count']][]=$moduleBillingPlanID;
 	    	
-	    	$purchasedModule = $this->getPurchasedModule($customerID, $moduleBillingDetails[0]['module_id'], 'todayOnly', array($startDate,date('Y-m-d',strtotime($startDate.' + '.$moduleBillingDetails[0]['month_count'].' months - 1 day'))));
+            $endDate = clone $startDate;
+            $endDate->add(new DateInterval("P{$moduleBillingDetails[0]['month_count']}M"));
+            $endDate->sub(new DateInterval("P1D"));
+            //date('Y-m-d',strtotime($startDate.' + '.$moduleBillingDetails[0]['month_count'].' months - 1 day'))
+            
+	    	$purchasedModule = $this->getPurchasedModule($customerID, $moduleBillingDetails[0]['module_id'], 'todayOnly', array($startDate,$endDate));
+            //echo "purchasedModule";
+            
+            
+           // var_dump($purchasedModule);
+            
+            //$this->db->beginTransaction();
+            
 	    	if ($purchasedModule) {    		
 	    		foreach ($purchasedModule as $module) {
 	    			$this->removeModuleBillingPlan($customerID, $module['id']);//if we get here customer accepted to delete all conflicted modules: we can delete them all!
 	    		}
 	    	}
 		}
-    	    	   	   	    	
+    		    	
     	//	and now create invoice
     	foreach($moduleBPIDsByMonthCount as $moduleBillingPlanIDs) {
 	    	$invoice = new Invoice($this->db);    	
@@ -533,13 +548,12 @@ class Billing {
     	}
     }
     
-    public function insertModuleBillingPlan($customerID, $startDate, $arrayBillingPlanIDs) {
+    public function insertModuleBillingPlan($customerID, DateTime $startDate, $arrayBillingPlanIDs) {
     	$query = "INSERT INTO ".TB_VPS_MODULE2CUSTOMER." (customer_id, module_billing_id, start_date) VALUES ";
     	foreach ($arrayBillingPlanIDs as $moduleID) {
-    		$query .= "( ".$customerID.", ".$moduleID.", '".$startDate."'), ";  
+    		$query .= "( ".$customerID.", ".$moduleID.", ".$startDate->getTimestamp()."), ";  
     	}
     	$query = substr($query,0,-2);
-    	
     	$this->db->exec($query);
     }
     /**
@@ -619,19 +633,9 @@ class Billing {
     	
     	$currency = $this->getCurrencyByCustomer($customerID);
     	
-    	//var_dump($moduleBillingPlanID);
-    	//p("invoiceDetails");
-    	//var_dump($invoiceDetails);
-    	//var_dump($invoiceDetails);
-    	
-    	//p("is multi?");
-    	//var_dump($result);
-    
-    	//exit;
-    	
-    	
     	if($result) /**MULTI INVOICE*/
     	{
+            echo "MULTI INVOICE"; exit;
 	    		 $billingID = $invoiceDetails['customerDetails']['billing_id'];
 	    		 $trialEndDate = $invoiceDetails['customerDetails']['trial_end_date'];
 	    		 $customerID = $invoiceDetails['customerDetails']['company_id'];
@@ -695,92 +699,7 @@ class Billing {
 	    		 //echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>createCustomInvoice</b><br/>"); 
 	    		 //exit;
 	    		 
-	    		 //-------------------------------------------------------------------------------------------------------------------------------------------
-	    		 ///Remove invoice_item from main multiInvoice
-	    		 /*$query = "SELECT item.id 
-					FROM  vps_invoice inv, vps_invoice_item item
-					WHERE inv.invoice_id = item.invoice_id and inv.customer_id = $customerID AND item.module_id = $mID";
-	    		 
-	    		 $this->db->query($query);
-	    		 $removingInvoiceItemId = $this->db->fetch(0)->id;
-	    		 
-	    		 if($removingInvoiceItemId)
-	    		 {
-	    		 	$query = "DELETE FROM vps_invoice_item where id = $removingInvoiceItemId";
-	    		 }
-	    		 else
-	    		 {
-	    		 	die("$query <h1>returns null!</h1>");
-	    		 }*/
-	    		 /*$invoiceItemsDetails = $invoice->getInvoiceItemsDetails($invoiceDetails['invoiceID']);
-	    		 
-	    		 $invoiceItems = $invoiceItemsDetails['invoice_items'];
-	    		 
-	    		 $moduleIDs = array();
-	    		 
-	    		 
-	    		 // Prepare data to create new multi invoice without deleting module
-	    		 $test = array();
-	    		 $mID = $invoice->getModuleIDByBillingModuleID($moduleBillingPlanID);
-	    		 
-	    		 
-	    		 
-	    		 foreach($invoiceItems as $i)
-	    		 {
-	    		 	//p($mID . " == " . $i['moduleID']);
-	    		 	
-	    		 	if($i['moduleID'] and $i['moduleID'] != $mID)
-	    		 	{
-	    		 		$moduleIDs[] = $i['moduleID'];	
-	    		 		$test[] = $i['moduleID'];
-	    		 	}
-	    		 	else
-	    		 	{
-	    		 		$deletingModuleID = $i['moduleID'];
-	    		 	}
-	    		 }
-	    		 
-	    		 //p("invoiceItems:");
-	    		 //var_dump($invoiceItems);
-	    		 
-	    		 //p("moduleIDs");
-	    		 //var_dump($moduleIDs);
-	    		 
-	    		 $moduleBillingIDList = array();
-	    		 
-	    		 //$purcashedModules = $this->getPurchasedModule($customerID, null, 'todayOnly', 'today', $currency['id']);
-	    		 
-	    		 /*getPurchasedModule без всякой фигни*/
-	    		 /*$query = "SELECT  mb.id, mb.month_count, mb2c.price, mb.module_id, mb.type, m2c.start_date " .
-    			 "FROM ".TB_VPS_MODULE2CUSTOMER." m2c, ".TB_VPS_MODULE_BILLING." mb, " . TB_VPS_MODULE2CURRENCY . " mb2c 
-    			 WHERE mb.id = m2c.module_billing_id
-    			AND mb2c.module_billing_id = mb.id
-    			AND m2c.customer_id = $customerID 
-    			 AND mb2c.currency_id = {$currency['id']} ";
-    			 $this->db->query($query);
-    			 
-    			 echo $query;
-    			
-    			 $purcashedModules = $this->db->fetch_all_array();
-	    		 
-	    		 //p("purcashedModules");
-	    		 //var_dump($purcashedModules);
-	    		 
-	    		 //p("change moduleIDs from ");
-	    		 //var_dump($moduleIDs);
-	    		 //p("to");
-	    		 $moduleIDs = array();
-	    		 foreach($purcashedModules as $pm)
-	    		 {
-	    		 	if($pm['module_id'] != $deletingModuleID)
-	    		 	{
-	    		 		$moduleIDs[] = $pm['id'];
-	    		 	}
-	    		 }
-	    		 //var_dump($moduleIDs);
-	    		 //p("modules");
-	    		 $modules = $this->getModulesBillingByIDs($moduleIDs,$currency['id']);
-	    		 var_dump($modules);*/
+	    		 ///b tot rfrfz nj
 	    		 
 	    		 //echo "<h1>Normal modules ;)</h1>";
 	    		 $modules = array(); //clear modules
@@ -856,7 +775,9 @@ class Billing {
     		/*
     		 * Cancel invoice
     		 */
-    		 
+    		 echo "Invoice with one item"; 
+             var_dump($invoiceDetails);
+             //exit;
     		 if($invoiceDetails)
     		 {
     		 	if (strtolower($invoiceDetails['status']) == 'due') 
@@ -868,7 +789,9 @@ class Billing {
 	    		else 
 	    		{
 	    			//echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>Begin</b><br/>");
+                    //echo "partial refund";
 	    			$backToCustomer = $invoice->partialRefund($invoiceDetails);
+                   // echo "back to customer: ".$backToCustomer;
 	    			//$invoice->manualBalanceChange($customerID,'+',$backToCustomer);
 	    			$deletingModuleInfo = $invoiceDetails['modules'][0];
 	    			
@@ -877,8 +800,10 @@ class Billing {
 		    		type - <b>{$deletingModuleInfo['type']}</b>,
 		    		back to customer - <b>$ $backToCustomer</b>
 		    		<a href='/voc_src/vwm/vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceDetails['invoiceID']}'>Original Invoice</a>";
+                    
 	    		 	$customInfo = mysql_escape_string($customInfo);
 	    		 	$invoice->createCustomInvoice($customerID, $backToCustomer * -1, $invoiceDetails['suspensionDate'], 0, $customInfo,'CANCELED');
+                    
 	    		 	//echo("<br/>Balance: " . $invoice->getBalance($customerID) . " <b>createCustomInvoice</b><br/>");
 	    		 	$query = "UPDATE ".TB_VPS_INVOICE. " " .
 						"SET status = 'CANCELED' " .
@@ -903,26 +828,12 @@ class Billing {
 				    
 	    			//p("cancel PAID single Invoice");
 	    			//$invoice->cancelInvoice($invoiceDetails['invoiceID']);
-	    			
 	    			//exit;
 	    		}
     		 } 
     	}
     	
 		
-	
-    	//switching off the module
-    	/*
-    	if ($invoiceDetails['periodStartDate'] <= date('Y-m-d') && $invoiceDetails['periodEndDate'] >= date('Y-m-d')) {
-    		p("cancelModule2company");
-	    	$ms = new ModuleSystem($this->db);
-	    	$vps2voc = new VPS2VOC($this->db);
-	    	$moduleName = $vps2voc->getModuleNameByID($invoiceDetails['moduleID']);
-	    	p("moduleName",$moduleName);
-			$ms->setModule2company($moduleName,0,$customerID);
-    	}*/
-    	
-    	//exit;
     	return true;
     }
     
@@ -967,15 +878,20 @@ class Billing {
     		$modulesExists = array();	//needed only if $period[1] is null
     		$modules = array();
     		
+            
     		if ($period == 'today') {
-    			$period = array($this->currentDate, null);
+    			$period = array(new DateTime("now"), null);
     		} elseif (!is_array($period)) {
-    			$period = array(date('Y-m-d', strtotime($period)), null);
+                $now = new DateTime("now");
+                $now->setTimestamp(strtotime($period));
+    			$period = array($now, null);
     		} else {
     			foreach ($period as $key => $value) {
-    				$period[$key] = date('Y-m-d', strtotime($value));
+    				$period[$key] = $value; // value is DateTime object
     			}
     		}    		
+            
+            
     		
     		foreach($modulesFetched as  $module) {
     			if (is_null($period[1])) {
@@ -993,24 +909,85 @@ class Billing {
     					$modulesExists [$module['module_id']]= $id;
     				}	
     				
-    			} else {    				
-    				$month_count = ' + '.$module['month_count'].(($module['month_count'] == 1)?' month':' months').' - 1 day';
-    				if (($module['start_date'] >= $period[0] && $module['start_date'] <= $period[1]) || 
+    			} else {    
+                    
+                    
+                    
+                    $module_start_date = new DateTime();
+                    $module_start_date->setTimestamp($module['start_date']);
+                    $module_end_date = clone $module_start_date;
+                    $module_end_date->add(new DateInterval("P{$module['month_count']}M"));
+                    $module_end_date->sub(new DateInterval("P1D"));
+                    
+                    $period_start_date = $period[0];
+                    $period_end_date = $period[1];
+                    
+                    /*echo "module start date";
+                    var_dump($module_start_date);
+                    echo "module end date";
+                    var_dump($module_end_date);
+                    echo "period start date";
+                    var_dump($period_start_date);
+                    echo "period end date";
+                    var_dump($period_end_date);*/
+                    
+                    /*
+                     * if module start date > period start date AND module start date < period end date
+                     * 
+                     * OR
+                     * 
+                     * module end date > period start date AND module end date < period end date
+                     * 
+                     * OR
+                     * 
+                     * module end date count > period end date AND module start date < period start date
+                     */
+                    
+                    /*
+                     * invert == false means less than.
+                     * invert == true means greater than
+                     */
+                    
+                    if( ($module_start_date->diff($period_start_date)->invert == true and $module_start_date->diff($period_end_date)->invert == false)
+                            or
+                            ($module_end_date->diff($period_start_date)->invert == true and $module_end_date->diff($period_end_date)->invert == false)
+                                    or
+                                    ($module_end_date->diff($period_end_date)->invert == true and $module_start_date->diff($period_start_date)->invert == false)
+                       ) 
+                    {
+                        
+                        /*
+                         * period of this module does not conflict with chosen period
+                         */
+                        $id = count($modules);
+                    }else {
+                        /**
+                         * period of this module conflict with chosen period
+                         */
+                        continue;
+                    }
+                    
+    				/*if (($module['start_date'] >= $period[0] && $module['start_date'] <= $period[1]) 
+                            || 
     				 (date('Y-m-d',strtotime($module['start_date'].$month_count)) > $period[0] && 
-    				  date('Y-m-d',strtotime($module['start_date'].$month_count)) < $period[1]) || 
+    				  date('Y-m-d',strtotime($module['start_date'].$month_count)) < $period[1]) 
+                            || 
     				 (date('Y-m-d',strtotime($module['start_date'].$month_count)) > $period[1] &&
     				  $module['start_date'] < $period[0])) {
     				 	$id = count($modules);	
     				 } else {
     				 	continue;	//period of this module does not conflict with chosen period  
-    				 }
+    				 }*/
     			}
     			//if we get here we have $id in $modules and we should add current $module to $modules[$id]
     			$modules[$id] = $module;
     			$modules[$id]['module_name'] = $allAvailableModules[$modules[$id]['module_id']];
+                
+                
     			
     			$modules[$id]['currentInvoice'] = $invoiceObj->getInvoiceForModuleByStartDate($customerID,$modules[$id]['id'],$modules[$id]['start_date']);//($invoiceType == 'todayOnly')?($invoiceObj->getCurrentInvoiceForModule($customerID, $modules[$id]['id'], date('Y-m-d',strtotime($modules[$id]['start_date'].' + 1 day')))):($invoiceObj->getCurrentOrFutureInvoiceForModule($customerID, $modules[$id]['id'], date('Y-m-d',strtotime($modules[$id]['start_date'].' + 1 day'))));
     		}
+            
     		return $modules;
     	} else {
     		return false;
@@ -1065,15 +1042,26 @@ class Billing {
 	    foreach ($allModules as $key => $value) {
 		    $activatedModules[$key] = $user->checkAccess($value,$customerID);
 	    }
-	    
+        
+	    $dt = new DateTime();
+        $dateFormat = VOCApp::get_instance()->getDateFormat();
+        
 	    $appliedModules = array();
 	    foreach ($purchasedModules as $key => $module) {
+            $start = $module['currentInvoice']['periodStartDate'];
+            $dt->setTimestamp($start);
+            $start = $dt->format($dateFormat);
+            
+            $end = $module['currentInvoice']['periodEndDate'];
+            $dt->setTimestamp($module['currentInvoice']['periodEndDate']);
+            $end = $dt->format($dateFormat);
+            
 		    $module_plan = array(
 			    'id' => $module['id'],
 				'type' => $module['type'],
 				'period' => $module['month_count'].(($module['month_count'] == 1)?'Month':'Months'),
-				'start' => $module['currentInvoice']['periodStartDate'],
-				'end' => $module['currentInvoice']['periodEndDate'],
+				'start' => $start,
+				'end' => $end,
 				'status' => $module['currentInvoice']['status'],
 				'price' => $module['price'],
 		    	'currency_id'	=>  $module['currentInvoice']['currency_id'],
@@ -1502,7 +1490,9 @@ class Billing {
 			$customerDetails = $vps2voc->getCustomerDetails($newBillingPlan['customerID']);						    	 	
 			$invoice = new Invoice($this->db);		
 			
-			$invoice->createInvoiceForBilling($newBillingPlan['customerID'], $customerDetails["trial_end_date"], $insertedBillingPlanID); //Bridge trial_end_date
+            $dt = new DateTime();
+            $dt->setTimestamp($customerDetails["trial_end_date"]);
+			$invoice->createInvoiceForBilling($newBillingPlan['customerID'], $dt, $insertedBillingPlanID); //Bridge trial_end_date
 			//echo "end<br/>";
     	 }
     	 

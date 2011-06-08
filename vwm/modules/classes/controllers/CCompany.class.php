@@ -128,7 +128,8 @@ class CCompany extends Controller
 		$this->smarty->assign('childCategory', 'facility');		
 							
 		//Set Payment Notify
-		$checkResult = $this->checkPaymentNotify($this->getFromRequest('id'), $this->db);						
+		$checkResult = $this->checkPaymentNotify($this->getFromRequest('id'), $this->db);	
+        //var_dump($checkResult);
 		if ($checkResult['shouldPay']) {						
 			$notify = new Notify($this->smarty);			
 			$this->smarty->assign('notify', $notify->paymentNotify($checkResult['daysLeft']));
@@ -537,15 +538,34 @@ class CCompany extends Controller
 		
 		$voc2vps = new VOC2VPS($db);
 		$configs = $voc2vps->loadConfigs();
-		$vpsRegistrationPeriod = $configs['vps_registration_period'];
+		$vpsRegistrationPeriod = intval($configs['vps_registration_period']);
+        
+        //var_dump($vpsRegistrationPeriod);
 		
 		$vps_customer = $voc2vps->getCustomerDetails($customerID,true);
+        
+        //var_dump($vps_customer);
+        
+        $trial_end_date = new DateTime();
+        $trial_end_date->setTimestamp($vps_customer['trial_end_date']);
+        
+        $diff = $trial_end_date->diff(new DateTime());
+        
+        //Trial period ended
+        if($diff->invert == false){
+            //var_dump($diff);
+        }else{ //Trial period
+            
+        }
 		
-		$timeStampTrialDaysLeft = strtotime($vps_customer['trial_end_date']) - strtotime();
+		$timeStampTrialDaysLeft = $vps_customer['trial_end_date'] - strtotime();
+        
+        //var_dump($timeStampTrialDaysLeft);
 		
-		if ( $timeStampTrialDaysLeft < $vpsRegistrationPeriod*24*60*60 && $timeStampTrialDaysLeft > 0 && $vps_customer['status'] == "notReg") {															
+		if ( $timeStampTrialDaysLeft < $vpsRegistrationPeriod*24*60*60 && $timeStampTrialDaysLeft > 0 && $vps_customer['status'] == "notReg") {		
+            //echo "_____";
 			$shouldPay = true;
-			$daysLeft = round($timeStampTrialDaysLeft/60/60/24);			
+			$daysLeft = $diff->format("%d"); //round($timeStampTrialDaysLeft/60/60/24);			
 		} else {						
 			
 			//get min of daysLeft from DueInvoices							
@@ -562,5 +582,15 @@ class CCompany extends Controller
 		
 		return $result; 	
 	}	
+    
+    public function to_seconds(DateInterval $di)
+      {
+        
+        return ($di->y * 365 * 24 * 60 * 60) +
+               ($di->m * 30 * 24 * 60 * 60) +
+               ($di->d * 24 * 60 * 60) +
+               ($di->h * 60 *60) +
+               $di->s;
+      }
 }
 ?>

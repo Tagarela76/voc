@@ -82,10 +82,11 @@ class VPS2VOC {
     		$query .= "AND vc.customer_id = '$customerID' LIMIT 1";
     	}
     	
-
+        
     	$this->db->query($query);    	
     	$customerDetails = $this->db->fetch_all_array();    	
     	
+        
     	$companyList = array();
     	foreach($customerDetails as $details) {
     		$companyList []= $details['company_id'];
@@ -106,16 +107,27 @@ class VPS2VOC {
 	    		}
 	    	}
 	    	
-	    	//var_dump($dates);
+            //echo "details";
+	    	//var_dump($customerDetails);
+            //echo "dates";
+            //var_dump($dates);
 	    	
 	    	foreach($customerDetails as $key => $details) {
+                
+            
 	    		$customerDetails [$key]['period_end_date']= $dates[$details['company_id']]['period_end_date'];
+                
+                $dt = new DateTime();
+                
+                
 	    		if (strtoupper($dates[$details['company_id']]['status']) == 'PAID') {	    			
-	    			
-	    			$customerDetails [$key]['deadline_counter']= (strtotime($dates [$details['company_id']]['period_end_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
+                    $dt->setTimestamp($dates [$details['company_id']]['period_end_date']);
+                    $diff = $dt->diff(new DateTime());
+	    			$customerDetails [$key]['deadline_counter'] = $diff->format("%d"); //(strtotime($dates [$details['company_id']]['period_end_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
 	    		} else {
-	    			
-	    			$customerDetails [$key]['deadline_counter']= (strtotime($dates [$details['company_id']]['suspension_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
+	    			$dt->setTimestamp($dates [$details['company_id']]['suspension_date']);
+                    $diff = $dt->diff(new DateTime());
+	    			$customerDetails [$key]['deadline_counter']= $diff->format("%d");//(strtotime($dates [$details['company_id']]['suspension_date']) - strtotime($this->currentDate))/ (60 * 60 * 24); 
 	    		}
 	    	}
     	}

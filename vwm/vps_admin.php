@@ -13,7 +13,15 @@
 		}
 		
 		return $config;	
-	}						
+	}	
+    
+    $dateTime = new DateTime();
+    
+    function convertTimestampToDate($stamp) {
+        global $dateTime;
+        $dateTime->setTimestamp(intval($stamp));
+        return $dateTime->format(DEFAULT_DATE_FORMAT);
+    }
 	
 	$categoryID = "vps";
 	
@@ -139,10 +147,21 @@
 					
 					$requestList = $billing->getRequest();
 					$vps2voc = new VPS2VOC($db);
+                    
+                    $trial_end_date = new DateTime();
+                    
+                    
+                    
 					foreach ($requestList as $key=>$value)	{
-						$customerDetails = $vps2voc->getCustomerDetails($requestList[$key]['customerID']);						
+						$customerDetails = $vps2voc->getCustomerDetails($requestList[$key]['customerID']);	
+                        
+                        $trial_end_date->setTimestamp($requestList[$key]['date']);
+                        $requestList[$key]['date'] = $trial_end_date->format(DEFAULT_DATE_FORMAT);
+                    
 						$requestList[$key]['customerName'] = $customerDetails['name'];
-					}				
+					}		
+                    
+                    //var_dump($requestList);
 					$smarty->assign("requestList",$requestList);
 					break;
 					
@@ -219,12 +238,25 @@
 					$invoice = new Invoice($db);
 					
 					$invoiceDetails = $invoice->getInvoiceItemsDetails($invoiceID);	
+                    
+                    
+                    $invoiceDetails['generationDate'] = convertTimestampToDate($invoiceDetails['generationDate']);
+                    $invoiceDetails['suspensionDate'] = convertTimestampToDate($invoiceDetails['suspensionDate']);
+                    $invoiceDetails['periodStartDate'] = convertTimestampToDate($invoiceDetails['periodStartDate']);
+                    $invoiceDetails['periodEndDate'] = convertTimestampToDate($invoiceDetails['periodEndDate']);
+                    
+                    //var_dump($invoiceDetails);
 								
 					$smarty->assign("invoiceDetails", $invoiceDetails);
 					
 					$payment = new Payment($db);
 					
-					$paymentHistory = $payment->getHistory($invoiceID);		
+					$paymentHistory = $payment->getHistory($invoiceID);	
+                    
+                    $count = count($paymentHistory);
+                    for($i=0; $i<$count; $i++) {
+                        $paymentHistory[$i]['date'] = convertTimestampToDate($paymentHistory[$i]['date']);
+                    }
 								
 					$smarty->assign("paymentHistory", $paymentHistory);
 					
@@ -273,15 +305,36 @@
 					// OK Style =)
 					$vps2voc = new VPS2VOC($db);
 					$customerDetails = $vps2voc->getCustomerDetails($customerID);
+                    //var_dump($customerDetails);
+                    $dt = new DateTime();
+                    $dt->setTimestamp($customerDetails['trial_end_date']);
+                    $customerDetails['trial_end_date'] = $dt->format(DEFAULT_DATE_FORMAT);
+                    $dt->setTimestamp($customerDetails['period_end_date']);
+                    $customerDetails['period_end_date'] = $dt->format(DEFAULT_DATE_FORMAT);
+                    
 
 					$customerDetails['contactPerson'] = $customerDetails['contact'];
 					$customerDetails['id'] = $customerDetails['customer_id'];
 					
 					$invoices = $invoice->getAllInvoicesList($customerID);
-					
-					for ($i=0; $i<count($invoices); $i++) {						
-							$invoices[$i]['editable'] = 'yes';
-					}
+                    
+                    $count = count($invoices);
+                    for($i=0; $i<$count; $i++) {
+                        $dt->setTimestamp($invoices[$i]['generationDate']);
+                        $invoices[$i]['generationDate'] = $dt->format(DEFAULT_DATE_FORMAT);
+                        
+                        $dt->setTimestamp($invoices[$i]['suspensionDate']);
+                        $invoices[$i]['suspensionDate'] = $dt->format(DEFAULT_DATE_FORMAT);
+                        
+                        $dt->setTimestamp($invoices[$i]['periodStartDate']);
+                        $invoices[$i]['periodStartDate'] = $dt->format(DEFAULT_DATE_FORMAT);
+                        
+                        $dt->setTimestamp($invoices[$i]['periodEndDate']);
+                        $invoices[$i]['periodEndDate'] = $dt->format(DEFAULT_DATE_FORMAT);
+                        
+                        $invoices[$i]['editable'] = 'yes';
+                    }
+                    
 					
 					$currencies = $billing->getCurrenciesList();
 					
@@ -448,12 +501,17 @@
 				    $customerDetails  = $vps2voc->getCustomerDetails($_GET['customerID']);
 					
 					//$db->select_db(DB_NAME);
-					$query = "SELECT discount, TIMESTAMPDIFF(MONTH, '".$customerDetails['trial_end_date']."', CURDATE()) as time_with_us FROM ".TB_VPS_CUSTOMER." WHERE customer_id= ".$_GET['customerID'];
+					$query = "SELECT discount, TIMESTAMPDIFF(MONTH, FROM_UNIXTIME(".$customerDetails['trial_end_date']."), CURDATE()) as time_with_us FROM ".TB_VPS_CUSTOMER." WHERE customer_id= ".$_GET['customerID'];
+                    
 					$db->query($query);
 					$data = $db->fetch(0);
 					$customerDetails['discount'] = $data->discount;
 					$customerDetails['time_with_us'] = $data->time_with_us; 
-					$customerDetails['trial_end_date'] = str_replace('-', '.', $customerDetails['trial_end_date']);
+					//$customerDetails['trial_end_date'] = str_replace('-', '.', $customerDetails['trial_end_date']);
+                    $trial_end_date = new DateTime();
+                    $trial_end_date->setTimestamp($customerDetails['trial_end_date']);
+                    $customerDetails['trial_end_date'] = $trial_end_date->format(DEFAULT_DATE_FORMAT);
+                    
 					 
 					$billingPlan = $Billing->getCustomerPlan($_GET['customerID']);
 					$allInvoices = $Invoice->getAllInvoicesList($_GET['customerID']);
@@ -1546,11 +1604,16 @@
 					
 					$xnyo->filter_get_var('requestID','int');					
 					if (isset($_GET['requestID'])) {
+                        
 						$billing = new Billing($db);
 						$vps2voc = new VPS2VOC($db);						
 						$requestDetails = $billing->getRequest($_GET['requestID']);
 						$customerDetails = $vps2voc->getCustomerDetails($requestDetails[0]['customerID']);
-												
+											
+                        
+                        $dt = new DateTime();
+                        $dt->setTimestamp($requestDetails[0]['date']);
+                        
 						//I hope this is tmp
 						$definedPlans[0]['request_id'] = $requestDetails[0]['id'];
 						$definedPlans[0]['customer_id'] = $requestDetails[0]['customerID'];
@@ -1562,8 +1625,10 @@
 						$definedPlans[0]['limits']['MSDS']['default_limit'] = $requestDetails[0]['MSDSLimit'];
 						$definedPlans[0]['limits']['memory']['default_limit'] = $requestDetails[0]['memoryLimit'];
 						$definedPlans[0]['description'] = stripslashes($requestDetails[0]['description']);
-						$definedPlans[0]['date'] = $requestDetails[0]['date'];
+						$definedPlans[0]['date'] = $dt->format(DEFAULT_DATE_FORMAT);
 						$definedPlans[0]['status'] = $requestDetails[0]['status'];
+                        
+                        
 						 
 						$smarty->assign("definedPlans",$definedPlans); 												
 						

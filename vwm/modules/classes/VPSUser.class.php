@@ -245,6 +245,7 @@ class VPSUser {
 	function getCustomerIDbyUserID($userID) {
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT company_id FROM ".TB_VPS_USER." WHERE user_id=".$userID);
+       
 		$data=$this->db->fetch(0);				
 		return $data->company_id;
 	}
@@ -283,9 +284,42 @@ class VPSUser {
 		$customersData = $vps2voc->getCustomerDetails();
 		foreach ($customersData as $c) {
 
-			$timeData = (date('Y') - date('Y',strtotime($c['trial_end_date'])))*12 + 
+			/*$timeData = (date('Y') - date('Y',strtotime($c['trial_end_date'])))*12 + 
 				(date('n') - date('n',strtotime($c['trial_end_date']))) - 
-				((date('j') - date('j',strtotime($c['trial_end_date'])) >= 0)? 0 : 1 ); //govnokod
+				((date('j') - date('j',strtotime($c['trial_end_date'])) >= 0)? 0 : 1 ); //govnokod */
+            
+            $trial_end_date = new DateTime();
+            $trial_end_date->setTimestamp(intval($c['trial_end_date']));
+            $monthWithUs = $trial_end_date->diff(new DateTime("now"));
+            
+            
+            
+            //make cute string
+            //echo "diff:";
+            
+            $format = "";
+            $year = $monthWithUs->y == 1 ? "year" : "years";
+            $month = $monthWithUs->m == 1 ? "month" : "monts";
+            $day = $monthWithUs->d == 1 ? "day" : "days";
+                
+            if($monthWithUs->y) {
+                
+                $format = "%y $year, %m $month, %d $day";
+            }elseif($monthWithUs->m) {
+                $format = "%m $month, %d $day";
+            }else {
+                $format = "%d $day";
+            }
+            //var_dump($monthWithUs->format("%y years - %m month"));
+            
+            $timeWithUs_formatted = $monthWithUs->format($format);
+            if($monthWithUs->invert)
+            {
+                $timeWithUs_formatted = "Trial period: $timeWithUs_formatted left" ;
+            } 
+            
+            //echo $timeWithUs_formatted . " invert:" . $monthWithUs->invert . "<br/>";
+            
 			
 			$customer = array(
 				'id'				=>	$c['customer_id'],
@@ -297,7 +331,7 @@ class VPSUser {
 				'discount'			=>  $c['discount'],
 				'status'			=>  $c['status'],
 				'balance'			=>  $c['balance'],
-				'time_with_us'		=>  (($timeData > 0)?$timeData:0),
+				'time_with_us'		=>  $timeWithUs_formatted,
 				'currencySign'		=>	$c['currencySign']
 			);
 			
@@ -648,6 +682,7 @@ class VPSUser {
     		$vps2voc = new VPS2VOC($this->db);
     		$return_limits ['Source count']['current_value'] = $vps2voc->getCurrentEquipmentCount($customerID);
     	}
+        
 		return $return_limits; 			    
     }
     

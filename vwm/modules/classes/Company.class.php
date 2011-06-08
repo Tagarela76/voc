@@ -60,6 +60,9 @@ class Company {
 		$voc2vps = new VOC2VPS($this->db);
 		$configs = $voc2vps->loadConfigs();
 		$trialPeriod = $configs['trial_period'];
+        
+        $trialPeriod = new DateTime();
+        $trialPeriod->add( new DateInterval("P".intval($configs['trial_period'])."D") );
 		
 		$query="INSERT INTO ".TB_COMPANY." (name, address, city, zip, county, state, country, phone, fax, email, contact, title, gcg_id, creater_id, trial_end_date, voc_unittype_id) VALUES (";
 		
@@ -77,10 +80,12 @@ class Company {
 		$query.="'".$companyData["title"]."', ";
 		$query.=$gcgID.", ";
 		$query.=$companyData["creater_id"].", ";
-		$query.=((VERSION=="standalone")?"NULL,":"DATE_ADD(CURDATE(), INTERVAL ".$trialPeriod." DAY), ");
+		$query.=((VERSION=="standalone")?"NULL,": $trialPeriod->getTimestamp().",");
 		$query.=$companyData["voc_unittype_id"];
 		
 		$query.=')';
+        
+        
 						
 		$this->db->query($query);
 		

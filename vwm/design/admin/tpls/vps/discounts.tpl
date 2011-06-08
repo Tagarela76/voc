@@ -167,7 +167,7 @@
     <td class="billingPlans_left">Name</td>
     <td class="billingPlans_left">Current Billing Plan</td>
     <td class="billingPlans_left">Total Charge</td>
-    <td class="billingPlans_left">Time With Us (months)</td>
+    <td class="billingPlans_left">Time With Us</td>
     <td class="billingPlans_left">Discount</td>
     </tr>
     {section name=i loop=$customers}

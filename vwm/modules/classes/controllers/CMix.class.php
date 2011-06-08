@@ -574,7 +574,7 @@ class CMix extends Controller
 		$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
 		
 		$this->smarty->assign("dateFormat",$dateFormatForCalendar);
-		$dateFormat = $chain->getFromTypeController('getFormat');; 
+		$dateFormat = $chain->getFromTypeController('getFormat'); 
 		
 		$sortStr=$this->sortList('mix',2);
 		$filterStr=$this->filterList('mix',$dateFormat);
