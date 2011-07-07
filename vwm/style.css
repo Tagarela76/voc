@@ -1,3 +1,38 @@
+em.bt, em.bt b, em.bb, em.bb b {
+    display: block; /* Блочный элемент */
+    height: 4px; /* Высота уголка */
+    font-size: 0; /* Размер шрифта */
+    background: url(images/cor.png) no-repeat; /* Путь к файлу с уголками */
+    position: relative; /* Относительное позиционирование */
+   }
+   
+em.bt { 
+    top: -1px; /* Сдвигаем левый верхний уголок вверх */
+    left: -1px; /* Сдвигаем влево */
+   }
+   
+em.bt b {
+    background-position:  100% -4px; /* Рисунок сдвигается к следующему уголку */
+    left: 2px; /* Сдвигаем вправо */
+   }
+   
+em.bb { background-position: 0 -8px; top:  1px; left: -1px; }
+
+em.bb b { background-position: 100% -12px;  left: 2px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .headerSortUp {
 	background: url(images/asc.gif) no-repeat right;
 }
@@ -744,7 +779,8 @@ table.controlCategoriesList td {
 }
 
 .control_panel {
-    width: 98%
+    width: 98%;
+    border: 1px #E0E4EE solid; 
 }
 
 .control_panel_tl {
@@ -764,9 +800,9 @@ table.controlCategoriesList td {
 }
 
 .control_panel_center {
-    border-top: 1px solid #e0e4ee;
-    border-bottom: 1px solid #e0e4ee;
-    margin: 0 5px
+   
+ 
+   
 }
 
 /*
@@ -1175,7 +1211,7 @@ tr.users_header_blue td div.users_header_blue_r div{
 }
 /*end new class*/
 tr.users_top_blue {
-    background: #8aa4c8 url(images/users_top_blue.gif) repeat-x 0px -92px;
+    background: #8aa4c8 url(images/users_top_blue.gif) repeat-x scroll 0px -92px;
     color: #fff
 }
 
