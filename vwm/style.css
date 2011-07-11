@@ -29,8 +29,10 @@ em.bb b { background-position: 100% -12px;  left: 2px; }
 
 
 
-
-
+.foot_block {
+    background: url(images/foot_block.gif) no-repeat left bottom;
+    padding-bottom: 30px; 
+}
 
 
 .headerSortUp {
@@ -223,10 +225,7 @@ a.decoration_underline {
     padding: 15px;
 }
 
-.foot_block {
-    background: url(images/foot_block.gif) no-repeat left bottom;
-    padding-bottom: 30px
-}
+
 
 span.textbold {
     color: #404654;
@@ -256,14 +255,30 @@ span.textbold {
     line-height: 18px;
 }
 
+/*
 .bgtop {
     background: #3e424c url(images/bg_top.gif) repeat-x bottom center;
 }
+*/
+
+.bgtop {
+    background: url(images/logo_and_bg.png) repeat-x;
+    background-position: 0 -60px;
+}
+
+/*
+.logo {
+     background: url(images/gyantcompliance_small.png) no-repeat;
+}
+*/
 
 .logo {
-    /*background: url(images/logo.png) no-repeat;*/
-    background: url(images/gyantcompliance_small.png) no-repeat;
+     background: url(images/logo_and_bg.png)no-repeat;
+     background-position: 0 0;
 }
+
+
+
 
 .logo_site_green {
     background: url(images/logo_site_green.gif) no-repeat 1% 50%;
@@ -449,7 +464,13 @@ table.pop_up {
     color: #294887
 }
 
-/*orange*/
+
+
+
+
+
+
+/*orange
 .bl_o {
     background: #ff793f url(images/delete_categoriesLb.gif) 0% 100% no-repeat;
 }
@@ -467,6 +488,44 @@ table.pop_up {
     padding: 5px 15px 7px 15px;
     color: #ffffff;
 }
+*/
+
+
+
+.o_block {
+    width: 535px; /* ширина основного блока */
+   }
+   .b1, .b2, .b3 {
+    background: #FF7137; /* фон элементов, используемых для закругления */
+    font-size: 0; /* обнуление шрифта (для старых браузеров) */
+    overflow: hidden; /* обрезаем все, что выходит за границы (для старых браузеров) */
+   }
+   .b1 {
+    height: 2px; /* высота первого блока для закругления углов */
+    margin: 0 1px; /* боковые поля */
+    
+   }
+   .b2 {
+    height: 1px;
+    margin: 0 2px;
+    
+   }
+   .b3 {
+    height: 1px;
+    margin: 0 4px;
+    
+   }
+   .o_content_block {
+    height: 17px; /* высота блока с контентом */
+    background: #FF7137; /* фон */
+    padding-left: 5px;
+    
+   }
+
+
+
+
+
 
 /*green*/
 .bl_gr {
@@ -1574,10 +1633,26 @@ td.report_right {
     background: #fff
 }
 
+
+
+
+
+
 .bg_left {
-    background: #4C505B url(images/bg_fon.gif) repeat-x bottom right;
+    background: #4C505B url(images/bg_fon.gif) repeat-x bottom left;
     height: 400px;
 }
+
+/*
+.bg_left {
+    background: url(images/logo_and_bg.png) repeat-x bottom left;
+    background-position: 0 -117px;
+    height: 400px;
+  
+}
+*/
+
+
 
 .dotted_right {
     border-right: 0px groove #555c68
@@ -1601,6 +1676,7 @@ div.border_table {
     padding-bottom: 100px
 }
 
+
 .left_m div {
     background: url(images/left_m_top.gif) no-repeat left top;
     margin: 5px 0 0 0;
@@ -1611,6 +1687,7 @@ div.border_table {
     background: #adaeb3 url(images/left_m_bottom.gif) no-repeat left bottom;
     margin-left: 10px
 }
+
 
 .left_m_active div {
     background: url(images/left_m_top_active.gif) no-repeat left top;
@@ -1628,6 +1705,13 @@ ul.link {
     list-style-image: url(images/square.gif);
     padding-left: 23px;
 }
+
+
+
+
+
+
+
 
 .link li {
     color: #aebacd;
@@ -1775,25 +1859,68 @@ ul.link2 {
     padding: 7px 25px 0 0;
 }
 
+
+
+
+
+
 /*Buttons*/
-.button {
+/*.button {
     background: url(images/button.gif) repeat-x top left #E3E3E3;
     border: 1px solid #D3D3D3;
     padding: 0px 15px;
     height: 20px;
-	font-family:Tahoma,Verdana,Helvetica,sans-serif;color:#000
+    font-family:Tahoma,Verdana,Helvetica,sans-serif;
+    color:#000;
+    cursor:pointer;
+}*/
+
+
+.button {
+    background: url(images/button_h.gif) repeat-x;
+    background-position: 0 0;
+    border: 1px solid #D3D3D3;
+    padding: 0px 15px;
+    height: 20px;
+    font-family:Tahoma,Verdana,Helvetica,sans-serif;
+    color:#000;
+    cursor:pointer;
+    position: relative;
 }
 
+/*
 input.button {
     background: url(images/button.gif) repeat-x top left #E3E3E3;
     border: 1px solid #D3D3D3;
     padding: 0px 15px;
-    margin: 0px;color:#000
+    margin: 0px;
+    color:#000
+}*/
+
+input.button {
+    background: url(images/adddel.gif) repeat-x;
+    background-position: 0 -20px;
+    border: 1px solid #D3D3D3;
+    padding: 0px 15px;
+    height: 20px;
+    font-family:Tahoma,Verdana,Helvetica,sans-serif;
+    color:#000;
+    cursor:pointer;
+    position: relative;
 }
+/*
+.button:hover, a:hover.button, input:hover.button {
+    background: #EBEBEB url(images/button_hover_.gif) repeat-x top;color:#000
+}*/
 
 .button:hover, a:hover.button, input:hover.button {
-    background: #EBEBEB url(images/button_hover.gif) repeat-x top;color:#000
+    background: #EBEBEB url(images/adddel.gif) repeat-x;
+    background-position: 0 -40px;
+    color:#000;
 }
+
+
+
 
 /*Select*/
 a.button_select_all div{padding-top:2px}
@@ -1850,13 +1977,21 @@ a.button_select_none:hover{
     height: 23px;
 }
 
-.delete_button {
+/*.delete_button {
     background: url(images/delete.gif) no-repeat left center;
     border: 0px;
     cursor: pointer;
     height: 20px;
     width: 71px;
-	font-family:Tahoma,Verdana,Helvetica,sans-serif;
+    font-family:Tahoma,Verdana,Helvetica,sans-serif;
+}*/
+
+.delete_button {
+    background: url(images/adddel.gif);
+    height: 20px;
+    width: 71px;
+    background-position: -70px 0;
+    background-repeat: no-repeat;
 }
 
 .delete_button input {
@@ -1872,27 +2007,32 @@ a.button_select_none:hover{
     width: 71px
 }
 /*Add*/
-.add_button {
+/*.add_button {
     background: url(images/add_button.gif) no-repeat 0px center;
     border: 0px;
     cursor: pointer;
     height: 20px;
     width: 71px;
-	font-family:Tahoma,Verdana,Helvetica,sans-serif;
-}
+    font-family:Tahoma,Verdana,Helvetica,sans-serif;
+}*/
 
-.add_button input {
+
+.add_button {
+    background: url(images/adddel.gif);
+    height: 20px;
     width: 71px;
-	border: 0px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+  
 }
 
-.add_button:hover, a:hover.add_button, input:hover.add_button {
+/*.add_button:hover, a:hover.add_button, input:hover.add_button {
     background: url(images/add_button.gif) no-repeat -71px center;
 	height: 20px;
     border: 0px;
     cursor: pointer;
     width: 71px
-}
+}*/
 
 .addDelete_button {
     background: url(images/addDelete_button.gif) no-repeat 0px center;

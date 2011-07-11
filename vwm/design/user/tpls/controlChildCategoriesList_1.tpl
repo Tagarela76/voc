@@ -2,13 +2,11 @@
 <form method="get" action="" id='controlForm'>	{*this FORM will be closed at categoriesList.tpl*}
     <div align="center" class="control_panel_padd">
         <div class="control_panel" class="logbg" align="left">
-            
-<em class="bt"><b>&nbsp;</b></em>
-
-
-
+            <div class="control_panel_tl">
+                <div class="control_panel_tr">
+                    <div class="control_panel_bl">
+                        <div class="control_panel_br">
                             <div class="control_panel_center">
-
                                
 							    <div class="controlCategoriesList" style="display:table;width:100%;">
 
@@ -16,9 +14,8 @@
 									{if $request.bookmark=="inventory" && $request.tab==Inventory::PAINT_MATERIAL && $request.category=="department"}
 												{if $permissions.data.add && $permissions.data.delete}
 											<div class="button_float_left">	
-												<div  class="button_alpha addDelete_button">
+												<div class="button_alpha addDelete_button">
                                                 	<input type="submit" name="action" value="addItem">
-
                                             	</div>
 											</div>
 												{/if}
@@ -146,13 +143,10 @@
                           			 </div>
 								
                             </div>
-            
-
-<em class="bb"><b>&nbsp;</b></em>
-
-
-
-
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 	<div class="br_10"></div>
