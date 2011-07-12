@@ -2586,43 +2586,125 @@ a.report_uploader {
     background: #D3DAE2;
 }
 
-.report_uploader_t {
-    background: url(images/report_uploader_t.gif) repeat-x top left;
-}
 
+
+
+/*
 .report_uploader_b {
     background: url(images/report_uploader_b.gif) repeat-x bottom left;
 }
+*/
 
+
+/*
 .report_uploader_l {
     background: url(images/report_uploader_l.gif) repeat-y top left;
 }
+*/
 
+.report_uploader_l {
+    background: url(images/report_lr.gif) repeat-y;
+    background-position: 0 0;
+    width: 126px;
+}
+
+/*
 .report_uploader_r {
     background: url(images/report_uploader_r.gif) repeat-y top right;
 }
+*/
 
+.report_uploader_r {
+    background: url(images/report_lr.gif) repeat-y;
+    background-position: -154px 0;
+    
+}
+
+
+/*
+.report_uploader_t {
+    background: url(images/report_uploader_t.gif) repeat-x top left;
+}
+*/
+
+.report_uploader_t {
+    background: url(images/report.gif) repeat-x;
+    background-position: 0 -156px;
+}
+
+/*
 .report_uploader_t_l {
     background: url(images/report_uploader_t_l.gif) no-repeat top left;
     width: 98px;
     height: 78px;
 }
+*/
 
+
+.report_uploader_t_l {
+    background: url(images/report.gif) no-repeat;
+    background-position: 0 0;
+    height: 78px;
+    width: 98px;
+}
+
+
+.report_uploader_t_r {
+    background: url(images/report.gif) no-repeat;
+    background-position: -28px -78px;
+    height: 78px;
+    width: 98px;
+}
+
+/*
 .report_uploader_t_r {
     background: url(images/report_uploader_t_r.gif) no-repeat top right;
     width: 98px;
     height: 78px;
 }
+*/
 
+
+/*
+.report_uploader_b {
+    background: url(images/report_uploader_b.gif) repeat-x bottom left;
+}
+*/
+
+.report_uploader_b {
+    background: url(images/report.gif) repeat-x;
+    background-position: 0 -390px;
+}
+
+/*
 .report_uploader_b_r {
     background: url(images/report_uploader_b_r.gif) no-repeat bottom right;
     height: 78px;
 }
+*/
 
+.report_uploader_b_r {
+    background: url(images/report.gif) no-repeat;
+    background-position: -28px -312px;
+    height: 78px;
+}
+
+/*
 .report_uploader_b_l {
     background: url(images/report_uploader_b_l.gif) no-repeat bottom left;
     height: 78px;
 }
+*/
+
+.report_uploader_b_l {
+    background: url(images/report.gif) no-repeat;
+    background-position: 0 -234px;
+    height: 78px;
+}
+
+
+
+
 
 .report_uploader_c_yellowgreen {
     padding: 5px 0px;
