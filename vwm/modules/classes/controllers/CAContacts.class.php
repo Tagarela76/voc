@@ -17,26 +17,24 @@ class CAContacts extends Controller {
 			$this->$functionName();		
 	}
 	
-	protected function bookmarkContacts($vars) {
+	protected function bookmarkContacts($vars) {            
 		extract($vars);
 		
-		$manager = new SalesContactsManager($this->db);
-		$totalCount = $manager->getTotalCount();
-		
-		$pagination = new Pagination($totalCount);
-		$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
-		
-		
-		$sub = $this->getFromRequest("subBookmark");
-		
-		if(!isset($sub)) {
+                $sub = $this->getFromRequest("subBookmark");            
+                if(!isset($sub)) {
 			$sub = "contacts";
 		}
-		
+                                
+		$manager = new SalesContactsManager($this->db);
+
+		$totalCount = $manager->getTotalCount( strtolower ( $sub ) );                
+		                
+		$pagination = new Pagination($totalCount);  
+                
+		$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=".urlencode($sub);                
+						
 		$contactsList = $manager->getContactsList($pagination,strtolower($sub));
-		
-		
-		
+				
 		/*$apmethodList=$apmethod->getApmethodList($pagination);
 		$field='apmethod_id';
 		$list = $apmethodList;

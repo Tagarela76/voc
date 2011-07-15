@@ -17,6 +17,7 @@ class SalesContactsManager
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$contacts = array();
@@ -49,17 +50,24 @@ class SalesContactsManager
 			throw new Exception(mysql_error());
 		}
 	}
-	
-	public function getTotalCount() {
-		$query = "SELECT count(id) as 'count' from " . TB_CONTACTS;
+
+//        	public function getTotalCount() {
+	public function getTotalCount( $sub ) {
+                
+              
+
+                $query = "SELECT count(c.id) as 'count' " .
+                            "FROM " . TB_CONTACTS . " c, " . TB_CONTACTS_TYPE . " ct " .
+                            "WHERE ct.name = '".mysql_escape_string($sub)."' " .
+                            "AND c.type = ct.id";
+
 		$this->db->query($query);
 		$r = $this->db->fetch_array(0);
-		return $r['count'];
+		
+                return $r['count'];
 	}
 	
-	public function saveContact(SalesContact $c) {
-		
-		
+	public function saveContact(SalesContact $c) {		
 		
 		$state_id = $c->state_id;
 		if(!isset($state_id)) {
