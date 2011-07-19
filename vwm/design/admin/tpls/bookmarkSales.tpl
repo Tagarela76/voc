@@ -56,20 +56,18 @@
      </tr>
 	  
 	 <tr height="19px">
-	 <td {if $request.bookmark eq "contacts"} class="active_bookmark_fon" {/if}></td>
-	 <td {if $request.bookmark eq "facility"} class="active_bookmark_green_fon" {/if}></td>
+	 <td {if !$request.subBookmark} class="active_bookmark_fon" {/if}></td>
+         <td {if $request.subBookmark eq "Government"} class="active_bookmark_fon" {/if}></td>
+         <td {if $request.subBookmark eq "Affiliations"} class="active_bookmark_fon" {/if}></td>         
+	 <td {if $request.bookmark eq "facility"} class="active_bookmark_green_fon"{/if}></td>
 	 <td {if $request.bookmark eq "department"} class="active_bookmark_violet_fon" {/if}></td>
-	 <td {if $request.bookmark eq "contacts"} class="active_bookmark_fon" {/if}></td>
 	
 	 </tr>
 </table>   
  </td>
    
-    <td 
-	{if $request.bookmark eq "contacts"} class="bookmark_fon" {/if}
-	
-	
-	
-	> </td >
+    
+    
+
   </tr>
 </table>
