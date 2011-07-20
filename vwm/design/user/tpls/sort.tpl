@@ -18,7 +18,7 @@
 		<input type="hidden" name="searchAction" value="search">
 	{/if}		
 </form>
-
+        
 {if $request.bookmark == 'solventplan'}
 <form id="solventPlanForm" name="solventPlanForm" action="?action=browseCategory&category=facility&id={$request.id}&bookmark=solventplan&tab={$request.tab}" method="post" >			
 <div align="center">

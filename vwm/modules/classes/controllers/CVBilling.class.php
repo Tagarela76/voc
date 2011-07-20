@@ -23,7 +23,7 @@ class CVBilling extends Controller {
             $controller = $this->getFromRequest("subCategory");
             $function = "action".ucfirst($this->getFromRequest("action"));
             //echo "billing forvard $controller :: $function";
-            $this->forvard($controller, $function, null, 'vps');
+            $this->forward($controller, $function, null, 'vps');
         }
         else {
             $functionName='action'.ucfirst($this->action);				

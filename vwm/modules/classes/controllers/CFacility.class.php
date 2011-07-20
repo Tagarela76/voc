@@ -153,7 +153,7 @@ class CFacility extends Controller
 		
 		
 		
-		$this->forvard($bookmark,'bookmark'.ucfirst($bookmark),$vars);		
+		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars);		
 		$this->smarty->display("tpls:index.tpl");			
 	}	
 	

@@ -64,7 +64,7 @@ class CATables extends Controller {
 		//$this->smarty->assign("categoryID","tab_class");//destroy it!
 		//$this->smarty->assign("bookmarkType",$bookmark);
 		//$this->smarty->assign("categoryType","");//destroy it!
-		$this->forvard($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');		
+		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');		
 		$this->smarty->display("tpls:index.tpl");
 	}
 }

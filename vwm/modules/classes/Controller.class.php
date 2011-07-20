@@ -35,7 +35,7 @@ class Controller
 		$this->smarty->assign('footerYear', date('Y'));
 	}
 		
-	protected function forvard($controller,$function,$vars,$controllerType = 'main')
+	protected function forward($controller,$function,$vars,$controllerType = 'main')
 	{
 		
 		

@@ -22,7 +22,7 @@ class CASalescontacts extends Controller {
 		 * Потом всунуть сюда фильтр
 		 */
 
-		$this->forvard($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');		
+		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');		
 		$this->smarty->display("tpls:index.tpl");
 	}
 }
