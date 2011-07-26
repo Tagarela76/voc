@@ -7,22 +7,26 @@ class SalesContactsManager
 		$this->db=$db;
 	}
 	
-	public function getContactsList(Pagination $pagination = null,$contacts_type_name) {
-		$query = "SELECT c.* from " . TB_CONTACTS . " c ";
+	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter) {
+		$query = "SELECT c. * FROM " . TB_CONTACTS . " c ";
 		$contacts_type_name = mysql_escape_string($contacts_type_name);
 		if(isset($contacts_type_name)) {
 			$query .=  ", " . TB_CONTACTS_TYPE . " ct ";
-			$query .= " WHERE c.type = ct.id AND ct.name = '$contacts_type_name' ";
+			$query .= " WHERE c.type = ct.id AND ct.name = '$contacts_type_name'";
 		}
+                
+                if ($filter!='TRUE') {
+			$query .= " AND $filter";
+		}
+                
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-
 		$this->db->query($query);
-		$arr = $this->db->fetch_all_array();
+		$arr = $this->db->fetch_all_array();           
 		$contacts = array();
 		foreach($arr as $ca) {
-			$contact = new SalesContact($this->db,$ca);
+			$contact = new SalesContact($this->db,$ca);        
 			$contacts[] = $contact;
 		}
 		return $contacts;
@@ -52,9 +56,7 @@ class SalesContactsManager
 	}
 
 //        	public function getTotalCount() {
-	public function getTotalCount( $sub ) {
-                
-              
+	public function getTotalCount( $sub ) {              
 
                 $query = "SELECT count(c.id) as 'count' " .
                             "FROM " . TB_CONTACTS . " c, " . TB_CONTACTS_TYPE . " ct " .
@@ -141,5 +143,134 @@ class SalesContactsManager
 			}
 		}
 	}
+        
+        public function contactAutocomplete($occurrence, int $subNumber) {
+		$occurrence = mysql_escape_string($occurrence);
+		$query = "SELECT id, company, LOCATE('".$occurrence."', company) occurrence FROM ".TB_CONTACTS.
+			 " WHERE (type = ".$subNumber." AND LOCATE('".$occurrence."', company)>0) LIMIT ".AUTOCOMPLETE_LIMIT;
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0) {
+			$contacts = $this->db->fetch_all();
+			foreach ($contacts as $contact) {
+				if($contact->occurrence) {
+					$results[] = $contact->company;
+                                        $results = array_unique($results);
+				}				
+			}
+			return (isset($results)) ? $results : false;								
+		} else 
+			return false;
+	}
+        
+        /**	 
+	 * Count search contacts
+	 * @param  $contacts - value of field to search, array or string
+	 * @param string $byField - field name
+	 */	
+	public function countSearchedContacts($contacts, $byField1, $byField2, $subNumber) {
+            
+                
+                $sub = mysql_escape_string($sub);
+		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND (";
+                //$sub=mysql_escape_string($type);
+		$query = "SELECT  count(id) contactCount FROM ".TB_CONTACTS." WHERE ((";		
+		if (!is_array($contacts)) {
+			$contacts = array($contacts);
+		}
+		$sqlParts = array();
+		foreach ($contacts as $contact) {
+			$sqlParts[] = $byField1." LIKE '%".$contact."%'";		
+		}
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql.") OR (";
+                
+		
+                $sqlParts = array();
+		foreach ($contacts as $contact) {
+			$contact=mysql_escape_string($contact);
+			$sqlParts[] = $byField2." LIKE '%".$contact."%'";		
+		}
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql."))";
+                
+                
+                
+                $this->db->query($query);
+		if ($this->db->num_rows() > 0) {			
+			return $this->db->fetch(0)->contactCount;
+		} else 
+			return false;
+	}
+        
+        
+	public function countContacts($subNumber, $filter) {
+		
+		//$departmentID=mysql_escape_string($departmentID);		
+		
+		//$this->db->select_db(DB_NAME);
+		
+		$query = "SELECT count(id) contactsCount FROM ".TB_CONTACTS." WHERE type = $subNumber";                
+                if ($filter != 'TRUE') {
+			$query .= " AND $filter";
+		}
+                
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0) {			
+			return $this->db->fetch(0)->contactsCount;
+		} else 
+			return false;
+	}        
+        
+        
+        /**	 
+	* Search contacts
+	* @param  $contacts - value of field to search, array or string
+	* @param string $byField - field name
+        * @param string $subNumber - number of subBookmark
+	*/
+	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null) {
+            
+		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND (";
+		if (!is_array($contacts)) {
+			$contacts = array($contacts);
+		}
+                
+		$sqlParts = array();
+		foreach ($contacts as $contact) {
+			$sqlParts[] = $byField1." LIKE '%".$contact."%'";		
+		}
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql.") OR (";
+                
+		
+                $sqlParts = array();
+		foreach ($contacts as $contact) {
+			$contact=mysql_escape_string($contact);
+			$sqlParts[] = $byField2." LIKE '%".$contact."%'";		
+		}
+                
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql.")";		
+		
+                
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}	
+		
+		$this->db->query($query);	
+		if ($this->db->num_rows() > 0) {	
+			$searchedContacts = $this->db->fetch_all_array();
+		}
+                
+                $searchcontacts = array();
+		foreach($searchedContacts as $searchedContact) {
+			$searchcontact = new SalesContact($this->db,$searchedContact);        
+			$searchcontacts[] = $searchcontact;
+		}
+                
+                $searchedContact = $searchcontacts;
+		return (isset($searchcontacts)) ? $searchcontacts : null;		
+	}   
+	
 }
 ?>

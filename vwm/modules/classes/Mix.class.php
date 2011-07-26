@@ -68,35 +68,6 @@ class Mix extends MixProperties {
 	}
 	
 	
-	public function getMixList($departmentID, Pagination $pagination = null,$filter=' TRUE ',$sort=' ORDER BY mix_id DESC ') {
-		
-		$departmentID=mysql_escape_string($departmentID);
-		
-		$query = "SELECT mix_id, description, voc, creation_time FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND $filter $sort ";
-		
-		
-		
-		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}		
-		 						
-		$this->db->query($query);		
-		if ($this->db->num_rows() > 0) {
-			for ($i = 0; $i < $this->db->num_rows(); $i++) {
-				$data = $this->db->fetch($i);				
-				$usage = array (
-					'mix_id'		=>	$data->mix_id,
-					'description'	=>	$data->description,
-					'voc'			=>	$data->voc,
-					'creation_time'	=>	$data->creation_time
-				);				
-				$usageList[] = $usage;
-			}			
-			
-		} //else 
-			//return false;			
-			return $usageList;									
-	}
 	
 	
 	
@@ -877,7 +848,7 @@ class Mix extends MixProperties {
 	
 	*/
 	
-	
+
 	public function initializeByID($mixID) {
 		
 		$mixID=mysql_escape_string($mixID);				
@@ -1028,52 +999,6 @@ class Mix extends MixProperties {
 	
 	
 	
-	public function countMixes($departmentID,$filter=' TRUE ') {
-		
-		$departmentID=mysql_escape_string($departmentID);		
-		
-		//$this->db->select_db(DB_NAME);
-		
-		$query = "SELECT count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = $departmentID AND $filter";
-		$this->db->query($query);	
-		if ($this->db->num_rows() > 0) {			
-			return $this->db->fetch(0)->mixCount;
-		} else 
-			return false;
-	}
-	
-	
-	/**	 
-	 * Search mixes
-	 * @param mixed $mixes - value of field to search, array or string
-	 * @param string $byField - field name 
-	 * @param int $departmentID 
-	 */	
-	public function countSearchedMixes($mixes, $byField, $departmentID) {
-		
-		$departmentID=mysql_escape_string($departmentID);		
-		$query = "SELECT  count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND (";
-		
-		if (!is_array($mixes)) {
-			$mixes = array($mixes);
-		}
-		
-		$sqlParts = array();
-		foreach ($mixes as $mix) {
-			$sqlParts[] = $byField." LIKE '%".$mix."%'";		
-		}
-		$sql = implode(' OR ', $sqlParts);
-		$query .= $sql.")";		
-		
-		$this->db->query($query);	
-		if ($this->db->num_rows() > 0) {			
-			return $this->db->fetch(0)->mixCount;
-		} else 
-			return false;
-	}
-	
-	
-	
 	public function mixAutocomplete($occurrence, $departmentID) {
 		
 		$departmentID=mysql_escape_string($departmentID);		
@@ -1103,42 +1028,6 @@ class Mix extends MixProperties {
 		} else 
 			return false;
 	}
-	
-	
-	/**	 
-	 * Search mixes
-	 * @param mixed $mixes - value of field to search, array or string
-	 * @param string $byField - field name 
-	 * @param int $departmentID 
-	 */
-	public function searchMixes($mixes, $byField, $departmentID, Pagination $pagination = null) {
-		$departmentID=mysql_escape_string($departmentID);		
-		$query = "SELECT  mix_id, description, voc, creation_time FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND (";		
-		
-		if (!is_array($mixes)) {
-			$mixes = array($mixes);
-		}
-		
-		$sqlParts = array();
-		foreach ($mixes as $mix) {
-			$mix=mysql_escape_string($mix);
-			$sqlParts[] = $byField." LIKE '%".$mix."%'";		
-		}
-		$sql = implode(' OR ', $sqlParts);
-		$query .= $sql.")";		
-		
-		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}		
-		
-		$this->db->query($query);	
-		if ($this->db->num_rows() > 0) {
-				
-			$searchedMixes = $this->db->fetch_all_array();
-		}
-		return (isset($searchedMixes)) ? $searchedMixes : null;		
-	}
-	
 	
 	
 	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection	
@@ -1711,5 +1600,112 @@ class Mix extends MixProperties {
 //			}								
 //		}		
 	}	
+        
+ 	public function countMixes($departmentID, $filter=' TRUE ') {
+		
+		$departmentID=mysql_escape_string($departmentID);		
+		
+		//$this->db->select_db(DB_NAME);
+		
+		$query = "SELECT count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = $departmentID AND $filter";
+		$this->db->query($query);	
+		if ($this->db->num_rows() > 0) {			
+			return $this->db->fetch(0)->mixCount;
+		} else 
+			return false;
+	}
+	
+	
+	/**	 
+	 * Search mixes
+	 * @param mixed $mixes - value of field to search, array or string
+	 * @param string $byField - field name 
+	 * @param int $departmentID 
+	 */	
+	public function countSearchedMixes($mixes, $byField, $departmentID) {
+		
+		//$departmentID=mysql_escape_string($departmentID);		
+		$query = "SELECT  count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND (";
+		
+		if (!is_array($mixes)) {
+			$mixes = array($mixes);
+		}
+		
+		$sqlParts = array();
+		foreach ($mixes as $mix) {
+			$sqlParts[] = $byField." LIKE '%".$mix."%'";		
+		}
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql.")";		
+		
+		$this->db->query($query);	
+		if ($this->db->num_rows() > 0) {			
+			return $this->db->fetch(0)->mixCount;
+		} else 
+			return false;
+	}
+        
+	/**	 
+	 * Search mixes
+	 * @param mixed $mixes - value of field to search, array or string
+	 * @param string $byField - field name 
+	 * @param int $departmentID 
+	 */
+	public function searchMixes($mixes, $byField, $departmentID, Pagination $pagination = null) {
+		$departmentID=mysql_escape_string($departmentID);		
+		$query = "SELECT  mix_id, description, voc, creation_time FROM ".TB_USAGE." WHERE department_id = ".$departmentID." AND (";		
+		
+		if (!is_array($mixes)) {
+			$mixes = array($mixes);
+		}
+		
+		$sqlParts = array();
+		foreach ($mixes as $mix) {
+			$mix=mysql_escape_string($mix);
+			$sqlParts[] = $byField." LIKE '%".$mix."%'";		
+		}
+		$sql = implode(' OR ', $sqlParts);
+		$query .= $sql.")";		
+		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}		
+		
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0) {
+				
+			$searchedMixes = $this->db->fetch_all_array();
+		}
+		return (isset($searchedMixes)) ? $searchedMixes : null;		
+	}        
+        
+	public function getMixList($departmentID, Pagination $pagination = null,$filter=' TRUE ',$sort=' ORDER BY mix_id DESC ') {
+		
+		$departmentID=mysql_escape_string($departmentID);
+		
+		$query = "SELECT mix_id, description, voc, creation_time FROM ".TB_USAGE." WHERE department_id = $departmentID AND $filter $sort";
+		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}		
+		 						
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() > 0) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);				
+				$usage = array (
+					'mix_id'		=>	$data->mix_id,
+					'description'	=>	$data->description,
+					'voc'			=>	$data->voc,
+					'creation_time'	=>	$data->creation_time
+				);				
+				$usageList[] = $usage;
+			}			
+			
+		} //else 
+			//return false;			
+			return $usageList;									
+	}        
 }
 ?>

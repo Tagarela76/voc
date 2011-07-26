@@ -55,6 +55,9 @@
 		<input type="hidden" name="action" value="browseCategory">
 		<input type="hidden" name="category" value="{$request.category}">
 		<input type="hidden" name="bookmark" value="{$request.bookmark}">
+                {if ($request.category eq "salescontacts")&($request.subBookmark != "")}
+                <input type="hidden" name="subBookmark" value="{$request.subBookmark}">   
+                {/if}
 		<input type="hidden" name="searchAction" value="filter">
 		<input type="hidden" name="sort" value='{$sort}'>
 	</form>

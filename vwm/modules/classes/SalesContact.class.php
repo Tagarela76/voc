@@ -198,26 +198,6 @@ class SalesContact
 			throw new Exception("title cannot be empty!");
 		}
 	}
-	/*private function set_government_agencies($value) {
-		try {
-			$value = $this->escapeValue($value);
-			$this->government_agencies = $value;
-		} catch(Exception $e) {
-			$this->errors[""] = $e->getMessage();
-			throw new Exception("government agencies cannot be empty!");
-		}
-	}
-	private function set_affiliations($value) {
-		try {
-			$value = $this->escapeValue($value);
-			$this->affiliations = $value;
-		} catch(Exception $e) {
-			$this->errors["affiliations"] = $e->getMessage();
-			throw new Exception("affiliations cannot be empty!");
-		}
-	}*/
-	
-	
 	
 	private function set_industry($value) {
 		try {
@@ -229,13 +209,8 @@ class SalesContact
 		}
 	}
 	private function set_comments($value) {
-		try {
-			
+		try {			
 			$value = $this->escapeValue($value);
-			
-			
-			//nl2br($value);
-			
 			$this->comments = $value;
 		} catch(Exception $e) {
 		}
@@ -303,7 +278,6 @@ class SalesContact
 	
 	private function escapeValue($value) {
 		$value = strip_tags($value);
-		//$value = mysql_escape_string($value);
 		return $value;
 	}
 	
@@ -321,16 +295,34 @@ class SalesContact
 		if(!$res) {
 			throw new Exception("Phone is invalid");
 		}
-	}
-	
+	} 
+        
+        public function getContactsList(Pagination $pagination = null,$filter=' TRUE ',$sort=' ORDER BY id DESC ') {		
+		$departmentID=mysql_escape_string($departmentID);		
+		$query = "SELECT * FROM ".TB_CONTACTS." WHERE $filter $sort ";
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+		 						
+		$this->db->query($query);		
+		if ($this->db->num_rows() > 0) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);				
+				$contacts[] = $usage;
+			}			
+			
+		}		
+		return $contacts;									
+	}        
+        
+        
+        
 	/**
 	 * 
 	 * Overvrite get property if property is not exists or private.
 	 * @param unknown_type $name - property name. method call method get_%property_name%, if method does not exists - return property value; 
 	 */
-	public function __get($name) {
-	        
-
+	public function __get($name) {       
         	if(method_exists($this, "get_".$name)) {
         		$methodName = "get_".$name;
         		$res = $this->$methodName();
@@ -344,11 +336,11 @@ class SalesContact
 	}
 	
 	/**
-     * 
-     * Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
-     * @param unknown_type $name - name of property
-     * @param unknown_type $value - value to set
-     */
+	* 
+	* Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
+	* @param unknown_type $name - name of property
+	* @param unknown_type $value - value to set
+	*/
 	public function __set($name,$value) {
 	        
 	    	/*Call setter only if setter exists*/

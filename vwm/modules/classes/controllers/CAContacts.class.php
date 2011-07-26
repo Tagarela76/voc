@@ -7,59 +7,111 @@ class CAContacts extends Controller {
 		$this->parent_category='salescontacts';		
 	}
 	
-	function runAction() {
-		
-		$this->runCommon('admin');
-		
-		$functionName='action'.ucfirst($this->action);	
-					
+	function runAction() {		
+		$this->runCommon('admin');		
+		$functionName='action'.ucfirst($this->action);						
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
 	
-	protected function bookmarkContacts($vars) {            
-		extract($vars);
-		
-                $sub = $this->getFromRequest("subBookmark");            
+	protected function bookmarkContacts($vars) {
+		extract($vars);		
+                $sub = $this->getFromRequest("subBookmark");      
                 if(!isset($sub)) {
 			$sub = "contacts";
-		}
-                                
-		$manager = new SalesContactsManager($this->db);
-
-		$totalCount = $manager->getTotalCount( strtolower ( $sub ) );                
-		                
-		$pagination = new Pagination($totalCount);  
+		}  
+                switch ($sub){
+                    case "contacts":
+                        $subNumber = 1;
+                        break;
                 
-		$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=".urlencode($sub);                
-						
-		$contactsList = $manager->getContactsList($pagination,strtolower($sub));
-				
-		/*$apmethodList=$apmethod->getApmethodList($pagination);
-		$field='apmethod_id';
-		$list = $apmethodList;
-		$itemsCount = ($list) ? count($list) : 0;
-		for ($i=0; $i<$itemsCount; $i++) {
-			$url="admin.php?action=viewDetails&category=apmethod&id=".$list[$i][$field];
-			$list[$i]['url']=$url;
-		}*/
-		
-		
+                    case "Government":
+                        $subNumber = 2;
+                        break;
+                
+                    case "Affiliations":
+                        $subNumber = 3;
+                        break;
+                }
 
-		$this->smarty->assign("contacts",$contactsList);
-		
-		$this->smarty->assign("itemsCount",$totalCount);
-		
+		$filterStr=$this->filterList('contacts');                
+		$manager = new SalesContactsManager($this->db);               
+
+		// search (not empty q)
+		if ($this->getFromRequest('q') != '')
+		{
+			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										
+			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber);
+                        $pagination = new Pagination($searchedContactsCount);
+                        $pagination->url = "?q=".urlencode($this->getFromRequest('q'))."&action=browseCategory&category=salescontacts&bookmark=contacts";
+                        if ($subNumber != 1)
+                        {
+                            $pagination->url .= "&subBookmark=".urlencode($sub);
+                        }
+                        $contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
+                        $this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+			$this->smarty->assign('pagination',$pagination);
+                        $totalCount = $manager->getTotalCount( strtolower ( $sub ) );
+		}
+                else // search (empty q)
+                {
+                    $totalCount = $manager->getTotalCount( strtolower ( $sub ) );
+                    //pag for filter
+                    if ($this->getFromRequest('searchAction')=='filter')
+                    {
+                        $pagination = new Pagination($manager->countContacts($subNumber, $filterStr));
+			$pagination->url = "?action=browseCategory&category=".$this->getFromRequest('category')."&bookmark=".$this->getFromRequest('bookmark');
+                                if ($this->getFromRequest('filterField') != '')
+                                {
+                                    $pagination->url .= "&filterField=".$this->getFromRequest('filterField');
+                                }
+                                if ($this->getFromRequest('filterCondition') != '')
+                                {
+                                    $pagination->url .= "&filterCondition=".$this->getFromRequest('filterCondition');
+                                }
+                                if ($this->getFromRequest('filterValue') != '')
+                                {
+                                    $pagination->url .= "&filterValue=".$this->getFromRequest('filterValue');
+                                }
+                                if ($this->getFromRequest('filterField') != '')
+                                {
+                                    $pagination->url .= "&searchAction=filter";
+                                }
+                    }
+                    // q is empty
+                    else
+                    {
+                        $pagination = new Pagination($totalCount);
+                        $pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
+                                if ($subNumber != 1)
+                                {
+                                    $pagination->url .= "&subBookmark=".urlencode($sub);
+                                }
+                    }
+                    // kostyl'!!
+                    if($_REQUEST['filterField'] == 'id'){
+                        $filterStr = " c.".$filterStr;
+                    }
+                    $contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
+                    $this->smarty->assign('pagination',$pagination);
+                    
+                }
+                
+                 //	set js scripts
+		$jsSources = array  ('modules/js/autocomplete/jquery.autocomplete.js');                
+                $this->smarty->assign('jsSources', $jsSources);                
+		$this->smarty->assign("contacts",$contactsList);		
+		$this->smarty->assign("itemsCount",$totalCount);		
 		$this->smarty->assign('tpl', 'tpls/bookmarkContacts.tpl');
 		$this->smarty->assign('pagination', $pagination);
+               
 	}
 	
+
 	private function actionViewDetails() {
 		
 		$manager = new SalesContactsManager($this->db);
-		
 		$contact = $manager->getSalesContact($this->getFromRequest('id'));
-		
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -68,12 +120,8 @@ class CAContacts extends Controller {
 	private function actionEdit() {
 		
 		$id = $this->getFromRequest('id');
-		
-		
-		
 		$contactsManager = new SalesContactsManager($this->db);
 		$contact = $contactsManager->getSalesContact($id);
-		
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
 		$usaID = $country->getCountryIDByName('USA');
@@ -83,9 +131,7 @@ class CAContacts extends Controller {
 			
 			$contact = $this->createContactByForm($_POST);
 			$contact->id = $id;
-			
-			
-			
+                        
 			if(!empty($contact->errors)) {
 				
 				$this->smarty->assign("error_message","Errors on the form");
@@ -99,35 +145,21 @@ class CAContacts extends Controller {
 				}
 			}
 		}
-		//var_dump($contact);
 		$this->smarty->assign("data",$contact);
-		
-		
-		
-		$countries =  $registration->getCountryList();
-		
-		
-		
-		 
-		
+                $countries =  $registration->getCountryList();
 		$state = new State($this->db);
 		$stateList = $state->getStateList($usaID);														
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
-		
-		
 		$this->smarty->assign("countries", $countries);
-		
 		$jsSources = array();											
 		array_push($jsSources, 'modules/js/addContact.js');	
 		$this->smarty->assign('jsSources', $jsSources);
-		
 		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
-	private function actionAddItem() {
-		
+	private function actionAddItem() {		
 		$contact = new SalesContact($this->db);
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
@@ -145,8 +177,7 @@ class CAContacts extends Controller {
 			}
 			$contact->type = $sub;
 		
-			if(!empty($contact->errors)) {
-				
+			if(!empty($contact->errors)) {				
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
 				$contactsManager = new SalesContactsManager($this->db);
@@ -161,29 +192,16 @@ class CAContacts extends Controller {
 			
 			$contact->country_id = $usaID;
 		}
-		//var_dump($contact);
 		$this->smarty->assign("data",$contact);
-		
-		
-		
 		$countries =  $registration->getCountryList();
-		
-		
-		
-		 
-		
 		$state = new State($this->db);
 		$stateList = $state->getStateList($usaID);														
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
-		
-		
 		$this->smarty->assign("countries", $countries);
-		
 		$jsSources = array();											
 		array_push($jsSources, 'modules/js/addContact.js');	
-		$this->smarty->assign('jsSources', $jsSources);
-		
+		$this->smarty->assign('jsSources', $jsSources);		
 		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -193,13 +211,10 @@ class CAContacts extends Controller {
 		$itemForDelete = array();
 		$manager = new SalesContactsManager($this->db);
 		for ($i=0; $i<$itemsCount; $i++) {
-			if (!is_null($this->getFromRequest('item_'.$i))) {
-				
-				$contact = $manager->getSalesContact($this->getFromRequest('item_'.$i));
-				
+			if (!is_null($this->getFromRequest('item_'.$i))) {				
+				$contact = $manager->getSalesContact($this->getFromRequest('item_'.$i));				
 				$item["id"]	= $contact->id;
-				$item["name"] = $contact->contact;
-				
+				$item["name"] = $contact->contact;				
 				$itemForDelete []= $item;
 			}
 		}
@@ -209,8 +224,7 @@ class CAContacts extends Controller {
 	}
 	
 	private function actionConfirmDelete() {
-		$itemsCount= $this->getFromRequest('itemsCount');
-		
+		$itemsCount= $this->getFromRequest('itemsCount');		
 		$manager = new SalesContactsManager($this->db);
 		
 		for ($i=0; $i<$itemsCount; $i++) {
@@ -222,8 +236,7 @@ class CAContacts extends Controller {
 		die();
 	}
 	
-	private function createContactByForm($form) {
-		
+	private function createContactByForm($form) {		
 		
 		if($form['state_select_type'] == 'text') {
 			unset($form['selState']);
@@ -232,28 +245,18 @@ class CAContacts extends Controller {
 			unset($form['txState']);
 			$form['state_id'] = $form['selState'];
 		}
-		//var_Dump($form);
-		
-		//$errors = array();
-		
-		$contact = new SalesContact($this->db);
-		
-			
+		$contact = new SalesContact($this->db);		
 		foreach($form as $key => $value) {
 			try {
 				$contact->$key = $value;
 			}catch(Exception $e) {
-				//$errors[] = $e->getMessage();
 				$contact->unsafe_set_value($key,$value);
 			}
 		} 
 		
 		if(empty($contact->errors)) {
 			$contact->erorrs = false;
-		}
-		
-		//var_dump($contact->errors);
-		
+		}		
 		return $contact;
 	}
 	

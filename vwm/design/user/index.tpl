@@ -48,9 +48,9 @@
 	<body>		
 	
 		{include file="tpls:tpls/notify/popupNotify.tpl"}
-									
+								
 		<table width="100%" height="100%"  cellspacing="0" cellpadding="0" >			  						  
-			<tr>											
+			<tr>										
 				{include file="tpls:logo.tpl"}											
 				<td  valign="top">
 				{*table center*}										

@@ -20,6 +20,7 @@
     		$this->db=$db;    		
     	}
     	
+        //TODO: trackAutocomplete doesn't work
     	public function trackAutocomplete($occurrence)
     	{	
     		//	no facility is bad..					

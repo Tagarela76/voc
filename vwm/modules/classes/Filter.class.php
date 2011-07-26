@@ -12,8 +12,8 @@ class Filter {
     
     public function getJsonFilterArray()
     {    	
-    	$query = "SELECT * FROM ".TB_FILTER." WHERE parent='".$this->tableParent."'";
-    	$this->db->query($query);
+    	$query = "SELECT * FROM ".TB_FILTER." WHERE parent='{$this->tableParent}'";
+        $this->db->query($query);
     	if ($this->db->num_rows()>0)
     	{
     		$data = $this->db->fetch_all_array();

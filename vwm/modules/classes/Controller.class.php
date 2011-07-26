@@ -90,10 +90,9 @@ class Controller
 	}
 	
 	protected function filterList($category,$dateFormat = false)
-	{									
-		$this->filter=new Filter($this->db,$category);								
+	{
+		$this->filter=new Filter($this->db,$category);
 		$this->smarty->assign('filterArray',$this->filter->getJsonFilterArray());
-									
 		$filterData= array
 		(
 			'filterField'		=>$this->getFromRequest('filterField'),

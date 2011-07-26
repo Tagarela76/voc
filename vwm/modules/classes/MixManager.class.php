@@ -129,21 +129,7 @@
 			
 		}
 		
-		public function countMixes() {
-			if (!isset($this->departmentID)) return false;
-			$departmentID=mysql_escape_string($this->departmentID);
-
-			$query = "SELECT count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = ".$departmentID;
-			$this->db->query($query);
-
-			if ($this->db->num_rows() > 0) {
-				return $this->db->fetch(0)->mixCount;
-			} else {
-				return false;
-			}				
-		}
-		
 		public function deleteMixList($mixIDarr) {
 			
 		}
-	}
+}
