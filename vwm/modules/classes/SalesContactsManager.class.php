@@ -145,21 +145,27 @@ class SalesContactsManager
 	}
         
         public function contactAutocomplete($occurrence, int $subNumber) {
-		$occurrence = mysql_escape_string($occurrence);
-		$query = "SELECT id, company, LOCATE('".$occurrence."', company) occurrence FROM ".TB_CONTACTS.
-			 " WHERE (type = ".$subNumber." AND LOCATE('".$occurrence."', company)>0) LIMIT ".AUTOCOMPLETE_LIMIT;
+		$occurrence = mysql_escape_string($occurrence);                
+                $query = "SELECT id, company, LOCATE('".$occurrence."', company) occurrenceCmp, contact, LOCATE('".$occurrence."', contact) occurrenceCnt FROM ".TB_CONTACTS.
+			 " WHERE type = ".$subNumber." 
+                          AND (LOCATE('".$occurrence."', company)>0 OR  LOCATE('".$occurrence."', contact)>0) 
+                          LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {
 			$contacts = $this->db->fetch_all();
 			foreach ($contacts as $contact) {
-				if($contact->occurrence) {
+				if($contact->occurrenceCmp) {
 					$results[] = $contact->company;
                                         $results = array_unique($results);
-				}				
+				}
+                                if($contact->occurrenceCnt) {
+					$results[] = $contact->contact;
+                                        $results = array_unique($results);
+				}
 			}
 			return (isset($results)) ? $results : false;								
 		} else 
-			return false;
+			return false;		
 	}
         
         /**	 
