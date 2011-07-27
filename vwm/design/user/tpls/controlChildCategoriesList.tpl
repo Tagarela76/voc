@@ -90,9 +90,9 @@
 											</div>												
 											{/if}  
 									{/if}										                                        
-									</div>
-                                    {if $childCategory != "company" && $show.reports}											
-									<div class="button_float_left">
+                                                                        </div>
+                                    {if ($childCategory != "company" && $show.reports) || ($request.category == "company")}
+                                            <div class="button_float_left">
                                             <div class="button_alpha report_button">
                                                 <input type="button" name="action" value="createReport" onclick="location.href='?action=createReport&category={$request.category}&id={$request.id}'">
                                             </div>											

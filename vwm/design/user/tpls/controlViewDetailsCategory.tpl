@@ -37,7 +37,7 @@
 									{else}									
                             		<input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&category={$request.category}&id={$request.id}&departmentID={$request.departmentID}'">
 									{/if}
-								{/if}
+                                                                        {/if}
 								{if $request.category=="wastestorage"}
 									{if $deleteORrestore eq "delete"}
 										<br>

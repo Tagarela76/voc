@@ -7,7 +7,7 @@
     {/if}
     {if $color eq "blue"}
     	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
-    {/if}   
+    {/if}
     <table class="users" width="100%" cellspacing="0" cellpadding="0">
        {*header*}
 	    <tr class="users_header_blue">
