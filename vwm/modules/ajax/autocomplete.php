@@ -83,21 +83,14 @@
 			break;
                     
                 case "salescontacts":
-                        $sub = $request['subBookmark'];                        
-                        switch ($sub){                                            
-                            case "Government":
-                                $subNumber = 2;
-                                break;
-                
-                            case "Affiliations":
-                                $subNumber = 3;
-                                break;
-                            default :                                
-                                $subNumber = 1;
-                                break;
-                        }                                                        
-                        $contactObj = new SalesContactsManager($db);
-                                $suggestions = $contactObj->contactAutocomplete($request['query'], $subNumber);
+                        $sub = $request['subBookmark'];
+                        if($sub == '') {
+                                $sub = "contacts";
+                        }
+                        $sub = strtolower($sub);
+                        
+                         $contactObj = new SalesContactsManager($db);
+                                $suggestions = $contactObj->contactAutocomplete($request['query'], $sub);
                                 if ($suggestions) {																		//new
                                         $response = array('query'=>$request['query'], 'suggestions'=>$suggestions);			
                                         echo json_encode($response);

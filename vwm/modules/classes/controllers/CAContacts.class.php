@@ -16,25 +16,16 @@ class CAContacts extends Controller {
 	
 	protected function bookmarkContacts($vars) {
 		extract($vars);		
-                $sub = $this->getFromRequest("subBookmark");      
+                $sub = $this->getFromRequest("subBookmark");
                 if(!isset($sub)) {
 			$sub = "contacts";
-		}  
-                switch ($sub){
-                    case "contacts":
-                        $subNumber = 1;
-                        break;
+		}
+                $sub = strtolower($sub);
+                $query = "SELECT * FROM " . TB_CONTACTS_TYPE . " WHERE name='".$sub."'";                       
+		$this->db->query($query);
+		$subNumber = $this->db->fetch(0)->id;
                 
-                    case "Government":
-                        $subNumber = 2;
-                        break;
-                
-                    case "Affiliations":
-                        $subNumber = 3;
-                        break;
-                }
-
-		$filterStr=$this->filterList('contacts');                
+                $filterStr=$this->filterList('contacts');                
 		$manager = new SalesContactsManager($this->db);               
 
 		// search (not empty q)
@@ -44,7 +35,7 @@ class CAContacts extends Controller {
 			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber);
                         $pagination = new Pagination($searchedContactsCount);
                         $pagination->url = "?q=".urlencode($this->getFromRequest('q'))."&action=browseCategory&category=salescontacts&bookmark=contacts";
-                        if ($subNumber != 1)
+                        if ($sub != 'contacts')
                         {
                             $pagination->url .= "&subBookmark=".urlencode($sub);
                         }

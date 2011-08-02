@@ -68,9 +68,7 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-                                                                                                                        $request.bookmark == 'contacts' ||
-															$request.bookmark == 'Government'||
-															$request.bookmark == 'Affiliations'}
+                                                                                                                        $request.category == 'salescontacts'}
 															{include file="tpls:tpls/filter.tpl"}
 														{/if}
 													{*/FILTER*}
@@ -78,7 +76,7 @@
 													<td align='right'>
 														<br>
 														{*SEARCH*}
-															{if $request.bookmark == "product" || $request.category == "salescontacts"}
+															{if $request.bookmark == "product"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>
@@ -87,7 +85,25 @@
 																		options = { serviceUrl:'modules/ajax/autocomplete.php',
 																					minChars:2,
 																					delimiter: /(,|;)\s*/,
-																					params: { category:'{/literal}{$request.bookmark}All{literal}' },
+																					params: {category: '{/literal}{$request.bookmark}All{literal}'},
+																					deferRequestBy:300
+																		};
+																		a = $('#search').autocomplete(options);
+																	});
+																</script>
+															{/literal}
+															{include file="tpls:tpls/search.tpl"}
+															{elseif $request.category == "salescontacts"}
+															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+															{literal}
+																<script>
+																	var options, a;
+																	jQuery(function(){
+																		options = { serviceUrl:'modules/ajax/autocomplete.php',
+																					minChars:2,
+																					delimiter: /(,|;)\s*/,
+																					params: {subBookmark:'{/literal}{$request.subBookmark}{literal}',
+                                                                                                                                                                        category:'{/literal}{$request.category}{literal}'},
 																					deferRequestBy:300
 																		};
 																		a = $('#search').autocomplete(options);

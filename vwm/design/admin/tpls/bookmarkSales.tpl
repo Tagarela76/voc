@@ -2,8 +2,8 @@
 
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0">
   <tr>
-  
-   <td  align="right" 
+      
+      <td  align="right" 
 
 	  {if $request.bookmark eq "contacts"} class="bookmark_fon" {/if}
 	>
@@ -48,8 +48,8 @@
   		 </div></a>
    </td>
    
-   
-   	<td>
+
+     	<td>
     	<td width="20px">  
   	</td>
    

@@ -55,7 +55,6 @@ class SalesContactsManager
 		}
 	}
 
-//        	public function getTotalCount() {
 	public function getTotalCount( $sub ) {              
 
                 $query = "SELECT count(c.id) as 'count' " .
@@ -144,13 +143,20 @@ class SalesContactsManager
 		}
 	}
         
-        public function contactAutocomplete($occurrence, int $subNumber) {
-		$occurrence = mysql_escape_string($occurrence);                
+        public function contactAutocomplete($occurrence, $sub) {
+		$occurrence = mysql_escape_string($occurrence);   
+                
+                $query = "SELECT * FROM " . TB_CONTACTS_TYPE . " WHERE name='".$sub."'";                       
+		$this->db->query($query);
+		$subNumber = $this->db->fetch(0)->id;
+                
                 $query = "SELECT id, company, LOCATE('".$occurrence."', company) occurrenceCmp, contact, LOCATE('".$occurrence."', contact) occurrenceCnt FROM ".TB_CONTACTS.
-			 " WHERE type = ".$subNumber." 
+			 " WHERE type = '".$subNumber."' 
                           AND (LOCATE('".$occurrence."', company)>0 OR  LOCATE('".$occurrence."', contact)>0) 
                           LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
+                //var_dump($query);
+                //echo $query;
 		if ($this->db->num_rows() > 0) {
 			$contacts = $this->db->fetch_all();
 			foreach ($contacts as $contact) {
