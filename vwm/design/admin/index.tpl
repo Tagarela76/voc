@@ -43,6 +43,10 @@
 													{include file="tpls:tpls/bookmarkSales.tpl"}
 												{/if}
 											{/if}
+                                                                                        
+                                                                                        {if $request.category == 'salescontacts'}
+                                                                                                {include file="tpls:tpls/subBookmarks.tpl"}
+                                                                                        {/if}
 											{*SORT*}
 												{if $request.bookmark == 'coat'||
 													$request.bookmark == 'components'||

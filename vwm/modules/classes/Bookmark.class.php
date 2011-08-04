@@ -24,7 +24,12 @@ class Bookmark {
 				$this->errors[] = $e->getMessage();
 			}
 		}
-	}        
+	}   
+        
+        private function escapeValue($value) {
+		$value = strip_tags($value);
+		return $value;
+	}
         
         private function set_id($value) {
 		try {
@@ -35,15 +40,23 @@ class Bookmark {
 	}
 	
 	private function set_name($value) {
+		
 		try {
+			$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->name = $value;
 		} catch(Exception $e) {
-			$this->errors['name'] = $e->getMessage();
-			throw new Exception("Name cannot be empty!");
+			$this->errors["name"] = $e->getMessage();
+			throw new Exception("name cannot be empty!");
 		}
-		
-		$this->name = $value;
+	}        
+        
+        private function set_type($value) {
+		try {
+			$this->type = $value;
+		} catch(Exception $e) {
+			throw new Exception("Bookmark Type: " . $e->getMessage());
+		}
 	}
         
 	public function get_id() {
@@ -56,11 +69,17 @@ class Bookmark {
         
 	public function saveBookmark() {
 
-		$query = "UPDATE " . TB_CONTACTS_TYPE . " SET 
+                if ($this->id != NULL){
+                        $query = "UPDATE " . TB_CONTACTS_TYPE . " SET 
 					id = '{$this->id}',
 					name = '{$this->name}',
 					controller = '{$this->type}'
 					WHERE id = {$this->id}";
+                }
+                else {
+                        $query = "INSERT INTO " . TB_CONTACTS_TYPE . " (id, name, controller) VALUES (
+						'{$this->id}', '{$this->name}', '{$this->type}')";
+                }		
 		
 		$this->db->query($query);
 			
@@ -71,6 +90,7 @@ class Bookmark {
 		}
 	}
         
+        /*  MOVED TO saveBookmark()
         public function addBookmark() {
 		if(!$b->errors) {
 
@@ -85,7 +105,7 @@ class Bookmark {
 				throw new Exception(mysql_error());
 			}
 		}
-	}
+	}*/
         
 	public function deleteBookmark($bookmarkID) {
 		$query = "DELETE FROM ". TB_CONTACTS_TYPE . " WHERE id = $bookmarkID";
@@ -98,6 +118,78 @@ class Bookmark {
 			throw new Exception(mysql_error());
 		}
 	}
+        
+	public function unsafe_set_value($property,$value) {
+		$this->$property = $value;
+	}        
+        
+	 public function getErrorMessage() {
+	 	if(!empty($this->errors)) {
+	 		foreach($this->errors as $e) {
+	 			$msg .= $e . "<br/>";
+	 		}
+	 		return $msg;
+	 	} else {
+	 		return false;
+	 	}
+	 }
+         
+	private function checkEmpty($value) {
+		if(!isset($value) or empty($value)) {
+			throw new Exception("Value is empty");
+		} else if(strlen($value) > 255) {
+			throw new Exception("Value is too long (max 255 symbols)");
+		}
+	}         
+         
+	/**
+	 * 
+	 * Overvrite get property if property is not exists or private.
+	 * @param unknown_type $name - property name. method call method get_%property_name%, if method does not exists - return property value; 
+	 */
+	public function __get($name) {       
+        	if(method_exists($this, "get_".$name)) {
+        		$methodName = "get_".$name;
+        		$res = $this->$methodName();
+        		return $res;
+        	}
+	        else if(property_exists($this,$name)) {
+	        	return $this->$name;
+	        } else {
+	        	return false;
+	        }
+	}
+	
+	/**
+	* 
+	* Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
+	* @param unknown_type $name - name of property
+	* @param unknown_type $value - value to set
+	*/
+	public function __set($name,$value) {
+	        
+	    	/*Call setter only if setter exists*/
+	        if(method_exists($this, "set_".$name)) {
+        		$methodName = "set_".$name;
+        		$this->$methodName($value);
+        	}
+        	/**
+        	 * Set property value only if property does not exists (in order to do not revrite privat or protected properties), 
+        	 * it will craete dynamic property, like usually does PHP
+        	*/
+	        else if(!property_exists($this,$name)){
+	        	/**
+	        	 * Disallow add new properties dynamicly (cause of its change type of object to stdObject, i dont want that)
+	        	 */
+	        	//$this->$name = $value;
+	        }
+	        /**
+	         * property exists and private or protected, do not touch. Keep OOP
+	         */ 
+	        else {
+	        	//Do nothing
+	        }
+	 }        
     
 }
 

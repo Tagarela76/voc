@@ -7,21 +7,33 @@ class BookmarksManager {
                 $this->db=$db;
         }
 
+	public function getBookmark($bookmarkName) {
+		$query = "SELECT * from " . TB_CONTACTS_TYPE . " WHERE name = '".$bookmarkName."'";
+		
+		$this->db->query($query);
+		$arr = $this->db->fetch_all_array();
+		$bookmarksArr = $arr[0];
+		
+		$bookmark = new Bookmark($this->db, $bookmarksArr);
+		return $bookmark;
+	}        
+        
 	public function getBookmarksList($arr_itemID) {
             
                 $itemCount = count($arr_itemID);
 		$query = "SELECT * FROM " . TB_CONTACTS_TYPE . "";
+                //echo "$arr_itemID = ", $arr_itemID[0];
 		if(isset($arr_itemID)) {
-			$query .= " WHERE id=".$arr_itemID[0]."";
+			$query .= " WHERE id='".$arr_itemID[0]."'";
                         if($itemCount>1){
                                 for ($i = 1; $i < $itemCount; $i++) {
-                                        $query .= " OR id=".$arr_itemID[i]."";
+                                        $query .= " OR id='".$arr_itemID[i]."'";
                                 }
                         }                        
 		}
 
 		$this->db->query($query);
-		$arr = $this->db->fetch_all_array();
+		$arr = $this->db->fetch(0);
 		$bookmarks = array();
 		foreach($arr as $b) {
 			$bookmark = new Bookmark($this->db, $b);        

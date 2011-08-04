@@ -465,7 +465,7 @@ class Controller
 			break;						
 		}
 		$this->smarty->assign("itemForDelete", $itemForDelete);	
-		$this->smarty->assign("itemType", $this->getFromRequest('category'));					
+		$this->smarty->assign("itemType", $this->getFromRequest('category'));
 		$this->smarty->assign("itemsCount", count($itemForDelete));						
 		$this->smarty->display("tpls:index.tpl");
 	} 

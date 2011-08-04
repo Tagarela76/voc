@@ -18,7 +18,7 @@ class CAContacts extends Controller {
 		extract($vars);		
                 $sub = $this->getFromRequest("subBookmark");
                 if(!isset($sub)) {
-			$sub = "contacts";
+			$sub = $this->getFromRequest("bookmark");
 		}
                 $sub = strtolower($sub);
                 $query = "SELECT * FROM " . TB_CONTACTS_TYPE . " WHERE name='".$sub."'";                       
@@ -167,8 +167,8 @@ class CAContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-		
-			if(!empty($contact->errors)) {				
+                        
+			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
 				$contactsManager = new SalesContactsManager($this->db);
