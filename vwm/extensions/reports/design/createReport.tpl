@@ -1,4 +1,4 @@
-{*shadow_table*} 
+{*shadow_table*}
 <table cellspacing="0" cellpadding="0" align="center" width="90%">
     <tr>
         <td valign="top" class="report_uploader_t_l">
@@ -14,22 +14,22 @@
         <td valign="top" class="report_uploader_c">
             {*shadow_table*}
 			<h1 class="titleinfo"><b>Choose Report Type</b></h1>
-			
+
             <table cellspacing="0" cellpadding="0" class="choose_report_type" width="100%">
-            	{foreach from=$reports item=name key=type}
+            	{foreach from=$reports item=report key=type}
             		<tr class="choose_report_type">
             			<td>
-            				<a style="color: black" href="?action=sendReport&reportType={$type}&category={$request.category}&id={$request.id}">{$name}&nbsp;</a>
+            				<a style="color: black" href="?action=sendReport&reportType={$type}&category={$request.category}&id={$request.id}">{$report.name}&nbsp;</a>
             			</td>
             			<td>
-                        	Report description 
+                        	{$report.description}
                    	 	</td>
                 	</tr>
-            	{/foreach}                
+            	{/foreach}
             </table>
             <br>
             <br>
-            {*/shadow_table*} 
+            {*/shadow_table*}
         </td>
         <td valign="top" class="report_uploader_r">
         </td>
@@ -43,4 +43,4 @@
         </td>
     </tr>
 </table>
-{*/shadow_table*} 
+{*/shadow_table*}
