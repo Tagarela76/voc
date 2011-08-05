@@ -17,7 +17,12 @@ class CASalescontacts extends Controller {
 	
 	private function actionBrowseCategory() {
 		$bookmark=$this->getFromRequest('bookmark');
-		
+                $manager = new BookmarksManager($this->db);
+                $bookmarksList = $manager->getBookmarksList();
+                $totalCount = $manager->getCount();
+                $this->smarty->assign("bookmarks",$bookmarksList);		
+		$this->smarty->assign("itemsCount",$totalCount);		
+		$this->smarty->assign('tpl', 'tpls/bookmarkSales.tpl');
 		/**
 		 * Потом всунуть сюда фильтр
 		 */

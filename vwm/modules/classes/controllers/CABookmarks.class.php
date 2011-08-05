@@ -28,7 +28,7 @@ class CABookmarks extends Controller{
 			
 			$bookmark = $this->bookmarkByForm($_POST,$bookmark);
 			
-                        $bookmark->type = $this->getFromRequest("bookmark");
+                        $bookmark->controller = $this->getFromRequest("bookmark");
                         if(!empty($bookmark->errors)) {
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
@@ -42,16 +42,7 @@ class CABookmarks extends Controller{
 			   
 		}
 
-		$this->smarty->assign("data",$bookmark);
-		//$countries =  $registration->getCountryList();
-		//$state = new State($this->db);
-		//$stateList = $state->getStateList($usaID);														
-		//$this->smarty->assign("states", $stateList);	
-		//$this->smarty->assign("usaID", $usaID);
-		//$this->smarty->assign("countries", $countries);
-		//$jsSources = array();
-		//array_push($jsSources, 'modules/js/addBookmark.js');	
-		//$this->smarty->assign('jsSources', $jsSources);		
+		$this->smarty->assign("data",$bookmark);	
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -64,23 +55,15 @@ class CABookmarks extends Controller{
                 }
 		$bookmarksManager = new BookmarksManager($this->db);
 		$bookmark = $bookmarksManager->getBookmark($name);
-                
-		//$country = new Country($this->db);
-		//$registration = new Registration($this->db);
-		//$usaID = $country->getCountryIDByName('USA');
-		//$this->smarty->assign($usaID);
 		
 		if ($this->getFromPost('save') == 'Save') {
 			$bookmark = $this->bookmarkByForm($_POST,$bookmark);
-                        $bookmark->type = $this->getFromRequest("bookmark");
-                        //$bookmark->id = $b->id;
+                        $bookmark->controller = $this->getFromRequest("bookmark");
                         
 			if(!empty($bookmark->errors)) {
 				
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
-				//$b = new Bookmark($this->db);
-				//$result = $b->saveBookmark();
                                 $result = $bookmark->saveBookmark();
 				if($result == true) {
 					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
@@ -91,63 +74,79 @@ class CABookmarks extends Controller{
 		}
                 
 		$this->smarty->assign("data",$bookmark);
-                //$countries =  $registration->getCountryList();
-		//$state = new State($this->db);
-		//$stateList = $state->getStateList($usaID);														
-		//$this->smarty->assign("states", $stateList);	
-		//$this->smarty->assign("usaID", $usaID);
-		//$this->smarty->assign("countries", $countries);
-                
-		//$jsSources = array();											
-		//array_push($jsSources, 'modules/js/addBookmark.js');	
-		//$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
         
 	private function actionDeleteItem() {
-		//$itemsCount= $this->getFromRequest('itemsCount');
-		//$itemForDelete = array();
-                $name = $this->getFromRequest('subBookmark');
-                if (!isset($name)){
-                    $name =  $this->getFromRequest('bookmark');
+                /*$bookmark = new Bookmark($this->db);
+		if ($this->getFromPost('save') == 'Save') {
+			$bookmark = $this->bookmarkByForm($_POST,$bookmark);
+                        $bookmark->controller = $this->getFromRequest("bookmark");
+                        if(!empty($bookmark->errors)) {
+				$this->smarty->assign("error_message","Errors on the form");
+			} else {
+                                $result = $bookmark->saveBookmark();
+				if($result == true) {
+                                       header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");                                      
+				} else {
+					$this->smarty->assign("error_message",$contact->getErrorMessage());
+				}
+			}
+			   
+		}
+		$this->smarty->assign("data",$bookmark);	
+		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
+		$this->smarty->display("tpls:index.tpl");*/
+            
+		$bookmark=$this->getFromRequest('bookmark');
+                $manager = new BookmarksManager($this->db);
+                $bookmarksList = $manager->getBookmarksList();
+                $totalCount = $manager->getCount();
+                $this->smarty->assign("bookmarks",$bookmarksList);		
+		$this->smarty->assign("itemsCount",$totalCount);
+                
+                if ($this->getFromPost('delete') == 'Save') {
+                    echo "confirmed";
                 }
-		$manager = new BookmarksManager($this->db);
-		//for ($i=0; $i<$itemsCount; $i++) {
-			//if (!is_null($this->getFromRequest('item_'.$i))) {				
-				$bookmark = $manager->getBookmark($name);			
-				$item["id"]	= $bookmark->id;
-				$item["name"] = $bookmark->name;				
-                                $item["controller"] = $bookmark->type;
-				//$itemForDelete = $item;
-			//}
-		//}
                                 
-		$query = "SELECT id FROM " . TB_CONTACTS_TYPE . "";
-		$this->db->query($query);
-		$arr = $this->db->fetch_all();
-                $list = $manager->getBookmarksList($arr);
-		
-		$this->smarty->assign("gobackAction","viewDetails");
+		//$this->smarty->assign("gobackAction","viewDetails");
                 $this->smarty->assign("data",$bookmark);
 		$this->smarty->assign('tpl', 'tpls/deleteBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
-		//$this->finalDeleteItemACommon($item);
+		$this->finalDeleteItemACommon($item);
+                
+		
+                
+                /*$itemsCount= $this->getFromRequest('itemsCount');
+		$itemForDelete = array();
+		$manager = new SalesContactsManager($this->db);
+		for ($i=0; $i<$itemsCount; $i++) {
+			if (!is_null($this->getFromRequest('item_'.$i))) {				
+				$contact = $manager->getSalesContact($this->getFromRequest('item_'.$i));				
+				$item["id"]	= $contact->id;
+				$item["name"] = $contact->contact;				
+				$itemForDelete []= $item;
+			}
+		}
+		
+		$this->smarty->assign("gobackAction","viewDetails");
+		$this->finalDeleteItemACommon($itemForDelete);*/
 	}
         
-	/*private function actionConfirmDelete() {
-		$itemsCount= $this->getFromRequest('itemsCount');		
+	private function actionConfirmDelete() {
+		//$itemsCount= $this->getFromRequest('itemsCount');		
 		$manager = new SalesContactsManager($this->db);
 		
-		for ($i=0; $i<$itemsCount; $i++) {
+		//for ($i=0; $i<$itemsCount; $i++) {
 			$id = $this->getFromRequest('item_'.$i);
 			
-			$manager->deleteSalesContact($id);
-		}
+			//$manager->deleteSalesContact($id);
+		//}
 		header ('Location: admin.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category'));
 		die();
-	}*/       
-                
+	}
+        
 	private function bookmarkByForm($form, Bookmark $bookmark) {	
 
 		//$bookmark = new Bookmark($this->db);		

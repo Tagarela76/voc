@@ -250,20 +250,8 @@ class CAContacts extends Controller {
 		}		
 		return $contact;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+        
+
 	
 	
 }

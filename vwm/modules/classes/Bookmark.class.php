@@ -3,7 +3,7 @@ class Bookmark {
     
         private $id;
         private $name;
-        private $type;
+        private $controller;
         private $db;
         public $errors;
     
@@ -16,7 +16,6 @@ class Bookmark {
         }
         
 	private function initByArray($array) {
-		
 		foreach($array as $key => $value) {
 			try {
 				$this->__set($key, $value);
@@ -51,9 +50,9 @@ class Bookmark {
 		}
 	}        
         
-        private function set_type($value) {
+        private function set_controller($value) {
 		try {
-			$this->type = $value;
+			$this->controller = $value;
 		} catch(Exception $e) {
 			throw new Exception("Bookmark Type: " . $e->getMessage());
 		}
@@ -73,12 +72,12 @@ class Bookmark {
                         $query = "UPDATE " . TB_CONTACTS_TYPE . " SET 
 					id = '{$this->id}',
 					name = '{$this->name}',
-					controller = '{$this->type}'
+					controller = '{$this->controller}'
 					WHERE id = {$this->id}";
                 }
                 else {
                         $query = "INSERT INTO " . TB_CONTACTS_TYPE . " (id, name, controller) VALUES (
-						'{$this->id}', '{$this->name}', '{$this->type}')";
+						'{$this->id}', '{$this->name}', '{$this->controller}')";
                 }		
 		
 		$this->db->query($query);
@@ -95,7 +94,7 @@ class Bookmark {
 		if(!$b->errors) {
 
 			$query = "INSERT INTO " . TB_CONTACTS_TYPE . " (id, name, controller) VALUES (
-						'{$this->id}', '{$this->name}', '{$this->type}')";
+						'{$this->id}', '{$this->name}', '{$this->controller}')";
 
 			$this->db->query($query);
 			

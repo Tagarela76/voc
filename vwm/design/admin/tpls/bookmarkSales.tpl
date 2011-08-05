@@ -10,64 +10,45 @@
        <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
 
    <tr>
-   <td >
-    <a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts">
-   {if $request.subBookmark}
-   <div class="deactiveBookmark"><div class="deactiveBookmark_right">
-   {else}
- <div  class = "activeBookmark">  <div class = "activeBookmark_right">
-   {/if}
-  Contacts
-   </div>
-   </div></a>
-   </td>
-   
-  
-   
-   <td >
-    <a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=Government">
-   		{if $request.subBookmark != "Government"}
-  			 <div class="deactiveBookmark"><div class="deactiveBookmark_right">
-  		{else}
+       
+    {*BEGIN LIST*}				
+    {section name=i loop=$bookmarks}    
+        <td >
+            <a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts{if $bookmarks[i]->id != 1}&subBookmark={$bookmarks[i]->name}{/if}">
+   		{if $request.subBookmark == $bookmarks[i]->name}
+  			<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+  		{else}                    
+                     {if ($bookmarks[i]->id == 1)&(!$request.subBookmark)}
 			<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+                     {else}
+                        <div class="deactiveBookmark"><div class="deactiveBookmark_right">
+                     {/if}
   		{/if}
- 		 Government Agencies
+ 		 {$bookmarks[i]->name|capitalize:true}
    			</div>
   		 </div></a>
-   </td>
-   
-   <td >
-    <a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=Affiliations">
-   		{if $request.subBookmark != "Affiliations"}
-  			 <div class="deactiveBookmark"><div class="deactiveBookmark_right">
-  		{else}
-			<div  class = "activeBookmark">  <div class = "activeBookmark_right">
-  		{/if}
- 		 Affiliations 
-   			</div>
-  		 </div></a>
-   </td>
-
-
-     	<td>
+        </td>
+    {/section}						
+    {*END LIST*}
+    
+     <td>
     	<td width="20px">  
   	</td>
    
      </tr>
-	  
-	 <tr height="19px">
-	 <td {if !$request.subBookmark} class="active_bookmark_fon" {/if}></td>
-         <td {if $request.subBookmark eq "Government"} class="active_bookmark_fon" {/if}></td>
-         <td {if $request.subBookmark eq "Affiliations"} class="active_bookmark_fon" {/if}></td>         
-	 <td {if $request.bookmark eq "facility"} class="active_bookmark_green_fon"{/if}></td>
-	 <td {if $request.bookmark eq "department"} class="active_bookmark_violet_fon" {/if}></td>
-	
-	 </tr>
+     
+     <tr height="19px">
+        {section name=i loop=$bookmarks}  
+        {if !$request.subBookmark}
+            {if $bookmarks[i]->id == 1}
+                <td class="active_bookmark_fon"></td>
+            {/if}
+        {/if}
+        <td {if $request.subBookmark eq $bookmarks[i]->name} class="active_bookmark_fon" {/if}></td>	
+        {/section}
+     </tr>
+
 </table>   
  </td>
-  
-    
-    
-
   </tr>
 </table>

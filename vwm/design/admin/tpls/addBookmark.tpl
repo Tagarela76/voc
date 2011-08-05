@@ -1,5 +1,5 @@
 <div style="padding:7px;">
-<form method='POST' action='admin.php?action={$request.action}&category=bookmarks&bookmark={$request.bookmark}{if $request.subBookmark}&subBookmark={$request.subBookmark}{else}&subBookmark={$request.bookmark}{/if}'>
+<form method='POST' action='admin.php?action={$request.action}&category=bookmarks&bookmark={$request.bookmark}{if $request.subBookmark}&subBookmark={$request.subBookmark}{*else}&subBookmark={$request.bookmark*}{/if}'>
 		<table class="users rd" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">

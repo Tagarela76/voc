@@ -33,7 +33,7 @@ class BookmarksManager {
 		}
 
 		$this->db->query($query);
-		$arr = $this->db->fetch(0);
+		$arr = $this->db->fetch_all_array();
 		$bookmarks = array();
 		foreach($arr as $b) {
 			$bookmark = new Bookmark($this->db, $b);        
