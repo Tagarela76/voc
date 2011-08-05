@@ -7,43 +7,43 @@ class Facility extends FacilityProperties {
 	private $db;
 	private $trashRecord;
 	private $parentTrashRecord;
-	
-	
+
+
 	//	Methods
-	
+
 	function Facility($db) {
 		$this->db=$db;
 	}
-	
-	
-	
-	
-	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection	
+
+
+
+
+	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection
 	public function setTrashRecord(iTrash $trashRecord) {
-		$this->trashRecord = $trashRecord;		
+		$this->trashRecord = $trashRecord;
 	}
 	public function setParentTrashRecord(iTrash $trashRecord) {
-		$this->parentTrashRecord = $trashRecord;		
-	}	
-	
-	
-	
-	
+		$this->parentTrashRecord = $trashRecord;
+	}
+
+
+
+
 	function addNewFacility($facilityData) {
-		
+
 		//screening of quotation marks
 		foreach ($facilityData as $key=>$value)
 		{
 			$facilityData[$key]=mysql_escape_string($value);
 		}
-		
+
 		//	GCG Creation
 		$GCG = new GCG($this->db);
 		$gcgID = $GCG->create();
-		
+
 		//$this->db->select_db(DB_NAME);
 		$query="INSERT INTO ".TB_FACILITY." (epa, company_id, name, address, city, zip, county, state, country, phone, fax, email, contact, title, creater_id, voc_limit, voc_annual_limit, gcg_id) VALUES (";
-		
+
 		$query.="'".$facilityData['epa']."', ";
 		$query.=$facilityData['company_id'].", ";
 		$query.="'".$facilityData['name']."', ";
@@ -61,16 +61,16 @@ class Facility extends FacilityProperties {
 		$query.="'".$facilityData['creater_id']."', ";
 		$query.=$facilityData['voc_limit'].", ";
 		$query.=$facilityData['voc_annual_limit'].", ";
-		$query .= $gcgID.")";			
+		$query .= $gcgID.")";
 		$this->db->query($query);
-		
-		
+
+
 		$this->db->query("SELECT LAST_INSERT_ID() id");
 		$facility_id=$this->db->fetch(0)->id;
 		//----------------------------------------------------------------
 		//GACL
 		//----------------------------------------------------------------
-		
+
 		//   CREATE ACO
 		$gacl_api = new gacl_api();
 		$acoID = $gacl_api->add_object('access', "facility_".$facility_id, "facility_".$facility_id, 0, 0, 'ACO');
@@ -80,26 +80,26 @@ class Facility extends FacilityProperties {
 		$aro_group_company=$gacl_api->get_group_id ("company_".$facilityData['company_id']);
 		$aro_group_root=$gacl_api->get_group_id("root");
 		//   CREATE ACL
-		$acoArray = array("access"=>array("facility_".$facility_id));		
+		$acoArray = array("access"=>array("facility_".$facility_id));
 		$facilityGroup = array($aro_group_facility);
 		$companyGroup = array($aro_group_company);
-		$rootGroup = array($aro_group_root);		
+		$rootGroup = array($aro_group_root);
 		$gacl_api->add_acl($acoArray,NULL,$facilityGroup,NULL,NULL,1,1,NULL,'facility users has access to facility ACO ');
 		$gacl_api->add_acl($acoArray,NULL,$companyGroup,NULL,NULL,1,1,NULL,'company users has access to facility ACO ');
 		$gacl_api->add_acl($acoArray,NULL,$rootGroup,NULL,NULL,1,1,NULL,'root users has access to facility ACO ');
-		
-			
+
+
 		//-----------------------------------------------------------------
-		
+
 		//	save to trash_bin
 		$this->db->query("SELECT LAST_INSERT_ID() id");
-		$this->save2trash('C', $facility_id);	
+		$this->save2trash('C', $facility_id);
 		return $facility_id;
 	}
-	
+
 	function getFacilityDetails($facility_id, $vanilla=false) {
 		$facility_id=mysql_escape_string($facility_id);
-		
+
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT * FROM ".TB_FACILITY." WHERE facility_id='".$facility_id."' ORDER BY name LIMIT 1");
 		$facilityDetails=$this->db->fetch_array(0);
@@ -122,44 +122,44 @@ class Facility extends FacilityProperties {
 			'creater_id'	=>	$data->creater_id,
 			'voc_limit'		=>	$data->voc_limit,
 			'voc_annual_limit'	=>	$data->voc_annual_limit,
-			'gcg_id'		=>	$data->gcg_id									
+			'gcg_id'		=>	$data->gcg_id
 		);*/
 		//var_dump($facilityDetails);
 		if (!$vanilla) {
 			$reg = new Registration($this->db);
-			
+
 			//	Set State
 			if ($reg->isOwnState($facilityDetails['country'])) {
 				//	have own state list
 				$facilityDetails["state"] = $reg->getState($facilityDetails['state']);
 			}
-			
+
 			//	Set Country
 			$facilityDetails["country"] = $reg->getCountry($facilityDetails['country']);
 		}
-		
+
 		return $facilityDetails;
 	}
-	
+
 	function setFacilityDetails($facilityData) {
-		
+
 		//screening of quotation marks
 		foreach ($facilityData as $key=>$value)
 		{
 			$facilityData[$key]=mysql_escape_string($value);
 		}
-		
+
 		//	check voc limit change
 		$recalculteMixLimits = false;
 		if ($this->isVocLimitChanged($facilityData["facility_id"], $facilityData["voc_limit"], $facilityData["voc_annual_limit"])) {
-			$recalculteMixLimits = true;			
+			$recalculteMixLimits = true;
 		}
 
 		//	save to trash
 		$this->save2trash('U', $facilityData["facility_id"]);
-		
+
 		$query="UPDATE ".TB_FACILITY." SET ";
-		
+
 		$query.="epa='".		$facilityData['epa']."', ";
 		$query.="voc_limit='".	$facilityData['voc_limit']."', ";
 		$query.="voc_annual_limit='".	$facilityData['voc_annual_limit']."', ";
@@ -175,28 +175,28 @@ class Facility extends FacilityProperties {
 		$query.="email='".		$facilityData['email']."', ";
 		$query.="contact='".		$facilityData['contact']."', ";
 		$query.="title='".		$facilityData['title']."' ";
-		
+
 		$query.="WHERE facility_id=".$facilityData["facility_id"];
 		$this->db->query($query);
-		
+
 		//	DEPRECATED
 		//	VOC limit was changed. We should recalculte all mix limits
 		//	It can take some minutes. Please wait...
-//		ini_set("max_execution_time","180"); 
-//		if ($recalculteMixLimits) {			
-//			$mixesData = $this->getMixList($facilityData["facility_id"]);			
-//			$mix = new Mix($this->db);		
-//			foreach($mixesData as $mixData) {							
+//		ini_set("max_execution_time","180");
+//		if ($recalculteMixLimits) {
+//			$mixesData = $this->getMixList($facilityData["facility_id"]);
+//			$mix = new Mix($this->db);
+//			foreach($mixesData as $mixData) {
 //				$mix->calculateAndSaveMixLimits($mixData['mix_id']);
 //			}
 //		}
-		
+
 	}
-	
+
 	function getFacilityListByCompany($company_id) {
-		
+
 		$company_id=mysql_escape_string($company_id);
-		
+
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT * FROM ".TB_FACILITY." WHERE company_id=".$company_id. " ORDER BY name");
 		if ($this->db->num_rows()) {
@@ -212,40 +212,40 @@ class Facility extends FacilityProperties {
 				$facilityList[]=$facility;
 			}
 		}
-		
+
 		return $facilityList;
 	}
-	
+
 	//	NOT TESTED
-	
+
 	function deleteFacility($facility_id) {
-		
+
 		$facility_id=mysql_escape_string($facility_id);
-		
+
 		//$this->db->select_db(DB_NAME);
-		
+
 		//	save to trash
 		$this->save2trash('D', $facility_id);
-		
+
 		$this->db->query("SELECT * FROM ".TB_DEPARTMENT." WHERE facility_id = ".$facility_id);
 		$departmentsCount = $this->db->num_rows();
 		$departmentToDelete = $this->db->fetch_all();
-		if ($departmentsCount > 0) {			
+		if ($departmentsCount > 0) {
 			$department = new Department($this->db);
 			$department->setParentTrashRecord($this->trashRecord);
 			for ($i=0; $i<$departmentsCount; $i++) {
-				$department->setTrashRecord(new Trash($this->db));						
-				$department->deleteDepartment($departmentToDelete[$i]->department_id);				
+				$department->setTrashRecord(new Trash($this->db));
+				$department->deleteDepartment($departmentToDelete[$i]->department_id);
 			}
 		}
-		
+
 		$this->db->query("SELECT id FROM ".TB_INVENTORY." WHERE facility_id = " .$facility_id);
 		if ($this->db->num_rows > 0) {
 			$inventoryList = $this->db->fetch_all();
 			foreach ($inventoryList as $inventoryData) {
 				$inventory = new Inventory($this->db, $inventoryData->id);
 				$inventory->setParentTrashRecord($this->trashRecord);
-				$inventory->setTrashRecord(new Trash($this->db));									
+				$inventory->setTrashRecord(new Trash($this->db));
 				$inventory->delete();
 			}
 		}
@@ -256,27 +256,27 @@ class Facility extends FacilityProperties {
 //			$inventory = new Inventory($this->db);
 //			$inventory->setParentTrashRecord($this->trashRecord);
 //			for ($i=0; $i<$inventoryCount; $i++) {
-//				$inventory->setTrashRecord(new Trash($this->db));									
-//				$inventory->deleteInventory($inventoriesToDelete[$i]->inventory_id);				
+//				$inventory->setTrashRecord(new Trash($this->db));
+//				$inventory->deleteInventory($inventoriesToDelete[$i]->inventory_id);
 //			}
 //		}
-		
+
 		$this->db->query("DELETE FROM ".TB_FACILITY." WHERE facility_id=".$facility_id);
 	}
-	
-	
-	
-	
-	public function initializeByID($facilityID) {	
-		
+
+
+
+
+	public function initializeByID($facilityID) {
+
 		$facilityID=mysql_escape_string($facilityID);
-		
+
 		//$this->db->select_db(DB_NAME);
 		$query = "SELECT * FROM ".TB_FACILITY." WHERE facility_id=".$facilityID;
 		$this->db->query($query);
 
 		if ($this->db->num_rows() > 0) {
-			$facilityData = $this->db->fetch(0);			
+			$facilityData = $this->db->fetch(0);
 			$this->facilityID = $facilityData->facility_id;
 			$this->vocLimit = $facilityData->voc_limit;
 			$this->vocAnnualLimit = $facilityData->voc_annual_limit;
@@ -291,111 +291,111 @@ class Facility extends FacilityProperties {
 				foreach ($usageData as $usage) {
 					$annualUsage[$usage->yyyy][$usage->mm] = $usage->total_usage;
 				}
-				$this->annualUsage = $annualUsage;				
-			}		
+				$this->annualUsage = $annualUsage;
+			}
 		} else {
 			return false;
 		}
 		return true;
 	}
-	
-	
-	
-	
+
+
+
+
 	public function getCurrentUsage() {
 		$this->calculateCurrentUsage();
-		
+
 		return $this->currentUsage;
 	}
-	
+
 	private function calculateCurrentUsage() {
-			
+
 		//$this->db->select_db(DB_NAME);
 		$query = "SELECT * FROM ".TB_DEPARTMENT." WHERE facility_id=".$this->facilityID;
 		$this->db->query($query);
-		
+
 		$totalUsage = 0;
-		
+
 		if ($this->db->num_rows() > 0) {
 			$departments = $this->db->fetch_all();
-			
+
 			foreach($departments as $department) {
 				$departmentID = $department->department_id;
-				
+
 				$department = new Department($this->db);
 				$department->initializeByID($departmentID);
-				
+
 				$totalUsage += $department->getCurrentUsage(false);
-			}	
+			}
 		}
-				
+
 		$this->currentUsage = $totalUsage;
 	}
-	
-	public function isOverLimit() {		
+
+	public function isOverLimit() {
 		if ($this->getDailyLimit() > 0) {
 			//$this->calculateCurrentUsage();
-			$this->getCurrentUsageOptimized();			
+			$this->getCurrentUsageOptimized();
 			return $this->currentUsage > (float)$this->getDailyLimit();
 		}
-		
+
 		return false;
 	}
-	
-	public function clearFacility(){		
+
+	public function clearFacility(){
 		//$this->db->select_db(DB_NAME);
-    	
+
     	$query = "DELETE FROM ".TB_FACILITY;
-    	$this->db->query($query);	
+    	$this->db->query($query);
 	}
-	
+
 	public function fillFacility(){
-		$this->db->select_db(DB_IMPORT);    	
+		$this->db->select_db(DB_IMPORT);
     	$query = "INSERT INTO ".DB_NAME.".".TB_FACILITY." SELECT * FROM ".DB_IMPORT.".".TB_FACILITY;
-    	$this->db->query($query);    	
+    	$this->db->query($query);
 	}
-	
-	
-	
-	
+
+
+
+
 	public function getMixList($facilityId){
-		
+
 		$facilityId=mysql_escape_string($facilityId);
-		
+
 		//$this->db->select_db(DB_NAME);
-		    	
+
     	$query = "SELECT department.department_id department_id, department.name department_name, mix.mix_id mix_id " .
     			 "FROM mix, department " .
     			 "WHERE mix.department_id = department.department_id " .
-    			 "AND department.facility_id = ". $facilityId;    	
+    			 "AND department.facility_id = ". $facilityId;
     	$this->db->query($query);
-    	
+
     	if ($this->db->num_rows()) {
 			for ($i=0; $i<$this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
 				$mix = array (
 					'department_id'		=> $data->department_id,
 					'mix_id'			=> $data->mix_id,
-					'department_name' 	=> $data->department_name				
+					'department_name' 	=> $data->department_name
 				);
 				$mixList[]=$mix;
 			}
-		}		
-		return $mixList;    	
+		}
+		return $mixList;
 	}
-	
-	
-	
-	
+
+
+
+
 	// getCurrentUsage method optimized version. Direct SQL query. 		//den 22 July 2009
 	public function getCurrentUsageOptimized($month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
-		
+
 		$month=mysql_escape_string($month);
 		$year=mysql_escape_string($year);
-		
-		//$this->db->select_db(DB_NAME);		
-				 
-		//new query with time dependence		
+
+		//$this->db->select_db(DB_NAME);
+
+		//new query with time dependence
 		$query = "SELECT sum( m.voc ) total_usage , f.voc_limit, MONTH(m.creation_time) creation_month " .
 			"FROM ".TB_FACILITY." f, ".TB_DEPARTMENT." d, ".TB_USAGE." m " .
 			"WHERE f.facility_id = d.facility_id " .
@@ -403,49 +403,49 @@ class Facility extends FacilityProperties {
 			"AND f.facility_id = ".$this->facilityID." " .
 			"AND MONTH(m.creation_time) = ".$month." " .
 			"AND YEAR(m.creation_time) = ".$year." " .
-			"GROUP BY MONTH(m.creation_time), voc_limit";			
+			"GROUP BY MONTH(m.creation_time), voc_limit";
 		$this->db->query($query);
-						
+
 		$numRows = $this->db->num_rows();
 		$currentDate = getdate();
-		if ($numRows > 0) {		
-			$data = $this->db->fetch(0);							
+		if ($numRows > 0) {
+			$data = $this->db->fetch(0);
 			if ((int)$currentDate['mon'] == (int)$data->creation_month) {
-				$this->currentUsage = (float)$data->total_usage;		
-			}			
+				$this->currentUsage = (float)$data->total_usage;
+			}
 			return (float)$data->total_usage;
 
-		} else 
-			return false;				
+		} else
+			return false;
 	}
-	
-	
-	
-	
-	public function getInventoryList($sort=' ORDER BY name ') {	
+
+
+
+
+	public function getInventoryList($sort=' ORDER BY name ') {
 		$inventoryList = array(Inventory::PAINT_MATERIAL => array(), Inventory::PAINT_ACCESSORY => array());
-		
-		//	facilityid property should be set 
+
+		//	facilityid property should be set
 		if (!isset($this->facilityID)) {
 			return false;
 		}
-				
+
 		$query = "SELECT id FROM ".TB_INVENTORY." WHERE facility_id = ".$this->facilityID." $sort";
-		$this->db->query($query);		
+		$this->db->query($query);
 		//	sql should not return empty result
-		if ($this->db->num_rows() == 0) {			
+		if ($this->db->num_rows() == 0) {
 			return false;
-		}				
-		
+		}
+
 		$dataRows = $this->db->fetch_all();
 		foreach ($dataRows as $dataRow) {
 			$inventory = new Inventory($this->db, $dataRow->id, $loadProducts = false);
-			$inventoryList[$inventory->getType()][] = $inventory;				
+			$inventoryList[$inventory->getType()][] = $inventory;
 		}
-		
-		return $inventoryList;		
+
+		return $inventoryList;
 	}
-			
+
 
 	public function calculateSolidsMass($facilityID = null, $dateBegin = null, $dateEnd = null) {
 		if ($facilityID === null) {
@@ -469,11 +469,11 @@ class Facility extends FacilityProperties {
 				'value' => $solidsMass
 			);
 	}
-	
 
-	
+
+
 	/**
-	 * 
+	 *
 	 * calculate annual usage for whole facility
 	 * @param string $year
 	 */
@@ -482,33 +482,33 @@ class Facility extends FacilityProperties {
 		if ($year === null) {
 			$year = date('Y');
 		}
-		
+
 		$query = "SELECT sum( m.voc ) total_usage " .
 			"FROM ".TB_DEPARTMENT." d, ".TB_USAGE." m " .
 			"WHERE m.department_id = d.department_id " .
-			"AND d.facility_id = ".$this->facilityID." " .			
+			"AND d.facility_id = ".$this->facilityID." " .
 			"AND YEAR(m.creation_time) = ".$year." ";
-		
+
 		$this->db->query($query);
 
 		$this->annualUsage[$year] = $this->db->fetch(0);
-		
-		return $this->annualUsage[$year]; 
+
+		return $this->annualUsage[$year];
 	}
-			
-	
-	
+
+
+
 	public function getDepartmentUsageByDays(TypeChain $beginDate, TypeChain $endDate, $facilityID) {
 		$query = "SELECT sum(m.voc) as voc, d.name, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_DEPARTMENT." d " .
-				" WHERE m.department_id = d.department_id AND d.facility_id = '$facilityID' " . 
-					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+				" WHERE m.department_id = d.department_id AND d.facility_id = '$facilityID' " .
+					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."' " .
 				" GROUP BY m.department_id, m.creation_time " .
 				" ORDER BY m.department_id ";
 		$this->db->query($query);
 		$departmentUsageData = $this->db->fetch_all();
 		$result = array();
-		
+
 		//get empty template for output for each equiment
 		$emptyDepartmentData = array();
 		$day = 86400; // Day in seconds
@@ -518,88 +518,88 @@ class Facility extends FacilityProperties {
 			$emptyDepartmentData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
-		
+
 		//get all equipments list
 		$query = "SELECT name FROM ".TB_DEPARTMENT .
 				" WHERE facility_id = '$facilityID' " .
 				" ORDER BY department_id";
 		$this->db->query($query);
 		$departmentList = $this->db->fetch_all();
-		
+
 		//format output for all equipments
 		foreach($departmentList as $data) {
 			$result[$data->name] = $emptyDepartmentData;
 		}
-		
+
 		foreach ($departmentUsageData as $data) {
-			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
-			$result[$data->name][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
+			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
+			$result[$data->name][$key][1] = $data->voc;
 		}
-		
+
 		return $result;
 	}
-	
-	
+
+
 	//	check difference between $vocLimit and DB value
 	private function isVocLimitChanged($facilityID, $vocLimit, $annualVocLimit) {
-		
+
 		$facilityID = mysql_escape_string($facilityID);
 		$vocLimit = mysql_escape_string($vocLimit);
-		$annualVocLimit = mysql_escape_string($annualVocLimit);		
-		
+		$annualVocLimit = mysql_escape_string($annualVocLimit);
+
 		$query = "SELECT voc_limit FROM ".TB_FACILITY." WHERE facility_id = ".$facilityID." AND voc_limit = '".$vocLimit."' AND voc_annual_limit = '".$annualVocLimit."'";
 		$this->db->query($query);
-		
+
 		return ($this->db->num_rows() > 0) ? false : true;
 	}
-	
-	
-	
+
+
+
 	//	Tracking System
 	private function save2trash($CRUD, $facilityID) {
 		//	protect from SQL injections
 		$facilityID = mysql_escape_string($facilityID);
-		
+
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_FACILITY, $facilityID, $CRUD, $this->parentTrashRecord);
-		
+
 		//	DEPRECATED July 16, 2010
-		
-//		$facilityID=mysql_escape_string($facilityID);		
-//		
-//		if (isset($this->trashRecord)) {	
+
+//		$facilityID=mysql_escape_string($facilityID);
+//
+//		if (isset($this->trashRecord)) {
 //			$query = "SELECT * FROM ".TB_FACILITY." WHERE facility_id = ".$facilityID;
 //			$this->db->query($query);
 //			$dataRows = $this->db->fetch_all();
-//			
+//
 //			foreach ($dataRows as $dataRow) {
 //				$parentID = (isset($this->parentTrashRecord)) ? $this->parentTrashRecord->getID() : null;
-//				
-//				$facilityRecords = TrackingSystem::properties2array($dataRow);		
-//				$this->trashRecord->setTable(TB_FACILITY);		
+//
+//				$facilityRecords = TrackingSystem::properties2array($dataRow);
+//				$this->trashRecord->setTable(TB_FACILITY);
 //				$this->trashRecord->setData(json_encode($facilityRecords[0]));
 //				$this->trashRecord->setUserID($_SESSION['user_id']);
 //				$this->trashRecord->setCRUD($CRUD);		//	C - Create, U - update, D - delete
 //				$this->trashRecord->setDate(time());	//	current time
 //				$this->trashRecord->setReferrer($parentID);
-//				$this->trashRecord->save();	
-//			}			
+//				$this->trashRecord->save();
+//			}
 //
 //			if ($CRUD != 'D') {
-//				//	load and save dependencies				
-//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {				
+//				//	load and save dependencies
+//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {
 //					foreach ($dependencies as $dependency) {
 //						$parentID = ($dependency->getParentObj() !== null) ? $dependency->getParentObj()->getID() : null;
 //						$dependency->setUserID($_SESSION['user_id']);
 //						$dependency->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//						$dependency->setDate(time());	//	current time					
+//						$dependency->setDate(time());	//	current time
 //						$dependency->setReferrer($parentID);
-//						$dependency->save();												
+//						$dependency->save();
 //					}
-//				}	
-//			}		
+//				}
+//			}
 //		}
-	}				
+	}
 }
 
 
