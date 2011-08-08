@@ -88,7 +88,7 @@
                                 $sub = "contacts";
                         }
                         $sub = strtolower($sub);
-                        
+                        $sub = htmlentities($sub);
                          $contactObj = new SalesContactsManager($db);
                                 $suggestions = $contactObj->contactAutocomplete($request['query'], $sub);
                                 if ($suggestions) {																		//new

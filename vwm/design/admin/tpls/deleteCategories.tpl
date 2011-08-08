@@ -20,6 +20,11 @@
         <td class="users_u_top_red" width="10%">
             Select
         </td>
+        {if $request.category == "bookmarks"}
+            <td class="users_u_top_r_red">
+            Boomarks
+            </td>
+         {else}
         <td>
             ID Number
         </td>
@@ -44,10 +49,21 @@
             Total linked mixes
         </td>
         {/if}
+        {/if}
     </tr>
     {if $itemsCount > 0}  
     {section name=i loop=$itemForDelete} 
     <tr height="10px">
+        {if $request.category == "bookmarks"}            
+            <td class="border_users_l border_users_r border_users_b">
+                <input type="checkbox" {if $itemForDelete[i]->id == 1}disabled="disabled"{/if} value="{$itemForDelete[i]->id}" name="item_{$smarty.section.i.index}" onclick="return CheckCB(this);">
+            </td>            
+            <td class="border_users_r border_users_b">
+                <div style="width:100%;">
+                {$itemForDelete[i]->name}
+                </div>
+            </td>
+        {else}
         <td class="border_users_l border_users_r border_users_b">
             <input type="checkbox" checked="checked" value="{$itemForDelete[i].id}" name="item_{$smarty.section.i.index}" onclick="return CheckCB(this);">
         </td>
@@ -85,6 +101,7 @@
             </div>
         </td>
         {/if}
+        {/if}
     </tr>
     {/section} 
     <tr class="">
@@ -119,7 +136,7 @@
 	{if $itemsCount > 0}
 	
 	<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark=apmethod'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}'">
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
 

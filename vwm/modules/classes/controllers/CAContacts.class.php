@@ -21,10 +21,10 @@ class CAContacts extends Controller {
 			$sub = $this->getFromRequest("bookmark");
 		}
                 $sub = strtolower($sub);
-                $query = "SELECT * FROM " . TB_CONTACTS_TYPE . " WHERE name='".$sub."'";                       
+                $sub = htmlentities($sub);
+                $query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='".$sub."'";
 		$this->db->query($query);
 		$subNumber = $this->db->fetch(0)->id;
-                
                 $filterStr=$this->filterList('contacts');                
 		$manager = new SalesContactsManager($this->db);               
 
@@ -167,13 +167,13 @@ class CAContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-                        
+                        var_dump($contact);
 			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
 				$contactsManager = new SalesContactsManager($this->db);
 				$result = $contactsManager->addContact($contact);
-				if($result == true) {
+				if($result) {
 					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=$sub");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());

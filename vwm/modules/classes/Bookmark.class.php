@@ -15,7 +15,7 @@ class Bookmark {
 		}
         }
         
-	private function initByArray($array) {
+	private function initByArray($array) {                        
 		foreach($array as $key => $value) {
 			try {
 				$this->__set($key, $value);
@@ -69,16 +69,23 @@ class Bookmark {
 	public function saveBookmark() {
 
                 if ($this->id != NULL){
-                        $query = "UPDATE " . TB_CONTACTS_TYPE . " SET 
-					id = '{$this->id}',
-					name = '{$this->name}',
-					controller = '{$this->controller}'
+                        $query = "UPDATE " . TB_BOOKMARKS_TYPE . " SET 
+					name = '".mysql_escape_string($this->name)."',
+					controller = '".mysql_escape_string($this->controller)."'
 					WHERE id = {$this->id}";
                 }
-                else {
-                        $query = "INSERT INTO " . TB_CONTACTS_TYPE . " (id, name, controller) VALUES (
-						'{$this->id}', '{$this->name}', '{$this->controller}')";
-                }		
+                else {                        
+                        $query = " SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name = '".mysql_escape_string($this->name)."'";
+                        $this->db->query($query);
+                        $arr = $this->db->fetch_all_array();
+                        if( count($arr) == 0 )
+                        {   
+                            $query = "INSERT INTO " . TB_BOOKMARKS_TYPE . " (name, controller) VALUES ('"
+						/*.$this->id.","*/
+                                                .($this->name)."','" 
+                                                .($this->controller)."')";
+                        }
+                }	
 		
 		$this->db->query($query);
 			
@@ -89,28 +96,11 @@ class Bookmark {
 		}
 	}
         
-        /*  MOVED TO saveBookmark()
-        public function addBookmark() {
-		if(!$b->errors) {
-
-			$query = "INSERT INTO " . TB_CONTACTS_TYPE . " (id, name, controller) VALUES (
-						'{$this->id}', '{$this->name}', '{$this->controller}')";
-
-			$this->db->query($query);
-			
-			if(mysql_error() == '') {
-				return true;
-			} else {
-				throw new Exception(mysql_error());
-			}
-		}
-	}*/
-        
-	public function deleteBookmark($bookmarkID) {
-		$query = "DELETE FROM ". TB_CONTACTS_TYPE . " WHERE id = $bookmarkID";
+	public function deleteBookmark($bookmarkID) {//var_dump($bookmarkID);
+		$query = "DELETE FROM ". TB_BOOKMARKS_TYPE . " WHERE id = ".$bookmarkID."";
 		$query = mysql_escape_string($query);
 		$this->db->query($query);
-			
+                                
 		if(mysql_error() == '') {
 			return true;
 		} else {
@@ -136,8 +126,8 @@ class Bookmark {
 	private function checkEmpty($value) {
 		if(!isset($value) or empty($value)) {
 			throw new Exception("Value is empty");
-		} else if(strlen($value) > 255) {
-			throw new Exception("Value is too long (max 255 symbols)");
+		} else if(strlen(html_entity_decode($value)) > 22) {
+			throw new Exception("Value is too long (max 22 symbols)");
 		}
 	}         
          

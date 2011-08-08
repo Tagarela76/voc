@@ -15,7 +15,7 @@
     {section name=i loop=$bookmarks}    
         <td >
             <a href="admin.php?action=browseCategory&category=salescontacts&bookmark=contacts{if $bookmarks[i]->id != 1}&subBookmark={$bookmarks[i]->name}{/if}">
-   		{if $request.subBookmark == $bookmarks[i]->name}
+   		{if $request.subBookmark|escape == $bookmarks[i]->name}
   			<div  class = "activeBookmark">  <div class = "activeBookmark_right">
   		{else}                    
                      {if ($bookmarks[i]->id == 1)&(!$request.subBookmark)}
@@ -24,7 +24,8 @@
                         <div class="deactiveBookmark"><div class="deactiveBookmark_right">
                      {/if}
   		{/if}
- 		 {$bookmarks[i]->name|capitalize:true}
+ 		 {*$bookmarks[i]->name|capitalize:true*}
+                 {$bookmarks[i]->name}
    			</div>
   		 </div></a>
         </td>
@@ -44,10 +45,10 @@
                 <td class="active_bookmark_fon"></td>
             {/if}
         {/if}
-        <td {if $request.subBookmark eq $bookmarks[i]->name} class="active_bookmark_fon" {/if}></td>	
+        <td {if $request.subBookmark|escape eq $bookmarks[i]->name} class="active_bookmark_fon" {/if}></td>	
         {/section}
      </tr>
-
+{$bookmarks[i]->name}
 </table>   
  </td>
   </tr>

@@ -400,7 +400,7 @@ class Controller
 	}
 	
 	private function actionConfirmDeleteCommon()
-	{					
+	{       
 		if ($this->getFromPost('confirm') != 'Yes') 
 			throw new Exception('404');
 			
@@ -937,7 +937,7 @@ class Controller
 		if (isset($key))
 		{
 			if (isset($this->request[$key]))
-				return $this->request[$key];
+                                return $this->request[$key];
 			else 
 				return null;
 		}

@@ -11,7 +11,7 @@ class SalesContactsManager
 		$query = "SELECT c. * FROM " . TB_CONTACTS . " c ";
 		$contacts_type_name = mysql_escape_string($contacts_type_name);
 		if(isset($contacts_type_name)) {
-			$query .=  ", " . TB_CONTACTS_TYPE . " ct ";
+			$query .=  ", " . TB_BOOKMARKS_TYPE . " ct ";
 			$query .= " WHERE c.type = ct.id AND ct.name = '$contacts_type_name'";
 		}
                 
@@ -58,7 +58,7 @@ class SalesContactsManager
 	public function getTotalCount( $sub ) {              
 
                 $query = "SELECT count(c.id) as 'count' " .
-                            "FROM " . TB_CONTACTS . " c, " . TB_CONTACTS_TYPE . " ct " .
+                            "FROM " . TB_CONTACTS . " c, " . TB_BOOKMARKS_TYPE . " ct " .
                             "WHERE ct.name = '".mysql_escape_string($sub)."' " .
                             "AND c.type = ct.id";
 
@@ -126,7 +126,7 @@ class SalesContactsManager
 			
 			$query .= " , '{$c->mail}', '{$c->cellphone}' ,";
 			
-			$query .= " (select id from contacts_type where name = '{$c->type}' limit 1) ";
+			$query .= " (select id from ".TB_BOOKMARKS_TYPE." where name = '".htmlentities($c->type)."' limit 1) ";
 			
 			$query .= " )";
 			
@@ -146,7 +146,7 @@ class SalesContactsManager
         public function contactAutocomplete($occurrence, $sub) {
 		$occurrence = mysql_escape_string($occurrence);   
                 
-                $query = "SELECT * FROM " . TB_CONTACTS_TYPE . " WHERE name='".$sub."'";                       
+                $query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='".$sub."'";                       
 		$this->db->query($query);
 		$subNumber = $this->db->fetch(0)->id;
                 
@@ -184,7 +184,6 @@ class SalesContactsManager
                 
                 $sub = mysql_escape_string($sub);
 		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND (";
-                //$sub=mysql_escape_string($type);
 		$query = "SELECT  count(id) contactCount FROM ".TB_CONTACTS." WHERE ((";		
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
@@ -241,8 +240,8 @@ class SalesContactsManager
         * @param string $subNumber - number of subBookmark
 	*/
 	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null) {
-            
-		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND (";
+        
+		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND ((";
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -262,7 +261,7 @@ class SalesContactsManager
 		}
                 
 		$sql = implode(' OR ', $sqlParts);
-		$query .= $sql.")";		
+		$query .= $sql."))";		
 		
                 
 		if (isset($pagination)) {
