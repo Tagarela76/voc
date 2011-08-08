@@ -112,6 +112,20 @@ class VOCApp {
             return $res;
         }
     }
+
+
+    /**
+     *
+     * @param string from MySQL
+     * @param type $print if print eq true than print value, else - return
+     */
+    public function printDatetimeByMySqlDateInCurrentDateformat($mysqlDate,$print=true) {
+		$dt = DateTime::createFromFormat('Y-m-d', $mysqlDate);
+        $res = $this->printDatetimeByCurrentDateformat($dt,$print);
+        if(!$print) {
+            return $res;
+        }
+    }
 }
 
 ?>

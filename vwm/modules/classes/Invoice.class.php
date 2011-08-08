@@ -1378,7 +1378,7 @@ class Invoice {
 		}
 		
 		$query .= " GROUP BY inv.invoice_id";
-		
+		                       
 	
 					return $query;
     }

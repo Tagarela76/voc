@@ -82,7 +82,7 @@ END DEPRECATED
 						Date:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails.generationDate)}
+						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.generationDate)}
 					</td>
 				</tr>
 				<tr>	
@@ -98,7 +98,7 @@ END DEPRECATED
 						Billing Period Date Start:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails.periodStartDate)}
+						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.periodStartDate)}
 					</td>
 					<td>
 				</tr>
@@ -107,7 +107,7 @@ END DEPRECATED
 						Billing Period Date Finish:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails.periodEndDate)}
+						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.periodEndDate)}
 					</td>
 					
 				</tr>
@@ -116,7 +116,7 @@ END DEPRECATED
 						Suspension date:	
 					</td>
 					<td>
-						<b>{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails.suspensionDate)}</b>
+						<b>{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.suspensionDate)}</b>
 					</td>
 				</tr>
 			</table>

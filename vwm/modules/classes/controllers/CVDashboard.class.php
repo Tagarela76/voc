@@ -67,12 +67,13 @@ class CVDashboard extends Controller {
         $config = $this->loadConfig();						 
         $lastInvoice = $invoice->getLastInvoice($customerID);
         
-        $lastInvoiceDate = new DateTime();
-        $lastInvoiceDate->setTimestamp(intval($lastInvoice['periodEndDate']));
-        
-        
+        $lastInvoiceDate = DateTime::createFromFormat('Y-m-d', $lastInvoice['periodEndDate']);
+//		$lastInvoiceDate = new DateTime();
+//      $lastInvoiceDate->setTimestamp(intval($lastInvoice['periodEndDate']));
+
         $diff = new DateInterval("P{$config['invoice_generation_period']}D");
         $lastInvoiceDate->sub($diff);
+
         $dateFormat = VOCApp::get_instance()->getDateFormat();
         $nextInvoiceDate = $lastInvoiceDate->format($dateFormat);
         
