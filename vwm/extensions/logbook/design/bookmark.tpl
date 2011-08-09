@@ -1,3 +1,6 @@
+
+
+
 <td>
     <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=logbook">
     	

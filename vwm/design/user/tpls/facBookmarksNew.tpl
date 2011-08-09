@@ -1,11 +1,14 @@
+
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:3px 0 0 0">
     <tr>
         <td align="right">
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
+
                 {*REGULATION UPDATES*}
+
                 {if $show.regupdate}
-                	{if $permissions.data.view}
+                               	{if $permissions.data.view}
                 		{include file="tpls:regupdate/design/bookmarkRegulationUpdates.tpl"}
                 	{/if}
                 {/if}
@@ -55,9 +58,9 @@
 					
 				{*INVENTORY MODULE*}	
 				{if $show.inventory}
-                    {if $permissions.data.view}
-						{include file="tpls:inventory/design/bookmark.tpl"}                     
-                    {/if}          
+                {if $permissions.data.view}
+			{include file="tpls:inventory/design/bookmark.tpl"}                     
+                {/if}          
 				{/if}   
                 {*/INVENTORY MODULE*}
                 
@@ -71,6 +74,28 @@
                 {/foreach}*/
                 {*/SOLVENT PLAN MODULE*}
 				
+
+                    {if $permissions.data.view}
+                    <td>
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=product">{if $request.bookmark != "product"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    {$smarty.const.LABEL_PRODUCTS_BOOKMARK}&nbsp;
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark_green">
+                                <div class="activeBookmark_green_right">
+                                    {$smarty.const.LABEL_PRODUCTS_BOOKMARK}&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+                    {/if}
+
+
+
 				      
                     {if $permissions.data.view}
                     <td>
@@ -98,16 +123,19 @@
                     </td>
                     <td {if $request.bookmark  eq "inventory"}  class="" {/if}>
                     </td>
-                    <td {if $request.bookmark  eq "department"}  class="" {/if}>
+                    <td {if $request.bookmark  eq "department"}  class="bookmark_bg_green" {/if}>
                     </td>  *}                  
                 </tr>                                    
             </table>
 </td>
 
    			 </tr>
+
+
               <tr>
                 	<td colspan="2"
 {if $request.bookmark  eq "department"}  class="bookmark_bg" {/if}
+{if $request.bookmark  eq "product"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "inventory"}  class="bookmark_bg_violet" {/if}
 {if $request.bookmark  eq "docs"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "reduction"}  class="bookmark_bg_orange" {/if}
@@ -120,5 +148,6 @@
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>
+
     </tr>
 </table>

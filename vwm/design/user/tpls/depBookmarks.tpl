@@ -1,3 +1,6 @@
+
+
+
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:3px 0 0 0">
     <tr>
         <td align="right">
@@ -67,6 +70,7 @@
                         </a>
                     </td>
                     {/if}
+
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=mix&tab=mixes">{if $request.bookmark != "mix"}

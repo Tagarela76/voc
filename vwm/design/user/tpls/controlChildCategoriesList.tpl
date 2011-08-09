@@ -30,7 +30,8 @@
                                             	($request.bookmark=="inventory" && $permissions.data.add) || 
                                             	($request.bookmark=="mix" && $permissions.data.add) || 
                                             	$permissions.addItem && $request.bookmark != "reduction" && $request.bookmark != "solventplan" &&
-                                            	$request.bookmark != "regupdate" && $request.bookmark != "emissionGraphs" }
+                                            	$request.bookmark != "regupdate" && $request.bookmark != "emissionGraphs" 
+                                                && $request.bookmark != "product"}
                                             	
 											<div class="button_float_left">	
                                             <div class="button_alpha add_button">
@@ -61,8 +62,8 @@
                                             		($request.bookmark=="accessory" && $permissions.data.delete) || 
                                             		($request.bookmark=="inventory" && $permissions.data.delete) || 
                                             		($request.bookmark=="mix" && $permissions.data.delete) ||
-                                            		($request.bookmark=="logbook" && $permissions.data.delete) || 
-                                            		$permissions.deleteItem}
+                                            		($request.bookmark=="logbook" && $permissions.data.delete) ||                                                         
+                                                            $permissions.deleteItem && $request.bookmark != "product"}
 											<div class="button_float_left">	
                                            			<div class="button_alpha delete_button">
                                            			{if $smarty.request.tab != 'pfp'}

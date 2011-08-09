@@ -117,44 +117,75 @@ class CFacility extends Controller
 	}
 	
 	private function actionBrowseCategory()
-	{
-		
-		$bookmark=$this->getFromRequest('bookmark');
+	{                
+		//  TODO: move voc indicator here from child controllers
+		$bookmark=$this->getFromRequest('bookmark');                
+                
 		$this->smarty->assign("childCategory", $bookmark ? $bookmark : 'department');	
 		$facility = new Facility($this->db);	
-		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));							
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));	
+                
 		$this->smarty->assign('popup_category', 'facility');
 		$this->smarty->assign('popup_category_id', $this->getFromRequest('id'));
 		$date = getdate();
 		$this->smarty->assign('curYear', $date['year']);
 
+//
+		$departments = new Department($this->db);                
+		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr,$sortStr);																		
+		
+		for ($i = 0; $i<count($departmentList); $i++) 
+		{
+			$url = "?action=browseCategory&category=department&id=".$departmentList[$i]['id']."&bookmark=mix";
+			$departmentList[$i]['url'] = $url;
+			
+			$department = new Department($this->db);
+			$department->initializeByID($departmentList[$i]["id"]);
+			
+			if ($department->isOverLimit()) {
+				$departmentList[$i]["valid"] = "invalid";
+			} else {
+				$departmentList[$i]["valid"] = "valid";
+			}
+			//	sum total usage
+			$totalUsage += $department->getCurrentUsage();
+		}																		
+		$this->setIndicator($facilityDetails['voc_limit'], $totalUsage);
+//                
+                
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
-		foreach($moduleMap as $key=>$module) 
+		
+                foreach($moduleMap as $key=>$module) 
 		{
 			$showModules[$key] = $this->user->checkAccess($key, $facilityDetails['company_id']);
-		}							
+		}
+                
 		$this->smarty->assign('show',$showModules);	
-		
+                
 		if ($showModules['regupdate']) {
 			$mRegAct = new $moduleMap['regupdate'];
 			$result = $mRegAct->prepareCountUnread(array(
 				'db'=>$this->db,
 				'userID' => $this->user->xnyo->user['user_id']
-			));
+			));                        
 			$this->smarty->assign('unreadedRegUpdatesCount', $result);
 		}	
-		
+                
 		$vars=array	(
 						'facility'			=>$facility,
 						'facilityDetails'	=>$facilityDetails,
 						'moduleMap'			=>$moduleMap
 					);
-		
-		
-		
-		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars);		
-		$this->smarty->display("tpls:index.tpl");			
+                
+                if($bookmark == 'product') {
+                    //  We need to show the product tab at both facility and department levels
+                    //  that is why we are forwarding to Product controller, action bookmarkDProduct
+                    $this->forward($bookmark,'bookmarkD'.ucfirst($bookmark),$vars);		                
+                } else {
+                    $this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars);		                    
+                }		
+		$this->smarty->display("tpls:index.tpl");			                
 	}	
 	
 	private function actionAddItem() {

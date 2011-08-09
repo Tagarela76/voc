@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
+
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<title>{$title}</title>
 		
@@ -67,7 +68,6 @@
 											{if $request.category == 'facility' && $request.action == 'browseCategory'}
 												{include file="tpls:tpls/facBookmarksNew.tpl"}
 											{elseif $request.category == 'department' && $request.action == 'browseCategory'}
-											
 												{include file="tpls:tpls/depBookmarks.tpl"}
 											{/if}
 											
@@ -83,10 +83,10 @@
 													$request.bookmark == 'mix' ||
 													$request.bookmark == 'solventplan'}
 													
-													
 													{if $request.tab != "pfp"}
 														{include file="tpls:tpls/sort.tpl"}
 													{/if}
+                                                                                                        
 												{/if}
 											{*/SORT*}							
 											
@@ -117,7 +117,7 @@
 						  														minChars:2, 
 						  														delimiter: /(,|;)\s*/, 
 						  														params: { {/literal}{if $request.bookmark == 'logbook'}facilityID{else}departmentID{/if}:'{$request.id}{literal}',
-						  														 category:'{/literal}{$childCategory}{literal}'}, 
+						  														category:'{/literal}{$childCategory}{literal}'}, 
 						  														deferRequestBy:300   								
 						  													};
 						  													a = $('#search').autocomplete(options);
@@ -135,9 +135,11 @@
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 											
+                                                                                        
 											{if $request.action == 'viewDetails' || $request.action == 'viewPFPDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
+                                                                                        
 								
 											{include file="tpls:$tpl"}			
 																			

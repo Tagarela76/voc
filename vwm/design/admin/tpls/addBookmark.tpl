@@ -40,9 +40,11 @@
 			</table>
 	<div align="right">
 		<br>
+
 		<input type='submit' name='save' class="button" value='Save'>
 		<input type='button'  class="button" id='cancelButton' value='Cancel' onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{/if}&bookmark={$request.bookmark}'">
 		<span style="padding-right:50">&nbsp;</span>
+
 		</div>
 		
 		</form>

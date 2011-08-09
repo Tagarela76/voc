@@ -123,6 +123,7 @@ class CDepartment extends Controller
 		foreach($moduleMap as $key=>$module) {
 			$showModules[$key] = $this->user->checkAccess($key, $facilityDetails['company_id']);
 		}
+                
 		$this->smarty->assign('show',$showModules);
 		
 		$this->smarty->assign('popup_category', 'department');
@@ -239,7 +240,7 @@ class CDepartment extends Controller
 		}																		
 		$this->smarty->assign("childCategoryItems", $departmentList);									
 		//	voc indicator
-		$this->setIndicator($facilityDetails['voc_limit'], $totalUsage);
+
 		//	set js scripts				
 		$jsSources = array(
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',										

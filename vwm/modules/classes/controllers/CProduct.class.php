@@ -95,6 +95,7 @@ class CProduct extends Controller
 					(!is_null($this->getFromRequest('filterCondition'))?"&filterCondition=".$this->getFromRequest('filterCondition'):"").
 					(!is_null($this->getFromRequest('filterValue'))?"&filterValue=".$this->getFromRequest('filterValue'):"").
 					(!is_null($this->getFromRequest('filterField'))?"&searchAction=filter":"");
+                                
 				$this->smarty->assign('pagination',$pagination);
 			}																											
 			$productList = $product->getProductList($companyDetails['company_id'], $pagination,$filterStr,$sortStr,false);								

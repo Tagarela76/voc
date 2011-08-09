@@ -18,8 +18,6 @@ class CEmissionGraphs extends Controller {
 		extract($vars);
 
 		$facility->initializeByID($this->getFromRequest('id'));
-		$this->setIndicator($facility->getDailyLimit(), $facility->getCurrentUsage());
-
 		$this->setGraphs('facility',$this->getFromRequest('id'));
 	}
 
