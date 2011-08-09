@@ -2,23 +2,23 @@
 
 class RegActManager {
 	private $db;
-	
+
 	private $xmlReview = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml";
 	private $xmlCompleted = "http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml";
-	
+
 	const CATEGORY_REVIEW = 'review';
 	const CATEGORY_COMPLETED = 'completed';
 
     function __construct($db, $xmlFileReviewPath = XML_FILE_REVIEWED_RULES, $xmlFileCompletedPath = XML_FILE_COMPLETED_RULES) {
     	$this->db = $db;
-    	
+
     	$this->xmlReview = $xmlFileReviewPath;
     	$this->xmlCompleted = $xmlFileCompletedPath;
     }
-    
+
     /**
-     * function parseXML 
-     * parse xml's for chosen category, remove all old info from db and add/update new. Also manage Users2Regs list.  
+     * function parseXML
+     * parse xml's for chosen category, remove all old info from db and add/update new. Also manage Users2Regs list.
      * @param string category = "review"/"completed"/null
      */
     public function parseXML($category = null) {
@@ -60,7 +60,7 @@ class RegActManager {
 	    	$query = substr($query, 0 , -2);
 	    	$this->db->query('DELETE FROM '.TB_REG_ACTS.' WHERE category = \''.$category.'\''); //delete all acts was in db
 	    	$this->db->query($query);
-	    	
+
 	    	//update regActs=>Users Info
 	    	$this->updateRegs2Users($rin_array);
 	    } else {
@@ -68,12 +68,12 @@ class RegActManager {
 	    	$this->parseXML(self::CATEGORY_COMPLETED);
 	    }
     }
-    
+
     /**
      * function getRegActsList($userID = null)
      * gets list of acts from db, if was set userId in objects filled info about act was readen by user, was act mailed to user.
      * @param int $userID
-     * @return array of RegAct objects 
+     * @return array of RegAct objects
      */
 	public function getRegActsList($userID = null, $category = self::CATEGORY_REVIEW, $pagination = null) {
 		$query = "SELECT * FROM ".TB_REG_ACTS." ra ".
@@ -81,18 +81,18 @@ class RegActManager {
 				(", ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
 				" WHERE ra.rin = u2r.rin AND u2r.user_id = '$userID'".
 					" AND ra.reg_agency_id = rag.id " .
-					" AND ra.category = '$category' ") : 
+					" AND ra.category = '$category' ") :
 				(" WHERE ra.category = '$category' ")
 			).
 			" ORDER BY ra.category, ra.date_received desc";
 		if (!is_null($pagination)) {
 				$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 			}
-		
+
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();
-			
+
 			//the funiest part: make from array of assoc-array an array of objects))
 			$objectsList = array();
 			foreach($data as $actData) {
@@ -102,7 +102,7 @@ class RegActManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * function getUnreadList
 	 * get Unread(by default unmailed too) list to notify about new updates
@@ -112,7 +112,7 @@ class RegActManager {
 	 * @return array of RegAct objects
 	 */
 	public function getUnreadList($userID, $category = null, $mailed = false) {
-		
+
 		$query = "SELECT * FROM ".TB_REG_ACTS." ra, ".TB_USERS2REGS." u2r, ".TB_REG_AGENCY." rag " .
 				"WHERE ra.rin = u2r.rin AND u2r.user_id ".((is_array($userID))?" IN ('".implode('\', \'',$userID)."')":"= '$userID'")." " .
 					"AND u2r.readed = '0' AND u2r.mailed = '".((!$mailed)?'0':'1')."' " .
@@ -122,7 +122,7 @@ class RegActManager {
 		$this->db->query($query);
 		if ($this->db->num_rows()>0) {
 			$data = $this->db->fetch_all_array();
-			
+
 			//the funiest part: make from array of assoc-array an array of objects))
 			$objectsList = array();
 			foreach($data as $actData) {
@@ -132,11 +132,11 @@ class RegActManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * function markRIN
 	 * mark RIN for user(was it readen? was it mailed?)
-	 * @param int  $userID - can be id or array of id 
+	 * @param int  $userID - can be id or array of id
 	 * @param string $action = 'readed'/'mailed'
 	 * @param array of int $RINarray
 	 */
@@ -146,7 +146,7 @@ class RegActManager {
 				( (!is_null($category)) ? " AND '$category' = (SELECT ra.category FROM ".TB_REG_ACTS." ra WHERE ra.rin = u2r.rin)" : "" );
 		$this->db->query($query);
 	}
-	
+
 	/**
 	 * function getMessageForNotificator
 	 * @param int $userID - can be id or array of ids
@@ -181,12 +181,12 @@ class RegActManager {
 				$textToMail .= "DECISION: ".$regAct->decision." \n";
 			}
 		}
-		
+
 		$textToMail .= "\n______ \n";
 		$textToMail .= "You can swith off it in EmailNotificator option in your VOCWEBMANAGER Settings"; //here we should add some footer))
 		return $textToMail;
 	}
-	
+
 	/**
 	 * getUnreadCountForCategries($userID)
 	 * @param $userID
@@ -201,13 +201,13 @@ class RegActManager {
 		$this->db->query($query);
 		return $this->db->fetch_all_array();
 	}
-	
+
 	public function getCountForCategory($category) {
 		$query = "SELECT count(category) as count FROM ".TB_REG_ACTS." WHERE category = '$category' GROUP BY category ";
 		$this->db->query($query);
 		return $this->db->fetch(0)->count;
 	}
-	
+
 	private function arrayIntoRegActObject($actData) {
 		$regAct = new RegAct($this->db);
 		foreach($actData as $property => $value) {
@@ -224,23 +224,24 @@ class RegActManager {
 		$regAct->reg_agency = $agency;
 		return $regAct;
 	}
-	
+
 	private function updateRegs2Users($newRINarray) {
 		//delete all info with RIN not id db anymore
 		$query = "DELETE FROM ".TB_USERS2REGS." WHERE rin NOT IN (SELECT rin FROM ".TB_REG_ACTS." )";
 		$this->db->query($query);
-		
+
 		//get list for already managed rin's
 		$query = "SELECT rin FROM ".TB_USERS2REGS." WHERE rin IN ('".implode("', '", $newRINarray)."') GROUP BY rin ";
 		$this->db->query($query);
 		$rins = $this->db->fetch_all_array();
-				
+
 		//get all users list
 		$userObj = new User($this->db, null, null, null);
 		$userList = $userObj->getUsersList();
 		$regUpdateUsers = array();
 		foreach($userList as $userData) {
-			if ($userData['accesslevel_id'] == 3 || $userObj->checkAccess('regupdate',$userData['company_id'])) {
+			//	not department level users - they does not have access to this module
+			if ($userData['accesslevel_id'] != 2 || $userObj->checkAccess('regupdate',$userData['company_id'])) {
 				$regUpdateUsers []= $userData['user_id'];
 			}
 		}
@@ -248,27 +249,27 @@ class RegActManager {
 		//delete all info with users without this module anymore
 		$query = "DELETE FROM ".TB_USERS2REGS." WHERE user_id NOT IN ('".implode("', '", $regUpdateUsers)."')";
 		$this->db->query($query);
-		
+
 		if ($rins) {
 			//lets get list for already  managed users
 			$query = "SELECT user_id FROM ".TB_USERS2REGS." WHERE rin IN ('".implode("', '", $newRINarray)."') GROUP BY user_id ";
 			$this->db->query($query);
 			$managedUserList = $this->db->fetch_all_array();
-			
+
 			//now check is all users was managed for old rins(there can be new users)
 			foreach($managedUserList as $key => $user) {
 				$managedUserList[$key] = $user['user_id'];
 			}
-			
+
 			$newUsers = array();
 			foreach($regUpdateUsers as $userID) {
 				if (!in_array($userID, $managedUserList)) {
 					$newUsers []= $userID;
 				}
 			}
-			
+
 			$queryPartForNewUsers = '';
-			
+
 			//lets cut out from array rins was already managed
 			foreach($rins as $data) {
 				foreach ($newUsers as $userID) {
@@ -278,9 +279,9 @@ class RegActManager {
 				unset($newRINarray[$key]);
 			}
 			$queryPartForNewUsers = substr($queryPartForNewUsers, 0, -1);
-			
+
 		}
-		
+
 		//add new info for not managed RIN's + manage also new users for old RINS!!!
 		$query = "INSERT INTO ".TB_USERS2REGS." (user_id, rin, readed, mailed) VALUES ";
 		foreach($regUpdateUsers as $userID) {
@@ -290,6 +291,6 @@ class RegActManager {
 		}
 		$query = ((!is_null($queryPartForNewUsers) && $queryPartForNewUsers != '')?$query.$queryPartForNewUsers:substr($query, 0, -1));
 		$this->db->query($query);
-	} 
+	}
 }
 ?>
