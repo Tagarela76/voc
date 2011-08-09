@@ -438,7 +438,7 @@ function initNoMWS() {
 	      		dataType: "html",
 	      		success: function (response) 
 	      			{
-	      			console.log("response = " + response);
+	      			//console.log("response = " + response);
 	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);	
 	      				//console.log("END OF WRITE UNITTYPE");
 	      				productUnittype = products.getProduct(productAddedIdx).selectUnittype;

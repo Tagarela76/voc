@@ -1058,7 +1058,7 @@ class CMix extends Controller
 	
 		
 	private function actionAddItem() {
-		
+                //TODO: Баг в Internet Explorer список отображется не по порядку
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {						
 			throw new Exception('deny');

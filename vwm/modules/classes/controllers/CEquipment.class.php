@@ -270,8 +270,8 @@ class CEquipment extends Controller
 		
 		$sortStr=$this->sortList('equipment',3);
 		$equipments = new Equipment($this->db);
-		$equipmentList = $equipments->getEquipmentList($this->getFromRequest('id'),$sortStr);	
-		
+		$equipmentList = $equipments->getEquipmentList($this->getFromRequest('id'),$sortStr);				
+				
 		
 				
 		if (!is_null($this->getFromRequest('export'))) 

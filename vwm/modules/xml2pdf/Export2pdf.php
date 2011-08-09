@@ -489,8 +489,8 @@ class XML2PDF extends PDF_MC_Table
 			//$this->Cell(0,10,'URL: ',0,0,'R');
 			$this->SetFont('Courier','I',10);
 			$this->MultiCell(0,5,$this->header['URL'],0,0,'R');
-			$this->Ln(); 
-                        $this->Image('images/gyantcompliance_small.jpg',20,10,40, 'jpg');
+			$this->Ln();
+                        $this->Image('images/gyantcompliance_large.jpg',20,10,40, 'jpg');
                         $this->SetFont('Arial','B',10);
                         $this->Cell(60);
 			$this->Cell(35,5,'Company: ',0,0,'L');
