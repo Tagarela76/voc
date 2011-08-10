@@ -1,6 +1,9 @@
 <?php
 class CProduct extends Controller 
 {	
+        protected $category;
+        protected $categoryID;
+        
 	function CProduct($smarty,$xnyo,$db,$user,$action)
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
@@ -18,22 +21,41 @@ class CProduct extends Controller
 	
 	private function actionViewDetails()
 	{
+                //  from what level this code is called?
+                if($this->getFromRequest('departmentID') !== null) {
+                    $level = 'department';
+                    $levelID = $this->getFromRequest('departmentID');                    
+                } elseif ($this->getFromRequest('facilityID') !== null) {
+                    $level = 'facility';
+                    $levelID = $this->getFromRequest('facilityID');                    
+                } else {
+                    throw new Exception('deny');
+                }
+            
 		//	Access control
-		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) 
+		if (!$this->user->checkAccess($level, $levelID)) 
 		{						
 			throw new Exception('deny');
 		}					
 							
+
+                
+                
+/*		if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityID')))                         
+		{						
+			throw new Exception('deny');
+		}					
+*/							
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest("id"));
 		$productDetails['density_unit'] = new Density($this->db, $productDetails['densityUnitID']);						
 		$this->smarty->assign("product", $productDetails);
 		$this->smarty->assign("unittype", new Unittype($this->db));
 							
-		$this->setNavigationUpNew('department', $this->getFromRequest("departmentID"));
-		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"),  array('bookmark'=>'product'));
+		$this->setNavigationUpNew($level, $levelID);
+		$this->setListCategoriesLeftNew($level, $levelID,  array('bookmark'=>'product'));
 		$this->setPermissionsNew('viewData');			
-		$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=product');
+		$this->smarty->assign('backUrl','?action=browseCategory&category='.$level.'&id='.$levelID.'&bookmark=product');
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
 		
 		$this->smarty->display("tpls:index.tpl");	
@@ -46,9 +68,6 @@ class CProduct extends Controller
 	protected function bookmarkDProduct($vars)
 	{			
 		extract($vars);
-		
-		
-		
 		$product = new Product($this->db);
 																		
 		$sortStr=$this->sortList('chemicalProduct',3);
@@ -87,7 +106,7 @@ class CProduct extends Controller
 				
 				
 				$productsCount = (int)$product->countProducts($company_id,$filterStr);
-							
+                                
 				$pagination = new Pagination($productsCount);
 				
 				$pagination->url = "?action=browseCategory&category=".$this->getFromRequest('category')."&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark').
@@ -108,9 +127,9 @@ class CProduct extends Controller
                 
                 for ($i=0; $i<$itemsCount; $i++) 
 		{				
-			$url="?action=viewDetails&category=product&id=".$productList[$i]['product_id']."&departmentID=".$this->getFromRequest('id');
+			$url="?action=viewDetails&category=product&id=".$productList[$i]['product_id']."&".$this->getFromRequest('category')."ID=".$this->getFromRequest('id');
 			$productList[$i]['url']=$url;
-		}			
+		}	
                 
                 
                 
@@ -174,7 +193,7 @@ class CProduct extends Controller
 											
 			//	set tpl
 			$this->smarty->assign('tpl', 'tpls/productListNew.tpl');
-		}		
+		}
 	}	
 }
 ?>
