@@ -1,6 +1,3 @@
-
-
-
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:3px 0 0 0">
     <tr>
         <td align="right">

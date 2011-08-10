@@ -2093,11 +2093,31 @@ a.button_select_none:hover{
 
 .report_button input {
     width: 71px;
-	border: 0px;
+    border: 0px;
 }
 
 .report_button:hover, a:hover.report_button, input:hover.report_button {
     background: url(images/report_button.gif) no-repeat -100px center;
+    border: 0px;
+    cursor: pointer;
+    height: 20px;
+    width: 100px
+}
+
+.new_product_button {
+    background: url(images/new_product_button.jpg);
+    cursor: pointer;
+    height: 20px;
+    width: 100px;
+    background-repeat: no-repeat;
+}
+
+.new_product_button input {
+    width: 71px;
+    border: 0px;
+}
+.new_product_button:hover, a:hover.new_product_button, input:hover.new_product_button {
+    background: url(images/new_product_button.jpg) no-repeat -100px center;
     border: 0px;
     cursor: pointer;
     height: 20px;

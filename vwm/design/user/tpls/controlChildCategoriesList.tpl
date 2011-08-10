@@ -97,7 +97,7 @@
                                             <div class="button_alpha report_button">
                                                 <input type="button" name="action" value="createReport" onclick="location.href='?action=createReport&category={$request.category}&id={$request.id}'">
                                             </div>											
-                                     </div>
+                                            </div> 
                                      {if $show.reports and $request.bookmark == "solventplan" and $periodType=='month'}
                                      <div class="button_float_left">
                                      <input type='button' id='edit' class='button' value='Edit' onclick="location.href='?action=edit&category=solventplan&tab=direct&facilityID={$request.id}&mm={$period.month}&yyyy={$period.year}'">
@@ -118,6 +118,23 @@
                                      	</div>
                                      	{/if}
                                      	{/if}
+                                            
+                                         {if ($request.category == "facility" and $request.bookmark == "department" or $request.bookmark == "product")}  
+                                            <div class="button_float_left">
+                                            <div class="button_alpha new_product_button">
+                                                <input type='button'>
+                                            </div>											
+                                            </div>
+                                         {/if}
+                                         
+                                         {if ($request.category == "department" and $request.bookmark == "equipment")}  
+                                            <div class="button_float_left">
+                                            <div class="button_alpha new_product_button">
+                                                <input type='button'>
+                                            </div>											
+                                            </div>
+                                         {/if}
+                                           
                                      	{*/EXPORT PAGE*}
                                      
                                      
