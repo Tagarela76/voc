@@ -119,7 +119,7 @@
                                      	{/if}
                                      	{/if}
                                             
-                                         {if ($request.category == "facility" and $request.bookmark == "department" or $request.bookmark == "product")}  
+                                         {if ($request.category == "facility" and $request.bookmark == "department" || $request.bookmark == "product")}  
                                             <div class="button_float_left">
                                             <div class="button_alpha new_product_button">
                                                 <input type='button'>
