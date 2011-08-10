@@ -38,10 +38,17 @@
 			break;
 
 		case "product":
-			$query = "SELECT f.company_id FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f " .
+                        if(isset($request['facilityID'])) {
+                            $query = "SELECT f.company_id FROM ".TB_FACILITY." f " .
+					"WHERE f.facility_id = ".$request['facilityID'];
+                        } elseif (isset($request['departmentID'])) {
+                            $query = "SELECT f.company_id FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f " .
 					"WHERE d.facility_id = f.facility_id " .
 					"AND d.department_id = ".$request['departmentID'];
+                        }
+			
 			$db->query($query);
+                        
 			if ($db->num_rows() > 0) {
 				$companyID = $db->fetch(0)->company_id;
 				$productObj = new Product($db);

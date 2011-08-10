@@ -149,8 +149,11 @@ class CFacility extends Controller
 			}
 			//	sum total usage
 			$totalUsage += $department->getCurrentUsage();
-		}																		
-		$this->setIndicator($facilityDetails['voc_limit'], $totalUsage);
+		}
+                
+                   
+                $this->setIndicator($facilityDetails['voc_limit'], $totalUsage);
+
 //                
                 
 		$ms = new ModuleSystem($this->db);

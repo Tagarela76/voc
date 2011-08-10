@@ -108,6 +108,7 @@
 														<br>																																	
 													{*SEARCH*}																																	
 														{if $request.tab != 'pfp' and ($request.bookmark == 'mix' || $request.bookmark == 'product' || $request.bookmark == 'logbook' || $request.bookmark == 'accessory')}
+                                                                                                                        
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 																{literal}
 																	<script>
@@ -116,7 +117,13 @@
 						  													options = { serviceUrl:'modules/ajax/autocomplete.php', 
 						  														minChars:2, 
 						  														delimiter: /(,|;)\s*/, 
-						  														params: { {/literal}{if $request.bookmark == 'logbook'}facilityID{else}departmentID{/if}:'{$request.id}{literal}',
+						  														params: { {/literal}
+                                                                                                                                                                            {if $request.category == 'facility' }
+                                                                                                                                                                                facilityID
+                                                                                                                                                                            {elseif $request.category == 'department'}
+                                                                                                                                                                                departmentID
+                                                                                                                                                                            {/if}
+                                                                                                                                                                            :'{$request.id}{literal}',
 						  														category:'{/literal}{$childCategory}{literal}'}, 
 						  														deferRequestBy:300   								
 						  													};

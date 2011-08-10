@@ -102,11 +102,20 @@ class CProduct extends Controller
 																													
 		}																																	
 		$itemsCount = ($productList) ? count($productList) : 0;
-		for ($i=0; $i<$itemsCount; $i++) 
-		{										
+		
+                
+                
+                
+                for ($i=0; $i<$itemsCount; $i++) 
+		{				
 			$url="?action=viewDetails&category=product&id=".$productList[$i]['product_id']."&departmentID=".$this->getFromRequest('id');
 			$productList[$i]['url']=$url;
 		}			
+                
+                
+                
+                
+                
 		$this->smarty->assign("childCategoryItems", $productList);															
 		if (!is_null($this->getFromRequest('export'))) 
 		{

@@ -135,7 +135,9 @@ class CDepartment extends Controller
 		$departments->initializeByID($this->getFromRequest('id'));
 		$usage = $departments->getCurrentUsage();
 		
-		$this->setIndicator($departmentDetails['voc_limit'], $usage);
+                $this->setIndicator($departmentDetails['voc_limit'], $usage);
+
+                
 		$vars=array	(	
 			'departmentDetails'	=>$departmentDetails,
 			'facilityDetails'  	=>$facilityDetails,

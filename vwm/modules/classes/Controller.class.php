@@ -133,6 +133,8 @@ class Controller
 		return 	$sortStr;	
 	}	
 	
+        
+        
 	private function actionShowIssueReportCommon()
 	{
 		$request = $this->getFromRequest();					
@@ -554,6 +556,10 @@ class Controller
 		if ($pxCount > 200) {
 			$pxCount = 200;
 		}
+                
+                
+                
+                
 		$this->smarty->assign('pxCount', $pxCount);	//	200px - indicator length
 	}
 	
