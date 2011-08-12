@@ -1967,7 +1967,7 @@ class Validation {
 			} else {
 				$result["summary"] = "false";
 			}
-		} else {
+		} else { 
 			$result["summary"] = "false";
 		}
 		
