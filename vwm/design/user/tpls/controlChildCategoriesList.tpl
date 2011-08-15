@@ -121,16 +121,16 @@
                                             
                                          {if ($request.category == "facility" and $request.bookmark == "department" || $request.bookmark == "product")}  
                                             <div class="button_float_left">
-                                            <div class="button_alpha new_product_button">
-                                                <input type='button' onclick="location.href='?action=addNewProduct&category={$request.category}&id={$request.id}'">
+                                            {*<div class="button_alpha new_product_button">*}
+                                                <input type='button'  class='button' value='New Product' onclick="location.href='?action=addNewProduct&category={$request.category}&id={$request.id}'">
                                             </div>											
                                             </div>
                                          {/if}
                                          
                                          {if ($request.category == "department" and $request.bookmark == "equipment")}  
                                             <div class="button_float_left">
-                                            <div class="button_alpha new_product_button">
-                                                <input type='button' onclick="location.href='?action=addNewProduct&category={$request.category}&id={$request.id}'">
+                                            {*<div class="button_alpha new_product_button">*}
+                                                <input type='button' class='button' Value='New Product' onclick="location.href='?action=addNewProduct&category={$request.category}&id={$request.id}'">
                                             </div>											
                                             </div>
                                          {/if}

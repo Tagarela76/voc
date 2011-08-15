@@ -136,10 +136,21 @@ class Controller {
             $validationStatus = $prRequest->validate($productReq);
             if ($validationStatus["summary"] == "true") {
                 $prRequest->save();
-                header("Location:".$this->getFromPost('productReferer')."&message=ProductAdded&color=green");  //  redirect
+                $request = array('category'=>$this->getFromRequest('category'), 'id'=>$this->getFromRequest('id'));
+                $sSave = $this->noname($request);
+                $msds = new MSDS($this->db);
+                $msRes = $msds->upload('basic');
+                $save["companyID"] = $sSave['companyID'];
+		$save["facilityID"] = $sSave['facilityID'];
+		$save["departmentID"] = $sSave['departmentID'];
+                $save['msds'] = $msRes['msdsResult'];
+                $msds->addSheets($save);
+                //$newProductMail = new EMail();
+                //$newProductMail->sendMail('', '', 'NewProduct', 'New product added to the table NewProductRequest');
+                header("Location:" . $this->getFromPost('productReferer')."&message=ProductAdded&color=green");  //  redirect
                 die();
             } else {
-                $this->smarty->assign("validStatus", $validationStatus);
+                $this->smarty->assign('validStatus', $validationStatus);
                 $this->smarty->assign('productSupplier', $productReq['productSupplier']);
                 $this->smarty->assign('productId', $productReq['productId']);
                 $this->smarty->assign('productName', $productReq['productName']);
@@ -162,31 +173,31 @@ class Controller {
     }
 
     /* protected function actionSubmitNewProduct() {
-        $prRequest = new NewProductRequest($this->db);
-        $prRequest->setSupplier($this->getFromPost('productSupplier'));
-        $prRequest->setProductId($this->getFromPost('productId'));
-        $prRequest->setName($this->getFromPost('productName'));
-        $prRequest->setDescription($this->getFromPost('productDescription'));
-        $productReq['productSupplier'] = $this->getFromPost('productSupplier');
-        $productReq['productId'] = $this->getFromPost('productId');
-        $productReq['productName'] = $this->getFromPost('productName');
-        $productReq['productDescription'] = $this->getFromPost('productDescription');
+      $prRequest = new NewProductRequest($this->db);
+      $prRequest->setSupplier($this->getFromPost('productSupplier'));
+      $prRequest->setProductId($this->getFromPost('productId'));
+      $prRequest->setName($this->getFromPost('productName'));
+      $prRequest->setDescription($this->getFromPost('productDescription'));
+      $productReq['productSupplier'] = $this->getFromPost('productSupplier');
+      $productReq['productId'] = $this->getFromPost('productId');
+      $productReq['productName'] = $this->getFromPost('productName');
+      $productReq['productDescription'] = $this->getFromPost('productDescription');
 
-        $validationStatus = $prRequest->validate($productReq);
-        if ($validationStatus["summary"] == "true") {
-            $prRequest->save();
-            header("Location:" . $this->getFromPost('productReferer') . "&message=ProductAdded&color=green");  //  redirect
-        } else { //  show form again with errors
-            $this->smarty->assign("validStatus", $validationStatus);
+      $validationStatus = $prRequest->validate($productReq);
+      if ($validationStatus["summary"] == "true") {
+      $prRequest->save();
+      header("Location:" . $this->getFromPost('productReferer') . "&message=ProductAdded&color=green");  //  redirect
+      } else { //  show form again with errors
+      $this->smarty->assign("validStatus", $validationStatus);
 
-            $this->smarty->assign('accessname', $_SESSION['username']);
-            $this->smarty->assign('request', $request);
+      $this->smarty->assign('accessname', $_SESSION['username']);
+      $this->smarty->assign('request', $request);
 
-            $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
-            $this->smarty->display("tpls:index.tpl");
-            $this->smarty->assign('prRequest', $prRequest);
-        }
-    }*/
+      $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
+      $this->smarty->display("tpls:index.tpl");
+      $this->smarty->assign('prRequest', $prRequest);
+      }
+      } */
 
     private function actionShowIssueReportCommon() {
         $request = $this->getFromRequest();

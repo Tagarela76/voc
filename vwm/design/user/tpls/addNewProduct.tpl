@@ -7,7 +7,7 @@
 {if $color eq "blue"}
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
-<form method="POST" action="?action=addNewProduct&category={$request.category}&id={$request.id}">
+<form enctype="multipart/form-data" method="POST" action="?action=addNewProduct&category={$request.category}&id={$request.id}">
     {*shadow*} 
     <table class="report_issue" cellspacing="0" cellpadding="0" align="center">
         <tr>
@@ -112,7 +112,7 @@
                             MSDS File:
                         </td>
                         <td {*style="padding:5px 5px 0px 5px"*} align="left" colspan="2">
-                            <input type="file" name="file" size=22px> 
+                            <input type="file" name="inputFile[]" size=22px> 
                         </td>
                     </tr>
                     <tr>
