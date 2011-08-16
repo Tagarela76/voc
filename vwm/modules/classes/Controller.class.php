@@ -145,8 +145,14 @@ class Controller {
 		$save["departmentID"] = $sSave['departmentID'];
                 $save['msds'] = $msRes['msdsResult'];
                 $msds->addSheets($save);
-                //$newProductMail = new EMail();
-                //$newProductMail->sendMail('', '', 'NewProduct', 'New product added to the table NewProductRequest');
+
+                $msg = "New product requested. Later Denis will add more information to this email :)";
+                $newProductMail = new EMail();
+                $newProductMail->sendMail(
+						'newproductrequest@vocwebmanager.com',
+						array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'),
+						'New Product Request',
+						$msg);
                 header("Location:" . $this->getFromPost('productReferer')."&message=ProductAdded&color=green");  //  redirect
                 die();
             } else {

@@ -1,6 +1,5 @@
 <?php
-class NewProductRequest 
-{
+class NewProductRequest {
     /**
      *
      * @var db
@@ -52,9 +51,35 @@ class NewProductRequest
     }
     
     public function setStatus($status) {
-        $this->status = $status;
-        
+        $this->status = $status;        
     }
+
+
+    public function getProductID() {
+		return $this->product_id;
+    }
+
+    public function getSupplier() {
+		return $this->supplier;		
+    }
+
+    public function getName() {
+		return $this->name;
+    }
+
+    public function getDescription() {
+	   return $this->description;
+    }
+
+    public function getDate() {
+		return $this->date;
+    }
+
+    public function getUserID() {
+		return $this->user_id;    
+    }
+
+    
     
     
     public function validate($product) {

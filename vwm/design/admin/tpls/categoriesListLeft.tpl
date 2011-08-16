@@ -92,6 +92,16 @@
 						</ul>
 					</div>
 				</div>
+
+				<div align="left" width="100%"  class="{if $parent == 'requests'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+						<li>
+							<a href="admin.php?action=browseCategory&category=requests" class="id_company">Requests</a>
+						</li>
+						</ul>
+					</div>
+				</div>
 				
 			</td>
 		</tr>
