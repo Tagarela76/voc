@@ -12,7 +12,8 @@
 		<td>Supplier</td>
 		<td>Description</td>
 		<td>Request Date</td>
-		<td class="users_u_top_r_blue">User</td>
+		<td>User Name</td>
+                <td class="users_u_top_r_blue">MSDS</td>
 	</tr>
 	{foreach from=$productRequests item=productRequest}
 	<tr>
@@ -22,7 +23,8 @@
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getSupplier()}</div></td>
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getDescription()}</div></td>
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$requestDate->format($smarty.const.DEFAULT_DATE_FORMAT)}</div></td>
-		<td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$productRequest->getUserID()}</div></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getUserName()}</div></td>
+                <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{if $productRequest->getMsdsName() <> NULL}<a href="{$productRequest->getMsdsName()}">VIEW</a>{/if}</div></td>
 	</tr>
 	{/foreach}
 </table>

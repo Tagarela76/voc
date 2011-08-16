@@ -16,10 +16,12 @@ class NewProductRequest {
      */
     private $date;
     private $user_id;
+    private $user_name;
     private $status;
-    
-    private $errors = array();
-    
+    private $msds_id;
+    private $msds_name;
+
+
     const STATUS_NEW = 'new';
     
     public function __construct(db $db) {
@@ -53,6 +55,18 @@ class NewProductRequest {
     public function setStatus($status) {
         $this->status = $status;        
     }
+    
+    public function setMsdsId($msds_id){
+        $this->msds_id = $msds_id;
+    }
+    
+    public function setMsdsName($msds_name){
+        $this->msds_name = $msds_name;
+    }
+    
+    public function setUserName($user_name){
+        $this->user_name = $user_name;
+    }
 
 
     public function getProductID() {
@@ -78,10 +92,21 @@ class NewProductRequest {
     public function getUserID() {
 		return $this->user_id;    
     }
+    
+    public function getMsdsName(){
+                return $this->msds_name;
+    }
+    
+    public function getUserName(){
+                return $this->user_name;
+    }
 
-    
-    
-    
+
+
+
+
+
+
     public function validate($product) {
         $result["summary"] = "true";
 		
@@ -149,11 +174,12 @@ class NewProductRequest {
 
 
     public function save() {
-        $query = "INSERT INTO ".TB_NEW_PRODUCT_REQUEST." (supplier, product_id, name, description, date, user_id, status) VALUES (
+        $query = "INSERT INTO ".TB_NEW_PRODUCT_REQUEST." (supplier, product_id, name, description, msds_id, date, user_id, status) VALUES (
                 '".mysql_escape_string($this->supplier)."',
                 '".mysql_escape_string($this->product_id)."',
                 '".mysql_escape_string($this->name)."',
                 '".mysql_escape_string($this->description)."',
+                '".mysql_escape_string($this->msds_id)."',    
                 '".mysql_escape_string($this->date->getTimestamp())."',
                 '".mysql_escape_string($this->user_id)."',
                 '".mysql_escape_string($this->status)."')";

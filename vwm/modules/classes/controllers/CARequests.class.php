@@ -16,7 +16,11 @@ class CARequests extends Controller {
 	}
 
 	private function actionBrowseCategory() {
-		$sql = "SELECT * FROM ".TB_NEW_PRODUCT_REQUEST." ORDER BY date DESC";
+                $sql = "SELECT npr.product_id, npr.supplier, npr.description, npr.date, mf.real_name, u.username".
+                        " FROM ".TB_NEW_PRODUCT_REQUEST." npr ".
+                        " LEFT JOIN ".TB_MSDS_FILE." mf ON npr.msds_id=mf.msds_file_id".
+                        " LEFT JOIN ".TB_USER." u ON npr.user_id=u.user_id".
+                        " ORDER BY npr.date DESC";
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all();
 		$productRequests = array();
@@ -28,7 +32,13 @@ class CARequests extends Controller {
 			$productRequest->setDescription($row->description);
 			$productRequest->setDate(DateTime::createFromFormat('U', $row->date));
 			$productRequest->setStatus($row->status);
-			
+                        $productRequest->setUserName($row->username);
+                        if ($row->real_name <> NULL) {
+                            $productRequest->setMsdsName("../msds/".$row->real_name);
+                        } else {
+                            $productRequest->setMsdsName(NULL);
+                        }
+                        
 			$productRequests[] = $productRequest;	    	
 		}
 

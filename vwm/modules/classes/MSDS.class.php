@@ -1,7 +1,10 @@
 <?php
 
 class MSDS {
-
+    /**
+     *
+     * @var db
+     */
     private $db;
     public $totalNumberOfFiles = 5;
 

@@ -109,7 +109,7 @@
                     </tr>
                     <tr>
                         <td>
-                            MSDS File:
+                            MSDS File (doc/pdf):
                         </td>
                         <td {*style="padding:5px 5px 0px 5px"*} align="left" colspan="2">
                             <input type="file" name="inputFile[]" size=22px> 
