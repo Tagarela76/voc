@@ -107,7 +107,7 @@ class CCompany extends Controller
 			$this->smarty->display("tpls:index.tpl");
 			return false;
 		}
-		
+                
 		$facilities = new Facility($this->db);
 		$facilityList = $facilities->getFacilityListByCompany($this->getFromRequest('id'));							
 							

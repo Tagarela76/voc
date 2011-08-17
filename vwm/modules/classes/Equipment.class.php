@@ -483,10 +483,10 @@ class Equipment extends EquipmentProperties {
 				break;
 			case "facility":
 				$tables .= ", ".TB_DEPARTMENT." d ";
-				$categoryDependedSql = "eq.department_id = d.department_id AND d.facility_id = '$categoryID' ";
+				$categoryDependedSql = "eq.department_id = d.department_id AND d.facility_id = {$categoryID} ";
 				break;
 			case "department":				
-				$categoryDependedSql = "eq.department_id = '$categoryID' ";
+				$categoryDependedSql = "eq.department_id = {$categoryID} ";
 				break;
 			default :
 				throw new Exception('Unknown category for DailyEmissions');
@@ -517,10 +517,14 @@ class Equipment extends EquipmentProperties {
 
 		//get all equipments list
 		//	TODO: rewrite for diff categories
-		$query = "SELECT eq.equip_desc FROM ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
+                
+		/*$query = "SELECT eq.equip_desc FROM ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
 							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " :
-							"eq.department_id = '$categoryID' ");
+							"eq.department_id = '$categoryID' ");*/
+                $query = "SELECT eq.equip_desc".
+				" FROM {$tables} " .
+				" WHERE {$categoryDependedSql} ";
 		$this->db->query($query);
 		$equipmentList = $this->db->fetch_all();
 
@@ -536,10 +540,9 @@ class Equipment extends EquipmentProperties {
 
 
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
-
 			//$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
 			//$result[$data->equip_desc][$key][1] = array($data->creation_time*1000, $data->voc);
-			$result[$data->equip_desc][$key][1] = $data->voc;
+			$result[$data->equip_desc][$key][1] += $data->voc;
 		}
 
 		return $result;
