@@ -19,7 +19,7 @@
 	{*<input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&itemID={if $smarty.session.overCategoryType eq "facility"}company{elseif $smarty.session.overCategoryType eq "department"}facility{else}department{/if}&itemsCount=1&item_0={$smarty.session.CategoryID}'">*}
 	<input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&category={$request.category}&id={$request.id}'">
 	{/if}
-	{if $request.category eq 'facility' || $request.category eq 'department'}
+	{if $request.category eq 'facility' || $request.category eq 'department' || $request.category eq 'company'}
 	<input type="button" class="button" value="Emission Graphs" onclick="location.href='?action=browseCategory&category={$request.category}&id={$request.id}&bookmark=emissionGraphs'">	
 	{/if}
 	{/if}

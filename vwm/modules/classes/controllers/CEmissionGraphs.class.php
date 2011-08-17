@@ -16,14 +16,17 @@ class CEmissionGraphs extends Controller {
 
 	protected function bookmarkEmissionGraphs($vars) {
 		extract($vars);
-
 		$facility->initializeByID($this->getFromRequest('id'));
 		$this->setGraphs('facility',$this->getFromRequest('id'));
 	}
 
-	protected function bookmarkDEmissionGraphs($vars) {
+	protected function bookmarkDEmissionGraphs($vars) {	
 		extract($vars);
 		$this->setGraphs('department',$this->getFromRequest('id'));
+	}
+	
+	protected function bookmarkCEmissionGraphs() {				
+		$this->setGraphs('company',$this->getFromRequest('id'));
 	}
 
     private function setGraphs($category, $id) {
@@ -85,7 +88,7 @@ class CEmissionGraphs extends Controller {
 	    $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources',$cssSources);
 
-	    $this->smarty->assign('tpl','tpls/graph.tpl');
+	    $this->smarty->assign('tpl','tpls/graph.tpl');		
     }
 
     private function performDataForGraph($array) {

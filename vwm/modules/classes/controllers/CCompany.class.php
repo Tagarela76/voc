@@ -100,6 +100,14 @@ class CCompany extends Controller
 	
 	private function actionBrowseCategory()
 	{
+		
+		$bookmark=$this->getFromRequest('bookmark');
+		if ($bookmark !== null) {
+			$this->forward($bookmark,'bookmarkC'.ucfirst($bookmark));
+			$this->smarty->display("tpls:index.tpl");
+			return false;
+		}
+		
 		$facilities = new Facility($this->db);
 		$facilityList = $facilities->getFacilityListByCompany($this->getFromRequest('id'));							
 							

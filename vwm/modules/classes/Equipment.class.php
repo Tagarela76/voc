@@ -472,12 +472,30 @@ class Equipment extends EquipmentProperties {
 
 
 		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+		$categoryDependedSql = "";
+		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
+		switch ($category) {
+			case "company":
+				$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
+				$categoryDependedSql = "eq.department_id = d.department_id 
+										AND d.facility_id = f.facility_id 
+										AND f.company_id = {$categoryID} ";
+				break;
+			case "facility":
+				$tables .= ", ".TB_DEPARTMENT." d ";
+				$categoryDependedSql = "eq.department_id = d.department_id AND d.facility_id = '$categoryID' ";
+				break;
+			case "department":				
+				$categoryDependedSql = "eq.department_id = '$categoryID' ";
+				break;
+			default :
+				throw new Exception('Unknown category for DailyEmissions');
+				break;
+		}
 
 		$query = "SELECT sum(m.voc) as voc, eq.equip_desc, m.creation_time " .
-				" FROM ".TB_USAGE." m, ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
-				" WHERE ".(($category == 'facility')?
-							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " :
-							"eq.department_id = '$categoryID' ") .
+				" FROM {$tables} " .
+				" WHERE {$categoryDependedSql} " .
 					"AND m.equipment_id = eq.equipment_id " .
 					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY m.equipment_id, m.creation_time " .
@@ -498,6 +516,7 @@ class Equipment extends EquipmentProperties {
 		}
 
 		//get all equipments list
+		//	TODO: rewrite for diff categories
 		$query = "SELECT eq.equip_desc FROM ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
 							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " :
