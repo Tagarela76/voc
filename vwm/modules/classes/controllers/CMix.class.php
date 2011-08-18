@@ -1491,7 +1491,6 @@ class CMix extends Controller
 			$mix->department_id = $departmentID;
 			
 			$mix->creation_time = strtotime("now");
-		
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;			
 		$data->waste = $mix->waste;		
@@ -1848,21 +1847,29 @@ class CMix extends Controller
 		
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
-		
-		
-		
 		$companyEx = 1;
 		if (!$unitTypeEx) {
 			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
 			$companyEx = 0;
 		}		
-		
-		$k = 1;
+                
+                $k = 1;
 		$count = 1;
 		$flag = 1;
 		$typeEx = Array();
-		$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		
+                
+                // 80% of U.S. customers use the system USAWeight, so make it default
+                $usWgt = Array('OZS', 'LBS', 'GRAIN', 'CWT');
+                for ($ii=0; $ii<count($unitTypeEx); $ii++){
+                    for ($jj=0; $jj<count($usWgt); $jj++){
+                        if ($unitTypeEx[$ii]['name'] == $usWgt[$jj]){
+                                $typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$ii]['unittype_id']);
+                        }
+                    }
+                }
+                if ($typeEx[0] == ''){
+                    $typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+                }
 		
 		while ($unitTypeEx[$k]){
 			$idn = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$k]['unittype_id']);
@@ -1880,7 +1887,6 @@ class CMix extends Controller
 			$k++;
 			$flag = 1;
 		}
-		
 		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
 	}
 	

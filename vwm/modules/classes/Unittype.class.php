@@ -1,7 +1,10 @@
 <?php
 
 class Unittype {
-	
+        /**
+         *
+         * @var db 
+         */
 	private $db;
 	
 	function Unittype($db) {
@@ -342,19 +345,20 @@ class Unittype {
 	} 
 	
 	public function getUnitTypeExist($companyID) {
-		
+		//80% of U.S. customers use the system USAWeight, so make it default
 		$query = "SELECT * " .
-				"FROM ".TB_UNITTYPE." " .
-				"WHERE ".TB_UNITTYPE.".unittype_id IN " .
+				"FROM ".TB_UNITTYPE.", ".TB_UNITCLASS." ".
+				"WHERE ".TB_UNITTYPE.".unit_class_id=".TB_UNITCLASS.".id "."AND "
+                                        .TB_UNITTYPE.".unittype_id IN ".
 						"(SELECT d.id_of_subject " .
 						"FROM ".TB_DEFAULT." d " .
-						"WHERE d.id_of_object='".$companyID."') " .
-				"AND ".TB_UNITTYPE.".system IS NOT NULL AND  ".TB_UNITTYPE.".type_id <> '3'";
-		$this->db->query($query);
-		
-		
-		
-		if ($this->db->num_rows()) {
+						"WHERE d.id_of_object='".$companyID."' AND d.subject='unittype') ".
+				"AND ".TB_UNITTYPE.".system IS NOT NULL AND  ".TB_UNITTYPE.".type_id <> '3'".
+                                " ORDER BY ".TB_UNITCLASS.".id"; //Order by priority unittype
+		$resQ = $this->db->query($query);
+                
+			
+		if ($this->db->num_rows() > 0) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
 				$data=$this->db->fetch($i);
 				$unittype=array (
@@ -364,7 +368,9 @@ class Unittype {
 				);
 				$unittypes[]=$unittype;
 			}
-		}
+		}else{
+                   //set default unittype list
+                }
 		
 		return $unittypes;
 	}

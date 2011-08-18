@@ -36,7 +36,7 @@ var unittypes = new Array();
 
 {section name=i loop=$unittype}	
 	un = new Array({$unittype[i].unittype_id},'{$unittype[i].description}');
-	unittypes.push(un);									
+	unittypes.push(un);        
 {/section}
 
 {if $smarty.request.action == 'edit'}
@@ -67,15 +67,15 @@ $(function()
 
 function createSelectUnittypeClass(id) {
 	sel = $("<select>").attr("id",id);
-
+            
 	{/literal}
 	
 	//sel.attr('onchange','getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();');
 
 	{section name=j loop=$typeEx}
+                {if 'USAWght' eq $typeEx[j]}sel.append("<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA weight</option>");{/if}
 		{if 'USALiquid' eq $typeEx[j]}sel.append("<option value='USALiquid' {if 'USALiquid' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA liquid</option>");{/if}
 		{if 'USADry' eq $typeEx[j]}sel.append("<option value='USADry' {if 'USADry' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA dry</option>");{/if}
-		{if 'USAWght' eq $typeEx[j]}sel.append("<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA weight</option>");{/if}										
 		{if 'MetricVlm' eq $typeEx[j]}sel.append("<option value='MetricVlm' {if 'MetricVlm' eq $data->waste->waste->unitTypeClass}selected='selected'{/if}>Metric volume</option>");{/if}
 		{if 'MetricWght' eq $typeEx[j]}sel.append("<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>Metric weight</option>");{/if}		
 	{/section}
