@@ -333,10 +333,10 @@ class Facility extends FacilityProperties {
 	}
 
 	public function isOverLimit() {
-		if ($this->getDailyLimit() > 0) {
+		if ($this->getMonthlyLimit() > 0) {
 			//$this->calculateCurrentUsage();
 			$this->getCurrentUsageOptimized();
-			return $this->currentUsage > (float)$this->getDailyLimit();
+			return $this->currentUsage > (float)$this->getMonthlyLimit();
 		}
 
 		return false;

@@ -1,5 +1,5 @@
 <?php
-	
+
 	class MixValidatorOptimized {
 		protected $recalc;
 		/**
@@ -23,16 +23,16 @@
 			if ($this->recalc) {
 				$currentDate = new Date(time());
 				$currentDateTimeStamp = strtotime("now");
-				
-				$mixEq = $mix->getEquipment();				
+
+				$mixEq = $mix->getEquipment();
 				//echo "<h2>mix: </h2>";
 				//var_dump($mix);
 				//echo "<h2>mixEq: </h2>";
 				//var_dump($mixEq);
 				$equipmentExpireDate = $mixEq->expire;
-				$equipmentExpireDateTimeStamp = strtotime($equipmentExpireDate);				
+				$equipmentExpireDateTimeStamp = strtotime($equipmentExpireDate);
 				//echo "<h2>Expire Date: $equipmentExpireDate</h2>";
-				
+
 				//echo "<h2>Test Date</h2>";
 				//$ss = "11/19/2011 9:00PM";
 				//$strTime = strtotime($ss);
@@ -69,7 +69,7 @@
 			if ($this->recalc) {
 				$currentDate = new Date(time());
 				$equipmentExpireDate = $mix->getEquipment()->getDate();
-				
+
 				//	If Equipment expire date - current date less than 5 days,
 				//	change status to "preExpired"
 				if ($equipmentExpireDate != null) {
@@ -91,32 +91,32 @@
 		//	recalc == true	- calculate isFacilityLimitExceeded
 		//	recalc == false - take value from DB
 		private function isFacilityLimitExceeded($mix) {
-			
+
 			if ($this->recalc) {
-				
+
 				if ($mix->getEquipment()->isTrackedTowardsFacility()) {
-					
-					if ($mix->getFacility()->getDailyLimit() == 0) {
+
+					if ($mix->getFacility()->getMonthlyLimit() == 0) {
 						return false;
 					}
 
 					//$mixCreationMonth = substr($mix->getCreationTime(),3,2);	//	be careful with this
 					//$mixCreationYear = substr($mix->getCreationTime(),-4);
-					
+
 					//I was careful with that, and remade it =)
 					//echo $mix->getCreationTime();
 					//echo "<br/>DateFormat:" . $mix->dateFormat;
-					
+
 					$date = DateTime::createFromFormat($mix->dateFormat, $mix->getCreationTime());
 
 					//echo "dates:";
 					//var_dump($date);
-					
+
 					//var_dump($mix->dateFormat, $mix->getCreationTime());
-					
+
 					$mixCreationMonth = date("m", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
 					$mixCreationYear = date("Y", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
-					
+
 
 					//var_dump($mixCreationMonth,$mixCreationYear);
 					//exit;
@@ -125,16 +125,16 @@
 						$totalFacilityUsage = $this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth];
 					} else {
 						$totalFacilityUsage = $mix->getFacility()->getAnnualUsage((int)$mixCreationYear, (int)$mixCreationMonth);
-						$this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth] = $totalFacilityUsage;						
+						$this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth] = $totalFacilityUsage;
 					}
-					
-					
 
-					if (!$mix->isAlreadyExist()) {						
+
+
+					if (!$mix->isAlreadyExist()) {
 						$totalFacilityUsage += $mix->getCurrentUsage();
 					}
-					
-					if ((float)$totalFacilityUsage > (float)$mix->getFacility()->getDailyLimit()) {
+
+					if ((float)$totalFacilityUsage > (float)$mix->getFacility()->getMonthlyLimit()) {
 						return true;
 					}
 				}
@@ -152,7 +152,7 @@
 		private function isDepartmentLimitExceeded($mix) {
 			if ($this->recalc) {
 				if ($mix->getEquipment()->isTrackedTowardsDepartment()) {
-					if ($mix->getDepartment()->getDailyLimit() == 0) {
+					if ($mix->getDepartment()->getMonthlyLimit() == 0) {
 						return false;
 					}
 
@@ -174,7 +174,7 @@
 						$totalDepartmentUsage += $mix->getCurrentUsage();
 					}
 
-					if ((float)$totalDepartmentUsage > (float)$mix->getDepartment()->getDailyLimit()) {
+					if ((float)$totalDepartmentUsage > (float)$mix->getDepartment()->getMonthlyLimit()) {
 						return true;
 					}
 				}
@@ -191,7 +191,7 @@
 
 		private function isYearlyLimitExceeded($mix) {
 			if ($mix->getEquipment()->haveYearlyLimit()) {
-					
+
 			}
 
 			return false;
@@ -202,7 +202,7 @@
 
 		private function isQuarterlyLimitExceeded($mix) {
 			if ($mix->getEquipment()->haveQuarterlyLimit()) {
-					
+
 			}
 
 			return false;
@@ -213,7 +213,7 @@
 
 		//	recalc == true	- calculate isDailyLimitExceeded
 		//	recalc == false - take value from DB
-		private function isDailyLimitExceeded($mix) {
+		private function isDailyLimitExceeded(MixOptimized $mix) {
 			if ($this->recalc) {
 				if ($mix->getEquipment()->haveDailyLimit()) {
 					if ($mix->getEquipment()->getDailyLimit() == 0) {
@@ -265,7 +265,7 @@
 						$annualUsage = $mix->getFacility()->getAnnualUsage((int)$mixCreationYear);
 						$this->cachedFacilityUsage['annual'][$mix->getDepartment()->getFacilityID()][$mixCreationYear] = $annualUsage;
 					}
-						
+
 					if (!$mix->isAlreadyExist()) {
 						$annualUsage += $mix->getCurrentUsage();
 					}
@@ -299,7 +299,7 @@
 					if (!$mix->isAlreadyExist()) {
 						$annualUsage += $mix->getCurrentUsage();
 					}
-						
+
 					if ((float)$annualUsage > (float)$mix->getDepartment()->getAnnualLimit()) {
 						return true;
 					}
@@ -314,7 +314,7 @@
 
 
 		public function isValidMix($mix) {
-			//echo "<h1>".__FUNCTION__."</h1>";			
+			//echo "<h1>".__FUNCTION__."</h1>";
 			$mixValidatorResponse = new MixValidatorResponse();
 
 			//	Assign default values

@@ -1,26 +1,26 @@
 <?php
 class CCarbonfootprint extends Controller
-{	
+{
 	function CCarbonfootprint($smarty,$xnyo,$db,$user,$action)
 	{
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='carbonfootprint';
-		$this->parent_category='facility';	
+		$this->parent_category='facility';
 	}
-	
+
 	function runAction()
 	{
 		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
-		if (method_exists($this,$functionName))			
-			$this->$functionName();		
+		$functionName='action'.ucfirst($this->action);
+		if (method_exists($this,$functionName))
+			$this->$functionName();
 	}
-	
+
 	private function actionConfirmDelete()
-	{		
+	{
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromPost('facilityID'));
-								
+
 		if (!$this->user->checkAccess('carbon_footprint', $facilityDetails['company_id'])) {
 			throw new Exception('deny');
 		}
@@ -35,18 +35,18 @@ class CCarbonfootprint extends Controller
 						'confirmed' => true,
 						'idArray' => $this->itemID
 						);
-		$mCarbonFootprint->prepareDelete($params);		
-		if ($this->successDeleteInventories)											
-			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=carbonfootprint&tab=month&notify=22");	
+		$mCarbonFootprint->prepareDelete($params);
+		if ($this->successDeleteInventories)
+			header("Location: ?action=browseCategory&category=facility&id=".$this->getFromPost('facilityID')."&bookmark=carbonfootprint&tab=month&notify=22");
 	}
-	
+
 	private function actionDeleteItem()
 	{
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		//delete of direct carbon footprint!!
 		$facility->initializeByID($this->getFromRequest('facilityID'));
-							
+
 		if (!$this->user->checkAccess('carbon_footprint', $facilityDetails['company_id'])) {
 			throw new Exception('deny');
 		}
@@ -54,9 +54,9 @@ class CCarbonfootprint extends Controller
 		$ms = new ModuleSystem($this->db);	//	TODO: show?
 		$moduleMap = $ms->getModulesMap();
 		$mCarbonFootprint = new $moduleMap['carbon_footprint'];
-														
+
 		$idArray = $this->getFromPost('checkCarbonFootprint');
-	
+
 		$params = array(
 						'db' => $this->db,
 						'facilityID' => $this->getFromRequest('facilityID'),
@@ -68,27 +68,27 @@ class CCarbonfootprint extends Controller
 		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark'=>'carbonfootprint','tab'=>'month'));
 		$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
 		$this->setPermissionsNew('facility');
-							
+
 		$this->smarty->assign('facilityID', $this->getFromRequest('facilityID'));
 		$this->smarty->assign('cancelUrl', "?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=carbonfootprint&tab=month");
 		$this->smarty->assign('notViewChildCategory', true);
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 	}
-	
-	private function actionAddItem() 
+
+	private function actionAddItem()
 	{
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		//add of direct carbon footprint!!
 		$facility->initializeByID($this->getFromRequest('facilityID'));
-							
+
 		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark'=>'carbonfootprint','tab'=>'month'));
 		$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
 		$this->setPermissionsNew('viewFacility');
-							
+
 		//voc indicator
-		$this->setIndicator($this->smarty, $facility->getDailyLimit(), $facility->getCurrentUsage());
-							
+		$this->setIndicator($this->smarty, $facility->getMonthlyLimit(), $facility->getCurrentUsage());
+
 		if (!$this->user->checkAccess('carbon_footprint', $facilityDetails['company_id'])) {
 			throw new Exception('deny');
 		}
@@ -96,7 +96,7 @@ class CCarbonfootprint extends Controller
 		$ms = new ModuleSystem($this->db);	//	TODO: show?
 		$moduleMap = $ms->getModulesMap();
 		$mCarbonFootprint = new $moduleMap['carbon_footprint'];
-	
+
 		$params = array(
 								'db' => $this->db,
 								'facilityID' => $this->getFromRequest('facilityID'),
@@ -122,21 +122,21 @@ class CCarbonfootprint extends Controller
 		$this->smarty->assign('notViewChildCategory', true);
 		$this->smarty->assign('tpl','carbon_footprint/design/addDirectEmission.tpl');
 		$this->smarty->display("tpls:index.tpl");
-	}	
-	
+	}
+
 	private function actionEdit() {
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		//edit of direct carbon footprint!!
 		$facility->initializeByID($this->getFromRequest('facilityID'));
-		
+
 		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark'=>'carbonfootprint', 'tab'=>'month'));
 		$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
 		$this->setPermissionsNew('viewFacility');
-		
+
 		//voc indicator
-		$this->setIndicator($facility->getDailyLimit(), $facility->getCurrentUsage());
-		
+		$this->setIndicator($facility->getMonthlyLimit(), $facility->getCurrentUsage());
+
 		if (!$this->user->checkAccess('carbon_footprint', $facilityDetails['company_id'])) {
 			throw new Exception('deny');
 		}
@@ -144,7 +144,7 @@ class CCarbonfootprint extends Controller
 		$ms = new ModuleSystem($this->db);	//	TODO: show?
 		$moduleMap = $ms->getModulesMap();
 		$mCarbonFootprint = new $moduleMap['carbon_footprint'];
-		
+
 		switch($this->getFromRequest('tab')) {
 			case 'indirect':
 				$params = array(
@@ -170,7 +170,7 @@ class CCarbonfootprint extends Controller
 					'db' => $this->db,
 					'facilityID' => $this->getFromRequest('facilityID'),
 					'save' => (!is_null($this->getFromPost('save')))?true:false,
-					'emission_factor_id' => $this->getFromPost('emission_factor_id'),										
+					'emission_factor_id' => $this->getFromPost('emission_factor_id'),
 					'description' => $this->getFromPost('description'),
 					'unittype_id' => $this->getFromPost('unittype'),
 					'quantity' =>  str_replace(',','.',$this->getFromPost('quantity')),
@@ -183,7 +183,7 @@ class CCarbonfootprint extends Controller
 				if($result){
 					$notifyID = 20;
 				}
-				
+
 				$this->smarty->assign('tpl','carbon_footprint/design/addDirectEmission.tpl');
 				break;
 			default:
@@ -200,26 +200,26 @@ class CCarbonfootprint extends Controller
 		}
 		$this->smarty->assign('notViewChildCategory', true);
 		$this->smarty->display("tpls:index.tpl");
-	}	
-	
+	}
+
 	/**
-     * bookmarkCarbonfootprint($vars)     
+     * bookmarkCarbonfootprint($vars)
      * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
-     */       
+     */
 	protected function bookmarkCarbonfootprint($vars)
-	{			
-		extract($vars);	
+	{
+		extract($vars);
 		$facility->initializeByID($this->getFromRequest('id'));
-									
+
 		//voc indicator
-		$this->setIndicator($facility->getDailyLimit(), $facility->getCurrentUsage());
-									
+		$this->setIndicator($facility->getMonthlyLimit(), $facility->getCurrentUsage());
+
 		if (!$this->user->checkAccess('carbon_footprint', $facilityDetails['company_id'])) {
 			throw new Exception('deny');
 		}
 		//	OK, this company has access to this module, so let's setup..
 		$mCarbonFootprint = new $moduleMap['carbon_footprint'];
-		switch($this->getFromRequest('tab')) 
+		switch($this->getFromRequest('tab'))
 		{
 			case 'month':
 			case 'quarter':
@@ -227,7 +227,7 @@ class CCarbonfootprint extends Controller
 			case 'year':
 				$periodType = $this->getFromRequest('tab');
 
-				switch($periodType) 
+				switch($periodType)
 				{
 					case 'month':
 						$period = array(
@@ -251,7 +251,7 @@ class CCarbonfootprint extends Controller
 						$period = array('year' => ($this->getFromPost('selectYear')!== null)?$this->getFromPost('selectYear'):substr(date("Y-m-d", time()),0,4));
 						break;
 				}
-								
+
 				$params = array(
 								'db' => $this->db,
 								'facilityID' => $this->getFromRequest('id'),
@@ -259,16 +259,16 @@ class CCarbonfootprint extends Controller
 								'periodType' => $periodType
 								);
 				$result = $mCarbonFootprint->prepareView($params);
-											
-				foreach($result as $key => $data) 
+
+				foreach($result as $key => $data)
 				{
-					$this->smarty->assign($key,$data);												
+					$this->smarty->assign($key,$data);
 				}
-											
+
 				$this->smarty->assign('tpl','carbon_footprint/design/carbonFootprintView.tpl');
 				break;
-			case 'setLimit':											
-							
+			case 'setLimit':
+
 				$params = array(
 								'db' => $this->db,
 								'facilityID' => $this->getFromRequest('id'),
@@ -279,13 +279,13 @@ class CCarbonfootprint extends Controller
 								'annualShow' => (!is_null($this->getFromPost('showAnnual')))?1:0
 								);
 				$result = $mCarbonFootprint->prepareSetLimits($params);
-				if ($result === true) 
+				if ($result === true)
 				{
 					//	redirect
 					header("Location: ?action=browseCategory&category=facility&id=".$this->getFromRequest('id')."&bookmark=carbonfootprint&tab=month&notify=23");
 					die();
 				}
-				foreach($result as $key => $data) 
+				foreach($result as $key => $data)
 				{
 					$this->smarty->assign($key,$data);
 				}
@@ -295,7 +295,7 @@ class CCarbonfootprint extends Controller
 				throw new Exception('404');
 				break;
 		}
-		$this->smarty->assign('notViewChildCategory', true);	
+		$this->smarty->assign('notViewChildCategory', true);
 	}
 }
 ?>

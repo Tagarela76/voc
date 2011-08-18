@@ -133,29 +133,8 @@ class CFacility extends Controller
 		$date = getdate();
 		$this->smarty->assign('curYear', $date['year']);
 
-//
-		$departments = new Department($this->db);
-		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr,$sortStr);
-
-		for ($i = 0; $i<count($departmentList); $i++)
-		{
-			$url = "?action=browseCategory&category=department&id=".$departmentList[$i]['id']."&bookmark=mix";
-			$departmentList[$i]['url'] = $url;
-
-			$department = new Department($this->db);
-			$department->initializeByID($departmentList[$i]["id"]);
-
-			if ($department->isOverLimit()) {
-				$departmentList[$i]["valid"] = "invalid";
-			} else {
-				$departmentList[$i]["valid"] = "valid";
-			}
-			//	sum total usage
-			$totalUsage += $department->getCurrentUsage();
-		}
-
-
-		$this->setIndicator($facilityDetails['voc_limit'], $totalUsage);//
+		$facility->initializeByID($this->getFromRequest('id'));
+		$this->setIndicator($facilityDetails['voc_limit'], $facility->getCurrentUsage());//
 
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
