@@ -1920,6 +1920,24 @@ input.button {
     color:#000;
 }
 
+.greenButton {
+	background-color: green;
+	background: url(images/adddel_green.gif) repeat-x;
+	background-position: 0 -20px;
+	border: 1px solid #7ACC74;
+	padding: 0px 15px;
+	height: 20px;
+	font-family:Tahoma,Verdana,Helvetica,sans-serif;
+	color:#000;
+	cursor:pointer;
+	position: relative;
+}
+
+.greenButton:hover {
+	background: url(images/adddel_green.gif) repeat-x;
+	background-position: 0 -40px;
+}
+
 
 
 
