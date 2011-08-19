@@ -5,17 +5,17 @@ em.bt, em.bt b, em.bb, em.bb b {
     background: url(images/cor.png) no-repeat; /* Путь к файлу с уголками */
     position: relative; /* Относительное позиционирование */
    }
-   
-em.bt { 
+
+em.bt {
     top: -1px; /* Сдвигаем левый верхний уголок вверх */
     left: -1px; /* Сдвигаем влево */
    }
-   
+
 em.bt b {
     background-position:  100% -4px; /* Рисунок сдвигается к следующему уголку */
     left: 2px; /* Сдвигаем вправо */
    }
-   
+
 em.bb { background-position: 0 -8px; top:  1px; left: -1px; }
 
 em.bb b { background-position: 100% -12px;  left: 2px; }
@@ -31,7 +31,7 @@ em.bb b { background-position: 100% -12px;  left: 2px; }
 
 .foot_block {
     background: url(images/foot_block.gif) no-repeat left bottom;
-    padding-bottom: 30px; 
+    padding-bottom: 30px;
 }
 
 
@@ -40,7 +40,7 @@ em.bb b { background-position: 100% -12px;  left: 2px; }
 }
 
 .headerSortDown {
-	background: url(images/desc.gif) 	no-repeat right;	
+	background: url(images/desc.gif) 	no-repeat right;
 }
 
 .headerSortBoth {
@@ -281,7 +281,8 @@ span.textbold {
 
 
 .logo_site_green {
-    background: url(images/logo_site_green.gif) no-repeat 1% 50%;
+    /*background: url(images/logo_site_green.gif) no-repeat 1% 50%;*/
+	background: url(images/logo_and_bg.png) no-repeat;
 }
 
 .toppdd {
@@ -503,23 +504,23 @@ table.pop_up {
    .b1 {
     height: 2px; /* высота первого блока для закругления углов */
     margin: 0 1px; /* боковые поля */
-    
+
    }
    .b2 {
     height: 1px;
     margin: 0 2px;
-    
+
    }
    .b3 {
     height: 1px;
     margin: 0 4px;
-    
+
    }
    .o_content_block {
     height: 17px; /* высота блока с контентом */
     background: #FF7137; /* фон */
     padding-left: 5px;
-    
+
    }
 
 
@@ -839,7 +840,7 @@ table.controlCategoriesList td {
 
 .control_panel {
     width: 98%;
-    border: 1px #E0E4EE solid; 
+    border: 1px #E0E4EE solid;
 }
 
 .control_panel_tl {
@@ -859,9 +860,9 @@ table.controlCategoriesList td {
 }
 
 .control_panel_center {
-   
- 
-   
+
+
+
 }
 
 /*
@@ -1648,7 +1649,7 @@ td.report_right {
     background: url(images/logo_and_bg.png) repeat-x bottom left;
     background-position: 0 -117px;
     height: 400px;
-  
+
 }
 */
 
@@ -2023,7 +2024,7 @@ a.button_select_none:hover{
     width: 71px;
     background-position: 0 0;
     background-repeat: no-repeat;
-  
+
 }
 
 /*.add_button:hover, a:hover.add_button, input:hover.add_button {
@@ -2637,7 +2638,7 @@ a.report_uploader {
 .report_uploader_r {
     background: url(images/report_lr.gif) repeat-y;
     background-position: -154px 0;
-    
+
 }
 
 
@@ -2774,19 +2775,19 @@ a.report_uploader {
 /*
  orange
  */
- 
+
  /*
 .report_uploader_t_l_orange {
     background: url(images/report_uploader_t_l_orange.gif) no-repeat top left;
     height: 78px;
 }*/
- 
+
 .report_uploader_t_l_orange {
     background: url(images/report_top.gif) no-repeat;
     background-position: 0 0;
     height: 78px;
 }
- 
+
 /*
 .report_uploader_t_orange {
     background: url(images/report_uploader_t_orange.gif) repeat-x top left;
@@ -2798,7 +2799,7 @@ a.report_uploader {
     background-position: 0 -78px;
     height: 78px;
 }
- 
+
 /*
 .report_uploader_t_r_orange {
     background: url(images/report_uploader_t_r_orange.gif) no-repeat top right;
@@ -2813,7 +2814,7 @@ a.report_uploader {
 
 
 
- 
+
 
 .report_uploader_c_orange {
     padding: 5px 0px;
@@ -3560,12 +3561,12 @@ div:hover.category_folder_hover{cursor:pointer;}
 #notify {
 	-webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);
 	-moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);
-	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);		
-	text-shadow:0px -1px 1px #000000;	
+	box-shadow: 0px 0px 5px 5px rgba(0,0,0,.3);
+	text-shadow:0px -1px 1px #000000;
 }
 
 #notifyClose {
-	margin:3px;	
+	margin:3px;
 }
 
 .pfpList td
@@ -3579,7 +3580,7 @@ div:hover.category_folder_hover{cursor:pointer;}
 }
 .pfpList #title td {
 	background-color:#B9ADAD;
-	
+
 }
 .pfpListItemSelected
 {

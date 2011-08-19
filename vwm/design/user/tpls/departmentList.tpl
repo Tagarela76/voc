@@ -1,46 +1,50 @@
 <div class="padd7" align="center">
     {if $color eq "green"}
-    	{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
+		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
     {/if}
     {if $color eq "orange"}
-    	{include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
+		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
     {/if}
     {if $color eq "blue"}
-    	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
-    {/if}   
-    
+		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
+    {/if}
+
     {*PAGINATION*}
-{include file="tpls:tpls/pagination.tpl"}
-{*/PAGINATION*}
-	
+	{include file="tpls:tpls/pagination.tpl"}
+	{*/PAGINATION*}
+
 	<input type='hidden' id='sort'>
     <table class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">
         <tr class="users_header_blue">
             <td width="60">
-                <div class="users_header_blue_l"><div><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></div></div> 
+                <div class="users_header_blue_l"><div><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></div></div>
             </td>
             <td width="110">
-            	<div>
-            	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>            								
-                		ID Number 	
-						{if $sort==1 || $sort==2}<img src="{if $sort==1}images/asc2.gif{/if}{if $sort==2}images/desc2.gif{/if}" alt=""/>	{/if}								
-				</a>
-				</div>
-            </td>            
-            <td>
-            	<div class="users_header_blue_r">
-            	<div>
-            	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>            										
-	                	Department name	
-						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}														
-				</a>
-				</div>
-				</div>
-            </td>  			
-        </tr>
-		
-	{if $childCategoryItems|@count > 0}                
-		{foreach from=$childCategoryItems item=department}
+				<div>
+					<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
+						ID Number
+			{if $sort==1 || $sort==2}<img src="{if $sort==1}images/asc2.gif{/if}{if $sort==2}images/desc2.gif{/if}" alt=""/>	{/if}
+		</a>
+	</div>
+</td>
+<td>
+		<div>
+			<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
+				Department name
+	{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}
+</a>
+</div>
+</td>
+
+<td>
+	<div class="users_header_blue_r">
+		<div>Gauge</div>
+	</div>
+</td>
+</tr>
+
+{if $childCategoryItems|@count > 0}
+	{foreach from=$childCategoryItems item=department}
 		<tr class="hov_company" height="10px">
             <td class="border_users_l border_users_b">
                 <input type="checkbox" value="{$department.id}" name="id[]">
@@ -52,33 +56,42 @@
                     </div>
                 </a>
             </td>
-            <td class="border_users_b border_users_l border_users_r">
+            <td class="border_users_b border_users_l">
                 <a {if $permissions.viewItem}href="{$department.url}"{/if}>
                     <div style="width:100%;">
                         {$department.name}
                     </div>
                 </a>
-            </td>                            
+            </td>
+			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
+				<a {if $permissions.viewItem}href="{$department.url}"{/if}>
+				<div style="width:100%;">
+					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
+							vocLimit=$department.gauge.vocLimit
+							pxCount=$department.gauge.pxCount }
+				</div>
+				</a>
+			</td>
         </tr>
-		{/foreach}                 
-	{else}
-		
-        {*BEGIN	EMPTY LIST*}        
-        <tr>
-            <td colspan="3"class="border_users_l border_users_r" align="center">
-                No departments in the list
-            </td>
-        </tr>        		
-        {*END	EMPTY LIST*}
-		
-    {/if}
-        <tr>
-            <td class="users_u_bottom ">
-            </td>
-            <td colspan="2" bgcolor="" height="30" class="users_u_bottom_r">
-            </td>
-        </tr>
-    </table>
+	{/foreach}
+{else}
+
+	{*BEGIN	EMPTY LIST*}
+	<tr>
+		<td colspan="4"class="border_users_l border_users_r" align="center">
+			No departments in the list
+		</td>
+	</tr>
+	{*END	EMPTY LIST*}
+
+{/if}
+<tr>
+	<td class="users_u_bottom ">
+	</td>
+	<td colspan="3" bgcolor="" height="30" class="users_u_bottom_r">
+	</td>
+</tr>
+</table>
 </div>
 {*PAGINATION*}
 {include file="tpls:tpls/pagination.tpl"}
