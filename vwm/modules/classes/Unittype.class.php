@@ -13,25 +13,29 @@ class Unittype {
 	}
 	
 	public function getUnittypeList() {
-		//$this->db->select_db(DB_NAME);
-		$this->db->query("SELECT * FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id ORDER BY name");
-		
-		if ($this->db->num_rows()) {
-			for ($i=0; $i < $this->db->num_rows(); $i++) {
-				$data=$this->db->fetch($i);
-				$unittype=array (
-					'unittype_id'			=>	$data->unittype_id,
-					'description'			=>	$data->name,
-					'type_id'				=>  $data->type_id,
-					'type'					=>  $data->type_desc
-					
-				);
-				$unittypes[]=$unittype;
-			}
-		}
-		
-		return $unittypes;
-	}
+        //$this->db->select_db(DB_NAME);
+        //$query = $this->db->query("SELECT * FROM ".TB_UNITTYPE.",".TB_TYPE." WHERE type.type_id = unittype.type_id ORDER BY name");
+
+        $query = "SELECT * FROM " . TB_UNITCLASS . " uc, " . TB_UNITTYPE . " ut, " . TB_TYPE . " t " .
+                " WHERE ut.unit_class_id=uc.id AND t.type_id=ut.type_id" .
+                " ORDER BY uc.id";
+        $this->db->query($query);
+        
+        if ($this->db->num_rows() > 0) {
+            $rows = $this->db->fetch_all();        
+            foreach ($rows as $row) {
+                $unittype = array(
+                    'unittype_id' => $row->unittype_id,
+                    'name' => $row->name,
+                    'type_id' => $row->type_id,
+                    'type' => $row->type_desc
+                );
+                
+                $unittypes[] = $unittype;
+            }
+        }
+        return $unittypes;
+    }
 	
 	
 	public function getUnittypeDetails($unittypeID, $vanilla=false) {
@@ -122,7 +126,7 @@ class Unittype {
 		$this->db->query("DELETE FROM ".TB_UNITTYPE." WHERE unittype_id=".$unittypeID);
 	}
 	
-	public function getUnittypeListDefault($sysType = "USALiquid") {
+	public function getUnittypeListDefault($sysType = "USAWght") {
 		//$this->db->select_db(DB_NAME);
 		switch ($sysType){
 			case 'USALiquid':
@@ -162,8 +166,8 @@ class Unittype {
 				break;
 		}
 				
-		$this->db->query($query);							
-		
+		$this->db->query($query);
+                		
 		if ($this->db->num_rows()) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
 				$data=$this->db->fetch($i);
@@ -178,7 +182,6 @@ class Unittype {
 				$unittypes[]=$unittype;
 			}
 		}
-		
 		return $unittypes;
 	}
 	
@@ -292,7 +295,7 @@ class Unittype {
     						"(SELECT department_id FROM ".TB_DEPARTMENT." WHERE ".TB_DEPARTMENT.".facility_id IN ".
      							"(SELECT facility_id FROM ".TB_FACILITY." WHERE ".TB_FACILITY.".company_id='".$companyID."'))))";
      	
-     	
+
      	$this->db->query($query);
      	
      	// select unit types for which has already created products
@@ -355,7 +358,7 @@ class Unittype {
 						"WHERE d.id_of_object='".$companyID."' AND d.subject='unittype') ".
 				"AND ".TB_UNITTYPE.".system IS NOT NULL AND  ".TB_UNITTYPE.".type_id <> '3'".
                                 " ORDER BY ".TB_UNITCLASS.".id"; //Order by priority unittype
-		$resQ = $this->db->query($query);
+		$this->db->query($query);
                 
 			
 		if ($this->db->num_rows() > 0) {
@@ -369,7 +372,8 @@ class Unittype {
 				$unittypes[]=$unittype;
 			}
 		}else{
-                   //set default unittype list
+                    //set default unittype list
+                    $unittypes = $this->getUnittypeList();
                 }
 		
 		return $unittypes;
