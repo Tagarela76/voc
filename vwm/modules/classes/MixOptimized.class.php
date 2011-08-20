@@ -886,8 +886,9 @@
 				$this->waste = array (
 					'mixID'			=> $mixID,
 					'value'			=> "0.00",
-					'unittypeClass'	=> 'percent'								
-				);
+					'unittypeClass'	=> 'USAWght',								
+                                        'unitTypeList'   => $unittype->getUnittypeListDefault()
+				);                                
 			} else {				
 				foreach($wastesFromDB as $w) {
 						

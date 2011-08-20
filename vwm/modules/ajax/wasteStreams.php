@@ -55,7 +55,7 @@ switch ($action) {
             $sysType = $_POST['selectedClassValue'];
             $companyID = $_POST['companyId'];
             $companyEx = $_POST['companyEx'];
-
+            
             //this function change unittype if CompanyEx
             function setsql_1($sysType, $companyID) {
                 switch ($sysType) {
@@ -126,7 +126,7 @@ switch ($action) {
             } else {
                 $query = setsql_2($sysType, $companyID);
             }
-
+            
             $db->query($query);
             if ($db->num_rows() == 0) {
                 $query = setsql_2($sysType, $companyID);

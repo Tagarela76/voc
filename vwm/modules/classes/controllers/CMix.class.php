@@ -1486,17 +1486,16 @@ class CMix extends Controller
 		}
 		$data->unitTypeClass = $unitTypeClass;
 		
-			$mix = new MixOptimized($this->db);
+			$mix = new MixOptimized($this->db);                        
 			$mix->iniWaste(false);
-			$mix->department_id = $departmentID;
-			
+			$mix->department_id = $departmentID;			
 			$mix->creation_time = strtotime("now");
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;			
 		$data->waste = $mix->waste;		
 		$this->smarty->assign('data',$data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
-		
+               
 	}
 	
 	private function getClearDataForAddItem() {
