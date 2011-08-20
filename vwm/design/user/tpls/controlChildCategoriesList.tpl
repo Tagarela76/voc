@@ -114,7 +114,7 @@
 											$childCategory == "equipment"
 										}
 										<div class="button_float_left">
-											<input type="button" value="Export this tab to PDF" class="button" onclick="location.href = document.location.href.replace('#','') + '&export=true'">
+											<input type="button" value="Export to PDF" class="button" onclick="location.href = document.location.href.replace('#','') + '&export=true'">
                                      	</div>
                                      	{/if}
                                      	{/if}
