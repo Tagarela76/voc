@@ -18,7 +18,7 @@
             <td valign="top" class="report_issue_center" align="center">
                 {**}
                 <h1>New Product Request Form</h1>                
-                <table cellspacing="0" cellpadding="0" valign="top" width="440px">                	
+                <table cellspacing="0" cellpadding="0" valign="top" width="440px">  
                     <tr>
                         <td>
                             Manufacturer/Supplier:

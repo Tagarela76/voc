@@ -123,6 +123,10 @@ class Controller {
 
         return $sortStr;
     }
+    
+    public function actionUserRequest(){
+        
+    }
 
     protected function actionAddNewProduct() {
         //  if form were submitted
@@ -182,7 +186,7 @@ class Controller {
         if (!$this->getFromPost('productAction') == 'Submit'){
             $this->smarty->assign("productReferer", $_SERVER["HTTP_REFERER"]);
         }
-        $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
+        $this->smarty->assign("tpl", "tpls/userRequestForm.tpl");
         $this->smarty->display("tpls:index.tpl");
     }
 
