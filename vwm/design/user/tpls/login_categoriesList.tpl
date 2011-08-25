@@ -97,7 +97,7 @@
 				<!--<a href="{$urlRoot}" class="id_company_link " >Forms</a> -->
                                 <a href="#" class="id_company_link " id="toggler">Forms<small class="arrow_d"> ▼</small></a>
                                     <ul style="WIDTH: 150px" id="drop-down-list" class="no-display drop-down-block">
-                                        <li><a href="#">Username & Password</a></li>
+                                        <li><a href="?action=userRequest&category={$request.category}&id={$request.id}">Username & Password</a></li>
                                         <li><a href="?action=companySetupRequest&category={$request.category}&id={$request.id}">Company Setup</a></li>
                                     </ul>
 

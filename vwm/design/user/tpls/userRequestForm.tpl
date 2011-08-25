@@ -9,21 +9,118 @@
 {/if}
 {literal}
     <script type="text/javascript">
-        function onClickRadio(radio){
-            var html;
-                html = '<br<tr>'+
-                        '<td width="35%" colspan="2">'+
+        function onClickRadio(radio, categ){
+            var outputhtml_lost;
+            var outputhtml_cancel;
+            var outputhtml_username;
+            var outputhtml_password;
+                
+                outputhtml_lost = '<tr><td width="35%" colspan="2">'+
                             'User Name:'+
-                        '</td>'+
-                        '<td width="55%" colspan="2">'+
-                            '<select type="text" name="productSupplier">'+
-                        '</td>'+
-                        '<td> 1321 </td>'+
-                       '</tr>';
-            $('#myclass1').append(html);
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<select type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>';
+                outputhtml_cancel = '<tr><td width="35%" colspan="2">'+
+                            'User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<select type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>';
+                outputhtml_username = '<tr><td width="35%" colspan="2">'+
+                            'User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<select  type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2">'+
+                            'New User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2"></td>'+
+                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
+                            '<td></td></tr>';                
+                outputhtml_password = '<tr><td width="35%" colspan="2">'+
+                            'Old Password:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="password" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2">'+
+                            'New Password:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="password" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2">'+
+                            'Repeat New Password:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="password" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>';                
+            if (radio=="lost"){
+                $('#myclass').html(outputhtml_lost);
+            }
+            if (radio=="cancel"){
+                $('#myclass').html(outputhtml_cancel);
+            }
+            if (radio=="username"){
+                $('#myclass').html(outputhtml_username);
+            }
+            if (radio=="password"){
+                $('#myclass').html(outputhtml_password);
+            }    
         }
+        function onClickChBox(chbox, value, categ){
+            var outputhtml_username;
+
+            if ((chbox=="newUser") && (value=="off")){
+                outputhtml_username = '<tr><td width="35%" colspan="2">'+
+                            'New User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="text" name="newUserName">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2"></td>'+
+                            '<td width="55%" colspan="2"><input type="checkbox" checked value="on" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2">Facility/Department</td>'+
+                            '<td width="55%" colspan="2"><select type="text" name="structureName"></td>'+
+                            '<td></td></tr>';
+                $('#myclass').html(outputhtml_username);
+            } else {
+                outputhtml_username = '<tr><td width="35%" colspan="2">'+
+                            'User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<select  type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2">'+
+                            'New User Name:'+
+                            '</td>'+
+                            '<td width="55%" colspan="2">'+
+                            '<input  type="text" name="username">'+
+                            '</td>'+
+                            '<td></td></tr>'+
+                            '<tr><td width="35%" colspan="2"></td>'+
+                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
+                            '<td></td></tr>';
+                $('#myclass').html(outputhtml_username);                
+            }    
+        }    
     </script>
-{/literal}
+{/literal}    
 <form enctype="multipart/form-data" method="POST" action="?action=userRequest&category={$request.category}&id={$request.id}">
     {*shadow*} 
     <table class="report_issue" cellspacing="0" cellpadding="0" align="center">
@@ -35,47 +132,38 @@
             <td valign="top" class="report_issue_center" align="center">
                 {**}
                 <h2>Username & Password Request Form</h2>
-                <table cellspacing="0" cellpadding="0" valign="top" width="440px" border="1"> 
-                    <p id="myclass1">
-                    <tr colspan="5">
+                <table cellspacing="0" cellpadding="0" valign="top" width="440px"> 
+                    <tr>
                         <td nowrap width="15%">
-                            <input type="radio" name="radioRequest" value="lost"> Lost
+                            <input type="radio" name="radioRequest" checked value="lost" onclick="onClickRadio(value, '{$request.category}');"> Lost
                         </td>
                         <td nowrap width="20%">
-                            <input type="radio" name="radioRequest" value="cansel" onclick="onClickRadio(value);"> Cancel
+                            <input type="radio" name="radioRequest" value="cancel" onclick="onClickRadio(value, '{$request.category}');"> Cancel
                         </td>
                         <td nowrap width="25%">
-                            <input type="radio" name="radioRequest" value="username"> Username
+                            <input type="radio" name="radioRequest" value="username" onclick="onClickRadio(value, '{$request.category}');"> Username
                         </td>
                         <td nowrap width="30%">
-                            <input type="radio" name="radioRequest" value="password"> Password
+                            <input type="radio" name="radioRequest" value="password" onclick="onClickRadio(value, '{$request.category}');"> Password
                         </td>
                         <td nowrap width="10%">
                         </td>
                     </tr>
-                    <tr id="myclass">
-                        <td width="35%" colspan="2">
+                </table>
+                <hr width="400px">
+                <table width="440px" id="myclass">
+                    <tr>
+                        <td width="35%" collspan="2">
                             User Name:
                         </td>
-                        <td width="55%" colspan="2">
-                            <select type="text" name="productSupplier">
+                        <td width="55%" collspan="2">
+                            <select type="text" name="username">
                         </td>
                         <td>
-                            {if $validStatus.summary eq 'false'}
-                                {if $validStatus.productSupplier eq 'failed'}
-                                    {*ERORR*}
-                                    <div width="10%" style="margin:2px 0px 0px 2px;" align="left">
-                                        <img src='design/user/img/alert1.gif' height=16 style="float:left;">
-                                        <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 0px;">
-                                        {*Error!*}
-                                        </font>
-                                    </div>
-                                    {*/ERORR*}
-                                {/if}
-                            {/if}
                         </td>
                     </tr>
-                    </p>
+                </table>
+                <table width="440px">
                     <tr>
                         <td style="padding:5px 5px 0px 5px" align="left" colspan="5">
                             <input type="submit" name="productAction" value="Submit" class="button" Style="Float:Right;margin:0 1px">   
@@ -83,8 +171,6 @@
                     </tr>
                 </table>
                 <input type="hidden" name="productReferer" value="{$productReferer}">
-                {*<input type="hidden" name="action" value="reportIssue">*} 
-                {*shadow*} 
             </td>
         </tr>
         <tr>
