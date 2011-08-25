@@ -1,3 +1,36 @@
+
+
+.no-display {
+	DISPLAY: none;
+}
+
+.drop-down-block {
+	BORDER-BOTTOM: #ccc 1px solid; 
+        BORDER-LEFT: #ebebeb 1px solid; 
+        BACKGROUND: #fff; 
+        BORDER-TOP: #ebebeb 1px solid; 
+        BORDER-RIGHT: #ccc 1px solid;
+        padding-top: 5px;
+}
+
+.drop-down-block li{
+    list-style: none;
+    padding: 0 0 5px 10px;
+}
+
+.drop-down-block li a{
+    color: #000;
+}
+
+
+
+
+
+
+
+
+
+
 em.bt, em.bt b, em.bb, em.bb b {
     display: block; /* Блочный элемент */
     height: 4px; /* Высота уголка */
@@ -1438,7 +1471,9 @@ tr.users_top_lightgray {
 /*/ new class*/
 .users_bottom {
     width:98%;
+    *width:99%;
 }
+
 .users_bottom .users_u_bottom{
     padding-left:10px;
 }
@@ -3616,9 +3651,6 @@ div:hover.category_folder_hover{cursor:pointer;}
 {
 	background-color:#BFB8B8;
 }*/
-
-
-
 
 
 
