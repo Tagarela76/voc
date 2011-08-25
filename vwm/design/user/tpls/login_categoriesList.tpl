@@ -94,7 +94,21 @@
 		{if  $request.category == "company" || $request.category == "facility"}
 			<td align="left" class="padd7" valign="top" width="20%">
 				<a href="{$urlRoot}" class="id_company_link ">Training</a> |
-				<a href="{$urlRoot}" class="id_company_link ">Forms</a>
+				<!--<a href="{$urlRoot}" class="id_company_link " >Forms</a> -->
+                                <a href="#" class="id_company_link " id="toggler">Forms<small class="arrow_d"> ▼</small></a>
+                                    <ul style="WIDTH: 150px" id="drop-down-list" class="no-display drop-down-block">
+                                        <li><a href="#">One</a></li>
+                                        <li><a href="#">Two</a></li>
+                                        <li><a href="#">Three</a></li>
+                                        <li><a href="#">Four</a></li>
+                                        <li><a href="#">Five</a></li>
+                                    </ul>
+                                
+                                
+                                
+                                
+                                
+                                
 			</td>
 		{else}
 			<td align="left" class=""></td>
@@ -177,3 +191,82 @@
         </td>
     </tr>
 </table>
+
+
+<SCRIPT type="text/javascript" src="modules/js/jquery-1.5.2.js"></SCRIPT>        
+<SCRIPT type="text/javascript">
+
+                        {literal}  
+                               // определение браузера
+                                function getNameBrouser() {
+                                 var ua = navigator.userAgent.toLowerCase();
+                                 // Определим Internet Explorer
+                                 if (ua.indexOf("msie") != -1 && ua.indexOf("opera") == -1 && ua.indexOf("webtv") == -1) {
+                                   return "msie"
+                                 }
+                                 // Opera
+                                 if (ua.indexOf("opera") != -1) {
+                                   return "opera"
+                                 }
+                                 // Gecko = Mozilla + Firefox + Netscape
+                                 if (ua.indexOf("gecko") != -1) {
+                                   return "gecko";
+                                 }
+                                 // Safari, используется в MAC OS
+                                 if (ua.indexOf("safari") != -1) {
+                                   return "safari";
+                                 }
+                                 // Konqueror, используется в UNIX-системах
+                                 if (ua.indexOf("konqueror") != -1) {
+                                   return "konqueror";
+                                 }
+                                 return "unknown";
+                                }
+
+                            // выпадающий список под ссылкой
+                                (function($) {
+                                        $.fn.dropDownBlock = function(block, options) {
+                                                var defaults = {
+                                                        speed: 'fast',
+                                                        top: $(this).height(),
+                                                        left: 0
+                                                },
+                                                opts 	= $.extend(defaults, options),
+                                                toggler = $(this),
+                                                block 	= $(block);
+                                                toggler.css({'outline': 'none'})
+
+                                                // определение типа браузера, если IE для верхнего отступа добавим 12px - Хак
+                                                var browser =  getNameBrouser();
+                                                var ie_top = 0;
+
+                                                if(browser == 'msie')
+                                                ie_top = 12;
+
+
+
+                                                toggler.click(function(e) {
+                                                        e.preventDefault();
+                                                        $(block).css({
+                                                        'position' 	: 'absolute',
+                                                        'top' 		: ((toggler.offset().top + opts['top'])+ie_top) + 'px',
+                                                        'left' 		: (toggler.offset().left + opts['left']) + 'px'
+                                                });
+                                                if($(block).is(':visible')) $(block).fadeOut(opts['speed']);
+                                                else $(block).fadeIn(opts['speed']);
+                                                this.focus();
+                                                });
+                                                toggler.blur(function() {
+                                                        $(block).fadeOut(opts['speed']);
+                                                });
+                                        };
+                                })(jQuery);
+
+                                $('#toggler').dropDownBlock($('#drop-down-list'));
+                                    
+                                    
+                                    
+                                
+                                
+                        {/literal}
+</SCRIPT>                                
