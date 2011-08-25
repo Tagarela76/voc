@@ -84,7 +84,8 @@
     </table>
 	{*footer*}
 	<div align="center"><div class="users_bottom"><div class="users_footer_l"><div class="users_footer_r"><div class="users_footer"></div></div></div></div></div>
-	{*/footer*}
+	
+        {*/footer*}
 </div>
 
 </form>	{*close FORM tag opened at controlCategoriesList.tpl*}
