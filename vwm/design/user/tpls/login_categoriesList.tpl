@@ -97,18 +97,15 @@
 				<!--<a href="{$urlRoot}" class="id_company_link " >Forms</a> -->
                                 <a href="#" class="id_company_link " id="toggler">Forms<small class="arrow_d"> ▼</small></a>
                                     <ul style="WIDTH: 150px" id="drop-down-list" class="no-display drop-down-block">
-                                        <li><a href="#">One</a></li>
-                                        <li><a href="#">Two</a></li>
-                                        <li><a href="#">Three</a></li>
-                                        <li><a href="#">Four</a></li>
-                                        <li><a href="#">Five</a></li>
+                                        <li><a href="#">Username & Password</a></li>
+                                        <li><a href="?action=companySetupRequest&category={$request.category}&id={$request.id}">Company Setup</a></li>
                                     </ul>
-                                
-                                
-                                
-                                
-                                
-                                
+
+
+
+
+
+
 			</td>
 		{else}
 			<td align="left" class=""></td>
@@ -193,10 +190,9 @@
 </table>
 
 
-<SCRIPT type="text/javascript" src="modules/js/jquery-1.5.2.js"></SCRIPT>        
 <SCRIPT type="text/javascript">
 
-                        {literal}  
+                        {literal}
                                // определение браузера
                                 function getNameBrouser() {
                                  var ua = navigator.userAgent.toLowerCase();
@@ -263,10 +259,10 @@
                                 })(jQuery);
 
                                 $('#toggler').dropDownBlock($('#drop-down-list'));
-                                    
-                                    
-                                    
-                                
-                                
+
+
+
+
+
                         {/literal}
-</SCRIPT>                                
+</SCRIPT>

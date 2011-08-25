@@ -6,7 +6,7 @@ class Controller {
     protected $xnyo;
     /**
      *
-     * @var db 
+     * @var db
      */
     protected $db;
     protected $user;
@@ -123,10 +123,63 @@ class Controller {
 
         return $sortStr;
     }
-    
+
     public function actionUserRequest(){
-        
+
     }
+
+
+	public function actionCompanySetupRequest() {
+		$company = new Company($this->db);
+		$facility = new Facility($this->db);
+		$auth = $_SESSION['auth'];
+
+		$category = $this->getFromRequest('category');
+		$facilityDetails = array();
+		switch ($category) {
+			case 'company':
+				$referFacilityID = false;
+				$referCompanyID = $this->getFromRequest('id');
+				break;
+			case 'facility':
+				$referFacilityID = $this->getFromRequest('id');
+				$facilityDetails = $facility->getFacilityDetails($referFacilityID);
+				$referCompanyID = $facilityDetails['company_id'];
+				break;
+			default:
+				throw new Exception('deny');
+				break;
+		}
+
+		$companyDetails = array();
+
+		switch ($auth['accesslevel_id']) {
+			case "3":
+				//	super user
+				$companyDetails = $company->getCompanyDetails($referCompanyID);
+				break;
+			case "0":
+				//	company level
+				$companyDetails = $company->getCompanyDetails($auth['company_id']);
+				break;
+			case "1":
+				//	facility level
+				//	rewrite facilityDetails if needed
+				if ($referFacilityID != $auth['facility_id']) {
+					$facilityDetails = $facility->getFacilityDetails($auth['facility_id']);
+				}
+				break;
+			default:
+				throw new Exception('deny');
+				break;
+		}
+
+		$this->smarty->assign('companyDetails', $companyDetails);
+		$this->smarty->assign('facilityDetails', $facilityDetails);
+
+		$this->smarty->assign('tpl', 'tpls/companySetupRequestForm.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
 
     protected function actionAddNewProduct() {
         //  if form were submitted
@@ -152,7 +205,7 @@ class Controller {
                 $save["departmentID"] = $sSave['departmentID'];
                 $save['msds'] = $msRes['msdsResult'];
                 $msds->addSheets($save);
-                
+
                 $tmpId = $this->db->getLastInsertedID();
                 $prRequest->setMsdsId($tmpId);
                 $msg = "New product requested. Later Denis will add more information to this email :)";
@@ -182,7 +235,7 @@ class Controller {
 
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
-        
+
         if (!$this->getFromPost('productAction') == 'Submit'){
             $this->smarty->assign("productReferer", $_SERVER["HTTP_REFERER"]);
         }
