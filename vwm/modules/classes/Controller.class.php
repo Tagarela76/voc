@@ -130,7 +130,20 @@ class Controller {
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-
+		
+		$user = new User($this->db);
+		if ($request['category']=='company'){
+			$userList = $user->getUserListByCompany($request['id']);
+			$facility = new Facility($this->db);
+			$structureList = $facility->getFacilityListByCompany($request['id']);
+		} elseif ($request['category']=='facility') {
+			$userList = $user->getUserListByFacility($request['id']);
+			$department = new Department($this->db);
+			$structureList = $department->getDepartmentListByFacility($request['id']);
+		}
+		
+		$this->smarty->assign('structureList', $structureList);
+		$this->smarty->assign('userList', $userList);
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
