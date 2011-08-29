@@ -148,7 +148,7 @@ class Unittype {
 					"WHERE ut.type_id = t.type_id " .
 					"AND ut.system = 'USA' " .
 					"AND t.type_desc = 'Weight' " .
-					"ORDER BY ut.unittype_id";	
+					"ORDER BY ut.unittype_id";
 				break;
 			case 'MetricVlm':
 				$query="SELECT * FROM ".TB_UNITTYPE." ut, ".TB_TYPE." t " .
@@ -193,7 +193,7 @@ class Unittype {
 				"AND ut.unittype_id = ".$unittypeID;
 		
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows()) {			
 			$data=$this->db->fetch(0);
 			$unittype=array (
@@ -256,7 +256,7 @@ class Unittype {
 				);						
 			}
 		}
-				
+
 		return $unittype;
 		
 	}
@@ -359,7 +359,7 @@ class Unittype {
 				"AND ".TB_UNITTYPE.".system IS NOT NULL AND  ".TB_UNITTYPE.".type_id <> '3'".
                                 " ORDER BY ".TB_UNITCLASS.".id"; //Order by priority unittype
 		$this->db->query($query);
-                
+
 			
 		if ($this->db->num_rows() > 0) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
@@ -375,7 +375,7 @@ class Unittype {
                     //set default unittype list
                     $unittypes = $this->getUnittypeList();
                 }
-		
+
 		return $unittypes;
 	}
 	

@@ -853,7 +853,7 @@
 		 * 
 		 * @param boolean $isMWS if Module 'Wase Streams' Enabled
 		 */
-		public function iniWaste($isMWS) { //Is Module Wase Streams Enabled
+		public function iniWaste($isMWS, $unittypeListDefault = false) { //Is Module Wase Streams Enabled
 			//if (!isset($this->mix_id)) return false;
 			
 			//$isMWS = $this->isMWS;
@@ -883,12 +883,21 @@
 
 			if (!$wastesFromDB) {
 				//	default values
+				if (!$unittypeListDefault){ //if unittypeList is empty than set default
 				$this->waste = array (
 					'mixID'			=> $mixID,
 					'value'			=> "0.00",
 					'unittypeClass'	=> 'USAWght',								
                                         'unitTypeList'   => $unittype->getUnittypeListDefault()
-				);                                
+				);                         
+				} else { //else get unittypelist 
+				$this->waste = array (
+					'mixID'			=> $mixID,
+					'value'			=> "0.00",
+					'unittypeClass'	=> 'USAWght',								
+                                        'unitTypeList'   => $unittypeListDefault
+				);	
+				}
 			} else {				
 				foreach($wastesFromDB as $w) {
 						
