@@ -75,7 +75,7 @@
 				$('#structName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
-				$('#reNewPass').hide();	
+				$('#reNewPass').hide();
             }
             if (radio=="cancel"){
                 //$('#myclass').html(outputhtml_cancel);
@@ -85,7 +85,7 @@
 				$('#structName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
-				$('#reNewPass').hide();	
+				$('#reNewPass').hide();
             }
             if (radio=="username"){
 				$('#usersFields').show();
@@ -94,7 +94,7 @@
 				$('#structName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
-				$('#reNewPass').hide();	
+				$('#reNewPass').hide();
                 //$('#myclass').html(outputhtml_username);
 //                $.ajax({
 //                    url: 'modules/ajax/getUserList.php',
@@ -106,7 +106,7 @@
 //                                       if (responce.users.hasOwnProperty(key)) {
 //										   $('selectbox').append(
 //												'<option value='+responce.users[key].user_id+'>'+responce.users[key].username+'</option>'
-//											);										
+//											);
 //										}
 //								}
 //                            } else {
@@ -123,11 +123,11 @@
                 //$('#myclass').html(outputhtml_password);
 				$('#usersFields').hide();
 				$('#newUserName').hide();
-				$('#chBox').hide();	
+				$('#chBox').hide();
 				$('#structName').hide();
 				$('#oldPass').show();
 				$('#newPass').show();
-				$('#reNewPass').show();	
+				$('#reNewPass').show();
             }
         }
         function onClickChBox(chbox, value){
@@ -150,7 +150,7 @@
                 //$('#myclass').html(outputhtml_username);
 				$('#usersFields').hide();
 				$('#newUserName').show();
-				$('#chBox').show();	
+				$('#chBox').show();
 				$('#chBox input').attr('Value', 'on');
 				$('#structName').show();
 				$('#oldPass').hide();
@@ -174,17 +174,19 @@
                             '<tr><td width="35%" colspan="2"></td>'+
                             '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
                             '<td></td></tr>';
+
                 //$('#myclass').html(outputhtml_username);
 				$('#usersFields').show();
 				$('#newUserName').show();
-				$('#chBox').show();	
+				$('#chBox').show();
 				$('#chBox input').attr('Value', 'off');
 				$('#structName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
-				$('#reNewPass').hide();	
+				$('#reNewPass').hide();
             }
         }
+
     </script>
 {/literal}
 <form enctype="multipart/form-data" method="POST" action="?action=userRequest&category={$request.category}&id={$request.id}">
@@ -200,6 +202,7 @@
                 <h2>Username & Password Request Form</h2>
                 <table cellspacing="0" cellpadding="0" valign="top" width="440px">
                     <tr>
+
                         <td nowrap width="15%">
                             <input type="radio" name="radioRequest" checked value="lost" onclick="onClickRadio(value, '{$request.category}');"> Lost
                         </td>
@@ -260,12 +263,12 @@
 								{if $request.category=='company'}
 								{foreach from=$structureList item=structure}
 									<option value="{$structure.facility_id}">{$structure.name}</option>
-								{/foreach} 
+								{/foreach}
 								{elseif $request.category=='facility'}
 									{foreach from=$structureList item=structure}
 										<option value="{$structure.department_id}">{$structure.name}</option>
 									{/foreach}
-								{/if}	
+								{/if}
 							</select>
 						</td>
                         <td>

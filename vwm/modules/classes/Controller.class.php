@@ -161,15 +161,19 @@ class Controller {
 
         $category = $this->getFromRequest('category');
         $facilityDetails = array();
+	$setupLevel = '';
+
         switch ($category) {
             case 'company':
                 $referFacilityID = false;
                 $referCompanyID = $this->getFromRequest('id');
+		$setupLevel = 'Facility';
                 break;
             case 'facility':
                 $referFacilityID = $this->getFromRequest('id');
                 $facilityDetails = $facility->getFacilityDetails($referFacilityID);
                 $referCompanyID = $facilityDetails['company_id'];
+		$setupLevel = 'Department';
                 break;
             default:
                 throw new Exception('deny');
@@ -201,6 +205,7 @@ class Controller {
 
         $this->smarty->assign('companyDetails', $companyDetails);
         $this->smarty->assign('facilityDetails', $facilityDetails);
+	$this->smarty->assign('setupLevel', $setupLevel);
 
         $this->smarty->assign('tpl', 'tpls/companySetupRequestForm.tpl');
         $this->smarty->display("tpls:index.tpl");

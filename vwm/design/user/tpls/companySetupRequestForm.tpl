@@ -17,7 +17,7 @@
         </tr>
         <tr>
             <td valign="top" class="report_issue_center" align="center">
-                <h2>Company Setup Request Form</h2>
+                <h2>{$setupLevel} Setup Request Form</h2>
 		{if $companyDetails|@count > 0}
                 <div>
 			<h3 onclick = "$('#companyDetails').slideToggle();">Company Details</h3>
@@ -155,7 +155,7 @@
 		<div>
 			<h3>Facility Details</h3>
 			<div>
-		
+
 			</div>
 		</div>
 		{/if}
