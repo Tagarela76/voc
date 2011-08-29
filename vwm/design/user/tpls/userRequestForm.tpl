@@ -44,7 +44,7 @@
                             '</td>'+
                             '<td></td></tr>'+
                             '<tr><td width="35%" colspan="2"></td>'+
-                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
+                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value, categ);" name="newUser"> Create New User</td>'+
                             '<td></td></tr>';
                 outputhtml_password = '<tr><td width="35%" colspan="2">'+
                             'Old Password:'+
@@ -130,7 +130,7 @@
 				$('#reNewPass').show();
             }
         }
-        function onClickChBox(chbox, value){
+        function onClickChBox(chbox, value, category){
             var outputhtml_username;
 
             if ((chbox=="newUser") && (value=="off")){
@@ -142,7 +142,7 @@
                             '</td>'+
                             '<td></td></tr>'+
                             '<tr><td width="35%" colspan="2"></td>'+
-                            '<td width="55%" colspan="2"><input type="checkbox" checked value="on" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
+                            '<td width="55%" colspan="2"><input type="checkbox" checked value="on" onclick="onClickChBox(name, value, categ);" name="newUser"> Create New User</td>'+
                             '<td></td></tr>'+
                             '<tr><td width="35%" colspan="2">Facility/Department</td>'+
                             '<td width="55%" colspan="2"><select type="text" name="structureName"></td>'+
@@ -152,7 +152,15 @@
 				$('#newUserName').show();
 				$('#chBox').show();
 				$('#chBox input').attr('Value', 'on');
+				if (category=='company'){
+				$('#structName #structCaption').text('Facility:');
 				$('#structName').show();
+				} else {
+				if (category=='facility'){
+				$('#structName #structCaption').text('Department:');
+				$('#structName').show();
+				}
+				}
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
@@ -249,14 +257,14 @@
 						<td width="35%" colspan="2">
 						</td>
 						<td width="55%" colspan="2">
-							<input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User
+							<input type="checkbox" value="off" onclick="onClickChBox(name, value, '{$request.category}');" name="newUser"> Create New User
 						</td>
                         <td>
 						</td>
 					</tr>
 					<tr id="structName" style="display: none;">
 						<td width="35%" colspan="2">
-							Facility/Department
+							<div id="structCaption">Facility/Department</div>
 						</td>
                         <td width="55%" colspan="2">
 							<select type="text" name="structureName">

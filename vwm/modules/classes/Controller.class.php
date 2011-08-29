@@ -202,7 +202,16 @@ class Controller {
                 throw new Exception('deny');
                 break;
         }
+		
+		$request = $this->getFromRequest();
+        //titles new!!! {panding}
+        $title = new TitlesNew($this->smarty, $this->db);
+        $title->getTitle($request);
+        $this->noname($request, $this->user, $this->db, $this->smarty);
 
+        $this->smarty->assign('accessname', $_SESSION['username']);
+        $this->smarty->assign('request', $request);
+		
         $this->smarty->assign('companyDetails', $companyDetails);
         $this->smarty->assign('facilityDetails', $facilityDetails);
 	$this->smarty->assign('setupLevel', $setupLevel);

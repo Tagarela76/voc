@@ -1,193 +1,196 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
-<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
-<script type="text/javascript">
-$(function() {
-	$("a[name='leftMenuLink']").click(function(){
-		alert("Updating information");
-		return false;
-	});
-});
-</script>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>voc web manager</title>
+	<head>
+		<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+		<script type="text/javascript">
+			$(function() {
+				$("a[name='leftMenuLink']").click(function(){
+					alert("Updating information");
+					return false;
+				});
+			});
+		</script>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>voc web manager</title>
 
-<link href="style.css" rel="stylesheet" type="text/css">
-<script type="text/javascript">		
-	function iniEverything() {
-		setfocus();
-		
-		var getVars = getUrlVars();
-		var errorDiv = document.getElementById('error');
-		if (getVars['error'] === 'auth') {
-			errorDiv.innerHTML = 'Wrong login or password! Please, try again';
-			document.getElementById('error').style.display = 'block';
-		} else if (getVars['error'] === 'timeout') {
-			errorDiv.innerHTML = 'Timeout. Please, log in again';
-			document.getElementById('error').style.display = 'block';			
-		} else {
-			document.getElementById('error').style.display = 'none';
-		}
-		document.getElementById('url').value = getVars['url'];	 
-	}
-	
-	function setfocus() {
-        loginForm.accessname.focus()
-    }
-	
-	//	map[getVar] = getVarValue
-	function getUrlVars() {
-		var map = {};
-		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-			map[key] = value;
-		});
-		return map;
-}
-</script>
-</head>
+		<link href="style.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript">
+			function iniEverything() {
+				setfocus();
 
-<body onload="iniEverything();">
+				var getVars = getUrlVars();
+				var errorDiv = document.getElementById('error');
+				if (getVars['error'] === 'auth') {
+					errorDiv.innerHTML = 'Wrong login or password! Please, try again';
+					document.getElementById('error').style.display = 'block';
+				} else if (getVars['error'] === 'timeout') {
+					errorDiv.innerHTML = 'Timeout. Please, log in again';
+					document.getElementById('error').style.display = 'block';
+				} else {
+					document.getElementById('error').style.display = 'none';
+				}
+				document.getElementById('url').value = getVars['url'];
+			}
 
-<table class="tablefix cell" align="center" bgcolor="#353a44">
-<tr>
-<td valign="top">
+			function setfocus() {
+				loginForm.accessname.focus()
+			}
+
+			//	map[getVar] = getVarValue
+			function getUrlVars() {
+				var map = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+					map[key] = value;
+				});
+				return map;
+			}
+		</script>
+	</head>
+
+	<body onload="iniEverything();">
+
+		<table class="tablefix cell" align="center" bgcolor="#353a44">
+			<tr>
+				<td valign="top">
 
 
 
-	<table   class="cell1" cellspacing="0" cellpadding="0">
-	  <tr>
-		<td align="center" class="bgtop">
-			
-			
-			<table class="cell1 logo" cellspacing="0" cellpadding="0">
-			  <tr>	
-				<td style="height:134px;" >
-				
-			<table  align="right" class="cell">
-					  <tr>
-						<td style="padding-top:20px;"  >
-						
-						<table >
-						     <tr>	
-						<td>
-<a href="/" title="Home" >
-<img alt="" src="images/s1.gif" ></a>
-							</td>
-							<td>
-<a href="/contact_us.html" title="Contact Us" >							
-<img alt="" src="images/s2.gif" >
-</a>
-							</td>
-							<td>	
-<img alt="" src="images/s3.gif">
-						  </td>
-					  </tr>
-					</table>
-					
-					</td>
-					 </tr>
-			</table>
-							
-							
-				</td>
-				</tr>
-				<tr>
-				<td  valign="top" class="bg_center1 padd_b30">
-				
-				<table class="cell2 centerbg" height="600">
-				<tr>
-				<td  valign="top" align="center" >
-				
-								<!------------------------------menu top----------------------------->			
-			<table  align="right" class="cell" ><tr>					
-						<td align="center" class="menu" >
-							
-							
-<table align="center"  cellspacing="0" cellpadding="0" class="menu_t">
-       <tr> 
-           <td align="center">
-							<a href="voc_web_manager.html">
-						
-							<img src="images/v_m_active.gif"  border="0">
-							</a>
-</td>
-							<td  >							 
-						<span class="delm"></span></td>
-						<td align="center"><a href="about_us.html" > 
-                         <img src="images/a_us.gif" onmouseover="this.src='images/about_us.gif';"  onmouseout="this.src='images/a_us.gif'" border="0">			 
-							</a>
-							</td>
-							<td >
-							<span class="delm"></span></td>
-							<td align="center"> <a href="services.html" >
-					  <img src="images/serv.gif" onmouseover="this.src='images/services.gif';"  onmouseout="this.src='images/serv.gif'" border="0"> </a><span style="backgroun:red;"></span>
-						 </td>
-							<td >
-							<span class="delm"></span></td>
-							
-							<td align="center"> <a href="solutions.html" >
-						 <img src="images/solut.gif" onmouseover="this.src='images/solutions.gif';"  onmouseout="this.src='images/solut.gif'" border="0"> </a><span style="backgroun:red;"></span>
-						</td><td >
-							<span class="delm"></span>
-							<td align="center">
-							 <a href="contact_us.html" >
-					 <img src="images/contact.gif" onmouseover="this.src='images/contact_us.gif';"  onmouseout="this.src='images/contact.gif'" border="0"> </a>
-	
-			</td>
-		</tr>
- </table>
-			  
-					</td>
-					</tr>
-					<tr>
-					<td height="19px"style="background-repeat:no-repeat;background-position:right;" background="images/dark.gif">
-					</td>
-					</tr>
-					</table>
-					
-					<!------------------------------menu top----------------------------->			
-		
-					
-					
-					</td></tr><tr><td valign="top">
-					
-					
-                     					
-<div  align="center">
-					<table align="center" class="cell centermenu"  width="650" style="border:1px solid #555c68;">
+					<table   class="cell1" cellspacing="0" cellpadding="0">
 						<tr>
-						<td height="380px" >
-						
-						
-				<table class="cell2">
-						<tr>
-						<td class="dotted_right lmenu_pdd" width="173" valign="top" align="center">
-					   <h3>site categories
-					   </h3>				   
-					 
-				<div align="left" class="margin7 padd_b10 " >					
-				  <ul class="link" 	>
-					 <li><a href="#" name="leftMenuLink">News</a>
-					 </li>
-					 <li><a href="#" name="leftMenuLink">Special offers</a>
-					 </li>
-					 <li><a href="#" name="leftMenuLink">New services</a>
-					  </li>
-					   <li><a href="#" name="leftMenuLink">On-line support</a>
-					  </li>
-					   <li><a href="#" name="leftMenuLink">Partners</a>
-					  </li>
-					   <li><a href="#" name="leftMenuLink">Related sites</a>
-					  </li> 
-					 
-				  </ul>
-                </div>
-	<!-- "
+							<td align="center" class="bgtop">
 
 
-	
-			     <div align="left" class="margin7 dotted_bottom padd_b10">					
+								<table class="cell1 logo" cellspacing="0" cellpadding="0">
+									<tr>
+										<td style="height:134px;" >
+
+											<table  align="right" class="cell">
+												<tr>
+													<td style="padding-top:20px;"  >
+
+														<table >
+															<tr>
+																<td>
+																	<a href="/" title="Home" >
+																		<img alt="" src="images/s1.gif" ></a>
+																</td>
+																<td>
+																	<a href="/contact_us.html" title="Contact Us" >
+																		<img alt="" src="images/s2.gif" >
+																	</a>
+																</td>
+																<td>
+																	<img alt="" src="images/s3.gif">
+																</td>
+															</tr>
+														</table>
+
+													</td>
+												</tr>
+											</table>
+
+
+										</td>
+									</tr>
+									<tr>
+										<td  valign="top" class="bg_center1 padd_b30">
+
+											<table class="cell2 centerbg" height="600">
+												<tr>
+													<td  valign="top" align="center" >
+
+														<!------------------------------menu top----------------------------->
+														<table  align="right" class="cell" ><tr>
+																<td align="center" class="menu" >
+
+
+																	<table align="center"  cellspacing="0" cellpadding="0" class="menu_t">
+																		<tr>
+																			<td align="center">
+																				<a href="voc_web_manager.html">
+
+																					<img src="images/v_m_active.gif"  border="0">
+																				</a>
+																			</td>
+																			<td  >
+																				<span class="delm"></span></td>
+																			<td align="center"><a href="about_us.html" >
+																					<img src="images/a_us.gif" onmouseover="this.src='images/about_us.gif';"  onmouseout="this.src='images/a_us.gif'" border="0">
+																				</a>
+																			</td>
+																			<td >
+																				<span class="delm"></span></td>
+																			<td align="center"> <a href="services.html" >
+																					<img src="images/serv.gif" onmouseover="this.src='images/services.gif';"  onmouseout="this.src='images/serv.gif'" border="0"> </a><span style="backgroun:red;"></span>
+																			</td>
+																			<td >
+																				<span class="delm"></span></td>
+
+																			<td align="center"> <a href="solutions.html" >
+																					<img src="images/solut.gif" onmouseover="this.src='images/solutions.gif';"  onmouseout="this.src='images/solut.gif'" border="0"> </a><span style="backgroun:red;"></span>
+																			</td><td >
+																				<span class="delm"></span>
+																			<td align="center">
+																				<a href="contact_us.html" >
+																					<img src="images/contact.gif" onmouseover="this.src='images/contact_us.gif';"  onmouseout="this.src='images/contact.gif'" border="0"> </a>
+
+																			</td>
+																		</tr>
+																	</table>
+
+																</td>
+															</tr>
+															<tr>
+																<td height="19px"style="background-repeat:no-repeat;background-position:right;" background="images/dark.gif">
+																</td>
+															</tr>
+														</table>
+
+														<!------------------------------menu top----------------------------->
+
+
+
+													</td></tr><tr><td valign="top">
+
+
+
+														<div  align="center">
+															<table align="center" class="cell centermenu"  width="650" style="border:1px solid #555c68;">
+																<tr>
+																	<td height="380px" >
+
+
+																		<table class="cell2">
+																			<tr>
+																				<td class="dotted_right lmenu_pdd" width="173" valign="top" align="center">
+																					<h3>site categories
+																					</h3>
+
+																					<div align="left" class="margin7 padd_b10 " >
+																						<ul class="link" 	>
+																							<li><a href="#" name="leftMenuLink">News</a>
+																							</li>
+																							<li><a href="#" name="leftMenuLink">Special offers</a>
+																							</li>
+																							<li><a href="#" name="leftMenuLink">New services</a>
+																							</li>
+																							<li><a href="#" name="leftMenuLink">On-line support</a>
+																							</li>
+																							<li><a href="#" name="leftMenuLink">Partners</a>
+																							</li>
+																							<li><a href="#" name="leftMenuLink">Related sites</a>
+																							</li>
+
+																						</ul>
+																					</div>
+																					<div style="margin-top: 80%; text-align: center">
+																						<input type="submit" class="button_representative" value="Representative"/>
+																					</div>
+																					<!-- "
+
+
+
+			     <div align="left" class="margin7 dotted_bottom padd_b10">
 					<ul class="link">
 					 <li><a href="#">hot news</a>
 					 </li>
@@ -196,9 +199,9 @@ $(function() {
 					 <li><a href="#">special offers</a>
 					 </li>
 					</ul>
-                 </div>					   
-					   
-					 <div align="left" class="margin7  padd_b10">					
+																								 </div>
+
+					 <div align="left" class="margin7  padd_b10">
 					 <ul class="link">
 					 <li><a href="#">hot news</a>
 					 </li>
@@ -207,126 +210,126 @@ $(function() {
 					 <li><a href="#">special offers</a>
 					 </li>
 					 </ul>
-                     </div>
---->
+																									 </div>
+																				--->
 
-						</td>
-						<td valign="top"style="padding-top:18px;padding-left:10px">
-						 <table  class="login_table" >
-					 <tr>
-					 <td align="center" style="padding:10px 10px 10px 10px;">
-						 <table  class="login_table3" >
-					 <tr>
-					 <td align="center">
-					<br> <h2  class="voc_web_manager" style="color:#00ccff;">Voc	
-					 <br> web manager</h2><br>
-					
-						 </td>
-					 </tr>
-					 </table>
-					 <div class="home" align="center"style="margin:5px;">
-					 	<span style="color:#e5e5e5;font-family:Verdana;letter-spacing:5px;">
+																				</td>
+																				<td valign="top"style="padding-top:18px;padding-left:10px">
+																					<table  class="login_table" >
+																						<tr>
+																							<td align="center" style="padding:10px 10px 10px 10px;">
+																								<table  class="login_table3" >
+																									<tr>
+																										<td align="center">
+																											<br> <h2  class="voc_web_manager" style="color:#00ccff;">Voc
+																												<br> web manager</h2><br>
+
+																										</td>
+																									</tr>
+																								</table>
+																								<div class="home" align="center"style="margin:5px;">
+																									<span style="color:#e5e5e5;font-family:Verdana;letter-spacing:5px;">
 						Emissions Control and Reporting
-						</span>
-						</div>
-					 
-				<form method='POST' action='vwm/' name='loginForm'>
-					 <table  class="login_text bigtext login_table2" style="margin-top:15px;" align="center" border="0">
-					 <tr>
-					 	<td height="50" class="padd_b10 mg_left20" >
-					 	name:<span class="mintext"style="font-size:10px;"> (access name)</span>
-					 	</td>
-					 	<td  class="bg" height="40" style="padding:0 5 0 5">
-					 	<input type="text" name='accessname'>
-					 	</td>
-					 </tr>
-					 <tr>					 
-					 	<td  valign="top" class="mg_left20">
-					 	password: <span class="mintext">(pw)</span>
-					  	</td>
-					 	<td  class="bg" valign="top"style="padding:0 5 0 5" >
-					 	<input type="password" name='password'>
-					 	</td>
-					 </tr>
-					 <!--Wrong login or password-->
-					 <tr>					 
-					 	<td colspan="2">
-							<div id="error" style="display:block;color:#00ccff;text-align:center;"></div>
-					 	</td>
-					 </tr>
-					<!--/Wrong login or password-->		
-					 </table>
-					 <input type='hidden' name='action' value='auth'>
-					 <input type='hidden' id='url' name='url' value="">
-				
-						
-<br><div align="center">
-					 <input type="submit" class="button" value="login">
-					 </form>
-					 </div>
-					 </td>
-					 </tr>
-					 </table>
-					 
-						</td>
-						</tr>
-						</table>
-						
+																									</span>
+																								</div>
 
-						</td>
+																								<form method='POST' action='vwm/' name='loginForm'>
+																									<table  class="login_text bigtext login_table2" style="margin-top:15px;" align="center" border="0">
+																										<tr>
+																											<td height="50" class="padd_b10 mg_left20" >
+					 	name:<span class="mintext"style="font-size:10px;"> (access name)</span>
+																											</td>
+																											<td  class="bg" height="40" style="padding:0 5 0 5">
+																												<input type="text" name='accessname'>
+																											</td>
+																										</tr>
+																										<tr>
+																											<td  valign="top" class="mg_left20">
+					 	password: <span class="mintext">(pw)</span>
+																											</td>
+																											<td  class="bg" valign="top"style="padding:0 5 0 5" >
+																												<input type="password" name='password'>
+																											</td>
+																										</tr>
+																										<!--Wrong login or password-->
+																										<tr>
+																											<td colspan="2">
+																												<div id="error" style="display:block;color:#00ccff;text-align:center;"></div>
+																											</td>
+																										</tr>
+																										<!--/Wrong login or password-->
+																									</table>
+																									<input type='hidden' name='action' value='auth'>
+																									<input type='hidden' id='url' name='url' value="">
+
+
+																									<br><div align="center">
+																										<input type="submit" class="button" value="login">
+																										</form>
+																									</div>
+																							</td>
+																						</tr>
+																					</table>
+
+																				</td>
+																			</tr>
+																		</table>
+
+
+																	</td>
+																</tr>
+															</table>
+
+
+
+														</div>
+
+
+
+
+													</td>
+												</tr>
+											</table>
+
+
+
+										</td>
+									</tr>
+								</table>
+
+
+
+							</td>
 						</tr>
-						</table>
-									
-					
-					
-</div>					
-			
-			
-			
-			
-						</td>
-			  </tr>
-			  </table>
-			  
-			  
-							
-		</td>
-	  </tr>
-	</table>
-	
-	
-	
-	</td>
-	  </tr>
-		<tr>
-           <td bgcolor=red height="100%">		
-		<table  cellspacing="0" cellpadding="0" class="footer cell1" height=100>
-					  <tr>
-						<td align="left" class="mg_left20">
-										
-						
-							
-									<b>Copyright. 2011</b> &copy; Business Company. All rights reserved. Privacy policy | Terms of Use<br><a href="http://kttsoft.com/" style="color:#8892a2;text-decoration:none;">powered by KaTeT-Software</a>
-								</td>
-							  </tr>
+						<tr>
+							<td bgcolor=red height="100%">
+								<table  cellspacing="0" cellpadding="0" class="footer cell1" height=100>
+									<tr>
+										<td align="left" class="mg_left20">
+
+
+
+											<b>Copyright. 2011</b> &copy; Business Company. All rights reserved. Privacy policy | Terms of Use<br><a href="http://kttsoft.com/" style="color:#8892a2;text-decoration:none;">powered by KaTeT-Software</a>
+										</td>
+									</tr>
+								</table>
+
+							</td>
+						</tr>
+					</table>
+
+
+
+
+
+
+
+
+
+				</td>
+			</tr>
 		</table>
 
-			    </td>						
-				</tr>
-				</table>
-					
-					
-					
-					
-			
 
-	
-	
-	
-	</td>
-	  </tr>
-	</table>
-	
-	
-</body>
-</html>	
+	</body>
+</html>

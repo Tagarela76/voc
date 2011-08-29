@@ -98,7 +98,12 @@
                                 <a href="#" class="id_company_link " id="toggler">Forms<small class="arrow_d"> ▼</small></a>
                                     <ul style="WIDTH: 150px" id="drop-down-list" class="no-display drop-down-block">
                                         <li><a href="?action=userRequest&category={$request.category}&id={$request.id}">Username & Password</a></li>
-                                        <li><a href="?action=companySetupRequest&category={$request.category}&id={$request.id}">Company Setup</a></li>
+										{if ($request.category == 'company')}
+                                        <li><a href="?action=companySetupRequest&category={$request.category}&id={$request.id}">Facility Setup</a></li>
+										{/if}
+										{if ($request.category == 'facility')}
+										<li><a href="?action=companySetupRequest&category={$request.category}&id={$request.id}">Department Setup</a></li>
+										{/if}
                                     </ul>
 
 
