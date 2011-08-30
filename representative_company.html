@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+		<script type="text/javascript">
+			$(function() {
+				$("#name").focus(function(){
+					if($(this).val() == "Your name:") {
+						$(this).val("");
+					}
+				});
+
+				$("#name").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Your name:");
+					}else {
+						$("#name_err").html('');
+					}
+				});
+
+				$("#email").focus(function(){
+					if($(this).val() == "E-mail address:") {
+						$(this).val("");
+					}
+				});
+
+				$("#email").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("E-mail address:");
+					}else {
+						$("#email_err").html('');
+					}
+				});
+
+				$("#phone").focus(function(){
+					if($(this).val() == "Phone:") {
+						$(this).val("");
+					}
+				});
+
+				$("#phone").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Phone:");
+					}else {
+						$("#phone_err").html('');
+					}
+				});
+
+				$("#comment").focus(function(){
+					if($(this).val() == "Your message:") {
+						$(this).val("");
+					}
+				});
+
+				$("#comment").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Your message:");
+					}else {
+						$("#comment_err").html('');
+					}
+				});
+
+				$("#submitButton").click(function(){
+					err = false;
+					if($("#name").val() == "" || $("#name").val() == "Your name:") {
+						$("#name_err").html('Enter your name!');
+						err = true;
+					}
+
+					if($("#email").val() == "" || $("#email").val() == "Phone:") {
+						$("#email_err").html('Enter your email!');
+						err = true;
+					}
+
+					if(!isValidEmail($("#email").val())) {
+						$("#email_err").html('Email is wrong!');
+						err = true;
+					}
+
+					if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
+						$("#phone_err").html('Enter your phone!');
+						err = true;
+					}
+
+					if($("#comment").val() == "" || $("#comment").val() == "Your message:") {
+						$("#comment_err").html('Enter message!');
+						err = true;
+					}
+
+					if(err != true) {
+						document.getElementById("form1").submit();
+					}
+				});
+			});
+
+			function isValidEmail(strEmail){
+				validRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+				// search email text for regular exp matches
+				if (strEmail.search(validRegExp) == -1)
+				{
+					return false;
+				}
+				return true;
+			}
+		</script>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Company Setup Request Form</title>
+
+		<link href="style.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body>
+
+
+		<table class="tablefix cell" align="center" bgcolor="#353a44" height="100%">
+			<tr>
+				<td valign="top">
+
+
+
+					<table   class="cell1" cellspacing="0" cellpadding="0">
+						<tr>
+							<td align="center" class="bgtop">
+
+
+								<table class="cell1 logo" cellspacing="0" cellpadding="0">
+									<tr>
+										<td style="height:134px;" >
+
+											<table  align="right" class="cell">
+												<tr>
+													<td style="padding-top:20px;"  >
+
+														<table >
+															<tr>
+																<td>
+																	<a href="/" title="Home" >
+																		<img alt="" src="images/s1.gif" ></a>
+																</td>
+																<td>
+																	<a href="/contact_us.html" title="Contact Us" >
+																		<img alt="" src="images/s2.gif" >
+																	</a>
+																</td>
+																<td>
+																	<img alt="" src="images/s3.gif">
+																</td>
+															</tr>
+														</table>
+
+													</td>
+												</tr>
+											</table>
+
+
+										</td>
+									</tr>
+									<tr>
+										<td  valign="top" class="bg_center1 padd_b30">
+
+											<table class="cell2 centerbg" height="600">
+												<tr>
+													<td  valign="top" align="center" >
+
+
+
+														<!------------------------------menu top----------------------------->
+														<table  align="right" class="cell" ><tr>
+																<td align="center" class="menu" >
+
+
+																	<table align="center"  cellspacing="0" cellpadding="0" class="menu_t">
+																		<tr>
+																			<td align="center">
+																				<a href="voc_web_manager.html">
+
+																					<img src="images/v_m.gif" onmouseover="this.src='images/voc.gif';"  onmouseout="this.src='images/v_m.gif'" border="0">
+																				</a>
+																			</td>
+																			<td  >
+																				<span class="delm"></span></td>
+																			<td align="center"><a href="about_us.html" >
+																					<img src="images/a_us.gif" onmouseover="this.src='images/about_us.gif';"  onmouseout="this.src='images/a_us.gif'" border="0">
+																				</a>
+																			</td>
+																			<td >
+																				<span class="delm"></span></td>
+																			<td align="center"> <a href="services.html" >
+																					<img src="images/serv.gif" onmouseover="this.src='images/services.gif';"  onmouseout="this.src='images/serv.gif'" border="0"> </a><span style="backgroun:red;"></span>
+																			</td>
+																			<td >
+																				<span class="delm"></span></td>
+
+																			<td align="center"> <a href="solutions.html" >
+																					<img src="images/solut.gif" onmouseover="this.src='images/solutions.gif';"  onmouseout="this.src='images/solut.gif'" border="0"> </a><span style="backgroun:red;"></span>
+																			</td><td >
+																				<span class="delm"></span>
+																			<td align="center">
+																				<a href="contact_us.html" >
+																					<img src="images/contact.gif" onmouseover="this.src='images/contact_us.gif';"  onmouseout="this.src='images/contact.gif'" border="0"> </a>
+
+																			</td>
+																		</tr>
+																	</table>
+
+																</td>
+															</tr>
+															<tr>
+																<td height="19px"style="background-repeat:no-repeat;background-position:right;" background="images/dark.gif">
+																</td>
+															</tr>
+														</table>
+
+														<!------------------------------menu top----------------------------->
+
+
+
+													</td></tr><tr><td valign="top">
+
+
+
+														<div  align="center">
+															<table align="center" class="cell centermenu"  width="650" style="border:1px solid #555c68;">
+																<tr>
+																	<td height="380px" >
+
+
+																		<table class="cell2">
+																			<tr>
+																				<td class="dotted_right lmenu_pdd" width="173" valign="top" align="center" >
+																					<h3 class="mintext">
+																						forms
+
+																					</h3>
+																					<div class="padd_left" style="display:block" ALIGN="LEFT">
+
+
+																						<ul class="link link_no_images"><li>Forgot password</li></ul>
+																						<ul class="link link_no_images"><li>New User request</li></ul>
+																						<ul class="link link_no_images"><li>company setup request</li></ul>
+																					</div>
+																				</td>
+																				<td valign="top"style="padding-left:10px">
+																					<h3 class="mg_top50">
+																						company setup request form</h3>
+
+																					<form method="POST" action="" id="form1">
+
+																						<table border="0" class="cell1 ">
+																							<tr>
+																								<td  class="message" >
+																									<input type="text" value="Company name:" name="name" id="name"> <span id="name_err"></span>
+																									<BR> <br>
+																									<input type="text" value="Address:" name="address" id="email">  <span id="email_err"></span>
+																									<br> <br>
+																									<input type="text"  value="City:"  name="city" id="city">  <span id="city_err"></span>
+																									<br> <br>
+																									<input type="text"  value="County:"  name="country" id="country">  <span id="country_err"></span>
+																									<br> <br>
+																									<input type="text"  value="State:"  name="state" id="state">  <span id="state_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Zip/Postal code:"  name="zip" id="zip">  <span id="zip_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Phone:"  name="phone" id="phone">  <span id="phone_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Fax:"  name="fax" id="fax">  <span id="fax_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Email:"  name="email" id="email">  <span id="email_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Contact:"  name="contact" id="contact">  <span id="contact_err"></span>
+																									<br> <br>
+																									<input type="text"  value="Title:"  name="title" id="title">  <span id="title_err"></span>
+																								</td>
+																							</tr>
+																						</table>
+																						<div style="margin:10 0 0 302"><input type="button" value="submit" class="button" id="submitButton" ></div>
+																					</form>
+
+																					<br>		<br>
+
+
+																				</td>
+
+
+
+																			</tr>
+																		</table>
+
+
+																	</td>
+																</tr>
+															</table>
+
+
+														</div>
+
+
+
+
+													</td>
+												</tr>
+											</table>
+
+
+
+										</td>
+									</tr>
+								</table>
+
+
+
+							</td>
+						</tr>
+						<tr>
+							<td bgcolor=red height="100%">
+								<table  cellspacing="0" cellpadding="0" class="footer cell1" height=100>
+									<tr>
+										<td align="left" class="mg_left20">
+
+
+
+											<b>Copyright. 2011</b> &copy; Business Company. All rights reserved. Privacy policy | Terms of Use<br><a href="http://kttsoft.com/" style="color:#8892a2;text-decoration:none;">powered by KaTeT-Software</a>
+										</td>
+									</tr>
+								</table>
+
+							</td>
+						</tr>
+					</table>
+
+
+
+
+
+
+
+
+
+				</td>
+			</tr>
+		</table>
+
+
+	</body>
+</html>
