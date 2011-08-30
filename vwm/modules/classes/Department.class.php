@@ -71,7 +71,63 @@ class Department extends DepartmentProperties {
 		$this->save2trash('C', $department_id);
 		return $department_id;
 	}
+	
+	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID){
+		
+		$beginstamp = $beginDate->getTimestamp();
+		$endstamp = $endDate->getTimestamp();
+		
+		$categoryDependedSql = "";
+		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
+		if ($category == "company") {
+			$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
+			$categoryDependedSql = "eq.department_id = d.department_id 
+										AND d.facility_id = f.facility_id 
+										AND f.company_id = {$categoryID} ";
+		}
+		
+		$query = "SELECT sum(m.voc) as voc, concat(d.name,'/',f.name) as dfname, d.name, m.creation_time " .
+				" FROM {$tables} " .
+				" WHERE {$categoryDependedSql} " .
+					"AND m.equipment_id = eq.equipment_id " .
+					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
+				" GROUP BY d.name, m.creation_time " .
+				" ORDER BY d.name ";
+		
+		$this->db->query($query);
+		$dailyEmissionsData = $this->db->fetch_all();
+		$result = array();
 
+		//get empty template for output for each facility
+		$emptyData = array();
+		$day = 86400; // Day in seconds
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;//var_dump('day_count',$daysCount);
+		$curDay = $beginDate->formatInput();
+		for($i = 0; $i< $daysCount; $i++) {
+			$emptyData []= array(strtotime($curDay)*1000, 0);
+			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
+		}
+		
+		$query = "SELECT d.name, concat(d.name,'/',f.name) as dfname".
+				" FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f ".
+				" WHERE f.company_id = {$categoryID} AND d.facility_id=f.facility_id".
+				" GROUP BY f.name, d.name";
+		
+		$this->db->query($query);
+		$departmentList = $this->db->fetch_all();	
+		
+		foreach($departmentList as $data) {
+			$result[$data->dfname] = $emptyData;
+		}
+		
+		foreach ($dailyEmissionsData as $data) {
+			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
+			$result[$data->dfname][$key][1] += $data->voc;
+		}
+
+		return $result;
+				
+	}
 
 
 

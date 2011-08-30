@@ -18,45 +18,17 @@
 					}
 				});
 
-				$("#email").focus(function(){
-					if($(this).val() == "E-mail address:") {
+				$("#user").focus(function(){
+					if($(this).val() == "User name:") {
 						$(this).val("");
 					}
 				});
 
-				$("#email").focusout(function(){
+				$("#user").focusout(function(){
 					if($(this).val() == "") {
-						$(this).val("E-mail address:");
+						$(this).val("User name:");
 					}else {
-						$("#email_err").html('');
-					}
-				});
-
-				$("#phone").focus(function(){
-					if($(this).val() == "Phone:") {
-						$(this).val("");
-					}
-				});
-
-				$("#phone").focusout(function(){
-					if($(this).val() == "") {
-						$(this).val("Phone:");
-					}else {
-						$("#phone_err").html('');
-					}
-				});
-
-				$("#comment").focus(function(){
-					if($(this).val() == "Your message:") {
-						$(this).val("");
-					}
-				});
-
-				$("#comment").focusout(function(){
-					if($(this).val() == "") {
-						$(this).val("Your message:");
-					}else {
-						$("#comment_err").html('');
+						$("#user_err").html('');
 					}
 				});
 
@@ -67,23 +39,8 @@
 						err = true;
 					}
 
-					if($("#email").val() == "" || $("#email").val() == "Phone:") {
-						$("#email_err").html('Enter your email!');
-						err = true;
-					}
-
-					if(!isValidEmail($("#email").val())) {
-						$("#email_err").html('Email is wrong!');
-						err = true;
-					}
-
-					if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
-						$("#phone_err").html('Enter your phone!');
-						err = true;
-					}
-
-					if($("#comment").val() == "" || $("#comment").val() == "Your message:") {
-						$("#comment_err").html('Enter message!');
+					if($("#user").val() == "" || $("#user").val() == "User:") {
+						$("#user_err").html('Enter your username!');
 						err = true;
 					}
 
@@ -93,16 +50,6 @@
 				});
 			});
 
-			function isValidEmail(strEmail){
-				validRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-
-				// search email text for regular exp matches
-				if (strEmail.search(validRegExp) == -1)
-				{
-					return false;
-				}
-				return true;
-			}
 		</script>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<title>Company Setup Request Form</title>
@@ -250,27 +197,10 @@
 																						<table border="0" class="cell1 ">
 																							<tr>
 																								<td  class="message" >
+																									<input type="text" value="User name:" name="user" id="user">  <span id="user_err"></span>
+																									<br> <br>
 																									<input type="text" value="Company name:" name="name" id="name"> <span id="name_err"></span>
-																									<BR> <br>
-																									<input type="text" value="Address:" name="address" id="email">  <span id="email_err"></span>
 																									<br> <br>
-																									<input type="text"  value="City:"  name="city" id="city">  <span id="city_err"></span>
-																									<br> <br>
-																									<input type="text"  value="County:"  name="country" id="country">  <span id="country_err"></span>
-																									<br> <br>
-																									<input type="text"  value="State:"  name="state" id="state">  <span id="state_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Zip/Postal code:"  name="zip" id="zip">  <span id="zip_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Phone:"  name="phone" id="phone">  <span id="phone_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Fax:"  name="fax" id="fax">  <span id="fax_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Email:"  name="email" id="email">  <span id="email_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Contact:"  name="contact" id="contact">  <span id="contact_err"></span>
-																									<br> <br>
-																									<input type="text"  value="Title:"  name="title" id="title">  <span id="title_err"></span>
 																								</td>
 																							</tr>
 																						</table>

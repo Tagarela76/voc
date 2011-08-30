@@ -500,7 +500,7 @@ class Equipment extends EquipmentProperties {
 					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY m.equipment_id, m.creation_time " .
 				" ORDER BY m.equipment_id ";
-
+				
 		$this->db->query($query);
 		$dailyEmissionsData = $this->db->fetch_all();
 		$result = array();
@@ -547,7 +547,7 @@ class Equipment extends EquipmentProperties {
 
 		return $result;
 	}
-
+	
 
 	//	check difference between $expireTimestamp and DB value
 	private function isExpireDateChanged($equipmentID, $expireTimestamp) {

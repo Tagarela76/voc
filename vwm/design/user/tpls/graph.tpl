@@ -31,6 +31,21 @@
     (<span id="xDU">0</span>, <span id="yDU">0</span>). <span id="clickdata"></span></p>
 </div>
 {/if}
+<h2 style="align:center;padding-left:40px;">Daily Emissions by Facilities</h2><br/>
+<div style="padding-left:20px;width:1450px;height:370px;">
+   <div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
+   <div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+    <p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
+    (<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
+</div>
+
+<h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2><br/>
+<div style="padding-left:20px;width:1450px;height:370px;">
+   <div id="placeholderDEDepartment" style="float:left;width:1200px;height:300px"></div>
+   <div id="legendDEDepartment" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+    <p id="hoverdataDEDepartment" style="float:left;">Mouse hovers at
+    (<span id="xDEDepartment">0</span>, <span id="yDEDepartment">0</span>). <span id="clickdata"></span></p>
+</div>
 <script language="javascript" type="text/javascript">
 {literal}
 $(function () {
@@ -82,6 +97,43 @@ $(function () {
 		document.getElementById('placeholderDU').innerHTML = "{$noDataTable}";
 		{/if}
 	{/if}
+		
+	{if $dataDEF}
+		var all_data = {$dataDEF};
+		var tick = {$tick};
+		var ylabel = 'voc, lbs';
+		var xlabel = 'date';
+		var placeholder = $("#placeholderDEFacility");
+		var legend = $("#legendDEFacility");
+		var x = $("#xDEFacility");
+		var y = $("#yDEFacility");
+
+		{if $dataDEF != "[]"}
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		{else}
+		//document.getElementById('placeholderDE').innerHTML = "{$noDataTable}";
+		$('#placeholderDEFacility').html("{$noDataTable}");
+		{/if}
+	{/if}
+		
+	{if $dataDED}
+		var all_data = {$dataDED};
+		var tick = {$tick};
+		var ylabel = 'voc, lbs';
+		var xlabel = 'date';
+		var placeholder = $("#placeholderDEDepartment");
+		var legend = $("#legendDEDepartment");
+		var x = $("#xDEDepartment");
+		var y = $("#yDEDepartment");
+
+		{if $dataDED != "[]"}
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		{else}
+		//document.getElementById('placeholderDE').innerHTML = "{$noDataTable}";
+		$('#placeholderDEDepartment').html("{$noDataTable}");
+		{/if}
+	{/if}	
+		
 	{literal}
 });
 {/literal}
