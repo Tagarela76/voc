@@ -68,19 +68,27 @@ class CEmissionGraphs extends Controller {
 		//Daily Emissions Graph by Facilities
 		$facility = new Facility($this->db);
 		$data = $facility->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);
-
+		$facilityList = $facility->getFacilityListByCompany($id);
+		
 	    $this->smarty->assign('dataDEF',$this->performDataForGraph($data));
 		
 		//Daily Emissions Graph by Departments
 		$department = new Department($this->db);
 		$data = $department->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);
-
-	    $this->smarty->assign('dataDED',$this->performDataForGraph($data));
+		//echo $this->performDataForGraph($data);
+		$this->smarty->assign('dataDED',$this->performDataForGraph($data));
 		
 	    //Product Usage Graph
 	    $product = new Product($this->db);
 	    $data = $product->getProductUsageByDays($beginDate,$endDate,$category,$id);
-
+		
+		$request = $this->getFromRequest();
+		
+		$toSelectFacility = $_POST['facilityList'];
+		$this->smarty->assign('selectedFacility', $toSelectFacility);
+		
+		$this->smarty->assign('request', $request);
+		$this->smarty->assign('facilityList', $facilityList);
 	    $this->smarty->assign('legendPUheight',count($product->getProductNR())*18);
 	    $this->smarty->assign('dataPU',$this->performDataForGraph($data));//var_dump($data);
 
@@ -100,7 +108,7 @@ class CEmissionGraphs extends Controller {
 
 	    $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources',$cssSources);
-
+		
 	    $this->smarty->assign('tpl','tpls/graph.tpl');		
     }
 

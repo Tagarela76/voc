@@ -81,19 +81,25 @@ class Department extends DepartmentProperties {
 		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
 		if ($category == "company") {
 			$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-			$categoryDependedSql = "eq.department_id = d.department_id 
+			if ((!$_POST['facilityList']) || ($_POST['facilityList'] == 'all')) {
+				$categoryDependedSql = "eq.department_id = d.department_id	
 										AND d.facility_id = f.facility_id 
 										AND f.company_id = {$categoryID} ";
+			} else {
+				$categoryDependedSql = "eq.department_id = d.department_id". 
+										" AND d.facility_id = ".mysql_escape_string($_POST['facilityList']). 
+										" AND f.company_id = {$categoryID} ";
+			}							
 		}
 		
-		$query = "SELECT sum(m.voc) as voc, concat(d.name,'/',f.name) as dfname, d.name, m.creation_time " .
+		$query = "SELECT sum(m.voc) as voc, d.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
 					"AND m.equipment_id = eq.equipment_id " .
 					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY d.name, m.creation_time " .
 				" ORDER BY d.name ";
-		
+
 		$this->db->query($query);
 		$dailyEmissionsData = $this->db->fetch_all();
 		$result = array();
@@ -108,21 +114,28 @@ class Department extends DepartmentProperties {
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
 		
-		$query = "SELECT d.name, concat(d.name,'/',f.name) as dfname".
+		if ((!$_POST['facilityList']) || ($_POST['facilityList'] == 'all')) {
+		$query = "SELECT d.name ".
 				" FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f ".
 				" WHERE f.company_id = {$categoryID} AND d.facility_id=f.facility_id".
 				" GROUP BY f.name, d.name";
+		} else {
+			$query = "SELECT d.name ".
+				" FROM ".TB_DEPARTMENT." d ".
+				" WHERE d.facility_id = ".mysql_escape_string($_POST['facilityList']).
+				" GROUP BY d.name";
+		}
 		
 		$this->db->query($query);
 		$departmentList = $this->db->fetch_all();	
 		
 		foreach($departmentList as $data) {
-			$result[$data->dfname] = $emptyData;
+			$result[$data->name] = $emptyData;
 		}
 		
 		foreach ($dailyEmissionsData as $data) {
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
-			$result[$data->dfname][$key][1] += $data->voc;
+			$result[$data->name][$key][1] += $data->voc;
 		}
 
 		return $result;
