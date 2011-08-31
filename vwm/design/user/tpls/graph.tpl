@@ -45,7 +45,7 @@
 			<td width="60%"><h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2></br></td>
 			<td width="40%"><div><big>Facility: 
 						<select type="text" name="facilityList" onchange="onSelectFacility(value);">
-							<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>
+							{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
 							{foreach from=$facilityList item=facility}
 								<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
 							{/foreach}
