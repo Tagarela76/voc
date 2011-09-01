@@ -43,16 +43,16 @@
 	<table width="600px">
 		<tr>
 			<td width="60%"><h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2></br></td>
-			<td width="40%"><div><big>Facility: 
+			<td width="40%"><div><big>Facility:
 						<select type="text" name="facilityList" onchange="onSelectFacility(value);">
-							{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
-							{foreach from=$facilityList item=facility}
-								<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
-							{/foreach}
-						</select></div></br>
-			</td>
-		</tr>
-	</table>
+					{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
+					{foreach from=$facilityList item=facility}
+						<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
+					{/foreach}
+				</select></div></br>
+	</td>
+</tr>
+</table>
 </form>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
@@ -61,18 +61,47 @@
     <p id="hoverdataDEDepartment" style="float:left;">Mouse hovers at
 		(<span id="xDEDepartment">0</span>, <span id="yDEDepartment">0</span>). <span id="clickdata"></span></p>
 </div>
-{literal}					
-<script type="text/javascript">
-	function onSelectFacility(val){
-		document.forms.facilityName.submit();
-		//alert(val);
-	}
-</script>
+{literal}
+	<script type="text/javascript">
+		function onSelectFacility(val){
+			document.forms.facilityName.submit();
+		}
+	</script>
 {/literal}
 <script language="javascript" type="text/javascript">
 	{literal}
-$(function () {
+function redraw(hides, data){
+	console.log(hides);
+	console.log(data);
+	flag = true;
+	glob_data_plot = [];
+	for (var j = 0; j < data.length; ++j)
+    if(!hides[j]) // что скрываем, а что нет
+      glob_data_plot.push(data[j]);
+	console.log(glob_data_plot);
 	{/literal}
+		var tick = {$tick};
+		var ylabel = 'voc, lbs';
+		var xlabel = 'date';
+		var placeholder = $("#placeholderDEDepartment");
+		var legend = $("#legendDEDepartment");
+		var x = $("#xDEDepartment");
+		var y = $("#yDEDepartment");
+		if (glob_data_plot != [])
+		flotGraph(placeholder, legend, glob_data_plot, tick, ylabel, xlabel, y, x, false);
+
+	{literal}
+}
+	var flag = false;
+	var glob_data;
+	var glob_data_plot = [];
+	var hide = [];
+
+$(function () {
+
+	{/literal}
+
+
 	{if $dataDE}
 		var all_data = {$dataDE};
 		var tick = {$tick};
@@ -84,7 +113,7 @@ $(function () {
 		var y = $("#yDE");
 
 		{if $dataDE != "[]"}
-		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
 		{else}
 		//document.getElementById('placeholderDE').innerHTML = "{$noDataTable}";
 		$('#placeholderDE').html("{$noDataTable}");
@@ -100,7 +129,7 @@ $(function () {
 		var ylabel = 'qty, lbs';
 
 		{if $dataPU != "[]"}
-		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
 		{else}
 		document.getElementById('placeholderPU').innerHTML = "{$noDataTable}";
 		{/if}
@@ -115,12 +144,12 @@ $(function () {
 		legend = $("#legendDU");
 
 		{if $dataDU != "[]"}
-		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
 		{else}
 		document.getElementById('placeholderDU').innerHTML = "{$noDataTable}";
 		{/if}
 	{/if}
-		
+
 	{if $dataDEF}
 		var all_data = {$dataDEF};
 		var tick = {$tick};
@@ -132,16 +161,16 @@ $(function () {
 		var y = $("#yDEFacility");
 
 		{if $dataDEF != "[]"}
-		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
 		{else}
 		//document.getElementById('placeholderDE').innerHTML = "{$noDataTable}";
 		$('#placeholderDEFacility').html("{$noDataTable}");
 		{/if}
 	{/if}
-		
+
 	{if $dataDED}
 		var all_data = {$dataDED};
-		console.log(all_data);
+		glob_data = all_data;
 		var tick = {$tick};
 		var ylabel = 'voc, lbs';
 		var xlabel = 'date';
@@ -149,15 +178,31 @@ $(function () {
 		var legend = $("#legendDEDepartment");
 		var x = $("#xDEDepartment");
 		var y = $("#yDEDepartment");
-		
+
 		{if $dataDED != "[]"}
-		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x);
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
 		{else}
 		//document.getElementById('placeholderDE').innerHTML = "{$noDataTable}";
 		$('#placeholderDEDepartment').html("{$noDataTable}");
 		{/if}
-	{/if}	
-		
+
+		{literal}
+		var legend = document.getElementById('legendDEDepartment');
+		var legend_tbl = legend.getElementsByTagName('table')[0];
+		var legend_html = '<table style="font-size: smaller; color: rgb(84, 84, 84);"><tbody>';
+		for (var k=0; k<glob_data.length; k++)
+			hide[k] = false;
+		for (var i = 0; i < legend_tbl.rows.length; i++) {
+			legend_html += '<tr>' +
+			'<td><input type="checkbox" onclick="hide['+ i +']=!hide['+ i +'];redraw(hide, glob_data);" checked="1"></td>'
+			+ legend_tbl.rows[i].innerHTML
+			+ '</tr>';
+		}
+		legend_html += "</tbody></table>";
+		legend.innerHTML = legend_html;
+		{/literal}
+	{/if}
+
 	{literal}
 });
 	{/literal}

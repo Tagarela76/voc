@@ -77,7 +77,7 @@ class CEmissionGraphs extends Controller {
 		$data = $department->getDailyEmissionsByDays($beginDate,$endDate,$category,$id);
 		//echo $this->performDataForGraph($data);
 		$this->smarty->assign('dataDED',$this->performDataForGraph($data));
-		
+
 	    //Product Usage Graph
 	    $product = new Product($this->db);
 	    $data = $product->getProductUsageByDays($beginDate,$endDate,$category,$id);
