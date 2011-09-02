@@ -141,9 +141,9 @@ class Department extends DepartmentProperties {
 		return $result;
 				
 	}
-
-
-
+	
+	
+	
 	function getDepartmentDetails($department_id) {
 
 		$department_id=mysql_real_escape_string($department_id);

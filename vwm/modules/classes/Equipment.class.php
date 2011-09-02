@@ -534,7 +534,6 @@ class Equipment extends EquipmentProperties {
 		}
 
 
-
 		foreach ($dailyEmissionsData as $data) {
 			//$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
 
