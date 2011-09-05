@@ -32,29 +32,29 @@
 	</div>
 {/if}
 {if $dataDEF}
-<h2 style="align:center;padding-left:40px;">Daily Emissions by Facility</h2><br/>
-<div style="padding-left:20px;width:1450px;height:370px;">
-	<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
-	<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
-    <p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
+	<h2 style="align:center;padding-left:40px;">Daily Emissions by Facility</h2><br/>
+	<div style="padding-left:20px;width:1450px;height:370px;">
+		<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
+		<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+		<p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
 		(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
-</div>
+	</div>
 {/if}
 
 {if $dataDED}
-<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-	<table width="600px">
-		<tr>
-			<td width="60%"><h2 style="align:center;padding-left:40px;">Daily Emissions by Department</h2></br></td>
-			<td width="40%"><div><big>Facility:
-						<select type="text" name="facilityList" onchange="onSelectFacility(value);">
-					{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
-					{foreach from=$facilityList item=facility}
-						<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
-					{/foreach}
-				</select></div></br>
-	</td>
-</tr>
+	<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+		<table width="600px">
+			<tr>
+				<td width="60%"><h2 style="align:center;padding-left:40px;">Daily Emissions by Department</h2></br></td>
+				<td width="40%"><div><big>Facility:
+							<select type="text" name="facilityList" onchange="onSelectFacility(value);">
+						{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
+						{foreach from=$facilityList item=facility}
+							<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
+						{/foreach}
+					</select></div></br>
+		</td>
+	</tr>
 </table>
 </form>
 
@@ -64,22 +64,22 @@
     <p id="hoverdataDEDepartment" style="float:left;">Mouse hovers at
 		(<span id="xDEDepartment">0</span>, <span id="yDEDepartment">0</span>). <span id="clickdata"></span></p>
 </div>
-{/if}		
+{/if}
 
 {if $dataPUF}
-<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-	<table width="600px">
-		<tr>
-			<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Facility</h2></br></td>
-			<td width="40%"><div><big>Facility:
-						<select type="text" name="facilityListPU" onchange="onSelectFacilityPU(value)">
-					{if (count($facilityListPU) gt 1)}<option value="all" {if ($selectedFacilityPU == 'all')} selected {/if}>All Facilities</option>{/if}
-					{foreach from=$facilityListPU item=facility}
-						<option value="{$facility.id}" {if $selectedFacilityPU == $facility.id} selected {/if}>{$facility.name}</option>
-					{/foreach}
-				</select></div></br>
-	</td>
-</tr>
+	<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+		<table width="600px">
+			<tr>
+				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Facility</h2></br></td>
+				<td width="40%"><div><big>Facility:
+							<select type="text" name="facilityListPU" onchange="onSelectFacilityPU(value);">
+						{if (count($facilityListPU) gt 1)}<option value="all" {if ($selectedFacilityPU == 'all')} selected {/if}>All Facilities</option>{/if}
+						{foreach from=$facilityListPU item=facility}
+							<option value="{$facility.id}" {if $selectedFacilityPU == $facility.id} selected {/if}>{$facility.name}</option>
+						{/foreach}
+					</select></div></br>
+		</td>
+	</tr>
 </table>
 </form>
 
@@ -91,45 +91,49 @@
 </div>
 {/if}
 
-{*if $dataPUD}
-<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-	<table width="600px">
-		<tr>
-			<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Department</h2></br></td>
-			<td width="40%"><div><big>Facility/Department:
-						<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value)">
-					{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Facilities</option>{/if}
-					{foreach from=$departmentListPU item=department}
-						<option value="{$department.id}" {if $selectedDepartmentPU == $department.id} selected {/if}>{$department.name}</option>
-					{/foreach}
-				</select></div></br>
-	</td>
-</tr>
+{if $dataPUD}
+	<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+		<table width="600px">
+			<tr>
+				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Departments</h2></br></td>
+				<td width="40%"><div><big>Facility/Department:
+							<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
+						{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
+						{foreach from=$departmentListPU key=k item=department}
+							{foreach from=$department item=dep}
+								<option value="{$dep.id}" {if $selectedDepartmentPU == $dep.id} selected {/if}>{$k}/{$dep.name}</option>
+							{/foreach}
+						{/foreach}
+					</select></div></br>
+		</td>
+	</tr>
 </table>
 </form>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
 	<div id="placeholderPUDepartment" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendPUDepartment" style="float:left;width:200px;height:300px;overflow:auto;"></div>
-    <p id="hoverdataPUDepartment" style="float:left;">Mouse hovers at
+	<p id="hoverdataPUDepartment" style="float:left;">Mouse hovers at
 		(<span id="xPUDepartment">0</span>, <span id="yPUDepartment">0</span>). <span id="clickdata"></span></p>
 </div>
-{/if*}
+{/if}
 
 
 {literal}
 	<script type="text/javascript">
 		function onSelectFacility(val){
-			document.forms.facilityName.submit();
+			document.forms['facilityName'].submit();
 		}
-			
+
 		function onSelectDepartmentPU(val){
-			document.forms.departmentNamePU.submit();
-		}	
-			
+			//document.forms.departmentNamePU.submit();
+			document.forms['departmentNamePU'].submit();
+		}
+
 		function onSelectFacilityPU(val){
-			document.forms.facilityNamePU.submit();
-		}	
+			//document.forms.facilityNamePU.submit();
+			document.forms['facilityNamePU'].submit();
+		}
 	</script>
 {/literal}
 <script language="javascript" type="text/javascript">
@@ -139,7 +143,7 @@ function redraw(hides, data, datatype){
 	for (var j = 0; j < data.length; ++j)
     if(!hides[j]) // что скрываем, а что нет
       glob_data_plot.push(data[j]);
-	
+
 	switch (datatype){
 		case 'data_DE':
 				var ylabel = 'voc, lbs';
@@ -161,7 +165,7 @@ function redraw(hides, data, datatype){
 				var ylabel = 'voc, lbs';
 				var xlabel = 'date';
 				var placeholder = $("#placeholderDU");
-				var legend = $("#legendDU");	
+				var legend = $("#legendDU");
 				var x = $("#xDU");
 				var y = $("#yDU");
 				break;
@@ -190,9 +194,14 @@ function redraw(hides, data, datatype){
 				var y = $("#yPUFacility");
 				break;
 		case 'data_PUD':
-				
-				break;			
-	}	
+				var ylabel = 'qty, lbs';
+				var xlabel = 'date';
+				var placeholder = $("#placeholderPUDepartment");
+				var legend = $("#legendPUDepartment");
+				var x = $("#xPUDepartment");
+				var y = $("#yPUDepartment");
+				break;
+	}
 	{/literal}
 
 		var tick = {$tick};
@@ -203,21 +212,21 @@ function redraw(hides, data, datatype){
 }
 	var glob_data_DE;
 	var glob_data_PU;
-	var glob_data_DU;	
-	var glob_data_DEFacility;	
+	var glob_data_DU;
+	var glob_data_DEFacility;
 	var glob_data_DEDepartment;
 	var glob_data_PUFacility;
-	var glob_data_PUDepartment;	
-		
+	var glob_data_PUDepartment;
+
 	var glob_data_plot = [];
-		
+
 	var hideDE = [];
 	var hidePU = [];
-	var hideDU = [];	
+	var hideDU = [];
 	var hideDEF = [];
 	var hideDED = [];
 	var hidePUF = [];
-	var hidePUD = [];	
+	var hidePUD = [];
 
 $(function () {
 
@@ -256,7 +265,7 @@ $(function () {
 		}
 		legend_html += "</tbody></table>";
 		legend.innerHTML = legend_html;
-		{/literal}	
+		{/literal}
 	{/if}
 
 	{if $dataPU}
@@ -288,7 +297,7 @@ $(function () {
 		}
 		legend_html += "</tbody></table>";
 		legend.innerHTML = legend_html;
-		{/literal}	
+		{/literal}
 	{/if}
 
 	{if $dataDU}
@@ -320,7 +329,7 @@ $(function () {
 		}
 		legend_html += "</tbody></table>";
 		legend.innerHTML = legend_html;
-		{/literal}	
+		{/literal}
 	{/if}
 
 	{if $dataDEF}
@@ -355,7 +364,7 @@ $(function () {
 		}
 		legend_html += "</tbody></table>";
 		legend.innerHTML = legend_html;
-		{/literal}	
+		{/literal}
 	{/if}
 
 	{if $dataDED}
@@ -393,7 +402,7 @@ $(function () {
 		legend.innerHTML = legend_html;
 		{/literal}
 	{/if}
-		
+
 	{if $dataPUF}
 		all_data = {$dataPUF};
 		glob_data_PUFacility = all_data;
@@ -423,8 +432,40 @@ $(function () {
 		}
 		legend_html += "</tbody></table>";
 		legend.innerHTML = legend_html;
-		{/literal}	
-	{/if}	
+		{/literal}
+	{/if}
+
+	{if $dataPUD}
+		all_data = {$dataPUD};
+		glob_data_PUDepartment = all_data;
+		placeholder = $("#placeholderPUDepartment");
+		legend = $("#legendPUDepartment");
+		x = $("#xPUDepartment");
+		y = $("#yPUDepartment");
+		var ylabel = 'qty, lbs';
+
+		{if $dataPUD != "[]"}
+		flotGraph(placeholder, legend, all_data, tick, ylabel, xlabel, y, x, true);
+		{else}
+		document.getElementById('placeholderPUDepartment').innerHTML = "{$noDataTable}";
+		{/if}
+		{literal}
+		// create checkboxes in legend
+		var legend = document.getElementById('legendPUDepartment');
+		var legend_tbl = legend.getElementsByTagName('table')[0];
+		var legend_html = '<table style="font-size: smaller; color: rgb(84, 84, 84);"><tbody>';
+		for (var k=0; k<glob_data_PUDepartment.length; k++)
+			hidePUD[k] = false;
+		for (var i = 0; i < legend_tbl.rows.length; i++) {
+			legend_html += '<tr>' +
+			'<td><input type="checkbox" onclick="hidePUD['+ i +']=!hidePUD['+ i +'];redraw(hidePUD, glob_data_PUDepartment,\'data_PUD\');" checked="1"></td>'
+			+ legend_tbl.rows[i].innerHTML
+			+ '</tr>';
+		}
+		legend_html += "</tbody></table>";
+		legend.innerHTML = legend_html;
+		{/literal}
+	{/if}
 
 	{literal}
 });

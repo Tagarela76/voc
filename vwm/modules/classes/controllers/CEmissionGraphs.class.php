@@ -63,7 +63,6 @@ class CEmissionGraphs extends Controller {
 		$data = $equip->getDailyEmissionsByDays($beginDate, $endDate, $category, $id);
 
 		$this->smarty->assign('dataDE', $this->performDataForGraph($data));
-
 		//Daily Emissions Graph by Facilities
 		if ($category == 'company') {
 			
@@ -71,14 +70,18 @@ class CEmissionGraphs extends Controller {
 			$data = $facility->getDailyEmissionsByDays($beginDate, $endDate, $category, $id);
 			$data2 = $facility->getProductUsageByDaysByFacilities($beginDate, $endDate, $category, $id);
 			$facilityList = $facility->getFacilityListByCompany($id);
-
 			$this->smarty->assign('dataDEF', $this->performDataForGraph($data));
 			$this->smarty->assign('dataPUF', $this->performDataForGraph($data2));
 
 			//Daily Emissions Graph by Departments
 			$department = new Department($this->db);
 			$data = $department->getDailyEmissionsByDays($beginDate, $endDate, $category, $id);
-			
+			foreach ($facilityList as $row){
+				$departmentList[$row['name']] = $department->getDepartmentListByFacility($row['id']);
+			}
+
+			$departmentData = $department->getProductUsageByDaysByDepartments($beginDate, $endDate, $category, $id);
+			$this->smarty->assign('dataPUD', $this->performDataForGraph($departmentData));
 			//echo $this->performDataForGraph($data);
 			$this->smarty->assign('dataDED', $this->performDataForGraph($data));
 		}
@@ -91,12 +94,15 @@ class CEmissionGraphs extends Controller {
 
 		$toSelectFacility = $_POST['facilityList'];
 		$toSelectFacilityPU = $_POST['facilityListPU'];
+		$toSelectDepartmentPU = $_POST['departmentListPU'];
 		$this->smarty->assign('selectedFacility', $toSelectFacility);
 		$this->smarty->assign('selectedFacilityPU', $toSelectFacilityPU);
+		$this->smarty->assign('selectedDepartmentPU', $toSelectDepartmentPU);
 
 		$this->smarty->assign('request', $request);
 		$this->smarty->assign('facilityList', $facilityList);
 		$this->smarty->assign('facilityListPU', $facilityList);
+		$this->smarty->assign('departmentListPU', $departmentList);
 		$this->smarty->assign('legendPUheight', count($product->getProductNR()) * 18);
 
 

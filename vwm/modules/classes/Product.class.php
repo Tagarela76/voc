@@ -681,22 +681,22 @@ class Product extends ProductProperties {
 		switch ($category) {
 			case "company":
 				$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-				$categoryDependedSql = "m.department_id = d.department_id 
-                                                        AND d.facility_id = f.facility_id 
-                                                        AND f.company_id = {$categoryID} ";
+				$categoryDependedSql = " m.department_id = d.department_id "
+                                                        ." AND d.facility_id = f.facility_id "
+                                                        ." AND f.company_id = {$categoryID} ";
 				break;
 			case "facility":
 				$tables .= ", ".TB_DEPARTMENT." d ";
-				$categoryDependedSql = "m.department_id = d.department_id AND d.facility_id = {$categoryID} ";
+				$categoryDependedSql = " m.department_id = d.department_id AND d.facility_id = {$categoryID} ";
 				break;
 			case "department":				
-				$categoryDependedSql = "m.department_id = {$categoryID} ";
+				$categoryDependedSql = " m.department_id = {$categoryID} ";
 				break;
 			default :
 				throw new Exception('Unknown category for DailyEmissions');
 				break;
 		}
-
+		
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
@@ -705,7 +705,7 @@ class Product extends ProductProperties {
 					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'".
 				" GROUP BY mg.product_id, m.creation_time " .
 				" ORDER BY p.product_id ";
-                                
+				
 		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
                 //echo $query;
 		$this->db->query($query);

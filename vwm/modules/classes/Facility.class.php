@@ -546,24 +546,24 @@ class Facility extends FacilityProperties {
 		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg, ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
 
 			if ((!$_POST['facilityListPU']) || ($_POST['facilityListPU'] == 'all')) {
-				$categoryDependedSql = "m.department_id = d.department_id". 
+				$categoryDependedSql = " m.department_id = d.department_id". 
                                         " AND d.facility_id = f.facility_id". 
                                         " AND f.company_id = {$categoryID}  ";
 			} else {
-				$categoryDependedSql = "m.department_id = d.department_id". 
+				$categoryDependedSql = " m.department_id = d.department_id ". 
                                         " AND d.facility_id =".mysql_escape_string($_POST['facilityListPU']). 
                                         " AND f.company_id = {$categoryID} ";
 			}							
-
+		
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
 					"AND p.product_id = mg.product_id " .
 					"AND m.mix_id = mg.mix_id " .
 					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'".
-				" GROUP BY f.name, m.creation_time " .
-				" ORDER BY f.name ";
-                                
+				" GROUP BY mg.product_id, m.creation_time " .
+				" ORDER BY p.product_id ";
+                      
 		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
                 //echo $query;
 		$this->db->query($query);

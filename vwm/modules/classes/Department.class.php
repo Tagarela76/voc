@@ -143,6 +143,77 @@ class Department extends DepartmentProperties {
 	}
 	
 	
+	public function getProductUsageByDaysByDepartments(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
+            
+        $categoryDependedSql = "";
+		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg, ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
+
+			if ((!$_POST['departmentListPU']) || ($_POST['departmentListPU'] == 'all')) {
+				$categoryDependedSql = " m.department_id = d.department_id ". 
+                                        " AND d.facility_id = f.facility_id ". 
+                                        " AND f.company_id = {$categoryID}  ";
+			} else {
+				$selectFacilityId = " (SELECT facility_id FROM ".TB_DEPARTMENT." d WHERE d.department_id=".mysql_escape_string($_POST['departmentListPU']).") "; 
+				$categoryDependedSql = " m.department_id = ".mysql_escape_string($_POST['departmentListPU']). 
+                                        " AND d.facility_id = {$selectFacilityId} ". 
+                                        " AND f.company_id = {$categoryID} ";
+			}							
+
+		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
+				" FROM {$tables} " .
+				" WHERE {$categoryDependedSql} " .
+					" AND p.product_id = mg.product_id " .
+					" AND m.mix_id = mg.mix_id " .
+					" AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'".
+				" GROUP BY mg.product_id, m.creation_time " .
+				" ORDER BY p.product_id ";
+		
+		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
+                //echo $query;
+		$this->db->query($query);
+		$productUsageData = $this->db->fetch_all();
+		$result = array();
+
+		//get empty template for output for each product
+		$emptyProductData = array();
+		$day = 86400; // Day in seconds
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;
+		$curDay = $beginDate->formatInput();
+		for($i = 0; $i< $daysCount; $i++) {
+			$emptyProductData []= array(strtotime($curDay)*1000, 0);
+			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
+		}
+
+		//get all used products list
+		$productList = array();
+		foreach($productUsageData as $data) {
+			if (!in_array($data->product_nr,$productList)) {
+				$productList []= $data->product_nr;
+			}
+		}
+		
+
+		if (count($productList) == 0) {
+			$productList []= 'products not used!';
+		}
+
+		//format output for all products
+		foreach($productList as $data) {
+			$result[$data] = $emptyProductData;
+		}
+
+
+		foreach ($productUsageData as $data) {
+			//$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
+			//$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
+			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2);
+			//$key = intval(date("d",$key));
+			$result[$data->product_nr][$key][1] = $data->sum;
+		}
+
+		return $result;
+	}
+	
 	
 	function getDepartmentDetails($department_id) {
 
