@@ -81,13 +81,13 @@ class Department extends DepartmentProperties {
 		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
 		if ($category == "company") {
 			$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-			if ((!$_POST['facilityList']) || ($_POST['facilityList'] == 'all')) {
+			if ((!$_SESSION['DED']) || ($_SESSION['DED'] == 'all')) {
 				$categoryDependedSql = "eq.department_id = d.department_id	
 										AND d.facility_id = f.facility_id 
 										AND f.company_id = {$categoryID} ";
 			} else {
 				$categoryDependedSql = "eq.department_id = d.department_id". 
-										" AND d.facility_id = ".mysql_escape_string($_POST['facilityList']). 
+										" AND d.facility_id = ".mysql_escape_string($_SESSION['DED']). 
 										" AND f.company_id = {$categoryID} ";
 			}							
 		}
@@ -146,17 +146,16 @@ class Department extends DepartmentProperties {
 	public function getProductUsageByDaysByDepartments(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
             
         $categoryDependedSql = "";
-		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg, ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
+		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg ";
 
-			if ((!$_POST['departmentListPU']) || ($_POST['departmentListPU'] == 'all')) {
+			//if ((!$_POST['departmentListPU']) || ($_POST['departmentListPU'] == 'all')) {
+			if ((!$_SESSION['PUD']) || ($_SESSION['PUD'] == 'all')) {
+				$tables .=", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
 				$categoryDependedSql = " m.department_id = d.department_id ". 
                                         " AND d.facility_id = f.facility_id ". 
                                         " AND f.company_id = {$categoryID}  ";
 			} else {
-				$selectFacilityId = " (SELECT facility_id FROM ".TB_DEPARTMENT." d WHERE d.department_id=".mysql_escape_string($_POST['departmentListPU']).") "; 
-				$categoryDependedSql = " m.department_id = ".mysql_escape_string($_POST['departmentListPU']). 
-                                        " AND d.facility_id = {$selectFacilityId} ". 
-                                        " AND f.company_id = {$categoryID} ";
+				$categoryDependedSql = " m.department_id = ".mysql_escape_string($_SESSION['PUD']);
 			}							
 
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
@@ -169,7 +168,7 @@ class Department extends DepartmentProperties {
 				" ORDER BY p.product_id ";
 		
 		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
-                //echo $query;
+
 		$this->db->query($query);
 		$productUsageData = $this->db->fetch_all();
 		$result = array();
@@ -208,7 +207,7 @@ class Department extends DepartmentProperties {
 			//$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2);
 			//$key = intval(date("d",$key));
-			$result[$data->product_nr][$key][1] = $data->sum;
+			$result[$data->product_nr][$key][1] += $data->sum;
 		}
 
 		return $result;

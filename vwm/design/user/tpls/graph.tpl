@@ -23,7 +23,7 @@
 		(<span id="xPU">0</span>, <span id="yPU">0</span>). <span id="clickdata"></span></p>
 </div>
 {if $dataDU}
-	<h2 style="align:center;padding-left:40px;">Department Usage</h2><br/>
+	<h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2><br/>
 	<div style="padding-left:20px;width:1450px;height:370px;">
 		<div id="placeholderDU" style="float:left;width:1200px;height:300px"></div>
 		<div id="legendDU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
@@ -37,7 +37,7 @@
 		<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
 		<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
 		<p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
-		(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
+			(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
 	</div>
 {/if}
 
@@ -435,7 +435,7 @@ $(function () {
 		{/literal}
 	{/if}
 
-	{if $dataPUD}
+	{if $dataPUD} 
 		all_data = {$dataPUD};
 		glob_data_PUDepartment = all_data;
 		placeholder = $("#placeholderPUDepartment");

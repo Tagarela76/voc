@@ -30,7 +30,29 @@ class CEmissionGraphs extends Controller {
 	}
 
 	private function setGraphs($category, $id) {
-
+		
+		if (!$_POST){
+			$_SESSION['DED'] = '';
+			$_SESSION['PUF'] = '';
+			$_SESSION['PUD'] = '';
+		}
+		if ($category == 'company'){
+			if ($_POST['facilityList']) {
+			$_SESSION['DED'] = $_POST['facilityList'];
+			}
+			
+			if ($_POST['facilityListPU']) {
+			$_SESSION['PUF'] = $_POST['facilityListPU'];
+			}
+			
+			if ($_POST['departmentListPU']) {
+			$_SESSION['PUD'] = $_POST['departmentListPU'];
+			}
+		} else {
+			$_SESSION['DED'] = '';
+			$_SESSION['PUF'] = '';
+			$_SESSION['PUD'] = '';
+		}
 		//dates validation!
 		$endDate = new TypeChain($this->getFromRequest('end'), 'date', $this->db, $id, $category);
 		$beginDate = new TypeChain($this->getFromRequest('begin'), 'date', $this->db, $id, $category);
@@ -79,10 +101,8 @@ class CEmissionGraphs extends Controller {
 			foreach ($facilityList as $row){
 				$departmentList[$row['name']] = $department->getDepartmentListByFacility($row['id']);
 			}
-
 			$departmentData = $department->getProductUsageByDaysByDepartments($beginDate, $endDate, $category, $id);
 			$this->smarty->assign('dataPUD', $this->performDataForGraph($departmentData));
-			//echo $this->performDataForGraph($data);
 			$this->smarty->assign('dataDED', $this->performDataForGraph($data));
 		}
 		//Product Usage Graph
@@ -92,9 +112,9 @@ class CEmissionGraphs extends Controller {
 
 		$request = $this->getFromRequest();
 
-		$toSelectFacility = $_POST['facilityList'];
-		$toSelectFacilityPU = $_POST['facilityListPU'];
-		$toSelectDepartmentPU = $_POST['departmentListPU'];
+		$toSelectFacility = $_SESSION['DED'];
+		$toSelectFacilityPU = $_SESSION['PUF'];
+		$toSelectDepartmentPU = $_SESSION['PUD'];
 		$this->smarty->assign('selectedFacility', $toSelectFacility);
 		$this->smarty->assign('selectedFacilityPU', $toSelectFacilityPU);
 		$this->smarty->assign('selectedDepartmentPU', $toSelectDepartmentPU);
@@ -105,13 +125,12 @@ class CEmissionGraphs extends Controller {
 		$this->smarty->assign('departmentListPU', $departmentList);
 		$this->smarty->assign('legendPUheight', count($product->getProductNR()) * 18);
 
-
 		//Department Usage Graph(only for facility)
 		if ($category == 'facility') {
 			$facility = new Facility($this->db);
 			$data = $facility->getDepartmentUsageByDays($beginDate, $endDate, $id);
-			$this->smarty->assign('dataDU', $this->performDataForGraph($data)); //var_dump($data);
-		}//die();
+			$this->smarty->assign('dataDU', $this->performDataForGraph($data)); 
+		}
 
 		$jsSources = array(
 			'modules/js/flot/jquery.flot.js',

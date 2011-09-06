@@ -533,7 +533,7 @@ class Facility extends FacilityProperties {
 
 		foreach ($departmentUsageData as $data) {
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
-			$result[$data->name][$key][1] = $data->voc;
+			$result[$data->name][$key][1] += $data->voc;
 		}
 
 		return $result;
@@ -543,16 +543,16 @@ class Facility extends FacilityProperties {
 	public function getProductUsageByDaysByFacilities(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 
         $categoryDependedSql = "";
-		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg, ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
+		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg, ".TB_DEPARTMENT." d ";
 
-			if ((!$_POST['facilityListPU']) || ($_POST['facilityListPU'] == 'all')) {
+			if ((!$_SESSION['PUF']) || ($_SESSION['PUF'] == 'all')) {
+				$tables .= ", ".TB_FACILITY." f ";
 				$categoryDependedSql = " m.department_id = d.department_id". 
                                         " AND d.facility_id = f.facility_id". 
                                         " AND f.company_id = {$categoryID}  ";
 			} else {
 				$categoryDependedSql = " m.department_id = d.department_id ". 
-                                        " AND d.facility_id =".mysql_escape_string($_POST['facilityListPU']). 
-                                        " AND f.company_id = {$categoryID} ";
+                                        " AND d.facility_id =".mysql_escape_string($_SESSION['PUF']);
 			}							
 		
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
@@ -604,7 +604,7 @@ class Facility extends FacilityProperties {
 			//$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2);
 			//$key = intval(date("d",$key));
-			$result[$data->product_nr][$key][1] = $data->sum;
+			$result[$data->product_nr][$key][1] += $data->sum;
 		}
 
 		return $result;
