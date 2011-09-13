@@ -4,7 +4,7 @@
 	<input type="submit" value="Set Date" class="button" /></span>
 </form>
 {assign var=noDataTable value="<table style='padding-left:20px;width:100%;height:100%;verticalalign:middle;'><tr><td style='width:100%;height:100%;text-align:center; vertical-align:middle; border:1px solid Black'><h2>No Data</h2></td></tr></table>"}
-<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Daily Emissions {else} Daily Emissions {/if}</h2><br/>
+<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2><br/>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
 	<div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
@@ -15,7 +15,7 @@
 
 
 
-<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Product Usage {else} Product Usage {/if}</h2><br/>
+<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2><br/>
 <div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}370{*/if*}px;">
 	<div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendPU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
