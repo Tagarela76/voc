@@ -1,21 +1,22 @@
 <?php
 
 	class MixProduct extends Product {
-		
+
 		public $mixgroup_id;
 		public $mix_id;
 		public $product_id;
 		public $quantity;
 		public $unit_type;
 		public $quantity_lbs;
-		
+		public $is_primary = 0;
+
 		public $name;
 		public $voclx;
 		public $vocwx;
 		public $density;
 		public $supplier;
 		public $product_nr;
-		
+
 		public $unittypeDetails;
 		public $density_unit_id;
 		public $coating_id;
@@ -27,29 +28,29 @@
 		public $supplier_id;
 		public $coatDesc;
 		public $unitTypeList;
-		
-		
-		
-		
+
+
+
+
 		public function __construct($db, $mixgroup_id = null) {
 			$this->db = $db;
 			if (isset($mixgroup_id)) {
-				$this->$mixgroup_id = $mixgroup_id;		
-				$this->_load();			
-			}			
+				$this->$mixgroup_id = $mixgroup_id;
+				$this->_load();
+			}
 		}
-		
-		
+
+
 		private function _load() {
 			if (!isset($this->mixgroup_id)) return false;
-			
+
 			$mixGroupID = mysql_escape_string($this->mixgroup_id);
-			
+
 			$query = 'SELECT * FROM '.TB_MIXGROUP.' WHERE mixgroup_id = '.$mixGroupID.'';
 			$this->db->query($query);
-			
+
 			if ($this->db->num_rows() == 0) return false;
-			
+
 			$mixGroupData = $this->db->fetch(0);
 			foreach ($mixGroupData as $property =>$value) {
 				if (property_exists($this,$property)) {
@@ -57,49 +58,49 @@
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		/** overrides super class method **/
-		public function initializeByID($productID) { 
-			
-			$query = "SELECT sup.*, p.*, coat.coat_desc as coatDesc FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT . "  
+		public function initializeByID($productID) {
+
+			$query = "SELECT sup.*, p.*, coat.coat_desc as coatDesc FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT . "
 							WHERE p.supplier_id = sup.supplier_id
 							AND coat.coat_id = coating_id
 							AND p.product_id = $productID";
-			
+
 			$this->db->query($query);
-			
+
 			if ($this->db->num_rows() == 0) return false;
-			
+
 			$productData = $this->db->fetch(0);
 			//echo "<h1> Product Data</h1>";
 			//var_dump($productData);
 			//exit;
-			
+
 			$this->perccentVolatileVolume = $productData->percent_volatile_volume;
 			$this->perccentVolatileWeight = $productData->percent_volatile_weight;
-			
+
 			foreach ($productData as $property =>$value) {
-				
+
 				if (property_exists($this,$property)) {
 					//echo "<br/>set property: $property => $value";
 						$this->$property = $productData->$property;
 				}
 			}
-			
+
 			//	TODO: add userfriendly records to product properties (by Product::initializeByID)
 			//parent::initializeByID($mixProduct->product_id);
-			
+
 			//var_dump($this);
 			//exit;
-			
-			
+
+
 			return true;
 		}
-		
+
 		public function initUnittypeList($unittype) {
-			
+
 			//echo "init unitTypeList by unittype_id: {$this->unittypeDetails['unittype_id']}";
 			$unittypeClass = $unittype->getUnittypeClass($this->unittypeDetails['unittype_id']);
 			//echo " and class: <b>$unittypeClass</b>";
@@ -107,11 +108,11 @@
 			//var_dump($this->unitTypeList);
 			$this->unittypeDetails['unittypeClass'] = $unittypeClass;
 		}
-		
+
 		/*public function getVoclx() {
 			return $this->voclx;
 		}
-		
+
 		public function getVocwx() {
 			return $this->vocwx;
 		}*/

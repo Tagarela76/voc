@@ -34,7 +34,7 @@ pfp_id = {$pfp->getId()};
 pfp_descr = '{$pfp->getDescription()}';
 {literal}
 $("#pfp_"+pfp_id).click({ "pfp_products" : pfp_products_tmp, "pfp_id" : pfp_id, "pfp_descr" : pfp_descr}, function(e){
-	
+
 	addPFPProducts(e.data.pfp_products, e.data.pfp_id, e.data.pfp_descr);
 });
 {/literal}
