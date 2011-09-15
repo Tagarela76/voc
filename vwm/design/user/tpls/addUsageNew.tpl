@@ -9,7 +9,7 @@
 	{/if}
 
 
-	
+
 <script type="text/javascript">
 
 var companyId="{$companyID}";
@@ -34,17 +34,19 @@ var departmentID = {$data->department_id};
 
 var unittypes = new Array();
 
-{section name=i loop=$unittype}	
+{section name=i loop=$unittype}
 	un = new Array({$unittype[i].unittype_id},'{$unittype[i].description}');
-	unittypes.push(un);        
+	unittypes.push(un);
 {/section}
 
 {if $smarty.request.action == 'edit'}
 var editForm = true;
+var isPfp = ({$data->isPfp} == 1) ? true : false;
 var mixID = '{$smarty.request.id}';
 var mixDescription = '{$data->description}';
 {else}
 var editForm = false;
+var isPfp = false;
 {/if}
 
 {literal}
@@ -52,14 +54,24 @@ $(function()
 {
 {/literal}
 	//Products load
-	
 	{foreach from=$data->products item=p}
-		//products.addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type});
-		addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
-		
+
+		{literal}
+		if (isPfp) {
+		{/literal}
+			currentSelectedPFP = true;
+			addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
+		{literal}
+		} else {
+		{/literal}
+			addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
+		{literal}
+		}
+		{/literal}
+
 	{/foreach}
-		
-{literal}	
+
+{literal}
 
 
 }
@@ -67,9 +79,9 @@ $(function()
 
 function createSelectUnittypeClass(id) {
 	sel = $("<select>").attr("id",id);
-            
+
 	{/literal}
-	
+
 	//sel.attr('onchange','getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();');
 
 	{section name=j loop=$typeEx}
@@ -77,7 +89,7 @@ function createSelectUnittypeClass(id) {
 		{if 'USALiquid' eq $typeEx[j]}sel.append("<option value='USALiquid' {if 'USALiquid' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA liquid</option>");{/if}
 		{if 'USADry' eq $typeEx[j]}sel.append("<option value='USADry' {if 'USADry' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA dry</option>");{/if}
 		{if 'MetricVlm' eq $typeEx[j]}sel.append("<option value='MetricVlm' {if 'MetricVlm' eq $data->waste->waste->unitTypeClass}selected='selected'{/if}>Metric volume</option>");{/if}
-		{if 'MetricWght' eq $typeEx[j]}sel.append("<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>Metric weight</option>");{/if}		
+		{if 'MetricWght' eq $typeEx[j]}sel.append("<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>Metric weight</option>");{/if}
 	{/section}
 	{literal}
 
@@ -88,48 +100,48 @@ function createSelectUnittypeClass(id) {
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js"></script>
 
-	
+
 
 
 <div style="padding:7px;" >
 
-	<form method='POST' action='{$sendFormAction}'>		
-	
+	<form method='POST' action='{$sendFormAction}'>
+
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" width="30%">
-				
+
 					<span >{if $smarty.request.action==addItem}Adding for a new usage{else}Editing usage{/if}</span>
 				</td>
 				<td class="users_u_top_r">
 					&nbsp;
-				</td>				
-			</tr>		
+				</td>
+			</tr>
 
 			<tr height="">
 
-{*MIXDETAILS*}		
+{*MIXDETAILS*}
 							<td class="border_users_r border_users_l border_users_b" height="20">
-								Work Order/Job No.: 
+								Work Order/Job No.:
 							</td>
 							<td class="border_users_r border_users_b">
-							<div class="floatleft" >	
+							<div class="floatleft" >
 								<input type='text' id="mixDescription" name='description' value='{$data->description}'></div>
 								<div class="error_img"  id="mixDescriptionErrorAlreadyInUse" style="display:none;"><span class="error_text" >Entered name is already in use!</span></div>
 								<div class="error_img"  id="mixDescriptionError" style="display:none;"><span class="error_text" >Error!</span></div>
 							</td>
-							
-						</tr>												
-						
+
+						</tr>
+
 						<tr>
 							<td class="border_users_r border_users_l border_users_b" height="20">
 								Exempt Rule: (not necessary)
 							</td>
 							<td class="border_users_r border_users_b">
-							<div align="left" ><input type="text" name="exemptRule" value="{$data->exempt_rule}" id="exemptRule"></div>								
+							<div align="left" ><input type="text" name="exemptRule" value="{$data->exempt_rule}" id="exemptRule"></div>
 							</td>
 						</tr>
-																	
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Mix Date ({$data->dateFormatForCalendar}):
@@ -139,7 +151,7 @@ function createSelectUnittypeClass(id) {
 							<div id="creationTimeError" style="display:none;" class="error_img"><span class="error_text">Error!</span></div>
 								{if $validStatus.summary eq 'false'}
 								{if $validStatus.creationTime eq 'failed'}
-						
+
 								{*ERORR*}
 								<div class="error_img"><span class="error_text">Error!</span></div>
 								{*/ERORR*}
@@ -151,13 +163,13 @@ function createSelectUnittypeClass(id) {
 							    function clearInputBox(item){
 							        item.value = "";
 							    }
-							    
-							    $(document).ready(function(){	
-									 $('#calendar1').datepicker({ dateFormat: '{/literal}{$data->dateFormatForCalendar}{literal}' }); 
+
+							    $(document).ready(function(){
+									 $('#calendar1').datepicker({ dateFormat: '{/literal}{$data->dateFormatForCalendar}{literal}' });
 							    });
-							   
+
 							</script>
-							{/literal}								
+							{/literal}
 							</td>
 						</tr>
 						<tr>
@@ -165,45 +177,45 @@ function createSelectUnittypeClass(id) {
 								AP method:
 							</td>
 							<td class="border_users_b border_users_r">
-								<div class="floatleft">	
+								<div class="floatleft">
 									<select name="selectAPMethod" id="selectAPMethod">
-									{section name=i loop=$APMethod}										
-											<option value='{$APMethod[i].apmethod_id}' {if $APMethod[i].apmethod_id eq $data->apmethod_id}selected="selected"{/if}> {$APMethod[i].description}</option>										
+									{section name=i loop=$APMethod}
+											<option value='{$APMethod[i].apmethod_id}' {if $APMethod[i].apmethod_id eq $data->apmethod_id}selected="selected"{/if}> {$APMethod[i].description}</option>
 									{/section}
-									</select>									
-								</div>								
+									</select>
+								</div>
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Equipment :
 							</td>
-							<td class="border_users_r border_users_b">								
-								<div class="floatleft">	
+							<td class="border_users_r border_users_b">
+								<div class="floatleft">
 								<select name="selectEquipment" id="selectEquipment">
-									{section name=i loop=$equipment}										
+									{section name=i loop=$equipment}
 										<option value='{$equipment[i].equipment_id}' {if $equipment[i].equipment_id eq $data->equipment}selected="selected"{/if}> {$equipment[i].equip_desc} </option>
 									{/section}
-								</select>							
-									
+								</select>
+
 								</div>
-								
-								<div class="floatleft padd_left">									
+
+								<div class="floatleft padd_left">
 								<select name="rule" id="rule">
 									{section name=i loop=$rules}
 										<option value='{$rules[i].rule_id}' {if $rules[i].rule_id eq $data->rule_id}selected="selected"{/if}> {$rules[i].rule_nr} - {$rules[i].rule_desc}</option>
 									{/section}
-								</select>									
+								</select>
 								</div>
 									{if $validStatus.summary eq 'false'}
 									{if $validStatus.equipment eq 'noEquipment'}
-									{*ERORR*}										
+									{*ERORR*}
 										<div style="width:80px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
 									{*/ERORR*}
 									{/if}
-									{/if}								
+									{/if}
 							</td>
 						</tr>
 					</table>
@@ -214,20 +226,20 @@ function createSelectUnittypeClass(id) {
 {*WASTE*}
 {if $show.waste_streams === true}
 					{include file="tpls:waste_streams/design/wasteStreams.tpl"}
-{else}				
-<!--   <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> --> 
+{else}
+<!--   <a id="generateMix" href="#" onclick="generateLink(); return false;">Generate Link</a> -->
 <a id="addMix" href="" style="display:none;" target="_blank">Add Mix</a>
 
 					<table class="users" cellpadding="0" cellspacing="0" align="center">
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Set waste</td>
-						</tr>												
+						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%" height="20">
 								Waste value:
 							</td>
 							<td class="border_users_r border_users_b">
-								<div align="left" >											
+								<div align="left" >
 								<input type="text" id="wasteValue" name="wasteValue" value="{$data->waste.value}">
 									{if $validStatus.summary eq 'false'}
 									{if $validStatus.waste.value eq 'failed'}
@@ -247,9 +259,9 @@ function createSelectUnittypeClass(id) {
 										<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate waste for mix. Please enter valid waste value in % or set density for all products used in mix. VOC was calculated with waste = 0.</font></div>
 									{*/ERORR*}
-									{/if}	
 									{/if}
-								</div>								
+									{/if}
+								</div>
 							</td>
 						</tr>
 						<tr>
@@ -258,36 +270,36 @@ function createSelectUnittypeClass(id) {
 							</td>
 
 							<td class="border_users_r border_users_b">
-								<div class="floatleft">	
-								
-									<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >									 										
+								<div class="floatleft">
+
+									<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >
 										{section name=j loop=$typeEx}
 										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
 										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
 										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
 										{/section}
 										<!-- 'percent' eq $data->waste.unittypeClass or  -->
-										<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>										
+										<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
 									</select>
 									<input type="hidden" id="company" value="{$companyID}">
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
-								<div class="floatleft padd_left">	
-									<select name="selectWasteUnittype" id="selectWasteUnittype" >									
-										{section name=i loop=$data->waste.unitTypeList}	
-											<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>										
-										{/section}									
-									</select>									
+								<div class="floatleft padd_left">
+									<select name="selectWasteUnittype" id="selectWasteUnittype" >
+										{section name=i loop=$data->waste.unitTypeList}
+											<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>
+										{/section}
+									</select>
 								</div>
-								
+
 								{*ajax-preloader*}
 								<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
 									<img src='images/ajax-loader.gif' height=16  style="float:left;">
 								</div>
 							</td>
-						</tr>		
+						</tr>
 					</table>
 {/if}
 {*/WASTE*}
@@ -309,62 +321,62 @@ function createSelectUnittypeClass(id) {
     <div id="fragment-1" style=" padding:0px;">
 {/literal}
 
-    
 
-										
-	
-					
+
+
+
+
 					<table class="users" style="width:100%;" cellpadding="0" cellspacing="0" align="center" >
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Add product</td>
-						</tr>												
-													
-							
+						</tr>
+
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
 								Product :
 							</td>
 							<td class="border_users_r border_users_b">
-								<div class="floatleft">	
-								
-								{*NICE PRODUCT LIST*}	
+								<div class="floatleft">
+
+								{*NICE PRODUCT LIST*}
 								<select name="selectProduct" id="selectProduct" class="addInventory">
 									<!-- <option selected="selected" >Select Product</option> -->
-									{if $products}				
-										{foreach from=$products item=productsArr key=supplier}															
+									{if $products}
+										{foreach from=$products item=productsArr key=supplier}
 										<optgroup label="{$supplier}">
 											{section name=i loop=$productsArr}
 												{assign var=isAdded value=0}
-												{section name=j loop=$productsAdded} 
+												{section name=j loop=$productsAdded}
 		                            				{if $productsAdded[j]->product_id eq $productsArr[i].product_id}
 		                            					{assign var=isAdded value=1}
 		                            				{/if}
 		                            			{/section}
-                            					{if $isAdded eq 0}                            				
+                            					{if $isAdded eq 0}
 													<option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data->product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>
 												{else}
 													<option value='{$productsArr[i].product_id}' disabled="disabled"> {$productsArr[i].formattedProduct} </option>
 												{/if}
 											{/section}
 										</optgroup>
-										{/foreach}																			
+										{/foreach}
 									{else}
 										<option value='0'> no products </option>
 									{/if}
 								</select>
 								{*NICE PRODUCT LIST*}
-										
+
 								</div>
 								{if $validStatus.summary eq 'false'}
 								{if $validStatus.products eq 'noProducts'}
-									{*ERORR*}										
+									{*ERORR*}
 										<div class="error_img"><span class="error_text">No products in the mix!</span></div>
 									{*/ERORR*}
 								{/if}
 								{/if}
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r">
 								Quantity :
@@ -374,54 +386,54 @@ function createSelectUnittypeClass(id) {
 							<script type="text/javascript">
 										$("#quantity").numeric();
 							</script>
-							
+
 							{if $validStatus.summary eq 'false'}
 							{if $validStatus.quantity eq 'failed'}
-						
-								{*ERORR*}								
+
+								{*ERORR*}
 									<div class="error_img"><span class="error_text">Error!</span></div>
 								{*/ERORR*}
 							{/if}
 							{/if}
-						
+
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r">
 								Unit type :
 							</td>
 							<td class="border_users_r border_users_b">
-								<div class="floatleft">	
-									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();">	
-															 										
+								<div class="floatleft">
+									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();">
+
 										{section name=j loop=$typeEx}
 											{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
 											{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
-											{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+											{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}
 											{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste->waste->unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-											{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+											{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
 										{/section}
 									</select>
 								</div>
 								<div class="floatleft padd_left">
 									<select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
-									
-									{section name=i loop=$unittype}										
-											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $data->waste->unittypeID}selected="selected"{/if}> {$unittype[i].description}</option>										
+
+									{section name=i loop=$unittype}
+											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $data->waste->unittypeID}selected="selected"{/if}> {$unittype[i].description}</option>
 									{/section}
 									</select>
 								</div>
 								<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
-								
+
 								{*ajax-preloader*}
 								<div id="selectUnittypePreloader" class="floatleft padd_left" style="display:none">
 									<img src='images/ajax-loader.gif' height=16  style="float:left;">
 								</div>
-								
+
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r">
 								Product description :
@@ -429,14 +441,14 @@ function createSelectUnittypeClass(id) {
 							<td class="border_users_r border_users_b">
 							<div class="floatleft"> <!-- 	<input type='text' id='product_desc' value='{$data->description}' readonly> -->
 								<span id="product_desc"></span>
-							</div>							
+							</div>
 							{*ajax-preloader*}
 							<div id="product_descPreloader" class="floatleft padd_left" style="display:none">
 								<img src='images/ajax-loader.gif' height=16  style="float:left;">
 							</div>
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r">
 								Coating type :
@@ -448,7 +460,7 @@ function createSelectUnittypeClass(id) {
 							{*ajax-preloader*}
 							<div id="coatingPreloader" class="floatleft padd_left" style="display:none">
 								<img src='images/ajax-loader.gif' height=16  style="float:left;">
-							</div>							
+							</div>
 							</td>
 						</tr>
 						<tr>
@@ -458,16 +470,16 @@ function createSelectUnittypeClass(id) {
 							<td class="border_users_r border_users_b">
 								<div align="left" class="buttonpadd">
 									<input type='button' class="button" value='Add product to list' onclick="addProduct2List()">
-									
+
 								</div>
-								
+
 							</td>
 						</tr>
 					</table>
 
 </div>
     <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
-    
+
       <table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
       	<tr id="title">
       		<td>Description</td>
@@ -484,13 +496,13 @@ function createSelectUnittypeClass(id) {
       		</tr>
       		<tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
       			<td colspan="4" style="text-align:center;"><img src="images/ajax-loader.gif" class="preloader" />
-      				
+
       			</td>
       		</tr>
       	{/foreach}
       </table>
-      
-      
+
+
     </div>
 </div>
 <!--  <div  style="width:200px; display:none; height:200px; position:absolute; background-color:Green; left:250px; top:500px;">
@@ -499,7 +511,7 @@ function createSelectUnittypeClass(id) {
 -->
 {*/ADDPRODUCT*}
 
-{*MIXLIMITS*}					
+{*MIXLIMITS*}
 					<table class="users"  width="100%" cellpadding="0" cellspacing="0" align="center">
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Emissions</td>
@@ -523,7 +535,7 @@ function createSelectUnittypeClass(id) {
 								<input type="hidden" name="voclx" value="{$data->voclx}">
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								VOCWX:
@@ -533,51 +545,51 @@ function createSelectUnittypeClass(id) {
 								<input type="hidden" name="vocwx" value="{$data->vocwx}">
 							</td>
 						</tr>*}
-						<tr>													
+						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Daily limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
 								<div align="left" id="dailyLimitExceeded">
-									{if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
+									{if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
 								</div>
-								
+
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Department limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
 								<div align="left" id="departmentLimitExceeded">
-									{if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
+									{if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
 								</div>
-								
+
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Facility limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
 								<div align="left" id="facilityLimitExceeded">
-									{if $facilityLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
+									{if $facilityLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
 								</div>
-								
+
 							</td>
-						</tr>																												
-						
+						</tr>
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Facility annual limit exceeded:
 							</td>
 							<td class="border_users_r border_users_b">
 								<div align="left" id="facilityAnnualLimitExceeded">
-									{if $facilityAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
+									{if $facilityAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
 								</div>
-								
+
 							</td>
 						</tr>
 						<tr>
@@ -586,14 +598,14 @@ function createSelectUnittypeClass(id) {
 							</td>
 							<td class="border_users_r border_users_b">
 								<div align="left" id="departmentAnnualLimitExceeded">
-									{if $departmentAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 	
+									{if $departmentAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
 								</div>
-								
+
 							</td>
 						</tr>
 			</table>
-{*/MIXLIMITS*}		
-			
+{*/MIXLIMITS*}
+
 		<div align="right" class="buttonpadd">
 		<!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
 		{if $request.action eq "edit"}
@@ -601,11 +613,11 @@ function createSelectUnittypeClass(id) {
 		{else}
 			<input type='button' id="btnSave" name='save' class="button" value='Total' onclick="addMix()"/>
 		{/if}
-		
+
 		</div>
-		
-		
-	
+
+
+
 <div class="padd7" style="display:none;" id="addProductsContainer">
 <table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" >
 <tbody>
@@ -616,8 +628,8 @@ function createSelectUnittypeClass(id) {
 		<td>Description</td>
 		<td>Quantity</td>
 		<td class="border_users_r">Unit type</td>
-	</tr>	
-</tbody>	
+	</tr>
+</tbody>
 <tfoot>
 	<tr class="">
 		<td class="users_u_bottom" height="20">Select:
@@ -625,41 +637,41 @@ function createSelectUnittypeClass(id) {
 			<a href="#" onclick="selectAllProducts(false);return false;">None</a>
 		</td>
 		<td colspan="6" class="users_u_bottom_r">
-			
+
 			<a href="#" onclick="clearSelectedProducts(); return false">Remove selected products from the list</a>
 			{if $debug}
 			<a href="#" onclick="alert(products.toJson()); return false;">Display Products</a>
 			{/if}
 		</td>
 	</tr>
-</tfoot>														
-</table>			
-		
-	
-		
-		
+</tfoot>
+</table>
+
+
+
+
 		{if $request.action eq "addItem"}
-			{section name=i loop=$productCount}			
+			{section name=i loop=$productCount}
 			<input type='hidden' name='quantity_{$smarty.section.i.index}' value='{$productsAdded[i]->quantity}'>
 			<input type='hidden' name='unittype_{$smarty.section.i.index}' value='{$productsAdded[i]->unittype}'>
 			{/section}
-		{/if}		
-			<input type='hidden' name='productCount' value='{$productCount}'>									
+		{/if}
+			<input type='hidden' name='productCount' value='{$productCount}'>
 		{if $request.action eq "addItem"}
 			<input type='hidden' name='department_id' value='{$request.departmentID}'>
-		{/if}	
+		{/if}
 		{if $request.action eq "edit"}
 			<input type="hidden" name="id" value="{$request.id}">
 		{/if}
-		
+
 		</form>
-</div> 
+</div>
 {if $validStatus.summary eq 'true'}
 	{literal}
 		<script type="text/javascript">
 		//window.document.onload = getUnittypes(document.getElementById('selectWasteUnittypeClass'), document.getElementById('company').value, document.getElementById('companyEx').value);
 				window.document.onload = getUnittypes(document.getElementById('selectUnittypeClass'), document.getElementById('company').value, document.getElementById('companyEx').value);
-	
+
 		//		var count = document.getElementById('productCount').value;
 		//		for(i=0; i<count; i++) {
 		//			window.document.onload = getUnittypes(document.getElementById('selectUnittypeClass_'+i), document.getElementById('company').value, document.getElementById('companyEx').value);

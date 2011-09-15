@@ -881,7 +881,7 @@ class CMix extends Controller
 		$mix = $this->buildMix($jmix);
 		$mix->facility_id = $facilityID;
 		$mix->isMWS = $isMWS;
-		
+
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
@@ -978,7 +978,6 @@ class CMix extends Controller
 
 			$product = new MixProduct($this->db);
 
-
 			$product->initializeByID($p->productID);
 			$product->quantity = $p->quantity;
 
@@ -990,6 +989,7 @@ class CMix extends Controller
 			$product->json = json_encode($product);
 
 			$product->is_primary = ($p->isPrimary) ? 1 : 0;
+			$product->ratio_to_save = (isset($p->ratio)) ? $p->ratio : null;
 			$products[] = $product;
 		}
 

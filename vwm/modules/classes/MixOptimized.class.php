@@ -26,6 +26,7 @@
 		public $exprire;
 		public $expire;
 
+		public $isPfp = 0;
 
 		public $products = null;
 
@@ -494,7 +495,7 @@
 				return;
 			}
 
-			$query = "INSERT INTO ".TB_MIXGROUP." (mix_id, product_id, quantity, unit_type, quantity_lbs, is_primary) VALUES ";
+			$query = "INSERT INTO ".TB_MIXGROUP." (mix_id, product_id, quantity, unit_type, quantity_lbs, is_primary, ratio) VALUES ";
 
 			$unitTypeConverter = new UnitTypeConverter('lb');
 			$unittype = new Unittype($this->db);
@@ -521,16 +522,20 @@
 				    	$value = "'".$value."'";
 				    }
 				}
-			    $query .= " ($mixID,
+
+				$ratio = (isset($product->ratio_to_save)) ? $product->ratio_to_save : 'NULL';
+				$query .= " ($mixID,
 			    			{$product->product_id},
 			    			{$product->quantity},
 			    			{$product->unittypeDetails['unittype_id']},
 			    			{$value},
-			    			{$product->is_primary}) ,";
+			    			{$product->is_primary},
+						{$ratio}) ,";
 			}
 
 			$query = substr_replace($query, " ", strlen($query)-1, 1); // Remove last symbol ','
 			//echo "<h1>$query</h1>";
+
 			return $query;
 		}
 
@@ -778,6 +783,15 @@
 				//	TODO: add userfriendly records to product properties
 				$mixProduct->initializeByID($mixProduct->product_id);
 				array_push($this->products, $mixProduct);
+
+				//	if there is a primary product then this is an pfp-based mix
+				if ($mixProduct->is_primary) {
+					$this->isPfp = true;
+				}
+
+				if ($productData->ratio) {
+					$mixProduct->ratio_to_save = $productData->ratio;
+				}
 			}
 
 			$unittype = new Unittype($this->db);

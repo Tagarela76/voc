@@ -9,6 +9,7 @@
 		public $unit_type;
 		public $quantity_lbs;
 		public $is_primary = 0;
+		public $ratio_to_save;
 
 		public $name;
 		public $voclx;
@@ -28,7 +29,6 @@
 		public $supplier_id;
 		public $coatDesc;
 		public $unitTypeList;
-
 
 
 
