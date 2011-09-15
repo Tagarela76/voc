@@ -130,7 +130,7 @@ class Controller {
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-		
+
 		$user = new User($this->db);
 		if ($request['category']=='company'){
 			$userList = $user->getUserListByCompany($request['id']);
@@ -141,7 +141,7 @@ class Controller {
 			$department = new Department($this->db);
 			$structureList = $department->getDepartmentListByFacility($request['id']);
 		}
-		
+
 		$this->smarty->assign('structureList', $structureList);
 		$this->smarty->assign('userList', $userList);
         $this->smarty->assign('accessname', $_SESSION['username']);
@@ -202,7 +202,7 @@ class Controller {
                 throw new Exception('deny');
                 break;
         }
-		
+
 		$request = $this->getFromRequest();
         //titles new!!! {panding}
         $title = new TitlesNew($this->smarty, $this->db);
@@ -211,7 +211,7 @@ class Controller {
 
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
-		
+
         $this->smarty->assign('companyDetails', $companyDetails);
         $this->smarty->assign('facilityDetails', $facilityDetails);
 	$this->smarty->assign('setupLevel', $setupLevel);
@@ -254,7 +254,7 @@ class Controller {
                 $prRequest->save();
                 $query = "UPDATE " . TB_MSDS_FILE . " SET product_id=" . $this->db->getLastInsertedID() . " WHERE msds_file_id=" . $tmpId;
                 $this->db->query($query);
-                header("Location:" . $productReq['productReferer'] . "&message=ProductAdded&color=green");  //  redirect
+                header("Location:" . $productReq['productReferer'] . "&message=".  urlencode('New Product Submitted')."&color=green");  //  redirect
                 die();
             } else {
                 $this->smarty->assign('validStatus', $validationStatus);
