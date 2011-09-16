@@ -1,7 +1,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="modules/js/flot/excanvas.min.js"></script><![endif]-->
-<div width="100%" ><table width="100%"><tr>
-	<td align="right" width="40%"><h3>Select Graph: </h3></td>
-	<td align="left" width="60%"><select  id="selGr" name="selectGraph" onChange="onSelectGraph(value);">
+<div><table width="100%"><tr>
+	<td align="right" width="40%" valign="center"><b>Select Graph:</b></td>
+	<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value);">
 		<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
 		<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
 		<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
