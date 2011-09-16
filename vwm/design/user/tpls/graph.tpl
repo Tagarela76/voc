@@ -1,15 +1,15 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="modules/js/flot/excanvas.min.js"></script><![endif]-->
 <div><table width="100%"><tr>
-	<td align="right" width="40%" valign="center"><b>Select graph:</b></td>
-	<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value, false);">
-		<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
-		<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
-		<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
-		<option value="4" {if ($selectedGraph == '4')} selected {/if}>Daily Emissions by Department</option>
-		<option value="5" {if ($selectedGraph == '5')} selected {/if}>Product Usage by Facility</option>
-		<option value="6" {if ($selectedGraph == '6')} selected {/if}>Product Usage by Deprtment</option>
-	</select></td>
-	</tr></table></div>
+			<td align="right" width="40%" valign="center"><b>Select graph:</b></td>
+			<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value, false);">
+					<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
+					<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
+					<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
+					<option value="4" {if ($selectedGraph == '4')} selected {/if}>Daily Emissions by Department</option>
+					<option value="5" {if ($selectedGraph == '5')} selected {/if}>Product Usage by Facility</option>
+					<option value="6" {if ($selectedGraph == '6')} selected {/if}>Product Usage by Deprtment</option>
+				</select></td>
+		</tr></table></div>
 <span style="float:right;padding-right:40px;">
 	<input type="text" name="begin" id="calendar1" value="{$begin->formatOutput()}" /> - <input type="text" name="end" id="calendar2" value="{$end->formatOutput()}" />
 	<input type="submit" value="Set Date" class="button" /></span><br><br>
@@ -18,37 +18,37 @@
 
 <div id="graph1" style="display: block;">
 	<table><tr>
-			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
 			<td><h2 style="align:center; margin: 0px; padding: 0px">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2></td>
 			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-	</tr></table><br/><br/>
-<div style="padding-left:20px;width:1450px;height:370px;">
-	<div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
-	<div id="legendDE" style="float:left;width:200px;height:300px;overflow:auto;"></div>
-    <p id="hoverdataDE" style="float:left;">Mouse hovers at
-		(<span id="xDE">0</span>, <span id="yDE">0</span>). <span id="clickdata"></span></p>
-</div>
+		</tr></table><br/><br/>
+	<div style="padding-left:20px;width:1450px;height:330px;">
+		<div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
+		<div id="legendDE" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+		<p id="hoverdataDE" style="float:left;">Mouse hovers at
+			(<span id="xDE">0</span>, <span id="yDE">0</span>). <span id="clickdata"></span></p>
+	</div>
 </div>
 
 <div id="graph2" style="display: block;">
-<table><tr>
-			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
+	<table><tr>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
 			<td><h2 style="align:center; margin: 0px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2></td>
 			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-	</tr></table><br/><br/>	
+		</tr></table><br/><br/>
 
-<div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}370{*/if*}px;">
-	<div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
-	<div id="legendPU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
-    <p id="hoverdataPU" style="float:left;">Mouse hovers at
-		(<span id="xPU">0</span>, <span id="yPU">0</span>). <span id="clickdata"></span></p>
-</div>
+	<div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}330{*/if*}px;">
+		<div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
+		<div id="legendPU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+		<p id="hoverdataPU" style="float:left;">Mouse hovers at
+			(<span id="xPU">0</span>, <span id="yPU">0</span>). <span id="clickdata"></span></p>
+	</div>
 </div>
 
 
 {if $dataDU}
 	<h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2><br/>
-	<div style="padding-left:20px;width:1450px;height:370px;">
+	<div style="padding-left:20px;width:1450px;height:330px;">
 		<div id="placeholderDU" style="float:left;width:1200px;height:300px"></div>
 		<div id="legendDU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
 		<p id="hoverdataDU" style="float:left;">Mouse hovers at
@@ -58,43 +58,43 @@
 
 
 <div id="graph3" style="display: block;">
-{if $dataDEF}
-<table><tr>
-			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
-			<td><h2 style="align:center; margin: 0px;">Daily Emissions by Facility</h2></td>
-			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-	</tr></table><br/><br/>	
-	<div style="padding-left:20px;width:1450px;height:370px;">
-		<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
-		<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
-		<p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
-			(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
-	</div>
-{/if}
+	{if $dataDEF}
+		<table><tr>
+				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+				<td><h2 style="align:center; margin: 0px;">Daily Emissions by Facility</h2></td>
+				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+			</tr></table><br/><br/>
+		<div style="padding-left:20px;width:1450px;height:330px;">
+			<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
+			<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
+			<p id="hoverdataDEFacility" style="float:left;">Mouse hovers at
+				(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
+		</div>
+	{/if}
 </div>
 
 
 <div id="graph4" style="display: block;">
-{if $dataDED}
-	<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table>
-			<tr>
-				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
-				<td><h2 style="align:center; margin: 0px;">Daily Emissions by Department</h2></td>
-				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-				<td valign="middle" style="padding-left: 10px;"><b>Facility:</b>
-							<select type="text" name="facilityList" onchange="onSelectFacility(value);">
-						{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
-						{foreach from=$facilityList item=facility}
-							<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
-						{/foreach}
-					</select>
-		</td>
-	</tr>
-</table></br></br>
+	{if $dataDED}
+		<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+			<table>
+				<tr>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td><h2 style="align:center; margin: 0px;">Daily Emissions by Department</h2></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td valign="middle" style="padding-left: 10px;"><b>Facility:</b>
+						<select type="text" name="facilityList" onchange="onSelectFacility(value);">
+					{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
+					{foreach from=$facilityList item=facility}
+						<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
+					{/foreach}
+				</select>
+			</td>
+		</tr>
+	</table></br></br>
 </form>
 
-<div style="padding-left:20px;width:1450px;height:370px;">
+<div style="padding-left:20px;width:1450px;height:330px;">
 	<div id="placeholderDEDepartment" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendDEDepartment" style="float:left;width:200px;height:300px;overflow:auto;"></div>
     <p id="hoverdataDEDepartment" style="float:left;">Mouse hovers at
@@ -105,26 +105,26 @@
 
 
 <div id="graph5" style="display: block;">
-{if $dataPUF}
-	<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table>
-			<tr>
-				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
-				<td><h2 style="align:center; margin: 0px;">Product Usage by Facility</h2></td>
-				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-				<td><b>Facility:
+	{if $dataPUF}
+		<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+			<table>
+				<tr>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td><h2 style="align:center; margin: 0px;">Product Usage by Facility</h2></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td><b>Facility:
 							<select type="text" name="facilityListPU" onchange="onSelectFacilityPU(value);">
 						{if (count($facilityListPU) gt 1)}<option value="all" {if ($selectedFacilityPU == 'all')} selected {/if}>All Facilities</option>{/if}
 						{foreach from=$facilityListPU item=facility}
 							<option value="{$facility.id}" {if $selectedFacilityPU == $facility.id} selected {/if}>{$facility.name}</option>
 						{/foreach}
 					</select>
-		</td>
-	</tr>
-</table><br/><br/>
+			</td>
+		</tr>
+	</table><br/><br/>
 </form>
 
-<div style="padding-left:20px;width:1450px;height:370px;">
+<div style="padding-left:20px;width:1450px;height:330px;">
 	<div id="placeholderPUFacility" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendPUFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
     <p id="hoverdataPUFacility" style="float:left;">Mouse hovers at
@@ -135,28 +135,28 @@
 
 
 <div id="graph6" style="display: block;">
-{if $dataPUD}
-	<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table>
-			<tr>
-				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
-				<td><h2 style="align:center;margin: 0px;">Product Usage by Department</h2></td>
-				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
-				<td><b>Facility/Department:</b>
-							<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
-						{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
-						{foreach from=$departmentListPU key=k item=department}
-							{foreach from=$department item=dep}
-								<option value="{$dep.id}" {if $selectedDepartmentPU == $dep.id} selected {/if}>{$k}/{$dep.name}</option>
-							{/foreach}
+	{if $dataPUD}
+		<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
+			<table>
+				<tr>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td><h2 style="align:center;margin: 0px;">Product Usage by Department</h2></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td><b>Facility/Department:</b>
+						<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
+					{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
+					{foreach from=$departmentListPU key=k item=department}
+						{foreach from=$department item=dep}
+							<option value="{$dep.id}" {if $selectedDepartmentPU == $dep.id} selected {/if}>{$k}/{$dep.name}</option>
 						{/foreach}
-					</select>
-		</td>
-	</tr>
-</table><br/><br/>
+					{/foreach}
+				</select>
+			</td>
+		</tr>
+	</table><br/><br/>
 </form>
 
-<div style="padding-left:20px;width:1450px;height:370px;">
+<div style="padding-left:20px;width:1450px;height:330px;">
 	<div id="placeholderPUDepartment" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendPUDepartment" style="float:left;width:200px;height:300px;overflow:auto;"></div>
 	<p id="hoverdataPUDepartment" style="float:left;">Mouse hovers at
@@ -164,7 +164,14 @@
 </div>
 {/if}
 </div>
-
+<div>
+	<table width="1200px">
+		<tr>
+			<td align="right"><a title="Previous graph"><img src="../vwm/images/goBackLarge.png" onClick="onBack();"/></a></td>
+			<td align="left"><a title="Next graph"><img src="../vwm/images/goNextLarge.png" onClick="onNext();"/></a></td>
+		</tr>
+	</table>
+</div>
 
 {literal}
 	<script type="text/javascript">
@@ -179,81 +186,81 @@
 		function onSelectFacilityPU(val){
 			document.forms['facilityNamePU'].submit();
 		}
-			
+
 		function onNext(){
 				selRow++;
-				if (selRow > 6){ 
+				if (selRow > 6){
 					selRow = 6;
 				}
-				onSelectGraph(selRow + '', true);		
+				onSelectGraph(selRow + '', true);
 				document.getElementById('selGr').options[selRow-1].selected = true;
 		}
-		
+
 		function onBack(){
 				selRow--;
-				if (selRow < 1){ 
+				if (selRow < 1){
 					selRow = 1;
 				}
-				onSelectGraph(selRow + '', true);		
+				onSelectGraph(selRow + '', true);
 				document.getElementById('selGr').options[selRow-1].selected = true;
 		}
-		
+
 		function onSelectGraph(val, flag){
-			
+
 			switch (val){
 				case '1':
 					$('#graph2').hide();
 					$('#graph3').hide();
 					$('#graph4').hide();
-					$('#graph5').hide();	
-					$('#graph6').hide();	
+					$('#graph5').hide();
+					$('#graph6').hide();
 					$('#graph1').show();
 					break;
 				case '2':
 					$('#graph1').hide();
 					$('#graph3').hide();
 					$('#graph4').hide();
-					$('#graph5').hide();	
-					$('#graph6').hide();	
+					$('#graph5').hide();
+					$('#graph6').hide();
 					$('#graph2').show();
 					break;
 				case '3':
 					$('#graph1').hide();
 					$('#graph2').hide();
 					$('#graph4').hide();
-					$('#graph5').hide();	
-					$('#graph6').hide();	
+					$('#graph5').hide();
+					$('#graph6').hide();
 					$('#graph3').show();
 					break;
 				case '4':
 					$('#graph1').hide();
 					$('#graph2').hide();
 					$('#graph3').hide();
-					$('#graph5').hide();	
-					$('#graph6').hide();	
+					$('#graph5').hide();
+					$('#graph6').hide();
 					$('#graph4').show();
 					break;
 				case '5':
 					$('#graph1').hide();
 					$('#graph2').hide();
 					$('#graph3').hide();
-					$('#graph4').hide();	
-					$('#graph6').hide();	
+					$('#graph4').hide();
+					$('#graph6').hide();
 					$('#graph5').show();
 					break;
 				case '6':
 					$('#graph1').hide();
 					$('#graph2').hide();
 					$('#graph3').hide();
-					$('#graph4').hide();	
-					$('#graph5').hide();	
+					$('#graph4').hide();
+					$('#graph5').hide();
 					$('#graph6').show();
-					break;		
+					break;
 			}
 			if (!flag){
 				selRow = document.getElementById('selGr').selectedIndex + 1;
-			}	
-		}	
+			}
+		}
 	</script>
 {/literal}
 <script language="javascript" type="text/javascript">
@@ -347,15 +354,15 @@ function redraw(hides, data, datatype){
 	var hideDED = [];
 	var hidePUF = [];
 	var hidePUD = [];
-		
+
 	var selRow;
-		
+
 $(function () {
 
 	{/literal}
-		
+
 	selRow = document.getElementById('selGr').selectedIndex + 1;
-	
+
 	{if $dataDE}
 		var all_data = {$dataDE};
 		glob_data_DE = all_data;
@@ -558,7 +565,7 @@ $(function () {
 		{/literal}
 	{/if}
 
-	{if $dataPUD} 
+	{if $dataPUD}
 		all_data = {$dataPUD};
 		glob_data_PUDepartment = all_data;
 		placeholder = $("#placeholderPUDepartment");
@@ -590,54 +597,54 @@ $(function () {
 		{/literal}
 	{/if}
 		var xx = document.getElementById('selGr').value;
-		{literal}
+	{literal}
 		switch (xx){
 			case '1':
 				$('#graph2').hide();
 				$('#graph3').hide();
 				$('#graph4').hide();
 				$('#graph5').hide();
-				$('#graph6').hide();	
-				break;	
+				$('#graph6').hide();
+				break;
 			case '2':
 				$('#graph1').hide();
 				$('#graph3').hide();
 				$('#graph4').hide();
 				$('#graph5').hide();
-				$('#graph6').hide();	
+				$('#graph6').hide();
 				break;
 			case '3':
 				$('#graph2').hide();
 				$('#graph1').hide();
 				$('#graph4').hide();
 				$('#graph5').hide();
-				$('#graph6').hide();	
+				$('#graph6').hide();
 				break;
 			case '4':
 				$('#graph2').hide();
 				$('#graph3').hide();
 				$('#graph1').hide();
 				$('#graph5').hide();
-				$('#graph6').hide();	
+				$('#graph6').hide();
 				break;
 			case '5':
 				$('#graph2').hide();
 				$('#graph3').hide();
 				$('#graph4').hide();
 				$('#graph1').hide();
-				$('#graph6').hide();	
-				break;			
+				$('#graph6').hide();
+				break;
 			case '6':
 				$('#graph2').hide();
 				$('#graph3').hide();
 				$('#graph4').hide();
 				$('#graph5').hide();
-				$('#graph1').hide();	
-				break;		
+				$('#graph1').hide();
+				break;
 		}
-			
-		{/literal}	
-		
+
+	{/literal}
+
 	{literal}
 });
 	{/literal}
