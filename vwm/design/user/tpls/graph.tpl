@@ -1,7 +1,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="modules/js/flot/excanvas.min.js"></script><![endif]-->
 <div><table width="100%"><tr>
-	<td align="right" width="40%" valign="center"><b>Select Graph:</b></td>
-	<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value);">
+	<td align="right" width="40%" valign="center"><b>Select graph:</b></td>
+	<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value, false);">
 		<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
 		<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
 		<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
@@ -17,8 +17,11 @@
 {assign var=noDataTable value="<table style='padding-left:20px;width:100%;height:100%;verticalalign:middle;'><tr><td style='width:100%;height:100%;text-align:center; vertical-align:middle; border:1px solid Black'><h2>No Data</h2></td></tr></table>"}
 
 <div id="graph1" style="display: block;">
-<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2><br/>
-
+	<table><tr>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
+			<td><h2 style="align:center; margin: 0px; padding: 0px">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+	</tr></table><br/><br/>
 <div style="padding-left:20px;width:1450px;height:370px;">
 	<div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendDE" style="float:left;width:200px;height:300px;overflow:auto;"></div>
@@ -28,7 +31,12 @@
 </div>
 
 <div id="graph2" style="display: block;">
-<h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2><br/>
+<table><tr>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
+			<td><h2 style="align:center; margin: 0px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+	</tr></table><br/><br/>	
+
 <div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}370{*/if*}px;">
 	<div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
 	<div id="legendPU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
@@ -51,7 +59,11 @@
 
 <div id="graph3" style="display: block;">
 {if $dataDEF}
-	<h2 style="align:center;padding-left:40px;">Daily Emissions by Facility</h2><br/>
+<table><tr>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>		
+			<td><h2 style="align:center; margin: 0px;">Daily Emissions by Facility</h2></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+	</tr></table><br/><br/>	
 	<div style="padding-left:20px;width:1450px;height:370px;">
 		<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
 		<div id="legendDEFacility" style="float:left;width:200px;height:300px;overflow:auto;"></div>
@@ -65,19 +77,21 @@
 <div id="graph4" style="display: block;">
 {if $dataDED}
 	<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table width="600px">
+		<table>
 			<tr>
-				<td width="60%"><h2 style="align:center;padding-left:40px;">Daily Emissions by Department</h2></br></td>
-				<td width="40%"><div><big>Facility:
+				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+				<td><h2 style="align:center; margin: 0px;">Daily Emissions by Department</h2></td>
+				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+				<td valign="middle" style="padding-left: 10px;"><b>Facility:</b>
 							<select type="text" name="facilityList" onchange="onSelectFacility(value);">
 						{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
 						{foreach from=$facilityList item=facility}
 							<option value="{$facility.id}" {if $selectedFacility == $facility.id} selected {/if}>{$facility.name}</option>
 						{/foreach}
-					</select></div></br>
+					</select>
 		</td>
 	</tr>
-</table>
+</table></br></br>
 </form>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
@@ -93,19 +107,21 @@
 <div id="graph5" style="display: block;">
 {if $dataPUF}
 	<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table width="600px">
+		<table>
 			<tr>
-				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Facility</h2></br></td>
-				<td width="40%"><div><big>Facility:
+				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+				<td><h2 style="align:center; margin: 0px;">Product Usage by Facility</h2></td>
+				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+				<td><b>Facility:
 							<select type="text" name="facilityListPU" onchange="onSelectFacilityPU(value);">
 						{if (count($facilityListPU) gt 1)}<option value="all" {if ($selectedFacilityPU == 'all')} selected {/if}>All Facilities</option>{/if}
 						{foreach from=$facilityListPU item=facility}
 							<option value="{$facility.id}" {if $selectedFacilityPU == $facility.id} selected {/if}>{$facility.name}</option>
 						{/foreach}
-					</select></div></br>
+					</select>
 		</td>
 	</tr>
-</table>
+</table><br/><br/>
 </form>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
@@ -121,10 +137,12 @@
 <div id="graph6" style="display: block;">
 {if $dataPUD}
 	<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
-		<table width="600px">
+		<table>
 			<tr>
-				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Department</h2></br></td>
-				<td width="40%"><div><big>Facility/Department:
+				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+				<td><h2 style="align:center;margin: 0px;">Product Usage by Department</h2></td>
+				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+				<td><b>Facility/Department:</b>
 							<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
 						{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
 						{foreach from=$departmentListPU key=k item=department}
@@ -132,10 +150,10 @@
 								<option value="{$dep.id}" {if $selectedDepartmentPU == $dep.id} selected {/if}>{$k}/{$dep.name}</option>
 							{/foreach}
 						{/foreach}
-					</select></div></br>
+					</select>
 		</td>
 	</tr>
-</table>
+</table><br/><br/>
 </form>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
@@ -161,8 +179,26 @@
 		function onSelectFacilityPU(val){
 			document.forms['facilityNamePU'].submit();
 		}
+			
+		function onNext(){
+				selRow++;
+				if (selRow > 6){ 
+					selRow = 6;
+				}
+				onSelectGraph(selRow + '', true);		
+				document.getElementById('selGr').options[selRow-1].selected = true;
+		}
 		
-		function onSelectGraph(val){
+		function onBack(){
+				selRow--;
+				if (selRow < 1){ 
+					selRow = 1;
+				}
+				onSelectGraph(selRow + '', true);		
+				document.getElementById('selGr').options[selRow-1].selected = true;
+		}
+		
+		function onSelectGraph(val, flag){
 			
 			switch (val){
 				case '1':
@@ -171,7 +207,7 @@
 					$('#graph4').hide();
 					$('#graph5').hide();	
 					$('#graph6').hide();	
-					$('#graph1').show();	
+					$('#graph1').show();
 					break;
 				case '2':
 					$('#graph1').hide();
@@ -214,6 +250,9 @@
 					$('#graph6').show();
 					break;		
 			}
+			if (!flag){
+				selRow = document.getElementById('selGr').selectedIndex + 1;
+			}	
 		}	
 	</script>
 {/literal}
@@ -308,12 +347,15 @@ function redraw(hides, data, datatype){
 	var hideDED = [];
 	var hidePUF = [];
 	var hidePUD = [];
-
+		
+	var selRow;
+		
 $(function () {
 
 	{/literal}
 		
-		
+	selRow = document.getElementById('selGr').selectedIndex + 1;
+	
 	{if $dataDE}
 		var all_data = {$dataDE};
 		glob_data_DE = all_data;
