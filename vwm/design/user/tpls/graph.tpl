@@ -1,9 +1,22 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="modules/js/flot/excanvas.min.js"></script><![endif]-->
+<div width="100%" ><table width="100%"><tr>
+	<td align="right" width="40%"><h3>Select Graph: </h3></td>
+	<td align="left" width="60%"><select  id="selGr" name="selectGraph" onChange="onSelectGraph(value);">
+		<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
+		<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
+		<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
+		<option value="4" {if ($selectedGraph == '4')} selected {/if}>Daily Emissions by Department</option>
+		<option value="5" {if ($selectedGraph == '5')} selected {/if}>Product Usage by Facility</option>
+		<option value="6" {if ($selectedGraph == '6')} selected {/if}>Product Usage by Deprtment</option>
+	</select></td>
+	</tr></table></div>
 <span style="float:right;padding-right:40px;">
 	<input type="text" name="begin" id="calendar1" value="{$begin->formatOutput()}" /> - <input type="text" name="end" id="calendar2" value="{$end->formatOutput()}" />
-	<input type="submit" value="Set Date" class="button" /></span>
+	<input type="submit" value="Set Date" class="button" /></span><br><br>
 </form>
 {assign var=noDataTable value="<table style='padding-left:20px;width:100%;height:100%;verticalalign:middle;'><tr><td style='width:100%;height:100%;text-align:center; vertical-align:middle; border:1px solid Black'><h2>No Data</h2></td></tr></table>"}
+
+<div id="graph1" style="display: block;">
 <h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2><br/>
 
 <div style="padding-left:20px;width:1450px;height:370px;">
@@ -12,9 +25,9 @@
     <p id="hoverdataDE" style="float:left;">Mouse hovers at
 		(<span id="xDE">0</span>, <span id="yDE">0</span>). <span id="clickdata"></span></p>
 </div>
+</div>
 
-
-
+<div id="graph2" style="display: block;">
 <h2 style="align:center;padding-left:40px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2><br/>
 <div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}370{*/if*}px;">
 	<div id="placeholderPU" style="float:left;width:1200px;height:300px"></div>
@@ -22,6 +35,9 @@
     <p id="hoverdataPU" style="float:left;">Mouse hovers at
 		(<span id="xPU">0</span>, <span id="yPU">0</span>). <span id="clickdata"></span></p>
 </div>
+</div>
+
+
 {if $dataDU}
 	<h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2><br/>
 	<div style="padding-left:20px;width:1450px;height:370px;">
@@ -31,6 +47,9 @@
 			(<span id="xDU">0</span>, <span id="yDU">0</span>). <span id="clickdata"></span></p>
 	</div>
 {/if}
+
+
+<div id="graph3" style="display: block;">
 {if $dataDEF}
 	<h2 style="align:center;padding-left:40px;">Daily Emissions by Facility</h2><br/>
 	<div style="padding-left:20px;width:1450px;height:370px;">
@@ -40,7 +59,10 @@
 			(<span id="xDEFacility">0</span>, <span id="yDEFacility">0</span>). <span id="clickdata"></span></p>
 	</div>
 {/if}
+</div>
 
+
+<div id="graph4" style="display: block;">
 {if $dataDED}
 	<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 		<table width="600px">
@@ -65,7 +87,10 @@
 		(<span id="xDEDepartment">0</span>, <span id="yDEDepartment">0</span>). <span id="clickdata"></span></p>
 </div>
 {/if}
+</div>
 
+
+<div id="graph5" style="display: block;">
 {if $dataPUF}
 	<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 		<table width="600px">
@@ -90,12 +115,15 @@
 		(<span id="xPUFacility">0</span>, <span id="yPUFacility">0</span>). <span id="clickdata"></span></p>
 </div>
 {/if}
+</div>
 
+
+<div id="graph6" style="display: block;">
 {if $dataPUD}
 	<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 		<table width="600px">
 			<tr>
-				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Departments</h2></br></td>
+				<td width="60%"><h2 style="align:center;padding-left:40px;">Product Usage by Department</h2></br></td>
 				<td width="40%"><div><big>Facility/Department:
 							<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
 						{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
@@ -117,6 +145,7 @@
 		(<span id="xPUDepartment">0</span>, <span id="yPUDepartment">0</span>). <span id="clickdata"></span></p>
 </div>
 {/if}
+</div>
 
 
 {literal}
@@ -126,14 +155,66 @@
 		}
 
 		function onSelectDepartmentPU(val){
-			//document.forms.departmentNamePU.submit();
 			document.forms['departmentNamePU'].submit();
 		}
 
 		function onSelectFacilityPU(val){
-			//document.forms.facilityNamePU.submit();
 			document.forms['facilityNamePU'].submit();
 		}
+		
+		function onSelectGraph(val){
+			
+			switch (val){
+				case '1':
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();	
+					$('#graph6').hide();	
+					$('#graph1').show();	
+					break;
+				case '2':
+					$('#graph1').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();	
+					$('#graph6').hide();	
+					$('#graph2').show();
+					break;
+				case '3':
+					$('#graph1').hide();
+					$('#graph2').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();	
+					$('#graph6').hide();	
+					$('#graph3').show();
+					break;
+				case '4':
+					$('#graph1').hide();
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph5').hide();	
+					$('#graph6').hide();	
+					$('#graph4').show();
+					break;
+				case '5':
+					$('#graph1').hide();
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();	
+					$('#graph6').hide();	
+					$('#graph5').show();
+					break;
+				case '6':
+					$('#graph1').hide();
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();	
+					$('#graph5').hide();	
+					$('#graph6').show();
+					break;		
+			}
+		}	
 	</script>
 {/literal}
 <script language="javascript" type="text/javascript">
@@ -231,8 +312,8 @@ function redraw(hides, data, datatype){
 $(function () {
 
 	{/literal}
-
-
+		
+		
 	{if $dataDE}
 		var all_data = {$dataDE};
 		glob_data_DE = all_data;
@@ -466,7 +547,55 @@ $(function () {
 		legend.innerHTML = legend_html;
 		{/literal}
 	{/if}
-
+		var xx = document.getElementById('selGr').value;
+		{literal}
+		switch (xx){
+			case '1':
+				$('#graph2').hide();
+				$('#graph3').hide();
+				$('#graph4').hide();
+				$('#graph5').hide();
+				$('#graph6').hide();	
+				break;	
+			case '2':
+				$('#graph1').hide();
+				$('#graph3').hide();
+				$('#graph4').hide();
+				$('#graph5').hide();
+				$('#graph6').hide();	
+				break;
+			case '3':
+				$('#graph2').hide();
+				$('#graph1').hide();
+				$('#graph4').hide();
+				$('#graph5').hide();
+				$('#graph6').hide();	
+				break;
+			case '4':
+				$('#graph2').hide();
+				$('#graph3').hide();
+				$('#graph1').hide();
+				$('#graph5').hide();
+				$('#graph6').hide();	
+				break;
+			case '5':
+				$('#graph2').hide();
+				$('#graph3').hide();
+				$('#graph4').hide();
+				$('#graph1').hide();
+				$('#graph6').hide();	
+				break;			
+			case '6':
+				$('#graph2').hide();
+				$('#graph3').hide();
+				$('#graph4').hide();
+				$('#graph5').hide();
+				$('#graph1').hide();	
+				break;		
+		}
+			
+		{/literal}	
+		
 	{literal}
 });
 	{/literal}

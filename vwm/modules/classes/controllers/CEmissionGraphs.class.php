@@ -35,23 +35,28 @@ class CEmissionGraphs extends Controller {
 			$_SESSION['DED'] = '';
 			$_SESSION['PUF'] = '';
 			$_SESSION['PUD'] = '';
+			$_SESSION['selGraph'] ='';
 		}
 		if ($category == 'company'){
 			if ($_POST['facilityList']) {
-			$_SESSION['DED'] = $_POST['facilityList'];
+				$_SESSION['DED'] = $_POST['facilityList'];
+				$_SESSION['selGraph'] = '4';
 			}
 			
 			if ($_POST['facilityListPU']) {
-			$_SESSION['PUF'] = $_POST['facilityListPU'];
+				$_SESSION['PUF'] = $_POST['facilityListPU'];
+				$_SESSION['selGraph'] = '5';
 			}
 			
 			if ($_POST['departmentListPU']) {
-			$_SESSION['PUD'] = $_POST['departmentListPU'];
+				$_SESSION['PUD'] = $_POST['departmentListPU'];
+				$_SESSION['selGraph'] = '6';
 			}
 		} else {
 			$_SESSION['DED'] = '';
 			$_SESSION['PUF'] = '';
 			$_SESSION['PUD'] = '';
+			$_SESSION['selGraph'] ='';
 		}
 		//dates validation!
 		$endDate = new TypeChain($this->getFromRequest('end'), 'date', $this->db, $id, $category);
@@ -111,10 +116,13 @@ class CEmissionGraphs extends Controller {
 		$this->smarty->assign('dataPU', $this->performDataForGraph($data)); //var_dump($data);
 
 		$request = $this->getFromRequest();
-
+		
+		
+		$toSelectGraph = $_SESSION['selGraph'];
 		$toSelectFacility = $_SESSION['DED'];
 		$toSelectFacilityPU = $_SESSION['PUF'];
 		$toSelectDepartmentPU = $_SESSION['PUD'];
+		$this->smarty->assign('selectedGraph', $toSelectGraph);
 		$this->smarty->assign('selectedFacility', $toSelectFacility);
 		$this->smarty->assign('selectedFacilityPU', $toSelectFacilityPU);
 		$this->smarty->assign('selectedDepartmentPU', $toSelectDepartmentPU);
