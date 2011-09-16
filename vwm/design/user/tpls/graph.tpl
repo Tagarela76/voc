@@ -18,9 +18,9 @@
 
 <div id="graph1" style="display: block;">
 	<table><tr>
-			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 			<td><h2 style="align:center; margin: 0px; padding: 0px">{if ($request.category eq 'company')} Company Daily Emissions {else}{if ($request.category eq 'facility')} Facility Daily Emissions{else} Daily Emissions {/if}{/if}</h2></td>
-			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 		</tr></table><br/><br/>
 	<div style="padding-left:20px;width:1450px;height:330px;">
 		<div id="placeholderDE" style="float:left;width:1200px;height:300px"></div>
@@ -32,9 +32,9 @@
 
 <div id="graph2" style="display: block;">
 	<table><tr>
-			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 			<td><h2 style="align:center; margin: 0px;">{if ($request.category eq 'company')} Company Product Usage {else}{if ($request.category eq 'facility')} Facility Product Usage{else} Product Usage {/if}{/if}</h2></td>
-			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 		</tr></table><br/><br/>
 
 	<div style="padding-left:20px;width:1450px;height:{*if $legendPUheight > 370}{$legendPUheight}{else*}330{*/if*}px;">
@@ -60,9 +60,9 @@
 <div id="graph3" style="display: block;">
 	{if $dataDEF}
 		<table><tr>
-				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+				<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 				<td><h2 style="align:center; margin: 0px;">Daily Emissions by Facility</h2></td>
-				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+				<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 			</tr></table><br/><br/>
 		<div style="padding-left:20px;width:1450px;height:330px;">
 			<div id="placeholderDEFacility" style="float:left;width:1200px;height:300px"></div>
@@ -79,9 +79,9 @@
 		<form method="POST" name="facilityName" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 			<table>
 				<tr>
-					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 					<td><h2 style="align:center; margin: 0px;">Daily Emissions by Department</h2></td>
-					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 					<td valign="middle" style="padding-left: 10px;"><b>Facility:</b>
 						<select type="text" name="facilityList" onchange="onSelectFacility(value);">
 					{if (count($facilityList) gt 1)}<option value="all" {if ($selectedFacility == 'all')} selected {/if}>All Facilities</option>{/if}
@@ -109,9 +109,9 @@
 		<form method="POST" name="facilityNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 			<table>
 				<tr>
-					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 					<td><h2 style="align:center; margin: 0px;">Product Usage by Facility</h2></td>
-					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 					<td><b>Facility:
 							<select type="text" name="facilityListPU" onchange="onSelectFacilityPU(value);">
 						{if (count($facilityListPU) gt 1)}<option value="all" {if ($selectedFacilityPU == 'all')} selected {/if}>All Facilities</option>{/if}
@@ -139,9 +139,9 @@
 		<form method="POST" name="departmentNamePU" action="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark={$request.bookmark}">
 			<table>
 				<tr>
-					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"><a><img src="../vwm/images/goBack.png" onClick="onBack();"></a></td>
+					<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
 					<td><h2 style="align:center;margin: 0px;">Product Usage by Department</h2></td>
-					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"><a><img src="../vwm/images/goNext.png" onClick="onNext();"/></a></td>
+					<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
 					<td><b>Facility/Department:</b>
 						<select type="text" name="departmentListPU" onchange="onSelectDepartmentPU(value);">
 					{if (count($departmentListPU) gt 1)}<option value="all" {if ($selectedDepartmentPU == 'all')} selected {/if}>All Departments</option>{/if}
