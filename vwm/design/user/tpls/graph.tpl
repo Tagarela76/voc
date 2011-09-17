@@ -2,12 +2,23 @@
 <div><table width="100%"><tr>
 			<td align="right" width="40%" valign="center"><b>Select graph:</b></td>
 			<td align="left" width="60%" valign="center"><select id="selGr" name="selectGraph" onChange="onSelectGraph(value, false);">
+					{if $request.category eq 'company'}
 					<option value="1" {if ($selectedGraph == '1')} selected {/if}>Company Daily Emissions</option>
 					<option value="2" {if ($selectedGraph == '2')} selected {/if}>Company Product Usage</option>
-					<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>
+					<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Facility</option>	
 					<option value="4" {if ($selectedGraph == '4')} selected {/if}>Daily Emissions by Department</option>
 					<option value="5" {if ($selectedGraph == '5')} selected {/if}>Product Usage by Facility</option>
 					<option value="6" {if ($selectedGraph == '6')} selected {/if}>Product Usage by Deprtment</option>
+					{/if}
+					{if $request.category eq 'facility'}
+					<option value="1" {if ($selectedGraph == '1')} selected {/if}>Facility Daily Emissions</option>
+					<option value="2" {if ($selectedGraph == '2')} selected {/if}>Facility Product Usage</option>
+					<option value="3" {if ($selectedGraph == '3')} selected {/if}>Daily Emissions by Department</option>
+					{/if}
+					{if $request.category eq 'department'}
+					<option value="1" {if ($selectedGraph == '1')} selected {/if}>Daily Emissions</option>
+					<option value="2" {if ($selectedGraph == '2')} selected {/if}>Product Usage</option>
+					{/if}
 				</select></td>
 		</tr></table></div>
 <span style="float:right;padding-right:40px;">
@@ -45,9 +56,13 @@
 	</div>
 </div>
 
-
+<div id="graph7" style="display: block;">
 {if $dataDU}
-	<h2 style="align:center;padding-left:40px;">Daily Emissions by Departments</h2><br/>
+	<table><tr>
+			<td style="padding-left:20px;padding-right:5px; padding-top: 5px;"></td>
+			<td><h2 style="align:center; margin: 0px;">Daily Emissions by Department</h2></td>
+			<td style="padding-right:20px;padding-left:5px; padding-top: 5px;"></td>
+		</tr></table><br/><br/>
 	<div style="padding-left:20px;width:1450px;height:330px;">
 		<div id="placeholderDU" style="float:left;width:1200px;height:300px"></div>
 		<div id="legendDU" style="float:left;width:200px;height:300px;overflow:auto;"></div>
@@ -55,7 +70,7 @@
 			(<span id="xDU">0</span>, <span id="yDU">0</span>). <span id="clickdata"></span></p>
 	</div>
 {/if}
-
+</div>
 
 <div id="graph3" style="display: block;">
 	{if $dataDEF}
@@ -171,6 +186,7 @@
 			<td align="left"><a title="Next graph"><img src="../vwm/images/goNextLarge.png" onClick="onNext();"/></a></td>
 		</tr>
 	</table>
+	<input id="hiddenCategory" type="hidden" value="{$request.category}"/>
 </div>
 
 {literal}
@@ -189,9 +205,13 @@
 
 		function onNext(){
 				selRow++;
-				if (selRow > 6){
-					selRow = 6;
+				if (selRow > document.getElementById('selGr').options.length){
+					selRow = document.getElementById('selGr').options.length;
 				}
+				//if (selRow > $('#selGr option').size()){
+				//	selRow = $('#selGr option').size();
+				//	}
+				//console.log(document.getElementById('hiddenCategory').value);	
 				onSelectGraph(selRow + '', true);
 				document.getElementById('selGr').options[selRow-1].selected = true;
 		}
@@ -206,14 +226,16 @@
 		}
 
 		function onSelectGraph(val, flag){
-
-			switch (val){
+			//console.log(document.getElementById('hiddenCategory').value);
+			if (document.getElementById('hiddenCategory').value == 'company'){
+				switch (val){
 				case '1':
 					$('#graph2').hide();
 					$('#graph3').hide();
 					$('#graph4').hide();
 					$('#graph5').hide();
 					$('#graph6').hide();
+					$('#graph7').hide();	
 					$('#graph1').show();
 					break;
 				case '2':
@@ -222,6 +244,7 @@
 					$('#graph4').hide();
 					$('#graph5').hide();
 					$('#graph6').hide();
+					$('#graph7').hide();
 					$('#graph2').show();
 					break;
 				case '3':
@@ -230,6 +253,7 @@
 					$('#graph4').hide();
 					$('#graph5').hide();
 					$('#graph6').hide();
+					$('#graph7').hide();	
 					$('#graph3').show();
 					break;
 				case '4':
@@ -238,6 +262,7 @@
 					$('#graph3').hide();
 					$('#graph5').hide();
 					$('#graph6').hide();
+					$('#graph7').hide();	
 					$('#graph4').show();
 					break;
 				case '5':
@@ -246,6 +271,7 @@
 					$('#graph3').hide();
 					$('#graph4').hide();
 					$('#graph6').hide();
+					$('#graph7').hide();	
 					$('#graph5').show();
 					break;
 				case '6':
@@ -254,9 +280,64 @@
 					$('#graph3').hide();
 					$('#graph4').hide();
 					$('#graph5').hide();
+					$('#graph7').hide();	
 					$('#graph6').show();
 					break;
+				}			
 			}
+			if (document.getElementById('hiddenCategory').value == 'facility'){
+				switch (val){
+				case '1':
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();
+					$('#graph6').hide();
+					$('#graph7').hide();	
+					$('#graph1').show();
+					break;
+				case '2':
+					$('#graph1').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();
+					$('#graph6').hide();
+					$('#graph7').hide();
+					$('#graph2').show();
+					break;
+				case '3':
+					$('#graph1').hide();
+					$('#graph2').hide();
+					$('#graph3').hide();	
+					$('#graph4').hide();
+					$('#graph5').hide();
+					$('#graph6').hide();
+					$('#graph7').show();	
+					break;
+				}
+			}		
+			if (document.getElementById('hiddenCategory').value == 'department'){
+				switch (val){
+				case '1':
+					$('#graph2').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();
+					$('#graph6').hide();
+					$('#graph7').hide();	
+					$('#graph1').show();
+					break;
+				case '2':
+					$('#graph1').hide();
+					$('#graph3').hide();
+					$('#graph4').hide();
+					$('#graph5').hide();
+					$('#graph6').hide();
+					$('#graph7').hide();
+					$('#graph2').show();
+					break;
+				}
+			}	
 			if (!flag){
 				selRow = document.getElementById('selGr').selectedIndex + 1;
 			}
@@ -605,6 +686,7 @@ $(function () {
 				$('#graph4').hide();
 				$('#graph5').hide();
 				$('#graph6').hide();
+				$('#graph7').hide();	
 				break;
 			case '2':
 				$('#graph1').hide();
@@ -612,6 +694,7 @@ $(function () {
 				$('#graph4').hide();
 				$('#graph5').hide();
 				$('#graph6').hide();
+				$('#graph7').hide();	
 				break;
 			case '3':
 				$('#graph2').hide();
@@ -619,6 +702,7 @@ $(function () {
 				$('#graph4').hide();
 				$('#graph5').hide();
 				$('#graph6').hide();
+				$('#graph7').hide();	
 				break;
 			case '4':
 				$('#graph2').hide();
@@ -626,6 +710,7 @@ $(function () {
 				$('#graph1').hide();
 				$('#graph5').hide();
 				$('#graph6').hide();
+				$('#graph7').hide();	
 				break;
 			case '5':
 				$('#graph2').hide();
@@ -633,6 +718,7 @@ $(function () {
 				$('#graph4').hide();
 				$('#graph1').hide();
 				$('#graph6').hide();
+				$('#graph7').hide();	
 				break;
 			case '6':
 				$('#graph2').hide();
@@ -640,6 +726,7 @@ $(function () {
 				$('#graph4').hide();
 				$('#graph5').hide();
 				$('#graph1').hide();
+				$('#graph7').hide();	
 				break;
 		}
 
