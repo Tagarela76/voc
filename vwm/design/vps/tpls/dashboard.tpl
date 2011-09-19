@@ -11,19 +11,20 @@
 		<table width="440px" class="dashboard" cellspacing="0" cellpadding="0">
 			<tr>
 				<td colspan="3" class="dashboard">
-					Invoice Stats
+					<!--Invoice Stats-->
+					INVOICE
 				</td>				
 			</tr>
 			<tr class="hov_vps">
 				<td class="pcenter">
-					<a href="{$viewListURL}&subCategory=All"><div>My invoices:</div></a>
+					<a href="{$viewListURL}&subCategory=All"><div>Payment History:</div></a>
 				</td>
 				<td class="pcenter" width="5%" align="center">
 					<a href="{$viewListURL}&subCategory=All"><div>[{$allInvoices.count}]</div></a>
 				</td>
 				<td class="pcenter" align="center"><b><span>&nbsp;</b></span></td>
 			</tr>
-			<tr class="hov_vps">
+			<!--tr class="hov_vps">
 				<td class="pcenter">
 					<a href="{$viewListURL}&subCategory=All" ><div>Total Paid:</div></a>
 				</td>
@@ -44,10 +45,10 @@
 				<td class="pcenter"align="center">
 					<b>{$currentCurrency.sign} {$canceledInvoices.total}<span></span></b>
 				</td>
-			</tr>
+			</tr-->
 			<tr class="hov_vps">
 				<td class="pcenter">
-					<a href="{$viewListURL}&subCategory=Due"><div>Total Now Due:</div></a>
+					<a href="{$viewListURL}&subCategory=Due"><div><b>TOTAL DUE NOW:</b></div></a>
 				</td>
 				<td class="pcenter" width="5%" align="center">
 					<a href="{$viewListURL}&subCategory=Due" ><div><span>[{$dueInvoices.count}]</span></div></a>
