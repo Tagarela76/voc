@@ -21,7 +21,7 @@ class CProduct extends Controller
 	
 	private function actionViewDetails()
 	{
-                //  from what level this code is called?
+		//  from what level this code is called?
                 if($this->getFromRequest('departmentID') !== null) {
                     $level = 'department';
                     $levelID = $this->getFromRequest('departmentID');                    
@@ -31,10 +31,10 @@ class CProduct extends Controller
                 } else {
                     throw new Exception('deny');
                 }
-            
+
 		//	Access control
 		if (!$this->user->checkAccess($level, $levelID)) 
-		{						
+		{	
 			throw new Exception('deny');
 		}					
 							
@@ -54,7 +54,12 @@ class CProduct extends Controller
 							
 		$this->setNavigationUpNew($level, $levelID);
 		$this->setListCategoriesLeftNew($level, $levelID,  array('bookmark'=>'product'));
-		$this->setPermissionsNew('viewData');			
+		// if ViewDetails Product from Facility not show other facility
+		if ($this->getFromRequest('facilityID') !== null) { 
+			$this->setPermissionsNew('facility');			
+		} else {
+			$this->setPermissionsNew('viewData');			
+		}
 		$this->smarty->assign('backUrl','?action=browseCategory&category='.$level.'&id='.$levelID.'&bookmark=product');
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
 		
