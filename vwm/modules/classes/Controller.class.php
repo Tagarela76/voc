@@ -281,8 +281,22 @@ class Controller {
         $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
         $this->smarty->display("tpls:index.tpl");
     }
+	
+	public function actionShowTraining(){
+		$request = $this->getFromRequest();
+        $title = new TitlesNew($this->smarty, $this->db);
+        $title->getTitle($request);
+        $this->noname($request, $this->user, $this->db, $this->smarty);
 
-    private function actionShowIssueReportCommon() {
+        $this->smarty->assign('accessname', $_SESSION['username']);
+        $this->smarty->assign('request', $request);
+
+        $this->smarty->assign("referer", $_SERVER["HTTP_REFERER"]);
+        $this->smarty->assign("tpl", "tpls/training.tpl");
+        $this->smarty->display("tpls:index.tpl");
+	}
+
+	private function actionShowIssueReportCommon() {
         $request = $this->getFromRequest();
         //titles new!!! {panding}
         $title = new TitlesNew($this->smarty, $this->db);
