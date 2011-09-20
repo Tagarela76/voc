@@ -14,11 +14,31 @@
 			<a href="../videoTutorial/{$request.category}Training.mp4" style="display:block;width:720px;height:480px" id="player"></a>	
 			{if ($smarty.const.ENVIRONMENT eq 'server')}
 			<script>
-				flowplayer("player", "../videoTutorial/flowplayer.commercial-3.2.7.swf");
+			{literal}		
+				flowplayer("player", "../videoTutorial/flowplayer.commercial-3.2.7.swf", {
+					key: '#$5f3af9a58275bb39d55',
+					clip: {
+							autoPlay: false,
+							autoBuffering: true	
+					},	
+					logo: {
+							url: '../images/logoLarge.png',
+							top: '85%',
+							left: '10',
+							width: '15%',
+							height: '15%',
+							fullscreenOnly: false,
+							displayTime: 0,
+							opacity: 1	
+					}
+				});
+			{/literal}	
 			</script>
 			{else}
 			<script>
+			{literal}	
 				flowplayer("player", "../videoTutorial/flowplayer-3.2.7.swf");
+			{/literal}		
 			</script>
 			{/if}
             </td>
