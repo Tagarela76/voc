@@ -16,11 +16,22 @@
 					<tr>
 						<td align="center" id="login" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
 							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/login.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								How to Login
 							</a>
@@ -29,11 +40,22 @@
 					<tr>
 						<td align="center" id="overview" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
 							<a  onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/overview.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								Overwiew
 							</a>
@@ -42,11 +64,22 @@
 					<tr>
 						<td align="center" id="report" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
 							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/report.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								Create Report
 							</a>
@@ -55,11 +88,22 @@
 					<tr>
 						<td align="center" id="graph" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
 							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/graph.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								Company at a Glance Graphs
 							</a>
@@ -68,11 +112,22 @@
 					<tr>
 						<td align="center" id="payment" style="padding: 10px; margin: 0; " onclick="changeColor(id);">
 							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/payment.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								Payment Process
 							</a>
@@ -81,11 +136,22 @@
 					<tr>
 						<td align="center" id="entire" style="padding: 10px; margin: 0; border: 4px solid gray; color: red" onclick="changeColor(id);">
 							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: {/literal}'../videoTutorial/{$request.category}Training.mp4'{literal},
 									autoPlay: false,
 									autoBuffering: true	
-								}
+								},
+								logo: {
+									url: '../images/logoLarge.png',
+									top: '85%',
+									left: '10',
+									width: '15%',
+									height: '15%',
+									fullscreenOnly: false,
+									displayTime: 0,
+									opacity: 1	
+								}	
 								});">
 								See Entire Video
 							</a>
@@ -136,7 +202,6 @@
 	{literal}		
 	<script>
 		function changeColor(val){
-			console.log(val);
 			document.getElementById('login').style.border = '1px solid black';	
 			document.getElementById('overview').style.border = '1px solid black';	
 			document.getElementById('report').style.border = '1px solid black';	
@@ -151,7 +216,6 @@
 			document.getElementById('entire').style.color = 'black';	
 			document.getElementById(val).style.border = '4px solid gray';
 			document.getElementById(val).style.color = 'red';		
-			//document.getElementById(val).style.padding = '10px';	
 		}
 	</script>		
 	{/literal}
