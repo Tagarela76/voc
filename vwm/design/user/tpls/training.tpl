@@ -8,9 +8,93 @@
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 <script type="text/javascript" src="../vwm/modules/js/flowplayer-3.2.6.min.js"></script>
-    <table border="1px" cellspacing="0" cellpadding="0" align="center">
+    <table cellspacing="0" cellpadding="0" align="center">
         <tr>
-			<td>
+			<td align="center" width="120px" style="padding-right: 20px">
+				<table id="tableLink" cellspacing="0" cellpadding="0" align="center" border="1px">
+					{literal}
+					<tr>
+						<td align="center" id="login" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
+							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: '../videoTutorial/login.mp4',
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								How to Login
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="overview" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
+							<a  onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: '../videoTutorial/overview.mp4',
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								Overwiew
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="report" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
+							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: '../videoTutorial/report.mp4',
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								Create Report
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="graph" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
+							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: '../videoTutorial/graph.mp4',
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								Company at a Glance Graphs
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="payment" style="padding: 10px; margin: 0; " onclick="changeColor(id);">
+							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: '../videoTutorial/payment.mp4',
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								Payment Process
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="entire" style="padding: 10px; margin: 0; border: 4px solid gray; color: red" onclick="changeColor(id);">
+							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+								clip: {
+									url: {/literal}'../videoTutorial/{$request.category}Training.mp4'{literal},
+									autoPlay: false,
+									autoBuffering: true	
+								}
+								});">
+								See Entire Video
+							</a>
+						</td>
+					</tr>
+					{/literal}
+				</table>
+			</td>
+			<td style="border:1px solid black;">
 			<a href="../videoTutorial/{$request.category}Training.mp4" style="display:block;width:720px;height:480px" id="player"></a>	
 			{if ($smarty.const.ENVIRONMENT eq 'server')}
 			<script>
@@ -37,12 +121,37 @@
 			{else}
 			<script>
 			{literal}	
-				flowplayer("player", "../videoTutorial/flowplayer-3.2.7.swf");
+				flowplayer("player", "../videoTutorial/flowplayer-3.2.7.swf", {
+					clip: {
+							autoPlay: false,
+							autoBuffering: true	
+					}
+					});
 			{/literal}		
 			</script>
 			{/if}
             </td>
         </tr>
     </table>
-    {**} 
-</form>
+	{literal}		
+	<script>
+		function changeColor(val){
+			console.log(val);
+			document.getElementById('login').style.border = '1px solid black';	
+			document.getElementById('overview').style.border = '1px solid black';	
+			document.getElementById('report').style.border = '1px solid black';	
+			document.getElementById('graph').style.border = '1px solid black';	
+			document.getElementById('payment').style.border = '1px solid black';	
+			document.getElementById('entire').style.border = '1px solid black';		
+			document.getElementById('login').style.color = 'black';	
+			document.getElementById('overview').style.color = 'black';	
+			document.getElementById('report').style.color = 'black';	
+			document.getElementById('graph').style.color = 'black';	
+			document.getElementById('payment').style.color = 'black';	
+			document.getElementById('entire').style.color = 'black';	
+			document.getElementById(val).style.border = '4px solid gray';
+			document.getElementById(val).style.color = 'red';		
+			//document.getElementById(val).style.padding = '10px';	
+		}
+	</script>		
+	{/literal}
