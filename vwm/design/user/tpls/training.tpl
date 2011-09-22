@@ -8,29 +8,20 @@
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 <script type="text/javascript" src="../vwm/modules/js/flowplayer-3.2.6.min.js"></script>
-    <table cellspacing="0" cellpadding="0" align="center">
-        <tr>
-			<td align="center" width="120px" style="padding-right: 20px">
-				<table id="tableLink" cellspacing="0" cellpadding="0" align="center" border="1px">
+<table cellspacing="0" cellpadding="0" align="center" style="border-collapse: collapse;">
+		<tr>
+			<td align="center" width="160px" style="padding-right: 20px">
+				<img style="height: 130px; width: 160px; margin-bottom: 50px;" src="../images/logoLarge.png">
+				<table id="tableLink" cellspacing="0" cellpadding="0" align="center" style="background: #F0F0F0; border: 1px solid black; border-collapse: collapse;">
 					{literal}
 					<tr>
-						<td align="center" id="login" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
-							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="login" style="padding: 10px; margin: 0; border: 1px solid black;">
+							<a style="text-decoration: none;" onClick="changeColor('login');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/login.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
 								}	
 								});">
 								How to Login
@@ -38,71 +29,41 @@
 						</td>
 					</tr>
 					<tr>
-						<td align="center" id="overview" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
-							<a  onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="overview" style="padding: 10px; margin: 0; border: 1px solid black;">
+							<a style="text-decoration: none;" onClick="changeColor('overview');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/overview.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
-								}	
+								}
 								});">
 								Overwiew
 							</a>
 						</td>
 					</tr>
 					<tr>
-						<td align="center" id="report" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
-							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="report" style="padding: 10px; margin: 0; border: 1px solid black;">
+							<a style="text-decoration: none;" onClick="changeColor('report');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/report.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
-								}	
+								}
 								});">
 								Create Report
 							</a>
 						</td>
 					</tr>
 					<tr>
-						<td align="center" id="graph" style="padding: 10px; margin: 0;" onclick="changeColor(id);">
-							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="graph" style="padding: 10px; margin: 0; border: 1px solid black;">
+							<a style="text-decoration: none;" onClick="changeColor('graph');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/graph.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
 								}	
 								});">
 								Company at a Glance Graphs
@@ -110,23 +71,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td align="center" id="payment" style="padding: 10px; margin: 0; " onclick="changeColor(id);">
-							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="payment" style="padding: 10px; margin: 0; border: 1px solid black;">
+							<a style="text-decoration: none;" onClick="changeColor('payment');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: '../videoTutorial/payment.mp4',
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
 								}	
 								});">
 								Payment Process
@@ -134,23 +85,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td align="center" id="entire" style="padding: 10px; margin: 0; border: 4px solid gray; color: red" onclick="changeColor(id);">
-							<a onClick="$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
+						<td align="center" id="entire" style="padding: 10px; margin: 0; border: 3px solid black; background: #D0D0D0; font-weight: bold;">
+							<a style="text-decoration: none;" onClick="changeColor('entire');$f('player', '../videoTutorial/flowplayer.commercial-3.2.7.swf', {
 								key: '#$5f3af9a58275bb39d55',
 								clip: {
 									url: {/literal}'../videoTutorial/{$request.category}Training.mp4'{literal},
 									autoPlay: false,
 									autoBuffering: true	
-								},
-								logo: {
-									url: '../images/logoLarge.png',
-									top: '85%',
-									left: '10',
-									width: '15%',
-									height: '15%',
-									fullscreenOnly: false,
-									displayTime: 0,
-									opacity: 1	
 								}	
 								});">
 								See Entire Video
@@ -170,16 +111,6 @@
 					clip: {
 							autoPlay: false,
 							autoBuffering: true	
-					},	
-					logo: {
-							url: '../images/logoLarge.png',
-							top: '85%',
-							left: '10',
-							width: '15%',
-							height: '15%',
-							fullscreenOnly: false,
-							displayTime: 0,
-							opacity: 1	
 					}
 				});
 			{/literal}	
@@ -201,21 +132,20 @@
     </table>
 	{literal}		
 	<script>
+		var allVal = ['login', 'overview', 'report', 'graph', 'payment', 'entire'];
 		function changeColor(val){
-			document.getElementById('login').style.border = '1px solid black';	
-			document.getElementById('overview').style.border = '1px solid black';	
-			document.getElementById('report').style.border = '1px solid black';	
-			document.getElementById('graph').style.border = '1px solid black';	
-			document.getElementById('payment').style.border = '1px solid black';	
-			document.getElementById('entire').style.border = '1px solid black';		
-			document.getElementById('login').style.color = 'black';	
-			document.getElementById('overview').style.color = 'black';	
-			document.getElementById('report').style.color = 'black';	
-			document.getElementById('graph').style.color = 'black';	
-			document.getElementById('payment').style.color = 'black';	
-			document.getElementById('entire').style.color = 'black';	
-			document.getElementById(val).style.border = '4px solid gray';
-			document.getElementById(val).style.color = 'red';		
+			//console.log(allVal);
+			for (var i=0; i<allVal.length; i++){
+				if (val == allVal[i]){
+					document.getElementById(allVal[i]).style.border = '3px solid black';
+					document.getElementById(allVal[i]).style.background = '#D0D0D0';
+					document.getElementById(allVal[i]).style.fontWeight = 'bold';	
+				} else {		
+					document.getElementById(allVal[i]).style.border = '1px solid black';
+					document.getElementById(allVal[i]).style.background = '#F0F0F0';
+					document.getElementById(allVal[i]).style.fontWeight = 'normal';	
+				}
+			}
 		}
 	</script>		
 	{/literal}
