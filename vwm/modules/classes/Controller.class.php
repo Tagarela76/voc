@@ -287,7 +287,40 @@ class Controller {
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-
+		
+		switch ($request['category']){
+			case 'company': 
+				$trainingParts = array('login' => 'How to Login',
+									   'overview' => 'Overview', 
+									   'report' => 'Create Report', 
+									   'graph' => 'Company at a Glance Graphs', 
+									   'payment' => 'Payment Process');
+				break;
+			case 'facility':
+				$trainingParts = array('login' => 'How to Login', 
+									   'overview' => 'Overview',
+									   'report' => 'Create Report',
+									   'graph' => 'Company at a Glance Graphs',
+									   'msds' => 'How to Manage MSDS & Product Library',
+									   'newproduct' => 'How to Add a New Product',
+									   'management' => 'Equipment Management',
+									   'eqgraph' => 'Equipment Graphs',
+									   'payment' => 'Payment Process');
+				break;
+			case 'department':	
+				$trainingParts = array('login' => 'How to Login', 
+									   'overview' => 'Overview',
+									   'pfpmix' => '',
+									   'singlemix' => '',
+									   'report' => 'Create Report',
+									   'msds' => 'How to Manage MSDS & Product Library',
+									   'newproduct' => 'How to Add a New Product',
+									   'management' => 'Equipment Management',
+									   'eqgraph' => 'Equipment Graphs');
+				break;
+		}
+		
+		$this->smarty->assign('trainingParts', $trainingParts);		
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
