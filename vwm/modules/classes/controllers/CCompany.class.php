@@ -150,12 +150,12 @@ class CCompany extends Controller
 		$this->smarty->assign('childCategory', 'facility');
 
 		//Set Payment Notify
-		$checkResult = $this->checkPaymentNotify($this->getFromRequest('id'), $this->db);
+		/*$checkResult = $this->checkPaymentNotify($this->getFromRequest('id'), $this->db);
 
 		if ($checkResult['shouldPay']) {
 			$notify = new Notify($this->smarty);
 			$this->smarty->assign('notify', $notify->paymentNotify($checkResult['daysLeft']));
-		}
+		}*/
 
 
 

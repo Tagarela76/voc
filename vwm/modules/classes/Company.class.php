@@ -79,8 +79,8 @@ class Company {
 		$query.="'".$companyData["contact"]."', ";
 		$query.="'".$companyData["title"]."', ";
 		$query.=$gcgID.", ";
-		$query.=$companyData["creater_id"].", ";
-		$query.=((VERSION=="standalone")?"NULL,": $trialPeriod->getTimestamp().",");
+		$query.=$companyData["creater_id"].", '";
+		$query.=((VERSION=="standalone")?"NULL,": $trialPeriod->format('Y-m-d')."',");
 		$query.=$companyData["voc_unittype_id"];
 		
 		$query.=')';
