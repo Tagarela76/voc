@@ -108,7 +108,7 @@
 			</td>
 		{else}
 			<td align="left" class="padd7" valign="top" width="15%">
-				{*<a href="?action=showTraining&category={$request.category}&id={$request.id}" class="id_company_link ">Training</a>*}
+				<a href="?action=showTraining&category={$request.category}&id={$request.id}" class="id_company_link ">Training</a>
 			</td>
 		{/if}
 

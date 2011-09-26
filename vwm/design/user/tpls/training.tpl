@@ -8,10 +8,41 @@
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 <script type="text/javascript" src="../vwm/modules/js/flowplayer-3.2.6.min.js"></script>
-<table cellspacing="0" cellpadding="0" align="center" style="border-collapse: collapse;">	
-	<tr style="vertical-align: bottom;">
-			<td valign="bottom" align="center" width="160px" style="padding-right: 20px">
-				<img style="height: 130px; width: 160px; margin-bottom: 50px;" src="../images/logoLarge.png">
+<table cellspacing="0" cellpadding="0" align="center" colls="2" style="border-collapse: collapse;">	
+	<tr>
+		<td>
+			<img style="height: 130px; width: 160px;" src="../images/logoLarge.png">			
+		</td>
+		<td style="vertical-align: bottom;" rowspan="2">
+				<a href="../videoTutorial/{$request.category}/training{$request.category|capitalize}.mp4" style="display:block;width:720px;height:480px;border-bottom: 1px solid black;border-top: 1px solid black;" id="player"></a>	
+			{if ($smarty.const.ENVIRONMENT eq 'server')}
+			<script>
+			{literal}		
+				flowplayer("player", "../videoTutorial/flowplayer.commercial-3.2.7.swf", {
+					key: '#$5f3af9a58275bb39d55',
+					clip: {
+							autoPlay: false,
+							autoBuffering: true	
+					}
+				});
+			{/literal}	
+			</script>
+			{else}
+			<script>
+			{literal}	
+				flowplayer("player", "../videoTutorial/flowplayer-3.2.7.swf", {
+					clip: {
+							autoPlay: false,
+							autoBuffering: true	
+					}
+					});
+			{/literal}		
+			</script>
+			{/if}
+            </td>
+	</tr>
+	<tr>
+		<td align="center" width="160px" style="vertical-align: bottom;padding-right: 20px">
 				<table id="tableLink" cellspacing="0" cellpadding="0" align="center" style="background: #F0F0F0; border: 1px solid black; border-collapse: collapse;">
 				{foreach from=$trainingParts key=key item=part}
 					<tr>
@@ -53,34 +84,9 @@
 							</a>
 						</td>
 					</tr>
-				</table>
+				</table>		
 			</td>
 			<td>
-				<a href="../videoTutorial/{$request.category}/training{$request.category|capitalize}.mp4" style="display:block;width:720px;height:480px;border-bottom: 1px solid black;border-top: 1px solid black;" id="player"></a>	
-			{if ($smarty.const.ENVIRONMENT eq 'server')}
-			<script>
-			{literal}		
-				flowplayer("player", "../videoTutorial/flowplayer.commercial-3.2.7.swf", {
-					key: '#$5f3af9a58275bb39d55',
-					clip: {
-							autoPlay: false,
-							autoBuffering: true	
-					}
-				});
-			{/literal}	
-			</script>
-			{else}
-			<script>
-			{literal}	
-				flowplayer("player", "../videoTutorial/flowplayer-3.2.7.swf", {
-					clip: {
-							autoPlay: false,
-							autoBuffering: true	
-					}
-					});
-			{/literal}		
-			</script>
-			{/if}
             </td>
         </tr>
 		<tr>
