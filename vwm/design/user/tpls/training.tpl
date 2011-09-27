@@ -11,7 +11,7 @@
 <table cellspacing="0" cellpadding="0" align="center" colls="2" style="border-collapse: collapse;">
 	<tr>
 		<td style="vertical-align: top;" align="center">
-			<img style="height: 100px; width: 120px; padding-right: 20px; margin-right: 20px;" src="../images/logoLarge.png">
+			<img style="height: 100px; width: 120px; margin-right: 20px;" src="../images/logoLarge.png">
 		</td>
 		<td style="vertical-align: bottom;" rowspan="2">
 			<a href="../videoTutorial/{$request.category}/training{$request.category|capitalize}.mp4" style="display:block;width:720px;height:480px;border-bottom: 1px solid black;border-top: 1px solid black;" id="player"></a>
@@ -42,7 +42,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="center" width="160px" style="vertical-align: bottom;padding-right: 20px">
+		<td align="center" width="160px" style="vertical-align: bottom;padding-right: 20px;">
 			<b id="caption">{$request.category|capitalize} Level Tutorial</b><br/><br/>
 			<table id="tableLink" cellspacing="0" cellpadding="0" align="center" style="background: #F0F0F0; border: 1px solid black; border-collapse: collapse;">
 				{foreach from=$trainingParts key=key item=part}
