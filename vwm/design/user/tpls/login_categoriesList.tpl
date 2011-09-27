@@ -106,7 +106,7 @@
 					{/if}
 				</ul>
 			</td>
-		{else}
+		{elseif $request.category == "department"}
 			<td align="left" class="padd7" valign="top" width="15%">
 				<a href="?action=showTraining&category={$request.category}&id={$request.id}" class="id_company_link ">Training</a>
 			</td>

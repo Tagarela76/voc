@@ -294,7 +294,8 @@ class Controller {
 									   'overview' => 'Overview', 
 									   'report' => 'Create Report', 
 									   'graph' => 'Company at a Glance Graphs', 
-									   'payment' => 'Payment Process');
+									   'payment' => 'Payment Process',
+									   'training' => 'See Entire Video');
 				break;
 			case 'facility':
 				$trainingParts = array('login' => 'How to Login', 
@@ -305,7 +306,8 @@ class Controller {
 									   'newproduct' => 'How to Add a New Product',
 									   'management' => 'Equipment Management',
 									   'eqgraph' => 'Equipment Graphs',
-									   'payment' => 'Payment Process');
+									   'payment' => 'Payment Process',
+									   'training' => 'See Entire Video');
 				break;
 			case 'department':	
 				$trainingParts = array('login' => 'How to Login', 
@@ -316,7 +318,8 @@ class Controller {
 									   'msds' => 'How to Manage MSDS & Product Library',
 									   'newproduct' => 'How to Add a New Product',
 									   'management' => 'Equipment Management',
-									   'eqgraph' => 'Equipment Graphs');
+									   'eqgraph' => 'Equipment Graphs',
+									   'training' => 'See Entire Video');
 				break;
 		}
 		
