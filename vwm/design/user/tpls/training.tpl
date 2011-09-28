@@ -43,7 +43,9 @@
 	</tr>
 	<tr>
 		<td align="center" width="160px" style="vertical-align: bottom;padding-right: 20px;">
+			<table><tr><td width="180px" align="center">
 			<b id="caption">{$request.category|capitalize} Level Tutorial</b><br/><br/>
+			</td></tr></table>
 			<table id="tableLink" cellspacing="0" cellpadding="0" align="center" style="background: #F0F0F0; border: 1px solid black; border-collapse: collapse;">
 				{foreach from=$trainingParts key=key item=part}
 					<tr>
