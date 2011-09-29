@@ -103,7 +103,7 @@
 {literal}
 	<script>
 		var allVal = [];
-		var allValCompany = ['login', 'overview', 'report', 'graph', 'payment', 'training'];
+		var allValCompany = ['login', 'overview', 'report', 'graph', 'payment', 'training','npvideo'];
 		var allValFacility = ['login', 'overview', 'report', 'graph', 'msds', 'newproduct', 'management', 'eqgraph', 'payment', 'training'];
 		var allValDepartment = ['login', 'overview', 'pfpmix', 'singlemix', 'report', 'msds', 'newproduct', 'management', 'eqgraph', 'training'];
 		function changeColor(val){
@@ -228,7 +228,7 @@
 		function createHtml(level){
 			var levelAll = [];
 			var levelAllKey = [];	
-			var levelC = ['How to Login', 'Overview', 'Create Report','Company at a Glance Graphs', 'Payment Process','See Entire Video'];
+			var levelC = ['How to Login', 'Overview', 'Create Report','Company at a Glance Graphs', 'Payment Process','See Entire Video','New Product Video'];
 			var levelF = ['How to Login', 'Overview', 'Create Report', 'Facility at a Glance Graphs', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'Payment Process', 'See Entire Video'];	
 			var	levelD = ['How to Login', 'Overview', 'Pre Formaulated Mix', 'Single Mix Input', 'Create Report', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'See Entire Video'];
 			var result = '';

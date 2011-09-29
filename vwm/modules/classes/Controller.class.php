@@ -295,7 +295,8 @@ class Controller {
 									   'report' => 'Create Report', 
 									   'graph' => 'Company at a Glance Graphs', 
 									   'payment' => 'Payment Process',
-									   'training' => 'See Entire Video');
+									   'training' => 'See Entire Video',
+									   'npvideo' => 'New Product Video',);
 				break;
 			case 'facility':
 				$trainingParts = array('login' => 'How to Login', 
