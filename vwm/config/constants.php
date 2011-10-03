@@ -197,6 +197,8 @@
 	define ('TB_SUPPLIER', 'supplier');
 	define ('TB_TYPE', 'type');
 	define ('TB_LOL', 'list-of-lists');
+	define('TB_PRODUCT2TYPE', 'product2type');
+	define('TB_INDUSTRY_TYPE', 'industry_type');
 	//define ('TB_PRODUCTGROUP', 'productgroup');	//	not used any more | May 14, 2010
 	define ('TB_USAGE', 'mix');
 	define ('TB_MIXGROUP', 'mixgroup');

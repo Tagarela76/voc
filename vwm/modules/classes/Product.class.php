@@ -831,6 +831,37 @@ class Product extends ProductProperties {
 			return false;
 		}
 	}
+	
+	public function assignProduct2Type($productID, $industryType, $industrySubType){
+		if ($industrySubType !== ''){
+			$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = '".$industrySubType.
+					 "' AND parent = ".
+					 " (SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = '".$industryType."' AND parent is NULL)";
+			$this->db->query($query);
+			$resultSubType=$this->db->fetch(0);
+			if (!empty($resultSubType)) {
+				$this->db->query("SELECT * FROM ".TB_PRODUCT2TYPE." WHERE product_id = ".$productID." AND type_id = ".$resultSubType->id);
+				if ($this->db->numrows() == 0){ 
+					$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultSubType->id.")");
+				}
+			} else {
+				//create new Type or SubType
+			}
+		} else {
+			$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = ".$industryType." AND parent is NULL";
+			$this->db->query($query);
+			$resultType = $this->db->fetch(0);
+			if (!empty($resultType)) {
+				$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultType->id.")");
+			} else {
+				// create new Type or SubType
+			}
+		}
+	}
+	
+	public function detachProduct2Type($productID){
+		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE product_id = ".$productID);
+	}
 
 	private function selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		settype($companyID,"integer");

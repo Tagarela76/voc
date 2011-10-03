@@ -42,7 +42,7 @@ class bulkUploader {
 		
 		$validation = new validateCSV();
 		$validation->validate($input);
-		 
+		
 		$errorLog = $validation->errorComments;
 		
 		//partition
@@ -70,7 +70,7 @@ class bulkUploader {
 						$products[$i]['density'] = $density;											
 					}					
 				}
-				
+
 				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i]['productID'] . "'");
 				$r=$this->db->fetch(0);				
 				if (empty($r) && $i >= $this->productFrom && $i <= $this->productTo) {					
@@ -137,7 +137,7 @@ class bulkUploader {
 			$r=$this->db->fetch(0);
 		}
 		$coating_id = $r->coat_id;
-
+		
 		//	hazardous			
 		$chemicalClasses = $this->processChemicalClass($product);		
 		/*$querySel = "SELECT hazardous_class_id " .
@@ -201,7 +201,7 @@ class bulkUploader {
 				 $product['boilingRangeTo'].", " .
 				 $hazardous_class_id.", " .
 				 $supplier_id.")";*/
-				 
+			  
 		$query = "INSERT INTO product (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 					"specialty_coating, aerosol, specific_gravity, boiling_range_from, " . 
 					"boiling_range_to, supplier_id) " .
@@ -240,7 +240,7 @@ class bulkUploader {
 			$productID = 0;
 			$actionLog .= "	Error while adding product " . $product['productID'] . "\n";	
 		}		
-
+		
 		return $actionLog;
 	}
 	
@@ -341,6 +341,12 @@ class bulkUploader {
 					"supplier_id=".$supplier_id." " .
 				"WHERE product_id = ".$productID;
 		$this->db->query($queryUpd);
+		
+		//updating industy type and subtype
+		$this->productObj->detachProduct2Type($productID);
+		foreach ($product['industryType'] as $industryType){
+			$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
+		}
 		
 		//	set product to company link
 		if (!empty($this->companyID)) {
