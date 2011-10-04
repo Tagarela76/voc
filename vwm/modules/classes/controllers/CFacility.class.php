@@ -118,6 +118,12 @@ class CFacility extends Controller
 
 	private function actionBrowseCategory()
 	{
+		//this user already read terms and conditions
+		if (!empty($_POST['agree'])){
+			$query = "UPDATE ".TB_USER." SET terms_conditions = 1 WHERE user_id = ".$_SESSION['user_id'];
+			$this->db->query($query);
+		}
+		
 		//  TODO: move voc indicator here from child controllers
 		$bookmark=$this->getFromRequest('bookmark');
 
