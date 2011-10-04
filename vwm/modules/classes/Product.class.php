@@ -3,9 +3,11 @@
 class Product extends ProductProperties {
 
 	protected $db;
+	private $productType;
 
 	function Product($db) {
 		$this->db=$db;
+		$this->productType = new ProductTypes($db);
 	}
 
 
@@ -838,14 +840,24 @@ class Product extends ProductProperties {
 					 "' AND parent = ".
 					 " (SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = '".$industryType."' AND parent is NULL)";
 			$this->db->query($query);
-			$resultSubType=$this->db->fetch(0);
-			if (!empty($resultSubType)) {
+			if ($this->db->num_rows() > 0) {
+				$resultSubType = $this->db->fetch(0);
 				$this->db->query("SELECT * FROM ".TB_PRODUCT2TYPE." WHERE product_id = ".$productID." AND type_id = ".$resultSubType->id);
-				if ($this->db->numrows() == 0){ 
+				if ($this->db->num_rows() == 0){ 
 					$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultSubType->id.")");
 				}
 			} else {
 				//create new Type or SubType
+				$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = '".$industryType."' AND parent is NULL";
+				$this->db->query($query);
+				//$resultType = $this->db->fetch(0);
+				if ($this->db->num_rows() > 0){
+					$resultID = $this->productType->createNewSubType($industryType, $industrySubType);
+					$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultID.")");
+				} else {
+					$resultID = $this->productType->createNewType($industryType, $industrySubType);
+					$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultID.")");
+				}
 			}
 		} else {
 			$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = ".$industryType." AND parent is NULL";
@@ -854,12 +866,14 @@ class Product extends ProductProperties {
 			if (!empty($resultType)) {
 				$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultType->id.")");
 			} else {
-				// create new Type or SubType
+				// create new Type
+				$resultID = $this->productType->createNewType($industryType, $industrySubType);
+				$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultID.")");
 			}
 		}
 	}
 	
-	public function detachProduct2Type($productID){
+	public function unassignProductFromType($productID){
 		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE product_id = ".$productID);
 	}
 

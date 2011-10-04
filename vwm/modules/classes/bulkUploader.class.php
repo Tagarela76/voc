@@ -229,6 +229,11 @@ class bulkUploader {
 				$this->productObj->assignProduct2Company($productID, $this->companyID);	
 			}
 			
+			// set product to type
+			foreach ($product['industryType'] as $industryType){
+				$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
+			}
+			
 			//	set product to chemical class link
 			$this->hazardousObj->setProduct2ChemicalClasses($productID, $chemicalClasses);			
 			
@@ -343,7 +348,7 @@ class bulkUploader {
 		$this->db->query($queryUpd);
 		
 		//updating industy type and subtype
-		$this->productObj->detachProduct2Type($productID);
+		$this->productObj->unassignProductFromType($productID);
 		foreach ($product['industryType'] as $industryType){
 			$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
 		}
