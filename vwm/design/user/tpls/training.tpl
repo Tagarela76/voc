@@ -103,9 +103,9 @@
 {literal}
 	<script>
 		var allVal = [];
-		var allValCompany = ['login', 'overview', 'report', 'graph', 'payment', 'training','npvideo'];
-		var allValFacility = ['login', 'overview', 'report', 'graph', 'msds', 'newproduct', 'management', 'eqgraph', 'payment', 'training'];
-		var allValDepartment = ['login', 'overview', 'pfpmix', 'singlemix', 'report', 'msds', 'newproduct', 'management', 'eqgraph', 'training'];
+		var allValCompany = ['login', 'overview', 'report', 'graph', 'payment', 'training', 'npvideo'];
+		var allValFacility = ['login', 'overview', 'report', 'graph', 'msds', 'newproduct', 'management', 'eqgraph', 'payment', 'training', 'npvideo'];
+		var allValDepartment = ['login', 'overview', 'pfpmix', 'singlemix', 'report', 'msds', 'newproduct', 'management', 'eqgraph', 'training', 'npvideo'];
 		function changeColor(val){
 			switch (document.getElementById('hiddenPart').value){
 				case 'company':
@@ -229,8 +229,8 @@
 			var levelAll = [];
 			var levelAllKey = [];	
 			var levelC = ['How to Login', 'Overview', 'Create Report','Company at a Glance Graphs', 'Payment Process','See Entire Video','New Product Video'];
-			var levelF = ['How to Login', 'Overview', 'Create Report', 'Facility at a Glance Graphs', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'Payment Process', 'See Entire Video'];	
-			var	levelD = ['How to Login', 'Overview', 'Pre Formaulated Mix', 'Single Mix Input', 'Create Report', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'See Entire Video'];
+			var levelF = ['How to Login', 'Overview', 'Create Report', 'Facility at a Glance Graphs', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'Payment Process', 'See Entire Video','New Product Video'];	
+			var	levelD = ['How to Login', 'Overview', 'Pre Formaulated Mix', 'Single Mix Input', 'Create Report', 'How to Manage MSDS & Product Library', 'How to Add a New Product', 'Equipment Management', 'Equipment Graphs', 'See Entire Video','New Product Video'];
 			var result = '';
 			switch (level){
 				case 'company':
