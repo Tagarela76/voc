@@ -159,13 +159,19 @@
 								case "CompanyLevel":
 									
 									$company_id=$user->getUserDetails($_SESSION['user_id'], true);
+									$terms_conditions = $company_id['terms_conditions'];
 									$company_id=$company_id['company_id'];
 									//header("Location: ?action=browseCategory&categoryID=facility&companyID=".$company_id);
 									if ($queryStrPost[0] == 'h') {
 										header("Location: ".$queryStrPost);
-									}
-									else {
-										header("Location: ?action=browseCategory&category=company&id=".$company_id);
+									} else {
+										if ($terms_conditions == 1){
+											header("Location: ?action=browseCategory&category=company&id=".$company_id);
+										} else {
+											$smarty->assign('companyID', $company_id);
+											$smarty->display('tpls:tpls/termsConditions.tpl');
+											die();
+										}
 									}
 									break;
 									
@@ -173,13 +179,19 @@
 									//echo "FacilityUser<br>";
 									
 									$facility_id=$user->getUserDetails($_SESSION['user_id'], true);
+									$terms_conditions = $facility_id['terms_conditions'];
 									$facility_id=$facility_id['facility_id'];
 									//header("Location: ?action=browseCategory&categoryID=department&facilityID=".$facility_id);
 									if ($queryStrPost[0] == 'h') {
 										header("Location: ".$queryStrPost);
-									}
-									else {
-										header("Location: ?action=browseCategory&category=facility&id=".$facility_id."&bookmark=department");
+									} else {
+										if ($terms_conditions == 1){
+											header("Location: ?action=browseCategory&category=facility&id=".$facility_id."&bookmark=department");
+										} else {
+											$smarty->assign('facilityID', $facility_id);
+											$smarty->display('tpls:tpls/termsConditions.tpl');
+											die();
+										}	
 									}
 									break;
 									
