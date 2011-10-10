@@ -130,7 +130,7 @@ class CAApmethod extends Controller {
 				$itemForDelete []= $item;
 			}
 		}
-		$this->smarty->assign("gobackAction","viewDetails");
+		$this->smarty->assign("gobackAction","browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
 	

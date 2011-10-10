@@ -5,6 +5,8 @@
 {if $request.bookmark  eq "apmethod"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "coat"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "product"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "industryType"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "industrySubType"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "components"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "agency"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "density"}  class="bookmark_fon" {/if}
@@ -56,6 +58,32 @@
                                                     <div class="activeBookmark_right">
                                                         {/if}
                                                        {$smarty.const.AI_LABEL_PRODUCT_BOOKMARK}
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </td>
+											<td>
+                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=industryType">{if $request.bookmark != "industryType"}
+                                            <div class="deactiveBookmark">
+                                                <div class="deactiveBookmark_right">
+                                                {else}
+                                                <div class="activeBookmark">
+                                                    <div class="activeBookmark_right">
+                                                        {/if}
+                                                       {$smarty.const.AI_LABEL_INDUSTRY_TYPE_BOOKMARK}
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </td>
+											<td>
+                                        <a href="admin.php?action=browseCategory&category={$request.category}&bookmark=industrySubType">{if $request.bookmark != "industrySubType"}
+                                            <div class="deactiveBookmark">
+                                                <div class="deactiveBookmark_right">
+                                                {else}
+                                                <div class="activeBookmark">
+                                                    <div class="activeBookmark_right">
+                                                        {/if}
+                                                       {$smarty.const.AI_LABEL_INDUSTRY_SUB_TYPE_BOOKMARK}
                                                     </div>
                                                 </div>
                                                 </a>
@@ -259,6 +287,10 @@
                                                                                                                                         </td>
                                                                                                                                         <td {if $request.bookmark  eq "product"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
+																																		<td {if $request.bookmark  eq "industryType"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        </td>
+																																		<td {if $request.bookmark  eq "industrySubType"}  class="active_bookmark_fon" {/if}>
+                                                                                                                                        </td>
                                                                                                                                         <td {if $request.bookmark  eq "components"}  class="active_bookmark_fon" {/if}>
                                                                                                                                         </td>
                                                                                                                                         <td {if $request.bookmark  eq "agency"}  class="active_bookmark_fon" {/if}>
@@ -302,6 +334,8 @@
 {if $request.bookmark  eq "apmethod"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "coat"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "product"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "industryType"}  class="bookmark_fon" {/if}
+{if $request.bookmark  eq "industrySubType"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "components"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "agency"}  class="bookmark_fon" {/if}
 {if $request.bookmark  eq "density"}  class="bookmark_fon" {/if}

@@ -28,8 +28,8 @@
         <td>
             ID Number
         </td>
-        <td {if $itemForDelete[0].links}{else}class="users_u_top_r_red"{/if}>
-            {$itemID} name
+        <td {if $itemForDelete[0].links}{/if}{if $itemForDelete[0].parentName}{else}class="users_u_top_r_red"{/if}>
+            {$itemID}{if $itemForDelete[0].parentName}Industry Sub-Category{else}name{/if}
         </td>
 		
         {if $itemForDelete[0].links}
@@ -50,6 +50,11 @@
         </td>
         {/if}
         {/if}
+		{if $itemForDelete[0].parentName}
+		<td class="users_u_top_r_red">
+            Industry Type
+        </td>	
+		{/if}
     </tr>
     {if $itemsCount > 0}  
     {section name=i loop=$itemForDelete} 
@@ -102,6 +107,13 @@
         </td>
         {/if}
         {/if}
+		{if $itemForDelete[i].parentName}
+		<td class="border_users_r border_users_b">
+            <div style="width:100%;">
+                {$itemForDelete[i].parentName}
+            </div>
+        </td>	
+		{/if}
     </tr>
     {/section} 
     <tr class="">
@@ -136,13 +148,17 @@
 	{if $itemsCount > 0}
 	
 	<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->
+{if $gobackAction eq 'browseCategory'}		
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>	
+{else}
 <input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}'">
+{/if}
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
 
 
 {else}
-<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
+<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'">
 
 {/if}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">

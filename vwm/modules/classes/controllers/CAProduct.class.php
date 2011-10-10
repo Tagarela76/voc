@@ -116,6 +116,10 @@ class CAProduct extends Controller {
 		$unittypeData = $cUnitType->getUnittypeDetails($densityDetailsTrue['denominatorID']);
 		$densityDetailsTrue['denominator'] = $unittypeData['name']; 
 		
+		$cProductTypes = new ProductTypes($this->db);
+		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		
+		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
@@ -680,6 +684,7 @@ class CAProduct extends Controller {
 				$itemForDelete []= $item;
 			}
 		}
+		$this->smarty->assign("gobackAction","browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
 	

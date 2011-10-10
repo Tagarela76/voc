@@ -108,7 +108,8 @@ ID number
 {if $gobackAction=="viewDetails"}
 <input type="button" value="No" class="button" onclick="location.href='admin.php?action=viewDetails&category={$request.category}&bookmark={$request.bookmark}&id={$itemForDelete[0].id}'">
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'">
+{*<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}'"/>*}
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button">
 

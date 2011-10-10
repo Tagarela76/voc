@@ -197,6 +197,29 @@
 						</tr>
 						
 						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+									Industry Type / Industry Sub-Category:
+							</td>
+							<td class="border_users_l border_users_r border_users_b">
+							<div align="left" > 
+								{if $productTypes|@count > 0}
+								{foreach from=$productTypes item=category key=k}
+									{if $k < $productTypes|@count-1}
+									&nbsp;{$category.industryType} / {$category.industrySubType},
+									{else}
+									{$category.industryType} / {$category.industrySubType}
+									{/if}
+								{/foreach}
+								{/if}
+							</div>
+							
+							
+						
+							</td>
+						</tr>
+						
+						
 							<tr>
 							<td class="border_users_l border_users_r" colspan="2" style="padding:5px 3px 0 3px">
 							
