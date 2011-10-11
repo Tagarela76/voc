@@ -127,6 +127,13 @@ class CAProduct extends Controller {
 	}
 	
 	private function actionEdit() {
+		$cProductTypes = new ProductTypes($this->db);
+		$productTypesList = $cProductTypes->getTypesWithSubTypes();
+		$this->smarty->assign('productTypeList', $productTypesList);
+		
+		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		$this->smarty->assign('productTypes', $productType);
+				
 		$product = new Product($this->db);
 		$id = $this->getFromRequest('id');
 		if (!is_null($this->getFromPost('save')))
@@ -170,6 +177,32 @@ class CAProduct extends Controller {
 			}								
 			$productData['chemicalClasses'] = $chemicalClasses;
 			
+			// process industry types
+			$prodTypeList = $cProductTypes->getAllTypes();
+			$prodSubTypeList = $cProductTypes->getAllSubTypes();
+			$prodTypeAndSubTypeList = array_merge_recursive($prodTypeList, $prodSubTypeList);
+
+			for ($i=0; $i<count($prodTypeAndSubTypeList); $i++){
+				if (!is_null($this->getFromPost('typesClass_'.$i))){
+					foreach ($prodTypeAndSubTypeList as $item) {
+						if ($this->getFromPost('typesClass_'.$i) == $item['id']){
+							$productAllTypesList[] = $item;
+						}
+					}
+				}
+			}
+			$j = 0;
+			foreach ($productAllTypesList as $prod){
+				if ($prod['parent'] == null){
+					$resProductAllTypesList[$j]['type'] = $prod['type'];
+					$resProductAllTypesList[$j]['subType'] = '';
+				} else {
+					$resProductAllTypesList[$j]['type'] = $prod['parentType'];
+					$resProductAllTypesList[$j]['subType'] = $prod['type'];
+				}
+				$j++;
+			}
+
 			//	process components
 			$componentCount = $this->getFromPost('componentCount');
 			for ($i=0;$i<$componentCount;$i++) {
@@ -237,6 +270,12 @@ class CAProduct extends Controller {
 			$chemicalClassesList = $hazardous->getChemicalClassesList();
 			$this->smarty->assign("chemicalClassesList",$chemicalClassesList);
 			
+			$productTypesList = $cProductTypes->getTypesWithSubTypes();
+			$this->smarty->assign('productTypeList', $productTypesList);
+		
+			$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+			$this->smarty->assign('productTypes', $productType);
+			
 			//density 
 			$cDensity = new Density($this->db);
 			$cUnitType = new Unittype($this->db);
@@ -259,8 +298,13 @@ class CAProduct extends Controller {
 			$product=new Product($this->db);
 			
 			if ($validStatus['summary'] == 'true') {
-				
+
 				$product->setProductDetails($productData);
+
+				$product->unassignProductFromType($id);
+				foreach ($resProductAllTypesList as $prod){
+					$product->assignProduct2Type($id, $prod['type'], $prod['subType']);
+				}
 				
 				header ('Location: admin.php?action=viewDetails&category=product&id='.$id);
 				die();																		
@@ -382,7 +426,7 @@ class CAProduct extends Controller {
 			}
 			$this->smarty->assign("component", $componentsList);
 			
-			if ($validateStatus['summary'] = "true") {
+			if ($validateStatus['summary'] == "true") {
 				$componentDetails = $component->getComponentDetails($componentsList[0]['component_id'],true);
 				$productData['cas'] = $componentDetails['cas'];
 				$productData['comp_desc'] = $componentDetails['description'];
@@ -419,7 +463,8 @@ class CAProduct extends Controller {
 			"modules/js/componentPreview.js",
 			"modules/js/getInventoryShortInfo.js",
 			"modules/js/addProductQuantity.js",
-			"modules/js/hazardousPopup.js"
+			"modules/js/hazardousPopup.js",
+			"modules/js/industryTypesPopup.js"
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl','tpls/addProductClass.tpl');
@@ -478,6 +523,33 @@ class CAProduct extends Controller {
 			}								
 			$productData['chemicalClasses'] = $chemicalClasses;
 			
+			// process industry types
+			$cProductTypes = new ProductTypes($this->db);
+			$prodTypeList = $cProductTypes->getAllTypes();
+			$prodSubTypeList = $cProductTypes->getAllSubTypes();
+			$prodTypeAndSubTypeList = array_merge_recursive($prodTypeList, $prodSubTypeList);
+
+			for ($i=0; $i<count($prodTypeAndSubTypeList); $i++){
+				if (!is_null($this->getFromPost('typesClass_'.$i))){
+					foreach ($prodTypeAndSubTypeList as $item) {
+						if ($this->getFromPost('typesClass_'.$i) == $item['id']){
+							$productAllTypesList[] = $item;
+						}
+					}
+				}
+			}
+			$j = 0;
+			foreach ($productAllTypesList as $prod){
+				if ($prod['parent'] == null){
+					$resProductAllTypesList[$j]['type'] = $prod['type'];
+					$resProductAllTypesList[$j]['subType'] = '';
+				} else {
+					$resProductAllTypesList[$j]['type'] = $prod['parentType'];
+					$resProductAllTypesList[$j]['subType'] = $prod['type'];
+				}
+				$j++;
+			}
+			$productData['prodTypes'] = $resProductAllTypesList;
 			//	process components
 			$componentCount = $this->getFromPost('componentCount');
 			for ($i=0;$i<$componentCount;$i++) {
@@ -518,7 +590,8 @@ class CAProduct extends Controller {
 				$product = new Product($this->db);
 				
 				if ($validStatus['summary'] == 'true') {
-					$product->addNewProduct($productData, $this->getFromRequest('companyID'));										
+					$productData['resultTypesList'] = $resProductAllTypesList;
+					$product->addNewProduct($productData, $this->getFromRequest('companyID'));		
 					header ('Location: admin.php?action=browseCategory&category=tables&bookmark=product');
 					die();
 				} else {
@@ -606,7 +679,7 @@ class CAProduct extends Controller {
 				}
 				$this->smarty->assign("component", $componentsList);
 				
-				if ($validateStatus['summary']="true") {
+				if ($validateStatus['summary'] == "true") {
 					$componentDetails = $component->getComponentDetails($componentsList[0]['component_id'],true);
 					$productData['cas'] = $componentDetails['cas'];
 					$productData['comp_desc'] = $componentDetails['description'];
@@ -646,6 +719,13 @@ class CAProduct extends Controller {
 		$chemicalClassesList = $hazardous->getChemicalClassesList();
 		$this->smarty->assign("chemicalClassesList", $chemicalClassesList);
 		
+		$cProductTypes = new ProductTypes($this->db);
+		$productTypesList = $cProductTypes->getTypesWithSubTypes();
+		$this->smarty->assign('productTypeList', $productTypesList);
+		
+		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		$this->smarty->assign('productTypes', $productType);
+		
 		//density 
 		$cDensity = new Density($this->db);
 		$cUnitType = new Unittype($this->db);
@@ -663,7 +743,8 @@ class CAProduct extends Controller {
 			"modules/js/componentPreview.js",
 			"modules/js/getInventoryShortInfo.js",
 			"modules/js/addProductQuantity.js",
-			"modules/js/hazardousPopup.js"
+			"modules/js/hazardousPopup.js",
+			"modules/js/industryTypesPopup.js"
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl', 'tpls/addProductClass.tpl');

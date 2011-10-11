@@ -41,20 +41,20 @@
 			for (i = 0; i < checkBoxes.length; i++) {
 				if (checkBoxes[i].type == 'checkbox' && checkBoxes[i].checked == true) {
 					var index = checkBoxes[i].value -1 ;
-					chemicalClassString.innerHTML +=  document.getElementById('chemicalClassName_'+index).innerHTML + "; ";
+					chemicalClassString.innerHTML += document.getElementById('chemicalClassName_'+index).innerHTML + "; ";
 					var hiddenChemicalClassID =  document.createElement("input");
 					hiddenChemicalClassID.type = "hidden";
 					hiddenChemicalClassID.name = 'chemicalClass_'+index;
 					hiddenChemicalClassID.value = checkBoxes[i].value;
 					hiddenChemicalClasses.appendChild(hiddenChemicalClassID);
-					var ruleCount = document.getElementById('rulesCount_'+index).value;
+					/*var ruleCount = document.getElementById('rulesCount_'+index).value;
 					for (j = 0; j < ruleCount; j++) {
 						var hiddenChemicalRuleID = document.createElement("input");
 						hiddenChemicalRuleID.type = "hidden";
 						hiddenChemicalRuleID.name = 'chemicalRule_'+index+"_"+j;
 						hiddenChemicalRuleID.value = document.getElementById("chemicalRule_"+index+"_"+j).value;
 						hiddenChemicalClasses.appendChild(hiddenChemicalRuleID);
-					}
+					}*/
 				}
 			}
 			

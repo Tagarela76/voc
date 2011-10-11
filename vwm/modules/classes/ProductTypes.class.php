@@ -70,26 +70,33 @@ class ProductTypes {
 
 
 	public function getTypeAndSubTypeByProductID($productID){
-		$query = "SELECT it.type, it.parent FROM ".TB_INDUSTRY_TYPE." it, ".TB_PRODUCT2TYPE." p2t ".
-				 " WHERE p2t.product_id = ".$productID." AND p2t.type_id = it.id AND it.parent is not NULL";
+		$query = "SELECT it.type, it.parent, it.id FROM ".TB_INDUSTRY_TYPE." it, ".TB_PRODUCT2TYPE." p2t ".
+				 " WHERE p2t.product_id = ".$productID." AND it.id = p2t.type_id";
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0){
 			$result = $this->db->fetch_all_array();
-			$i = 0;
 			foreach ($result as $key){
-				$productType[$i]['industrySubType'] = $key['type'];
-				$query = "SELECT type FROM ".TB_INDUSTRY_TYPE.
-						 " WHERE id = ".$key['parent']." AND parent is NULL";
-				$this->db->query($query);
-				$resultType = $this->db->fetch_array(0);
-				$productType[$i]['industryType'] = $resultType['type'];
-				$i++;
+				if ($key['parent'] == null){
+					$productType[$key['id']]['industryType'] = $key['type'];
+					$productType[$key['id']]['industrySubType'] = '';
+				} else {
+					$query = "SELECT type FROM ".TB_INDUSTRY_TYPE.
+							 " WHERE id = ".$key['parent']." AND parent is NULL";
+					$this->db->query($query);
+					$resultType = $this->db->fetch_array(0);
+					$productType[$key['id']]['industryType'] = $resultType['type'];
+					$productType[$key['id']]['industrySubType'] = $key['type'];
+				}
 			}
 		}
 		
 		return $productType;
 	}
 	
+	public function setTypeAndSubTypeByProductID($productID, $types){
+		
+	}
+
 	public function getTypeDetails($typeID){
 		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE.
 				 " WHERE id = ".$typeID;
@@ -162,17 +169,42 @@ class ProductTypes {
 
 	public function deleteType($industryTypeID){
 		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE id = ".$industryTypeID);
+		$this->db->query("SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$industryTypeID);
+		$typeID = $this->db->fetch_all_array();
+		foreach ($typeID as $key){
+			$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$key['id']);
+		}
+		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$industryTypeID);
 		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$industryTypeID);
 	}
 	
 	public function deleteSubType($industrySubTypeID){
 		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE id = ".$industrySubTypeID);
+		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$industrySubTypeID);
 	}
 
 	public function getSubTypesByTypeID($typeID){
 		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$typeID;
 		$this->db->query($query);
 		$result = $this->db->fetch_all_array();
+		
+		return $result;
+	}
+	
+	public function getTypesWithSubTypes(){
+		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent is NULL";
+		$this->db->query($query);
+		$types = $this->db->fetch_all();
+		$i = 0;
+		foreach ($types as $item){
+			$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$item->id;
+			$this->db->query($query);
+			$subTypes = $this->db->fetch_all();
+			$result[$item->type]['id'] = $item->id;
+			foreach ($subTypes as $subitem){
+				$result[$item->type]['subTypes'][$subitem->id] = $subitem->type;
+			}
+		}
 		
 		return $result;
 	}

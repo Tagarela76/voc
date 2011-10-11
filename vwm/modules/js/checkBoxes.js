@@ -3,9 +3,12 @@ function CheckAll(Element) {
 	if (Element.name == 'allChemicalClasses') {
 		thisCheckBoxes = document.getElementById('chemClassList').getElementsByTagName('input');
 	} else {
-		thisCheckBoxes = document.getElementsByTagName('input');
+		if (Element.name == 'allTypesClasses'){
+			thisCheckBoxes = document.getElementById('typesClassList').getElementsByTagName('input');
+		} else {
+			thisCheckBoxes = document.getElementsByTagName('input');
 	}	
-		
+	}	
 	for (i = 0; i < thisCheckBoxes.length; i++) {
 		if (thisCheckBoxes[i].type == 'checkbox') {
 			thisCheckBoxes[i].checked = true;
@@ -19,9 +22,12 @@ function unCheckAll(Element) {
 	if (Element.name == 'allChemicalClasses') {
 		thisCheckBoxes = document.getElementById('chemClassList').getElementsByTagName('input');
 	} else {
-		thisCheckBoxes = document.getElementsByTagName('input');
+		if (Element.name == 'allTypesClasses'){
+			thisCheckBoxes = document.getElementById('typesClassList').getElementsByTagName('input');
+		} else {
+			thisCheckBoxes = document.getElementsByTagName('input');
 	}	
-	
+	}
 	for (i = 0; i < thisCheckBoxes.length; i++){
 		if (thisCheckBoxes[i].type=='checkbox') {
 			thisCheckBoxes[i].checked = false;

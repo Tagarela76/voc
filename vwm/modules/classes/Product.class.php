@@ -217,7 +217,13 @@ class Product extends ProductProperties {
 
 		$this->db->query("SELECT LAST_INSERT_ID() id");
 		$productID = $this->db->fetch(0)->id;
-
+		
+		//assign product2types
+		
+		foreach ($productData['resultTypesList'] as $prod){
+			$this->assignProduct2Type($productID, $prod['type'], $prod['subType']);
+		}
+		
 		//assign product2company
 		if (!empty($companyID)) {
 			$this->assignProduct2Company($productID, $companyID);
@@ -860,10 +866,10 @@ class Product extends ProductProperties {
 				}
 			}
 		} else {
-			$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = ".$industryType." AND parent is NULL";
+			$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE type = '".$industryType."' AND parent is NULL";
 			$this->db->query($query);
-			$resultType = $this->db->fetch(0);
-			if (!empty($resultType)) {
+			if ($this->db->num_rows() > 0) {
+				$resultType = $this->db->fetch(0);
 				$this->db->query("INSERT INTO ".TB_PRODUCT2TYPE." (product_id, type_id) VALUES (".$productID.", ".$resultType->id.")");
 			} else {
 				// create new Type

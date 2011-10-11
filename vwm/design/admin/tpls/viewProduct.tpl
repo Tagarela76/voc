@@ -204,13 +204,17 @@
 							<td class="border_users_l border_users_r border_users_b">
 							<div align="left" > 
 								{if $productTypes|@count > 0}
-								{foreach from=$productTypes item=category key=k}
-									{if $k < $productTypes|@count-1}
-									&nbsp;{$category.industryType} / {$category.industrySubType},
-									{else}
-									{$category.industryType} / {$category.industrySubType}
-									{/if}
-								{/foreach}
+									{foreach from=$productTypes item=category key=k}
+										{if $category.industrySubType neq ''}
+											{if $k < $productTypes|@count-1}
+												&nbsp;{$category.industryType} / {$category.industrySubType},
+											{else}
+												{$category.industryType} / {$category.industrySubType}
+											{/if}
+										{else}	
+											{$category.industryType},
+										{/if}	
+									{/foreach}
 								{/if}
 							</div>
 							
