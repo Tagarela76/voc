@@ -28,7 +28,7 @@ class bulkUploader {
     	$this->ruleObj = new Rule($db);
     	$this->companyID = (empty($input['companyID'])) ? null : $input['companyID'];
     	
-    	//$this->db->select_db(DB_NAME);
+//    	//$this->db->select_db(DB_NAME);
     	
     	$this->productTo = $input['maxNumber'];
     	
@@ -41,7 +41,11 @@ class bulkUploader {
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of ". $input['realFileName'] . "...\n";
 		
 		$validation = new validateCSV();
-		$validation->validate($input);
+		$validation->validate($input);		
+		
+		//var_dump($validation->productsCorrect[3]['component']); die();
+		//var_dump($validation->productsCorrect[6]); die();
+		//var_dump($validation); die();
 		
 		$errorLog = $validation->errorComments;
 		
@@ -53,70 +57,62 @@ class bulkUploader {
 		$this->productsCorrect = $validation->productsCorrect;
 		$this->productsError = $validation->productsError;		 	
 		
-		if ($percent<=$input['threshold']) {
-			
-			//creating_backup
-    		$sqlFile = "db_backup/".DB_NAME."_".date('Y_m_d_H_i_s').".sql";
-    		$creatBackup = "mysqldump -h ".DB_HOST." -u ".DB_USER." --password=".DB_PASS." ".DB_NAME." > ".$sqlFile;		
-			exec($creatBackup);
-		
-			$products = $validation->productsCorrect;
-			for($i=0;$i<count($products);$i++) {
-								
-				//	try to calculate density from specific gravity if needed
-				if ($products[$i]['density'] == '' || (int)$products[$i]['density'] == 0) {
-					$density = $this->getDensityBySpecificGravity($products[$i]['gavity']);					
-					if ($density) {
-						$products[$i]['density'] = $density;											
-					}					
-				}
 
-				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i]['productID'] . "'");
-				$r=$this->db->fetch(0);				
-				if (empty($r) && $i >= $this->productFrom && $i <= $this->productTo) {					
-					$actionLog .= $this->insertData($products[$i]);
-					$this->insertedCnt++;						
-				} elseif (isset($r->product_id)) { //product exist then update it
-					if (!empty($input['update'])) {
-						$actionLog .= "	Product ".$products[$i]['productID']." already exists. Update items: YES.\n";
-						$productID = $r->product_id;								
-						$actionLog .= $this->updateData($productID, $products[$i]);			
-						$this->updatedCnt++;
-					} else {
-						$actionLog .= "	Product ".$products[$i]['productID']." already exists. Update items: NO.\n";
-					}				
-					
-				} //if isset($r->product_id)
-			}
-			$this->validationResult = "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%.";
-			$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of ". $input['realFileName'] . " is successfuly finished.\n";
-			$actionLog .= "	Number of inserted products is " . $this->insertedCnt."\n";
-			$actionLog .= "	Number of updated products is " . $this->updatedCnt."\n";
-			$actionLogFile = fopen("../voc_logs/actions.log","a");
-			fwrite($actionLogFile,$actionLog);
-			fclose($actionLogFile);			
-			$errorLog .= "(" . date("m.d.Y H:i:s") . ") Validation of ". $input['realFileName'] . " complete!\n";
-			$errorLog .= "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%.\n";
+		//creating_backup
+    	$sqlFile = "db_backup/".DB_NAME."_".date('Y_m_d_H_i_s').".sql";
+    	$creatBackup = "mysqldump -h ".DB_HOST." -u ".DB_USER." --password=".DB_PASS." ".DB_NAME." > ".$sqlFile;		
+		//exec($creatBackup);
+		
+		$products = $validation->productsCorrect;
+		for($i=0;$i<count($products);$i++) {
 			
-			$this->actions = str_replace("\n","<br>",$actionLog);
-			$this->actions = str_replace("	","&nbsp;&nbsp;",$this->actions);
-		} else {
-			$this->validationResult = "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%. <b>Correct input file, please.</b>";
-			$errorLog .= "(" . date("m.d.Y H:i:s") . ") Validation of ". $input['realFileName'] . " failed!\n";
-			$errorLog .= "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%. Correct input file, please.\n";			
-		}		
-		$validationLogFile = fopen("../voc_logs/validation.log","a");
+			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i]['productID'] . "'");
+			$r=$this->db->fetch(0);				
+			if (empty($r) && $i >= $this->productFrom && $i <= $this->productTo) {					
+				$actionLog .= $this->insertData($products[$i]);
+				$this->insertedCnt++;						
+			} elseif (isset($r->product_id)) { //product exist then update it				
+				if (!empty($input['update'])) {
+					$actionLog .= "	Product ".$products[$i]['productID']." already exists. Update items: YES.\n";
+					$productID = $r->product_id;								
+					$actionLog .= $this->updateData($productID, $products[$i]);			
+					$this->updatedCnt++;
+				} else {
+					$actionLog .= "	Product ".$products[$i]['productID']." already exists. Update items: NO.\n";
+				}				
+				
+			} //if isset($r->product_id)
+		}
+		
+		$this->validationResult = "	Percent of errors is ".$percent."%.";
+		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of ". $input['realFileName'] . " is successfuly finished.\n";
+		$actionLog .= "	Number of inserted products is " . $this->insertedCnt."\n";
+		$actionLog .= "	Number of updated products is " . $this->updatedCnt."\n";
+		$actionLogFile = fopen(DIR_PATH_LOGS."actions.log","a");
+		fwrite($actionLogFile,$actionLog);
+		fclose($actionLogFile);			
+		$errorLog .= "(" . date("m.d.Y H:i:s") . ") Validation of ". $input['realFileName'] . " complete!\n";
+		$errorLog .= "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%.\n";
+		
+		$this->actions = str_replace("\n","<br>",$actionLog);
+		$this->actions = str_replace("	","&nbsp;&nbsp;",$this->actions);
+		
+		//$this->validationResult = "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%. <b>Correct input file, please.</b>";
+		$errorLog .= "(" . date("m.d.Y H:i:s") . ") Validation of ". $input['realFileName'] . " failed!\n";
+		$errorLog .= "	Percent of errors is ".$percent."%.";			
+	
+		$validationLogFile = fopen(DIR_PATH_LOGS."validation.log","a");
 		fwrite($validationLogFile,$errorLog);
-		fclose($validationLogFile);					
+		fclose($validationLogFile);			
     }
     
     //--------------private functions-------------------------------------
     
     private function insertData($product){
-		
+
 		//supplier
-		$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '" . $product['MFG'] . "'");
-		$r=$this->db->fetch(0);		
+		$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '" . $product['MFG'] . "'");		
+		$r=$this->db->fetch(0);
 		if (empty($r->supplier_id)) {
 			$actionLog .= "	Adding supplier ".$product['MFG']."\n";
 			$this->db->query("INSERT INTO supplier (supplier) VALUES ('".$product['MFG']."')");
@@ -137,36 +133,9 @@ class bulkUploader {
 			$r=$this->db->fetch(0);
 		}
 		$coating_id = $r->coat_id;
-		
+
 		//	hazardous			
 		$chemicalClasses = $this->processChemicalClass($product);		
-		/*$querySel = "SELECT hazardous_class_id " .
-			 "FROM hazardous_class " .
-			 "WHERE class = '".$product['hazardousClass']."' " .
-			 "AND irr = '".$product['hazardousIRR']."' " .
-			 "AND ohh = '".$product['hazardousOHH']."' " .
-			 "AND sens = '".$product['hazardousSENS']."' " .
-			 "AND oxy_1 = '".$product['hazardousOXY']."'";
-		$this->db->query($querySel);
-		$r=$this->db->fetch(0);
-		if (empty($r->hazardous_class_id)) {
-			$actionLog .= "	Adding Hazardous class = '".$product['hazardousClass']."', " .
-			 	      "irr = '".$product['hazardousIRR']."', " .
-			 	      "ohh = '".$product['hazardousOHH']."', " .
-			 	      "sens = '".$product['hazardousSENS']."', " .
-				      "oxy_1 = '".$product['hazardousOXY']."'\n";
-			$queryIns = "INSERT INTO hazardous_class (class, irr, ohh, sens, oxy_1) " .
-				 "VALUES ('".$product['hazardousClass']."', " .
-				 "'".$product['hazardousIRR']."', " .
-				 "'".$product['hazardousOHH']."', " .
-				 "'".$product['hazardousSENS']."', " .
-				 "'".$product['hazardousOXY']."')";
-			$this->db->query($queryIns);			
-
-			$this->db->query($querySel);
-			$r=$this->db->fetch(0);
-		}
-		$hazardous_class_id = $r->hazardous_class_id;*/
 
 		$tmpArray = array("vocwx","voclx","density","gavity","boiling_range_from","boiling_range_to");
 		foreach ($tmpArray as $key) {
@@ -183,45 +152,31 @@ class bulkUploader {
 				$product[$key] = "no";
 			}
 		}
-		// query with old hazardous (chemical system) 
-		/*$query = "INSERT INTO product (product_nr, name, inventory_id, voclx, vocwx, density, coating_id, " .
-					"specialty_coating, aerosol, specific_gravity, boiling_range_from, " . 
-					"boiling_range_to, hazardous_class_id, supplier_id) " .
-			 "VALUES ('".$product['productID']."', '" .
-				 $product['productName']."', " .
-				 $this->inventoryID.", " .
-				 $product['voclx'].", " .
-				 $product['vocwx'].", " .
-				 $product['density'].", " .
-				 $coating_id.", '" .
-				 $product['specialtyCoating']."', '" .
-				 $product['aerosol']."', " .
-				 $product['gavity'].", " .
-				 $product['boilingRangeFrom'].", " .
-				 $product['boilingRangeTo'].", " .
-				 $hazardous_class_id.", " .
-				 $supplier_id.")";*/
-			  
+	
+				 
 		$query = "INSERT INTO product (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
-					"specialty_coating, aerosol, specific_gravity, boiling_range_from, " . 
-					"boiling_range_to, supplier_id) " .
+					"specific_gravity, specific_gravity_unit_id, boiling_range_from, " . 
+					"boiling_range_to, supplier_id, percent_volatile_weight, percent_volatile_volume) " .
 			 "VALUES ('".$product['productID']."', '" .
 				 $product['productName']."', " .				 
 				 $product['voclx'].", " .
 				 $product['vocwx'].", " .
 				 $product['density'].", " .
-				 "1, ".									// The default density is measured in lbs/gal
-				 $coating_id.", '" .
-				 $product['specialtyCoating']."', '" .
-				 $product['aerosol']."', " .
+				 "2, ".									// The default density is measured in g/cm3
+				 $coating_id.", " .				  
 				 $product['gavity'].", " .
+				 "2, ".									// The default density is measured in g/cm3
 				 $product['boilingRangeFrom'].", " .
 				 $product['boilingRangeTo'].", " .				 
-				 $supplier_id.")";		 
+				 $supplier_id.", " .
+				 "".$product['percentVolatileWeight'].", " .
+				 "".$product['percentVolatileVolume']." " .
+				 ")";		 
 		$this->db->query($query);
 
 		if (mysql_errno()==0) {
-			$productID = $this->db->getLastInsertedID();//mysql_insert_id(); OLD
+			//$productID = mysql_insert_id();//OLD
+			$productID = $this->db->getLastInsertedID();
 			$actionLog .= "	Adding product " . $product['productID'] . "\n";
 			
 			//	set product to company link
@@ -229,9 +184,25 @@ class bulkUploader {
 				$this->productObj->assignProduct2Company($productID, $this->companyID);	
 			}
 			
-			// set product to type
-			foreach ($product['industryType'] as $industryType){
-				$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
+			//	waste class processing
+			if (!empty($product['waste'])) {
+				$wasteClasses = explode(',',$product['waste']);
+				foreach ($wasteClasses as $wasteClass) {
+					$wasteClass = trim($wasteClass);
+					$querySel = "SELECT id FROM waste_class WHERE name = '".$wasteClass."'";
+					$this->db->query($querySel);					
+					if ($this->db->num_rows() == 0) {
+						$query = "INSERT INTO waste_class (name) VALUES ('".$wasteClass."')";
+						$this->db->exec($query);
+						
+						$this->db->query($querySel);
+						$wasteClassID = $this->db->fetch(0)->id;								
+					} else {
+						$wasteClassID = $this->db->fetch(0)->id;
+					}
+					
+					$this->productObj->assignProduct2WasteClass($productID, $wasteClassID);						
+				}				
 			}
 			
 			//	set product to chemical class link
@@ -245,7 +216,7 @@ class bulkUploader {
 			$productID = 0;
 			$actionLog .= "	Error while adding product " . $product['productID'] . "\n";	
 		}		
-		
+
 		return $actionLog;
 	}
 	
@@ -277,41 +248,7 @@ class bulkUploader {
 		$coating_id = $r->coat_id;
 
 		//hazrdous class	
-		$chemicalClasses = $this->processChemicalClass($product);				
-		/*$tmpArray = array("hazardousIRR","hazardousOHH","hazardousSENS","hazardousOXY");
-		foreach ($tmpArray as $key) {
-			if (empty($product[$key])) {
-				$product[$key] = "no";
-			} else {
-				$product[$key] = "yes";
-			}
-		}
-		$querySel = "SELECT hazardous_class_id " .
-			    "FROM hazardous_class " .
-			    "WHERE class = '".$product['hazardousClass']."' " .
-			    "AND irr = '".$product['hazardousIRR']."' " .
-			    "AND ohh = '".$product['hazardousOHH']."' " .
-			    "AND sens = '".$product['hazardousSENS']."' " .
-			    "AND oxy_1 = '".$product['hazardousOXY']."'";
-		$this->db->query($querySel);					
-		$row_haz=$this->db->fetch(0);
-		if (empty($row_haz)) {
-			$actionLog .= "		Adding Hazardous class = '".$product['hazardousClass']."', " .
-			 	      "irr = '".$product['hazardousIRR']."', " .
-			 	      "ohh = '".$product['hazardousOHH']."', " .
-			 	      "sens = '".$product['hazardousSENS']."', " .
-				      "oxy_1 = '".$product['hazardousOXY']."'\n";
-			$queryIns = "INSERT INTO hazardous_class (class, irr, ohh, sens, oxy_1) " .
-				 	"VALUES ('".$product['hazardousClass']."', " .
-					 "'".$product['hazardousIRR']."', " .
-					 "'".$product['hazardousOHH']."', " .
-					 "'".$product['hazardousSENS']."', " .
-					 "'".$product['hazardousOXY']."')";
-			$this->db->query($queryIns);			
-			$row_haz->hazardous_class_id = mysql_insert_id();
-		}*/
-
-
+		$chemicalClasses = $this->processChemicalClass($product);						
 
 		$tmpArray = array("vocwx","voclx","density","gavity","boiling_range_from","boiling_range_to");
 		foreach ($tmpArray as $key) {
@@ -337,25 +274,39 @@ class bulkUploader {
 					"density=".$product['density'].", " .
 					//"density_unit_id=1, ".				// The default density is measured in lbs/gal
 					"coating_id=".$coating_id.", " .
-					"specific_gravity=".$product['gavity'].", " .
-					"specialty_coating='".$product['specialtyCoating']."', " .
-					"aerosol='".$product['aerosol']."', " .
+					"specific_gravity=".$product['gavity'].", " .					
 					"boiling_range_from=".$product['boilingRangeFrom'].", " .
 					"boiling_range_to=".$product['boilingRangeTo'].", " .
-					//"hazardous_class_id='".$row_haz->hazardous_class_id."', " .
-					"supplier_id=".$supplier_id." " .
+					"supplier_id=".$supplier_id.", " .
+					"percent_volatile_weight = ".$product['percentVolatileWeight'].", " .
+					"percent_volatile_volume = ".$product['percentVolatileVolume']." " .
 				"WHERE product_id = ".$productID;
 		$this->db->query($queryUpd);
-		
-		//updating industy type and subtype
-		$this->productObj->unassignProductFromType($productID);
-		foreach ($product['industryType'] as $industryType){
-			$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
-		}
 		
 		//	set product to company link
 		if (!empty($this->companyID)) {
 			$this->productObj->assignProduct2Company($productID, $this->companyID);	
+		}
+		
+		//	waste class processing
+		if (!empty($product['waste'])) {
+			$wasteClasses = explode(',',$product['waste']);
+			foreach ($wasteClasses as $wasteClass) {
+				$wasteClass = trim($wasteClass);
+				$querySel = "SELECT id FROM waste_class WHERE name = '".$wasteClass."'";
+				$this->db->query($querySel);					
+				if ($this->db->num_rows() == 0) {
+					$query = "INSERT INTO waste_class (name) VALUES ('".$wasteClass."')";
+					$this->db->exec($query);
+					
+					$this->db->query($querySel);
+					$wasteClassID = $this->db->fetch(0)->id;								
+				} else {
+					$wasteClassID = $this->db->fetch(0)->id;
+				}
+				
+				$this->productObj->assignProduct2WasteClass($productID, $wasteClassID);						
+			}				
 		}
 			
 		//	set product to chemical class link
@@ -363,12 +314,12 @@ class bulkUploader {
 
 		//component part
 		//delete old data
-		$actionLog .= "			Deleting old components from product ".$product['productID']."\n";
+		$actionLog .= "			Deleting old components from product ".$product['productID']."\n";		
 		$this->db->query("DELETE FROM components_group WHERE product_id = " . $productID);		
 
 		//add new components
 		for ($i=0;$i<count($product['component']);$i++){
-			$actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);
+			$actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);	//	$product['productID'] - name
 		}	
 		return $actionLog;	
 	}
@@ -378,13 +329,17 @@ class bulkUploader {
 		//component
 		$query = "SELECT component_id " .
 			"FROM component " .
-			"WHERE cas = '" .$component['caseNumber'] . "'";
+			"WHERE cas = '" .$component['caseNumber'] . "' " .
+			"AND description = '" . $component['description'] . "'";
 		$this->db->query($query);
 		$r=$this->db->fetch(0);
 			
 		if (empty($r->component_id)){//adding component
 			$actionLog .= "				Adding component '".$component['caseNumber']."','".$component['description'] ."'\n";
-			$this->db->query("INSERT INTO component (cas, description) VALUES ('".$component['caseNumber']."', " .
+			$this->db->query("INSERT INTO component (einecs_elincs, substance_symbol, cas, description) VALUES (" .
+					"'".$component['einecsElincs']."', " .
+					"'".$component['substanceSymbol']."', " .
+					"'".$component['caseNumber']."', " .
 					"'".$component['description']."')");			
 
 			$query = "SELECT component_id " .
@@ -393,8 +348,17 @@ class bulkUploader {
 				"AND description = '" . $component['description'] . "'";
 			$this->db->query($query);
 			$r=$this->db->fetch(0);
+			
+			//	substance rules
+			if ( !empty($component['substanceR'])) {
+				$substanceRs = $this->processSubstanceR($component['substanceR']);
+				foreach ($substanceRs as $substanceR) {
+					$query = "INSERT INTO component2rule (component_id, rule_id) VALUES (".$r->component_id.", ".$substanceR.")";
+					$this->db->exec($query);
+				}			
+			}			
 		}
-		$componentID = $r->component_id;
+		$componentID = $r->component_id;				
 
 		//substrate
 		if ( !empty($component['substrate']) ){
@@ -413,7 +377,7 @@ class bulkUploader {
 		}
 
 		//rule
-		if ( !empty($component['rule']) ){			
+		if ( !empty($component['rule']) ){
 			$this->db->query("SELECT rule_id FROM rule WHERE ".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()]." = '".$component['rule']."'");
 			$r=$this->db->fetch(0);
 			if ( empty($r->rule_id) ) {
@@ -433,6 +397,8 @@ class bulkUploader {
 			}
 		}
 		$component['weight'] = str_replace("%", "", $component['weight']);
+		$component['temp'] = str_replace("C", "", $component['weight']);
+		$component['temp'] = trim($component['temp']);
 		
 		if ($component['vocpm'] == "") {
 			$component['vocpm'] = "VOC";
@@ -462,27 +428,55 @@ class bulkUploader {
 		return $actionLog;
 	}
 	
+	
+	
+	
+	/*
+	 * return array
+  0 => 
+    array
+      'id' => string '1' (length=1)
+      'rules' => 
+        array
+          0 => string '61' (length=2)
+          1 => string '58' (length=2)
+          2 => string '135' (length=3)
+          3 => string '140' (length=3)
+          4 => string '115' (length=3)
+          5 => string '128' (length=3)
+	 */
 	private function processChemicalClass($product) {
-		//$this->db->select_db(DB_NAME);
+		
+//		//$this->db->select_db(DB_NAME);
 		$hazardousClasses = array();
 		
 		$tmpArray 	= array("hazardousIRR","hazardousOHH","hazardousSENS","hazardousOXY");
 		$realNames 	= array("IRR","OHH","SENS","OXY-1");
 		foreach ($tmpArray as $index=>$key) {
 			if (!empty($product[$key])) {			
-				$querySel = "SELECT id FROM chemical_class WHERE name = '".$realNames[$index]."'";
+				$querySel = "SELECT id FROM chemical_class WHERE name = '".$realNames[$index]."'";				
 				$this->db->query($querySel);
 				$data = $this->db->fetch(0);
-				if (!empty($data->id)) {
-					$hazardousClasses[] = $data->id;			
+				if (!empty($data->id)) {					
+					$hazardousClass['id'] = $data->id;
+					$substanceRs = $this->processSubstanceR($product[$key]);
+					foreach ($substanceRs as $substanceR) {
+							$hazardousClass['rules'][] = $substanceR;
+					}
+					$hazardousClasses[] = $hazardousClass;							
 				}			
 			}
 		}			
 		
+		if ($product['hazardousClass'] == '') {
+			return $hazardousClasses;
+		}
+		
 		$chemicalClass = strtoupper($product['hazardousClass']);
 		$querySel = "SELECT id FROM chemical_class WHERE name = '".$chemicalClass."'";
 		$this->db->query($querySel);
-		$data = $this->db->fetch(0);		
+		$data = $this->db->fetch(0);
+	
 		if (empty($data->id)) {
 			$actionLog .= "	Adding Hazardous class = '".$chemicalClass."'\n";
 			$queryIns = "INSERT INTO chemical_class (name) VALUES ('".$chemicalClass."')";
@@ -491,29 +485,32 @@ class bulkUploader {
 			$this->db->query($querySel);
 			$data = $this->db->fetch(0);
 		}
-		$hazardousClasses[] = $data->id;
+		$hazardousClasses[] = array('id'=>$data->id, 'rules'=>null);
 				
 		return $hazardousClasses; 
 	}
 	
 	
-	/**
-	 * 
-	 * Try to get density by Spec Gravity using following
-	 * ρ = SG · ρH2O
-	 * ρ - density
-	 * SG - Specific Gravity
-	 * ρH2O - water density (usually 4 ºC, see MSDS to insure) = 999.972024 kg/m3 or 8.345171 pounds/gallon (US)
-	 * 
-	 * @param array $product
-	 * @return mixed density value, false - no changes
-	 */
-	private function getDensityBySpecificGravity($specificGravity) {				
-		if ($specificGravity == "" || (int)$specificGravity == 0) {
-			//	specific gravity is empty. Cannot apply changes
-			return false;
-		}		
-		return $specificGravity * 8.34;					
+	
+	
+	private function processSubstanceR($substanceR) {
+		$rules = explode(',',$substanceR);
+		foreach ($rules as $rule) {
+			$rule = trim(strtoupper($rule));
+			$querySel = "SELECT rule_id FROM rule WHERE ".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()]." = '".$rule."'";
+			$this->db->query($querySel);
+			$dataRule = $this->db->fetch(0);
+			if (empty($dataRule->rule_id)) {
+				$actionLog .= "	Adding Rule = '".$rule."'\n";
+				$queryIns = "INSERT INTO ".TB_RULE." (".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()].") VALUES ('".$rule."')";
+				$this->db->query($queryIns);			
+				
+				$this->db->query($querySel);
+				$dataRule = $this->db->fetch(0);
+			}
+			$rulesID[] = $dataRule->rule_id;
+		}					
+		return $rulesID;				
 	}
 			
 }

@@ -879,6 +879,21 @@ class Product extends ProductProperties {
 		}
 	}
 	
+	public function assignProduct2WasteClass($productID, $wasteClassID) {
+		
+		$productID=mysql_escape_string($productID);
+		$wasteClassID=mysql_escape_string($wasteClassID);
+		
+		$query = "SELECT id FROM product2waste_class WHERE product_id = ".$productID." AND waste_class_id = ".$wasteClassID."";
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			$query = "INSERT INTO product2waste_class (product_id, waste_class_id) VALUES (" .
+					"".$productID.", ".$wasteClassID.")";
+			$this->db->exec($query);
+		}
+	}
+	
 	public function unassignProductFromType($productID){
 		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE product_id = ".$productID);
 	}
