@@ -146,7 +146,7 @@ class Product extends ProductProperties {
 
 			$component['mm_hg']   = $data[$i]->mm_hg;
 			$component['temp']   = $data[$i]->temp;
-			$component['weight'] = $data[$i]->weight;
+			$component['weightFrom'] = $data[$i]->weight;
 			$component['type']	 = $data[$i]->type;
 			$component['temp_vp'] = $data[$i]->temp;
 			$component['rule_id'] = $data[$i]->rule_id;
@@ -412,14 +412,14 @@ class Product extends ProductProperties {
 				$components[$i][$key]=mysql_escape_string($value);
 			}
 
-			$query="INSERT INTO ".TB_COMPONENTGROUP." (component_id, product_id, substrate_id, rule_id, temp, mm_hg, weight, type) VALUES (";
+			$query="INSERT INTO ".TB_COMPONENTGROUP." (component_id, product_id, substrate_id, rule_id, temp, mm_hg, weight_from, type) VALUES (";
 			$query.="'".$components[$i]['component_id']."', ";
 			$query.="'".$id."', ";
 			$query.="'".$components[$i]['substrate_id']."', ";
 			$query.="'".$components[$i]['rule_id']."', ";
 			$query.="'".$components[$i]['temp_vp']."', ";
 			$query.="'".$components[$i]['mm_hg']."', ";
-			$query.="'".$components[$i]['weight']."', ";
+			$query.="'".$components[$i]['weightFrom']."', ";
 			$query.="'".$components[$i]['type']."'";
 
 			$query.=")";
