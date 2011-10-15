@@ -73,6 +73,7 @@ class validateCSV {
 			$data_tmp[33] = $data[$headerKey['industrySubType']];
 			$data_tmp[34] = $data[$headerKey['paintOrChemical']];
 			$data_tmp[35] = $data[$headerKey['flashPoint']];
+			$data_tmp[36] = $data[$headerKey['health']];
 			
 			$data = $data_tmp;			
 
@@ -100,6 +101,24 @@ class validateCSV {
 					}
 					$this->errorComments .= $currRowComments;
 					
+					if (!preg_match("/^[0-9.]*$/",$data[29]) || (substr_count($data[29],".") > 1) ){
+						$data[29] = '';
+					}
+					if ($data[29] == ''){
+						$data[29] = '0';
+					}
+					
+					if (!preg_match("/^[0-9.]*$/",$data[30]) || (substr_count($data[30],".") > 1) ){
+						$data[30] = '';
+					}
+					if ($data[30] == ''){
+						$data[30] = '0';
+					}
+					
+					if ($data[35] == ''){
+						$data[35] = '0';
+					}
+					
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
@@ -112,8 +131,8 @@ class validateCSV {
 						"voclx" => $data[9],
 						"density" => $data[16],
 						"gavity" => $data[17],
-						"boilingRangeFrom" => $data[18],
-						"boilingRangeTo" => $data[19],
+						"boilingRangeFrom" => $this->toCelsius($data[18]),
+						"boilingRangeTo" => $this->toCelsius($data[19]),
 						"hazardousClass" => $data[20],
 						"hazardousIRR" => $data[21],
 						"hazardousOHH" => $data[22],
@@ -126,18 +145,13 @@ class validateCSV {
 						//"industryType" => $data[32],
 						//"industrySubType" => $data[33],
 						"paintOrChemical" => $data[34],
-						"flashPoint" => $data[35]
+						"flashPoint" => $this->toCelsius($data[35]),
+						"health" => $data[36]
 					);				
 				} 
 				
 				if ($inProduct){
 					if (!empty($data[32])) {
-						/*need to create typeDataCheck
-						if ($currRowComments != "") {
-							$error .= $currRowComments;
-						}
-						$this->errorComments .= $currRowComments;
-						*/
 						$industryType = array(
 							"industryType" => $data[32],
 							"industrySubType" => $data[33]
@@ -146,7 +160,6 @@ class validateCSV {
 						$industryTypeEnd = FALSE;
 					} elseif (empty ($data[33])){
 						$industryTypeEnd = TRUE;
-						//error
 					}
 				} else {
 					$industryTypeEnd = TRUE;
@@ -182,13 +195,24 @@ class validateCSV {
 					}
 					$this->errorComments .= $currRowComments;										
 					
+					if (!preg_match("/^[0-9.]*$/",$data[12]) || (substr_count($data[12],".") > 1) ){
+						$data[12] = '';
+					}
+					if ($data[12] == ''){
+						$data[12] = '0';
+					}
+					
+					if ($data[13] == ''){
+						$data[13] = '0';
+					}
+					
 					$component = array (
 						"substrate" => $data[6],
 						"rule" => $data[7],
 						"caseNumber" => $data[10],
 						"description" => $data[11],
 						"mmhg" => $data[12],
-						"temp" => $data[13],
+						"temp" => $this->toCelsius($data[13]),
 						"weightFrom" => $data[14],
 						"weightTo" => $data[15],
 						"vocpm" => $data[25],
@@ -308,7 +332,28 @@ class validateCSV {
 						
 	}
 	
-	
+	private function toCelsius($data){
+		$cUnitTypeConvertor = new UnitTypeConverter();
+		$data = trim($data);
+		if (!preg_match("/^\d+[FCfc]1$/",$data)){
+			if (strtoupper(substr($data, strlen($data)-1)) == "F"){
+				$data = str_replace('F', '', $data);
+				$data = str_replace('f', '', $data);
+				$dataTemp = trim($data);
+				$result = $cUnitTypeConvertor->convertFahrenheitToCelsius($dataTemp);
+			} else {
+				$data = str_replace('C', '', $data);
+				$data = str_replace('c', '', $data);
+				$result = trim($data);
+			}
+		} else {
+			
+		}
+		$result = strval($result);
+		
+		return $result;
+	}
+
 	private function productDataCheck($data,$row){
 		$comments = "";
 		//product id check
@@ -411,7 +456,7 @@ class validateCSV {
 		}
 		
 		//waste class
-		$data[31] = str_replace("/",",R",$data[31]);
+		//$data[31] = str_replace("/",",R",$data[31]);
 		$wasteArray = explode(",",$data[31]);		
 		foreach($wasteArray as $waste) {
 			$waste = trim($waste);
@@ -505,7 +550,7 @@ class validateCSV {
 		}	
 		
 		//substance r check		
-		$data[28] = str_replace("/",",R",$data[28]);
+		//$data[28] = str_replace("/",",R",$data[28]);
 		$rArray = explode(",",$data[28]);
 		foreach($rArray as $r) {
 			$r = trim($r);
@@ -565,6 +610,7 @@ class validateCSV {
 		$possibleSubstanceSymbol = array('SYMBOL OF SUBSTANCE','SYMBOL', 'SYMBOL OF');
 		$possibleSubstanceR = array('R(*) OF SUBSTANCE','RULE OF SUBSTANCE','R OF', 'R(*) OF', 'R (*) OF', 'R', 'R(*)', 'R (*)');
 		$possiblePercentVolatile = array();
+		$possibleHealth = array('HEALTH');
 		
 		$columnIndex = array();
 		
@@ -598,7 +644,20 @@ class validateCSV {
 						$columnIndex[$i] = TRUE;
 					}	
 				}
-			}											
+			}	
+			
+			//HEALTH mapping
+			if (!isset($key['health'])){				
+				foreach ($possibleHealth as $header){
+					if ( strtoupper(trim($firstRowData[$i])) == $header ){
+						$key['health'] = $i;
+						$columnIndex[$i] = TRUE;									
+					} elseif ( strtoupper(trim($secondRowData[$i])) == $header ){
+						$key['health'] = $i;
+						$columnIndex[$i] = TRUE;
+					}	
+				}
+			}
 			
 			//PRODUCT NAME/COLOR mapping
 			if (!isset($key['productName'])){

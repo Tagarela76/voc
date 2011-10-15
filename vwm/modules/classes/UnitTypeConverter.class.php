@@ -288,8 +288,18 @@ class UnitTypeConverter {
     	}    	
     	return $value;
     }
-    
-    public function convertFromToOld($value, $sourceType, $destinationType, $density = false) {
+	
+	public function convertCelsiusToFahrenheit($tempC){
+		$tempF = round($tempC*0.556 + 32);
+		return $tempF;
+	}
+	
+	public function convertFahrenheitToCelsius($tempF){
+		$tempC = round(($tempF - 32)*0.556);
+		return $tempC;
+	}
+
+	public function convertFromToOld($value, $sourceType, $destinationType, $density = false) {
     	if ($destinationType=='KILO') $value=1000*$value;
     		else { 
     			$defaultValue = $this->toDefault($value, $sourceType);    			      			  			    			
