@@ -968,7 +968,7 @@ class Product extends ProductProperties {
 
 
 
-	private function checkForAvailableMSDS($productID) {
+	public function checkForAvailableMSDS($productID) {
 		settype($productID,"integer");
 
 		$query = "SELECT real_name FROM ".TB_MSDS_FILE." WHERE product_id = ".$productID." LIMIT 1";

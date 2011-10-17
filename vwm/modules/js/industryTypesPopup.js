@@ -38,10 +38,9 @@
 			}
 			
 			for (i = 0; i < checkBoxes.length; i++) {
-				if (checkBoxes[i].type == 'checkbox' && checkBoxes[i].checked == true) {
-					console.log(checkBoxes[i]);
-					var index = checkBoxes[i].value - 1;
-					//typesClassString.innerHTML += document.getElementById('typesClassName_'+index).innerHTML + "; ";
+				if (checkBoxes[i].type == 'checkbox' && checkBoxes[i].checked == true) {					
+					var index = checkBoxes[i].value;										
+					typesClassString.innerHTML += document.getElementById('category_'+index).innerHTML + "; ";
 					var hiddenTypesClassID =  document.createElement("input");
 					hiddenTypesClassID.type = "hidden";
 					hiddenTypesClassID.name = 'typesClass_'+i;

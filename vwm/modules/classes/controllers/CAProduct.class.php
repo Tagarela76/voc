@@ -119,9 +119,12 @@ class CAProduct extends Controller {
 		$cProductTypes = new ProductTypes($this->db);
 		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
 		
+		$msdsLink = $product->checkForAvailableMSDS($productDetails['product_id']);
+		
 		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
+		$this->smarty->assign('msdsLink', $msdsLink);
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -768,7 +771,7 @@ class CAProduct extends Controller {
 		$this->smarty->assign("gobackAction","browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
-	
+			
 	private function actionConfirmDelete() {
 		$itemsCount= $this->getFromRequest('itemsCount');
 		$product=new Product($this->db);

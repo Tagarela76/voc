@@ -47,8 +47,8 @@ class MSDS {
         if ($type == 'basic') {
             foreach ($_FILES["inputFile"]["size"] as $key => $size) {
                 if ($size > 0) {
-                    $VPSError = $this->VPSLimitsExceed($size, $companyID);
-                    if (!$VPSError) {
+                    //$VPSError = $this->VPSLimitsExceed($size, $companyID);
+                    //if (!$VPSError) {
                         $tmp_name = $_FILES["inputFile"]["tmp_name"][$key];
 
                         $currentFile['name'] = $_FILES["inputFile"]["name"][$key];
@@ -77,11 +77,11 @@ class MSDS {
                             $fileWithError['error'] = "Only .pdf and .doc files!";
                             $filesWithError[] = $fileWithError;
                         }
-                    } else {
+                   /* } else {
                         $fileWithError['name'] = $_FILES["inputFile"]["name"][$key];
                         $fileWithError['error'] = $VPSError;
                         $filesWithError[] = $fileWithError;
-                    }
+                    }*/
                 } else { // errors
                     if ($_FILES["inputFile"]["error"][$key] != 4) {
                         $fileWithError['name'] = $_FILES["inputFile"]["name"][$key];
@@ -374,7 +374,7 @@ class MSDS {
         }
 
 
-
+		
         foreach ($sheets["msds"] as $msds) {
             if (empty($msds["productID"])) {
                 $msds["productID"] = "NULL";

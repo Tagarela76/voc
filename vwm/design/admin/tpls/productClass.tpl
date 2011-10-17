@@ -84,7 +84,7 @@
 				{if $category[i].msdsLink}
 					<a href="{$category[i].msdsLink}"><div style="width:100%;">view</div ></a>
 				{else}
-					&nbsp;
+					<a href="?action=uploadOneMsds&category=tables&productID={$category[i].product_id}"><div style="width:100%;">upload</div></a>
 				{/if}
 			</td>
 		</tr>

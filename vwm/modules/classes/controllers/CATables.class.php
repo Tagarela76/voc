@@ -67,5 +67,63 @@ class CATables extends Controller {
 		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
 		$this->smarty->display("tpls:index.tpl");
 	}
+	
+	
+	private function actionUploadOneMsds() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+			
+		$success = true;
+		if (count($_FILES) > 0) {			
+			$msds = new MSDS($this->db);
+			$msdsUploadResult = $msds->upload('basic');
+			if (isset($msdsUploadResult['filesWithError'][0])) {
+				$success = false;
+				$error = $msdsUploadResult['filesWithError'][0]['error'];
+			} else {				
+				if ($msdsUploadResult['msdsResult']) {
+					$msdsUploadResult['msdsResult'][0]['productID'] = $productDetails['product_id'];
+					$input = array(
+						'msds' => $msdsUploadResult['msdsResult']
+					);					
+					$msds->addSheets($input);					
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id']);
+				} else {
+					$success = false;	
+					$error = 'msdsResult is not set';
+				}				
+			}
+						
+		}
+		
+		if (!$success) {
+			$this->smarty->assign("error", $error);	
+		}
+		
+		$this->smarty->assign("productDetails",$productDetails);
+		$this->smarty->assign("tpl","tpls/uploadOneMsds.tpl");
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	
+	private function actionUnlinkMsds() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+				
+		$msds = new MSDS($this->db);
+		$sheet = $msds->getSheetByProduct($this->getFromRequest('productID'));
+		if (!$sheet) {
+			throw new Exception('This product does not hava MSDS');
+		}
+		
+		$msds->unlinkMsdsSheet($sheet['id']);
+		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+	}
 }
 ?>

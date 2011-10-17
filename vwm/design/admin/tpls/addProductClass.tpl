@@ -738,7 +738,7 @@
 							   {/foreach}
 						/>
 					</td>
-					<td id="">
+					<td id="category_{$type.id}">
 						<b>{$k}&nbsp;</b>
 					</td>
 				</tr>
@@ -751,7 +751,7 @@
 																						 {/foreach}
 																				  />
 						</td>
-						<td id="">
+						<td id="category_{$i}">
 							{$subType}&nbsp;
 						</td>
 					</tr>
@@ -782,3 +782,4 @@
 				
 		</table>	
 </div>
+
