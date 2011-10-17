@@ -120,11 +120,13 @@ class CAProduct extends Controller {
 		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
 		
 		$msdsLink = $product->checkForAvailableMSDS($productDetails['product_id']);
+		$techSheetLink = $product->checkForAvailableTechSheet($productDetails['product_id']);
 		
 		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
 		$this->smarty->assign('msdsLink', $msdsLink);
+		$this->smarty->assign('techSheetLink', $techSheetLink);
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}

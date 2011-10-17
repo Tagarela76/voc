@@ -119,6 +119,14 @@ class validateCSV {
 						$data[35] = '0';
 					}
 					
+					if ($data[18] == ''){
+						$data[18] = '0';
+					}
+					
+					if ($data[19] == ''){
+						$data[19] = '0';
+					}
+					
 					//	product processing
 					$product = array (
 						"productID" => $data[0],

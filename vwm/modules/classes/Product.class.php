@@ -27,6 +27,7 @@ class Product extends ProductProperties {
 			if ($pagination) {
 				for ($i=0;$i<count($products);$i++) {
 					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);
+					$products[$i]['techSheetLink'] = $this->checkForAvailableTechSheet($products[$i]['product_id']);
 				}
 			}
 			return $products;
@@ -46,6 +47,7 @@ class Product extends ProductProperties {
 			if ($pagination) {
 				for ($i=0;$i<count($products);$i++) {
 					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);
+					$products[$i]['techSheetLink'] = $this->checkForAvailableTechSheet($products[$i]['product_id']);
 				}
 			}
 			return $products;
@@ -978,9 +980,17 @@ class Product extends ProductProperties {
 			return "../msds/" . $this->db->fetch(0)->real_name;
 		} else return false;
 	}
+	
+	public function checkForAvailableTechSheet($productID) {
+		settype($productID,"integer");
 
+		$query = "SELECT real_name FROM ".TB_TECH_SHEET_FILE." WHERE product_id = ".$productID." LIMIT 1";
+		$this->db->query($query);
 
-
+		if ($this->db->num_rows()) {
+			return "../tech_sheet/" . $this->db->fetch(0)->real_name;
+		} else return false;
+	}
 
 	private function getMaxLenghtSupplierAndProductNR($productList) {
 		foreach($productList as $value) {

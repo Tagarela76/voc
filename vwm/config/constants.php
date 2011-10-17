@@ -188,6 +188,7 @@
 	define ('TB_PRODUCT', 'product');
 	define ('TB_COMPONENT', 'component');
 	define ('TB_MSDS', 'msds');
+	define ('TB_TECH_SHEET_FILE', 'tech_sheet_files');
 	define ('TB_DENSITY', 'density');	//	TODO: disable at AI
 	define ('TB_UNITTYPE', 'unittype');
 	define ('TB_RULE', 'rule');

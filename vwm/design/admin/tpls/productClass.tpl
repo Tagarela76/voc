@@ -50,6 +50,7 @@
 					</div>					
 				</a>  
 			</td>
+			<td>Tech Sheet</td>
 			<td  class="users_u_top_r_blue">MSDS</td>
 		</tr>
 		</thead>
@@ -80,6 +81,13 @@
 				<a href="{$category[i].url}"><div style="width:100%;">{$category[i].coating}</div ></a>
 			</td>
 			
+			<td class="border_users_b border_users_l">
+				{if $category[i].techSheetLink}
+					<a href="{$category[i].techSheetLink}"><div style="width:100%;">view</div ></a>
+				{else}
+					<a href="?action=uploadOneMsds&category=tables&productID={$category[i].product_id}"><div style="width:100%;">upload</div></a>
+				{/if}
+			</td>
 			<td class="border_users_b border_users_l border_users_r">
 				{if $category[i].msdsLink}
 					<a href="{$category[i].msdsLink}"><div style="width:100%;">view</div ></a>
@@ -105,7 +113,7 @@
 		<tfoot>
 		<tr>
 			 <td class="users_u_bottom"></td>
-        	 <td colspan="5" height="30" class="users_u_bottom_r"></td>
+        	 <td colspan="6" height="30" class="users_u_bottom_r"></td>
 		</tr>
 		</tfoot>
 	</table>

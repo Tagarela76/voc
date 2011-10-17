@@ -97,7 +97,10 @@
 				</div>					
 			</a>
         </td>
-        <td class="users_u_top_r_green">
+        <td width="63px" align="center">
+            Tech Sheet
+        </td>
+		<td class="users_u_top_r_green">
             MSDS
         </td>
     </tr>
@@ -171,23 +174,33 @@
                 </div>
             </a>
         </td>
-        <td class="border_users_r">
+        <td align="center">
+            {if $childCategoryItems[i].techSheetLink}
+            <div>
+                <a href='{$childCategoryItems[i].techSheetLink}' target="_blank">VIEW</a>
+            </div>
+			{else}
+				&nbsp;
+            {/if}
+        </td>
+		<td class="border_users_r" align="center">
             {if $childCategoryItems[i].msdsLink}
             <div>
                 <a href='{$childCategoryItems[i].msdsLink}' target="_blank">VIEW</a>
-                {if $permissions.company.view} 
-                | {*<a href='?action=deleteItem&itemID=MSDS_Sheet&itemsCount=1&item_0={$product.product_id}'>UNLINK</a>*}
+                {*if $permissions.company.view*} 
+                <!--| {*<a href='?action=deleteItem&itemID=MSDS_Sheet&itemsCount=1&item_0={$product.product_id}'>UNLINK</a>*}
 				<a href='?action=deleteItem&category=MSDS_Sheet&id={$childCategoryItems[i].product_id}&departmentID={$request.id}'>UNLINK</a>
-                {/if}
+                {*/if*}-->
             </div>
             {else}           
-            <div>
-                    {if $permissions.company.view}
+				&nbsp;
+            <!--div>
+                    {*if $permissions.company.view}
 						<a href='?action=msdsUploader&step=edit&productID={$childCategoryItems[i].product_id}&itemID={$request.category}&id={$request.id}'>edit</a>
                     {else}
                     	--
-                    {/if}
-            </div>                
+                    {/if*}
+            </div-->                
             {/if}
         </td>
     </tr>
@@ -213,7 +226,7 @@
         <td height="25" class="users_u_bottom" colspan="6">
             &nbsp;
         </td>
-        <td class="border_users" colspan="4">
+        <td class="border_users" colspan="5">
         </td>
         <td class="users_u_bottom_r">
         </td>

@@ -75,7 +75,9 @@ class CATables extends Controller {
 		if ($productDetails['product_id'] === null) {
 			throw new Exception('404');
 		}
-			
+		//var_dump($productDetails['product_id']);
+		//var_dump($_POST); die();
+		if ($_POST['fileType'][0] == 'msds'){
 		$success = true;
 		if (count($_FILES) > 0) {			
 			$msds = new MSDS($this->db);
@@ -98,7 +100,32 @@ class CATables extends Controller {
 			}
 						
 		}
-		
+		} elseif ($_POST['fileType'][0] == 'techsheet') {
+		$success = true;
+		if (count($_FILES) > 0) {			
+			$techSheet = new TechSheet($this->db);
+			$techSheetUploadResult = $techSheet->upload('basic');
+			//var_dump($techSheetUploadResult);
+			if (isset($techSheetUploadResult['filesWithError'][0])) {
+				$success = false;
+				$error = $techSheetUploadResult['filesWithError'][0]['error'];
+			} else {
+				if ($techSheetUploadResult['techSheetResult']) {
+					$techSheetUploadResult['techSheetResult'][0]['productID'] = $productDetails['product_id'];
+					$input = array(
+						'techSheets' => $techSheetUploadResult['techSheetResult']
+					);	
+					//var_dump($input);
+					$techSheet->addSheets($input);					
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id']);
+				} else {
+					$success = false;	
+					$error = 'techSheetResult is not set';
+				}				
+			}
+						
+		}	
+		}
 		if (!$success) {
 			$this->smarty->assign("error", $error);	
 		}
@@ -115,14 +142,31 @@ class CATables extends Controller {
 		if ($productDetails['product_id'] === null) {
 			throw new Exception('404');
 		}
-				
+		
 		$msds = new MSDS($this->db);
 		$sheet = $msds->getSheetByProduct($this->getFromRequest('productID'));
 		if (!$sheet) {
-			throw new Exception('This product does not hava MSDS');
+			throw new Exception('This product does not have MSDS');
 		}
 		
 		$msds->unlinkMsdsSheet($sheet['id']);
+		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+	}
+	
+	private function actionUnlinkTechSheet() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+		
+		$techSheet = new TechSheet($this->db);
+		$sheet = $techSheet->getSheetByProduct($this->getFromRequest('productID'));
+		if (!$sheet) {
+			throw new Exception('This product does not have Tech Sheet');
+		}
+		
+		$techSheet->unlinkTechSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
 	}
 }

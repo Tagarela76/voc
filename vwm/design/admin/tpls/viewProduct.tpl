@@ -236,7 +236,21 @@
 									<a href="?action=uploadOneMsds&category=tables&productID={$product.product_id}"><div style="width:100%;">upload</div></a>
 								{/if}
 							</td>
-						</tr>						
+						</tr>
+						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+									Tech Sheet:
+							</td>
+							<td class="border_users_l border_users_r border_users_b">																										
+								{if $techSheetLink}
+									<a href='{$techSheetLink}'>view</a> or 
+									<a href='?action=unlinkTechSheet&category=tables&productID={$product.product_id}'>unlink</a>
+								{else}
+									<a href="?action=uploadOneMsds&category=tables&productID={$product.product_id}"><div style="width:100%;">upload</div></a>
+								{/if}
+							</td>
+						</tr>
 						
 							<tr>
 							<td class="border_users_l border_users_r" colspan="2" style="padding:5px 3px 0 3px">
