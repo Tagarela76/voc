@@ -1100,6 +1100,80 @@ class CMix extends Controller
 
 		$this->addEdit($action, $departmentID);
 	}
+	
+	private function actionCreateLabel(){
+		$usage = new Mix($this->db);
+		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
+		$mixID = $this->getFromRequest('id');
+		$mixOptimized = new MixOptimized($this->db, $mixID);
+		$mixOptimized->getRule();
+		$this->smarty->assign("usage", $mixOptimized);
+		//var_dump($mixOptimized); die();
+		//var_dump($mixOptimized->products[0]->unittypeDetails);
+		$result['mix_id'] = $mixOptimized->mix_id;
+		$result['mix_desc'] = $mixOptimized->description;
+		$result['voc'] = $mixOptimized->voc; 
+		$result['voclx'] = $mixOptimized->voclx;
+		$result['vocwx'] = $mixOptimized->vocwx;
+		$result['rule'] = $mixOptimized->rule['rule_nr_us'];
+		$result['ex_rule'] = $mixOptimized->exempt_rule;
+		$result['creation_time'] = $mixOptimized->__get('creation_time');
+		foreach ($mixOptimized->products as $key => $item){
+			$result['products'][$key]['name'] = $item->name;
+			$result['products'][$key]['supplier'] = $item->supplier;
+			$result['products'][$key]['product_nr'] = $item->product_nr;
+			$result['products'][$key]['quantity'] = $item->quantity;
+			$result['products'][$key]['unittype'] = $item->unittypeDetails['name'];
+		}
+		
+		//var_dump($result); die();
+		$apMethodObject = new Apmethod($this->db);
+		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
+		$this->smarty->assign('apMethodDetails',$apMethodDetails);
+		$unittype = new Unittype($this->db);
+		//	TODO: что за хрень с рулами?
+		$k = 0;
+		for ($i = 0; $i < count($mixOptimized->products); $i++)
+		{
+			$product = $mixOptimized->products[$i];
+			$unittypeDetails[$i] = $unittype->getUnittypeDetails($product->unit_type);
+			$productDetails[$i] = $product->getProductDetails($product->product_id);
+			for ($j = 0;$j < count($productDetails[$i]['components']); $j++)
+			{
+				if (!empty($productDetails[$i]['components'][$j]['rule']))
+				{
+					$rules[$k] = $productDetails[$i]['components'][$j]['rule'];
+					$k++;
+				}
+			}
+		}
+		$rules = array_keys(array_count_values($rules));
+		$rulesCount = count($rules);
+		$this->smarty->assign('rules',$rules);
+		$this->smarty->assign('rulesCount',$rulesCount);
+
+		$this->smarty->assign('unitTypeName',$unittypeDetails);
+		$mixValidatorOptimized = new MixValidatorOptimized();
+		$mixOptimizedValidatorResponce = $mixValidatorOptimized->isValidMix($mixOptimized);
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest('departmentID'));
+		$companyDetails = $company->getCompanyDetails($companyID);
+		$this->smarty->assign('companyDetails',$companyDetails);
+		$this->smarty->assign('unittypeObj',$unittype);
+		$this->smarty->assign('dailyLimitExceeded', $mixOptimizedValidatorResponce->isDailyLimitExceeded());
+		$this->smarty->assign('departmentLimitExceeded', $mixOptimizedValidatorResponce->isDepartmentLimitExceeded());
+		$this->smarty->assign('facilityLimitExceeded', $mixOptimizedValidatorResponce->isFacilityLimitExceeded());
+		$this->smarty->assign('departmentAnnualLimitExceeded', $mixOptimizedValidatorResponce->getDepartmentAnnualLimitExceeded());
+		$this->smarty->assign('facilityAnnualLimitExceeded', $mixOptimizedValidatorResponce->getFacilityAnnualLimitExceeded());
+		$this->smarty->assign('expired', $mixOptimizedValidatorResponce->isExpired());
+		$this->smarty->assign('preExpired', $mixOptimizedValidatorResponce->isPreExpired());
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');
+		$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=mix');
+		$this->smarty->assign('tpl', 'tpls/viewUsage.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
 
 	private function addEdit($action, $departmentID) {
 		$form = $this->getFromPost();

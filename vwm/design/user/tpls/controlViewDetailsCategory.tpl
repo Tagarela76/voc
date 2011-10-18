@@ -38,6 +38,11 @@
                             		<input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&category={$request.category}&id={$request.id}&departmentID={$request.departmentID}'">
 									{/if}
                                                                         {/if}
+								
+								{if $request.category == "mix"}
+									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>
+								{/if}											
+																			
 								{if $request.category=="wastestorage"}
 									{if $deleteORrestore eq "delete"}
 										<br>
