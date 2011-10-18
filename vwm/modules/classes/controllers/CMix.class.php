@@ -1107,9 +1107,50 @@ class CMix extends Controller
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
 		$mixOptimized->getRule();
+		
+		$component = new Component($this->db);		
+		$hz = new Hazardous($this->db);
+		$totalMixComponents = array();
+		$totalChemicalClassification = array();
+		$totalHealthHazardous = array();
+		foreach ($mixOptimized->products as $product) {
+			$components = $component->getComponentDetailsByProduct($product->product_id);
+			$product->setComponents($components);
+			
+			//	collect chemicals into one array
+			foreach ($components as $oneComponent) {
+				if ($totalMixComponents[$oneComponent->component_id] === null) {
+					$totalMixComponents[$oneComponent->component_id] = $oneComponent;
+				}			
+			}
+			
+			//	chemical classification is stord in the same table with health hazard requirements
+			$chemicalClassification = $hz->getChemicalClassification($product->product_id);
+			foreach ($chemicalClassification as $chemicalClassificationItem) {
+				if ($hz->isChemicalClassification($chemicalClassificationItem['id'])) {
+					$totalChemicalClassification[$chemicalClassificationItem['id']] = $chemicalClassificationItem['name'];
+				} else {
+					$totalHealthHazardous[$chemicalClassificationItem['id']] = $chemicalClassificationItem['name'];
+				}
+			}			
+		}		
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($mixOptimized->department_id);
+		$companyDetails = $company->getCompanyDetails($companyID);
+		$this->smarty->assign('companyDetails',$companyDetails);
+		
+		$unittype = new Unittype($this->db);
+		$this->smarty->assign('unittypeObj',$unittype);
+				
 		$this->smarty->assign("usage", $mixOptimized);
-		//var_dump($mixOptimized); die();
-		//var_dump($mixOptimized->products[0]->unittypeDetails);
+		$this->smarty->assign("components", $totalMixComponents);
+		$this->smarty->assign("chemicalClassification", implode('/', $totalChemicalClassification));
+		$this->smarty->assign("healthHazardous", implode('/', $totalHealthHazardous));
+		$this->smarty->display("tpls/mixLabel.tpl");						
+		die();
+		
+		$this->smarty->assign("usage", $mixOptimized);
+		
 		$result['mix_id'] = $mixOptimized->mix_id;
 		$result['mix_desc'] = $mixOptimized->description;
 		$result['voc'] = $mixOptimized->voc; 
@@ -1126,12 +1167,12 @@ class CMix extends Controller
 			$result['products'][$key]['unittype'] = $item->unittypeDetails['name'];
 		}
 		
-		//var_dump($result); die();
+		var_dump($mixOptimized->products);
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
 		$this->smarty->assign('apMethodDetails',$apMethodDetails);
 		$unittype = new Unittype($this->db);
-		//	TODO: что за хрень с рулами?
+		
 		$k = 0;
 		for ($i = 0; $i < count($mixOptimized->products); $i++)
 		{
@@ -1166,13 +1207,9 @@ class CMix extends Controller
 		$this->smarty->assign('departmentAnnualLimitExceeded', $mixOptimizedValidatorResponce->getDepartmentAnnualLimitExceeded());
 		$this->smarty->assign('facilityAnnualLimitExceeded', $mixOptimizedValidatorResponce->getFacilityAnnualLimitExceeded());
 		$this->smarty->assign('expired', $mixOptimizedValidatorResponce->isExpired());
-		$this->smarty->assign('preExpired', $mixOptimizedValidatorResponce->isPreExpired());
-		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
-		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
-		$this->setPermissionsNew('viewData');
-		$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=mix');
-		$this->smarty->assign('tpl', 'tpls/viewUsage.tpl');
-		$this->smarty->display("tpls:index.tpl");
+		$this->smarty->assign('preExpired', $mixOptimizedValidatorResponce->isPreExpired());		
+		
+		$this->smarty->display("tpls/mixLabel.tpl");
 	}
 
 	private function addEdit($action, $departmentID) {

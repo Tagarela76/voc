@@ -173,5 +173,24 @@ class Hazardous {
 		$query = substr($query, 0, -2);													
 		$this->db->query($query);
     }
+	
+	
+	/**
+	 * Chemical classification is stord in the same table with health hazard requirements
+	 * So this method helps to check type or record
+	 * @param int $chemicalClassID
+	 * @return boolean false if health hazard, true if chemical classification
+	 */
+	public function isChemicalClassification($chemicalClassID) {
+		if ($chemicalClassID == 1
+				|| $chemicalClassID == 2
+				|| $chemicalClassID == 3) {
+					//	health hazard
+				return false;
+		} else {
+			//	this is chemical classification
+			return true;
+		}
+	}
 }
 ?>

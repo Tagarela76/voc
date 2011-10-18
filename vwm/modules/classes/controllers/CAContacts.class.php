@@ -15,84 +15,72 @@ class CAContacts extends Controller {
 	}
 	
 	protected function bookmarkContacts($vars) {
-		extract($vars);		
-                $sub = $this->getFromRequest("subBookmark");
-                if(!isset($sub)) {
+		extract($vars);
+		$sub = $this->getFromRequest("subBookmark");
+		if (!isset($sub)) {
 			$sub = $this->getFromRequest("bookmark");
 		}
-                $sub = strtolower($sub);
-                $sub = htmlentities($sub);
-                $query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='".$sub."'";
+		$sub = strtolower($sub);
+		$sub = htmlentities($sub);
+		$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='" . $sub . "'";
 		$this->db->query($query);
 		$subNumber = $this->db->fetch(0)->id;
-                $filterStr=$this->filterList('contacts');                
-		$manager = new SalesContactsManager($this->db);               
+		$filterStr = $this->filterList('contacts');
+		$manager = new SalesContactsManager($this->db);
 
 		// search (not empty q)
-		if ($this->getFromRequest('q') != '')
-		{
-			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										
+		if ($this->getFromRequest('q') != '') {
+			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber);
-                        $pagination = new Pagination($searchedContactsCount);
-                        $pagination->url = "?q=".urlencode($this->getFromRequest('q'))."&action=browseCategory&category=salescontacts&bookmark=contacts";
-                        if ($sub != 'contacts')
-                        {
-                            $pagination->url .= "&subBookmark=".urlencode($sub);
-                        }
-                        $contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
-                        $this->smarty->assign('searchQuery', $this->getFromRequest('q'));
-			$this->smarty->assign('pagination',$pagination);
-                        $totalCount = $manager->getTotalCount( strtolower ( $sub ) );
+			$pagination = new Pagination($searchedContactsCount);
+			$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=salescontacts&bookmark=contacts";
+			if ($sub != 'contacts') {
+				$pagination->url .= "&subBookmark=" . urlencode($sub);
+			}
+			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
+			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+			$this->smarty->assign('pagination', $pagination);
+			$totalCount = $manager->getTotalCount(strtolower($sub));
+		} else { // search (empty q)
+			$totalCount = $manager->getTotalCount(strtolower($sub));
+			//pag for filter
+			if ($this->getFromRequest('searchAction') == 'filter') {
+				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr));
+				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark');
+				if ($this->getFromRequest('filterField') != '') {
+					$pagination->url .= "&filterField=" . $this->getFromRequest('filterField');
+				}
+				if ($this->getFromRequest('filterCondition') != '') {
+					$pagination->url .= "&filterCondition=" . $this->getFromRequest('filterCondition');
+				}
+				if ($this->getFromRequest('filterValue') != '') {
+					$pagination->url .= "&filterValue=" . $this->getFromRequest('filterValue');
+				}
+				if ($this->getFromRequest('filterField') != '') {
+					$pagination->url .= "&searchAction=filter";
+				}
+			}
+			// q is empty
+			else {
+				$pagination = new Pagination($totalCount);
+				$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
+				if ($subNumber != 1) {
+					$pagination->url .= "&subBookmark=" . urlencode($sub);
+				}
+			}
+			// kostyl'!!
+			if ($_REQUEST['filterField'] == 'id') {
+				$filterStr = " c." . $filterStr;
+			}
+			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
+			$this->smarty->assign('pagination', $pagination);
 		}
-                else // search (empty q)
-                {
-                    $totalCount = $manager->getTotalCount( strtolower ( $sub ) );
-                    //pag for filter
-                    if ($this->getFromRequest('searchAction')=='filter')
-                    {
-                        $pagination = new Pagination($manager->countContacts($subNumber, $filterStr));
-			$pagination->url = "?action=browseCategory&category=".$this->getFromRequest('category')."&bookmark=".$this->getFromRequest('bookmark');
-                                if ($this->getFromRequest('filterField') != '')
-                                {
-                                    $pagination->url .= "&filterField=".$this->getFromRequest('filterField');
-                                }
-                                if ($this->getFromRequest('filterCondition') != '')
-                                {
-                                    $pagination->url .= "&filterCondition=".$this->getFromRequest('filterCondition');
-                                }
-                                if ($this->getFromRequest('filterValue') != '')
-                                {
-                                    $pagination->url .= "&filterValue=".$this->getFromRequest('filterValue');
-                                }
-                                if ($this->getFromRequest('filterField') != '')
-                                {
-                                    $pagination->url .= "&searchAction=filter";
-                                }
-                    }
-                    // q is empty
-                    else
-                    {
-                        $pagination = new Pagination($totalCount);
-                        $pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
-                                if ($subNumber != 1)
-                                {
-                                    $pagination->url .= "&subBookmark=".urlencode($sub);
-                                }
-                    }
-                    // kostyl'!!
-                    if($_REQUEST['filterField'] == 'id'){
-                        $filterStr = " c.".$filterStr;
-                    }
-                    $contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
-                    $this->smarty->assign('pagination',$pagination);
-                    
-                }
-                
-                 //	set js scripts
-		$jsSources = array  ('modules/js/autocomplete/jquery.autocomplete.js');                
-                $this->smarty->assign('jsSources', $jsSources);                
-		$this->smarty->assign("contacts",$contactsList);		
-		$this->smarty->assign("itemsCount",$totalCount);		
+
+		//	set js scripts
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
+		$this->smarty->assign('jsSources', $jsSources);
+		$this->smarty->assign("contacts", $contactsList);
+		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign('tpl', 'tpls/bookmarkContacts.tpl');
 		$this->smarty->assign('pagination', $pagination);
                

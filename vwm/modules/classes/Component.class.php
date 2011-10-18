@@ -97,53 +97,42 @@ class Component {
 		return $data->component_id;
 	}
 	
+	/**
+	 *
+	 * @param int $productID
+	 * @return mixed object 
+	 * public 'component_group_id' => string '4560' (length=4)
+	   public 'component_id' => string '12' (length=2)
+       public 'product_id' => string '611' (length=3)
+       public 'substrate_id' => null
+      public 'rule_id' => null
+      public 'mm_hg' => string '0.00' (length=4)
+      public 'temp' => string '0' (length=1)
+      public 'weight_from' => string '80.00' (length=5)
+      public 'weight_to' => null
+      public 'type' => string 'VOC' (length=3)
+      public 'einecs_elincs' => null
+      public 'substance_symbol' => null
+      public 'cas' => string '28182-81-2' (length=10)
+      public 'description' => string 'HOMOPOLYMER OF HDI (1,60HEXAMETHYLENE)' (length=38)
+      public 'sara313' => string '' (length=0)
+      public 'caab2588' => string '' (length=0)
+      public 'EINECS' => null
+	 * 
+	 * or false
+	 */
 	public function getComponentDetailsByProduct($productID) {
-		$this->db->query("SELECT * FROM ".TB_PRODUCT." WHERE product_id=".$productID." ORDER BY product_nr");
-		$data=$this->db->fetch(0);
-		/*	$product=array(
-		 'voclx'		=>	$data->voclx,
-		 'vocwx'	=>	$data->vocwx,
-		 'temp_vp'		=>	$data->temp_vp
-		 );
-		 */
-		$this->db->query("SELECT * FROM ".TB_COMPONENT." WHERE component_id=".$data->component_id);
-		$data2=$this->db->fetch(0);
-		$product['comp_name']=$data2->comp_name;
-		$product['sar']=$data2->sara;
-		$product['comp_weight']=$data2->comp_weight;
-		$product['comp_desc']=$data2->description;
+		$sql = "SELECT * 
+				FROM ".TB_COMPONENTGROUP." cg, ".TB_COMPONENT." c
+				WHERE cg.component_id = c.component_id
+				AND product_id=".mysql_real_escape_string($productID)." ";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
 		
-		$this->db->query("SELECT * FROM ".TB_MSDS." where msds_id=".$data2->msds_id);
-		$msdsData=$this->db->fetch(0);
-		
-		$product['voclx']=$msdsData->voclx;
-		$product['vocwx']=$msdsData->vocwx;
-		$product['temp_vp']=$msdsData->temp_vp;
-		
-		
-		$this->db->query("SELECT * FROM ".TB_SUPPLIER." WHERE supplier_id=".$data2->supplier);
-		$data2=$this->db->fetch(0);
-		$product['supplier']=$data2->supplier;
-		
-		return $product;
-	}
-	
-	
-	public function getComponentProductCode($productID) {
-		$this->db->query("SELECT * FROM ".TB_PRODUCT." WHERE product_id=".$productID." ORDER BY product_nr");
-		
-		$data=$this->db->fetch(0);
-		
-		$this->db->query("SELECT * FROM ".TB_COMPONENT." WHERE component_id=".$data->component_id);
-		$data2=$this->db->fetch(0);
-		
-		$productParam=array(
-			'productComponentCode'	=>	$data2->comp_name,
-			'product_desc'		=>	$data->product_desc
-		);
-		
-		return $productParam;
-		
+		$data = $this->db->fetch_all();
+		return $data;		
 	}
 	
 	public function deleteComponent($compID){
