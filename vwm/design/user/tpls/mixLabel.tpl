@@ -2,7 +2,7 @@
     <table align="center" cellpadding="0" cellspacing="0">        
 		<tr>
 			<td  colspan="2" style="padding:5px 5px 0 5px">
-				<img src="images/logo_new.png"/>
+				<img src="../images/logoLarge.png" width="95px" height="75px"/>
 			</td>
 		</tr>
 		
@@ -59,7 +59,11 @@
                 </table>
             </td>
             <td width="50%"style="padding:0 5px 0 2px" valign="top">
-                <table width="100%"cellpadding="0" cellspacing="0">                                        
+                <table width="100%"cellpadding="0" cellspacing="0">        
+					<tr>
+						<td class="" colspan="2" height="20px">
+						</td>
+					</tr>
                     <tr>
                         <td class="" height="20px">
                             VOC:
@@ -100,12 +104,17 @@
                         <td height="30" width="300">
                             <b>Supplier</b>
                         </td>
-                        <td width="100">
+                        <td width="120">
                             <b>Product NR</b>
                         </td>
                         <td width="200">
                             <b>Description</b>
                         </td>
+						{if $usage->isPfp}
+						<td align="center" width="60px">
+							<b>Ratio</b>
+						</td>
+						{/if}
                          <td width="100">
                             <b>Quantity</b>
                         </td>                        
@@ -122,6 +131,11 @@
                         <td >
                             {$product->name}
                         </td>
+						{if $usage->isPfp}
+						<td align="center">
+							{$product->ratio_to_save}
+						</td>
+						{/if}
                         <td>
                             <div align="left">
                                 &nbsp; {$product->quantity}&nbsp; {$product->unittypeDetails.name}

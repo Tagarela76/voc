@@ -1150,24 +1150,7 @@ class CMix extends Controller
 		die();
 		
 		$this->smarty->assign("usage", $mixOptimized);
-		
-		$result['mix_id'] = $mixOptimized->mix_id;
-		$result['mix_desc'] = $mixOptimized->description;
-		$result['voc'] = $mixOptimized->voc; 
-		$result['voclx'] = $mixOptimized->voclx;
-		$result['vocwx'] = $mixOptimized->vocwx;
-		$result['rule'] = $mixOptimized->rule['rule_nr_us'];
-		$result['ex_rule'] = $mixOptimized->exempt_rule;
-		$result['creation_time'] = $mixOptimized->__get('creation_time');
-		foreach ($mixOptimized->products as $key => $item){
-			$result['products'][$key]['name'] = $item->name;
-			$result['products'][$key]['supplier'] = $item->supplier;
-			$result['products'][$key]['product_nr'] = $item->product_nr;
-			$result['products'][$key]['quantity'] = $item->quantity;
-			$result['products'][$key]['unittype'] = $item->unittypeDetails['name'];
-		}
-		
-		var_dump($mixOptimized->products);
+
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
 		$this->smarty->assign('apMethodDetails',$apMethodDetails);
