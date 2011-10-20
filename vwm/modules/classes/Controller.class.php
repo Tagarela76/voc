@@ -190,9 +190,9 @@ class Controller {
 			}
 			
 			if ($this->getFromRequest('category') == 'company'){
-				//header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id'));
+				header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id'));
 			} elseif ($this->getFromRequest('category') == 'facility'){
-				//header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id').'&bookmark=department');
+				header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id').'&bookmark=department');
 			}
 		}
         $request = $this->getFromRequest();

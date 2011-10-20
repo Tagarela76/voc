@@ -167,8 +167,8 @@ class UserRequest {
 	
 	public function sendMail($message){
 		$newUserMail = new EMail();
-		//$newUsertMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);
-		$newUserMail->sendMail('userrequest@vocwebmanager.com', 'dmitry.ds@kttsoft.com', 'New User Request', $message);
+		$newUsertMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);
+		//$newUserMail->sendMail('userrequest@vocwebmanager.com', 'dmitry.ds@kttsoft.com', 'New User Request', $message);
 	}
 	
 	public function changePassword($userID, $oldPass, $newPass, $reNewPass){
@@ -179,9 +179,9 @@ class UserRequest {
 			if ($result->password == md5(trim($oldPass))){
 				if ((strlen(trim($newPass)) > 0) && (strlen(trim($reNewPass)) > 0) && 
 					(trim($newPass) == trim($reNewPass)) && 
-					(strlen(trim($newPass)) < 10) && (strlen(trim($reNewPass)) < 10)){
+					(strlen(trim($newPass)) < 12) && (strlen(trim($reNewPass)) < 12)){
 					//save new password to DB in md5
-					$query = "UPDATE ".TB_USER." SET password = ".md5($newPass)." WHERE user_id=".$userID;
+					$query = "UPDATE ".TB_USER." SET password = '".md5($newPass)."' WHERE user_id=".$userID;
 					$this->db->query($query);
 					if (mysql_errno() == 0){
 						$newUserMail = new EMail();
@@ -210,7 +210,7 @@ class UserRequest {
 			$passLength = 7;
 			$newPassword = $this->generate_password($passLength);
 			if ($result->email != ''){
-				$query = "UPDATE ".TB_USER." SET password = ".md5($newPassword)." WHERE user_id=".$userID;
+				$query = "UPDATE ".TB_USER." SET password = '".md5($newPassword)."' WHERE user_id=".$userID;
 				$this->db->query($query);
 				if (mysql_errno() == 0){
 					$newUserMail = new EMail();
