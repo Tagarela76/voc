@@ -50,7 +50,6 @@ class CAProductRequest extends Controller {
 		
 		$this->smarty->assign('productRequests', $productRequests);
 		$this->smarty->assign('tpl', 'tpls/productRequest.tpl');
-		$this->smarty->display("tpls:index.tpl");
 	}
 }
 ?>

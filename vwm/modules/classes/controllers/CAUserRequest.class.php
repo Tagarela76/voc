@@ -62,7 +62,6 @@ class CAUserRequest extends Controller {
 		
 		$this->smarty->assign('requests' ,$requests);
 		$this->smarty->assign('tpl', 'tpls/userRequest.tpl');
-		$this->smarty->display("tpls:index.tpl");
 	}
 }
 ?>
