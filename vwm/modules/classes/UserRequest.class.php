@@ -160,14 +160,12 @@ class UserRequest {
                 "".mysql_escape_string($this->date->getTimestamp()).", ".
                 "".mysql_escape_string($this->user_id).", ".
                 "'".mysql_escape_string($this->status)."')";
-        //$this->db->exec($query);
-		echo $query;
 		$this->db->query($query);
     }
 	
 	public function sendMail($message){
 		$newUserMail = new EMail();
-		$newUsertMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);
+		$newUserMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);
 		//$newUserMail->sendMail('userrequest@vocwebmanager.com', 'dmitry.ds@kttsoft.com', 'New User Request', $message);
 	}
 	
@@ -177,7 +175,7 @@ class UserRequest {
 		if ($this->db->num_rows() > 0){
 			$result = $this->db->fetch(0);
 			if ($result->password == md5(trim($oldPass))){
-				if ((strlen(trim($newPass)) > 0) && (strlen(trim($reNewPass)) > 0) && 
+				if ((strlen(trim($newPass)) > 5) && (strlen(trim($reNewPass)) > 5) && 
 					(trim($newPass) == trim($reNewPass)) && 
 					(strlen(trim($newPass)) < 12) && (strlen(trim($reNewPass)) < 12)){
 					//save new password to DB in md5
@@ -190,13 +188,13 @@ class UserRequest {
 						$newUserMail->sendMail('userrequest@vocwebmanager.com', $result->email, 'User Request Password', $message);
 					}
 				} else {
-					$error = 'ERROR';
+					$error = 'Incorrect password! Password length is 5-12 symbols.';
 				}
 			} else {
-				$error = 'ERROR';
+				$error = 'Incorrect old password!';
 			}
 		} else {
-			$error = 'ERROR';
+			$error = 'Password is not changed.';
 		}
 		return $error;
 	}
@@ -218,11 +216,11 @@ class UserRequest {
 					$message .= "Password: ".$newPassword;
 					$newUserMail->sendMail('userrequest@vocwebmanager.com', $result->email, 'User Request Password', $message);
 				} else {
-					$error = 'ERROR';
+					$error = 'Password is not changed.';
 				}
 			}
 		} else {
-			$error = 'ERROR';
+			$error = 'Password is not changed.';
 		}
 		return $error;
 	}

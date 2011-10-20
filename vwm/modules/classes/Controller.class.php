@@ -125,6 +125,7 @@ class Controller {
     }
 
     public function actionUserRequest() {
+		$radioSelected = 'lost';
 		if ($_POST['productAction'] == 'Submit'){
 			$userRequest = new UserRequest($this->db);
 			switch ($_POST['radioRequest']){
@@ -183,15 +184,12 @@ class Controller {
 					$repeatNewPassword = $_POST['renewpass'];
 					$userID = $_SESSION['user_id'];
 					$error = $userRequest->changePassword($userID, $oldPassword, $newPassword, $repeatNewPassword);
-					if ($error == ''){
-						//$userRequest->sendMail('');
-					}
 					break;
 			}
 			
-			if ($this->getFromRequest('category') == 'company'){
+			if ($this->getFromRequest('category') == 'company' && $error == ''){
 				header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id'));
-			} elseif ($this->getFromRequest('category') == 'facility'){
+			} elseif ($this->getFromRequest('category') == 'facility' && $error == ''){
 				header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id').'&bookmark=department');
 			}
 		}
@@ -212,6 +210,7 @@ class Controller {
 			$structureList = $department->getDepartmentListByFacility($request['id']);
 		}
 		
+		$this->smarty->assign('error', $error);
 		$this->smarty->assign('structureList', $structureList);
 		$this->smarty->assign('userList', $userList);
         $this->smarty->assign('accessname', $_SESSION['username']);

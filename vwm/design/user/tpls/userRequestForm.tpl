@@ -209,8 +209,14 @@
                 {**}
                 <h2>Username & Password Request Form</h2>
                 <table cellspacing="0" cellpadding="0" valign="top" width="440px">
+					{if $error neq ''}
+					<tr>
+						<td colspan="5" align="center">
+							<font color="red">{$error}</font>
+						</td>
+					</tr>
+					{/if}
                     <tr>
-
                         <td nowrap width="15%">
                             <input type="radio" name="radioRequest" checked value="lost" onclick="onClickRadio(value, '{$request.category}');"> Lost
                         </td>
