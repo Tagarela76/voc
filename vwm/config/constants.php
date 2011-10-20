@@ -272,7 +272,8 @@
 	
 	define('TB_PFP2PRODUCT','pfp2product');
 	define('TB_PFP','preformulated_products');
-        define('TB_NEW_PRODUCT_REQUEST','new_product_request');
+    define('TB_NEW_PRODUCT_REQUEST','new_product_request');
+	define('TB_USER_REQUEST', 'user_request');
 	
 			
 	//	XNYO CONSTANTS

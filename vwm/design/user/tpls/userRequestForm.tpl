@@ -268,14 +268,16 @@
 						</td>
                         <td width="55%" colspan="2">
 							<select type="text" name="structureName">
-								{if $request.category=='company'}
+								{if $request.category eq 'company'}
 								{foreach from=$structureList item=structure}
-									<option value="{$structure.facility_id}">{$structure.name}</option>
+									<option value="{$structure.id}">{$structure.name}</option>
 								{/foreach}
-								{elseif $request.category=='facility'}
+									<input type="hidden" name="structureCategory" value="facility">
+								{elseif $request.category eq 'facility'}
 									{foreach from=$structureList item=structure}
-										<option value="{$structure.department_id}">{$structure.name}</option>
+										<option value="{$structure.id}">{$structure.name}</option>
 									{/foreach}
+										<input type="hidden" name="structureCategory" value="department">
 								{/if}
 							</select>
 						</td>

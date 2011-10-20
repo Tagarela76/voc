@@ -125,6 +125,76 @@ class Controller {
     }
 
     public function actionUserRequest() {
+		if ($_POST['productAction'] == 'Submit'){
+			$userRequest = new UserRequest($this->db);
+			switch ($_POST['radioRequest']){
+				case 'lost':
+					//generate password and send it in e-mail
+					$usernameID = $_POST['username'];
+					$error = $userRequest->lostPassword($usernameID);
+					break;
+				case 'cancel':
+					//delete user
+					$usernameID = $_POST['username'];
+					$action = 'delete';
+					$userRequest->setAction($action);
+					$userRequest->setCategoryID('NULL');
+					$userRequest->setCategoryType('NULL');
+					$userRequest->setNewUserName('NULL');
+					$userRequest->setUserNameID($usernameID);
+					$userRequest->save();
+					$userRequest->sendMail('User Request. Please, delete user: '.$_POST['username'].".");
+					break;
+				case 'username':
+					//change or create new user
+					if ($_POST['newUser'] == 'on'){
+						$newUserName = $_POST['newusername'];
+						$categoryType = $_POST['structureCategory'];
+						$categoryID = $_POST['structureName'];
+						$action = 'add';
+						$userRequest->setAction($action);
+						$userRequest->setCategoryID($categoryID);
+						$userRequest->setCategoryType($categoryType);
+						$userRequest->setNewUserName($newUserName);
+						$userRequest->setUserNameID('NULL');
+						if ($newUserName != ''){
+							$userRequest->save();
+							$userRequest->sendMail('Please, create new user.');
+						}	
+					} else {
+						$usernameID = $_POST['username'];
+						$newUserName = $_POST['newusername'];
+						$action = 'change';
+						$userRequest->setAction($action);
+						$userRequest->setCategoryID('NULL');
+						$userRequest->setCategoryType('NULL');
+						$userRequest->setNewUserName($newUserName);
+						$userRequest->setUserNameID($usernameID);
+						if ($newUserName != ''){
+							$userRequest->save();
+							$userRequest->sendMail('Please, change username.');
+						}
+					}
+					break;
+				case 'password':
+					//change old password to new password
+					$oldPassword = $_POST['oldpass'];
+					$newPassword = $_POST['newpass'];
+					$repeatNewPassword = $_POST['renewpass'];
+					$userID = $_SESSION['user_id'];
+					$error = $userRequest->changePassword($userID, $oldPassword, $newPassword, $repeatNewPassword);
+					if ($error == ''){
+						//$userRequest->sendMail('');
+					}
+					break;
+			}
+			
+			if ($this->getFromRequest('category') == 'company'){
+				//header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id'));
+			} elseif ($this->getFromRequest('category') == 'facility'){
+				//header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id').'&bookmark=department');
+			}
+		}
         $request = $this->getFromRequest();
         //titles new!!! {panding}
         $title = new TitlesNew($this->smarty, $this->db);
@@ -141,7 +211,7 @@ class Controller {
 			$department = new Department($this->db);
 			$structureList = $department->getDepartmentListByFacility($request['id']);
 		}
-
+		
 		$this->smarty->assign('structureList', $structureList);
 		$this->smarty->assign('userList', $userList);
         $this->smarty->assign('accessname', $_SESSION['username']);
