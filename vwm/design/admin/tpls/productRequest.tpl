@@ -24,8 +24,14 @@
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getDescription()}</div></td>
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$requestDate->format($smarty.const.DEFAULT_DATE_FORMAT)}</div></td>
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getUserName()}</div></td>
-                <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{if $productRequest->getMsdsName() <> NULL}<a href="{$productRequest->getMsdsName()}">VIEW</a>{/if}</div></td>
+        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{if $productRequest->getMsdsName() <> NULL}<a href="{$productRequest->getMsdsName()}">VIEW</a>{/if}</div></td>
 	</tr>
 	{/foreach}
+	<tr>
+		<td colspan="3" height="15" class="users_u_bottom">
+		</td>
+		<td colspan="4" height="15" class="users_u_bottom_r">
+		</td>
+	</tr>
 </table>
 </div>
