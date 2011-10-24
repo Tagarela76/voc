@@ -21,36 +21,43 @@
 					<h2>Facility Setup Request Form</h2>
 					<hr width="400px">
 					<table width="440px" cellspacing="0" cellpadding="0">
+						{if $error neq ''}
+						<tr>
+							<td colspan="2" align="center">
+								<font color="red">{$error}</font>
+							</td>
+						</tr>
+						{/if}
 						<tr>
 							<td>
-							EPA ID number:
+								EPA ID number:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="epa"/>
+								<input type="text" name="epa" value="{$setupRequest->getEPANumber()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							VOC monthly limit:
+							VOC monthly limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="voc_limit"/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-							VOC annual limit:
-							</td>
-							<td>
-								<input type="text" name="voc_annual_limit"/>
+								<input type="text" name="voc_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							Facility name:
+							VOC annual limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="name"/>
+								<input type="text" name="voc_annual_limit" value="{$setupRequest->getVOCAnnualLimit()}"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+							Facility name:<font color="red">&nbsp;<big>*</big></font>
+							</td>
+							<td>
+								<input type="text" name="facilityName" value="{$setupRequest->getName()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -58,7 +65,7 @@
 							Address:
 							</td>
 							<td>
-								<input type="text" name="adress"/>
+								<input type="text" name="adress" value="{$setupRequest->getAdress()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -66,7 +73,7 @@
 							City:
 							</td>
 							<td>
-								<input type="text" name="city"/>
+								<input type="text" name="city" value="{$setupRequest->getCity()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -74,15 +81,26 @@
 							County:
 							</td>
 							<td>
-								<input type="text" name="county"/>
+								<input type="text" name="county" value="{$setupRequest->getCounty()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
 							State:
 							</td>
-							<td>
-								<select name="state"/>
+							<td id="stateText" style="display: block;">
+								{*<div id="stateText" style="display: table-row;">*}
+									<input type="text" name="stateText" value="{$setupRequest->getState()}"/>
+							</td>
+							<td id="stateSelect" style="display: none;">
+								{*</div>
+								<div id="stateSelect" style="display: none;">*}
+									<select name="stateSelect">
+										{foreach from=$stateList item=state}
+											<option value="{$state.id}">{$state.name}</option>
+										{/foreach}	
+									</select>
+								{*</div>*}
 							</td>
 						</tr>
 						<tr>
@@ -90,7 +108,7 @@
 							Zip/Postal code:
 							</td>
 							<td>
-								<input type="text" name="zip"/>
+								<input type="text" name="zip" value="{$setupRequest->getZipPostalCode()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -98,7 +116,11 @@
 							Country:
 							</td>
 							<td>
-								<select name="country"/>
+								<select name="country" onclick="clickCountry(value);">
+									{foreach from=$countryList item=country}
+										<option value="{$country.country_id}">{$country.name}</option>
+									{/foreach}	
+								</select>	
 							</td>
 						</tr>
 						<tr>
@@ -106,7 +128,7 @@
 							Phone:
 							</td>
 							<td>
-								<input type="text" name="phone"/>
+								<input type="text" name="phone" value="{$setupRequest->getPhone()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -114,15 +136,15 @@
 							Fax:
 							</td>
 							<td>
-								<input type="text" name="fax"/>
+								<input type="text" name="fax" value="{$setupRequest->getFax()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							Email:
+							Email:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="email"/>
+								<input type="text" name="email" value="{$setupRequest->getEmail()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -130,7 +152,7 @@
 							Contact:
 							</td>
 							<td>
-								<input type="text" name="contact"/>
+								<input type="text" name="contact" value="{$setupRequest->getContact()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -138,7 +160,12 @@
 							Title:
 							</td>
 							<td>
-								<input type="text" name="title"/>
+								<input type="text" name="title" value="{$setupRequest->getTitle()}"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" align="right">
+								<font color="red">&nbsp;<big>*</big></font>&nbsp;-&nbsp;required
 							</td>
 						</tr>
 					</table>
@@ -146,35 +173,53 @@
 				{if $request.category == 'facility'}
 					<h2>Department Setup Request Form</h2>
 					<table width="440px" cellpadding="0" cellspacing="0">
+						{if $error neq ''}
+						<tr>
+							<td colspan="2" align="center">
+								<font color="red">{$error}</font>
+							</td>
+						</tr>
+						{/if}
 						<tr>
 							<td>
-							Department Name:
+							Department Name:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="name"/>
+								<input type="text" name="departmentName" value="{$setupRequest->getName()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							VOC monthly limit:
+							VOC monthly limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="voc_limit"/>
+								<input type="text" name="voc_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							VOC annual limit:
+							VOC annual limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="voc_annual_limit"/>
+								<input type="text" name="voc_annual_limit" value="{$setupRequest->getVOCAnnualLimit()}"/>
 							</td>
 						</tr>
+						<tr>
+							<td colspan="2" align="right">
+								<font color="red">&nbsp;<big>*</big></font>&nbsp;-&nbsp;required
+							</td>
+						</tr>	
 					</table>
 				{/if}	
 				<div style="padding-top: 10px;">
-					<input type="button" class="button" value="Cancel"/>
-					<input type="submit" class="button" value="Submit"/>
+					<input type="button" class="button" value="Cancel" 
+							{if $request.category eq 'company'}
+							onclick="location.href='?action=browseCategory&category={$request.category}&id={$request.id}'"
+							{elseif $request.category eq 'facility'}
+							onclick="location.href='?action=browseCategory&category={$request.category}&id={$request.id}&bookmark=department'"
+							{/if}
+						   />
+					<input name="submitForm" type="submit" class="button" value="Submit"/>
 				</div>
 				{*<input type="hidden" name="action" value="reportIssue">*}
 				{*shadow*}
@@ -187,3 +232,16 @@
 	</table>
 	{**}
 </form>
+{literal}
+<script type="text/javascript">
+	function clickCountry(value){
+		if (value == 215){
+			$('#stateText').hide();
+			$('#stateSelect').show();	
+		} else {
+			$('#stateText').show();
+			$('#stateSelect').hide();
+		}	
+	}
+</script>
+{/literal}

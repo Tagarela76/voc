@@ -230,19 +230,71 @@ class Controller {
 
         $category = $this->getFromRequest('category');
         $facilityDetails = array();
-	$setupLevel = '';
-
+		$setupLevel = '';
+		//var_dump($_POST);
+		if ($_POST['submitForm'] == 'Submit'){
+			$setupRequest = new SetupRequest($this->db);
+			$setupRequest->setVOCMonthlyLimit($_POST['voc_limit']);
+			$setupRequest->setVOCAnnualLimit($_POST['voc_annual_limit']);
+			$setupRequest->setParentID($this->getFromRequest('id'));
+			if ($this->getFromRequest('category') == 'company'){
+				$setupRequest->setName($_POST['facilityName']);
+				$setupRequest->setEPANumber($_POST['epa']);
+				$setupRequest->setAdress($_POST['adress']);
+				$setupRequest->setCity($_POST['city']);
+				$setupRequest->setCounty($_POST['county']);
+				$setupRequest->setZipPostalCode($_POST['zip']);
+				$setupRequest->setEmail($_POST['email']);
+				$setupRequest->setPhone($_POST['phone']);
+				$setupRequest->setFax($_POST['fax']);
+				$setupRequest->setContact($_POST['contact']);
+				$setupRequest->setTitle($_POST['title']);
+				$setupRequest->setCountryID($_POST['country']);
+				if ($_POST['country'] == '215'){
+					$setupRequest->setStateID($_POST['stateSelect']);
+				} else {
+					$setupRequest->setState($_POST['stateText']);
+				}
+				$error = $setupRequest->save($this->getFromRequest('category'));
+				if ($error == ''){
+					header('Location: ?action=browseCategory&category=company&id='.$this->getFromRequest('id'));
+					die();
+				} else {
+					$this->smarty->assign('error', $error);
+					$this->smarty->assign('setupRequest', $setupRequest);
+				}
+			} elseif ($this->getFromRequest('category') == 'facility'){
+				$setupRequest->setName($_POST['departmentName']);
+				$error = $setupRequest->save($this->getFromRequest('category'));
+				if ($error == ''){
+					header('Location: ?action=browseCategory&category=facility&id='.$this->getFromRequest('id').'&bookmark=department');
+					die();
+				} else {
+					$this->smarty->assign('error', $error);
+					$this->smarty->assign('setupRequest', $setupRequest);
+				}
+			}
+		} else {
+			$setupRequest = new SetupRequest($this->db);
+			$this->smarty->assign('setupRequest', $setupRequest);
+		}
         switch ($category) {
             case 'company':
                 $referFacilityID = false;
                 $referCompanyID = $this->getFromRequest('id');
-		$setupLevel = 'Facility';
+				$setupLevel = 'Facility';
+				$country = new Country($this->db);
+				$countryList = $country->getCountryList();
+				$state = new State($this->db);
+				$stateList = $state->getStateList($country->getCountryIDByName('USA'));
+				$this->smarty->assign('countryList', $countryList);
+				$this->smarty->assign('stateList', $stateList);
                 break;
             case 'facility':
                 $referFacilityID = $this->getFromRequest('id');
                 $facilityDetails = $facility->getFacilityDetails($referFacilityID);
                 $referCompanyID = $facilityDetails['company_id'];
-		$setupLevel = 'Department';
+				$setupLevel = 'Department';
                 break;
             default:
                 throw new Exception('deny');
@@ -271,19 +323,19 @@ class Controller {
                 throw new Exception('deny');
                 break;
         }
-
+		
 		$request = $this->getFromRequest();
         //titles new!!! {panding}
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-
+		//var_dump($facilityDetails);
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
         $this->smarty->assign('companyDetails', $companyDetails);
         $this->smarty->assign('facilityDetails', $facilityDetails);
-	$this->smarty->assign('setupLevel', $setupLevel);
+		$this->smarty->assign('setupLevel', $setupLevel);
 
         $this->smarty->assign('tpl', 'tpls/companySetupRequestForm.tpl');
         $this->smarty->display("tpls:index.tpl");
