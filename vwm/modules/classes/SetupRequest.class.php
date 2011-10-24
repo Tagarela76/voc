@@ -223,16 +223,25 @@ class SetupRequest {
 		$values .= "'".$this->name."', ";
 		if ($category == 'company'){
 			$fields = " (category, parent_id, name, epa, voc_monthly_limit, voc_annual_limit, adress, city, county, zip_code,".
-					  " country_id, state, phone, fax, email, contact, title, date, creator_id, status) ";
+					  " country_id, state, state_id, phone, fax, email, contact, title, date, creator_id, status) ";
 			$values .= "'".$this->epa_number."', " ;
 			$values .= $this->voc_monthly_limit.", ";
 			$values .= $this->voc_annual_limit.", ";
 			$values .= "'".$this->adress."', ";
 			$values .= "'".$this->city."', ";
 			$values .= "'".$this->county."', ";
-			$values .= $this->zip_postal_code.", ";
+			if ($this->zip_postal_code){
+				$values .= $this->zip_postal_code.", ";
+			} else {
+				$values .= "0, ";
+			}
 			$values .= $this->country_id.", ";
 			$values .= "'".$this->state."', ";
+			if ($this->state_id){
+				$values .= $this->state_id.", ";
+			} else {
+				$values .= "NULL, ";
+			}	
 			$values .= "'".$this->phone."', ";
 			$values .= "'".$this->fax."', ";
 			$values .= "'".$this->email."', ";

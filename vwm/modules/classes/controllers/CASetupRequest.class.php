@@ -29,6 +29,14 @@ class CASetupRequest extends Controller {
 			if ($row->category == 'company'){
 				$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$row->parent_id);
 				$row->parent_name = $this->db->fetch(0)->name;
+				$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
+				$row->country_name = $this->db->fetch(0)->name;
+				if ($row->country_id == '215'){
+					$this->db->query("SELECT name FROM ".TB_STATE." WHERE state_id=".$row->state_id);
+					$row->state_name = $this->db->fetch(0)->name;
+				} else {
+					$row->state_name = $row->state;
+				}
 				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creator_id);
 				$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 				$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
@@ -44,7 +52,7 @@ class CASetupRequest extends Controller {
 				$setupRequestArray['department'][] = $row;
 			}
 		}
-		
+		//var_dump($setupRequestArray);
 		$this->smarty->assign('setupRequest', $setupRequestArray);
 		$this->smarty->assign('tpl', 'tpls/setupRequest.tpl');
 	}
