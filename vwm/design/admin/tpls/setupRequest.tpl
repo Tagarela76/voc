@@ -134,7 +134,6 @@
 		{literal}
 				{
 					width: 300,
-					height:300,
 					autoOpen: false,
 					resizable: true,
 					dragable: true,			
