@@ -1,51 +1,51 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
-		<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+		<script type="text/javascript" src="./vwm/modules/js/jquery-1.5.2.js"></script>
 		<script type="text/javascript">
-			$(function() {
-				$("#name").focus(function(){
-					if($(this).val() == "Your name:") {
-						$(this).val("");
-					}
-				});
-
-				$("#name").focusout(function(){
-					if($(this).val() == "") {
-						$(this).val("Your name:");
-					}else {
-						$("#name_err").html('');
-					}
-				});
-
-				$("#user").focus(function(){
+			$(document).ready(function() {
+				$("#username").focus(function(){
 					if($(this).val() == "User name:") {
 						$(this).val("");
 					}
 				});
 
-				$("#user").focusout(function(){
+				$("#username").focusout(function(){
 					if($(this).val() == "") {
 						$(this).val("User name:");
 					}else {
-						$("#user_err").html('');
+						$("#username_err").html('');
+					}
+				});
+
+				$("#companyname").focus(function(){
+					if($(this).val() == "Company name:") {
+						$(this).val("");
+					}
+				});
+
+				$("#companyname").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Company name:");
+					}else {
+						$("#companyname_err").html('');
 					}
 				});
 
 				$("#submitButton").click(function(){
 					err = false;
-					if($("#name").val() == "" || $("#name").val() == "Your name:") {
-						$("#name_err").html('Enter your name!');
+					if($("#username").val() == "" || $("#username").val() == "User name:") {
+						$("#username_err").html('Enter your name!');
 						err = true;
 					}
 
-					if($("#user").val() == "" || $("#user").val() == "User:") {
-						$("#user_err").html('Enter your username!');
+					if($("#companyname").val() == "" || $("#companyname").val() == "Company name:") {
+						$("#companyname_err").html('Enter company name!');
 						err = true;
 					}
 
 					if(err != true) {
-						document.getElementById("form1").submit();
+						document.getElementById("formNewUserRequest").submit();
 					}
 				});
 			});
@@ -192,14 +192,14 @@
 																					<h3 class="mg_top50">
 																						company setup request form</h3>
 
-																					<form method="POST" action="" id="form1">
+																					<form method="POST" action="" id="formNewUserRequest">
 
 																						<table border="0" class="cell1 ">
 																							<tr>
 																								<td  class="message" >
-																									<input type="text" value="User name:" name="user" id="user">  <span id="user_err"></span>
+																									<input type="text" value="User name:" name="username" id="username">  <span id="username_err"></span>
 																									<br> <br>
-																									<input type="text" value="Company name:" name="name" id="name"> <span id="name_err"></span>
+																									<input type="text" value="Company name:" name="companyname" id="companyname"> <span id="companyname_err"></span>
 																									<br> <br>
 																								</td>
 																							</tr>

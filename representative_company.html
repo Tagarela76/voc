@@ -1,37 +1,93 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
-		<script type="text/javascript" src='/vwm/modules/js/jquery-1.5.2.js'></script>
+		<script type="text/javascript" src="./vwm/modules/js/jquery-1.5.2.js"></script>
 		<script type="text/javascript">
-			$(function() {
+			$(document).ready(function() {
 				$("#name").focus(function(){
-					if($(this).val() == "Your name:") {
+					if($(this).val() == "Company name:") {
 						$(this).val("");
 					}
 				});
 
 				$("#name").focusout(function(){
 					if($(this).val() == "") {
-						$(this).val("Your name:");
+						$(this).val("Company name:");
 					}else {
 						$("#name_err").html('');
 					}
 				});
-
-				$("#email").focus(function(){
-					if($(this).val() == "E-mail address:") {
+				
+				$("#address").focus(function(){
+					if($(this).val() == "Address:") {
 						$(this).val("");
 					}
 				});
 
-				$("#email").focusout(function(){
+				$("#address").focusout(function(){
 					if($(this).val() == "") {
-						$(this).val("E-mail address:");
+						$(this).val("Address:");
 					}else {
-						$("#email_err").html('');
+						$("#address_err").html('');
+					}
+				});
+				
+				$("#city").focus(function(){
+					if($(this).val() == "City:") {
+						$(this).val("");
 					}
 				});
 
+				$("#city").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("City:");
+					}else {
+						$("#city_err").html('');
+					}
+				});
+				
+				$("#country").focus(function(){
+					if($(this).val() == "Country:") {
+						$(this).val("");
+					}
+				});
+
+				$("#country").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Country:");
+					}else {
+						$("#country_err").html('');
+					}
+				});
+				
+				$("#state").focus(function(){
+					if($(this).val() == "State:") {
+						$(this).val("");
+					}
+				});
+
+				$("#state").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("State:");
+					}else {
+						$("#state_err").html('');
+					}
+				});
+				
+				$("#zip").focus(function(){
+					if($(this).val() == "Zip/Postal code:") {
+						$(this).val("");
+					}
+				});
+
+				$("#zip").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Zip/Postal code:");
+					}else {
+						$("#zip_err").html('');
+					}
+				});
+				
 				$("#phone").focus(function(){
 					if($(this).val() == "Phone:") {
 						$(this).val("");
@@ -45,30 +101,107 @@
 						$("#phone_err").html('');
 					}
 				});
-
-				$("#comment").focus(function(){
-					if($(this).val() == "Your message:") {
+				
+				$("#fax").focus(function(){
+					if($(this).val() == "Fax:") {
 						$(this).val("");
 					}
 				});
 
-				$("#comment").focusout(function(){
+				$("#fax").focusout(function(){
 					if($(this).val() == "") {
-						$(this).val("Your message:");
+						$(this).val("Fax:");
 					}else {
-						$("#comment_err").html('');
+						$("#fax_err").html('');
+					}
+				});
+
+				$("#email").focus(function(){
+					if($(this).val() == "E-mail:") {
+						$(this).val("");
+					}
+				});
+
+				$("#email").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("E-mail:");
+					}else {
+						$("#email_err").html('');
+					}
+				});
+
+				$("#contact").focus(function(){
+					if($(this).val() == "Contact:") {
+						$(this).val("");
+					}
+				});
+
+				$("#contact").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Contact:");
+					}else {
+						$("#contact_err").html('');
+					}
+				});
+				
+				$("#title").focus(function(){
+					if($(this).val() == "Title:") {
+						$(this).val("");
+					}
+				});
+
+				$("#title").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Title:");
+					}else {
+						$("#title_err").html('');
 					}
 				});
 
 				$("#submitButton").click(function(){
 					err = false;
-					if($("#name").val() == "" || $("#name").val() == "Your name:") {
-						$("#name_err").html('Enter your name!');
+					if($("#name").val() == "" || $("#name").val() == "Company name:") {
+						$("#name_err").html('Enter your company name!');
+						err = true;
+					}
+					
+					if($("#address").val() == "" || $("#address").val() == "Address:") {
+						$("#address_err").html('Enter address!');
+						err = true;
+					}
+					
+					if($("#city").val() == "" || $("#city").val() == "City:") {
+						$("#city_err").html('Enter city!');
+						err = true;
+					}
+					
+					if($("#country").val() == "" || $("#country").val() == "Country:") {
+						$("#country_err").html('Enter country!');
+						err = true;
+					}
+					
+					if($("#state").val() == "" || $("#state").val() == "State:") {
+						$("#state_err").html('Enter state!');
+						err = true;
+					}
+					
+					if($("#zip").val() == "" || $("#zip").val() == "Zip/Postal code:") {
+						$("#zip_err").html('Enter zip/postal code!');
+						err = true;
+					}
+					
+					if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
+						$("#phone_err").html('Enter your phone!');
+						err = true;
+					}
+					
+					if($("#fax").val() == "" || $("#fax").val() == "Fax:") {
+						$("#fax_err").html('Enter your fax!');
 						err = true;
 					}
 
-					if($("#email").val() == "" || $("#email").val() == "Phone:") {
-						$("#email_err").html('Enter your email!');
+					if($("#email").val() == "" || $("#email").val() == "E-mail:") {
+						$("#email_err").html('Enter your e-mail!');
 						err = true;
 					}
 
@@ -77,18 +210,18 @@
 						err = true;
 					}
 
-					if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
-						$("#phone_err").html('Enter your phone!');
+					if($("#contact").val() == "" || $("#contact").val() == "Contact:") {
+						$("#contact_err").html('Enter your contact!');
 						err = true;
 					}
-
-					if($("#comment").val() == "" || $("#comment").val() == "Your message:") {
-						$("#comment_err").html('Enter message!');
+					
+					if($("#title").val() == "" || $("#title").val() == "Title:") {
+						$("#title_err").html('Enter title!');
 						err = true;
 					}
 
 					if(err != true) {
-						document.getElementById("form1").submit();
+						document.getElementById("formRepresentativeCompany").submit();
 					}
 				});
 			});
@@ -245,18 +378,18 @@
 																					<h3 class="mg_top50">
 																						company setup request form</h3>
 
-																					<form method="POST" action="" id="form1">
+																					<form method="POST" action="" id="formRepresentativeCompany">
 
 																						<table border="0" class="cell1 ">
 																							<tr>
 																								<td  class="message" >
 																									<input type="text" value="Company name:" name="name" id="name"> <span id="name_err"></span>
 																									<BR> <br>
-																									<input type="text" value="Address:" name="address" id="email">  <span id="email_err"></span>
+																									<input type="text" value="Address:" name="address" id="address">  <span id="address_err"></span>
 																									<br> <br>
 																									<input type="text"  value="City:"  name="city" id="city">  <span id="city_err"></span>
 																									<br> <br>
-																									<input type="text"  value="County:"  name="country" id="country">  <span id="country_err"></span>
+																									<input type="text"  value="Country:"  name="country" id="country">  <span id="country_err"></span>
 																									<br> <br>
 																									<input type="text"  value="State:"  name="state" id="state">  <span id="state_err"></span>
 																									<br> <br>
@@ -266,7 +399,7 @@
 																									<br> <br>
 																									<input type="text"  value="Fax:"  name="fax" id="fax">  <span id="fax_err"></span>
 																									<br> <br>
-																									<input type="text"  value="Email:"  name="email" id="email">  <span id="email_err"></span>
+																									<input type="text"  value="E-mail:"  name="email" id="email">  <span id="email_err"></span>
 																									<br> <br>
 																									<input type="text"  value="Contact:"  name="contact" id="contact">  <span id="contact_err"></span>
 																									<br> <br>
