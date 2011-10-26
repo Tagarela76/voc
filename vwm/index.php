@@ -236,7 +236,7 @@
 			$user = new User($db, $xnyo, $access, $auth);
 			
 								
-			if (!$user->isLoggedIn() && $_GET["action"] != 'auth' && !($_GET['action'] == "sendContactEmail" and $_GET['category'] == "common")) {
+			if (!$user->isLoggedIn() && $_GET["action"] != 'auth' && !(($_GET['action'] == "sendContactEmail" || $_GET['action'] == "requestRepresentativeForms") and $_GET['category'] == "common")) {
 				for($l = 0; $l<strlen($queryStr); $l++) {
 					if ($queryStr[$l] == '&') $queryStr[$l] = '!'; 
 				}

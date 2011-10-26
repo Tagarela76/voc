@@ -35,6 +35,10 @@ class UserRequest {
     public function setDate(DateTime $date) {
         $this->date = $date;
     }
+	
+	public function setUserID($userID) {
+        $this->user_id = $userID;
+    }
     
     public function setUserNameID($usernameID) {
         $this->username_id = $usernameID;
@@ -161,6 +165,14 @@ class UserRequest {
                 "".mysql_escape_string($this->user_id).", ".
                 "'".mysql_escape_string($this->status)."')";
 		$this->db->query($query);
+		
+		if (mysql_errno() != 0){
+			$error = "Error!";
+		} else {
+			$error = "";
+		}
+		
+		return $error;
     }
 	
 	public function sendMail($message){

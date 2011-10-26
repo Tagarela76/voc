@@ -40,6 +40,8 @@ class CAUserRequest extends Controller {
 					$querySelect = "SELECT name FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id;
 				} elseif ($row->category_type == 'department') {
 					$querySelect = "SELECT name FROM ".TB_DEPARTMENT." WHERE department_id=".$row->category_id;
+				} elseif ($row->category_type == 'company') {
+					$querySelect = "SELECT name FROM ".TB_COMPANY." WHERE company_id=".$row->category_id;
 				}
 				$this->db->query($querySelect);
 				if ($this->db->num_rows() > 0){

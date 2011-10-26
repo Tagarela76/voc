@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" src="./vwm/modules/js/jquery-1.5.2.js"></script>
 		<script type="text/javascript">
-			$(document).ready(function() {
+			$(function() {
 				$("#name").focus(function(){
 					if($(this).val() == "Company name:") {
 						$(this).val("");
@@ -378,13 +378,13 @@
 																					<h3 class="mg_top50">
 																						company setup request form</h3>
 
-																					<form method="POST" action="" id="formRepresentativeCompany">
+																					<form method="POST" action="vwm/?action=requestRepresentativeForms&category=common" id="formRepresentativeCompany">
 
 																						<table border="0" class="cell1 ">
 																							<tr>
 																								<td  class="message" >
 																									<input type="text" value="Company name:" name="name" id="name"> <span id="name_err"></span>
-																									<BR> <br>
+																									<br> <br>
 																									<input type="text" value="Address:" name="address" id="address">  <span id="address_err"></span>
 																									<br> <br>
 																									<input type="text"  value="City:"  name="city" id="city">  <span id="city_err"></span>
@@ -407,6 +407,7 @@
 																								</td>
 																							</tr>
 																						</table>
+																						<input type="hidden" name="postType" value="representativeCompany"/>
 																						<div style="margin:10 0 0 302"><input type="button" value="submit" class="button" id="submitButton" ></div>
 																					</form>
 

@@ -283,9 +283,56 @@ jgypsyn@gyantgroup.com
 			
 			$cemail->sendMail($from, $to, $theme, $message);
 			
-			echo '<html><head><meta http-equiv="refresh" content="3; url=/voc_web_manager.html"><title>mail result</title></head><body>' . "Mail sent successfully. Redirect to main page in 3 seconds." . '</body></html>';
+			echo '<html><head><meta http-equiv="refresh" content="3; url=../voc_web_manager.html"><title>mail result</title></head><body>' . "Mail sent successfully. Redirect to main page in 3 seconds." . '</body></html>';
 	}
-		
+	
+	private function actionRequestRepresentativeForms(){
+			$cemail = new EMail();
+			$cUserRequest = new UserRequest($this->db);
+			
+			$to = array ("denis.nt@kttsoft.com",										
+				"dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com "
+			);
+			
+			//$from = "authentification@vocwebmanager.com";
+			$from = AUTH_SENDER."@".DOMAIN;
+			
+			switch ($_POST['postType']) {
+				case 'representativeCompany':
+					
+				case 'newUserRequest':
+					$this->db->query("SELECT company_id FROM ".TB_COMPANY." WHERE name='".$_POST['companyname']."'");
+					if ($this->db->num_rows() > 0){
+						$companyID = $this->db->fetch(0)->company_id;
+						$cUserRequest->setAction('add');
+						$cUserRequest->setNewUserName($_POST['username']);
+						$cUserRequest->setCategoryID($companyID);
+						$cUserRequest->setCategoryType('company');
+						$cUserRequest->setUserNameID('NULL');
+						$cUserRequest->setUserID('NULL');
+						$error = $cUserRequest->save();
+					} else {
+						$error = "Incorrect Company Name!";
+					}
+					break;
+				case 'forgotPassword':
+					$this->db->query("SELECT user_id FROM ".TB_USER." WHERE accessname='".$_POST['user']."'");
+					if ($this->db->num_rows() > 0){
+						$userID = $this->db->fetch(0)->user_id;
+						$error = $cUserRequest->lostPassword($userID);
+					} else {
+						$error = "Incorrect User Name!";
+					}
+					break;
+			}
+			
+			if ($error == ''){
+				echo '<html><head><meta http-equiv="refresh" content="3; url=../voc_web_manager.html"><title>mail result</title></head><body>' . "Mail sent successfully. Redirect to main page in 3 seconds." . '</body></html>';
+			} else {
+				echo '<html><head><meta http-equiv="refresh" content="3; url=../voc_web_manager.html"><title>mail result</title></head><body>' . $error .' Redirect to main page in 3 seconds.'. '</body></html>';
+			}
+	}
+
 	private function actionMsdsUploaderBasic()
 	{
 		
