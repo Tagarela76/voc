@@ -311,6 +311,7 @@ jgypsyn@gyantgroup.com
 						$cUserRequest->setUserNameID('NULL');
 						$cUserRequest->setUserID('NULL');
 						$error = $cUserRequest->save();
+						$cUserRequest->sendMail('Please, create new user.');
 					} else {
 						$error = "Incorrect Company Name!";
 					}
