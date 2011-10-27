@@ -8,6 +8,45 @@
 					<a onclick="unCheckAll(this)" style="color:white">None</a>
 				</span>
 			</td>
+			<td>Company Name</td>
+			<td>Additional Information</td>
+			<td>Request Date</td>
+			<td class="users_u_top_r_blue">Status</td>
+		</tr>
+		{if $setupRequest.company|@count gt 0}
+			{foreach from=$setupRequest.company item=request key=i}
+				<tr>
+					<td class="border_users_l border_users_b"><input type="checkbox" name="setupRequestCompanyID[]" value=""/></td>
+					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->name}</div></td>
+					<td class="border_users_l border_users_b"><a href="#" onclick="$('#additionalInformationCompany_{$i}').dialog('open'); return false;">View Information</a></td>
+					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
+					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request->status}</div></td>
+				</tr>
+			{/foreach}
+		{else}
+			<tr>
+				<td colspan="10" align="center" class="border_users_l border_users_r">
+					No requests to add new company
+				</td>
+			</tr>	
+		{/if}	
+		<tr>
+			<td colspan="2" height="15" class="users_u_bottom">
+			</td>
+			<td colspan="3" height="15" class="users_u_bottom_r">
+			</td>
+		</tr>
+	</table>
+	<br/>	
+	<table class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">
+		<tr class="users_u_top_size users_top_blue">
+			<td class="users_u_top_blue" width="5%">
+				<span style="display:inline-block; width:60px;">
+					<a style="color:white" onclick="CheckAll(this)">All</a>
+					/
+					<a onclick="unCheckAll(this)" style="color:white">None</a>
+				</span>
+			</td>
 			<td>Facility Name</td>
 			<td>Company</td>
 			<td>EPA ID Number</td>
@@ -35,7 +74,7 @@
 			{/foreach}
 		{else}
 			<tr>
-				<td colspan="10" align="center">
+				<td colspan="10" align="center" class="border_users_l border_users_r">
 					No requests to add new facility
 				</td>
 			</tr>	
@@ -80,7 +119,7 @@
 			{/foreach}
 		{else}
 			<tr>
-				<td colspan="8" align="center">
+				<td colspan="8" align="center" class="border_users_l border_users_r">
 					No requests to add new department
 				</td>
 			</tr>	
@@ -126,11 +165,29 @@
 </div>
 {/foreach}
 
+{*ADDITIONAL_INFORMATION_COMPANY_POPUP*}
+{foreach from=$setupRequest.company item=request key=k}
+<div id="additionalInformationCompany_{$k}" title="View Additional Information" style="background-color:#e3e9f8; padding:25px; font-size:150%; text-align:center;display:none;">		
+	<table id="infList" width="200px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
+		<tr><td>Country:</td><td>{$request->country_name}</td></tr>
+		<tr><td>State:</td><td> {$request->state_name}</td></tr>
+		<tr><td>City: </td><td>{$request->city}</td></tr>
+		<tr><td>Adress: </td><td>{$request->adress}</td></tr>
+		<tr><td>Zip Code: </td><td>{$request->zip_code}</td></tr>
+		<tr><td>Phone:</td><td> {$request->phone}</td></tr>
+		<tr><td>Fax: </td><td>{$request->fax}</td></tr>
+		<tr><td>Email: </td><td>{$request->email}</td></tr>
+		<tr><td>Contact:</td><td> {$request->contact}</td></tr>
+		<tr><td>Title: </td><td>{$request->title}</td></tr>
+	</table>	
+</div>
+{/foreach}
+
 {literal}
 <script>	
 	$(function() {
-		{/literal}{foreach from=$setupRequest.facility item=request key=k}
-			$('#additionalInformationFacility_{$k}').dialog(
+		{/literal}{foreach from=$setupRequest.facility item=request key=s}
+			$('#additionalInformationFacility_{$s}').dialog(
 		{literal}
 				{
 					width: 300,
@@ -140,6 +197,19 @@
 					modal: true
 				});
 		{/literal}{/foreach}
+		
+		{foreach from=$setupRequest.company item=request key=k}
+			$('#additionalInformationCompany_{$k}').dialog(
+		{literal}
+				{
+					width: 300,
+					autoOpen: false,
+					resizable: true,
+					dragable: true,			
+					modal: true
+				});
+		{/literal}
+		{/foreach}
 		{literal}
 		});
 </script>			

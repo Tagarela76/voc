@@ -252,10 +252,11 @@ class Controller {
 				$setupRequest->setCountryID($_POST['country']);
 				if ($_POST['country'] == '215'){
 					$setupRequest->setStateID($_POST['stateSelect']);
+					$setupRequest->setState($_POST['stateText']);
 				} else {
 					$setupRequest->setState($_POST['stateText']);
 				}
-				$error = $setupRequest->save($this->getFromRequest('category'));
+				$error = $setupRequest->save('facility');
 				if ($error == ''){
 					header('Location: ?action=browseCategory&category=company&id='.$this->getFromRequest('id'));
 					die();
@@ -265,7 +266,7 @@ class Controller {
 				}
 			} elseif ($this->getFromRequest('category') == 'facility'){
 				$setupRequest->setName($_POST['departmentName']);
-				$error = $setupRequest->save($this->getFromRequest('category'));
+				$error = $setupRequest->save('department');
 				if ($error == ''){
 					header('Location: ?action=browseCategory&category=facility&id='.$this->getFromRequest('id').'&bookmark=department');
 					die();

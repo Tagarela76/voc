@@ -199,19 +199,24 @@ class SetupRequest {
 	
 	private function validate($category){
 		if ($category == 'company'){
-			if ($this->name == '' || $this->epa_number == '' || $this->voc_monthly_limit == '' || $this->voc_annual_limit == '' || $this->email == ''){
+			if ($this->name == '' || $this->email == ''){
 				$error = "Incorrect data!";
 			} else {
 				$error = '';
 			}
 		} elseif ($category == 'facility'){
+			if ($this->name == '' || $this->epa_number == '' || $this->voc_monthly_limit == '' || $this->voc_annual_limit == '' || $this->email == ''){
+				$error = "Incorrect data!";
+			} else {
+				$error = '';
+			}
+		} elseif ($category == 'department'){
 			if ($this->name == '' || $this->voc_monthly_limit == '' || $this->voc_annual_limit == ''){
 				$error = "Incorrect data!";
 			} else {
 				$error = '';
 			}
 		}
-		
 		
 		return $error;
 	}
@@ -222,6 +227,33 @@ class SetupRequest {
 		$values .= $this->parent_id.", ";
 		$values .= "'".$this->name."', ";
 		if ($category == 'company'){
+			$fields = " (category, parent_id, name, adress, city, county, zip_code,".
+					  " country_id, state, state_id, phone, fax, email, contact, title, date, creator_id, status) ";
+			$values .= "'".$this->adress."', ";
+			$values .= "'".$this->city."', ";
+			$values .= "'".$this->county."', ";
+			if ($this->zip_postal_code){
+				if (preg_match("/^[0-9]+$/",  $this->zip_postal_code)){
+					$values .= $this->zip_postal_code.", ";
+				} else {
+					$values .= "0, ";
+				}
+			} else {
+				$values .= "0, ";
+			}
+			$values .= $this->country_id.", ";
+			$values .= "'".$this->state."', ";
+			if ($this->state_id){
+				$values .= $this->state_id.", ";
+			} else {
+				$values .= "NULL, ";
+			}	
+			$values .= "'".$this->phone."', ";
+			$values .= "'".$this->fax."', ";
+			$values .= "'".$this->email."', ";
+			$values .= "'".$this->contact."', ";
+			$values .= "'".$this->title."', ";
+		} elseif ($category == 'facility') {
 			$fields = " (category, parent_id, name, epa, voc_monthly_limit, voc_annual_limit, adress, city, county, zip_code,".
 					  " country_id, state, state_id, phone, fax, email, contact, title, date, creator_id, status) ";
 			$values .= "'".$this->epa_number."', " ;
@@ -247,13 +279,17 @@ class SetupRequest {
 			$values .= "'".$this->email."', ";
 			$values .= "'".$this->contact."', ";
 			$values .= "'".$this->title."', ";
-		} elseif ($category == 'facility'){
+		} elseif ($category == 'department'){
 			$fields = " (category, parent_id, name, voc_monthly_limit, voc_annual_limit, date, creator_id, status) ";
 			$values .= $this->voc_monthly_limit.", ";
 			$values .= $this->voc_annual_limit.", ";
 		}
 		$values .= $this->date->getTimestamp().", ";
-		$values .= $this->user_id.", ";
+		if ($category == 'company') {
+			$values .= "NULL, ";	
+		} else {
+			$values .= $this->user_id.", ";
+		}
 		$values .= "'".$this->status."'";
 		
 		$query = "INSERT INTO ".TB_COMPANY_SETUP_REQUEST.
@@ -261,7 +297,7 @@ class SetupRequest {
 				 " VALUES (".
 				 $values.
 				 ")";
-		//echo $query;
+		
 		if ($error == ''){
 			$this->db->query($query);
 		}

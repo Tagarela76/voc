@@ -289,17 +289,59 @@ jgypsyn@gyantgroup.com
 	private function actionRequestRepresentativeForms(){
 			$cemail = new EMail();
 			$cUserRequest = new UserRequest($this->db);
+			$cSetupRequest = new SetupRequest($this->db);
 			
-			$to = array ("denis.nt@kttsoft.com",										
-				"dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com "
-			);
+			$to = array ("denis.nt@kttsoft.com", "dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ");
+			//$to = "dmitry.ds@kttsoft.com";
 			
 			//$from = "authentification@vocwebmanager.com";
 			$from = AUTH_SENDER."@".DOMAIN;
+			$theme = "Company setup request";
 			
+			$message .= "Company Name: ".$_POST['name']."\r\n\r\n";
+			$message .= "Email:".$_POST['email']."\r\n\r\n";
+			
+			//var_dump($_POST); die();
 			switch ($_POST['postType']) {
 				case 'representativeCompany':
-					
+					$cSetupRequest->setName($_POST['name']);
+					$cSetupRequest->setAdress($_POST['address']);
+					$cSetupRequest->setCity($_POST['city']);
+					$this->db->query("SELECT country_id FROM ".TB_COUNTRY." WHERE name='".$_POST['country']."'");
+					if ($this->db->num_rows() > 0){
+						$countryID = $this->db->fetch(0)->country_id;
+						$cSetupRequest->setCountryID($countryID);
+					} else {
+						$error = "Incorrect Country!";
+					}
+					if ($countryID == 215){
+						$this->db->query("SELECT state_id FROM ".TB_STATE." WHERE name='".$_POST['state']."'");
+						if ($this->db->num_rows() > 0){
+							$stateID = $this->db->fetch(0)->state_id;
+							$cSetupRequest->setState($_POST['state']);
+							$cSetupRequest->setStateID($stateID);
+						} else {
+							$error = "Incorrect State!";
+						}
+					} else {
+						$cSetupRequest->setState($_POST['state']);
+						$cSetupRequest->setStateID('NULL');
+					}
+					$cSetupRequest->setCounty('NULL');
+					$cSetupRequest->setParentID('NULL');
+					$cSetupRequest->setZipPostalCode($_POST['zip']);
+					$cSetupRequest->setPhone($_POST['phone']);
+					$cSetupRequest->setContact($_POST['contact']);
+					$cSetupRequest->setEmail($_POST['email']);
+					$cSetupRequest->setFax($_POST['fax']);
+					$cSetupRequest->setTitle($_POST['title']);
+					$errorSave = $cSetupRequest->save('company');
+					if ($errorSave == ''){
+						$cemail->sendMail($from, $to, $theme, $message);
+					} else {
+						$error = $errorSave;
+					}
+					break;
 				case 'newUserRequest':
 					$this->db->query("SELECT company_id FROM ".TB_COMPANY." WHERE name='".$_POST['companyname']."'");
 					if ($this->db->num_rows() > 0){
