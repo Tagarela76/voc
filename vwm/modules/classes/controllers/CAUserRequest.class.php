@@ -27,15 +27,12 @@ class CAUserRequest extends Controller {
 		$rows = $this->db->fetch_all();
 		foreach ($rows as $row){
 			$userRequest->setDate(DateTime::createFromFormat('U', $row->date));
-			$result['date'] = $userRequest->getDate()->format(DEFAULT_DATE_FORMAT);
+			$row->date = $userRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 			$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->user_id;
 			$this->db->query($queryUser);
-			$result['creator_user'] = $this->db->fetch(0)->username;
-			$result['status'] = $row->status;
+			$row->creator_user = $this->db->fetch(0)->username;
 			if ($row->action == 'add'){
-				$result['action'] = 'Add new user';
-				$result['username'] = $row->new_username;
-				$result['access_level'] = $row->category_type;
+				$row->action = 'Add new user';
 				if ($row->category_type == 'facility'){
 					$querySelect = "SELECT name FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id;
 				} elseif ($row->category_type == 'department') {
@@ -45,25 +42,80 @@ class CAUserRequest extends Controller {
 				}
 				$this->db->query($querySelect);
 				if ($this->db->num_rows() > 0){
-					$result['title'] = $this->db->fetch(0)->name;
+					$row->title = $this->db->fetch(0)->name;
 				}
-				$requests['add'][] = $result;
+				$row->url = "admin.php?action=viewDetails&category=userRequest&id=".$row->id;
+				$requests['add'][] = $row;
 			} elseif ($row->action == 'delete') {
-				$result['action'] = 'Delete user';
+				$row->action = 'Delete user';
 				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-				$result['username'] = $this->db->fetch(0)->username;
-				$requests['delete'][] = $result;
+				$row->username = $this->db->fetch(0)->username;
+				$row->url = "admin.php?action=viewDetails&category=userRequest&id=".$row->id;
+				$requests['delete'][] = $row;
 			} elseif ($row->action == 'change') {
-				$result['action'] = 'Change user';
+				$row->action = 'Change user';
 				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-				$result['username'] = $this->db->fetch(0)->username;
-				$result['new_username'] = $row->new_username;
-				$requests['change'][] = $result;
+				$row->username = $this->db->fetch(0)->username;
+				$row->url = "admin.php?action=viewDetails&category=userRequest&id=".$row->id;
+				$requests['change'][] = $row;
 			}
 		}
-		
+		//var_dump($requests); die();
+		$this->smarty->assign('doNotShowControls', true);
 		$this->smarty->assign('requests' ,$requests);
 		$this->smarty->assign('tpl', 'tpls/userRequest.tpl');
+	}
+	
+	private function actionViewDetails() {
+		$userRequest = new UserRequest($this->db);
+		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$this->getFromRequest('id');
+		$this->db->query($query);
+		$row = $this->db->fetch(0);
+		$userRequest->setDate(DateTime::createFromFormat('U', $row->date));
+		$row->date = $userRequest->getDate()->format(DEFAULT_DATE_FORMAT);
+		$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->user_id;
+		$this->db->query($queryUser);
+		$row->creator_user = $this->db->fetch(0)->username;
+		if ($row->action == 'add'){
+			$row->action_type = $row->action;
+			$row->action = 'Add new user';
+		} elseif ($row->action == 'delete') {
+			$row->action_type = $row->action;
+			$row->action = 'Delete user';
+			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
+			$row->username = $this->db->fetch(0)->username;
+		} elseif ($row->action == 'change') {
+			$row->action_type = $row->action;
+			$row->action = 'Change user';
+			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
+			$row->username = $this->db->fetch(0)->username;
+		}
+		if ($row->category_type == 'facility'){
+			$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id);
+			$row->facility_name = $this->db->fetch(0)->name;
+			$companyID = $this->db->fetch(0)->company_id;
+			$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$companyID);
+			$row->company_name = $this->db->fetch(0)->name;
+		} elseif ($row->category_type == 'department') {
+			$this->db->query("SELECT name, facility_id FROM ".TB_DEPARTMENT." WHERE department_id=".$row->category_id);
+			$row->department_name = $this->db->fetch(0)->name;
+			$facilityID = $this->db->fetch(0)->facility_id;
+			$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$facilityID);
+			$row->facility_name = $this->db->fetch(0)->name;
+			$companyID = $this->db->fetch(0)->company_id;
+			$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$companyID);
+			$row->company_name = $this->db->fetch(0)->name;
+		} elseif ($row->category_type == 'company') {
+			$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$row->category_id);
+			$row->company_name = $this->db->fetch(0)->name;
+		}
+		$row->back_url = "admin.php?action=browseCategory&category=requests&bookmark=userRequest";
+		//var_dump($row); 
+		//die();
+		$this->smarty->assign('userRequest', $row);
+		$this->smarty->assign('tpl', 'tpls/viewUserRequest.tpl');
+		$this->smarty->assign('doNotShowControls', true);
+		$this->smarty->display("tpls:index.tpl");
 	}
 }
 ?>

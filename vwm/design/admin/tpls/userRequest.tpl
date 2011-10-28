@@ -18,20 +18,20 @@
 	</tr>
 	{if $requests.add|@count gt 0}
 	{foreach from=$requests.add item=request}
-	<tr>
+	<tr class="hov_company">
 		<td class="border_users_l border_users_b"><input type="checkbox" name="userRequestAddID[]" value=""/></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.action}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.username}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.access_level}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.title}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.date}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.creator_user}</div></td>
-        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request.status}</div></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->action}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->new_username}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->category_type}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->title}</div></a></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_user}</div></td>
+        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 	</tr>
 	{/foreach}
 	{else}
 	<tr>
-		<td colspan="8" align="center">
+		<td colspan="8" align="center" class="border_users_l border_users_r">
 			No requests to add new user
 		</td>
 	</tr>	
@@ -61,18 +61,18 @@
 	</tr>
 	{if $requests.delete|@count gt 0}
 	{foreach from=$requests.delete item=request}
-	<tr>
+	<tr class="hov_company">
 		<td class="border_users_l border_users_b"><input type="checkbox" name="userRequestDeleteID[]" value=""/></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.action}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.username}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.date}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.creator_user}</div></td>
-        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request.status}</div></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->action}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->username}</div></a></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_user}</div></td>
+        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 	</tr>
 	{/foreach}
 	{else}
 	<tr>
-		<td colspan="8" align="center">
+		<td colspan="8" align="center" class="border_users_l border_users_r">
 			No requests to delete user
 		</td>
 	</tr>	
@@ -103,19 +103,19 @@
 	</tr>
 	{if $requests.change|@count gt 0}
 	{foreach from=$requests.change item=request}
-	<tr>
+	<tr class="hov_company">
 		<td class="border_users_l border_users_b"><input type="checkbox" name="userRequestChangeID[]" value=""/></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.action}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.username}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.new_username}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.date}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$request.creator_user}</div></td>
-        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request.status}</div></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->action}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->username}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->new_username}</div></a></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_user}</div></td>
+        <td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 	</tr>
 	{/foreach}
 	{else}
 	<tr>
-		<td colspan="8" align="center">
+		<td colspan="8" align="center" class="border_users_l border_users_r">
 			No requests to change user
 		</td>
 	</tr>	

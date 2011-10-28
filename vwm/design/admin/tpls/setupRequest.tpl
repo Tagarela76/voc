@@ -15,12 +15,12 @@
 		</tr>
 		{if $setupRequest.company|@count gt 0}
 			{foreach from=$setupRequest.company item=request key=i}
-				<tr>
+				<tr class="hov_company">
 					<td class="border_users_l border_users_b"><input type="checkbox" name="setupRequestCompanyID[]" value=""/></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->name}</div></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->name}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="#" onclick="$('#additionalInformationCompany_{$i}').dialog('open'); return false;">View Information</a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
-					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request->status}</div></td>
+					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
 		{else}
@@ -59,17 +59,17 @@
 		</tr>
 		{if $setupRequest.facility|@count gt 0}
 			{foreach from=$setupRequest.facility item=request key=i}
-				<tr>
+				<tr class="hov_company">
 					<td class="border_users_l border_users_b"><input type="checkbox" name="setupRequestFacilityID[]" value=""/></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->name}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->parent_name}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->epa}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->voc_monthly_limit}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->voc_annual_limit}</div></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->name}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->parent_name}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->epa}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_monthly_limit}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_annual_limit}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="#" onclick="$('#additionalInformationFacility_{$i}').dialog('open'); return false;">View Information</a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_name}</div></td>
-					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request->status}</div></td>
+					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
 		{else}
@@ -98,6 +98,7 @@
 			</td>
 			<td>Department Name</td>
 			<td>Facility</td>
+			<td>Company</td>
 			<td>VOC Monthly Limit</td>
 			<td>VOC Annual Limit</td>
 			<td>Request Date</td>
@@ -106,26 +107,27 @@
 		</tr>
 		{if $setupRequest.department|@count gt 0}
 			{foreach from=$setupRequest.department item=request}
-				<tr>
+				<tr class="hov_company">
 					<td class="border_users_l border_users_b"><input type="checkbox" name="setupRequestDepartmentID[]" value=""/></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->name}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->parent_name}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->voc_monthly_limit}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->voc_annual_limit}</div></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->name}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->parent_name}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->company_name}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_monthly_limit}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_annual_limit}</div></a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_name}</div></td>
-					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;">{$request->status}</div></td>
+					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
 		{else}
 			<tr>
-				<td colspan="8" align="center" class="border_users_l border_users_r">
+				<td colspan="9" align="center" class="border_users_l border_users_r">
 					No requests to add new department
 				</td>
 			</tr>	
 		{/if}
 		<tr>
-			<td colspan="4" height="15" class="users_u_bottom">
+			<td colspan="5" height="15" class="users_u_bottom">
 			</td>
 			<td colspan="4" height="15" class="users_u_bottom_r">
 			</td>

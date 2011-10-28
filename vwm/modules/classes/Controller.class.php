@@ -139,8 +139,24 @@ class Controller {
 					$usernameID = $_POST['username'];
 					$action = 'delete';
 					$userRequest->setAction($action);
-					$userRequest->setCategoryID('NULL');
-					$userRequest->setCategoryType('NULL');
+					$this->db->query("SELECT accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$usernameID);
+					$accesslevelID = $this->db->fetch(0)->accesslevel_id;
+					switch ($accesslevelID){
+						case 0:
+							$categoryType = 'company';
+							$categoryID = $this->db->fetch(0)->company_id;
+							break;
+						case 1:
+							$categoryType = 'facility';
+							$categoryID = $this->db->fetch(0)->facility_id;
+							break;
+						case 2:
+							$categoryType = 'department';
+							$categoryID = $this->db->fetch(0)->department_id;
+							break;
+					}
+					$userRequest->setCategoryID($categoryID);
+					$userRequest->setCategoryType($categoryType);
 					$userRequest->setNewUserName('NULL');
 					$userRequest->setUserNameID($usernameID);
 					$userRequest->save();
@@ -167,8 +183,24 @@ class Controller {
 						$newUserName = $_POST['newusername'];
 						$action = 'change';
 						$userRequest->setAction($action);
-						$userRequest->setCategoryID('NULL');
-						$userRequest->setCategoryType('NULL');
+						$this->db->query("SELECT accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$usernameID);
+						$accesslevelID = $this->db->fetch(0)->accesslevel_id;
+						switch ($accesslevelID){
+							case 0:
+								$categoryType = 'company';
+								$categoryID = $this->db->fetch(0)->company_id;
+								break;
+							case 1:
+								$categoryType = 'facility';
+								$categoryID = $this->db->fetch(0)->facility_id;
+								break;
+							case 2:
+								$categoryType = 'department';
+								$categoryID = $this->db->fetch(0)->department_id;
+								break;
+						}
+						$userRequest->setCategoryID($categoryID);
+						$userRequest->setCategoryType($categoryType);
 						$userRequest->setNewUserName($newUserName);
 						$userRequest->setUserNameID($usernameID);
 						if ($newUserName != ''){

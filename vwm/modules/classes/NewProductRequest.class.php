@@ -17,12 +17,14 @@ class NewProductRequest {
     private $date;
     private $user_id;
     private $user_name;
+	private $user_name_id;
     private $status;
     private $msds_id;
     private $msds_name;
+	private $url;
 
 
-    const STATUS_NEW = 'new';
+	const STATUS_NEW = 'new';
     
     public function __construct(db $db) {
         $this->db = $db;
@@ -67,7 +69,14 @@ class NewProductRequest {
     public function setUserName($user_name){
         $this->user_name = $user_name;
     }
-
+	
+	public function setURL($url){
+        $this->url = $url;
+    }
+	
+	public function getURL() {
+		return $this->url;
+    }
 
     public function getProductID() {
 		return $this->product_id;
@@ -79,6 +88,10 @@ class NewProductRequest {
 
     public function getName() {
 		return $this->name;
+    }
+	
+	public function getStatus() {
+		return $this->status;
     }
 
     public function getDescription() {
@@ -94,11 +107,11 @@ class NewProductRequest {
     }
     
     public function getMsdsName(){
-                return $this->msds_name;
+		return $this->msds_name;
     }
     
     public function getUserName(){
-                return $this->user_name;
+		return $this->user_name;
     }
 
 
