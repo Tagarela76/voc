@@ -17,7 +17,9 @@ class CARequests extends Controller {
 
 	private function actionBrowseCategory() {
 		$bookmark = $this->getFromRequest('bookmark');
-		
+		$jsSources = array();
+		array_push($jsSources, 'modules/js/checkBoxes.js');
+		$this->smarty->assign('jsSources', $jsSources);
 		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
 		$this->smarty->display("tpls:index.tpl");
 	}

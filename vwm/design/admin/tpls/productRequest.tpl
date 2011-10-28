@@ -20,7 +20,7 @@
 	{foreach from=$productRequests item=productRequest}
 	<tr class="hov_company">
 		{assign var='requestDate' value=$productRequest->getDate()}
-		<td class="border_users_l border_users_b"><input type="checkbox" name="productRequestID[]" value=""/></td>
+		<td class="border_users_l border_users_b"><input type="checkbox" value="{$productRequest->requestID}" name="item_{$productRequest->requestID}"/></td>
 		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getProductID()}</div></a></td>
 		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getSupplier()}</div></a></td>
 		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getDescription()}</div></a></td>

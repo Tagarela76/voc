@@ -46,6 +46,7 @@ class CAProductRequest extends Controller {
             }
 			$productRequest->setURL("admin.php?action=viewDetails&category=productRequest&id=".$row->id);
 			$productRequest->setStatus($row->status);
+			$productRequest->requestID = $row->id;
 			$productRequests[] = $productRequest;	    	
 		}
 		
