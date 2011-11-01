@@ -151,67 +151,6 @@ class UserRequest {
         return $this->status;        
     }
 
-    public function validate($user) {
-        $result["summary"] = "true";
-		
-		$result["productSupplier"] = "failed";
-		if (isset($product["productSupplier"])) {
-			$product["productSupplier"] = trim($product["productSupplier"]);
-			$supplierLength = strlen($product["productSupplier"]);
-			
-			if ($supplierLength > 0 && $supplierLength < 120) {
-				$result["productSupplier"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-		
-		$result["productId"] = "failed";
-		if (isset($product["productId"])) {
-			$product["productId"] = trim($product["productId"]);
-			$idLength = strlen($product["productId"]);
-			
-			if ($idLength > 0 && $idLength < 20) {
-				$result["productId"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-		
-                $result["productName"] = "failed";
-		if (isset($product["productName"])) {
-			$product["productName"] = trim($product["productName"]);
-			$nameLength = strlen($product["productName"]);
-			
-			if ($nameLength > 0 && $nameLength < 120) {
-				$result["productName"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-                
-                $result["productDescription"] = "failed";
-		if (isset($product["productDescription"])) {
-			$product["productDescription"] = trim($product["productDescription"]);
-			$descriptionLength = strlen($product["productDescription"]);
-			
-			if ($descriptionLength > 0 && $descriptionLength < 120) {
-				$result["productDescription"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-		return $result;
-    }
-    
     public function save() {
         $query = "INSERT INTO ".TB_USER_REQUEST." (action, user_id, username, new_username, new_accessname, email, phone, mobile, category_type, category_id, date, creater_id, status)".
 				" VALUES (".
@@ -239,7 +178,7 @@ class UserRequest {
 		return $error;
     }
 	
-	public function update($requestID, $addComments = ''){
+	public function update($requestID){
 		$query = "UPDATE ".TB_USER_REQUEST." SET status='".mysql_escape_string($this->status)."' WHERE id=".$requestID;
 		$this->db->query($query);
 		if (mysql_errno() != 0){
@@ -287,7 +226,7 @@ class UserRequest {
 		}
 		$data .= $createrID.", 0";
 		
-		$queryUnique = "SELECT accessname FROM ".TB_USER;
+		$queryUnique = "SELECT accessname FROM ".TB_USER." WHERE 1";
 		$this->db->query($queryUnique);
 		$names = $this->db->fetch_all();
 		if (in_array($row->new_accessname, $names->accessname)){

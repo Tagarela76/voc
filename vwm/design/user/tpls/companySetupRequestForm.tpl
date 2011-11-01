@@ -30,7 +30,7 @@
 						{/if}
 						<tr>
 							<td>
-								EPA ID number:<font color="red">&nbsp;<big>*</big></font>
+								EPA/ID number:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
 								<input type="text" name="epa" value="{$setupRequest->getEPANumber()}"/>
@@ -41,7 +41,7 @@
 							VOC monthly limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="voc_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
+								<input type="text" name="voc_monthly_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -57,7 +57,7 @@
 							Facility name:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="facilityName" value="{$setupRequest->getName()}"/>
+								<input type="text" name="facility_name" value="{$setupRequest->getName()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -65,7 +65,7 @@
 							Address:
 							</td>
 							<td>
-								<input type="text" name="adress" value="{$setupRequest->getAdress()}"/>
+								<input type="text" name="address" value="{$setupRequest->getAddress()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -108,7 +108,7 @@
 							Zip/Postal code:
 							</td>
 							<td>
-								<input type="text" name="zip" value="{$setupRequest->getZipPostalCode()}"/>
+								<input type="text" name="zip_code" value="{$setupRequest->getZipCode()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -185,7 +185,7 @@
 							Department Name:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="departmentName" value="{$setupRequest->getName()}"/>
+								<input type="text" name="department_name" value="{$setupRequest->getName()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -193,7 +193,7 @@
 							VOC monthly limit:<font color="red">&nbsp;<big>*</big></font>
 							</td>
 							<td>
-								<input type="text" name="voc_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
+								<input type="text" name="voc_monthly_limit" value="{$setupRequest->getVOCMonthlyLimit()}"/>
 							</td>
 						</tr>
 						<tr>
@@ -212,17 +212,14 @@
 					</table>
 				{/if}	
 				<div style="padding-top: 10px;">
+					<input name="submitForm" type="submit" class="button" value="Submit"/>
 					<input type="button" class="button" value="Cancel" 
 							{if $request.category eq 'company'}
 							onclick="location.href='?action=browseCategory&category={$request.category}&id={$request.id}'"
 							{elseif $request.category eq 'facility'}
 							onclick="location.href='?action=browseCategory&category={$request.category}&id={$request.id}&bookmark=department'"
-							{/if}
-						   />
-					<input name="submitForm" type="submit" class="button" value="Submit"/>
+							{/if}/>
 				</div>
-				{*<input type="hidden" name="action" value="reportIssue">*}
-				{*shadow*}
 			</td>
 		</tr>
 		<tr>

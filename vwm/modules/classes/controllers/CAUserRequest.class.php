@@ -22,7 +22,7 @@ class CAUserRequest extends Controller {
 	protected function bookmarkUserRequest($vars){
 		extract($vars);
 		$userRequest = new UserRequest($this->db);
-		$query = "SELECT * FROM ".TB_USER_REQUEST;
+		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE 1";
 		$this->db->query($query);
 		$rows = $this->db->fetch_all();
 		foreach ($rows as $row){
@@ -67,11 +67,7 @@ class CAUserRequest extends Controller {
 			$requestID = $this->getFromRequest('id');
 			$userRequest = new UserRequest($this->db);
 			$userRequest->setStatus($_POST['selectStatus']);
-			if ($_POST['commentsCheckUncheck'] == 'ON'){
-				$userRequest->update($requestID, $_POST['comment']);
-			} else {
-				$userRequest->update($requestID);
-			}
+			$userRequest->update($requestID);
 			if ($_POST['selectStatus'] == 'accept'){
 				switch ($_POST['actionType']){
 					case 'add':

@@ -29,12 +29,6 @@ class CASetupRequest extends Controller {
 			if ($row->category == 'company'){
 				$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
 				$row->country_name = $this->db->fetch(0)->name;
-				if ($row->country_id == '215'){
-					$this->db->query("SELECT name FROM ".TB_STATE." WHERE state_id=".$row->state_id);
-					$row->state_name = $this->db->fetch(0)->name;
-				} else {
-					$row->state_name = $row->state;
-				}
 				$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 				$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 				$row->url = "admin.php?action=viewDetails&category=setupRequest&id=".$row->id;
@@ -44,26 +38,20 @@ class CASetupRequest extends Controller {
 				$row->parent_name = $this->db->fetch(0)->name;
 				$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
 				$row->country_name = $this->db->fetch(0)->name;
-				if ($row->country_id == '215'){
-					$this->db->query("SELECT name FROM ".TB_STATE." WHERE state_id=".$row->state_id);
-					$row->state_name = $this->db->fetch(0)->name;
-				} else {
-					$row->state_name = $row->state;
-				}
-				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creator_id);
+				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id);
+				$row->creater_name = $this->db->fetch(0)->username;
 				$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 				$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
-				$row->creator_name = $this->db->fetch(0)->username;
 				$row->url = "admin.php?action=viewDetails&category=setupRequest&id=".$row->id;
 				$setupRequestArray['facility'][] = $row;
 			} elseif ($row->category == 'department'){
 				$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->parent_id);
-				$row->parent_name = ($this->db->fetch(0)->name);
+				$row->parent_name = $this->db->fetch(0)->name;
 				$companyID = $this->db->fetch(0)->company_id;
 				$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$companyID);
 				$row->company_name = $this->db->fetch(0)->name;
-				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creator_id);
-				$row->creator_name = $this->db->fetch(0)->username;
+				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id);
+				$row->creater_name = $this->db->fetch(0)->username;
 				$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 				$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 				$row->url = "admin.php?action=viewDetails&category=setupRequest&id=".$row->id;
@@ -77,6 +65,36 @@ class CASetupRequest extends Controller {
 	}
 	
 	private function actionViewDetails() {
+		if ($_POST['actionSave'] == 'Save') {
+			$requestID = $this->getFromRequest('id');
+			$setupRequest = new SetupRequest($this->db);
+			$setupRequest->setStatus($_POST['selectStatus']);
+			$setupRequest->update($requestID);
+			if ($_POST['selectStatus'] == 'accept'){
+				switch ($_POST['category']){
+					case 'company':
+						$error = $setupRequest->addNewCompany($requestID, $_POST['comment']);
+						break;
+					case 'facility':
+						$error = $setupRequest->addNewFacility($requestID, $_POST['comment']);	
+						break;
+					case 'department':
+						$error = $setupRequest->addNewDepartment($requestID, $_POST['comment']);
+						break;
+				}
+			} elseif ($_POST['selectStatus'] == 'deny'){
+				//$setupRequest->denySetupRequest($requestID, $_POST['comment']);
+				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=setupRequest');
+				die();
+			}
+			if ($error == ''){
+				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=setupRequest');
+				die();
+			} else {
+				$setupRequest->setStatus('new');
+				$setupRequest->update($requestID);
+			}
+		}
 		$setupRequest = new SetupRequest($this->db);
 		$query = "SELECT * FROM ".TB_COMPANY_SETUP_REQUEST." WHERE id=".$this->getFromRequest('id');
 		$this->db->query($query);
@@ -84,12 +102,6 @@ class CASetupRequest extends Controller {
 		if ($row->category == 'company'){
 			$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
 			$row->country_name = $this->db->fetch(0)->name;
-			if ($row->country_id == '215'){
-				$this->db->query("SELECT name FROM ".TB_STATE." WHERE state_id=".$row->state_id);
-				$row->state_name = $this->db->fetch(0)->name;
-			} else {
-				$row->state_name = $row->state;
-			}
 			$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 			$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 		} elseif ($row->category == 'facility'){
@@ -97,24 +109,18 @@ class CASetupRequest extends Controller {
 			$row->parent_name = $this->db->fetch(0)->name;
 			$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
 			$row->country_name = $this->db->fetch(0)->name;
-			if ($row->country_id == '215'){
-				$this->db->query("SELECT name FROM ".TB_STATE." WHERE state_id=".$row->state_id);
-				$row->state_name = $this->db->fetch(0)->name;
-			} else {
-				$row->state_name = $row->state;
-			}
-			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creator_id);
+			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id);
+			$row->creater_name = $this->db->fetch(0)->username;
 			$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 			$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
-			$row->creator_name = $this->db->fetch(0)->username;
 		} elseif ($row->category == 'department'){
 			$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->parent_id);
 			$row->parent_name = ($this->db->fetch(0)->name);
 			$companyID = $this->db->fetch(0)->company_id;
 			$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$companyID);
 			$row->company_name = $this->db->fetch(0)->name;
-			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creator_id);
-			$row->creator_name = $this->db->fetch(0)->username;
+			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id);
+			$row->creater_name = $this->db->fetch(0)->username;
 			$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 			$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 		}

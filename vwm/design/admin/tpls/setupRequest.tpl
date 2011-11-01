@@ -54,7 +54,7 @@
 			<td>VOC Annual Limit</td>
 			<td>Additional Information</td>
 			<td>Request Date</td>
-			<td>Creator User</td>
+			<td>Creater User</td>
 			<td class="users_u_top_r_blue">Status</td>
 		</tr>
 		{if $setupRequest.facility|@count gt 0}
@@ -68,7 +68,7 @@
 					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_annual_limit}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="#" onclick="$('#additionalInformationFacility_{$i}').dialog('open'); return false;">View Information</a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_name}</div></td>
+					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creater_name}</div></td>
 					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
@@ -101,8 +101,9 @@
 			<td>Company</td>
 			<td>VOC Monthly Limit</td>
 			<td>VOC Annual Limit</td>
+			<td>Email</td>
 			<td>Request Date</td>
-			<td>Creator User</td>
+			<td>Creater User</td>
 			<td class="users_u_top_r_blue">Status</td>
 		</tr>
 		{if $setupRequest.department|@count gt 0}
@@ -114,14 +115,15 @@
 					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->company_name}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_monthly_limit}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->voc_annual_limit}</div></a></td>
+					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->email}</div></a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
-					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creator_name}</div></td>
+					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->creater_name}</div></td>
 					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
 		{else}
 			<tr>
-				<td colspan="9" align="center" class="border_users_l border_users_r">
+				<td colspan="10" align="center" class="border_users_l border_users_r">
 					No requests to add new department
 				</td>
 			</tr>	
@@ -129,7 +131,7 @@
 		<tr>
 			<td colspan="5" height="15" class="users_u_bottom">
 			</td>
-			<td colspan="4" height="15" class="users_u_bottom_r">
+			<td colspan="5" height="15" class="users_u_bottom_r">
 			</td>
 		</tr>
 	</table>
@@ -153,9 +155,9 @@
 <div id="additionalInformationFacility_{$k}" title="View Additional Information" style="background-color:#e3e9f8; padding:25px; font-size:150%; text-align:center;display:none;">		
 	<table id="infList" width="200px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
 		<tr><td>Country:</td><td>{$request->country_name}</td></tr>
-		<tr><td>State:</td><td> {$request->state_name}</td></tr>
+		<tr><td>State:</td><td> {$request->state}</td></tr>
 		<tr><td>City: </td><td>{$request->city}</td></tr>
-		<tr><td>Adress: </td><td>{$request->adress}</td></tr>
+		<tr><td>Adress: </td><td>{$request->address}</td></tr>
 		<tr><td>Zip Code: </td><td>{$request->zip_code}</td></tr>
 		<tr><td>County:</td><td> {$request->county}</td></tr>
 		<tr><td>Phone:</td><td> {$request->phone}</td></tr>
@@ -172,9 +174,9 @@
 <div id="additionalInformationCompany_{$k}" title="View Additional Information" style="background-color:#e3e9f8; padding:25px; font-size:150%; text-align:center;display:none;">		
 	<table id="infList" width="200px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
 		<tr><td>Country:</td><td>{$request->country_name}</td></tr>
-		<tr><td>State:</td><td> {$request->state_name}</td></tr>
+		<tr><td>State:</td><td> {$request->state}</td></tr>
 		<tr><td>City: </td><td>{$request->city}</td></tr>
-		<tr><td>Adress: </td><td>{$request->adress}</td></tr>
+		<tr><td>Adress: </td><td>{$request->address}</td></tr>
 		<tr><td>Zip Code: </td><td>{$request->zip_code}</td></tr>
 		<tr><td>Phone:</td><td> {$request->phone}</td></tr>
 		<tr><td>Fax: </td><td>{$request->fax}</td></tr>

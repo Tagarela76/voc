@@ -329,7 +329,7 @@ jgypsyn@gyantgroup.com
 					}
 					$cSetupRequest->setCounty('NULL');
 					$cSetupRequest->setParentID('NULL');
-					$cSetupRequest->setZipPostalCode($_POST['zip']);
+					$cSetupRequest->setZipCode($_POST['zip']);
 					$cSetupRequest->setPhone($_POST['phone']);
 					$cSetupRequest->setContact($_POST['contact']);
 					$cSetupRequest->setEmail($_POST['email']);

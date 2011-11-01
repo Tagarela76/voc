@@ -10,6 +10,7 @@
 	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 <div style="padding:7px;">
+<form id="saveForm" action="admin.php?action=viewDetails&category=setupRequest&id={$setupRequest->id}" enctype="multipart/form-data" method="post">	
 	<table class="users"  align="center" cellpadding="0" cellspacing="0">
 		<tr class="users_top_yellowgreen" >
 			<td class="users_u_top_yellowgreen" width="27%" height="30" >
@@ -61,7 +62,7 @@
 		{if $setupRequest->category eq 'facility'}
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
-				EPA ID Number:
+				EPA/ID Number:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
 				<div align="left" >&nbsp;{$setupRequest->epa}</div>
@@ -103,7 +104,7 @@
 				State:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >	&nbsp;{$setupRequest->state_name}</div>
+				<div align="left" >	&nbsp;{$setupRequest->state}</div>
 			</td>
 		</tr>
 		
@@ -180,6 +181,17 @@
 		</tr>
 		{/if}		
 		
+		{if $setupRequest->category eq 'department'}
+		<tr>
+			<td class="border_users_l border_users_b" height="20">
+				Email:
+			</td>
+			<td class="border_users_l border_users_r border_users_b">
+				<div align="left" >	&nbsp;{$setupRequest->email}</div>
+			</td>
+		</tr>	
+		{/if}	
+		
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
 				Request Date:
@@ -192,10 +204,10 @@
 		{if $setupRequest->category eq 'facility' || $setupRequest->category eq 'department'}
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
-				Creator Name:
+				Creater Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$setupRequest->creator_name}</div>
+				<div align="left" >&nbsp;{$setupRequest->creater_name}</div>
 			</td>
 		</tr>
 		{/if}
@@ -206,21 +218,27 @@
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
 				<div align="" >	
-					<select>
+					{if $setupRequest->status eq 'new'}
+					<select name="selectStatus">
 						<option {if $setupRequest->status eq 'new'} selected {/if}>new</option>
 						<option {if $setupRequest->status eq 'accept'} selected {/if}>accept</option>
 						<option {if $setupRequest->status eq 'deny'} selected {/if}>deny</option>
 					</select>
+					{else}
+						&nbsp;<b>{$setupRequest->status}</b>
+					{/if}	
 				</div>
 			</td>
 		</tr>
 		
+		{if $setupRequest->status eq 'new'}
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
 				Additional Mail Comments:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
 				<input type="checkbox" id="addComments" onclick="showAddComment();"/>
+				<input type="hidden" name="commentsCheckUncheck" id="commentsCheck" value=""/>
 			</td>
 		</tr>
 		
@@ -232,13 +250,19 @@
 				<textarea name="comment" id="addCommentTextArea"  rows="40" class="message" cols="20" wrap="hard" strolling="yes">Comments:</textarea>
 			</td>
 		</tr>
-
+		{/if}
+		
 		<tr>
 			<td colspan="2" align="right" class="border_users_l border_users_r">
 				<br/>
 				<div style="margin-right: 20px;">
-					<input type="button" class="button" value="Save"/>
-					<input type="button" class="button" value="Cancel" onclick="location.href='{$setupRequest->back_url}'"/>
+					{if $setupRequest->status eq 'new'}
+						<input type="button" class="button" value="Save" onclick="saveRequest();"/>
+						<input type="hidden" name="actionSave" id="buttonSave" value=""/>
+						<input type="button" class="button" value="Cancel" onclick="location.href='{$setupRequest->back_url}'"/>
+					{else}
+						<input type="button" class="button" value="Ok" onclick="location.href='{$setupRequest->back_url}'"/>
+					{/if}
 				</div>
 			</td>
 		</tr>
@@ -250,6 +274,8 @@
 			</td>
 		</tr>
 	</table>
+	<input type="hidden" name="category" value="{$setupRequest->category}"/>
+</form>
 <script>
 	{literal}
 	$(function() {
@@ -268,12 +294,21 @@
 	
 	function showAddComment(){
 		check = !document.getElementById('addComments').checked;
-			console.log(check);
 		if (check == true){
 			$('#addCommentRow').hide();
 		} else {
 			$('#addCommentRow').show();
 		}	
 	}
+		
+	function saveRequest(){
+		if (document.getElementById('addComments').checked == true) {
+			document.getElementById('commentsCheck').value = 'ON';
+		} else {
+			document.getElementById('commentsCheck').value = 'OFF';
+		}	
+		document.getElementById('buttonSave').value = 'Save';
+		document.getElementById('saveForm').submit();
+	}	
 	{/literal}	
 </script>

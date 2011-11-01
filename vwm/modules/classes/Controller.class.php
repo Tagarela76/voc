@@ -273,16 +273,16 @@ class Controller {
 		//var_dump($_POST);
 		if ($_POST['submitForm'] == 'Submit'){
 			$setupRequest = new SetupRequest($this->db);
-			$setupRequest->setVOCMonthlyLimit($_POST['voc_limit']);
+			$setupRequest->setVOCMonthlyLimit($_POST['voc_monthly_limit']);
 			$setupRequest->setVOCAnnualLimit($_POST['voc_annual_limit']);
 			$setupRequest->setParentID($this->getFromRequest('id'));
 			if ($this->getFromRequest('category') == 'company'){
-				$setupRequest->setName($_POST['facilityName']);
+				$setupRequest->setName($_POST['facility_name']);
 				$setupRequest->setEPANumber($_POST['epa']);
-				$setupRequest->setAdress($_POST['adress']);
+				$setupRequest->setAdress($_POST['address']);
 				$setupRequest->setCity($_POST['city']);
 				$setupRequest->setCounty($_POST['county']);
-				$setupRequest->setZipPostalCode($_POST['zip']);
+				$setupRequest->setZipCode($_POST['zip_code']);
 				$setupRequest->setEmail($_POST['email']);
 				$setupRequest->setPhone($_POST['phone']);
 				$setupRequest->setFax($_POST['fax']);
@@ -304,7 +304,9 @@ class Controller {
 					$this->smarty->assign('setupRequest', $setupRequest);
 				}
 			} elseif ($this->getFromRequest('category') == 'facility'){
-				$setupRequest->setName($_POST['departmentName']);
+				$setupRequest->setName($_POST['department_name']);
+				$this->db->query("SELECT email FROM ".TB_FACILITY." WHERE id=".$this->getFromRequest('id'));
+				$setupRequest->setEmail($this->db->fetch(0)->email);
 				$error = $setupRequest->save('department');
 				if ($error == ''){
 					header('Location: ?action=browseCategory&category=facility&id='.$this->getFromRequest('id').'&bookmark=department');
