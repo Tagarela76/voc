@@ -246,15 +246,6 @@ class UserRequest {
 			$error = "Error!";
 		} else {
 			$error = "";
-			if ($this->status == 'deny'){
-				$query = "SELECT email FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
-				$this->db->query($query);
-				$userEmail = $this->db->fetch(0)->email;
-				$newMail = new EMail();
-				$message = "To create a new user denied.\n";
-				$message .= $addComments;
-				$newMail->sendMail('newuserrequest@vocwebmanager.com', $userEmail, 'User Request', $message);
-			}
 		}
 		
 		return $error;	
@@ -368,6 +359,25 @@ class UserRequest {
 		}
 		
 		return $error;
+	}
+	
+	public function denyUserRequest($requestID, $addComments = ''){
+		$this->db->query("SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID);
+		$data = $this->db->fetch(0);
+		$newMail = new EMail();
+		switch ($data->action){
+			case 'add':
+				$message = "Your request to add new user is denied.\n";
+				break;
+			case 'delete':
+				$message = "Your request to delete user is denied.\n";
+				break;
+			case 'change':
+				$message = "Your request to change username is denied.\n";
+				break;
+		}
+		$message .= $addComments;
+		$newMail->sendMail('newuserrequest@vocwebmanager.com', $data->email, 'User Request', $message);
 	}
 
 	public function sendMail($message){

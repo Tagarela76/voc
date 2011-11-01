@@ -72,18 +72,23 @@ class CAUserRequest extends Controller {
 			} else {
 				$userRequest->update($requestID);
 			}
-			switch ($_POST['actionType']){
-				case 'add':
-					$error = $userRequest->addNewUser($requestID, $_POST['comment']);
-					break;
-				case 'delete':
-					$error = $userRequest->deleteUser($requestID, $_POST['comment']);
-					break;
-				case 'change':
-					$error = $userRequest->changeUser($requestID, $_POST['comment']);
-					break;
+			if ($_POST['selectStatus'] == 'accept'){
+				switch ($_POST['actionType']){
+					case 'add':
+						$error = $userRequest->addNewUser($requestID, $_POST['comment']);
+						break;
+					case 'delete':
+						$error = $userRequest->deleteUser($requestID, $_POST['comment']);	
+						break;
+					case 'change':
+						$error = $userRequest->changeUser($requestID, $_POST['comment']);
+						break;
+				}
+			} elseif ($_POST['selectStatus'] == 'deny'){
+				$userRequest->denyUserRequest($requestID, $_POST['comment']);
+				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=userRequest');
+				die();
 			}
-			
 			if ($error == ''){
 				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=userRequest');
 				die();
