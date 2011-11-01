@@ -131,16 +131,18 @@ class Controller {
 			switch ($_POST['radioRequest']){
 				case 'lost':
 					//generate password and send it in e-mail
-					$usernameID = $_POST['username'];
-					$error = $userRequest->lostPassword($usernameID);
+					$userID = $_POST['user_id'];
+					$error = $userRequest->lostPassword($userID);
 					break;
 				case 'cancel':
 					//delete user
-					$usernameID = $_POST['username'];
+					$userID = $_POST['user_id'];
 					$action = 'delete';
 					$userRequest->setAction($action);
-					$this->db->query("SELECT accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$usernameID);
+					$this->db->query("SELECT username, email, accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$userID);
 					$accesslevelID = $this->db->fetch(0)->accesslevel_id;
+					$username = $this->db->fetch(0)->username;
+					$email = $this->db->fetch(0)->email;
 					switch ($accesslevelID){
 						case 0:
 							$categoryType = 'company';
@@ -155,36 +157,42 @@ class Controller {
 							$categoryID = $this->db->fetch(0)->department_id;
 							break;
 					}
-					$userRequest->setCategoryID($categoryID);
-					$userRequest->setCategoryType($categoryType);
-					$userRequest->setNewUserName('NULL');
-					$userRequest->setUserNameID($usernameID);
-					$userRequest->save();
-					$userRequest->sendMail('User Request. Please, delete user: '.$_POST['username'].".");
+					$userRequest->setALL($action, $userID, $username, 'NULL', 'NULL', $email, 'NULL', 'NULL', $categoryType, $categoryID);
+					$error = $userRequest->save();
+					if ($error == '') {
+						$userRequest->sendMail('User Request. Please, delete user: '.$username.".");
+					}
 					break;
 				case 'username':
 					//change or create new user
+					//var_dump($_POST); die();
 					if ($_POST['newUser'] == 'on'){
-						$newUserName = $_POST['newusername'];
+						$newUserName = $_POST['new_username'];
+						$newAccessName = $_POST['new_accessname'];
+						$email = $_POST['email'];
+						$phone = $_POST['phone'];
+						$mobile = $_POST['mobile'];
 						$categoryType = $_POST['structureCategory'];
-						$categoryID = $_POST['structureName'];
+						$categoryID = $_POST['structure_id'];
 						$action = 'add';
-						$userRequest->setAction($action);
-						$userRequest->setCategoryID($categoryID);
-						$userRequest->setCategoryType($categoryType);
-						$userRequest->setNewUserName($newUserName);
-						$userRequest->setUserNameID('NULL');
-						if ($newUserName != ''){
-							$userRequest->save();
+						$userRequest->setALL($action, 'NULL', 'NULL', $newUserName, $newAccessName, $email, $phone, $mobile, $categoryType, $categoryID);
+						if ($newUserName != '' && $newAccessName != '' && $phone != '' && $mobile != '' && preg_match('/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/', $email)){
+							$error = $userRequest->save();
+						} else {
+							$error = 'Incorrect data!';
+						}
+						if ($error == '') {
 							$userRequest->sendMail('Please, create new user.');
-						}	
+						}
 					} else {
-						$usernameID = $_POST['username'];
-						$newUserName = $_POST['newusername'];
+						$userID = $_POST['user_id'];
+						$newUserName = $_POST['new_username'];
 						$action = 'change';
 						$userRequest->setAction($action);
-						$this->db->query("SELECT accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$usernameID);
+						$this->db->query("SELECT username, email, accesslevel_id, company_id, facility_id, department_id FROM ".TB_USER." WHERE user_id=".$userID);
 						$accesslevelID = $this->db->fetch(0)->accesslevel_id;
+						$username = $this->db->fetch(0)->username;
+						$email = $this->db->fetch(0)->email;
 						switch ($accesslevelID){
 							case 0:
 								$categoryType = 'company';
@@ -199,12 +207,11 @@ class Controller {
 								$categoryID = $this->db->fetch(0)->department_id;
 								break;
 						}
-						$userRequest->setCategoryID($categoryID);
-						$userRequest->setCategoryType($categoryType);
-						$userRequest->setNewUserName($newUserName);
-						$userRequest->setUserNameID($usernameID);
+						$userRequest->setALL($action, $userID, $username, $newUserName, 'NULL', $email, 'NULL', 'NULL', $categoryType, $categoryID);
 						if ($newUserName != ''){
-							$userRequest->save();
+							$error = $userRequest->save();
+						}
+						if ($error == ''){
 							$userRequest->sendMail('Please, change username.');
 						}
 					}

@@ -9,186 +9,94 @@
 {/if}
 {literal}
     <script type="text/javascript">
-        function onClickRadio(radio, categ){
-            var outputhtml_lost;
-            var outputhtml_cancel;
-            var outputhtml_username;
-            var outputhtml_password;
-
-                outputhtml_lost = '<tr><td width="35%" colspan="2">'+
-                            'User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<select type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>';
-                outputhtml_cancel = '<tr><td width="35%" colspan="2">'+
-                            'User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<select type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>';
-                outputhtml_username = '<tr><td width="35%" colspan="2">'+
-                            'User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<select  type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2">'+
-                            'New User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2"></td>'+
-                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value, categ);" name="newUser"> Create New User</td>'+
-                            '<td></td></tr>';
-                outputhtml_password = '<tr><td width="35%" colspan="2">'+
-                            'Old Password:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="password" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2">'+
-                            'New Password:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="password" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2">'+
-                            'Repeat New Password:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="password" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>';
+        function onClickRadio(radio){
+			
             if (radio=="lost"){
-                //$('#myclass').html(outputhtml_lost);
-				$('#usersFields').show();
+				$('#usersList').show();
 				$('#newUserName').hide();
-				$('#chBox').hide();
-				$('#structName').hide();
+				$('#newAccessName').hide();
+				$('#email').hide();
+				$('#phone').hide();
+				$('#mobile').hide();	
+				$('#newUserCheckBox').hide();
+				$('#structureName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
             }
             if (radio=="cancel"){
-                //$('#myclass').html(outputhtml_cancel);
-				$('#usersFields').show();
+				$('#usersList').show();
 				$('#newUserName').hide();
-				$('#chBox').hide();
-				$('#structName').hide();
+				$('#newAccessName').hide();
+				$('#email').hide();
+				$('#phone').hide();
+				$('#mobile').hide();	
+				$('#newUserCheckBox').hide();
+				$('#structureName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
             }
             if (radio=="username"){
-				$('#usersFields').show();
+				$('#usersList').show();
 				$('#newUserName').show();
-				$('#chBox').show();
-				$('#structName').hide();
+				$('#newAccessName').hide();
+				$('#email').hide();
+				$('#phone').hide();
+				$('#mobile').hide();	
+				$('#newUserCheckBox').show();
+				$('#structureName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
-                //$('#myclass').html(outputhtml_username);
-//                $.ajax({
-//                    url: 'modules/ajax/getUserList.php',
-//                    dataType:'json',
-//                    data: 'level=company&id=115',
-//                        success: function(responce) {
-//                            if (responce.success) {
-//                                for (var key in responce.users) {
-//                                       if (responce.users.hasOwnProperty(key)) {
-//										   $('selectbox').append(
-//												'<option value='+responce.users[key].user_id+'>'+responce.users[key].username+'</option>'
-//											);
-//										}
-//								}
-//                            } else {
-//								alert('something wrong');
-//							}
-//						},
-//                        error: function() {
-//                            alert('something wrong');
-//                            }
-//
-//                    });
             }
             if (radio=="password"){
-                //$('#myclass').html(outputhtml_password);
-				$('#usersFields').hide();
+				$('#usersList').hide();
 				$('#newUserName').hide();
-				$('#chBox').hide();
-				$('#structName').hide();
+				$('#newAccessName').hide();
+				$('#email').hide();
+				$('#phone').hide();
+				$('#mobile').hide();	
+				$('#newUserCheckBox').hide();
+				$('#structureName').hide();
 				$('#oldPass').show();
 				$('#newPass').show();
 				$('#reNewPass').show();
             }
         }
         function onClickChBox(chbox, value, category){
-            var outputhtml_username;
-
+            
             if ((chbox=="newUser") && (value=="off")){
-                outputhtml_username = '<tr><td width="35%" colspan="2">'+
-                            'New User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="text" name="newUserName">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2"></td>'+
-                            '<td width="55%" colspan="2"><input type="checkbox" checked value="on" onclick="onClickChBox(name, value, categ);" name="newUser"> Create New User</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2">Facility/Department</td>'+
-                            '<td width="55%" colspan="2"><select type="text" name="structureName"></td>'+
-                            '<td></td></tr>';
-                //$('#myclass').html(outputhtml_username);
-				$('#usersFields').hide();
+				$('#usersList').hide();
 				$('#newUserName').show();
-				$('#chBox').show();
-				$('#chBox input').attr('Value', 'on');
+				$('#newAccessName').show();
+				$('#email').show();
+				$('#phone').show();
+				$('#mobile').show();	
+				$('#newUserCheckBox').show();
+				$('#newUserCheckBox input').attr('Value', 'on');
 				if (category=='company'){
-				$('#structName #structCaption').text('Facility:');
-				$('#structName').show();
+					$('#structureName #structureCaption').text('Facility:');
+					$('#structureName').show();
 				} else {
-				if (category=='facility'){
-				$('#structName #structCaption').text('Department:');
-				$('#structName').show();
-				}
+					if (category=='facility'){
+						$('#structureName #structureCaption').text('Department:');
+						$('#structureName').show();
+					}
 				}
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
             } else {
-                outputhtml_username = '<tr><td width="35%" colspan="2">'+
-                            'User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<select  type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2">'+
-                            'New User Name:'+
-                            '</td>'+
-                            '<td width="55%" colspan="2">'+
-                            '<input  type="text" name="username">'+
-                            '</td>'+
-                            '<td></td></tr>'+
-                            '<tr><td width="35%" colspan="2"></td>'+
-                            '<td width="55%" colspan="2"><input type="checkbox" value="off" onclick="onClickChBox(name, value);" name="newUser"> Create New User</td>'+
-                            '<td></td></tr>';
-
-                //$('#myclass').html(outputhtml_username);
-				$('#usersFields').show();
+				$('#usersList').show();
 				$('#newUserName').show();
-				$('#chBox').show();
-				$('#chBox input').attr('Value', 'off');
-				$('#structName').hide();
+				$('#newAccessName').hide();
+				$('#email').hide();
+				$('#phone').hide();
+				$('#mobile').hide();	
+				$('#newUserCheckBox').show();
+				$('#newUserCheckBox input').attr('Value', 'off');
+				$('#structureName').hide();
 				$('#oldPass').hide();
 				$('#newPass').hide();
 				$('#reNewPass').hide();
@@ -218,16 +126,16 @@
 					{/if}
                     <tr>
                         <td nowrap width="15%">
-                            <input type="radio" name="radioRequest" checked value="lost" onclick="onClickRadio(value, '{$request.category}');"> Lost
+                            <input type="radio" name="radioRequest" checked value="lost" onclick="onClickRadio(value);"/>&nbsp;Lost
                         </td>
                         <td nowrap width="20%">
-                            <input type="radio" name="radioRequest" value="cancel" onclick="onClickRadio(value, '{$request.category}');"> Cancel
+                            <input type="radio" name="radioRequest" value="cancel" onclick="onClickRadio(value);"/>&nbsp;Cancel
                         </td>
                         <td nowrap width="25%">
-                            <input type="radio" name="radioRequest" value="username" onclick="onClickRadio(value, '{$request.category}');"> Username
+                            <input type="radio" name="radioRequest" value="username" onclick="onClickRadio(value);"/>&nbsp;Username
                         </td>
                         <td nowrap width="30%">
-                            <input type="radio" name="radioRequest" value="password" onclick="onClickRadio(value, '{$request.category}');"> Password
+                            <input type="radio" name="radioRequest" value="password" onclick="onClickRadio(value);"/>&nbsp;Password
                         </td>
                         <td nowrap width="10%">
                         </td>
@@ -235,12 +143,12 @@
                 </table>
                 <hr width="400px">
                 <table width="440px" id="myclass">
-                    <tr id="usersFields" style="display: table-row;">
+                    <tr id="usersList" style="display: table-row;">
                         <td width="35%" colspan="2">
                             User Name:
                         </td>
                         <td width="55%" colspan="2">
-                            <select type="text" name="username">
+                            <select type="text" name="user_id">
 								{foreach from=$userList item=user}
 									<option value="{$user.user_id}">{$user.username}</option>
 								{/foreach}
@@ -254,12 +162,52 @@
                             New User Name:
                         </td>
                         <td width="55%" colspan="2">
-                            <input type="text" name="newusername">
+                            <input type="text" name="new_username"/>
                         </td>
                         <td>
                         </td>
 					</tr>
-					<tr id="chBox" style="display: none;">
+					<tr id="newAccessName" style="display: none;">
+						<td width="35%" colspan="2">
+                            New Access Name:
+                        </td>
+                        <td width="55%" colspan="2">
+                            <input type="text" name="new_accessname"/>
+                        </td>
+                        <td>
+                        </td>
+					</tr>
+					<tr id="email" style="display: none;">
+						<td width="35%" colspan="2">
+                            Email:
+                        </td>
+                        <td width="55%" colspan="2">
+                            <input type="text" name="email">
+                        </td>
+                        <td>
+                        </td>
+					</tr>
+					<tr id="phone" style="display: none;">
+						<td width="35%" colspan="2">
+                            Phone:
+                        </td>
+                        <td width="55%" colspan="2">
+                            <input type="text" name="phone">
+                        </td>
+                        <td>
+                        </td>
+					</tr>
+					<tr id="mobile" style="display: none;">
+						<td width="35%" colspan="2">
+                            Mobile:
+                        </td>
+                        <td width="55%" colspan="2">
+                            <input type="text" name="mobile">
+                        </td>
+                        <td>
+                        </td>
+					</tr>
+					<tr id="newUserCheckBox" style="display: none;">
 						<td width="35%" colspan="2">
 						</td>
 						<td width="55%" colspan="2">
@@ -268,12 +216,12 @@
                         <td>
 						</td>
 					</tr>
-					<tr id="structName" style="display: none;">
+					<tr id="structureName" style="display: none;">
 						<td width="35%" colspan="2">
-							<div id="structCaption">Facility/Department</div>
+							<div id="structureCaption"></div>
 						</td>
                         <td width="55%" colspan="2">
-							<select type="text" name="structureName">
+							<select type="text" name="structure_id">
 								{if $request.category eq 'company'}
 								{foreach from=$structureList item=structure}
 									<option value="{$structure.id}">{$structure.name}</option>

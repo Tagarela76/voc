@@ -7,16 +7,21 @@ class UserRequest {
     private $db;
     
     private $action;
-    private $username_id;
-    private $new_username;
-    private $category_type;
+    private $user_id;
+	private $username;
+	private $new_username;
+	private $new_accessname;
+	private $email;
+	private $phone;
+	private $mobile;
+	private $category_type;
 	private $category_id;
     /**
      *
      * @var DateTime
      */
     private $date;
-    private $user_id;
+    private $creater_id;
     private $status;
     
     const STATUS_NEW = 'new';
@@ -24,73 +29,126 @@ class UserRequest {
     public function __construct(db $db) {
         $this->db = $db;
         $this->setDate(new DateTime());
-        $this->user_id = $_SESSION['user_id'];
+        $this->creater_id = $_SESSION['user_id'];
         $this->status = self::STATUS_NEW;
     }
 
     public function setAction($action){
         $this->action = $action;
     }
-
-    public function setDate(DateTime $date) {
-        $this->date = $date;
-    }
 	
 	public function setUserID($userID) {
         $this->user_id = $userID;
     }
-    
-    public function setUserNameID($usernameID) {
-        $this->username_id = $usernameID;
+	
+	public function setUserName($username) {
+        $this->username = $username;
     }
-    
-    public function setNewUserName($new_username) {
+	
+	public function setNewUserName($new_username) {
         $this->new_username = $new_username; 
     }
-
-
-    public function setCategoryType($category_type) {
+    
+	public function setNewAccessName($new_accessname){
+        $this->new_accessname = $new_accessname;
+    }
+	
+	public function setEmail($email){
+        $this->email = $email;
+    }
+	
+	public function setPhone($phone){
+        $this->phone = $phone;
+    }
+	
+	public function setMobile($mobile){
+        $this->mobile = $mobile;
+    }
+	
+	public function setCategoryType($category_type) {
         $this->category_type = $category_type;
+    }
+	
+	public function setCategoryID($category_id){
+        $this->category_id = $category_id;
+    }
+	
+	public function setDate(DateTime $date) {
+        $this->date = $date;
+    }
+	
+    public function setCreaterID($usernameID) {
+        $this->creater_id = $usernameID;
     }
     
     public function setStatus($status) {
         $this->status = $status;        
     }
     
-    public function setCategoryID($category_id){
-        $this->category_id = $category_id;
-    }
-    
-    public function getAction() {
-		return $this->action;
-    }
+	public function setALL($action, $user_id, $username, $new_username, $new_accessname, $email, $phone, $mobile,
+						   $category_type, $category_id){ 
+		$this->action = $action;
+		$this->user_id = $user_id;
+		$this->username = $username;
+		$this->new_username = $new_username;
+		$this->new_accessname = $new_accessname;
+		$this->email = $email;
+		$this->phone = $phone;
+		$this->mobile = $mobile;
+		$this->category_type = $category_type;
+		$this->category_id = $category_id;
+	}
 
-    public function getUserNameID() {
-		return $this->username_id;		
-    }
-
-    public function getNewUserName() {
-		return $this->new_username;
-    }
-
-    public function getCategoryType() {
-	   return $this->category_type;
-    }
-
-    public function getDate() {
-		return $this->date;
-    }
-
-    public function getUserID() {
-		return $this->user_id;    
-    }
-    
-    public function getCategoryID(){
-		return $this->category_id;
+	public function getAction(){
+        return $this->action;
     }
 	
-	public function getStatus(){
-		return $this->status;
+	public function getUserID(){
+        return $this->user_id;
+    }
+	
+	public function getUserName(){
+        return $this->username;
+    }
+	
+	public function getNewUserName(){
+        return $this->new_username;
+    }
+    
+	public function getNewAccessName(){
+        return $this->new_accessname;
+    }
+	
+	public function getEmail(){
+        return $this->email;
+    }
+	
+	public function getPhone(){
+        return $this->phone;
+    }
+	
+	public function getMobile(){
+        return $this->mobile;
+    }
+	
+	public function getCategoryType(){
+        return $this->category_type;
+    }
+	
+	public function getCategoryID(){
+        return $this->category_id;
+    }
+	
+	public function getDate(){
+        return $this->date;
+    }
+	
+    public function getCreaterID(){
+        return $this->creater_id;
+    }
+    
+    public function getStatus(){
+        return $this->status;        
     }
 
     public function validate($user) {
@@ -155,14 +213,20 @@ class UserRequest {
     }
     
     public function save() {
-        $query = "INSERT INTO ".TB_USER_REQUEST." (action, username_id, new_username, category_type, category_id, date, user_id, status) VALUES (".
+        $query = "INSERT INTO ".TB_USER_REQUEST." (action, user_id, username, new_username, new_accessname, email, phone, mobile, category_type, category_id, date, creater_id, status)".
+				" VALUES (".
                 "'".mysql_escape_string($this->action)."', ".
-                "".mysql_escape_string($this->username_id).", ".
+                "".mysql_escape_string($this->user_id).", ".
+				"'".mysql_escape_string($this->username)."', ".
                 "'".mysql_escape_string($this->new_username)."', ".
+				"'".mysql_escape_string($this->new_accessname)."', ".
+				"'".mysql_escape_string($this->email)."', ".
+				"'".mysql_escape_string($this->phone)."', ".
+				"'".mysql_escape_string($this->mobile)."', ".
                 "'".mysql_escape_string($this->category_type)."', ".
                 "".mysql_escape_string($this->category_id).", ".
                 "".mysql_escape_string($this->date->getTimestamp()).", ".
-                "".mysql_escape_string($this->user_id).", ".
+                "".mysql_escape_string($this->creater_id).", ".
                 "'".mysql_escape_string($this->status)."')";
 		$this->db->query($query);
 		
@@ -175,6 +239,129 @@ class UserRequest {
 		return $error;
     }
 	
+	public function update($requestID, $addComments = ''){
+		$query = "UPDATE ".TB_USER_REQUEST." SET status='".mysql_escape_string($this->status)."' WHERE id=".$requestID;
+		$this->db->query($query);
+		if (mysql_errno() != 0){
+			$error = "Error!";
+		} else {
+			$error = "";
+			if ($this->status == 'deny'){
+				$query = "SELECT email FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
+				$this->db->query($query);
+				$userEmail = $this->db->fetch(0)->email;
+				$newMail = new EMail();
+				$message = "To create a new user denied.\n";
+				$message .= $addComments;
+				$newMail->sendMail('newuserrequest@vocwebmanager.com', $userEmail, 'User Request', $message);
+			}
+		}
+		
+		return $error;	
+	}
+	
+	public function addNewUser($requestID, $addComments = ''){
+		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
+		$this->db->query($query);
+		$row = $this->db->fetch(0);
+		$passLength = 7;
+		$password = $this->generate_password($passLength);
+		$columns = "username, accessname, password, phone, mobile, email, ";
+		$data = "'".$row->new_username."', '".$row->new_accessname."', '".md5($password)."', '".$row->phone."', '".$row->mobile."', '".$row->email."', ";
+		switch ($row->category_type){
+			case 'company':
+				$columns .= "accesslevel_id, company_id, ";
+				$data .= "0, ".$row->category_id.", ";
+				break;
+			case 'facility':
+				$this->db->query("SELECT company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id);
+				$companyID = $this->db->fetch(0)->company_id;
+				$columns .= "accesslevel_id, company_id, facility_id, ";
+				$data .= "1, ".$companyID.", ".$row->category_id.", ";
+				break;
+			case 'department':
+				$this->db->query("SELECT facility_id FROM ".TB_DEPARTMENT." WHERE department_id=".$row->category_id);
+				$facilityID = $this->db->fetch(0)->facility_id;
+				$this->db->query("SELECT company_id FROM ".TB_FACILITY." WHERE facility_id=".$facilityID);
+				$companyID = $this->db->fetch(0)->company_id;
+				$columns .= "accesslevel_id, company_id, facility_id, department_id, ";
+				$data .= "2, ".$companyID.", ".$facilityID.", ".$row->category_id.", ";
+				break;
+		}
+		$columns .= "creater_id, terms_conditions";
+		if ($row->creater_id != NULL){
+			$createrID = $row->creater_id;
+		} else {
+			$createrID = 'NULL';
+		}
+		$data .= $createrID.", 0";
+		$quesrySave = "INSERT INTO ".TB_USER." (".$columns.") VALUES (".$data.")";
+		$this->db->query($quesrySave);
+		
+		if (mysql_errno() == 0){
+			$error = '';
+			$newMail = new EMail();
+			$message = "New User Created.\n";
+			$message .= "Accessname: ".$row->new_accessname."\n";
+			$message .= "Password: ".$password."\n\n";
+			$message .= $addComments;
+			$newMail->sendMail('newuserrequest@vocwebmanager.com', $row->email, 'User Request', $message);
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}
+	
+	public function deleteUser($requestID, $addComments = ''){
+		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
+		$this->db->query($query);
+		$userToDelete = $this->db->fetch(0)->user_id;
+		$userEmail = $this->db->fetch(0)->email;
+		$username = $this->db->fetch(0)->username;
+		
+		$queryDelete = "DELETE FROM ".TB_USER." WHERE user_id=".$userToDelete;
+		$this->db->query($queryDelete);
+		
+		if (mysql_errno() == 0){
+			$error = '';
+			$newMail = new EMail();
+			$message = "User ".$username." Deleted.\n\n";
+			$message .= $addComments;
+			$newMail->sendMail('newuserrequest@vocwebmanager.com', $userEmail, 'User Request', $message);
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}
+	
+	public function changeUser($requestID, $addComments = ''){
+		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
+		$this->db->query($query);
+		$userToChange = $this->db->fetch(0)->user_id;
+		$newUsername = $this->db->fetch(0)->new_username;
+		$username = $this->db->fetch(0)->username;
+		$userEmail = $this->db->fetch(0)->email;
+		
+		$queryChange = "UPDATE ".TB_USER." SET username='".$newUsername."' WHERE user_id=".$userToChange;
+		$this->db->query($queryChange);
+		
+		if (mysql_errno() == 0){
+			$error = '';
+			$newMail = new EMail();
+			$message = "Username changed.\n";
+			$message .= "Old username: ".$username."\n";
+			$message .= "New username: ".$newUsername."\n\n";
+			$message .= $addComments;
+			$newMail->sendMail('newuserrequest@vocwebmanager.com', $userEmail, 'User Request', $message);
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}
+
 	public function sendMail($message){
 		$newUserMail = new EMail();
 		$newUserMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);

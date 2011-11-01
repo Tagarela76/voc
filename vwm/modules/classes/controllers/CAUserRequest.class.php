@@ -22,15 +22,15 @@ class CAUserRequest extends Controller {
 	protected function bookmarkUserRequest($vars){
 		extract($vars);
 		$userRequest = new UserRequest($this->db);
-		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE 1";
+		$query = "SELECT * FROM ".TB_USER_REQUEST;
 		$this->db->query($query);
 		$rows = $this->db->fetch_all();
 		foreach ($rows as $row){
 			$userRequest->setDate(DateTime::createFromFormat('U', $row->date));
 			$row->date = $userRequest->getDate()->format(DEFAULT_DATE_FORMAT);
-			$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->user_id;
+			$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id;
 			$this->db->query($queryUser);
-			$row->creator_user = $this->db->fetch(0)->username;
+			$row->creater_user = $this->db->fetch(0)->username;
 			if ($row->action == 'add'){
 				$row->action = 'Add new user';
 				if ($row->category_type == 'facility'){
@@ -48,14 +48,10 @@ class CAUserRequest extends Controller {
 				$requests['add'][] = $row;
 			} elseif ($row->action == 'delete') {
 				$row->action = 'Delete user';
-				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-				$row->username = $this->db->fetch(0)->username;
 				$row->url = "admin.php?action=viewDetails&category=userRequest&id=".$row->id;
 				$requests['delete'][] = $row;
 			} elseif ($row->action == 'change') {
 				$row->action = 'Change user';
-				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-				$row->username = $this->db->fetch(0)->username;
 				$row->url = "admin.php?action=viewDetails&category=userRequest&id=".$row->id;
 				$requests['change'][] = $row;
 			}
@@ -67,28 +63,53 @@ class CAUserRequest extends Controller {
 	}
 	
 	private function actionViewDetails() {
+		if ($_POST['actionSave'] == 'Save') {
+			$requestID = $this->getFromRequest('id');
+			$userRequest = new UserRequest($this->db);
+			$userRequest->setStatus($_POST['selectStatus']);
+			if ($_POST['commentsCheckUncheck'] == 'ON'){
+				$userRequest->update($requestID, $_POST['comment']);
+			} else {
+				$userRequest->update($requestID);
+			}
+			switch ($_POST['actionType']){
+				case 'add':
+					$error = $userRequest->addNewUser($requestID);
+					break;
+				case 'delete':
+					$error = $userRequest->deleteUser($requestID);
+					break;
+				case 'change':
+					$error = $userRequest->changeUser($requestID);
+					break;
+			}
+			
+			if ($error == ''){
+				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=userRequest');
+				die();
+			} else {
+				$userRequest->setStatus('new');
+				$userRequest->update($requestID);
+			}
+		}
 		$userRequest = new UserRequest($this->db);
 		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$this->getFromRequest('id');
 		$this->db->query($query);
 		$row = $this->db->fetch(0);
 		$userRequest->setDate(DateTime::createFromFormat('U', $row->date));
 		$row->date = $userRequest->getDate()->format(DEFAULT_DATE_FORMAT);
-		$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->user_id;
+		$queryUser = "SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id;
 		$this->db->query($queryUser);
-		$row->creator_user = $this->db->fetch(0)->username;
+		$row->creater_user = $this->db->fetch(0)->username;
 		if ($row->action == 'add'){
 			$row->action_type = $row->action;
 			$row->action = 'Add new user';
 		} elseif ($row->action == 'delete') {
 			$row->action_type = $row->action;
-			$row->action = 'Delete user';
-			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-			$row->username = $this->db->fetch(0)->username;
+			$row->action = 'Delete user';			
 		} elseif ($row->action == 'change') {
 			$row->action_type = $row->action;
-			$row->action = 'Change user';
-			$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->username_id);
-			$row->username = $this->db->fetch(0)->username;
+			$row->action = 'Change username';
 		}
 		if ($row->category_type == 'facility'){
 			$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id);
@@ -110,8 +131,7 @@ class CAUserRequest extends Controller {
 			$row->company_name = $this->db->fetch(0)->name;
 		}
 		$row->back_url = "admin.php?action=browseCategory&category=requests&bookmark=userRequest";
-		//var_dump($row); 
-		//die();
+		
 		$this->smarty->assign('userRequest', $row);
 		$this->smarty->assign('tpl', 'tpls/viewUserRequest.tpl');
 		$this->smarty->assign('doNotShowControls', true);

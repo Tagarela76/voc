@@ -4,6 +4,20 @@
 		<script type="text/javascript" src="./vwm/modules/js/jquery-1.5.2.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
+				$("#accessname").focus(function(){
+					if($(this).val() == "Access name:") {
+						$(this).val("");
+					}
+				});
+
+				$("#accessname").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Access name:");
+					}else {
+						$("#accessname_err").html('');
+					}
+				});
+				
 				$("#username").focus(function(){
 					if($(this).val() == "User name:") {
 						$(this).val("");
@@ -15,6 +29,48 @@
 						$(this).val("User name:");
 					}else {
 						$("#username_err").html('');
+					}
+				});
+				
+				$("#useremail").focus(function(){
+					if($(this).val() == "Email:") {
+						$(this).val("");
+					}
+				});
+
+				$("#useremail").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Email:");
+					}else {
+						$("#useremail_err").html('');
+					}
+				});
+				
+				$("#phone").focus(function(){
+					if($(this).val() == "Phone:") {
+						$(this).val("");
+					}
+				});
+
+				$("#phone").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Phone:");
+					}else {
+						$("#phone_err").html('');
+					}
+				});
+				
+				$("#mobile").focus(function(){
+					if($(this).val() == "Mobile:") {
+						$(this).val("");
+					}
+				});
+
+				$("#mobile").focusout(function(){
+					if($(this).val() == "") {
+						$(this).val("Mobile:");
+					}else {
+						$("#mobile_err").html('');
 					}
 				});
 
@@ -31,11 +87,36 @@
 						$("#companyname_err").html('');
 					}
 				});
-
+				
 				$("#submitButton").click(function(){
 					err = false;
+					if($("#accessname").val() == "" || $("#accessname").val() == "Access name:") {
+						$("#accessname_err").html('Enter your access name!');
+						err = true;
+					}
+					
 					if($("#username").val() == "" || $("#username").val() == "User name:") {
 						$("#username_err").html('Enter your name!');
+						err = true;
+					}
+					
+					if($("#useremail").val() == "" || $("#useremail").val() == "Email:") {
+						$("#useremail_err").html('Enter your email!');
+						err = true;
+					}
+					
+					if(!isValidEmail($("#useremail").val())) {
+						$("#useremail_err").html('Email is wrong!');
+						err = true;
+					}
+					
+					if($("#phone").val() == "" || $("#phone").val() == "Phone:") {
+						$("#phone_err").html('Enter your phone!');
+						err = true;
+					}
+					
+					if($("#mobile").val() == "" || $("#mobile").val() == "Mobile:") {
+						$("#mobile_err").html('Enter your mobile!');
 						err = true;
 					}
 
@@ -49,6 +130,17 @@
 					}
 				});
 			});
+			
+			function isValidEmail(strEmail){
+				validRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+				// search email text for regular exp matches
+				if (strEmail.search(validRegExp) == -1)
+				{
+					return false;
+				}
+				return true;
+			}
 
 		</script>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -197,7 +289,15 @@
 																						<table border="0" class="cell1 ">
 																							<tr>
 																								<td  class="message" >
+																									<input type="text" value="Access name:" name="accessname" id="accessname">  <span id="accessname_err"></span>
+																									<br> <br>
 																									<input type="text" value="User name:" name="username" id="username">  <span id="username_err"></span>
+																									<br> <br>
+																									<input type="text" value="Email:" name="useremail" id="useremail">  <span id="useremail_err"></span>
+																									<br> <br>
+																									<input type="text" value="Phone:" name="phone" id="phone">  <span id="phone_err"></span>
+																									<br> <br>
+																									<input type="text" value="Mobile:" name="mobile" id="mobile">  <span id="mobile_err"></span>
 																									<br> <br>
 																									<input type="text" value="Company name:" name="companyname" id="companyname"> <span id="companyname_err"></span>
 																									<br> <br>

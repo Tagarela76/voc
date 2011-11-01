@@ -346,12 +346,8 @@ jgypsyn@gyantgroup.com
 					$this->db->query("SELECT company_id FROM ".TB_COMPANY." WHERE name='".$_POST['companyname']."'");
 					if ($this->db->num_rows() > 0){
 						$companyID = $this->db->fetch(0)->company_id;
-						$cUserRequest->setAction('add');
-						$cUserRequest->setNewUserName($_POST['username']);
-						$cUserRequest->setCategoryID($companyID);
-						$cUserRequest->setCategoryType('company');
-						$cUserRequest->setUserNameID('NULL');
-						$cUserRequest->setUserID('NULL');
+						$cUserRequest->setALL('add', 'NULL', 'NULL', $_POST['username'], $_POST['accessname'], $_POST['useremail'], $_POST['phone'], $_POST['mobile'], 'company', $companyID);
+						$cUserRequest->setCreaterID('NULL');
 						$error = $cUserRequest->save();
 						$cUserRequest->sendMail('Please, create new user.');
 					} else {
