@@ -74,13 +74,13 @@ class CAUserRequest extends Controller {
 			}
 			switch ($_POST['actionType']){
 				case 'add':
-					$error = $userRequest->addNewUser($requestID);
+					$error = $userRequest->addNewUser($requestID, $_POST['comment']);
 					break;
 				case 'delete':
-					$error = $userRequest->deleteUser($requestID);
+					$error = $userRequest->deleteUser($requestID, $_POST['comment']);
 					break;
 				case 'change':
-					$error = $userRequest->changeUser($requestID);
+					$error = $userRequest->changeUser($requestID, $_POST['comment']);
 					break;
 			}
 			

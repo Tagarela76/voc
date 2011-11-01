@@ -176,6 +176,7 @@
 		</tr>
 		{/if}
 		{else}
+			{if $userRequest->creater_user neq ''}
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
 				Creater Name:
@@ -184,6 +185,7 @@
 				<div align="left" >&nbsp;{$userRequest->creater_user}</div>
 			</td>
 		</tr>	
+			{/if}
 		{/if}
 		
 		<tr>

@@ -295,19 +295,27 @@ class UserRequest {
 			$createrID = 'NULL';
 		}
 		$data .= $createrID.", 0";
-		$quesrySave = "INSERT INTO ".TB_USER." (".$columns.") VALUES (".$data.")";
-		$this->db->query($quesrySave);
 		
-		if (mysql_errno() == 0){
-			$error = '';
-			$newMail = new EMail();
-			$message = "New User Created.\n";
-			$message .= "Accessname: ".$row->new_accessname."\n";
-			$message .= "Password: ".$password."\n\n";
-			$message .= $addComments;
-			$newMail->sendMail('newuserrequest@vocwebmanager.com', $row->email, 'User Request', $message);
+		$queryUnique = "SELECT accessname FROM ".TB_USER;
+		$this->db->query($queryUnique);
+		$names = $this->db->fetch_all();
+		if (in_array($row->new_accessname, $names->accessname)){
+			$error = "This Accessname already exists!";
 		} else {
-			$error = "Error!";
+			$quesrySave = "INSERT INTO ".TB_USER." (".$columns.") VALUES (".$data.")";
+			$this->db->query($quesrySave);
+			
+			if (mysql_errno() == 0){
+				$error = '';
+				$newMail = new EMail();
+				$message = "New User Created.\n";
+				$message .= "Accessname: ".$row->new_accessname."\n";
+				$message .= "Password: ".$password."\n\n";
+				$message .= $addComments;
+				$newMail->sendMail('newuserrequest@vocwebmanager.com', $row->email, 'User Request', $message);
+			} else {
+				$error = "Error!";
+			}
 		}
 		
 		return $error;
