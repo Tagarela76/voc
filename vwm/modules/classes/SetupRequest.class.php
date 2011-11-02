@@ -246,15 +246,175 @@ class SetupRequest {
 	}
 	
 	public function addNewCompany($requestID, $addComments = ''){
-		return $error = "Error!";
+		$this->db->query("SELECT * FROM ".TB_COMPANY_SETUP_REQUEST." WHERE id=".$requestID);
+		$data = $this->db->fetch(0);
+		
+		if ($data->country_id == 215){
+			$state = $data->state_id;
+		} else {
+			$state = $data->state;
+		}
+		
+		$dataCompany = array (
+			"name" => $data->name,
+			"address" => $data->address,
+			"city" => $data->city,
+			"zip" => $data->zip_code,
+			"county" => '',
+			"state" => $state,
+			"country" => $data->country_id,
+			"phone" => $data->phone,
+			"fax" => $data->fax,
+			"email" => $data->email,
+			"contact" => $data->contact,
+			"title" => $data->title,
+			"creater_id" => $_SESSION['user_id'],
+			"voc_unittype_id" => 2
+		);
+		
+		$queryUnique = "SELECT name FROM ".TB_COMPANY." WHERE 1";
+		$this->db->query($queryUnique);
+		$names = $this->db->fetch_all();
+		
+		foreach ($names as $item){
+			if ($item->name == $data->name){
+				$errorUnique = "This Company Name already exists!";
+				break;
+			}
+		}
+		
+		if ($errorUnique){
+			$error = $errorUnique;
+		} else {
+			//var_dump($dataCompany); die();
+			$company = new Company($this->db);
+			$companyID = $company->addNewCompany($dataCompany);
+			
+			if ($companyID){
+				$error = '';
+				$newMail = new EMail();
+				$message = "New Company Created.\n";
+				$message .= "Company Name: ".$data->name."\n\n";
+				$message .= $addComments;
+				$newMail->sendMail('newsetuprequest@vocwebmanager.com', $data->email, 'Company Setup Request', $message);
+			} else {
+				$error = "Error!";
+			}
+		}
+		
+		return $error;
 	}
 	
 	public function addNewFacility($requestID, $addComments = ''){
-		return $error = "Error!";
+		$this->db->query("SELECT * FROM ".TB_COMPANY_SETUP_REQUEST." WHERE id=".$requestID);
+		$data = $this->db->fetch(0);
+		
+		$facilityData = array(
+			"epa" => ($data->epa == 'NULL') ? '' : $data->epa,
+			"company_id" => $data->parent_id,
+			"name" => $data->name,
+			"address" => $data->address,
+			"city" => $data->city,
+			"zip" => $data->zip_code,
+			"county" => $data->county,
+			"state" => ($data->country_id == 215) ? $data->state_id : $data->state,
+			"country" => $data->country_id,
+			"phone" => $data->phone,
+			"fax" => $data->fax,
+			"email" => $data->email,
+			"contact" => $data->contact,
+			"title" => $data->title,
+			"creater_id" => $data->creater_id,
+			"voc_limit" => $data->voc_monthly_limit,
+			"voc_annual_limit" => $data->voc_annual_limit
+		);
+		
+		$queryUnique = "SELECT name, company_id FROM ".TB_FACILITY." WHERE 1";
+		$this->db->query($queryUnique);
+		$rows = $this->db->fetch_all();
+		
+		foreach ($rows as $item){
+			if ($item->name == $data->name && $item->company_id == $data->parent_id){
+				$errorUnique = "This Facility Name already exists in company!";
+				break;
+			}
+		}
+		
+		if ($errorUnique){
+			$error = $errorUnique;
+		} else {
+			//var_dump($dataCompany); die();
+			$facility = new Facility($this->db);
+			$facilityID =$facility->addNewFacility($facilityData);
+			
+			if ($facilityID){
+				$error = '';
+				$newMail = new EMail();
+				$message = "New Facility Created.\n";
+				$message .= "Facility Name: ".$data->name."\n";
+				$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$data->parent_id);
+				$companyName = $this->db->fetch(0)->name;
+				$message .= "Company Name: ".$companyName."\n\n";
+				$message .= $addComments;
+				$newMail->sendMail('newsetuprequest@vocwebmanager.com', $data->email, 'Facility Setup Request', $message);
+			} else {
+				$error = "Error!";
+			}
+		}
+		
+		return $error;
 	}
 	
 	public function addNewDepartment($requestID, $addComments = ''){
-		return $error = "Error!";
+		$this->db->query("SELECT * FROM ".TB_COMPANY_SETUP_REQUEST." WHERE id=".$requestID);
+		$data = $this->db->fetch(0);
+		
+		$departmentData = array(
+			"facility_id" => $data->parent_id,
+			"name" => $data->name,
+			"creater_id" => $data->creater_id,
+			"voc_limit" => $data->voc_monthly_limit,
+			"voc_annual_limit" => $data->voc_annual_limit
+		);
+		
+		$queryUnique = "SELECT name, facility_id FROM ".TB_DEPARTMENT." WHERE 1";
+		$this->db->query($queryUnique);
+		$rows = $this->db->fetch_all();
+		
+		foreach ($rows as $item){
+			if ($item->name == $data->name && $item->facility_id == $data->parent_id){
+				$errorUnique = "This Department Name already exists in facility!";
+				break;
+			}
+		}
+		
+		if ($errorUnique){
+			$error = $errorUnique;
+		} else {
+			
+			$department = new Department($this->db);
+			$departmentID = $department->addNewDepartment($departmentData);
+			
+			if ($departmentID){
+				$error = '';
+				$newMail = new EMail();
+				$message = "New Department Created.\n";
+				$message .= "Department Name: ".$data->name."\n";
+				$this->db->query("SELECT name, company_id FROM ".TB_FACILITY." WHERE facility_id=".$data->parent_id);
+				$facilityName = $this->db->fetch(0)->name;
+				$companyID = $this->db->fetch(0)->company_id;
+				$this->db->query("SELECT name FROM ".TB_COMPANY." WHERE company_id=".$companyID);
+				$companyName = $this->db->fetch(0)->name;
+				$message .= "Facility Name: ".$facilityName."\n";
+				$message .= "Company Name: ".$companyName."\n\n";
+				$message .= $addComments;
+				$newMail->sendMail('newsetuprequest@vocwebmanager.com', $data->email, 'Department Setup Request', $message);
+			} else {
+				$error = "Error!";
+			}
+		}
+		
+		return $error;
 	}
 	
 	public function denySetupRequest($requestID, $addComments = ''){
@@ -273,7 +433,7 @@ class SetupRequest {
 				break;
 		}
 		$message .= $addComments;
-		$newMail->sendMail('newuserrequest@vocwebmanager.com', $data->email, 'Setup Request', $message);
+		$newMail->sendMail('newsetuprequest@vocwebmanager.com', $data->email, 'Setup Request', $message);
 	}
 
 	public function save($category) {
@@ -288,13 +448,13 @@ class SetupRequest {
 			$values .= "'".$this->city."', ";
 			$values .= "'".$this->county."', ";
 			if ($this->zip_code){
-				if (preg_match("/^[0-9]+$/",  $this->zip_code)){
-					$values .= $this->zip_code.", ";
+				if (preg_match("/[0-9]{5}-[0-9]{4}|[0-9]{5}$/",  $this->zip_code)){
+					$values .= "'".$this->zip_code."', ";
 				} else {
-					$values .= "0, ";
+					$values .= "'0', ";
 				}
 			} else {
-				$values .= "0, ";
+				$values .= "'0', ";
 			}
 			$values .= $this->country_id.", ";
 			$values .= "'".$this->state."', ";
@@ -309,7 +469,7 @@ class SetupRequest {
 			$values .= "'".$this->contact."', ";
 			$values .= "'".$this->title."', ";
 		} elseif ($category == 'facility') {
-			$fields = " (category, parent_id, name, epa, voc_monthly_limit, voc_annual_limit, adress, city, county, zip_code,".
+			$fields = " (category, parent_id, name, epa, voc_monthly_limit, voc_annual_limit, address, city, county, zip_code,".
 					  " country_id, state, state_id, phone, fax, email, contact, title, date, creater_id, status) ";
 			$values .= "'".$this->epa_number."', " ;
 			$values .= $this->voc_monthly_limit.", ";
@@ -318,13 +478,13 @@ class SetupRequest {
 			$values .= "'".$this->city."', ";
 			$values .= "'".$this->county."', ";
 			if ($this->zip_code){
-				if (preg_match("/^[0-9]+$/",  $this->zip_code)){
-					$values .= $this->zip_code.", ";
+				if (preg_match("/[0-9]{5}-[0-9]{4}|[0-9]{5}$/",  $this->zip_code)){
+					$values .= "'".$this->zip_code."', ";
 				} else {
-					$values .= "0, ";
+					$values .= "'0', ";
 				}
 			} else {
-				$values .= "0, ";
+				$values .= "'0', ";
 			}
 			$values .= $this->country_id.", ";
 			$values .= "'".$this->state."', ";

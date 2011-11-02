@@ -305,7 +305,7 @@ jgypsyn@gyantgroup.com
 			switch ($_POST['postType']) {
 				case 'representativeCompany':
 					$cSetupRequest->setName($_POST['name']);
-					$cSetupRequest->setAdress($_POST['address']);
+					$cSetupRequest->setAddress($_POST['address']);
 					$cSetupRequest->setCity($_POST['city']);
 					$this->db->query("SELECT country_id FROM ".TB_COUNTRY." WHERE name='".$_POST['country']."'");
 					if ($this->db->num_rows() > 0){

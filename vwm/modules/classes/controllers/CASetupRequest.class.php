@@ -83,7 +83,7 @@ class CASetupRequest extends Controller {
 						break;
 				}
 			} elseif ($_POST['selectStatus'] == 'deny'){
-				//$setupRequest->denySetupRequest($requestID, $_POST['comment']);
+				$setupRequest->denySetupRequest($requestID, $_POST['comment']);
 				header ('Location: admin.php?action=browseCategory&category=requests&bookmark=setupRequest');
 				die();
 			}
@@ -93,6 +93,7 @@ class CASetupRequest extends Controller {
 			} else {
 				$setupRequest->setStatus('new');
 				$setupRequest->update($requestID);
+				$this->smarty->assign('error', $error);
 			}
 		}
 		$setupRequest = new SetupRequest($this->db);

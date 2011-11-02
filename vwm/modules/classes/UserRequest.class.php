@@ -365,7 +365,7 @@ class UserRequest {
 					$this->db->query($query);
 					if (mysql_errno() == 0){
 						$newUserMail = new EMail();
-						$message = "Username: ".$result->accessname."\n";	
+						$message = "Accessname: ".$result->accessname."\n";	
 						$message .= "Password: ".$newPass;
 						$newUserMail->sendMail('userrequest@vocwebmanager.com', $result->email, 'User Request Password', $message);
 					}

@@ -279,7 +279,7 @@ class Controller {
 			if ($this->getFromRequest('category') == 'company'){
 				$setupRequest->setName($_POST['facility_name']);
 				$setupRequest->setEPANumber($_POST['epa']);
-				$setupRequest->setAdress($_POST['address']);
+				$setupRequest->setAddress($_POST['address']);
 				$setupRequest->setCity($_POST['city']);
 				$setupRequest->setCounty($_POST['county']);
 				$setupRequest->setZipCode($_POST['zip_code']);

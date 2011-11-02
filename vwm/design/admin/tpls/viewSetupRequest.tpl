@@ -257,6 +257,9 @@
 				<br/>
 				<div style="margin-right: 20px;">
 					{if $setupRequest->status eq 'new'}
+						{if $error neq ''}
+							<font color="red">{$error}</font>
+						{/if}
 						<input type="button" class="button" value="Save" onclick="saveRequest();"/>
 						<input type="hidden" name="actionSave" id="buttonSave" value=""/>
 						<input type="button" class="button" value="Cancel" onclick="location.href='{$setupRequest->back_url}'"/>
