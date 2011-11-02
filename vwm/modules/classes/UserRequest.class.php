@@ -196,46 +196,70 @@ class UserRequest {
 		$row = $this->db->fetch(0);
 		$passLength = 7;
 		$password = $this->generate_password($passLength);
-		$columns = "username, accessname, password, phone, mobile, email, ";
-		$data = "'".$row->new_username."', '".$row->new_accessname."', '".md5($password)."', '".$row->phone."', '".$row->mobile."', '".$row->email."', ";
 		switch ($row->category_type){
 			case 'company':
-				$columns .= "accesslevel_id, company_id, ";
-				$data .= "0, ".$row->category_id.", ";
+				$companyID = $row->category_id;
+				$facilityID = 'NULL';
+				$departmentID = 'NULL';
+				$accesslevelID = '0';
 				break;
 			case 'facility':
-				$this->db->query("SELECT company_id FROM ".TB_FACILITY." WHERE facility_id=".$row->category_id);
+				$facilityID = $row->category_id;
+				$departmentID = 'NULL';
+				$accesslevelID = '1';
+				$this->db->query("SELECT company_id FROM ".TB_FACILITY." WHERE facility_id=".$facilityID);
 				$companyID = $this->db->fetch(0)->company_id;
-				$columns .= "accesslevel_id, company_id, facility_id, ";
-				$data .= "1, ".$companyID.", ".$row->category_id.", ";
 				break;
 			case 'department':
-				$this->db->query("SELECT facility_id FROM ".TB_DEPARTMENT." WHERE department_id=".$row->category_id);
+				$departmentID = $row->category_id;
+				$accesslevelID = '2';
+				$this->db->query("SELECT facility_id FROM ".TB_DEPARTMENT." WHERE department_id=".$departmentID);
 				$facilityID = $this->db->fetch(0)->facility_id;
 				$this->db->query("SELECT company_id FROM ".TB_FACILITY." WHERE facility_id=".$facilityID);
 				$companyID = $this->db->fetch(0)->company_id;
-				$columns .= "accesslevel_id, company_id, facility_id, department_id, ";
-				$data .= "2, ".$companyID.", ".$facilityID.", ".$row->category_id.", ";
 				break;
 		}
-		$columns .= "creater_id, terms_conditions";
-		if ($row->creater_id != NULL){
+		
+		if ($row->creater_id !== NULL){
 			$createrID = $row->creater_id;
 		} else {
 			$createrID = 'NULL';
 		}
-		$data .= $createrID.", 0";
+		
+		$userData = array (
+			"accessname" => $row->new_accessname,
+			"username" => $row->new_username,
+			"password" => $password,
+			"phone" => $row->phone,
+			"mobile" => $row->mobile,
+			"email" => $row->email,
+			"accesslevel_id" => $accesslevelID,
+			"company_id" => $companyID,
+			"facility_id" => $facilityID,
+			"department_id" => $departmentID,
+			"grace" => 14,
+			"creater_id" => $createrID
+		);
 		
 		$queryUnique = "SELECT accessname FROM ".TB_USER." WHERE 1";
 		$this->db->query($queryUnique);
 		$names = $this->db->fetch_all();
-		if (in_array($row->new_accessname, $names->accessname)){
+		
+		foreach ($names as $item){
+			if ($item->accessname == $row->new_accessname){
+				$errorUnique = "This Accessname already exists!";
+				break;
+			}
+		}
+		
+		if ($errorUnique){
 			$error = "This Accessname already exists!";
 		} else {
-			$quesrySave = "INSERT INTO ".TB_USER." (".$columns.") VALUES (".$data.")";
-			$this->db->query($quesrySave);
 			
-			if (mysql_errno() == 0){
+			$cUser = new User($this->db);
+			$insertedUserID = $cUser->addUser($userData);
+			
+			if ($insertedUserID){
 				$error = '';
 				$newMail = new EMail();
 				$message = "New User Created.\n";
@@ -258,10 +282,12 @@ class UserRequest {
 		$userEmail = $this->db->fetch(0)->email;
 		$username = $this->db->fetch(0)->username;
 		
-		$queryDelete = "DELETE FROM ".TB_USER." WHERE user_id=".$userToDelete;
-		$this->db->query($queryDelete);
+		$cUser = new User($this->db);
+		$cUser->deleteUser($userToDelete);
 		
-		if (mysql_errno() == 0){
+		$query = "SELECT * FROM ".TB_USER." WHERE user_id=".$userToDelete;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0){
 			$error = '';
 			$newMail = new EMail();
 			$message = "User ".$username." Deleted.\n\n";

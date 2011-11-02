@@ -91,6 +91,7 @@ class CAUserRequest extends Controller {
 			} else {
 				$userRequest->setStatus('new');
 				$userRequest->update($requestID);
+				$this->smarty->assign('error', $error);
 			}
 		}
 		$userRequest = new UserRequest($this->db);
