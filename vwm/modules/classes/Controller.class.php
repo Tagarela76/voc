@@ -263,6 +263,13 @@ class Controller {
     }
 
     public function actionCompanySetupRequest() {
+		$cemail = new EMail();
+		
+		$to = array ("denis.nt@kttsoft.com", "dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ");
+		//$to = "dmitry.ds@kttsoft.com";
+		
+		$from = "newsetuprequest@vocwebmanager.com";
+		
         $company = new Company($this->db);
         $facility = new Facility($this->db);
         $auth = $_SESSION['auth'];
@@ -291,12 +298,18 @@ class Controller {
 				$setupRequest->setCountryID($_POST['country']);
 				if ($_POST['country'] == '215'){
 					$setupRequest->setStateID($_POST['stateSelect']);
-					$setupRequest->setState($_POST['stateText']);
+					$this->db->query("SELECT name FROM ".TB_STATE." state_id=".$_POST['stateSelect']);
+					$setupRequest->setState($this->db->fetch(0)->name);
 				} else {
 					$setupRequest->setState($_POST['stateText']);
 				}
 				$error = $setupRequest->save('facility');
 				if ($error == ''){
+					$subject = "Facility Setup Request";
+					$message = "Please, create new facility.\n";
+					$message .= "Facility Name: ".$_POST['facility_name']."\n";
+					$message .= "Creater email: ".$_POST['email'];
+					$cemail->sendMail($from, $to, $subject, $message);
 					header('Location: ?action=browseCategory&category=company&id='.$this->getFromRequest('id'));
 					die();
 				} else {
@@ -305,10 +318,17 @@ class Controller {
 				}
 			} elseif ($this->getFromRequest('category') == 'facility'){
 				$setupRequest->setName($_POST['department_name']);
-				$this->db->query("SELECT email FROM ".TB_FACILITY." WHERE id=".$this->getFromRequest('id'));
-				$setupRequest->setEmail($this->db->fetch(0)->email);
+				$this->db->query("SELECT * FROM ".TB_FACILITY." WHERE facility_id=".$this->getFromRequest('id'));
+				//var_dump("SELECT * FROM ".TB_FACILITY." WHERE facility_id=".$this->getFromRequest('id')); die();
+				$createrEmail = html_entity_decode(mysql_escape_string($this->db->fetch(0)->email));
+				$setupRequest->setEmail($createrEmail);
 				$error = $setupRequest->save('department');
 				if ($error == ''){
+					$subject = "Department Setup Request";
+					$message = "Please, create new department.\n";
+					$message .= "Department Name: ".$_POST['department_name']."\n";
+					$message .= "Creater email: ".$createrEmail;
+					$cemail->sendMail($from, $to, $subject, $message);
 					header('Location: ?action=browseCategory&category=facility&id='.$this->getFromRequest('id').'&bookmark=department');
 					die();
 				} else {
