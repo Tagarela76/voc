@@ -145,12 +145,12 @@
                 <table width="440px" id="myclass">
                     <tr id="usersList" style="display: table-row;">
                         <td width="35%" colspan="2">
-                            User Name:
+                            User Name (Accessname):
                         </td>
                         <td width="55%" colspan="2">
                             <select type="text" name="user_id">
 								{foreach from=$userList item=user}
-									<option value="{$user.user_id}">{$user.username}</option>
+									<option value="{$user.user_id}">{$user.username}&nbsp;({$user.accessname})</option>
 								{/foreach}
 							</select>
                         </td>
