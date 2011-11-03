@@ -424,6 +424,15 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 
 								$dateTag->appendChild( $productTag );
 						}
+						
+						if ($mix->isPfp){
+							foreach ($mix->products as $product) {
+								$mixRatioNotCalc .= $product->ratio_to_save.":";
+							}
+						}
+						$lastDelimiter = strrpos($mixRatioNotCalc, ":");
+						$mixRatioNotCalc = substr_replace($mixRatioNotCalc, '', $lastDelimiter);
+						//var_dump($mixRatioTMP); die();
 
 						if ($cnt != 0) {
 
@@ -448,7 +457,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 
 								$mixRatioAttr = $doc->createAttribute("mixRatio" );
 								$mixRatioAttr->appendChild(
-									$doc->createTextNode($mixRatio)
+									$doc->createTextNode($mixRatioNotCalc)
 								);
 								$totalOnProjectTag->appendChild( $mixRatioAttr );
 
@@ -482,6 +491,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 								$dateTag->appendChild( $totalOnProjectTag );
 							}
 						}
+						$mixRatioNotCalc = '';
 					}
 				}
 
