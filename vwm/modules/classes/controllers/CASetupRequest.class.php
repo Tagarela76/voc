@@ -29,6 +29,8 @@ class CASetupRequest extends Controller {
 			if ($row->category == 'company'){
 				$this->db->query("SELECT name FROM ".TB_COUNTRY." WHERE country_id=".$row->country_id);
 				$row->country_name = $this->db->fetch(0)->name;
+				$this->db->query("SELECT username FROM ".TB_USER." WHERE user_id=".$row->creater_id);
+				$row->creater_name = $this->db->fetch(0)->username;
 				$setupRequest->setDate(DateTime::createFromFormat('U', $row->date));
 				$row->date = $setupRequest->getDate()->format(DEFAULT_DATE_FORMAT);
 				$row->url = "admin.php?action=viewDetails&category=setupRequest&id=".$row->id;

@@ -40,15 +40,29 @@ class Controller {
 
     protected function forward($controller, $function, $vars, $controllerType = 'main') {
 
-
+		switch ($controllerType) {
+			case "vps":
+				$className = "CV" . ucfirst($controller);
+				break;
+			case "admin":
+				$className = "CA" . ucfirst($controller);
+				break;
+			case "sales":
+				$className = "CS" . ucfirst($controller);
+				break;
+			default:
+				$className = "C" . ucfirst($controller);
+				break;
+		}
+		/*
         if ($controllerType == 'vps') {
-            $className = "CV" . ucfirst($controller);
+            
         } else if ($controllerType == 'admin') {
             $className = "CA" . ucfirst($controller);
         } else {
             $className = "C" . ucfirst($controller);
         }
-
+		*/
         //echo $className;
         //echo $function;
         //exit;
@@ -71,15 +85,29 @@ class Controller {
     protected function runCommon($controllerType = 'main') {
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($this->getFromRequest());
-
-        if ($controllerType != 'admin') {
+		
+		switch ($controllerType){
+			case "admin":
+				$functionName = 'action' . ucfirst($this->action) . 'ACommon';
+				break;
+			case "vps":
+				$functionName = 'action' . ucfirst($this->action) . 'VCommon';
+				break;
+			case "sales":
+				$functionName = 'action' . ucfirst($this->action) . 'SCommon';
+				break;
+			default :
+				$functionName = 'action' . ucfirst($this->action) . 'Common';
+		}
+		/*
+        if ($controllerType !== 'admin') {
             $functionName = 'action' . ucfirst($this->action) . 'Common';
         } elseif ($controllerType == 'admin') {
             $functionName = 'action' . ucfirst($this->action) . 'ACommon';
         } elseif ($controllerType == 'vps') {
             $functionName = 'action' . ucfirst($this->action) . 'VCommon';
         }
-
+		*/
         if (method_exists($this, $functionName))
             $this->$functionName();
     }
@@ -853,7 +881,7 @@ class Controller {
         $this->smarty->assign('request', $this->request);
 
         //	Access control
-        if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
+		if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
             throw new Exception('deny');
         }
 
@@ -870,7 +898,12 @@ class Controller {
         $this->smarty->assign('parent', $this->parent_category);
         $this->smarty->assign('request', $this->getFromRequest());
     }
-
+	
+	private function actionBrowseCategorySCommon() {
+        $this->smarty->assign('parent', $this->parent_category);
+        $this->smarty->assign('request', $this->getFromRequest());
+    }
+	
     private function actionAddItemCommon() {
         $title = new TitlesNew($this->smarty, $this->db);
         $request = $_GET;
@@ -885,6 +918,7 @@ class Controller {
         $this->smarty->assign("request", $this->getFromRequest());
         $this->smarty->assign('parent', $this->parent_category);
     }
+	
 
     private function actionEditCommon() {
         $title = new TitlesNew($this->smarty, $this->db);

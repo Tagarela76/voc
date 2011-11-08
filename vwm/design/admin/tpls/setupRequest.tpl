@@ -11,6 +11,7 @@
 			<td>Company Name</td>
 			<td>Additional Information</td>
 			<td>Request Date</td>
+			<td>Creater User</td>
 			<td class="users_u_top_r_blue">Status</td>
 		</tr>
 		{if $setupRequest.company|@count gt 0}
@@ -20,6 +21,7 @@
 					<td class="border_users_l border_users_b"><a href="{$request->url}"><div style="width:100%;">{$request->name}</div></a></td>
 					<td class="border_users_l border_users_b"><a href="#" onclick="$('#additionalInformationCompany_{$i}').dialog('open'); return false;">View Information</a></td>
 					<td class="border_users_l border_users_b"><div style="width:100%;">{$request->date}</div></td>
+					<td class="border_users_l border_users_b" width="12%"><div style="width:100%;">{$request->creater_name}</div></td>
 					<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$request->url}">{$request->status}</a></div></td>
 				</tr>
 			{/foreach}
@@ -31,7 +33,7 @@
 			</tr>	
 		{/if}	
 		<tr>
-			<td colspan="2" height="15" class="users_u_bottom">
+			<td colspan="3" height="15" class="users_u_bottom">
 			</td>
 			<td colspan="3" height="15" class="users_u_bottom_r">
 			</td>

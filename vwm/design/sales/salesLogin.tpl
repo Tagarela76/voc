@@ -3,7 +3,7 @@
 <head>
 
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>voc web manager: AI</title>
+<title>voc web manager: SI</title>
 <link href="style.css" rel="stylesheet" type="text/css">
 {literal}
 <script type="text/javascript">		
@@ -54,7 +54,7 @@
 	           {*shadow_table*}
 
 <h1 class="authorization_green">Authorization</h1>
-<form method='post' name="loginForm" action='admin.php'>
+<form method='post' name="loginForm" action='sales.php'>
 <input type='text' name='accessname' class="report_uploader">
 <br>
 <br>
