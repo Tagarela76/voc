@@ -170,6 +170,9 @@
 							{elseif $bookmark=="admin"}
 								Superuser level
 								<input type="hidden" name="accesslevel_id" value="3">
+							{elseif $bookmark=="sales"}
+								Sales level
+								<input type="hidden" name="accesslevel_id" value="4">	
 							{/if}
 							</div>
 							</td>
@@ -178,7 +181,7 @@
 						
 						
 
-					{if $bookmark!="admin"}	
+					{if $bookmark!="admin" and $bookmark!="sales"}	
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Company:

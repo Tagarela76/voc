@@ -226,6 +226,9 @@ class CAUsers extends Controller {
 					}
 				}				
 			}
+			if ($data['accesslevel_id'] == 4){
+				$bookmark = 'sales';
+			}
 		}
 		$this->smarty->assign("bookmark",$bookmark);
 		$this->smarty->assign("reg_field",$data);	

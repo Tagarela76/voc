@@ -86,6 +86,7 @@
 							</td>
 						</tr>																														
 						
+						{if $user.accesslevel_id neq "Superuser level (Admin)" and $user.accesslevel_id neq "Sales level"}
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Start point
@@ -94,7 +95,7 @@
 								<div align="left" >	&nbsp;{$user.startPoint}</div>						
 							</td>
 						</tr>																									
-						
+						{/if}
 						
 						<tr>
 							<td height="20" class="users_u_bottom">

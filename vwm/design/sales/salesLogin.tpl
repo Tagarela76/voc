@@ -53,7 +53,7 @@
                                <td valign="top" class="report_uploader_c">
 	           {*shadow_table*}
 
-<h1 class="authorization_green">Authorization</h1>
+<h1 class="authorization_green">Authorization SI</h1>
 <form method='post' name="loginForm" action='sales.php'>
 <input type='text' name='accessname' class="report_uploader">
 <br>

@@ -106,6 +106,9 @@ class User {
 			case 3:
 				$aroGroupName = 'root';
 				break;
+			case 4:
+				$aroGroupName = 'sales';
+				break;
 			default:
 				throw new Exception('Incorrect access level');
 		}
@@ -163,6 +166,9 @@ class User {
 					break;
 				case 3:
 					$userDetails['accesslevel_id']="Superuser level (Admin)";
+					break;
+				case 4:
+					$userDetails['accesslevel_id']="Sales level";
 					break;
 			}
 						//TODO: WTF id=name?!
@@ -271,6 +277,9 @@ class User {
 			case 3:
 				$aroGroupName = 'root';
 				break;
+			case 4:
+				$aroGroupName = 'sales';
+				break;
 			default:
 				throw new Exception('Incorrect access level');
 		}
@@ -306,6 +315,9 @@ class User {
 					break;
 				case "admin":
 					$access_level=3;
+					break;
+				case "sales":
+					$access_level=4;
 					break;
 			}
 			$query="SELECT * FROM ".TB_USER." WHERE accesslevel_id=$access_level AND $filter $sort";

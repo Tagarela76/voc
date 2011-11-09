@@ -10,7 +10,7 @@
 	  {if $request.bookmark eq "facility"} class="bookmark_fon_green" {/if}
 	  {if $request.bookmark eq "department"} class="bookmark_fon_violet" {/if}
 	  {if $request.bookmark eq "admin"} class="bookmark_fon" {/if}
-
+	  {if $request.bookmark eq "sales"} class="bookmark_fon_yellowgreen" {/if}
 	  
 	  >
        <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
@@ -64,6 +64,17 @@
    </div></a>
    </td>
    
+   <td >
+    <a href="admin.php?action=browseCategory&category=users&bookmark=sales">
+   {if $request.bookmark != "sales"}
+  <div class="deactiveBookmark"><div class="deactiveBookmark_right">
+   {else}
+ <div class="activeBookmark_yellowgreen"><div class="activeBookmark_yellowgreen_right">
+   {/if}
+  Sales Level
+   </div>
+   </div></a>
+   </td>
    
    
    <td>
@@ -77,7 +88,7 @@
 	 <td {if $request.bookmark eq "facility"} class="active_bookmark_green_fon" {/if}></td>
 	 <td {if $request.bookmark eq "department"} class="active_bookmark_violet_fon" {/if}></td>
 	 <td {if $request.bookmark eq "admin"} class="active_bookmark_fon" {/if}></td>
-	
+	 <td {if $request.bookmark eq "sales"} class="active_bookmark_yellowgreen_fon" {/if}></td>
 	 </tr>
 </table>   
  </td>
@@ -87,6 +98,7 @@
 	 {if $request.bookmark eq "facility"} class="bookmark_fon_green" {/if}
 	  {if $request.bookmark eq "department"} class="bookmark_fon_violet" {/if}
 	  {if $request.bookmark eq "admin"} class="bookmark_fon" {/if}
+	  {if $request.bookmark eq "sales"} class="bookmark_fon_yellowgreen" {/if}
 	
 	
 	
