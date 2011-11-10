@@ -18,7 +18,23 @@ class CSContracts extends Controller
 	
 	private function actionBrowseCategory()
 	{
+		$ms = new ModuleSystem($this->db);
+		$moduleMap = $ms->getModulesMap();
+		$mDocs = new $moduleMap['docs'];
+
+		$params = array(
+			'db' => $this->db,
+			'isSales' => 'yes',
+			'salesID' => '1'
+		);
+		$result = $mDocs->prepareView($params);
 		
+		foreach($result as $key => $data) {
+			$this->smarty->assign($key,$data);
+		}
+		
+		$itemsCount = count($result['InfoTree']);
+		$this->smarty->assign('itemsCount', $itemsCount);
 		$this->smarty->assign('doNotShowControls', true);
 		$this->smarty->assign('tpl','tpls/contracts.tpl');
 		$this->smarty->display("tpls:index.tpl");		
