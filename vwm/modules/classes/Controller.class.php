@@ -849,7 +849,7 @@ class Controller {
         $this->smarty->assign("itemForDelete", $itemForDelete);
         $this->smarty->assign("itemType", $this->getFromRequest('category'));
         $this->smarty->assign("itemsCount", count($itemForDelete));
-        $this->smarty->display("tpls:index.tpl");
+        //$this->smarty->display("tpls:index.tpl");
     }
 
     private function actionViewDetailsCommon() {
