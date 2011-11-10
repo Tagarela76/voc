@@ -28,19 +28,19 @@
 		{if $request.category neq "salesdocs"}	
 		<div style="float:left; width:80px">
 		
-		{if $request.category=="users"}
-			<div class="add_button button_alpha">
-				<input type="submit" name="action" value="addItem">
-			</div>
-		{elseif $request.category=="tables" && $request.bookmark != 'tabs'}
-			<div class="add_button button_alpha">
-				<input type="submit" name="action" value="addItem"  >
-			</div>
-		{elseif $request.category=="salescontacts" && $request.bookmark == "contacts"}
-			<div class="add_button button_alpha">
-				<input type="submit" name="action" value="addItem"  >
-			</div>
-		{/if}
+			{if $request.category=="users"}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem">
+				</div>
+			{elseif $request.category=="tables" && $request.bookmark != 'tabs'}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem"  >
+				</div>
+			{elseif $request.category=="salescontacts" && $request.bookmark == "contacts"}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem"  >
+				</div>
+			{/if}
 		</div>
 		{else}
 			<input type="button" class="button" value="Add" onclick="location.href='admin.php?action=addItem&category=salesdocs'">
@@ -49,14 +49,16 @@
 		{if $request.category eq 'salesdocs'}
 			<input type="button" class="button" name="action" value="Edit" onclick="location.href='admin.php?action=edit&category=salesdocs'">
 		{/if}
-		{if $itemsCount > 0 and $request.category neq 'salesdocs'}
-		<div style="float:left; width:80px">
-		<div class="delete_button button_alpha">
-			<input type="submit" name="action" value="deleteItem" >
-		</div>
-		</div>
-		{else}
-			<input type="button" class="button" name="action" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs'">
+		{if $itemsCount > 0}
+			{if $request.category neq 'salesdocs'}
+				<div style="float:left; width:80px">
+				<div class="delete_button button_alpha">
+					<input type="submit" name="action" value="deleteItem" >
+				</div>
+				</div>
+			{else}
+				<input type="button" class="button" name="action" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs'">
+			{/if}	
 		{/if}
 		
 		

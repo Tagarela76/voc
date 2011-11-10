@@ -31,7 +31,11 @@ class CASalesdocs extends Controller {
 			$this->smarty->assign($key,$data);
 		}
 		
-		$itemsCount = count($result['InfoTree']);
+		if ($result['InfoTree'] == 0){
+			$itemsCount = 0;
+		} else {
+			$itemsCount = count($result['InfoTree']);
+		}
 		$this->smarty->assign('itemsCount', $itemsCount);
 		$this->smarty->assign('tpl', 'tpls/salesdocs.tpl');
 		$this->smarty->display("tpls:index.tpl");
