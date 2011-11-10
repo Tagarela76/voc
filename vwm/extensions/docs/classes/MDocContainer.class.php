@@ -22,8 +22,15 @@ class MDocContainer extends Module {
      * @param $params array of params: db and facilityID
      */    
     function prepareView($params) {
+		if ($params['isSales'] == 'yes'){
+			$category = 'sales';
+			$categoryID = $params['salesID'];
+		} else {
+			$category = 'facility';
+			$categoryID = $params['facilityID'];
+		}
 	    $folder = new Folder($params['db']);
-	    $InfoTree = $folder->getTreeWithInfo('facility',$params['facilityID']);
+	    $InfoTree = $folder->getTreeWithInfo($category, $categoryID);
 	    $result = array(
 	    	"InfoTree" => $InfoTree,
 	    	"doc_item" => DocContainerItem::DOC_ITEM,
@@ -51,10 +58,18 @@ class MDocContainer extends Module {
      * return prepared for smarty params if needed
      * @param $params array of params: db and all post data(folder, name, description, item_type),facilityID
      */
-    function prepareAdd($params) {    	
+    function prepareAdd($params) {
+		if ($params['isSales'] == 'yes'){
+			$category = 'sales';
+			$categoryID = $params['salesID'];
+		} else {
+			$category = 'facility';
+			$categoryID = $params['facilityID'];
+		}
+		
 		    if ($params['folder'] == "none") {
-			    $params['folder'] = $params['facilityID'];
-			    $params['category'] = "facility";
+			    $params['folder'] = $categoryID;
+			    $params['category'] = $category;
 		    } else {
 			    $params['category'] = "folder";
 			    $result['folder_id'] = $params['folder'];
@@ -70,7 +85,7 @@ class MDocContainer extends Module {
 		    	if ($_FILES["inputFile"]['tmp_name'] == '') {
 		    		$result['error'] = 'path';
 		    						    
-				    if ($params['category'] == 'facility') {
+				    if ($params['category'] == $category) {
 				    	$params['folder'] = 'none';
 				    }
 				    $result['info'] = $params;
@@ -78,14 +93,18 @@ class MDocContainer extends Module {
 				    $doc = new Doc($params['db']);
 				    $doc->addNewDoc($info);
 				    //	redirect
-				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=12");
+					if ($params['isSales'] == 'yes'){
+						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=12");
+					} else {
+						header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=12");
+					}
 				    die();
 		    	}
 		    } else {
 			    if (trim($info['name'])=='') {
 				    $result['error'] = 'name';
 				    
-				    if ($params['category'] == 'facility') {
+				    if ($params['category'] == $category) {
 				    	$params['folder'] = 'none';
 				    }
 				    $result['info'] = $params;
@@ -93,7 +112,11 @@ class MDocContainer extends Module {
 				    $folder = new Folder($params['db']);
 				    $folder->addNewFolder($info);
 				    //	redirect
-				    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=14");
+					if ($params['isSales'] == 'yes'){
+						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=14");
+					} else {
+						header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=14");
+					}	
 				    die();
 			    }	
 		    }
@@ -107,10 +130,18 @@ class MDocContainer extends Module {
      * @param $params array of params: db and all post data(folder, file, name, description), facilityID
      */    
     function prepareEdit($params) {
+		if ($params['isSales'] == 'yes'){
+			$category = 'sales';
+			$categoryID = $params['salesID'];
+		} else {
+			$category = 'facility';
+			$categoryID = $params['facilityID'];
+		}
+		
 	    $validFolder = true;
 	    if ($params['folder'] == "none") {
-		    $params['folder'] = $params['facilityID'];
-		    $params['category'] = "facility";
+		    $params['folder'] = $categoryID;
+		    $params['category'] = $category;
 	    } else {
 		    $params['category'] = "folder";
 		    $result['folder_id'] = $params['folder'];
@@ -140,7 +171,11 @@ class MDocContainer extends Module {
 		    $doc = new Doc($params['db']);
 		    $doc->editDoc($info);
 		    //redirect
-		    header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=15");
+			if ($params['isSales'] == 'yes'){
+				header("Location: admin.php?action=browseCategory&category=salesdocs&notify=15");
+			} else {
+				header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=15");
+			}	
 		    die();
 	    }
 	    return $result;
@@ -153,9 +188,16 @@ class MDocContainer extends Module {
      * @param $params array of params: db, facilityID, xnyo
      */    
     function prepareViewDelete($params) {
-	    
+	    if ($params['isSales'] == 'yes'){
+			$category = 'sales';
+			$categoryID = $params['salesID'];
+		} else {
+			$category = 'facility';
+			$categoryID = $params['facilityID'];
+		}
+		
 	    $doc = new Doc($params['db']);
-	    $id_list = $doc->getIdList($params['facilityID'],'facility');
+	    $id_list = $doc->getIdList($categoryID, $category);
 	    
 	    foreach($id_list as $id) {
 		    $params['xnyo']->filter_post_var("doc_".$id, "text");
@@ -185,8 +227,16 @@ class MDocContainer extends Module {
      * @param $params array of params: db, facilityID, xnyo
      */    
     function prepareDelete($params) {
+		if ($params['isSales'] == 'yes'){
+			$category = 'sales';
+			$categoryID = $params['salesID'];
+		} else {
+			$category = 'facility';
+			$categoryID = $params['facilityID'];
+		}
+		
 	    $doc = new Doc($params['db']);
-	    $id_list = $doc->getIdList($params['facilityID'],'facility');
+	    $id_list = $doc->getIdList($categoryID, $category);
 	    
 	    foreach($id_list as $id) {
 		    $params['xnyo']->filter_post_var("doc_".$id, "text");

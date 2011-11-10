@@ -7,7 +7,7 @@ $site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP;
 define ('site_path', $site_path);
 
 require_once('modules/classAutoloader.php');
-
+require_once('modules/Reform.inc.php');
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');						
 

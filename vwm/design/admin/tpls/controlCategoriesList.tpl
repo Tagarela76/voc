@@ -25,6 +25,7 @@
 	<tr>
 		
 		<td>
+		{if $request.category neq "salesdocs"}	
 		<div style="float:left; width:80px">
 		
 		{if $request.category=="users"}
@@ -39,19 +40,23 @@
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem"  >
 			</div>
-			
-			
-			
 		{/if}
-		
 		</div>
+		{else}
+			<input type="button" class="button" value="Add" onclick="location.href='admin.php?action=addItem&category=salesdocs'">
+		{/if}	
 		
-		{if $itemsCount > 0 }{*&& $request.category != "issue"*}
+		{if $request.category eq 'salesdocs'}
+			<input type="button" class="button" name="action" value="Edit" onclick="location.href='admin.php?action=edit&category=salesdocs'">
+		{/if}
+		{if $itemsCount > 0 and $request.category neq 'salesdocs'}
 		<div style="float:left; width:80px">
 		<div class="delete_button button_alpha">
 			<input type="submit" name="action" value="deleteItem" >
 		</div>
 		</div>
+		{else}
+			<input type="button" class="button" name="action" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs'">
 		{/if}
 		
 		
@@ -106,12 +111,16 @@
 				{if $smarty.request.subBookmark}
 					<input type="hidden" name="subBookmark" value="{$smarty.request.subBookmark}">
 				{/if}
+			{elseif $request.category == 'salesdocs'}
+				<input type="hidden" name="category" value="salesdocs">
 				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
 				<input type="hidden" name="bookmark" value="{$request.bookmark}">
 			{/if}
+			{if $request.category neq "salesdocs"}
 				<input type="hidden" name="itemsCount" value="{$itemsCount}">			
+			{/if}	
 			</div>
 		</td>
 	</tr>
