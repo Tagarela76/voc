@@ -134,12 +134,11 @@ class CASalesdocs extends Controller {
 		//	set js scripts
 		$jsSources = array('modules/js/listDocs.js');
 		$this->smarty->assign('jsSources', $jsSources);
-
+		$this->smarty->assign('parent', $this->category);
 		$this->smarty->assign('tpl','tpls/deleteDocItem.tpl');
 		$this->smarty->assign('request',$this->getFromRequest());
 		$this->smarty->display("tpls:index.tpl");
-		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
-		die();
+		$this->finalDeleteItemACommon($itemForDelete);
 	}
 	
 	private function actionConfirmDelete()
