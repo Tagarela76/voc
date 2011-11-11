@@ -109,7 +109,7 @@ class CDocs extends Controller
 		$this->smarty->assign('tpl','docs/design/deleteDocItem.tpl');
 		$this->smarty->assign('request',$this->getFromRequest());
 		$this->smarty->display("tpls:index.tpl");
-		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
+		//$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 		die();
 	}
 
