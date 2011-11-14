@@ -86,7 +86,7 @@ class CAProduct extends Controller {
 		
 		$itemsCount = ($list) ? count($list) : 0;
 		for ($i=0; $i<$itemsCount; $i++) {
-			$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field];
+			$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&page=".$pagination->getCurrentPage();
 			$list[$i]['url']=$url;
 		}
 		$this->smarty->assign("category",$list);
@@ -122,6 +122,7 @@ class CAProduct extends Controller {
 		$msdsLink = $product->checkForAvailableMSDS($productDetails['product_id']);
 		$techSheetLink = $product->checkForAvailableTechSheet($productDetails['product_id']);
 		
+		$this->smarty->assign('page', $this->getFromRequest('page'));
 		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
@@ -135,7 +136,7 @@ class CAProduct extends Controller {
 		$cProductTypes = new ProductTypes($this->db);
 		$productTypesList = $cProductTypes->getTypesWithSubTypes();
 		$this->smarty->assign('productTypeList', $productTypesList);
-		
+		$this->smarty->assign('page', $this->getFromRequest('page'));
 		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
 		$this->smarty->assign('productTypes', $productType);
 				
@@ -311,7 +312,7 @@ class CAProduct extends Controller {
 					$product->assignProduct2Type($id, $prod['type'], $prod['subType']);
 				}
 				
-				header ('Location: admin.php?action=viewDetails&category=product&id='.$id);
+				header ('Location: admin.php?action=viewDetails&category=product&id='.$id."&page=".$this->getFromRequest('page'));
 				die();																		
 				
 			} else {
@@ -770,6 +771,7 @@ class CAProduct extends Controller {
 				$itemForDelete []= $item;
 			}
 		}
+		$this->smarty->assign('page', $this->getFromRequest('page'));
 		$this->smarty->assign("gobackAction","browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
@@ -781,7 +783,7 @@ class CAProduct extends Controller {
 			$id = $this->getFromRequest('item_'.$i);
 			$product->deleteProduct2($id);
 		}
-		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category'));
+		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category')."&page=".$this->getFromRequest('page'));
 		die();
 	}
 }

@@ -10,7 +10,7 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 <div style="padding:7px;">
-	<form method='POST' action='admin.php?action={$request.action}&category=product{if $request.action neq "addItem"}&id={$request.id}{else}&companyID={$request.companyID}{/if}'>
+	<form method='POST' action='admin.php?action={$request.action}&category=product{if $request.action neq "addItem"}&id={$request.id}{else}&companyID={$request.companyID}{/if}&page={$page}'>
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top" >
 				<td class="users_u_top" width="27%" height="30" >
@@ -758,6 +758,7 @@
 				{/foreach}	
 				<tr>
 					<td colspan="2"><hr/></td>
+					<input type="hidden" name="page" value="{$page}"/>
 				</tr>
 			{/foreach}
 			{*section name=i loop=$chemicalClassesList}
