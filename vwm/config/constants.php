@@ -272,6 +272,7 @@
 	
 	define('TB_PFP2PRODUCT','pfp2product');
 	define('TB_PFP','preformulated_products');
+	define('TB_PFP2COMPANY','pfp2company');
     define('TB_NEW_PRODUCT_REQUEST','new_product_request');
 	define('TB_USER_REQUEST', 'user_request');
 	define('TB_COMPANY_SETUP_REQUEST', 'company_setup_request');

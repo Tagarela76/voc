@@ -36,13 +36,28 @@ class PFPManager
 		return $c;
 	}
 	
-	public function getList($companyID, Pagination $pagination = null, $idArray = null) {
+	public function getCompaniesByPfpID($pfpID){
+		$query = "SELECT c.company_id, c.name FROM ".TB_COMPANY." c, ".TB_PFP2COMPANY." p2c WHERE c.company_id=p2c.company_id AND p2c.pfp_id=".$pfpID;
+		$this->db->query($query);
+		$rows = $this->db->fetch_all();
+		foreach ($rows as $row){
+			$list[$row->company_id] = $row->name;
+		}
 		
+		return $list;
+	}
+
+	public function getList($companyID = null, Pagination $pagination = null, $idArray = null) {
+		
+		if ($companyID){
 		$companyID = mysql_escape_string($companyID);
-		$query = "SELECT * FROM " . TB_PFP . " WHERE company_id = $companyID";
-		
+		//$query = "SELECT * FROM " . TB_PFP . " WHERE company_id = $companyID";
+		$query = "SELECT pfp.id, pfp.description, pfp.company_id FROM " . TB_PFP . " pfp, ".TB_PFP2COMPANY." pfp2c WHERE pfp.id=pfp2c.pfp_id AND pfp2c.company_id = $companyID ";
+		} else {
+			$query = "SELECT * FROM " . TB_PFP . " WHERE 1 ";
+		}
 		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+			$query .=  "ORDER BY pfp.id LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
 		
 		if(isset($idArray) and is_array($idArray) and count($idArray) > 0) {
@@ -59,6 +74,10 @@ class PFPManager
 			
 			
 			$query .= " )";
+		}
+		
+		if (!$companyID){
+			$query .= " ORDER BY id";
 		}
 		
 		$this->db->query($query);
@@ -114,6 +133,8 @@ class PFPManager
 		
 		$pfpID = $this->db->getLastInsertedID();
 		
+		$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (".$pfpID.", ".$companyID.")";
+		$this->db->query($queryAddPFPRelation2Company);
 		
 		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary) VALUES ";
 		for($i=0; $i<$count; $i++) {
@@ -144,6 +165,30 @@ class PFPManager
 		}
 	}
 	
+	public function unassignPFPFromCompanies($pfpID){
+		$query = "DELETE FROM ".TB_PFP2COMPANY." WHERE pfp_id=".$pfpID;
+		$this->db->query($query);
+		if (mysql_errno() == 0){
+			$error = "";
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}
+	
+	public function assignPFP2Company($pfpID, $companyID){
+		$query = "INSERT INTO ".TB_PFP2COMPANY." (pfp_id, company_id) VALUES (".$pfpID.", ".$companyID.")";
+		$this->db->query($query);
+		if (mysql_errno() == 0){
+			$error = "";
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}
+
 	public function update(PFP $from, PFP $to) {
 		
 		//echo "FROM:";

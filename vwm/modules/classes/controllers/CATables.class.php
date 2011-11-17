@@ -17,6 +17,11 @@ class CATables extends Controller {
 
 	private function actionBrowseCategory() {
 		$bookmark=$this->getFromRequest('bookmark');
+		if ($bookmark == 'country' || $bookmark == 'rule' || $bookmark == 'substrate' || $bookmark == 'supplier' || $bookmark == 'emissionFactor'){
+			$this->smarty->assign('selectedBookmark', 6);
+		} else {
+			$this->smarty->assign('selectedBookmark', 1);
+		}
 
 		/*FILTER*/
 		$filter=new Filter($this->db,$bookmark);

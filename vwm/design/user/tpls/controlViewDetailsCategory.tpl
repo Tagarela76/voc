@@ -5,7 +5,7 @@
                 <div class="control_panel_bl">
                     <div class="control_panel_br">
                         <div class="control_panel_center padd7">
-                        	<input type="button" class="button" value="<< Back" onclick="{if $backUrl}location.href='{$backUrl}'{else}history.go(-1);return true;{/if}">
+                        	<input type="button" class="button" value="<< Back" onclick="{if $backUrl}location.href='{$backUrl}';{else}history.go(-1);return true;{/if}">
                         	{if $request.category != "product"}
                             	{if $request.category=="company" 	&& $permissions.company.edit || 
 									$request.category=="facility" 	&& $permissions.facility.edit || 
@@ -39,7 +39,7 @@
 									{/if}
                                                                         {/if}
 								
-								{if $request.category == "mix"}
+								{if $request.category == "mix" and $request.action !== 'viewPFPDetails'}
 									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>
 								{/if}											
 																			
