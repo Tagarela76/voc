@@ -25,7 +25,7 @@
 		
 		function addCompanyToPFP() {
 			var checkBoxes = document.getElementById('companiesList').getElementsByTagName('input');
-			console.log(checkBoxes.length);
+			
 			//	clear old data from parent
 			var typesClassString = document.getElementById('companiesPFPList');
 			typesClassString.innerHTML = "";			
