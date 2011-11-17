@@ -138,7 +138,7 @@ class CAPfpLibrary extends Controller {
 		foreach ($companyAllList as $companyItem){
 			$manager->assignPFP2Company($pfpID, $companyItem['id']);
 		}
-		header("Location: admin.php?action=browseCategory&category=tables&bookmark=pfpLibrary");
+		header("Location: admin.php?action=viewDetails&category=pfpLibrary&id=".$pfpID);
 	}
 
 	private function actionAddItem() {

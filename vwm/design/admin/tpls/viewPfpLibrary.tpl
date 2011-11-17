@@ -65,7 +65,7 @@
 									{/if}	
 								{/foreach}
 								{else}
-									&nbsp;&nbsp;&HorizontalLine;
+									&nbsp;&nbsp;&mdash;
 								{/if}	
                             </div>
                         </td>
