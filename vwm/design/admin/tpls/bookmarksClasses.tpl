@@ -213,7 +213,7 @@
 					</a>
 				</li>	
 				{/if}
-				
+				{*
 				<li>  
 					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=tabs" style="text-decoration: none; color: #333333;">
 						{if $request.bookmark != "tabs"}
@@ -227,7 +227,7 @@
 									</div>
 								</div>
 					</a>
-				</li>
+				</li>*}
 			</ul>
 		</div>
 			<a class="buttons next" href="#"><img src="images/slider-right-arrow.gif" width="16px" height="10px" title="Next"/></a>
