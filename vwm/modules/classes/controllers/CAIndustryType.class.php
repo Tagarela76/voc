@@ -27,7 +27,11 @@ class CAIndustryType extends Controller {
 		extract($vars);
 		
 		$productTypes = new ProductTypes($this->db);
-		$allTypes = $productTypes->getAllTypes();
+		if (!is_null($this->getFromRequest('q'))){
+			$allTypes = $productTypes->searchType($this->getFromRequest('q'));
+		} else {
+			$allTypes = $productTypes->getAllTypes();
+		}
 		$i = 0;
 		foreach ($allTypes as $item){
 			$allTypes[$i]['url'] = 'admin.php?action=viewDetails&category=industryType&id='.$item['id'];

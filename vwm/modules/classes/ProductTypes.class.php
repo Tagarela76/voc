@@ -208,5 +208,30 @@ class ProductTypes {
 		
 		return $result;
 	}
+	
+	public function searchType($querySearch){
+		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent IS null AND UCASE(type) LIKE UCASE('%".$querySearch."%')";
+		$this->db->query($query);
+		$typesArray = $this->db->fetch_all_array();
+		
+		return $typesArray;
+	}
+	
+	public function searchSubType($querySearch){
+		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent IS NOT null AND UCASE(type) LIKE UCASE('%".$querySearch."%')";
+		$this->db->query($query);
+		$subTypesArray = $this->db->fetch_all_array();
+		
+		$allTypes = $this->getAllTypes();
+		for ($i=0; $i<count($subTypesArray); $i++){
+			for ($j=0; $j<count($allTypes); $j++){
+				if ($subTypesArray[$i]['parent'] == $allTypes[$j]['id']){
+					$subTypesArray[$i]['parentType'] = $allTypes[$j]['type'];
+				}
+			}
+		}
+		
+		return $subTypesArray;
+	}
 }
 ?>

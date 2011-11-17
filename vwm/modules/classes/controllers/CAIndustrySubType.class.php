@@ -27,7 +27,11 @@ class CAIndustrySubType extends Controller {
 		extract($vars);
 		
 		$productTypes = new ProductTypes($this->db);
-		$allSubTypes = $productTypes->getAllSubTypes();
+		if (!is_null($this->getFromRequest('q'))){
+			$allSubTypes = $productTypes->searchSubType($this->getFromRequest('q'));
+		} else {
+			$allSubTypes = $productTypes->getAllSubTypes();
+		}
 		$i = 0;
 		foreach ($allSubTypes as $item){
 			$allSubTypes[$i]['url'] = 'admin.php?action=viewDetails&category=industrySubType&id='.$item['id'];

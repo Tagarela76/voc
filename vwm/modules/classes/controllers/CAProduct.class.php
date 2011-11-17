@@ -86,7 +86,12 @@ class CAProduct extends Controller {
 		
 		$itemsCount = ($list) ? count($list) : 0;
 		for ($i=0; $i<$itemsCount; $i++) {
-			$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&page=".$pagination->getCurrentPage();
+			if (is_null($this->getFromRequest('q'))){
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&page=".$pagination->getCurrentPage();
+			} else {
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field];
+			}
+			
 			$list[$i]['url']=$url;
 		}
 		$this->smarty->assign("category",$list);
