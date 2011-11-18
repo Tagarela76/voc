@@ -238,7 +238,11 @@ class CMix extends Controller
 		foreach($pfp->products as $p) {
 			$productsIDArray[] = $p->product_id;
 		}
-
+		
+		if ($this->getFromRequest('reassignError')){
+			$this->smarty->assign('reassignError', 'error');
+		}
+		
 		$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);
 		$this->smarty->assign('products', $productsListGrouped);
 
@@ -287,7 +291,21 @@ class CMix extends Controller
 		$pfp = new PFP($products);
 		$pfp->setDescription($descr);
 		$pfp->setID($this->getFromRequest('id'));
-		$manager->update($pfpOld, $pfp);
+		$isModified = $manager->isPFPModified($pfpOld, $pfp);
+		if ($isModified){
+			$company = new Company($this->db);
+			$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
+			if ($manager->isCreaterPFP($this->getFromRequest('id'), $companyID)){
+				$manager->update($pfpOld, $pfp);
+			} else {
+				if ($pfp->getDescription() !== $pfpOld->getDescription()){
+					$manager->add($pfp, $companyID);
+				} else {
+					header("Location: ?action=editPFP&category=mix&departmentID=".$departmentID."&id=".$pfp->getId()."&reassignError=error");
+					die();
+				}
+			}
+		}
 		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
 	}
 

@@ -61,7 +61,12 @@ var pfp_descr = "";
 					</div>												
 					<div id="descr_error" class="error_img" style="display:none;">
 						<span class="error_text">Entered name is already in use!</span>
-					</div>											
+					</div>
+					{if $reassignError}
+					<div id="descr_error" class="error_img" style="display:block;">
+						<span class="error_text">Entered name is already in use!</span>
+					</div>
+					{/if}
 				</td>
 			</tr>
 			<!--  <tr>

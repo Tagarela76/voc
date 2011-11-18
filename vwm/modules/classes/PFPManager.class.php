@@ -269,5 +269,49 @@ class PFPManager
 		$prodtmp = new PFPProduct($this->db); 
 		
 	}
+	
+	public function isPFPModified($pfpOld, $pfp){
+		$result = FALSE;
+		if ($pfp->getDescription() == $pfpOld->getDescription()){
+			if (count($pfp->products) == count($pfpOld->products)){
+				for ($i=0; $i<count($pfp->products); $i++){
+					if ($pfp->products[$i]->product_id == $pfpOld->products[$i]->product_id){
+						if ($pfp->products[$i]->isPrimary() == $pfpOld->products[$i]->isPrimary()){
+							if ($pfp->products[$i]->getRatio() == $pfpOld->products[$i]->getRatio()){
+								
+							} else {
+								$result = TRUE;
+								break;
+							}
+						} else {
+							$result = TRUE;
+							break;
+						}
+					} else {
+						$result = TRUE;
+						break;
+					}
+				}
+			} else {
+				$result = TRUE;
+			}
+		} else {
+			$result = TRUE;
+		}
+		
+		return $result;
+	}
+	
+	public function isCreaterPFP($pfpID, $companyID){
+		$result = FALSE;
+		$query = "SELECT company_id FROM ".TB_PFP." WHERE id=".$pfpID;
+		$this->db->query($query);
+		$companyCreaterID = $this->db->fetch(0)->company_id;
+		if ($companyCreaterID == $companyID){
+			$result = TRUE;
+		}
+		
+		return $result;
+	}
 }
 ?>
