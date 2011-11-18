@@ -3,13 +3,14 @@
 {literal}
 <script type="text/javascript">
 	$(document).ready(function(){
+		$('.viewport').width(document.body.clientWidth - $('.dotted_right').width().valueOf() - 230 + 'px');
 		$('#slider1').tinycarousel({duration: 200, display:1, start: document.getElementById('selectedBookmark').value});
 	});
 </script>
 {/literal}
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0;">
 	<tr>
-	<td align="right" class="bookmark_fon">
+	<td align="center" class="bookmark_fon">
 <table cellspacing="0" cellpadding="0" height="100%" class="bookmarks_big" style="margin-left:20px;">
 	<tr>
 	<td>

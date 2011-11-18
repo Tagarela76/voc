@@ -2294,7 +2294,7 @@ table.bookmarks_big td {
     padding: 5px 19px 5px 19px;
     margin: 5px 0 0 0;
     text-align: center;
-    width: 130px;
+    /*width: 130px;*/
 }
 
 .activeBookmark_big {
@@ -2305,7 +2305,7 @@ table.bookmarks_big td {
 .activeBookmark_right_big {
     background: url(images/activeBookmark_right.gif) no-repeat top right;
     padding: 7px 19px 8px 19px;
-    width: 130px;
+    /*width: 130px;*/
     text-align: center;
 }
 
@@ -3659,6 +3659,65 @@ div:hover.category_folder_hover{cursor:pointer;}
 
 
 /* Tiny Carousel */
+/*#slider1 {
+	height: 30px; 
+	overflow:hidden; 
+	padding: 0px;
+}
+
+#slider1 .viewport {
+	float: left; 
+	width: 1000px; 
+	height: 125px; 
+	overflow: hidden; 
+	position: relative;
+}
+
+#slider1 .buttons { 
+	background:url("../images/buttons.png") no-repeat scroll 0 0 transparent; 
+	display: block; 
+	margin: 13px 0px 0 0; 
+	background-position: 0 -38px; 
+	float: left; 
+	width: 29px; 
+	height: 27px; 
+	overflow: hidden; 
+	position: relative; 
+}
+
+#slider1 .next { 
+	background-position: 0 0; 
+	padding: 7px 0 0 10px;
+	margin: 6px 0 0 0px;
+	border-left: 2px solid #444b5b;
+}
+
+#slider1 .prev { 
+	background-position: 0 0; 
+	padding: 7px 0 0 10px;
+	margin: 6px 0 0 0;
+	border-right: 2px solid #444b5b;
+}
+
+#slider1 .disable { 
+	visibility: hidden; 
+}
+
+#slider1 .overview { 
+	list-style: none; 
+	position: absolute; 
+	padding: 0; 
+	margin: 0; 
+	left: 0; top: 0; 
+}
+
+#slider1 .overview li { 
+	float: left; 
+	margin: 0 2px 0 0; 
+	padding: 1px; 
+}*/
+
+/* Tiny Carousel */
 #slider1 {
 	height: 30px; 
 	overflow:hidden; 
@@ -3667,7 +3726,7 @@ div:hover.category_folder_hover{cursor:pointer;}
 
 #slider1 .viewport {
 	float: left; 
-	width: 1202px; 
+	width: 1000px; 
 	height: 125px; 
 	overflow: hidden; 
 	position: relative;
