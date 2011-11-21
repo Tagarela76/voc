@@ -5,7 +5,7 @@ class CAProduct extends Controller {
 	function CAProduct($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='product';
-		$this->parent_category='tables';		
+		$this->parent_category='product';		
 	}
 	
 	function runAction() {
@@ -16,11 +16,88 @@ class CAProduct extends Controller {
 	}
 	
 	
-	
-	protected function actionBrowseCategory($vars) {			
+	private function actionBrowseCategory() {
+
+		
+		$product = new Product($this->db);
+		
+		$subaction = $this->getFromRequest('subaction');
+		$companyID = $this->getFromRequest('companyID');
+		$supplierID = $this->getFromRequest('supplierID');
+		$companyID = (is_null($companyID) || $companyID == 'All companies')?0:$companyID;
+		$supplierID = (is_null($supplierID) || $supplierID == 'All suppliers')?0:$supplierID;		
+		
+		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
+			$count = $this->getFromRequest('itemsCount');
+			for ($i=0;$i<$count;$i++) {										
+				if (!is_null($this->getFromRequest('item_'.$i))) {
+					$productID = $this->getFromRequest('item_'.$i);
+					if ($subaction == "Assign to company") {
+						$product->assignProduct2Company($productID, $companyID);	
+					} elseif ($subaction == "Unassign product(s)") {
+						$product->unassignProductFromCompany($productID, $companyID);
+					}											
+				}	
+			}	
+		}
+		
+		// get Supplier list
+		$supplier=new Supplier($this->db);
+		$supplierList=$supplier->getSupplierList();
+		$supplierItemsCount=count($supplierList);
+		$this->smarty->assign('supplierList', $supplierList);						
+		
+		//	get company list
+		$company = new Company($this->db);
+		$companyList = $company->getCompanyList();
+		$this->smarty->assign('companyList',$companyList);												
+		
+		//	search??	!WITHOUT PAGINATION!								
+		if (!is_null($this->getFromRequest('q'))) {
+			$productsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										
+			$productList = $product->searchProducts($productsToFind, $companyID);
+			
+			$this->smarty->assign('currentCompany',0);
+			$this->smarty->assign('currentSupplier', 0);												
+			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+		} else {
+			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));			
+			$pagination = new Pagination($productCount);
+			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&supplierID=".$this->getFromRequest('supplierID')."&subaction=Filter&category=product";
+			$this->smarty->assign('pagination', $pagination);
+			
+			if ($supplierID != 0) {
+				$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination,' TRUE ',$sortStr);
+			} else {
+				$productList = $product->getProductList($companyID, $pagination,' TRUE ',$sortStr);	
+			}			
+			$this->smarty->assign('currentCompany',$companyID);
+			$this->smarty->assign('currentSupplier', $supplierID);
+		}				
+		$field = 'product_id';
+		$list = $productList;
+		
+		$itemsCount = ($list) ? count($list) : 0;
+		for ($i=0; $i<$itemsCount; $i++) {
+			if (is_null($this->getFromRequest('q'))){
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&page=".$pagination->getCurrentPage();
+			} else {
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field];
+			}
+			
+			$list[$i]['url']=$url;
+		}
+		$this->smarty->assign("category",$list);
+		$this->smarty->assign("itemsCount",$itemsCount);
+		
+		$this->smarty->assign('tpl', 'tpls/productClass.tpl');
+		$this->smarty->assign('pagination', $pagination);
+		
+		$this->smarty->display("tpls:index.tpl");
+	}
+/*	protected function actionBrowseCategory($vars) {			
 		$this->bookmarkProduct($vars);
 	}
-	
 	
 	
 	protected function bookmarkProduct($vars) {
@@ -100,8 +177,9 @@ class CAProduct extends Controller {
 		$this->smarty->assign('tpl', 'tpls/productClass.tpl');
 		$this->smarty->assign('pagination', $pagination);
 		
+		
 	}
-	
+	*/
 	private function actionViewDetails() {
 		$product=new Product($this->db);
 		$productDetails=$product->getProductDetails($this->getFromRequest('id'));
@@ -603,7 +681,7 @@ class CAProduct extends Controller {
 				if ($validStatus['summary'] == 'true') {
 					$productData['resultTypesList'] = $resProductAllTypesList;
 					$product->addNewProduct($productData, $this->getFromRequest('companyID'));		
-					header ('Location: admin.php?action=browseCategory&category=tables&bookmark=product');
+					header ('Location: admin.php?action=browseCategory&category=product');
 					die();
 				} else {
 					
@@ -786,9 +864,10 @@ class CAProduct extends Controller {
 		$product=new Product($this->db);
 		for ($i=0; $i<$itemsCount; $i++) {
 			$id = $this->getFromRequest('item_'.$i);
+			
 			$product->deleteProduct2($id);
 		}
-		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category')."&page=".$this->getFromRequest('page'));
+		header ('Location: admin.php?action=browseCategory&category=product');
 		die();
 	}
 }

@@ -48,7 +48,7 @@ var pfp_descr = "";
         </tr>
 		<tr>
 			<td class="report_issue_center" align="center" style="vertical-align: middle;">
-				<input type="button" class="button" value="<< Back" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark=pfpLibrary'"/>
+				<input type="button" class="button" value="<< Back" onclick="location.href='admin.php?action=browseCategory&category=pfpLibrary'"/>
 			</td>
 		</tr>
         <tr>

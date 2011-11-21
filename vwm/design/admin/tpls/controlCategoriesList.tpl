@@ -36,6 +36,14 @@
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
 				</div>
+			{elseif $request.category=="product"}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem"  >
+				</div>
+			{elseif $request.category=="pfpLibrary"}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem"  >
+				</div>
 			{elseif $request.category=="salescontacts" && $request.bookmark == "contacts"}
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
@@ -62,7 +70,7 @@
 		{/if}
 		
 		
-	{if $request.bookmark=="product"}
+	{if $request.category eq "product"}
 		
 		{*{if $itemsCount > 0}
 		<div style="float:left; width:80px">
@@ -137,12 +145,12 @@
 			$('#hiddens').append('<input type="hidden" name="subaction" value="'+subaction+'">');
 			$('#hiddens').append('<input type="hidden" name="action" value="'+action+'">');
 			{/literal}
-			{if $request.bookmark=="product"}
+			{if $request.category eq "product"}
 			{literal}
 			$('#hiddens').append('<input type="hidden" name="sort" value="{$sort}">');			
 				if (action == 'browseCategory') {
-					$('#hiddens').append('<input type="hidden" name="bookmark" value="product">');					
-					$('input[name="category"]').val('tables'); 
+					//$('#hiddens').append('<input type="hidden" name="category" value="product">');					
+					$('input[name="category"]').val('product'); 
 				}						
 				{/literal}{/if}				
 			{literal}	

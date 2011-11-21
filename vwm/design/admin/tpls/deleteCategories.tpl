@@ -147,7 +147,7 @@
 <div style="width:650px;" align="right">
 	{if $itemsCount > 0}
 	
-	<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->
+	{*<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->*}
 {if $gobackAction eq 'browseCategory'}		
 <input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>	
 {else}
@@ -157,9 +157,11 @@
 {*<input type="submit" name="confirm" value="No">*}
 
 
+{else}{if $request.category == "product"}
+<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}'">
 {else}
 <input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'">
-
+{/if}
 {/if}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
 <input type="hidden" name="bookmark" value="{$request.bookmark}">

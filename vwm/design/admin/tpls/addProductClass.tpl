@@ -577,7 +577,7 @@
 		<input type='submit' name='save' class="button" value='Save'>
 		<input type='button' name='cancel' class="button" value='Cancel' 
 			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=product&id={$request.id}"'{/if}
-			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=tables&bookmark=product"'{/if}>
+			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=product"'{/if}>
 		<span style="padding-right:50">&nbsp;</span>
 	</div>
 		

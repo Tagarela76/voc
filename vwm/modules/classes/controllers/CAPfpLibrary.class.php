@@ -5,7 +5,7 @@ class CAPfpLibrary extends Controller {
 	function CAPfpLibrary($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='pfpLibrary';
-		$this->parent_category='tables';		
+		$this->parent_category='pfpLibrary';		
 	}
 	
 	function runAction() {
@@ -15,9 +15,26 @@ class CAPfpLibrary extends Controller {
 			$this->$functionName();		
 	}
 	
+	private function actionBrowseCategory() {
+
+		
+		
+		
+		$manager = new PFPManager($this->db);
+		$pfps = $manager->getList();
+		$this->smarty->assign('itemsCount', count($pfps));
+		$jsSources = array  ('modules/js/checkBoxes.js',
+                             'modules/js/autocomplete/jquery.autocomplete.js');
+		$this->smarty->assign('jsSources', $jsSources);
+		$this->smarty->assign('pfps', $pfps);
+		$this->smarty->assign('childCategoryItems', $pfps);
+		$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
+
+		$this->smarty->display("tpls:index.tpl");
 	
+	}
 	
-	protected function actionBrowseCategory($vars) {			
+	/*protected function actionBrowseCategory($vars) {			
 		$this->bookmarkPfpLibrary($vars);
 	}
 	
@@ -35,7 +52,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
 		
-	}
+	}*/
 	
 	private function actionViewDetails() {
 		$manager = new PFPManager($this->db);
@@ -153,7 +170,7 @@ class CAPfpLibrary extends Controller {
 		
 		$pfps = $manager->getList(null,null,$idArray);
 		
-		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=tables&bookmark=pfpLibrary");
+		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfpLibrary");
 
 		foreach ($pfps as $p) {
 				$delete["id"] =	$p->getId();
@@ -175,7 +192,7 @@ class CAPfpLibrary extends Controller {
 		$manager = new PFPManager($this->db);
 		$pfpList = $manager->getList(null,null,$itemID);
 		$manager->removeList($pfpList);
-		header("Location: admin.php?action=browseCategory&category=tables&bookmark=pfpLibrary");
+		header("Location: admin.php?action=browseCategory&category=pfpLibrary");
 		die();
 	}
 }

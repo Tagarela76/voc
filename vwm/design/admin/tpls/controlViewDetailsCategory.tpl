@@ -5,7 +5,7 @@
 {if $request.action != ""}
 	{if $page}
 	<input type="button" class="button" value="<< Back" 
-	onclick="location.href='?action=browseCategory&companyID={$request.companyID}&supplierID={$request.supplierID}&subaction=Filter&category=tables&bookmark=product&page={$page}'">
+	onclick="location.href='?action=browseCategory&companyID={$request.companyID}&supplierID={$request.supplierID}&subaction=Filter&category=product&page={$page}'">
 	{else}	
 	<input type="button" class="button" value="<< Back" 
 	onclick="location.href='admin.php?action=browseCategory&category={if $request.category != 'users'}{$parent}&bookmark={$request.category}{else}{$request.category}&bookmark={$request.bookmark}{/if}'">

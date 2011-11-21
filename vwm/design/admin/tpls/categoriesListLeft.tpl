@@ -11,7 +11,30 @@
 					</ul>
 				</div>
 			</div>
-						
+			
+			<!-- NEW PRDUCT TAB -->
+			<div align="left" width="100%"  class="{if $parent == 'product'}left_m_active{else}left_m{/if}">
+				<div align="left" width="100%">
+					<ul class="link">
+						<li>
+							<a href="admin.php?action=browseCategory&category=product" class="id_company">Product</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- NEW PFPLBRARY TAB 
+				
+			<div align="left" width="100%"  class="{if $parent == 'pfpLibrary'}left_m_active{else}left_m{/if}">
+				<div align="left" width="100%">
+					<ul class="link">
+						<li>
+							
+							<a href="admin.php?action=browseCategory&category=pfpLibrary&bookmark=company" class="id_company">PFP Library</a>
+						</li>
+					</ul>
+				</div>
+			</div>	
+   -->
 					<div align="left" width="100%"  class="{if $parent == 'users'}left_m_active{else}left_m{/if}" >
 					   <div align="left" width="100%">
 					<ul class="link">
