@@ -17,6 +17,7 @@ class CASalescontacts extends Controller {
 	
 	private function actionBrowseCategory() {
 		$bookmark=$this->getFromRequest('bookmark');
+		
                 $manager = new BookmarksManager($this->db);
                 $bookmarksList = $manager->getBookmarksList();                
                 $totalCount = $manager->getCount();

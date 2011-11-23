@@ -48,7 +48,7 @@ class PFPManager
 	}
 
 	public function getList($companyID = null, Pagination $pagination = null, $idArray = null) {
-		
+	
 		if ($companyID){
 		$companyID = mysql_escape_string($companyID);
 		//$query = "SELECT * FROM " . TB_PFP . " WHERE company_id = $companyID";
@@ -114,7 +114,105 @@ class PFPManager
 			$pfps[] = $pfp;
 		}
 		return $pfps;
+
+		
 	}
+
+	public function getPfpList($PfpIdArray = null) {
+		if ($PfpIdArray != null){
+		$pmanager = new Product($this->db);
+		$productsbysupplier = $pmanager->getProductListByMFG($PfpIdArray);
+		$count = count($productsbysupplier);
+			$PFPArray = array();
+			for($i=0; $i< $count; $i++) {
+				
+				$getPfpQuery = "SELECT preformulated_products_id FROM " . TB_PFP2PRODUCT . " WHERE product_id = " . $productsbysupplier[$i]['product_id'];
+			
+				$this->db->query($getPfpQuery);
+				$pfp = $this->db->fetch_all_array();
+				foreach($pfp as $p) {
+					if ($p['preformulated_products_id']){
+						$PFPArray[] = $p['preformulated_products_id'];
+					}
+				}
+			}
+		$pfparray = array_unique($PFPArray);
+		return $pfparray;
+		}else{
+			return false;
+			}
+	}
+	
+	public function getListSpecial($companyID = null, Pagination $pagination = null, $idArray = null) {
+	if($idArray!= null){	
+		if ($companyID){
+		$companyID = mysql_escape_string($companyID);
+		//$query = "SELECT * FROM " . TB_PFP . " WHERE company_id = $companyID";
+		$query = "SELECT pfp.id, pfp.description, pfp.company_id FROM " . TB_PFP . " pfp, ".TB_PFP2COMPANY." pfp2c WHERE pfp.id=pfp2c.pfp_id AND pfp2c.company_id = $companyID ";
+		} else {
+			$query = "SELECT * FROM " . TB_PFP . " WHERE 1 ";
+		}
+		if (isset($pagination)) {
+			$query .=  "ORDER BY pfp.id LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+		
+		if(isset($idArray) and is_array($idArray) and count($idArray) > 0) {
+			
+			$count = count($idArray);
+			$query .= " AND id IN ( ";
+			
+			for($i=0; $i<$count; $i++) {
+				$query .= $idArray[$i];
+				if($i < $count-1) {
+					$query .= ", ";
+				} 
+			}
+			
+			
+			$query .= " )";
+		}
+		
+		if (!$companyID){
+			$query .= " ORDER BY id";
+		}
+		
+		$this->db->query($query);
+		
+		//Init PFPProducts for each PFP...
+		$pfpArray = $this->db->fetch_all_array();
+		$count = count($pfpArray);
+		//var_dump($pfpArray);
+		
+		$pfps = array(); //Array of objects PFP
+		
+		for($i=0; $i< $count; $i++) {
+			
+			$PFPProductsArray = array();
+			
+			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
+			//echo "<br/>$getProductsQuery";
+			$this->db->query($getProductsQuery);
+			$products = $this->db->fetch_all_array();
+			//var_dump($products);
+			foreach($products as $p) {
+				$prodtmp = new PFPProduct($this->db); 
+				$prodtmp->setRatio($p['ratio']);
+				$prodtmp->initializeByID($p['product_id']);
+				$prodtmp->setIsPrimary($p['isPrimary']);
+				$PFPProductsArray[] = $prodtmp;
+			}
+			
+			//var_dump($PFPProductsArray);
+			$pfp = new PFP($PFPProductsArray);
+			$pfp->setID($pfpArray[$i]['id']);
+			$pfp->setDescription($pfpArray[$i]['description']);
+			$pfp->products = $PFPProductsArray;
+			$pfps[] = $pfp;
+		}
+		return $pfps;
+	}else{return false;}
+		
+	}	
 	
 	public function add(PFP $product, $companyID) {
 		

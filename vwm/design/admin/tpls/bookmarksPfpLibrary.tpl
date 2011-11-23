@@ -1,4 +1,3 @@
-
 <link href="style.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="modules/js/jquery.tinycarousel.min.js"></script>
 {literal}
@@ -18,9 +17,30 @@
 	<tr>
 	<td>
 		<div id="slider1">
-			<a class="buttons prev" href="#"><img src="images/slider-left-arrow.gif" width="16px" height="10px" title="Previous"/></a>
+		<a class="buttons prev" href="#"><img src="images/slider-left-arrow.gif" width="16px" height="10px" title="Previous"/></a>
 		<div class="viewport">
 			<ul class="overview">
+				
+				{*BEGIN LIST*}				
+				{section name=i loop=$bookmarks}    
+					<li>  {i}
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}{if $bookmarks[i].supplier_id != 45}&subBookmark={$bookmarks[i].supplier_id}{/if}" style="text-decoration: none; color: #333333;">
+							{if $request.subBookmark == $bookmarks[i].supplier_id}
+								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+									{else}                    
+										
+										<div class="deactiveBookmark"><div class="deactiveBookmark_right">
+										
+							{/if}
+							{$bookmarks[i].supplier|lower}
+							
+							</div>
+						</div></a>
+					</li>
+				{/section}	
+				{*END LIST*}
+				
+				{*
 				<li>  
 					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=apmethod" style="text-decoration: none; color: #333333;">
 						{if $request.bookmark != "apmethod"}	
@@ -35,203 +55,7 @@
 								</div>
 					</a>
 				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=coat" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "coat"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_COAT_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				{*<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=product" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "product"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_PRODUCT_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li> 
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=pfpLibrary" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "pfpLibrary"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_PFP_LIBRARY_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>*}
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=industryType" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "industryType"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_INDUSTRY_TYPE_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=industrySubType" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "industrySubType"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_INDUSTRY_SUB_TYPE_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=components" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "components"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_COMPOUNDS_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=agency" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "agency"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_AGENCIES_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=country" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "country"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_COUNTRY_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=rule" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "rule"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_RULE_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=substrate" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "substrate"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_SUBSTRATE_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=supplier" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "supplier"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_SUPPLIER_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>
-				
-				{if $showFootprint neq 'false'}
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=emissionFactor" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "emissionFactor"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_EFACTOR_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>	
-				{/if}
-				{*
-				<li>  
-					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=tabs" style="text-decoration: none; color: #333333;">
-						{if $request.bookmark != "tabs"}
-						<div class="deactiveBookmark_big">
-							<div class="deactiveBookmark_right_big">
-						{else}
-								<div class = "activeBookmark_big">
-									<div class = "activeBookmark_right_big">
-						{/if}
-						{$smarty.const.AI_LABEL_TABS_BOOKMARK}
-									</div>
-								</div>
-					</a>
-				</li>*}
+				*}
 			</ul>
 		</div>
 			<a class="buttons next" href="#"><img src="images/slider-right-arrow.gif" width="16px" height="10px" title="Next"/></a>

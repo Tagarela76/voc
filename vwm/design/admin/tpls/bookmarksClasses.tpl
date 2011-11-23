@@ -62,7 +62,7 @@
 								</div>
 					</a>
 				</li> 
-				
+				*}
 				<li>  
 					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=pfpLibrary" style="text-decoration: none; color: #333333;">
 						{if $request.bookmark != "pfpLibrary"}
@@ -76,7 +76,7 @@
 									</div>
 								</div>
 					</a>
-				</li>*}
+				</li>
 				
 				<li>  
 					<a href="admin.php?action=browseCategory&category={$request.category}&bookmark=industryType" style="text-decoration: none; color: #333333;">

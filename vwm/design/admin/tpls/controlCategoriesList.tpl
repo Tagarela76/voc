@@ -40,7 +40,7 @@
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
 				</div>
-			{elseif $request.category=="pfpLibrary"}
+			{elseif $request.category=="pfps"}
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
 				</div>
@@ -123,6 +123,10 @@
 				{/if}
 			{elseif $request.category == 'salesdocs'}
 				<input type="hidden" name="category" value="salesdocs">
+			{elseif $request.category == 'pfps'}	
+				<input type="hidden" name="category" value="{$request.bookmark}">
+				<input type="hidden" name="bookmark" value="{$request.category}">
+				<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">

@@ -22,19 +22,19 @@
 					</ul>
 				</div>
 			</div>
-			<!-- NEW PFPLBRARY TAB 
+			<!-- NEW PFPLBRARY TAB -->
 				
-			<div align="left" width="100%"  class="{if $parent == 'pfpLibrary'}left_m_active{else}left_m{/if}">
+			<div align="left" width="100%"  class="{if $parent == 'pfps'}left_m_active{else}left_m{/if}">
 				<div align="left" width="100%">
 					<ul class="link">
 						<li>
 							
-							<a href="admin.php?action=browseCategory&category=pfpLibrary&bookmark=company" class="id_company">PFP Library</a>
+							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary" class="id_company">PFP Library</a>
 						</li>
 					</ul>
 				</div>
 			</div>	
-   -->
+   
 					<div align="left" width="100%"  class="{if $parent == 'users'}left_m_active{else}left_m{/if}" >
 					   <div align="left" width="100%">
 					<ul class="link">

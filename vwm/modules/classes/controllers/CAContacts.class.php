@@ -1,4 +1,5 @@
 <?php
+
 class CAContacts extends Controller {
 	
 	function CAContacts($smarty,$xnyo,$db,$user,$action) {

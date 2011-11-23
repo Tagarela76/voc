@@ -61,7 +61,9 @@
     {*BEGIN LIST*} 
     {foreach from=$pfps item=pfp} 
     {assign var='pfpid' value=$pfp->getId()}
-    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&id=$pfpid"}
+	{assign var='subb' value=$request.subBookmark}
+	{assign var='book' value=$request.category}
+    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&bookmark=$book&subBookmark=$subb&id=$pfpid"}
 	<!-- Begin Highlighting -->
     <tr class="hov_company" height="10px"> 	
 		
@@ -109,7 +111,7 @@
     {*BEGIN	EMPTY LIST*}
     <tr class="">
         <td colspan="5"class="border_users_l border_users_r" align="center">
-            No pre formulated products in the department
+            No pre formulated products for this spiller
         </td>
     </tr>
     {*END	EMPTY LIST*}

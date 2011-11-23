@@ -48,7 +48,7 @@ var pfp_descr = "";
         </tr>
 		<tr>
 			<td class="report_issue_center" align="center" style="vertical-align: middle;">
-				<input type="button" class="button" value="<< Back" onclick="location.href='admin.php?action=browseCategory&category=pfpLibrary'"/>
+				<input type="button" class="button" value="<< Back" onclick="location.href='admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark={$request.subBookmark}'"/>
 			</td>
 		</tr>
         <tr>
@@ -255,8 +255,8 @@ var pfp_descr = "";
 	{*BUTTONS*}	
 	<div align="right" class="margin5">
 		<input type='button' name='cancel' class="button" value='Cancel' 
-				{if $request.action eq "addItem"} onClick="location.href='admin.php?action=browseCategory&category=tables&bookmark=pfpLibrary'"
-				{elseif $request.action eq "edit"} onClick="location.href='?action=browseCategory&category=tables&bookmark=pfpLibrary&id='"
+				{if $request.action eq "addItem"} onClick="location.href='admin.php?action=browseCategory&category=pfps&bookmark={$request.category}&subBookmark={$request.subBookmark}'"
+				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=pfpLibrary&bookmark={$request.category}&subBookmark={$request.subBookmark}&id={$request.id}'"
 				{/if}
 		>
 		{if $request.action !== "addItem"}<input type='button' name='save' id="save" class="button" value='Save'>{/if}
