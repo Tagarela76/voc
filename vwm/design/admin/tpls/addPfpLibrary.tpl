@@ -98,7 +98,7 @@ var pfp_descr = "";
 		
 		</table>
 		
-<!--		<table class="users" cellpadding="0" cellspacing="0" align="center" >
+		<table class="users" cellpadding="0" cellspacing="0" align="center" >
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Add product</td>
 						</tr>												
@@ -115,13 +115,11 @@ var pfp_descr = "";
 								<select name="selectProduct" id="selectProduct" class="addInventory">
 									 {*<option selected="selected" >Select Product</option>*}
 									{if $products}				
-										{foreach from=$products item=productsArr key=supplier}															
-										<optgroup label="{$supplier}">
-											{section name=i loop=$productsArr}
-												<option value='{$productsArr[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$productsArr[i].formattedProduct} </option>
+
+											{section name=i loop=$products}
+												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$products[i].name} </option>
 											{/section}
-										</optgroup>
-										{/foreach}																			
+																			
 									{else}
 										<option value='0'> no products </option>
 									{/if}
@@ -152,7 +150,7 @@ var pfp_descr = "";
 								<input type="text" name="ratio" id="ratio" value="1" />
 							</td>
 						</tr>
-					</table>-->
+					</table>
 
 {*ADDPRODUCTS*}					
 <div class="padd7" id="addProductsContainer">

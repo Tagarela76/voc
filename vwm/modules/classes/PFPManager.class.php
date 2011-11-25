@@ -136,7 +136,7 @@ class PFPManager
 					}
 				}
 			}
-		$pfparray = array_unique($PFPArray);
+		$pfparray =  array_merge(array_unique($PFPArray));
 		return $pfparray;
 		}else{
 			return false;
@@ -144,7 +144,7 @@ class PFPManager
 	}
 	
 	public function getListSpecial($companyID = null, Pagination $pagination = null, $idArray = null) {
-	if($idArray!= null){	
+	if($idArray!= null){
 		if ($companyID){
 		$companyID = mysql_escape_string($companyID);
 		//$query = "SELECT * FROM " . TB_PFP . " WHERE company_id = $companyID";
@@ -181,7 +181,7 @@ class PFPManager
 		//Init PFPProducts for each PFP...
 		$pfpArray = $this->db->fetch_all_array();
 		$count = count($pfpArray);
-		//var_dump($pfpArray);
+		
 		
 		$pfps = array(); //Array of objects PFP
 		
@@ -215,25 +215,36 @@ class PFPManager
 	}	
 	
 	public function add(PFP $product, $companyID) {
-		
-		
-		
+
 		$count = count($product->products);
 		if($count == 0) {
 		
 			return false;
 		}
 		
-		//$this->db->beginTransaction();
-		$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('". $product->getDescription() . "', $companyID)";
+		if(isset($companyID) and is_array($companyID) and count($companyID) > 0){
+			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('". $product->getDescription() . "',NULL)";
 		
-		$this->db->query($queryAddPFP);
+			$this->db->query($queryAddPFP);
 		
-		$pfpID = $this->db->getLastInsertedID();
+			$pfpID = $this->db->getLastInsertedID();
+			$i=0;
+			while($companyID[$i]) {
+			$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (".$pfpID.", ".$companyID[$i]['id'].")";
+			$this->db->query($queryAddPFPRelation2Company);
+
+			$i++;var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company);
+			}
+		}else{	
+				$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('". $product->getDescription() . "','". $companyID. "')";
+				$this->db->query($queryAddPFP);
 		
-		$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (".$pfpID.", ".$companyID.")";
-		$this->db->query($queryAddPFPRelation2Company);
-		
+				$pfpID = $this->db->getLastInsertedID();
+				
+				$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (".$pfpID.", ".$companyID.")";
+				$this->db->query($queryAddPFPRelation2Company);				
+
+		}
 		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary) VALUES ";
 		for($i=0; $i<$count; $i++) {
 			$isPrimary = $product->products[$i]->isPrimary() ? "true" : "false";
@@ -245,6 +256,8 @@ class PFPManager
 		}
 		
 		$this->db->query($queryInsertPFPProducts);
+		
+		var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company,'QUERY3',$queryInsertPFPProducts);
 	}
 	
 	public function remove(PFP $product) {
@@ -366,6 +379,14 @@ class PFPManager
 	public function getPFPProduct($id) {
 		$prodtmp = new PFPProduct($this->db); 
 		
+	}
+	
+	public function getPFPProductsbySopplier($id) {
+		
+		$query = "SELECT * FROM " . TB_PRODUCT . " WHERE supplier_id = $id";
+		$this->db->query($query);
+		$pfpproducts = $this->db->fetch_all_array();
+		return $pfpproducts;
 	}
 	
 	public function isPFPModified($pfpOld, $pfp){

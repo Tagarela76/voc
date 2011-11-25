@@ -32,6 +32,7 @@
 				</div>					
 			</a>                       
         </td>
+
         <td class="" width="50%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
@@ -70,7 +71,7 @@
         <td class="border_users_b border_users_l border_users_r" >
 			<input type="checkbox" value="{$pfp->getId()}" name="id[]">
         </td>
-        
+
         <td class="border_users_b border_users_r" >
             <a href="{$url}" class="id_company1" title="{$pfp->getDescription()}">
                 <div style="width:100%;">

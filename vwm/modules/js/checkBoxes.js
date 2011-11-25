@@ -34,7 +34,11 @@ function unCheckAll(Element) {
 		}
 	}
 }
-
+function CheckCB(Element){
+	if(document.getElementById) {
+		if(document.getElementById(Element.id.replace('cb','tr'))){Element.checked = !Element.checked;}
+	}
+}
 function CheckClassOfUnitTypes(Element) {
 	thisCheckBoxes = document.getElementById(Element.id).getElementsByTagName('input');
 	

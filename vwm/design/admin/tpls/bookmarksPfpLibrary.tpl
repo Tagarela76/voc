@@ -20,10 +20,23 @@
 		<a class="buttons prev" href="#"><img src="images/slider-left-arrow.gif" width="16px" height="10px" title="Previous"/></a>
 		<div class="viewport">
 			<ul class="overview">
-				
+				<li> 
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark=custom" style="text-decoration: none; color: #333333;">
+							{if $request.subBookmark == 'custom'}
+								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+									{else}                    
+										
+										<div class="deactiveBookmark"><div class="deactiveBookmark_right">
+										
+							{/if}
+							custom
+							
+							</div>
+						</div></a>
+				</li>	
 				{*BEGIN LIST*}				
 				{section name=i loop=$bookmarks}    
-					<li>  {i}
+					<li> 
 					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}{if $bookmarks[i].supplier_id != 45}&subBookmark={$bookmarks[i].supplier_id}{/if}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
 								<div  class = "activeBookmark">  <div class = "activeBookmark_right">

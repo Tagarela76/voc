@@ -43,7 +43,7 @@ var pfp_descr = "";
         </tr>
         <tr>
             <td class="report_issue_center" align="center" style="vertical-align: middle;">
-                <h2>Addition of PFP temporarily unavailable</h2>
+                <h2>Addition or Editing of PFP temporarily unavailable</h2>
             </td>
         </tr>
 		<tr>
@@ -65,7 +65,7 @@ var pfp_descr = "";
 			<tr class="users_header_orange">
 				<td height="30" width="30%">
 				
-					<div class="users_header_orange_l"><div><span >{if $smarty.request.action eq "addPFPItem"}Adding for a new pre formulated products{else}Editing pre formulated products{/if}</span></div></div>
+					<div class="users_header_orange_l"><div><span >{if $smarty.request.action eq "addItem"}Adding for a new pre formulated products{else}Editing pre formulated products{/if}</span></div></div>
 				</td>
 				<td>
 					<div class="users_header_orange_r"><div>&nbsp;</div></div>				
@@ -119,7 +119,7 @@ var pfp_descr = "";
 		
 		</table>
 		
-<!--		<table class="users" cellpadding="0" cellspacing="0" align="center" >
+		<table class="users" cellpadding="0" cellspacing="0" align="center" >
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2">Add product</td>
 						</tr>												
@@ -134,12 +134,30 @@ var pfp_descr = "";
 								
 								{*NICE PRODUCT LIST*}	
 								<select name="selectProduct" id="selectProduct" class="addInventory">
-									 {*<option selected="selected" >Select Product</option>*}
+									{*<option selected="selected" >Select Product</option>*}
+									{if $products}				
+
+											{section name=i loop=$products}
+												{if $request.subBookmark == 'custom'}
+												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$products[i].supplier} >> {$products[i].name} </option>
+												{else}
+												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}>{$products[i].name} </option>
+												{/if}
+											{/section}
+																			
+									{else}
+										<option value='0'> no products </option>
+									{/if}
+								</select>
+								{*NICE PRODUCT LIST*}
+								{*NICE PRODUCT LIST}	
+								<select name="selectProduct" id="selectProduct" class="addInventory">
+									 
 									{if $products}				
 										{foreach from=$products item=productsArr key=supplier}															
 										<optgroup label="{$supplier}">
 											{section name=i loop=$productsArr}
-												<option value='{$productsArr[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$productsArr[i].formattedProduct} </option>
+												<option value='{$productsArr[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$productsArr[i].name} </option>
 											{/section}
 										</optgroup>
 										{/foreach}																			
@@ -147,7 +165,7 @@ var pfp_descr = "";
 										<option value='0'> no products </option>
 									{/if}
 								</select>
-								{*NICE PRODUCT LIST*}
+								{NICE PRODUCT LIST*}
 										
 								</div>
 								{if $validStatus.summary eq 'false'}
@@ -173,7 +191,7 @@ var pfp_descr = "";
 								<input type="text" name="ratio" id="ratio" value="1" />
 							</td>
 						</tr>
-					</table>-->
+					</table>
 
 {*ADDPRODUCTS*}					
 <div class="padd7" id="addProductsContainer">
@@ -222,7 +240,7 @@ var pfp_descr = "";
 	{assign var=count value=$count+1}
 	{/foreach}
 </tbody>	
-{*<tfoot>
+<tfoot>
 	<tr class="">
 		<td class="users_u_bottom" height="20">Select:
 			<a href="#" onclick="selectAllProducts(true); return false;">All</a>
@@ -236,7 +254,7 @@ var pfp_descr = "";
 			{/if}
 		</td>
 	</tr>
-</tfoot>*}													
+</tfoot>												
 </table>			
 		
 		<input id="productCount" type='hidden' name='productCount' value='{if $productCount}{$productCount}{else}0{/if}'>									
@@ -259,7 +277,7 @@ var pfp_descr = "";
 				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=pfpLibrary&bookmark={$request.category}&subBookmark={$request.subBookmark}&id={$request.id}'"
 				{/if}
 		>
-		{if $request.action !== "addItem"}<input type='button' name='save' id="save" class="button" value='Save'>{/if}
+		<input type='button' name='save' id="save" class="button" value='Save'>
 	</div>
 	
 	

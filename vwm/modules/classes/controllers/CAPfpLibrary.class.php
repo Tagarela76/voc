@@ -175,7 +175,8 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("edit",true);
 		$this->smarty->assign("sendFormAction","admin.php?action=confirmEdit&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id'));
 		$this->smarty->assign("request",$_GET);
-		$this->smarty->assign('tpl','tpls/addPfpLibrary.tpl');
+		$this->smarty->assign('show',false);
+		$this->smarty->assign('tpl','tpls/addPfpLibraryTEMP.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
@@ -233,18 +234,111 @@ class CAPfpLibrary extends Controller {
 	}
 
 	private function actionAddItem() {
+		$manager = new PFPManager($this->db);
+		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
+		$id = $this->getFromRequest("id");
+		$pfp = $manager->getPFP($id);
+		
+		
+		$sub = $this->getFromRequest("subBookmark");
+		if($sub == 'custom'){
+			$pmanager = new Product($this->db);
+			$pfpproduct = $pmanager->getProductList();
+		}else{
+			$pfpproduct = $manager->getPFPProductsbySopplier($sub);
+		}
+		$company = new Company($this->db);
+		$companyList = $company->getCompanyList();
+		
+		//	Getting Product list
+		$productsIDArray = array();
+		/*foreach($pfp->products as $p) {
+			$productsIDArray[] = $p->product_id;
+		}
+
+		//$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);*/
+		$this->smarty->assign('products', $pfpproduct);
+		
+		$this->smarty->assign('companyList', $companyList);
+		$this->smarty->assign('companyListPFP', $companyListPFP);
+		$jsSources = array ('modules/js/flot/jquery.flot.js',
+							'modules/js/addPFP.js',
+							'modules/js/PopupWindow.js', 
+							'modules/js/checkBoxes.js',
+							'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+							'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+							'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js',
+							'modules/js/companiesPopup.js');
+        $this->smarty->assign('jsSources',$jsSources);
+		$this->smarty->assign("productCount",$pfp->getProductsCount());
+		$this->smarty->assign("pfp",$pfp);
+		
+		$this->smarty->assign("sendFormAction","admin.php?action=confirmAddItem&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id'));
+		$this->smarty->assign("request",$_GET);
+		
 		$this->smarty->assign('show', true);
 		$this->smarty->assign('tpl', 'tpls/addPfpLibraryTEMP.tpl');
 		$this->smarty->display("tpls:index.tpl");
-	}
+		}
 	
-	private function actionDeleteItem() {
+		private function actionConfirmAddItem() {
+			$formGet = $this->getFromRequest();
+			$form = $this->getFromPost();
+			
+			$pfp_primary_product_id = $form['pfp_primary'];
+			$productCount = intval($form['productCount']);
+			
+			//$departmentID = intval($formGet['departmentID']);
+			
+			$descr = $form['pfp_description'];
+			$products = array();
+
+			for($i=0; $i<$productCount; $i++) {
+				$productID = $form["product_{$i}_id"];
+				$ratio = $form["product_{$i}_ratio"];
+
+				$product = new PFPProduct($this->db);
+				$product->setRatio($ratio);
+				$product->initializeByID($productID);
+				if($productID == $pfp_primary_product_id) {
+					$product->setIsPrimary(true);
+				} else {
+					$product->setIsPrimary(false);
+				}
+
+				$products[] = $product;
+			}
+
+			$pfp = new PFP($products);
+			$pfp->setDescription($descr);
+			
+			$companyID = array();
+			
+			$company = new Company($this->db);
+			$companyList = $company->getCompanyList();
+			
+			for ($i=0; $i<count($companyList); $i++){
+				if (!is_null($this->getFromPost('company_'.$i))){
+					foreach ($companyList as $item) {
+						if ($this->getFromPost('company_'.$i) == $item['id']){
+							$companyAllList[] = $item;
+						}
+					}
+				}
+			} 
+			
+			$manager = new PFPManager($this->db);
+			$manager->add($pfp,$companyAllList);
+			header("Location: ?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$formGet['subBookmark']."");
+		}
+		
+		private function actionDeleteItem() {
 		$manager = new PFPManager($this->db);
 		$idArray = is_array($this->getFromRequest("id")) ? $this->getFromRequest("id") : array($this->getFromRequest("id"));
 		
 		$pfps = $manager->getList(null,null,$idArray);
 		
-		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfpLibrary");
+		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."");
 
 		foreach ($pfps as $p) {
 				$delete["id"] =	$p->getId();
@@ -265,8 +359,13 @@ class CAPfpLibrary extends Controller {
 
 		$manager = new PFPManager($this->db);
 		$pfpList = $manager->getList(null,null,$itemID);
+		$i=0;
+		while($itemID[$i]){
+		$manager->unassignPFPFromCompanies($itemID[$i]);
+		$i++;
+		}
 		$manager->removeList($pfpList);
-		header("Location: admin.php?action=browseCategory&category=pfpLibrary");
+		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."");
 		die();
 	}
 }

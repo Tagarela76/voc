@@ -119,6 +119,7 @@ ID number
 {*/if*}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
 <input type="hidden" name="bookmark" value="{$request.bookmark}">
+<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 <input type="hidden" name="ID" value="{$ID}">
 <input type="hidden" name="category" value="{$request.category}">
 <input type="hidden" name="action" value="confirmDelete">

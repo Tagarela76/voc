@@ -8,7 +8,14 @@
 	{if $color eq "blue"}
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
-
+	
+<script>{literal}
+function CheckCB(Element){
+	if(document.getElementById) {
+		if(document.getElementById(Element.id.replace('cb','tr'))){Element.checked = !Element.checked;}
+	}
+}	{/literal}
+</script>	
 <form method="get" action="">
 	  {*shadow*}
 	<div class="shadow">
@@ -149,9 +156,10 @@
 	
 	{*<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->*}
 {if $gobackAction eq 'browseCategory'}		
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>	
+{*<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{/if}'"/>
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}'">
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
@@ -160,11 +168,12 @@
 {else}{if $request.category == "product"}
 <input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}'">
 {else}
-<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'">
+<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{/if}{/if}'">
 {/if}
 {/if}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
 <input type="hidden" name="bookmark" value="{$request.bookmark}">
+<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 <input type="hidden" name="category" value="{$request.category}">
 <input type="hidden" name="action" value="confirmDelete">
 {if $itemType=="inventory" && $deleteWithProducts==true}

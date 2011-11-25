@@ -131,6 +131,7 @@ class CMix extends Controller
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 		//	Getting Product list
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
+	
 		$this->smarty->assign('products', $productsListGrouped);
                     $jsSources = array ('modules/js/flot/jquery.flot.js',
                                         'modules/js/addPFP.js',
