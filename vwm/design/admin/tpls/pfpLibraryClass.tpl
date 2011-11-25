@@ -112,7 +112,7 @@
     {*BEGIN	EMPTY LIST*}
     <tr class="">
         <td colspan="5"class="border_users_l border_users_r" align="center">
-            No pre formulated products for this spiller
+            No pre formulated products for this supplier
         </td>
     </tr>
     {*END	EMPTY LIST*}

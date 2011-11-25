@@ -44,7 +44,7 @@ var pfp_descr = "";
 			<tr class="users_header_orange">
 				<td height="30" width="30%">
 				
-					<div class="users_header_orange_l"><div><span >{if $smarty.request.action eq "addPFPItem"}Adding for a new pre formulated products{else}Editing pre formulated products{/if}</span></div></div>
+					<div class="users_header_orange_l"><div><span >{if $smarty.request.action eq "addPFPItem"}Add new pre formulated products{else}Edit pre formulated products{/if}</span></div></div>
 				</td>
 				<td>
 					<div class="users_header_orange_r"><div>&nbsp;</div></div>				
