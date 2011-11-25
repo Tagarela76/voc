@@ -175,7 +175,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("edit",true);
 		$this->smarty->assign("sendFormAction","admin.php?action=confirmEdit&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id'));
 		$this->smarty->assign("request",$_GET);
-		$this->smarty->assign('show',false);
+		$this->smarty->assign('show',true);
 		$this->smarty->assign('tpl','tpls/addPfpLibraryTEMP.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}

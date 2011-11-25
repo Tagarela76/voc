@@ -139,9 +139,9 @@ var pfp_descr = "";
 
 											{section name=i loop=$products}
 												{if $request.subBookmark == 'custom'}
-												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$products[i].supplier} >> {$products[i].name} </option>
+												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}> {$products[i].supplier} >> {$products[i].product_nr} >> {$products[i].name} </option>
 												{else}
-												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}>{$products[i].name} </option>
+												<option value='{$products[i].product_id}' {if $productsArr[i].disabled}disabled="disabled"{/if}>{$products[i].product_nr} >> {$products[i].name} </option>
 												{/if}
 											{/section}
 																			
