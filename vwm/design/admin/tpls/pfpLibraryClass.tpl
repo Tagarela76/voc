@@ -18,6 +18,10 @@
 </table>
 {/if}
 <div class="padd7" align="center">
+
+{*PAGINATION*}
+		{include file="tpls:tpls/paginationabc.tpl"}
+{*/PAGINATION*}
 <table class="users" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_blue" height="27px">
         <td class="users_u_top_blue" width="10%">
@@ -64,7 +68,8 @@
     {assign var='pfpid' value=$pfp->getId()}
 	{assign var='subb' value=$request.subBookmark}
 	{assign var='book' value=$request.category}
-    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&bookmark=$book&subBookmark=$subb&id=$pfpid"}
+	{assign var='page' value=$request.page}
+    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&bookmark=$book&subBookmark=$subb&id=$pfpid&page=$page"}
 	<!-- Begin Highlighting -->
     <tr class="hov_company" height="10px"> 	
 		
@@ -128,6 +133,6 @@
 </table>
 </div>
 {*PAGINATION*}
-{include file="tpls:tpls/pagination.tpl"}
+{include file="tpls:tpls/paginationabc.tpl"}
 {*/PAGINATION*}
 </form>	{*close form that was opened at controlInsideDepartment.tpl*}

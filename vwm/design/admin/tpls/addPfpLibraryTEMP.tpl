@@ -273,8 +273,8 @@ var pfp_descr = "";
 	{*BUTTONS*}	
 	<div align="right" class="margin5">
 		<input type='button' name='cancel' class="button" value='Cancel' 
-				{if $request.action eq "addItem"} onClick="location.href='admin.php?action=browseCategory&category=pfps&bookmark={$request.category}&subBookmark={$request.subBookmark}'"
-				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=pfpLibrary&bookmark={$request.category}&subBookmark={$request.subBookmark}&id={$request.id}'"
+				{if $request.action eq "addItem"} onClick="location.href='admin.php?action=browseCategory&category=pfps&bookmark={$request.category}&subBookmark={$request.subBookmark}{if $request.page }&page={$request.page}{/if}'"
+				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=pfpLibrary&bookmark={$request.category}&subBookmark={$request.subBookmark}&id={$request.id}{if $request.page }&page={$request.page}{/if}'"
 				{/if}
 		>
 		<input type='button' name='save' id="save" class="button" value='Save'>

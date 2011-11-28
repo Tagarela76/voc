@@ -22,7 +22,11 @@ class CAPfps extends Controller {
                 $bookmarksList = $manager->getBookmarksListSupplier();                
                 $this->smarty->assign("bookmarks",$bookmarksList);
 				
-				/*** calculating the length of the menu !!!!!!!!!!!!!!!NEED REWRITE!!!!!!!!!!***/
+				
+	
+
+				
+				/*** calculating the length of the menu !!!!!!!!!!!!!!!NEED REWRITE!!!!!!!!!!
 				$bmcount = $manager->getCountSupplier();
 				for ($i=0;$i<$bmcount;$i++){
 					if ($_GET['subBookmark'] == $bookmarksList[$i]['supplier_id']){
@@ -41,7 +45,7 @@ class CAPfps extends Controller {
 				}	
 				
 				$this->smarty->assign('selectedBookmark',round($indent));	
-
+***/
 
 	//	$manager = new PFPManager($this->db);
 	//	$pfps = $manager->getList();

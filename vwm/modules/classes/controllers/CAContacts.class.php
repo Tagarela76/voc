@@ -76,7 +76,7 @@ class CAContacts extends Controller {
 			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
 			$this->smarty->assign('pagination', $pagination);
 		}
-
+		
 		//	set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);

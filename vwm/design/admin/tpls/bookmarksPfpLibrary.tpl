@@ -12,14 +12,10 @@
 
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0;">
 	<tr>
-	<td align="center" class="bookmark_fon">
+	<td align="left" class="bookmark_fon">
 <table cellspacing="0" cellpadding="0" height="100%" class="bookmarks_big" style="margin-left:20px;">
 	<tr>
-	<td>
-		<div id="slider1">
-		<a class="buttons prev" href="#"><img src="images/slider-left-arrow.gif" width="16px" height="10px" title="Previous"/></a>
-		<div class="viewport">
-			<ul class="overview">
+				{*ABC TABS}
 				<li> 
 					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark=custom" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == 'custom'}
@@ -34,10 +30,29 @@
 							</div>
 						</div></a>
 				</li>	
-				{*BEGIN LIST*}				
-				{section name=i loop=$bookmarks}    
+								
+				{section name=i loop=$abctabs}    
 					<li> 
-					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}{if $bookmarks[i].supplier_id != 45}&subBookmark={$bookmarks[i].supplier_id}{/if}" style="text-decoration: none; color: #333333;">
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$abctabs[i]}" style="text-decoration: none; color: #333333;">
+							{if $request.subBookmark == $abctabs[i]}
+								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+									{else}                    
+										
+										<div class="deactiveBookmark"><div class="deactiveBookmark_right">
+										
+							{/if}
+							{$abctabs[i]}
+							
+							</div>
+						</div></a>
+					</li>
+				{/section}	
+				{ABC TABS*}
+				
+				{*BEGIN LIST*}			
+				{section name=i loop=$bookmarks}
+					<td >
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$bookmarks[i].supplier_id}&page={$request.page}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
 								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
 									{else}                    
@@ -49,7 +64,7 @@
 							
 							</div>
 						</div></a>
-					</li>
+					</td>
 				{/section}	
 				{*END LIST*}
 				
@@ -69,11 +84,7 @@
 					</a>
 				</li>
 				*}
-			</ul>
-		</div>
-			<a class="buttons next" href="#"><img src="images/slider-right-arrow.gif" width="16px" height="10px" title="Next"/></a>
-		</div>
-	</td>
+
 	</tr>
 	<tr height="19">
 		<td></td>
