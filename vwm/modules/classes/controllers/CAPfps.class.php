@@ -16,50 +16,49 @@ class CAPfps extends Controller {
 	}
 	
 	private function actionBrowseCategory() {
-		$bookmark=$this->getFromRequest('bookmark');
+		$bookmark = $this->getFromRequest('bookmark');
+
+		$manager = new BookmarksManager($this->db);
+		$bookmarksList = $manager->getBookmarksListSupplier();
+		$this->smarty->assign("bookmarks", $bookmarksList);
 		
-		        $manager = new BookmarksManager($this->db);
-                $bookmarksList = $manager->getBookmarksListSupplier();                
-                $this->smarty->assign("bookmarks",$bookmarksList);
-				
-				
-	
+		$productTypesObj = new ProductTypes($this->db);		 
+		$productTypeList = $productTypesObj->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productTypeList);
 
-				
-				/*** calculating the length of the menu !!!!!!!!!!!!!!!NEED REWRITE!!!!!!!!!!
-				$bmcount = $manager->getCountSupplier();
-				for ($i=0;$i<$bmcount;$i++){
-					if ($_GET['subBookmark'] == $bookmarksList[$i]['supplier_id']){
-					$check = $i;break; }
-				}
-				if ($check < round($bmcount/3)){
-					$tmp = $check;
-					$indent = $check;
-				}
-				if ( round($bmcount/3) <= $check AND $check <= round(2*($bmcount/3))){
-				
-				$indent = $check + $check/5 ;	
-				}
-				if ($check > round(2*($bmcount/3))){
-				$indent = $check+$check/3 ;	
-				}	
-				
-				$this->smarty->assign('selectedBookmark',round($indent));	
-***/
+		/*		 * * calculating the length of the menu !!!!!!!!!!!!!!!NEED REWRITE!!!!!!!!!!
+		  $bmcount = $manager->getCountSupplier();
+		  for ($i=0;$i<$bmcount;$i++){
+		  if ($_GET['subBookmark'] == $bookmarksList[$i]['supplier_id']){
+		  $check = $i;break; }
+		  }
+		  if ($check < round($bmcount/3)){
+		  $tmp = $check;
+		  $indent = $check;
+		  }
+		  if ( round($bmcount/3) <= $check AND $check <= round(2*($bmcount/3))){
 
-	//	$manager = new PFPManager($this->db);
-	//	$pfps = $manager->getList();
-	//	$this->smarty->assign('itemsCount', count($pfps));
-		$jsSources = array  ('modules/js/checkBoxes.js',
-                             'modules/js/autocomplete/jquery.autocomplete.js');
+		  $indent = $check + $check/5 ;
+		  }
+		  if ($check > round(2*($bmcount/3))){
+		  $indent = $check+$check/3 ;
+		  }
+
+		  $this->smarty->assign('selectedBookmark',round($indent));
+		 * * */
+
+		//	$manager = new PFPManager($this->db);
+		//	$pfps = $manager->getList();
+		//	$this->smarty->assign('itemsCount', count($pfps));
+		$jsSources = array('modules/js/checkBoxes.js',
+			'modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
-	//	$this->smarty->assign('pfps', $pfps);
-	//	$this->smarty->assign('childCategoryItems', $pfps);
+		//	$this->smarty->assign('pfps', $pfps);
+		//	$this->smarty->assign('childCategoryItems', $pfps);
 		//$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
-		
-		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
+
+		$this->forward($bookmark, 'bookmark' . ucfirst($bookmark), $vars, 'admin');
 		$this->smarty->display("tpls:index.tpl");
-	
 	}
 	
 /*	protected function actionBrowseCategory($vars) {			

@@ -1,15 +1,3 @@
-<link href="style.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="modules/js/jquery.tinycarousel.min.js"></script>
-{literal}
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.viewport').width(document.body.clientWidth - $('.dotted_right').width().valueOf() - 230 + 'px');
-		$('#slider1').tinycarousel({duration: 200, display:1, start: document.getElementById('selectedBookmark').value});
-	});
-</script>
-{/literal}
-
-
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0;">
 	<tr>
 	<td align="left" class="bookmark_fon">
@@ -94,3 +82,30 @@
 </tr>
 <input type="hidden" name="hiddenSelectedBookmark" id="selectedBookmark" value="{$selectedBookmark}"/>
 </table>
+
+
+<table align='center'>
+	<tr>
+		<td>
+			<form id="selectCategotyForm" method="get">
+				<input type="hidden" name="action" value="browseCategory"/>
+				<input type="hidden" name="category" value="pfps"/>
+				<input type="hidden" name="bookmark" value="pfpLibrary"/>
+				<input type="hidden" name="subBookmark" value="{$request.subBookmark}"/>
+				<input type="hidden" name="page" value="{$request.page}"/>
+				
+				<select class="addInventory" onchange="$('#selectCategotyForm').submit();" name="productCategory">
+					{foreach from=$productTypeList item='productType' key="name"}
+						<optgroup label="{$name}">
+							<option value="{$productType.id}" {if $request.productCategory == $productType.id}selected{/if}>{$name}</option>
+							{foreach from=$productType.subTypes item='subType' key="id"}		
+								<option value="{$id}" {if $request.productCategory == $id}selected{/if}>{$name} - {$subType}</option>
+							{/foreach}
+						</optgroup>					
+					{/foreach}				
+				</select>			
+			</form>
+		</td>
+	</tr>
+</table>
+
