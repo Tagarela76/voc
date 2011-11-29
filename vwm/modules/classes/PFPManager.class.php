@@ -233,7 +233,7 @@ class PFPManager
 			$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (".$pfpID.", ".$companyID[$i]['id'].")";
 			$this->db->query($queryAddPFPRelation2Company);
 
-			$i++;var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company);
+			$i++;//var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company);
 			}
 		}else{	
 				$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('". $product->getDescription() . "','". $companyID. "')";
@@ -257,7 +257,7 @@ class PFPManager
 		
 		$this->db->query($queryInsertPFPProducts);
 		
-		var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company,'QUERY3',$queryInsertPFPProducts);
+		//var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company,'QUERY3',$queryInsertPFPProducts);
 	}
 	
 	public function remove(PFP $product) {

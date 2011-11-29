@@ -122,40 +122,63 @@ class CAPfpLibrary extends Controller {
 		$bookmarksList = $suppl->getBookmarksListSupplier();
 		$page = substr($this->getFromRequest("page"),-1);
 		
+		$tmp = $suppl->getOriginSupplier();
 		
+		$bookmarksList = $tmp;
+		//var_dump($tmp,'----------',$bookmarksList);
 		if ($page == null){$page = 'a';}
 		$bookmarks[0]['supplier_id'] = 'custom';
 		$bookmarks[0]['supplier'] = 'custom';
-		for($i=0; $i<count($bookmarksList); $i++) {echo $bookmarksList[i][supplier];
+		for($i=0; $i<count($bookmarksList); $i++) {
 			if (strtolower(substr($bookmarksList[$i]['supplier'],0,1)) == $page){
 			$bookmarks[] = $bookmarksList[$i];
 			}
 		}
 
 		$this->smarty->assign("bookmarks",$bookmarks);
-		$pfplist = $manager->getList();
-		$sub = $this->getFromRequest("subBookmark");
-		$pfplist = $manager->getPfpList($sub);
+		//$pfplist = $manager->getList();
 		
+		$sub = $this->getFromRequest("subBookmark");
+		if ($sub != 'custom'){
+		$allsub = $suppl->getAllSuppliersByOrigin($sub);
+			$i=0;
+			while($allsub[$i]){
+				$listOFpfp[$i] = $manager->getPfpList($allsub[$i]['supplier_id']);
+				$i++;
+			}
+			$temp = $listOFpfp[0];
+			for($i = 0; $i < count($listOFpfp)-1; $i++){
+				$temp = array_merge($temp, $listOFpfp[$i+1]);
+			}
+			$listOFpfp = array_unique($temp);		
+		}else{
+		$listOFpfp = $manager->getPfpList($sub);	
+		}
+
+		$pfps = $manager->getListSpecial(null,null,$listOFpfp);
+			
+		/*
+		$pfplist = $manager->getPfpList($sub);
 		$pfps = $manager->getListSpecial(null,null,$pfplist);
+		*/
+		
 		
 		$this->smarty->assign('itemsCount', count($pfps));
-		$jsSources = array  ('modules/js/checkBoxes.js',
-                             'modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('pfps', $pfps);
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign("abctabs",$abc);
 		$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
-				
+		$jsSources = array  ('modules/js/checkBoxes.js',
+                             'modules/js/autocomplete/jquery.autocomplete.js');				
 	}
 	
 	private function actionViewDetails() {
 		$manager = new PFPManager($this->db);
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$pfp = $manager->getPFP($this->getFromRequest("id"));
-		$this->smarty->assign("deleteUrl","admin.php?action=deleteItem&category=pfps&bookmark=pfpLibrary&id={$this->getFromRequest("id")}&1page={$this->getFromRequest("page")}");
-		$this->smarty->assign("editUrl","admin.php?action=edit&category=pfps&bookmark=pfpLibrary&subBookmark={$_GET['subBookmark']}&id={$_GET['id']}&2page={$_GET['page']}");
+		$this->smarty->assign("deleteUrl","admin.php?action=deleteItem&category=pfps&bookmark=pfpLibrary&id={$this->getFromRequest("id")}&page={$this->getFromRequest("page")}");
+		$this->smarty->assign("editUrl","admin.php?action=edit&category=pfps&bookmark=pfpLibrary&subBookmark={$_GET['subBookmark']}&id={$_GET['id']}&page={$_GET['page']}");
 		$this->smarty->assign('companyListPFP', $companyListPFP);
 		$this->smarty->assign("pfp",$pfp);
 		$this->smarty->assign("request",$this->getFromRequest());
