@@ -40,7 +40,7 @@
 				{*BEGIN LIST*}			
 				{section name=i loop=$bookmarks}
 					<td >
-					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$bookmarks[i].supplier_id}&page={$request.page}" style="text-decoration: none; color: #333333;">
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$bookmarks[i].supplier_id}&page={$request.page}{if $request.page }&productCategory={$request.productCategory}{/if}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
 								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
 									{else}                    
@@ -95,6 +95,11 @@
 				<input type="hidden" name="page" value="{$request.page}"/>
 				
 				<select class="addInventory" onchange="$('#selectCategotyForm').submit();" name="productCategory">
+					<optgroup label="All">
+						<option value="0" {if $request.productCategory == $productType.id}selected{/if}>All</option>
+
+					</optgroup>
+					
 					{foreach from=$productTypeList item='productType' key="name"}
 						<optgroup label="{$name}">
 							<option value="{$productType.id}" {if $request.productCategory == $productType.id}selected{/if}>{$name}</option>

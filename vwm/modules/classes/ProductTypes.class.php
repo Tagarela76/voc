@@ -92,6 +92,13 @@ class ProductTypes {
 		
 		return $productType;
 	}
+
+	public function getProductsByType($typeID){
+		$query = "SELECT product_id FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$typeID." ORDER BY product_id ASC";
+		$this->db->query($query);
+		$productsbyType = $this->db->fetch_all_array();
+		return $productsbyType;
+	}	
 	
 	public function setTypeAndSubTypeByProductID($productID, $types){
 		

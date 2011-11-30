@@ -29,7 +29,7 @@
 					<ul class="link">
 						<li>
 							
-							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&page=1a" class="id_company">PFP Library</a>
+							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&page=1a&productCategory=0" class="id_company">PFP Library</a>
 						</li>
 					</ul>
 				</div>

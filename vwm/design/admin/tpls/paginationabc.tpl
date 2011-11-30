@@ -16,7 +16,7 @@
 
 	<td align="center" class="pagination">	{*<a href="?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&page={$request.page}" >Custom</a>*}
 		{if $pagination->getCurrentPage() != 1}
-		<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getCurrentPage()-1}{$abctabs[$prev1]}{if $sort}&sort={$sort}{/if}" class="NextPrevious">Previous</a>					
+		<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getCurrentPage()-1}{$abctabs[$prev1]}{if $sort}&sort={$sort}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}" class="NextPrevious">Previous</a>					
 		{/if}
 		
 		{if $pagination->getRangeFirstPage() > 1}
@@ -28,17 +28,17 @@
 			{if $pagination->getCurrentPage() eq $smarty.section.i.index+1}
 				<b style="color:#4C505B;background:#E3E3E3;">{*$smarty.section.i.index+1*}{$abctabs[i]|upper}</b>
 			{else}
-				<a href="{$pagination->url}&subBookmark=custom&page={$smarty.section.i.index+1}{$abctabs[i]}{if $sort}&sort={$sort}{/if}">{*$smarty.section.i.index+1*}{$abctabs[i]|upper}</a>
+				<a href="{$pagination->url}&subBookmark=custom&page={$smarty.section.i.index+1}{$abctabs[i]}{if $sort}&sort={$sort}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}">{*$smarty.section.i.index+1*}{$abctabs[i]|upper}</a>
 			{/if}
 		{/if}			
 		{/section}		
 		
 		{if $pagination->getRangeLastPage() < $pagination->getPageCount()}
-			..&nbsp;<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getPageCount()}{$abctabs[25]}{if $sort}&sort={$sort}{/if}">{*$pagination->getPageCount()*}{$abctabs[25]|upper}</a>
+			..&nbsp;<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getPageCount()}{$abctabs[25]}{if $sort}&sort={$sort}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}">{*$pagination->getPageCount()*}{$abctabs[25]|upper}</a>
 		{/if}
 		
 		{if $pagination->getCurrentPage() != $pagination->getPageCount() && $pagination->getPageCount() != 0}			
-			<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getCurrentPage()+1}{$abctabs[$next1]}{if $sort}&sort={$sort}{/if}" class="NextPrevious">Next</a>
+			<a href="{$pagination->url}&subBookmark=custom&page={$pagination->getCurrentPage()+1}{$abctabs[$next1]}{if $sort}&sort={$sort}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}" class="NextPrevious">Next</a>
 		{/if}
 	</td>	
 </tr>

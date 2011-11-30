@@ -128,6 +128,7 @@
 				<input type="hidden" name="bookmark" value="{$request.category}">
 				<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 				<input type="hidden" name="page" value="{$request.page}">
+				<input type="hidden" name="productCategory" value="{$request.productCategory}">
 				
 				
 			{else}
