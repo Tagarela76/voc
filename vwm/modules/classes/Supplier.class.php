@@ -89,5 +89,19 @@ class Supplier {
 		return $this->db->fetch(0)->cnt;
 	}
 	
+	public function assignSup2Sup($origin, $dublicate){
+		$query = "UPDATE ".TB_SUPPLIER." SET original_id = '".$origin."' WHERE supplier_id = ".$dublicate;
+
+		$this->db->query($query);
+		if (mysql_errno() == 0){
+			$error = "";
+		} else {
+			$error = "Error!";
+		}
+		
+		return $error;
+	}	
+	
+	
 }
 ?>

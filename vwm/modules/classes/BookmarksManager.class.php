@@ -40,23 +40,6 @@ class BookmarksManager {
 		return $bookmarks;
 	}
 	
-	public function getBookmarksListSupplier() {
-
-                $itemCount = $this->getCountSupplier();
-		$query = "SELECT * FROM " . TB_SUPPLIER . " ORDER BY supplier ASC";
-                
-		$this->db->query($query);
-		$arr = $this->db->fetch_all_array();
-		$bookmarks = array();
-		foreach($arr as $b) {
-			//$bookmark = new Bookmark($this->db, $b);
-			$bookmarks[] = $b; 
-			
-		}
-          // die(var_dump($arr,$bookmarks));            
-		return $bookmarks;
-	}
-	
 	/**** GET ORIGIN SUPPLIER***/
 	public function getOriginSupplier() {
 
@@ -78,7 +61,24 @@ class BookmarksManager {
 	public function getAllSuppliersByOrigin($origin) {
 
         $itemCount = $this->getCountSupplier();
-		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE original_id='$origin' ORDER BY supplier ASC";
+		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE original_id='$origin' AND supplier_id!='$origin' ORDER BY supplier ASC";
+                
+		$this->db->query($query);
+		$arr = $this->db->fetch_all_array();
+		$bookmarks = array();
+		foreach($arr as $b) {
+			//$bookmark = new Bookmark($this->db, $b);
+			$bookmarks[] = $b; 
+			
+		}
+          // die(var_dump($arr,$bookmarks));            
+		return $bookmarks;
+	}
+	
+	public function getBookmarksListSupplier() {
+
+                $itemCount = $this->getCountSupplier();
+		$query = "SELECT * FROM " . TB_SUPPLIER . " ORDER BY supplier ASC";
                 
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
@@ -91,6 +91,9 @@ class BookmarksManager {
           // die(var_dump($arr,$bookmarks));            
 		return $bookmarks;
 	}	
+
+	
+	
 	
 	public function getCountSupplier() {
                 $query = "SELECT count(*) Num FROM " . TB_SUPPLIER . "";

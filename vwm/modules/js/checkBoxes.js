@@ -4,7 +4,13 @@ function CheckAll(Element) {
 		thisCheckBoxes = document.getElementById('chemClassList').getElementsByTagName('input');
 	} else {
 		if (Element.name == 'allTypesClasses'){
+			if (document.getElementById('typesClassList') != null){
 			thisCheckBoxes = document.getElementById('typesClassList').getElementsByTagName('input');
+			}else if(document.getElementById('companiesList')!= null){
+			thisCheckBoxes = document.getElementById('companiesList').getElementsByTagName('input');	
+			}else if(document.getElementById('supplierListPP')!= null){
+				thisCheckBoxes = document.getElementById('supplierListPP').getElementsByTagName('input');
+			}
 		} else {
 			thisCheckBoxes = document.getElementsByTagName('input');
 	}	
@@ -23,7 +29,13 @@ function unCheckAll(Element) {
 		thisCheckBoxes = document.getElementById('chemClassList').getElementsByTagName('input');
 	} else {
 		if (Element.name == 'allTypesClasses'){
+			if (document.getElementById('typesClassList') != null){
 			thisCheckBoxes = document.getElementById('typesClassList').getElementsByTagName('input');
+			}else if(document.getElementById('companiesList')!= null){
+			thisCheckBoxes = document.getElementById('companiesList').getElementsByTagName('input');	
+			}else if(document.getElementById('supplierListPP')!= null){
+				thisCheckBoxes = document.getElementById('supplierListPP').getElementsByTagName('input');
+			}
 		} else {
 			thisCheckBoxes = document.getElementsByTagName('input');
 	}	

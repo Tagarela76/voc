@@ -55,9 +55,44 @@ class CASupplier extends Controller {
 	
 	private function actionEdit() {
 		$supplier=new Supplier($this->db);
-		$id = $this->getFromRequest('id');		
+		$suppl = new BookmarksManager($this->db);
+		$id = $this->getFromRequest('id');	
+		
+		$supplierList = $supplier->getSupplierList();
+		$SuppliersByOrigin = $suppl->getAllSuppliersByOrigin($this->getFromRequest('id'));
+		var_dump($this->getFromPost(),$SuppliersByOrigin);
 		if ($this->getFromPost('save')=='Save')
 		{	
+
+			
+			
+			for ($i=0; $i<count($supplierList); $i++){
+				if (!is_null($this->getFromPost('supplier_'.$i))){
+					foreach ($supplierList as $item) {
+						if ($this->getFromPost('supplier_'.$i) == $item['supplier_id']){
+							$sipplierAllList[] = $item;
+						}
+					}
+				}
+			}
+			var_dump($id,$supplierItem,$sipplierAllList);die();
+			foreach ($sipplierAllList as $supplierItem) {
+				$manager->assignSup2Sup($id , $supplierItem['supplier_id']);
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			//
+			
 			$data=array(
 				"supplier_id"	=>	$id,
 				"description"	=>	$this->getFromPost("supplier_desc"),
@@ -94,6 +129,18 @@ class CASupplier extends Controller {
 		$registration = new Registration($this->db);
 		$countries = $registration->getCountryList();
 		
+		
+		
+		
+		
+		$jsSources = array (
+							'modules/js/PopupWindow.js', 
+							'modules/js/checkBoxes.js',
+		
+							'modules/js/supplierPopup.js');
+		$this->smarty->assign('SuppliersByOrigin',$SuppliersByOrigin);
+		$this->smarty->assign('supplierList',$supplierList);	
+        $this->smarty->assign('jsSources',$jsSources);		
 		$this->smarty->assign("country",$countries);
 		$this->smarty->assign('tpl','tpls/addSupplierClass.tpl');
 		$this->smarty->assign('data', $data);
