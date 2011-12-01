@@ -95,7 +95,7 @@
 		<select name="supplierID">
 			<option value="All suppliers" {if $currentSupplier == 0} selected {/if}>All suppliers {if $currentSupplier == 0}(selected){/if}</option>
 			{section name=i loop=$supplierList}
-				<option value="{$supplierList[i].supplier_id}" {if $supplierList[i].supplier_id == $currentSupplier} selected {/if}>{$supplierList[i].supplier_desc}{if $supplierList[i].supplier_id == $currentSupplier}(selected){/if}</option>
+				<option value="{$supplierList[i].supplier_id}" {if $supplierList[i].supplier_id == $currentSupplier} selected {/if}>{$supplierList[i].supplier}{if $supplierList[i].supplier_id == $currentSupplier}(selected){/if}</option>
 			{/section}			
 		</select>
 		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">

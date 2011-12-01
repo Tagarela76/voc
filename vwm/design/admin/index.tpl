@@ -84,7 +84,7 @@
 													<td align='right'>
 														<br>
 														{*SEARCH*}
-															{if $request.bookmark == "product" || $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
+															{if $request.category == "product" || $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>

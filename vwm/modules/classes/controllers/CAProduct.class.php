@@ -42,11 +42,15 @@ class CAProduct extends Controller {
 		}
 		
 		// get Supplier list
-		$supplier=new Supplier($this->db);
+		$suppl = new BookmarksManager($this->db);
+		$supplierList = $suppl->getOriginSupplier();
+		$supplierItemsCount=count($supplierList);
+		/*$supplier=new Supplier($this->db);
 		$supplierList=$supplier->getSupplierList();
 		$supplierItemsCount=count($supplierList);
-		$this->smarty->assign('supplierList', $supplierList);						
-		
+								
+		*/
+		$this->smarty->assign('supplierList', $supplierList);
 		//	get company list
 		$company = new Company($this->db);
 		$companyList = $company->getCompanyList();
@@ -61,13 +65,44 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentSupplier', 0);												
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));			
+			$allsub = $suppl->getAllSuppliersByOrigin($this->getFromRequest('supplierID'));				
+
+			$i=0;$tmp=0;
+			while($allsub[$i]){
+				$productCount = $product->getProductCount($this->getFromRequest('companyID'),$allsub[$i]['supplier_id']);
+				$tmp = $tmp + $productCount;
+				$i++;
+			}			
+			$productCount = $tmp;
+			
+			//$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));	
 			$pagination = new Pagination($productCount);
 			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&supplierID=".$this->getFromRequest('supplierID')."&subaction=Filter&category=product";
 			$this->smarty->assign('pagination', $pagination);
 			
+			
+						
+			
 			if ($supplierID != 0) {
-				$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination,' TRUE ',$sortStr);
+			/**get product by origin and similar suppliers	
+	
+			$i=0;
+			while($allsub[$i]){
+				$listOFproduct[$i] = $product->getProductListByMFG($allsub[$i]['supplier_id'], $companyID, $pagination,' TRUE ',$sortStr);
+				$i++;
+			}		
+			$temp = $listOFproduct[0];
+			for($i = 0; $i < count($listOFproduct)-1; $i++){
+				if (($listOFproduct[$i+1])!=false){
+				$temp = array_merge($temp, $listOFproduct[$i+1]);
+				}
+			}
+			$productList = $temp;
+					
+				
+			/***********/	
+			$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination,' TRUE ',$sortStr);
+
 			} else {
 				$productList = $product->getProductList($companyID, $pagination,' TRUE ',$sortStr);	
 			}			

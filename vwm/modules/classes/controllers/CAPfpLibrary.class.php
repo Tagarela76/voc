@@ -119,11 +119,10 @@ class CAPfpLibrary extends Controller {
 		$pagination->url = "?action=browseCategory&category=pfps&bookmark=pfpLibrary";
 		$this->smarty->assign('pagination', $pagination);
 		
-		$bookmarksList = $suppl->getBookmarksListSupplier();
+		//$bookmarksList = $suppl->getBookmarksListSupplier();
 		$page = substr($this->getFromRequest("page"),-1);
 		
 		$tmp = $suppl->getOriginSupplier();
-		
 		$bookmarksList = $tmp;
 		//var_dump($tmp,'----------',$bookmarksList);
 		if ($page == null){$page = 'a';}
@@ -138,9 +137,10 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("bookmarks",$bookmarks);
 		//$pfplist = $manager->getList();
 		
-		$sub = $this->getFromRequest("subBookmark");
+			$sub = $this->getFromRequest("subBookmark");
 		
 	    if ($sub != 'custom'){
+			
 		$allsub = $suppl->getAllSuppliersByOrigin($sub);
 			$i=0;
 			while($allsub[$i]){

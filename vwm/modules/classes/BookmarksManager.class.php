@@ -61,7 +61,7 @@ class BookmarksManager {
 	public function getAllSuppliersByOrigin($origin) {
 
         $itemCount = $this->getCountSupplier();
-		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE original_id='$origin' AND supplier_id!='$origin' ORDER BY supplier ASC";
+		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE original_id='$origin' ORDER BY supplier ASC";
                 
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
