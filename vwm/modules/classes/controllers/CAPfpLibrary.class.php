@@ -124,7 +124,7 @@ class CAPfpLibrary extends Controller {
 		
 		$tmp = $suppl->getOriginSupplier();
 		
-		//!!$bookmarksList = $tmp;
+		$bookmarksList = $tmp;
 		//var_dump($tmp,'----------',$bookmarksList);
 		if ($page == null){$page = 'a';}
 		$bookmarks[0]['supplier_id'] = 'custom';
@@ -139,7 +139,7 @@ class CAPfpLibrary extends Controller {
 		//$pfplist = $manager->getList();
 		
 		$sub = $this->getFromRequest("subBookmark");
-	/*!!	
+		
 	    if ($sub != 'custom'){
 		$allsub = $suppl->getAllSuppliersByOrigin($sub);
 			$i=0;
@@ -157,11 +157,11 @@ class CAPfpLibrary extends Controller {
 		}
 
 		$pfps = $manager->getListSpecial(null,null,$listOFpfp);
-	*/	
 		
+		/*
 		$pfplist = $manager->getPfpList($sub);
 		$pfps = $manager->getListSpecial(null,null,$pfplist);
-		
+		*/
 		
 		
 		$this->smarty->assign('itemsCount', count($pfps));
@@ -192,7 +192,7 @@ class CAPfpLibrary extends Controller {
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
-		
+		var_dump($companyListPFP);
 		$company = new Company($this->db);
 		$companyList = $company->getCompanyList();
 		

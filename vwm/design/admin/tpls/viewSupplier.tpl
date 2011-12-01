@@ -77,6 +77,27 @@
 							<div align="left" >	&nbsp;{$supplier.country}</div>
 							</td>
 						</tr>
+						{*Similar suppliers*}
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Similar Suppliers:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+								<div align="left">
+									{if $SuppliersByOrigin|@count !== 0}
+									{foreach from=$SuppliersByOrigin item=supplier name=fooList}
+										{if $smarty.foreach.fooList.index < $SuppliersByOrigin|@count-1}
+											&nbsp;{$supplier.supplier},
+										{else}
+											&nbsp;{$supplier.supplier}
+										{/if}	
+									{/foreach}
+									{else}
+										&nbsp;&nbsp;&mdash;
+									{/if}	
+								</div>
+							</td>
+						</tr>						
 													
 						<tr>
              				 <td height="20" class="users_u_bottom">

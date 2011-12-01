@@ -47,7 +47,10 @@ class CASupplier extends Controller {
 	
 	private function actionViewDetails() {
 		$supplier=new Supplier($this->db);
+		$suppl = new BookmarksManager($this->db);
+		$SuppliersByOrigin = $suppl->getAllSuppliersByOrigin($this->getFromRequest('id'));
 		$supplierDetails=$supplier->getSupplierDetails($this->getFromRequest('id'));
+		$this->smarty->assign('SuppliersByOrigin',$SuppliersByOrigin);
 		$this->smarty->assign("supplier",$supplierDetails);
 		$this->smarty->assign('tpl', 'tpls/viewSupplier.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -60,12 +63,10 @@ class CASupplier extends Controller {
 		
 		$supplierList = $supplier->getSupplierList();
 		$SuppliersByOrigin = $suppl->getAllSuppliersByOrigin($this->getFromRequest('id'));
-		var_dump($this->getFromPost(),$SuppliersByOrigin);
+		
 		if ($this->getFromPost('save')=='Save')
 		{	
 
-			
-			
 			for ($i=0; $i<count($supplierList); $i++){
 				if (!is_null($this->getFromPost('supplier_'.$i))){
 					foreach ($supplierList as $item) {
@@ -75,23 +76,11 @@ class CASupplier extends Controller {
 					}
 				}
 			}
-			var_dump($id,$supplierItem,$sipplierAllList);die();
+			
 			foreach ($sipplierAllList as $supplierItem) {
-				$manager->assignSup2Sup($id , $supplierItem['supplier_id']);
+				$supplier->assignSup2Sup($id , $supplierItem['supplier_id']);
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			//
+
 			
 			$data=array(
 				"supplier_id"	=>	$id,

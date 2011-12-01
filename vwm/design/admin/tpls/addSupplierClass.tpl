@@ -8,6 +8,7 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 <div style="padding:7px;">
+	<form method="post" action="admin.php?action={$request.action}&category=supplier{if $request.action neq "addItem"}&id={$request.id}{/if}" name="editingsup" id="editingsup">
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top" >
 				<td class="users_u_top" width="27%" height="30" >
@@ -17,7 +18,7 @@
 					&nbsp;
 				</td>					
 			</tr>
-<form method='POST' action='admin.php?action={$request.action}&category=supplier{if $request.action neq "addItem"}&id={$request.id}{/if}'>
+
 			<tr height="10px">
 		
 							<td class="border_users_l border_users_b" height="20">
@@ -120,7 +121,7 @@
 						<tr height="10px">
 
 							<td class="border_users_l border_users_b" height="20">
-								duplicate SUPPLIER:
+								Similar Suppliers:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 								<div id="supplierList" align="left" >	
