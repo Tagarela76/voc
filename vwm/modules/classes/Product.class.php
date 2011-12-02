@@ -810,9 +810,14 @@ class Product extends ProductProperties {
 					"WHERE p.supplier_id = s.supplier_id " .
 					"AND coat.coat_id = p.coating_id ";
 			} else {
-				$query = "SELECT count(*) AS cnt " .
+				/*$query = "SELECT count(*) AS cnt " .
 					"FROM ".TB_PRODUCT." p " .
 					"WHERE p.supplier_id = ".(int)$supplierID;
+				*/
+					$query = "SELECT count(*) AS cnt
+								FROM product p, supplier s
+								WHERE p.supplier_id = s.supplier_id
+								AND s.original_id = ".(int)$supplierID;  
 			}
 		} else {
 			if ($supplierID == 0) {
@@ -824,10 +829,18 @@ class Product extends ProductProperties {
 					"AND coat.coat_id = p.coating_id " .
 					"AND c.company_id = ".$companyID." ";
 			} else {
-				$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p, product2company p2c " .
+			/*	$query = "SELECT count(*) AS cnt " .
+					"FROM ".TB_PRODUCT." p, product2company p2c,supplier s " .
 					"WHERE p.product_id = p2c.product_id " .
 					"AND p.supplier_id = ".(int)$supplierID." " .
+					"AND p2c.company_id = ".$companyID;
+			 
+			 */
+				$query = "SELECT count(*) AS cnt " .
+					"FROM ".TB_PRODUCT." p, product2company p2c,supplier s " .
+					"WHERE p.product_id = p2c.product_id " .
+					"AND p.supplier_id = s.supplier_id" .
+					"AND p2c.company_id = ".(int)$supplierID."".	
 					"AND p2c.company_id = ".$companyID;
 			}
 		}

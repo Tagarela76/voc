@@ -119,7 +119,8 @@ class CAProduct extends Controller {
 				$tmp = $tmp + $productCount;
 				$i++;
 			}			
-			$productCount = $tmp;
+			
+			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$supplierID);
 			
 			//$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));	
 			$pagination = new Pagination($productCount);
