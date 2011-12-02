@@ -41,6 +41,8 @@
 													{include file="tpls:tpls/bookmarksUsers.tpl"}
 												{elseif $request.category == 'pfps'}
 													{include file="tpls:tpls/bookmarksPfpLibrary.tpl"}
+												{elseif $request.category == 'product'}
+													{include file="tpls:tpls/bookmarksProduct.tpl"}	
 												{elseif $request.category == 'salescontacts'}
 													{include file="tpls:tpls/bookmarkSales.tpl"}
 												{elseif $request.category == 'requests'}
@@ -58,7 +60,7 @@
 													$request.bookmark == 'rule'||
 													$request.bookmark == 'supplier'||
 													$request.bookmark == 'agency'||
-													$request.bookmark == 'product'||
+													$request.category == 'product'||
 													$request.category == 'users'}
 													{include file="tpls:tpls/sort.tpl"}
 												{/if}
@@ -76,7 +78,7 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-                                                                                                                        $request.category == 'salescontacts'}
+                                                            $request.category == 'salescontacts'}
 															{include file="tpls:tpls/filter.tpl"}
 														{/if}
 													{*/FILTER*}

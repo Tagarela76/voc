@@ -17,7 +17,7 @@
 				<div align="left" width="100%">
 					<ul class="link">
 						<li>
-							<a href="admin.php?action=browseCategory&category=product" class="id_company">Product</a>
+							<a href="admin.php?action=browseCategory&category=product&subBookmark=custom&letterpage=1a" class="id_company">Product</a>
 						</li>
 					</ul>
 				</div>
@@ -29,7 +29,7 @@
 					<ul class="link">
 						<li>
 							
-							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&page=1a&productCategory=0" class="id_company">PFP Library</a>
+							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&letterpage=1a&productCategory=0" class="id_company">PFP Library</a>
 						</li>
 					</ul>
 				</div>

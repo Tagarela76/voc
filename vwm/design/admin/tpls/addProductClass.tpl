@@ -10,7 +10,7 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 <div style="padding:7px;">
-	<form method='POST' action='admin.php?action={$request.action}&category=product{if $request.action neq "addItem"}&id={$request.id}{else}&companyID={$request.companyID}{/if}&page={$page}'>
+	<form method='POST' action='admin.php?action={$request.action}&category=product{if $request.action neq "addItem"}&id={$request.id}{else}&companyID={$request.companyID}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}&page={$page}'>
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top" >
 				<td class="users_u_top" width="27%" height="30" >
@@ -344,7 +344,7 @@
 				
 				<select name="selectSupplier" id="selectSupplier">
 					{section name=i loop=$supplier}
-						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier_desc} </option>
+						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier} </option>
 					{/section}
 				</select>
 				
@@ -576,8 +576,8 @@
 		<input type='submit' name='save' class="button" value='Add compound to product'>
 		<input type='submit' name='save' class="button" value='Save'>
 		<input type='button' name='cancel' class="button" value='Cancel' 
-			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=product&id={$request.id}"'{/if}
-			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=product"'{/if}>
+			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=product&id={$request.id}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}"'{/if}
+			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=product{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}"'{/if}>
 		<span style="padding-right:50">&nbsp;</span>
 	</div>
 		

@@ -11,6 +11,8 @@
 						<input type="hidden" name="action" value="browseCategory">
 						<input type="hidden" name="category" value="{$request.category}">
 						<input type="hidden" name="bookmark" value="{$request.bookmark}">
+						<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
+						<input type="hidden" name="letterpage" value="{$request.letterpage}"></input>
                                                 {if ($request.category eq "salescontacts")&($request.subBookmark != "")}
                                                 <input type="hidden" name="subBookmark" value="{$request.subBookmark}">   
                                                 {/if}

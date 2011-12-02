@@ -51,7 +51,7 @@ class CAPfps extends Controller {
 		//	$pfps = $manager->getList();
 		//	$this->smarty->assign('itemsCount', count($pfps));
 		$jsSources = array('modules/js/checkBoxes.js',
-			'modules/js/autocomplete/jquery.autocomplete.js');
+						   'modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		//	$this->smarty->assign('pfps', $pfps);
 		//	$this->smarty->assign('childCategoryItems', $pfps);

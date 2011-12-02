@@ -40,7 +40,7 @@
 				{*BEGIN LIST*}			
 				{section name=i loop=$bookmarks}
 					<td >
-					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$bookmarks[i].supplier_id}&page={$request.page}{if $request.page }&productCategory={$request.productCategory}{/if}" style="text-decoration: none; color: #333333;">
+					     <a href="admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark}&subBookmark={$bookmarks[i].supplier_id}&letterpage={$request.letterpage}{if $request.productCategory }&productCategory={$request.productCategory}{/if}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
 								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
 									{else}                    
@@ -92,7 +92,7 @@
 				<input type="hidden" name="category" value="pfps"/>
 				<input type="hidden" name="bookmark" value="pfpLibrary"/>
 				<input type="hidden" name="subBookmark" value="{$request.subBookmark}"/>
-				<input type="hidden" name="page" value="{$request.page}"/>
+				<input type="hidden" name="letterpage" value="{$request.letterpage}"/>
 				
 				<select class="addInventory" onchange="$('#selectCategotyForm').submit();" name="productCategory">
 					<optgroup label="All">

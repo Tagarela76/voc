@@ -69,9 +69,10 @@
 	{assign var='subb' value=$request.subBookmark}
 	{assign var='book' value=$request.category}
 	{assign var='page' value=$request.page}
+	{assign var='letterpage' value=$request.letterpage}
 	{assign var='productCategory' value=$request.productCategory}
 	
-    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&bookmark=$book&subBookmark=$subb&id=$pfpid&page=$page&productCategory=$productCategory"}
+    {assign var='url' value="admin.php?action=viewDetails&category=pfpLibrary&bookmark=$book&subBookmark=$subb&id=$pfpid&letterpage=$letterpage&productCategory=$productCategory"}
 	<!-- Begin Highlighting -->
     <tr class="hov_company" height="10px"> 	
 		

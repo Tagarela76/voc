@@ -92,12 +92,14 @@
 				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
 			{/section}
 		</select>
+		{if $request.category != 'product'}	
 		<select name="supplierID">
 			<option value="All suppliers" {if $currentSupplier == 0} selected {/if}>All suppliers {if $currentSupplier == 0}(selected){/if}</option>
 			{section name=i loop=$supplierList}
 				<option value="{$supplierList[i].supplier_id}" {if $supplierList[i].supplier_id == $currentSupplier} selected {/if}>{$supplierList[i].supplier}{if $supplierList[i].supplier_id == $currentSupplier}(selected){/if}</option>
 			{/section}			
 		</select>
+		{/if}
 		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
 		<br>
 		{if $itemsCount > 0}
@@ -127,9 +129,16 @@
 				<input type="hidden" name="category" value="{$request.bookmark}">
 				<input type="hidden" name="bookmark" value="{$request.category}">
 				<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
-				<input type="hidden" name="page" value="{$request.page}">
-				<input type="hidden" name="productCategory" value="{$request.productCategory}">
+				<input type="hidden" name="letterpage" value="{$request.letterpage}">
 				
+				<input type="hidden" name="productCategory" value="{$request.productCategory}">
+			{elseif $request.category == 'product'}	
+				<input type="hidden" name="category" value="{$request.category}">
+				<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
+				<input type="hidden" name="page" value="{$request.page}">
+				<input type="hidden" name="letterpage" value="{$request.letterpage}">
+				<input type="hidden" name="page" value="{$request.page}">
+				<input type="hidden" name="productCategory" value="{$request.productCategory}">				
 				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">

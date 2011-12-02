@@ -17,15 +17,62 @@ class CAProduct extends Controller {
 	
 	
 	private function actionBrowseCategory() {
+		$abc = range('a','z');
 
+		$suppl = new BookmarksManager($this->db);
+		$manager = new PFPManager($this->db);
+		$paginationabc = new Paginationabc(1300);
 		
+		$paginationabc->url = "?action=browseCategory&category=product";
+		$this->smarty->assign("abctabs",$abc);
+		$this->smarty->assign('paginationabc', $paginationabc);
+/**BOOKMARKS**/
+		$page = substr($this->getFromRequest("letterpage"),-1);
+		$supplierList = $suppl->getOriginSupplier();
+		$bookmarksList = $supplierList;
+		if ($page == null){$page = 'a';}
+		$bookmarks[0]['supplier_id'] = 'custom';
+		$bookmarks[0]['supplier'] = 'custom';
+		for($i=0; $i<count($bookmarksList); $i++) {
+			if (strtolower(substr($bookmarksList[$i]['supplier'],0,1)) == $page){
+			$bookmarks[] = $bookmarksList[$i];
+			}
+		}
+		$this->smarty->assign("bookmarks",$bookmarks);
+/****/		
+
+/**PRODUCTS BY SUPPLIER IN BOOKMARK**/		
+		$sub = $this->getFromRequest("subBookmark");
+		if ($sub != 'custom'){
+		$allsub = $suppl->getAllSuppliersByOrigin($sub);
+			$i=0;
+			while($allsub[$i]){
+				$listOFpfp[$i] = $manager->getPfpList($allsub[$i]['supplier_id']);
+				$i++;
+			}
+			$temp = $listOFpfp[0];
+			for($i = 0; $i < count($listOFpfp)-1; $i++){
+				$temp = array_merge($temp, $listOFpfp[$i+1]);
+			}
+			$listOFpfp = array_unique($temp);		
+		}else{
+		$listOFpfp = $manager->getPfpList($sub);	
+		}
+		$pfps = $manager->getListSpecial(null,null,$listOFpfp);
+/****/
+
+
 		$product = new Product($this->db);
 		
 		$subaction = $this->getFromRequest('subaction');
 		$companyID = $this->getFromRequest('companyID');
-		$supplierID = $this->getFromRequest('supplierID');
 		$companyID = (is_null($companyID) || $companyID == 'All companies')?0:$companyID;
+		/*
+		$supplierID = $this->getFromRequest('supplierID');
 		$supplierID = (is_null($supplierID) || $supplierID == 'All suppliers')?0:$supplierID;		
+		*/
+		$supplierID = $this->getFromRequest('subBookmark');
+		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;		
 		
 		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
 			$count = $this->getFromRequest('itemsCount');
@@ -42,13 +89,12 @@ class CAProduct extends Controller {
 		}
 		
 		// get Supplier list
-		$suppl = new BookmarksManager($this->db);
-		$supplierList = $suppl->getOriginSupplier();
+
+		
 		$supplierItemsCount=count($supplierList);
 		/*$supplier=new Supplier($this->db);
 		$supplierList=$supplier->getSupplierList();
 		$supplierItemsCount=count($supplierList);
-								
 		*/
 		$this->smarty->assign('supplierList', $supplierList);
 		//	get company list
@@ -65,7 +111,7 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentSupplier', 0);												
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-			$allsub = $suppl->getAllSuppliersByOrigin($this->getFromRequest('supplierID'));				
+			$allsub = $suppl->getAllSuppliersByOrigin($this->getFromRequest('subBookmark'));				
 
 			$i=0;$tmp=0;
 			while($allsub[$i]){
@@ -77,12 +123,9 @@ class CAProduct extends Controller {
 			
 			//$productCount = $product->getProductCount($this->getFromRequest('companyID'),$this->getFromRequest('supplierID'));	
 			$pagination = new Pagination($productCount);
-			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&supplierID=".$this->getFromRequest('supplierID')."&subaction=Filter&category=product";
+			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&subaction=Filter&category=product";
 			$this->smarty->assign('pagination', $pagination);
-			
-			
-						
-			
+
 			if ($supplierID != 0) {
 			/**get product by origin and similar suppliers	
 	
@@ -115,9 +158,9 @@ class CAProduct extends Controller {
 		$itemsCount = ($list) ? count($list) : 0;
 		for ($i=0; $i<$itemsCount; $i++) {
 			if (is_null($this->getFromRequest('q'))){
-				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&page=".$pagination->getCurrentPage();
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&page=".$pagination->getCurrentPage();
 			} else {
-				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field];
+				$url="admin.php?action=viewDetails&category=product&id=".$list[$i][$field]."&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."";
 			}
 			
 			$list[$i]['url']=$url;
@@ -430,7 +473,7 @@ class CAProduct extends Controller {
 					$product->assignProduct2Type($id, $prod['type'], $prod['subType']);
 				}
 				
-				header ('Location: admin.php?action=viewDetails&category=product&id='.$id."&page=".$this->getFromRequest('page'));
+				header ('Location: admin.php?action=viewDetails&category=product&id='.$id."&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&page=".$this->getFromRequest('page'));
 				die();																		
 				
 			} else {
@@ -716,7 +759,7 @@ class CAProduct extends Controller {
 				if ($validStatus['summary'] == 'true') {
 					$productData['resultTypesList'] = $resProductAllTypesList;
 					$product->addNewProduct($productData, $this->getFromRequest('companyID'));		
-					header ('Location: admin.php?action=browseCategory&category=product');
+					header ('Location: admin.php?action=browseCategory&category=product&subBookmark='.$this->getFromRequest("subBookmark").'&letterpage='.$this->getFromRequest("letterpage"));
 					die();
 				} else {
 					
@@ -835,8 +878,11 @@ class CAProduct extends Controller {
 		$substrate=new Substrate($this->db);
 		$this->smarty->assign("substrate", $substrate->getSubstrateList());
 		
-		$supplier=new Supplier($this->db);
+		/*$supplier=new Supplier($this->db);
 		$this->smarty->assign("supplier", $supplier->getSupplierList());
+		*/
+		$suppl=new BookmarksManager($this->db);
+		$this->smarty->assign("supplier",$supplier=$suppl->getOriginSupplier());
 		
 		//	get hazardous (chemical) class list
 		$hazardous = new Hazardous($this->db);
@@ -902,7 +948,7 @@ class CAProduct extends Controller {
 			
 			$product->deleteProduct2($id);
 		}
-		header ('Location: admin.php?action=browseCategory&category=product');
+		header ('Location: admin.php?action=browseCategory&category=product&subBookmark='.$this->getFromRequest("subBookmark").'&letterpage='.$this->getFromRequest("letterpage").'&page='.$this->getFromRequest("page"));
 		die();
 	}
 }

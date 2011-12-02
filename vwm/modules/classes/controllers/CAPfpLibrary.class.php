@@ -114,17 +114,17 @@ class CAPfpLibrary extends Controller {
 
 		$manager = new PFPManager($this->db);
 		$suppl = new BookmarksManager($this->db);		
-		$pagination = new Pagination(1300);
+		$pagination = new Paginationabc(1300);
 		
 		$pagination->url = "?action=browseCategory&category=pfps&bookmark=pfpLibrary";
-		$this->smarty->assign('pagination', $pagination);
+		$this->smarty->assign('paginationabc', $pagination);
 		
 		//$bookmarksList = $suppl->getBookmarksListSupplier();
-		$page = substr($this->getFromRequest("page"),-1);
+		$page = substr($this->getFromRequest("letterpage"),-1);
 		
 		$tmp = $suppl->getOriginSupplier();
 		$bookmarksList = $tmp;
-		//var_dump($tmp,'----------',$bookmarksList);
+		
 		if ($page == null){$page = 'a';}
 		$bookmarks[0]['supplier_id'] = 'custom';
 		$bookmarks[0]['supplier'] = 'custom';
@@ -137,7 +137,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("bookmarks",$bookmarks);
 		//$pfplist = $manager->getList();
 		
-			$sub = $this->getFromRequest("subBookmark");
+		$sub = $this->getFromRequest("subBookmark");
 		
 	    if ($sub != 'custom'){
 			
@@ -178,7 +178,7 @@ class CAPfpLibrary extends Controller {
 		$manager = new PFPManager($this->db);
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$pfp = $manager->getPFP($this->getFromRequest("id"));
-		$this->smarty->assign("deleteUrl","admin.php?action=deleteItem&category=pfps&bookmark=pfpLibrary&id={$this->getFromRequest("id")}&page={$this->getFromRequest("page")}&productCategory={$this->getFromRequest("productCategory")}");
+		$this->smarty->assign("deleteUrl","admin.php?action=deleteItem&category=pfps&bookmark=pfpLibrary&id={$this->getFromRequest("id")}&letterpagee={$this->getFromRequest("letterpage")}&productCategory={$this->getFromRequest("productCategory")}");
 		$this->smarty->assign("editUrl","admin.php?action=edit&category=pfps&bookmark=pfpLibrary&subBookmark={$_GET['subBookmark']}&id={$_GET['id']}&page={$_GET['page']}&productCategory={$this->getFromRequest("productCategory")}");
 		$this->smarty->assign('companyListPFP', $companyListPFP);
 		$this->smarty->assign("pfp",$pfp);
@@ -192,7 +192,7 @@ class CAPfpLibrary extends Controller {
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
-		var_dump($companyListPFP);
+
 		$company = new Company($this->db);
 		$companyList = $company->getCompanyList();
 		
@@ -219,7 +219,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("productCount",$pfp->getProductsCount());
 		$this->smarty->assign("pfp",$pfp);
 		$this->smarty->assign("edit",true);
-		$this->smarty->assign("sendFormAction","admin.php?action=confirmEdit&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id')."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest("productCategory")."");
+		$this->smarty->assign("sendFormAction","admin.php?action=confirmEdit&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 		$this->smarty->assign("request",$_GET);
 		$this->smarty->assign('show',true);
 		$this->smarty->assign('tpl','tpls/addPfpLibraryTEMP.tpl');
@@ -276,7 +276,7 @@ class CAPfpLibrary extends Controller {
 		foreach ($companyAllList as $companyItem){
 			$manager->assignPFP2Company($pfpID, $companyItem['id']);
 		}
-		header("Location: admin.php?action=viewDetails&category=pfpLibrary&bookmark=pfps&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$pfpID."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest("productCategory")."");
+		header("Location: admin.php?action=viewDetails&category=pfpLibrary&bookmark=pfps&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$pfpID."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 	}
 
 	private function actionAddItem() {
@@ -345,7 +345,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign("productCount",$pfp->getProductsCount());
 		$this->smarty->assign("pfp",$pfp);
 		
-		$this->smarty->assign("sendFormAction","admin.php?action=confirmAddItem&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id')."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest('productCategory')."");
+		$this->smarty->assign("sendFormAction","admin.php?action=confirmAddItem&category=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&id=".$this->getFromRequest('id')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest('productCategory')."");
 		$this->smarty->assign("request",$_GET);
 		
 		$this->smarty->assign('show', true);
@@ -401,7 +401,7 @@ class CAPfpLibrary extends Controller {
 			
 			$manager = new PFPManager($this->db);
 			$manager->add($pfp,$companyAllList);
-			header("Location: ?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$formGet['subBookmark']."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest("productCategory")."");
+			header("Location: ?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$formGet['subBookmark']."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 		}
 		
 		private function actionDeleteItem() {
@@ -410,7 +410,7 @@ class CAPfpLibrary extends Controller {
 		
 		$pfps = $manager->getList(null,null,$idArray);
 		
-		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest("productCategory")."");
+		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 
 		foreach ($pfps as $p) {
 				$delete["id"] =	$p->getId();
@@ -437,7 +437,7 @@ class CAPfpLibrary extends Controller {
 		$i++;
 		}
 		$manager->removeList($pfpList);
-		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&page=".$this->getFromRequest('page')."&productCategory=".$this->getFromRequest("productCategory")."");
+		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 		die();
 	}
 }
