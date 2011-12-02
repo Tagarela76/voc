@@ -2333,6 +2333,7 @@ table.bookmarks td {
 
 .bookmark_fon {
     background: url(images/bookmark_fon.gif) repeat-x 0% 80%;
+	text-transform: uppercase;
 }
 
 .active_bookmark_fon {
