@@ -17,7 +17,7 @@
 				<div align="left" width="100%">
 					<ul class="link">
 						<li>
-							<a href="admin.php?action=browseCategory&category=product&subBookmark=custom&letterpage=1a" class="id_company">Product</a>
+							<a href="admin.php?action=browseCategory&category=product&subBookmark=custom&letterpage=1a" class="id_company">Product LIBRARY</a>
 						</li>
 					</ul>
 				</div>
