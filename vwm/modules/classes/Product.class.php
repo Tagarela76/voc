@@ -642,8 +642,40 @@ class Product extends ProductProperties {
 		} else
 			return false;
 	}
+//	autocomplete product search in admin.Not work yet
+	 public function productAutocompleteAdmin($occurrence, $sub) {
+		$occurrence = mysql_escape_string($occurrence);   
+                $query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
+					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s " .
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND s.original_id =".(int)$sub. " ORDER BY  p.product_id ASC"; 
+		$query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
+				 "FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s WHERE p.supplier_id = s.supplier_id AND s.original_id =".(int)$sub." AND LOCATE('".$occurrence."', product_nr)>0 OR LOCATE('".$occurrence."', name)>0 LIMIT ".AUTOCOMPLETE_LIMIT;				
+		$this->db->query($query);
 
+		if ($this->db->num_rows() > 0) {
+			$productsData = $this->db->fetch_all();
+			for ($i = 0; $i < count($productsData); $i++) {
+				if ($productsData[$i]->occurrence) {
+					$product = array (
+						"productNR"		=>	$productsData[$i]->product_nr,
+						"occurrence"	=>	$productsData[$i]->occurrence
+					);
+					$results[] = $product;
 
+				} elseif ($productsData[$i]->occurrence2) {
+					$product = array (
+						"productNR"		=>	$productsData[$i]->name,
+						"occurrence"	=>	$productsData[$i]->occurrence2
+					);
+					$results[] = $product;
+				}
+			}
+			return (isset($results)) ? $results : false;
+		} else
+			return false;		
+	
+	}
 	//	search product by product_nr or name.
 	public function searchProducts($products, $companyID = 0) {
 		$products = (!is_array($products))?array($products):$products;

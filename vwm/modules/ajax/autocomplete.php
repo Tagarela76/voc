@@ -24,7 +24,7 @@
 	$xnyo->filter_get_var('facilityID', 'text');
 	$xnyo->filter_get_var('category', 'text');
 	$xnyo->filter_get_var('field', 'text');
-        $xnyo->filter_get_var('subBookmark', 'text');
+    $xnyo->filter_get_var('subBookmark', 'text');
 	
 	$request = $_GET;
 	switch ($request['category']) {
@@ -38,7 +38,8 @@
 			break;
 
 		case "product":
-                        if(isset($request['facilityID'])) {
+			/**Not work yet**/
+                     if(isset($request['facilityID'])) {
                             $query = "SELECT f.company_id FROM ".TB_FACILITY." f " .
 					"WHERE f.facility_id = ".$request['facilityID'];
                         } elseif (isset($request['departmentID'])) {
@@ -52,7 +53,8 @@
 			if ($db->num_rows() > 0) {
 				$companyID = $db->fetch(0)->company_id;
 				$productObj = new Product($db);
-				$productList = $productObj->productAutocomplete($request['query'], $companyID);
+				$sub = $request['subBookmark'];
+				$productList = $productObj->productAutocompleteAdmin($request['query'],$sub );
 				if ($productList) {
 					foreach ($productList as $product) {
 						$suggestions[] = $product['productNR'];
@@ -89,7 +91,7 @@
 			echo json_encode($response);
 			break;
                     
-                case "salescontacts":
+        case "salescontacts":
                         $sub = $request['subBookmark'];
                         if($sub == '') {
                                 $sub = "contacts";

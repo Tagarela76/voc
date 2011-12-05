@@ -86,7 +86,7 @@
 													<td align='right'>
 														<br>
 														{*SEARCH*}
-															{if $request.category == "product" || $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
+																{if $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>
@@ -113,7 +113,7 @@
 																					minChars:2,
 																					delimiter: /(,|;)\s*/,
 																					params: {subBookmark:'{/literal}{$request.subBookmark}{literal}',
-                                                                                                                                                                        category:'{/literal}{$request.category}{literal}'},
+                                                                                    category:'{/literal}{$request.category}{literal}'},
 																					deferRequestBy:300
 																		};
 																		a = $('#search').autocomplete(options);
@@ -121,6 +121,26 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
+															{elseif $request.category == "product"}
+															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+															{literal}
+																<script>
+																	var options, a;
+																		
+																	jQuery(function(){
+																		options = { serviceUrl:'modules/ajax/autocomplete.php',
+																					minChars:2,
+																					delimiter: /(,|;)\s*/,
+																					params: {subBookmark:'{/literal}{$request.subBookmark}{literal}',
+                                                                                    category:'{/literal}{$request.category}{literal}'},
+																					deferRequestBy:300
+																		};
+																		a = $('#search').autocomplete(options); /**Not work yet**/
+																	});
+																</script>
+															{/literal}
+															{include file="tpls:tpls/search.tpl"}
+															
 															{/if}
 														{*/SEARCH*}
 													</td>

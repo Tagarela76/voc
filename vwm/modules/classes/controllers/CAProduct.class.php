@@ -26,6 +26,9 @@ class CAProduct extends Controller {
 		$paginationabc->url = "?action=browseCategory&category=product";
 		$this->smarty->assign("abctabs",$abc);
 		$this->smarty->assign('paginationabc', $paginationabc);
+		
+		$supplierID = $this->getFromRequest('subBookmark');
+		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;			
 /**BOOKMARKS**/
 		$page = substr($this->getFromRequest("letterpage"),-1);
 		$supplierList = $suppl->getOriginSupplier();
@@ -41,7 +44,8 @@ class CAProduct extends Controller {
 		$this->smarty->assign("bookmarks",$bookmarks);
 /****/		
 
-/**PRODUCTS BY SUPPLIER IN BOOKMARK**/		
+
+/**PRODUCTS BY SUPPLIER IN BOOKMARK		
 		$sub = $this->getFromRequest("subBookmark");
 		if ($sub != 'custom'){
 		$allsub = $suppl->getAllSuppliersByOrigin($sub);
@@ -59,7 +63,7 @@ class CAProduct extends Controller {
 		$listOFpfp = $manager->getPfpList($sub);	
 		}
 		$pfps = $manager->getListSpecial(null,null,$listOFpfp);
-/****/
+**/
 
 
 		$product = new Product($this->db);
@@ -71,8 +75,7 @@ class CAProduct extends Controller {
 		$supplierID = $this->getFromRequest('supplierID');
 		$supplierID = (is_null($supplierID) || $supplierID == 'All suppliers')?0:$supplierID;		
 		*/
-		$supplierID = $this->getFromRequest('subBookmark');
-		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;		
+	
 		
 		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
 			$count = $this->getFromRequest('itemsCount');
@@ -111,14 +114,14 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentSupplier', 0);												
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-			$allsub = $suppl->getAllSuppliersByOrigin($this->getFromRequest('subBookmark'));				
+			/*$allsub = $suppl->getAllSuppliersByOrigin($this->getFromRequest('subBookmark'));				
 
 			$i=0;$tmp=0;
 			while($allsub[$i]){
 				$productCount = $product->getProductCount($this->getFromRequest('companyID'),$allsub[$i]['supplier_id']);
 				$tmp = $tmp + $productCount;
 				$i++;
-			}			
+			}*/			
 			
 			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$supplierID);
 			
@@ -166,6 +169,8 @@ class CAProduct extends Controller {
 			
 			$list[$i]['url']=$url;
 		}
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
+		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("category",$list);
 		$this->smarty->assign("itemsCount",$itemsCount);
 		
