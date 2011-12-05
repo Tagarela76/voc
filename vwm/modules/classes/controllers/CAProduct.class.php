@@ -44,7 +44,6 @@ class CAProduct extends Controller {
 		$this->smarty->assign("bookmarks",$bookmarks);
 /****/		
 
-
 /**PRODUCTS BY SUPPLIER IN BOOKMARK		
 		$sub = $this->getFromRequest("subBookmark");
 		if ($sub != 'custom'){
@@ -169,7 +168,7 @@ class CAProduct extends Controller {
 			
 			$list[$i]['url']=$url;
 		}
-		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("category",$list);
 		$this->smarty->assign("itemsCount",$itemsCount);

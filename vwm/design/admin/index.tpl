@@ -103,6 +103,24 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
+															
+															{elseif $request.category == "product"}
+															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+															{literal}
+																<script>
+																	var options, a;
+																	jQuery(function(){
+																		options = { serviceUrl:'modules/ajax/autocomplete.php',
+																					minChars:2,
+																					delimiter: /(,|;)\s*/,
+																					params: {category: '{/literal}{$request.category}All{literal}'},
+																					deferRequestBy:300
+																		};
+																		a = $('#search').autocomplete(options);
+																	});
+																</script>
+															{/literal}
+															{include file="tpls:tpls/search.tpl"}
 															{elseif $request.category == "salescontacts"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
@@ -121,25 +139,7 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
-															{elseif $request.category == "product"}
-															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
-															{literal}
-																<script>
-																	var options, a;
-																		
-																	jQuery(function(){
-																		options = { serviceUrl:'modules/ajax/autocomplete.php',
-																					minChars:2,
-																					delimiter: /(,|;)\s*/,
-																					params: {subBookmark:'{/literal}{$request.subBookmark}{literal}',
-                                                                                    category:'{/literal}{$request.category}{literal}'},
-																					deferRequestBy:300
-																		};
-																		a = $('#search').autocomplete(options); /**Not work yet**/
-																	});
-																</script>
-															{/literal}
-															{include file="tpls:tpls/search.tpl"}
+															
 															
 															{/if}
 														{*/SEARCH*}

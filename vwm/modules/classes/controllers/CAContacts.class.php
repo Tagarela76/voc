@@ -78,7 +78,7 @@ class CAContacts extends Controller {
 		}
 		
 		//	set js scripts
-		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("contacts", $contactsList);
 		$this->smarty->assign("itemsCount", $totalCount);

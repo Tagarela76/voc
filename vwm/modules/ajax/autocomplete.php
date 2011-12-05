@@ -38,7 +38,7 @@
 			break;
 
 		case "product":
-			/**Not work yet**/
+			
                      if(isset($request['facilityID'])) {
                             $query = "SELECT f.company_id FROM ".TB_FACILITY." f " .
 					"WHERE f.facility_id = ".$request['facilityID'];
@@ -54,7 +54,7 @@
 				$companyID = $db->fetch(0)->company_id;
 				$productObj = new Product($db);
 				$sub = $request['subBookmark'];
-				$productList = $productObj->productAutocompleteAdmin($request['query'],$sub );
+				$productList = $productObj->productAutocomplete($request['query'],$companyID );
 				if ($productList) {
 					foreach ($productList as $product) {
 						$suggestions[] = $product['productNR'];
@@ -66,6 +66,7 @@
                         break;
                         
 		case "productAll":
+			
 			$productObj = new Product($db);
 			$productList = $productObj->productAutocomplete($_GET['query']);
 			if ($productList) {

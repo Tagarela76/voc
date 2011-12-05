@@ -170,8 +170,8 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign("abctabs",$abc);
 		$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
-		$jsSources = array  ('modules/js/checkBoxes.js',
-                             'modules/js/autocomplete/jquery.autocomplete.js');				
+		$jsSources = array  ('modules/js/checkBoxes.js','modules/js/autocomplete/jquery.autocomplete.js');		
+		$this->smarty->assign('jsSources', $jsSources);
 	}
 	
 	private function actionViewDetails() {
