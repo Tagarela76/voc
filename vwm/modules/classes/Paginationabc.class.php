@@ -29,8 +29,8 @@
 			$offset = ROW_COUNT * ($this->currentPage - 1);
 			$this->offset = ($offset < 0) ? $this->offset : $offset;
 
-			$this->rangeFirst = ($this->currentPage - 10 < 1) ? 1 : $this->currentPage - 10;
-			$this->rangeLast = ($this->currentPage + 10 > $this->pageCount) ? $this->pageCount : $this->currentPage + 9;
+			$this->rangeFirst = ($this->currentPage - 10 < 1) ? 1 : $this->currentPage - 25; //there was -10
+			$this->rangeLast = ($this->currentPage + 10 > $this->pageCount) ? $this->pageCount : $this->currentPage + 25; //there was +9
 		}
 
 		
