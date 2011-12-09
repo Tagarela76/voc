@@ -34,7 +34,7 @@
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'rootpass');
+				define ('DB_PASS', 'developer');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
@@ -42,7 +42,7 @@
 				define ('REGION', 	'us');
 				define ('DOMAIN', 	'vocwebmanager.com');
 				define ('DEFAULT_CURRENCY', 1);	//	USD
-                                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
+                define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;				
 				
 			//	KTTSOFT AREA	

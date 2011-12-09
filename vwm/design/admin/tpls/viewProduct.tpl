@@ -231,9 +231,9 @@
 							<td class="border_users_l border_users_r border_users_b">																										
 								{if $msdsLink}
 									<a href='{$msdsLink}'>view</a> or 
-									<a href='?action=unlinkMsds&category=tables&productID={$product.product_id}'>unlink</a>
+									<a href='?action=unlinkMsds&category=product&productID={$product.product_id}&letterpage={$letterpage}&page={$page}'>unlink</a>
 								{else}
-									<a href="?action=uploadOneMsds&category=tables&productID={$product.product_id}"><div style="width:100%;">upload</div></a>
+									<a href="?action=uploadOneMsds&category=product&productID={$product.product_id}&letterpage={$letterpage}&page={$page}"><div style="width:100%;">upload</div></a>
 								{/if}
 							</td>
 						</tr>
@@ -245,9 +245,9 @@
 							<td class="border_users_l border_users_r border_users_b">																										
 								{if $techSheetLink}
 									<a href='{$techSheetLink}'>view</a> or 
-									<a href='?action=unlinkTechSheet&category=tables&productID={$product.product_id}'>unlink</a>
+									<a href='?action=unlinkTechSheet&category=product&productID={$product.product_id}&letterpage={$letterpage}&page={$page}'>unlink</a>
 								{else}
-									<a href="?action=uploadOneMsds&category=tables&productID={$product.product_id}"><div style="width:100%;">upload</div></a>
+									<a href="?action=uploadOneMsds&category=product&productID={$product.product_id}&letterpage={$letterpage}&page={$page}"><div style="width:100%;">upload</div></a>
 								{/if}
 							</td>
 						</tr>

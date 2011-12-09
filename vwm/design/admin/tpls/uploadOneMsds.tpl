@@ -18,7 +18,7 @@
             </center>
 			{if $error}<div style="color:red">{$error}</div>{/if}
 			Upload <b id="typeOfFile">MSDS</b> file to product {$productDetails.product_nr}
-            <form name="form" enctype="multipart/form-data" action="?action=uploadOneMsds&category=tables&productID={$productDetails.product_id}" method="post">
+            <form name="form" enctype="multipart/form-data" action="?action=uploadOneMsds&category=product&productID={$productDetails.product_id}&letterpage={$letterpage}&page={$page}" method="post">
                 <input type="hidden" name="MAX_FILE_SIZE" value="52430000" />
                 <table>        
 					<tr>

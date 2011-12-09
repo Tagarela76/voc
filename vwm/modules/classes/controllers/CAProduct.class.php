@@ -289,6 +289,7 @@ class CAProduct extends Controller {
 		$techSheetLink = $product->checkForAvailableTechSheet($productDetails['product_id']);
 		
 		$this->smarty->assign('page', $this->getFromRequest('page'));
+		$this->smarty->assign('letterpage', $this->getFromRequest('letterpage'));
 		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
@@ -955,6 +956,109 @@ class CAProduct extends Controller {
 		}
 		header ('Location: admin.php?action=browseCategory&category=product&subBookmark='.$this->getFromRequest("subBookmark").'&letterpage='.$this->getFromRequest("letterpage").'&page='.$this->getFromRequest("page"));
 		die();
+	}
+	
+		private function actionUploadOneMsds() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+		$this->smarty->assign('page', $this->getFromRequest('page'));
+		$this->smarty->assign('letterpage', $this->getFromRequest('letterpage'));
+		//var_dump($productDetails['product_id']);
+		//var_dump($_POST); die();
+		if ($_POST['fileType'][0] == 'msds'){
+		$success = true;
+		if (count($_FILES) > 0) {			
+			$msds = new MSDS($this->db);
+			$msdsUploadResult = $msds->upload('basic');
+			if (isset($msdsUploadResult['filesWithError'][0])) {
+				$success = false;
+				$error = $msdsUploadResult['filesWithError'][0]['error'];
+			} else {				
+				if ($msdsUploadResult['msdsResult']) {
+					$msdsUploadResult['msdsResult'][0]['productID'] = $productDetails['product_id'];
+					$input = array(
+						'msds' => $msdsUploadResult['msdsResult']
+					);					
+					$msds->addSheets($input);					
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].'&letterpage='.$this->getFromRequest('letterpage').'&page='.$this->getFromRequest('page'));
+				} else {
+					$success = false;	
+					$error = 'msdsResult is not set';
+				}				
+			}
+						
+		}
+		} elseif ($_POST['fileType'][0] == 'techsheet') {
+		$success = true;
+		if (count($_FILES) > 0) {			
+			$techSheet = new TechSheet($this->db);
+			$techSheetUploadResult = $techSheet->upload('basic');
+			//var_dump($techSheetUploadResult);
+			if (isset($techSheetUploadResult['filesWithError'][0])) {
+				$success = false;
+				$error = $techSheetUploadResult['filesWithError'][0]['error'];
+			} else {
+				if ($techSheetUploadResult['techSheetResult']) {
+					$techSheetUploadResult['techSheetResult'][0]['productID'] = $productDetails['product_id'];
+					$input = array(
+						'techSheets' => $techSheetUploadResult['techSheetResult']
+					);	
+					//var_dump($input);
+					$techSheet->addSheets($input);					
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].'&letterpage='.$this->getFromRequest('letterpage').'&page='.$this->getFromRequest('page'));
+				} else {
+					$success = false;	
+					$error = 'techSheetResult is not set';
+				}				
+			}
+						
+		}	
+		}
+		if (!$success) {
+			$this->smarty->assign("error", $error);	
+		}
+		
+		$this->smarty->assign("productDetails",$productDetails);
+		$this->smarty->assign("tpl","tpls/uploadOneMsds.tpl");
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	
+	private function actionUnlinkMsds() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+		
+		$msds = new MSDS($this->db);
+		$sheet = $msds->getSheetByProduct($this->getFromRequest('productID'));
+		if (!$sheet) {
+			throw new Exception('This product does not have MSDS');
+		}
+		
+		$msds->unlinkMsdsSheet($sheet['id']);
+		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+	}
+	
+	private function actionUnlinkTechSheet() {
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
+		if ($productDetails['product_id'] === null) {
+			throw new Exception('404');
+		}
+		
+		$techSheet = new TechSheet($this->db);
+		$sheet = $techSheet->getSheetByProduct($this->getFromRequest('productID'));
+		if (!$sheet) {
+			throw new Exception('This product does not have Tech Sheet');
+		}
+		
+		$techSheet->unlinkTechSheet($sheet['id']);
+		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
 	}
 }
 ?>

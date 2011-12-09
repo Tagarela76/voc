@@ -1,0 +1,44 @@
+VOC WEB MANAGER Installation
+----------------------------
+
+Make following folders writable:
+	$ chmod -R 777 vwm/template_c/ vwm/tmp docs/ msds/ tech_sheet/ voc_logs/
+	
+
+Setup DB connection at vwm/config/constants.php		
+	* uncomment following line, all others definitions of ENVIRONMENT2LOAD
+should be commented.	
+	define('ENVIRONMENT2LOAD','local');
+
+	* enter your database credentials
+		case 'local':
+				define ('DB_HOST', 'localhost');	//	host
+				define ('DB_NAME', 'voc');			//	database name
+				define ('DB_IMPORT', 'voc_real');	//	leave it as is
+				define ('DB_USER', 'root');			//	username
+				define ('DB_PASS', 'rootpass');		//	password
+				
+	* import database from dump located at the root folder - voc.sql
+
+Mod rewrite
+	VOC WEB MANAGER does not use mod_rewrite
+					
+Requirements
+	PHP version: 5.3+
+	
+After installation	
+	Once installed, VOC WEB MANAGER will be available on
+	http://localhost/path_to_voc
+
+	Super User credentials 
+	kttsoft
+	KaTeT
+	
+	Admin interface (AI)
+	http://localhost/path_to_voc/vwm/admin.php
+	kttsoft
+	KaTeT
+	
+	Sales interface
+	http://localhost/path_to_voc/vwm/sales.php
+	* you need to create user at AI

@@ -576,8 +576,8 @@
 		<input type='submit' name='save' class="button" value='Add compound to product'>
 		<input type='submit' name='save' class="button" value='Save'>
 		<input type='button' name='cancel' class="button" value='Cancel' 
-			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=product&id={$request.id}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}"'{/if}
-			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=product{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}"'{/if}>
+			{if $request.action=='edit'} onclick='location.href="admin.php?action=viewDetails&category=product&id={$request.id}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}&page={$request.page}{/if}"'{/if}
+			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=product{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}&page={$request.page}{/if}"'{/if}>
 		<span style="padding-right:50">&nbsp;</span>
 	</div>
 		
