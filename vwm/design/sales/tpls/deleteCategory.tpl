@@ -106,14 +106,14 @@ ID number
 {*if $itemsCount > 0*}
 
 {if $gobackAction=="viewDetails"}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=viewDetails&category={$request.category}{if $request.bookmark}&bookmark={$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}&id={$itemForDelete[0].id}'">
+<input type="button" value="No" class="button" onclick="location.href='sales.php?action=viewDetails&category={$request.category}{if $request.bookmark}&bookmark={$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}&id={$itemForDelete[0].id}'">
 {else}
 {if $flashback == "salescontacts"}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=salescontacts&bookmark={$request.bookmark}&subBookmark={$request.subBookmark}'"/>	
+<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category=salescontacts&bookmark={$request.bookmark}&subBookmark={$request.subBookmark}'"/>	
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page}&page={$request.page}{/if}{if $request.productCategory }&productCategory={$request.productCategory}{/if}'"/>
+<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page}&page={$request.page}{/if}{if $request.productCategory }&productCategory={$request.productCategory}{/if}'"/>
 {/if}
-{*<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
+{*<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button">
 

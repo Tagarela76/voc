@@ -1,18 +1,19 @@
 <?php
-class CABookmarks extends Controller{
+class CSBookmarks extends Controller{
     
-        function CABookmarks($smarty,$xnyo,$db,$user,$action) {
+        function CSBookmarks($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);	
 	}
         
         function runAction() {		
-		$this->runCommon('admin');		
+		$this->runCommon('sales');		
 		$functionName='action'.ucfirst($this->action);						
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
     
 	private function actionAddItem() {
+		var_dump($this->getFromRequest());
 		$bookmark = new Bookmark($this->db);
                 $manager = new BookmarksManager($this->db);
                 $bookmarksList = $manager->getBookmarksList();
@@ -26,13 +27,13 @@ class CABookmarks extends Controller{
 			} else {
                                     $result = $bookmark->saveBookmark();                               
 				if($result == true) {
-                                       header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");                                      
+                                       header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts");                                      
 				} else {
 					$this->smarty->assign("error_message",$bookmark->getErrorMessage());
 				}
 			}
 		}
-                
+        $this->smarty->assign("request",$this->getFromRequest());        
 		$this->smarty->assign("data",$bookmark);	
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -60,13 +61,13 @@ class CABookmarks extends Controller{
 			} else {
                                 $result = $bookmark->saveBookmark();
 				if($result == true) {
-					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
+					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts");
 				} else {
 					$this->smarty->assign("error_message",$bookmark->getErrorMessage());
 				}
 			}
 		}
-                
+        $this->smarty->assign("request",$this->getFromRequest());        
 		$this->smarty->assign("data",$bookmark);
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -112,7 +113,7 @@ class CABookmarks extends Controller{
                 $manager->deleteBookmarks($itemForDelete);
                 $manager->updateType($itemForDelete);
                 
-		header ('Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts');
+		header ('Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts');
 		
 	}
         

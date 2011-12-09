@@ -17,7 +17,13 @@ class BookmarksManager {
 		return $bookmark;
 	}        
         
-        
+	public function getBookmarkStats($name) {
+		$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='" . $name . "'";
+		$this->db->query($query);
+		$subNumber = $this->db->fetch(0)->id;
+		
+		return $subNumber;
+	}        
         
         /**
          *  This method does ....
@@ -77,7 +83,7 @@ class BookmarksManager {
 	
 	public function getBookmarksListSupplier() {
 
-                $itemCount = $this->getCountSupplier();
+        $itemCount = $this->getCountSupplier();
 		$query = "SELECT * FROM " . TB_SUPPLIER . " ORDER BY supplier ASC";
                 
 		$this->db->query($query);

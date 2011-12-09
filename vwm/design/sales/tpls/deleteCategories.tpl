@@ -154,27 +154,28 @@ function CheckCB(Element){
 <div style="width:650px;" align="right">
 	{if $itemsCount > 0}
 	
-	{*<!-- admin.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->*}
+	{*<!-- sales.php?action=browseCategory&category={$request.category}&bookmark={$request.bookmark} -->*}
 {if $gobackAction eq 'browseCategory'}		
-{*<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page}&page={$request.page}{/if}{if $request.productCategory }&productCategory={$request.productCategory}{/if}'"/>
+{*<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
+<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page}&page={$request.page}{/if}{if $request.productCategory }&productCategory={$request.productCategory}{/if}'"/>
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}'">
+<input type="button" value="No" class="button" onclick="location.href='sales.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}'">
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}
 
 
 {else}{if $request.category == "product"}
-<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={$request.category}'">
+<input type="button" value="OK" class="button" onclick="location.href='sales.php?action=browseCategory&category={$request.category}'">
 {else}
-<input type="button" value="OK" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}{/if}{/if}'">
+<input type="button" value="OK" class="button" onclick="location.href='sales.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}{/if}{/if}'">
 {/if}
 {/if}
 <input type="hidden" name="itemsCount" value="{$itemsCount}">
 <input type="hidden" name="bookmark" value="{$request.bookmark}">
 <input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 <input type="hidden" name="category" value="{$request.category}">
+<input type="hidden" name="flashback" value="{$flashback}">
 <input type="hidden" name="action" value="confirmDelete">
 {if $itemType=="inventory" && $deleteWithProducts==true}
 	<input type="hidden" name="deleteWithProducts" value="yes">

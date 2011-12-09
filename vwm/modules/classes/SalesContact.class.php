@@ -66,6 +66,10 @@ class SalesContact
 		return "admin.php?action=viewDetails&category=contacts&id={$this->id}";
 	}
 	
+	public function get_viewDetailsUrlSales() {
+		return "sales.php?action=viewDetails&category=contacts&id={$this->id}";
+	}	
+	
 	public function get_country_name() {
 		if(isset($this->country_id) and !isset($this->country_name)) {
 			$country = new Country($this->db);

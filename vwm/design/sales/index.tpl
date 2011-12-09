@@ -37,6 +37,8 @@
 											{if $request.action == 'browseCategory'}
 												{if $request.category == 'forms'}
 													{include file="tpls:tpls/bookmarksForms.tpl"}
+												{elseif $request.category == 'salescontacts'}
+													{include file="tpls:tpls/bookmarkSales.tpl"}	
 												{/if}
 											{/if}
 											{*SORT*}
@@ -52,6 +54,9 @@
 											{/if}
 												{*/SORT*}
 
+                                                                                        {if $request.category == 'salescontacts'}
+                                                                                          {include file="tpls:tpls/subBookmarks.tpl"}
+                                                                                        {/if}
 												{if $request.action == 'browseCategory'}
 													<table width='100%'>
 														<tr>

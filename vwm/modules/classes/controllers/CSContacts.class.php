@@ -1,15 +1,15 @@
 <?php
 
-class CAContacts extends Controller {
+class CSContacts extends Controller {
 	
-	function CAContacts($smarty,$xnyo,$db,$user,$action) {
+	function CSContacts($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='contacts';
 		$this->parent_category='salescontacts';		
 	}
 	
 	function runAction() {		
-		$this->runCommon('admin');		
+		$this->runCommon('sales');		
 		$functionName='action'.ucfirst($this->action);						
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
@@ -92,6 +92,8 @@ class CAContacts extends Controller {
 		
 		$manager = new SalesContactsManager($this->db);
 		$contact = $manager->getSalesContact($this->getFromRequest('id'));
+		$this->smarty->assign("parent",$this->parent_category);
+		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -119,7 +121,7 @@ class CAContacts extends Controller {
 				
 				$result = $contactsManager->saveContact($contact);
 				if($result == true) {
-					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
+					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());
 				}
@@ -128,7 +130,8 @@ class CAContacts extends Controller {
 		$this->smarty->assign("data",$contact);
                 $countries =  $registration->getCountryList();
 		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);														
+		$stateList = $state->getStateList($usaID);		
+		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
 		$this->smarty->assign("countries", $countries);
@@ -156,14 +159,14 @@ class CAContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-                        var_dump($contact);
+                       
 			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
 				$contactsManager = new SalesContactsManager($this->db);
 				$result = $contactsManager->addContact($contact);
 				if($result) {
-					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=$sub");
+					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=$sub");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());
 				}
@@ -175,7 +178,8 @@ class CAContacts extends Controller {
 		$this->smarty->assign("data",$contact);
 		$countries =  $registration->getCountryList();
 		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);														
+		$stateList = $state->getStateList($usaID);		
+		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
 		$this->smarty->assign("countries", $countries);
@@ -212,7 +216,7 @@ class CAContacts extends Controller {
 			
 			$manager->deleteSalesContact($id);
 		}
-		header ('Location: admin.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category'));
+		header ('Location: sales.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category'));
 		die();
 	}
 	
