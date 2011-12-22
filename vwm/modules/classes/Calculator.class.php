@@ -5,7 +5,7 @@ class Calculator {
     function Calculator() {
     }
     
-    public function calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult)
+    public function calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult)
     {
     	$vocWeight=0;     
     	
@@ -24,7 +24,10 @@ class Calculator {
     	$unitTypeConverter = new UnitTypeConverter($defaultType);
     	$default= $unitTypeConverter->convertToDefault($vocVolume, "lb");        	
     	
-    	return ($vocWeight+$default)*$percentWithoutWaste/100;
+		$withoutRecycle =  ($vocWeight+$default)*$percentWithoutWaste/100;
+		$withRecycle = $withoutRecycle - ($withoutRecycle*$recycleResult['value'])/100;
+
+    	return $withRecycle;
     }
     
     public function calculateVoc ($vocwxArray, $quantityArray, $waste = 0) {

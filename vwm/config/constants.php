@@ -31,10 +31,10 @@
 			//	LOCAL AREA
 			case 'local':
 				define ('DB_HOST', 'localhost');
-				define ('DB_NAME', 'voc');
+				define ('DB_NAME', 'voc_vps');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'developer');
+				define ('DB_PASS', 'rootpass');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			

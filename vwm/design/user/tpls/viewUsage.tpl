@@ -128,6 +128,17 @@
                             </div>
                         </td>
                     </tr>
+<!-- RECYCLE -->                   
+					<tr>
+                        <td class="" height="20">
+                            Recycle:
+                        </td>
+                        <td class="">
+                            <div align="left">
+                                &nbsp; {$usage->recycle_percent} %
+                            </div>
+                        </td>
+                    </tr>					
                     <tr>
                         <td class="" height="20">
                             VOC:

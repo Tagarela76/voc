@@ -19,6 +19,7 @@
 		public $exempt_rule;
 		public $apmethod_id;
 		public $waste_percent;
+		public $recycle_percent;
 
 		public $url;
 		public $rule;
@@ -37,6 +38,7 @@
 
 
 		public $waste;
+		public $recycle;
 		public $waste_json;
 		public $isMWS; //Is module waste stream enabled
 		public $waste_calculated; //Total Waste value voc
@@ -269,12 +271,16 @@
 			}
 
 			//	save waste data (If module 'Waste Stream' is disabled)
-			if(!$isMWS and isset($this->waste) and ($this->waste->value) and $this->waste->value != "" and $this->vaste->value != "0.00") {
+			if(!$isMWS and isset($this->waste) and ($this->waste->value) and $this->waste->value != "" and $this->waste->value != "0.00") {
 				$this->saveWaste($mixID, $this->waste->value, $this->waste->unittype);
 			} else {
 				//echo "not MWS!!";
 			}
+			if(!$isMWS and isset($this->recycle) and isset($this->recycle->value) and $this->recycle->value != "" and $this->recycle->value != "0.00") {
 
+				//$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
+			}
+			
 			return $mixID;
 		}
 
@@ -427,6 +433,38 @@
 				$this->insertWaste($wasteData);
 			}
 		}
+		
+		private function saveRecycle($mixID, $value, $unittype=null) {
+			//	form & escape input data
+			$recycleData = $this->formAndEscapeRecycleData($mixID, $value);
+
+			//	if recycle already saved at DB - update, else - insert
+			if ($this->checkIfRecycleExist($recycleData['mixID'])) {
+				//echo "<h1>Update waste</h1>";
+				$this->updateRecycle($recycleData);
+			} else {
+				//echo "<h1>Insert waste</h1>";
+				$this->insertRecycle($recycleData);
+			}
+		}
+		
+		private function updateRecycle($recycleData) {
+
+			//screening of quotation marks
+			foreach ($recycleData as $key=>$value)
+			{
+				$recycleData[$key]=mysql_escape_string($value);
+			}
+
+			//$this->db->select_db(DB_NAME);
+			$query = "UPDATE recycle SET " .
+						"method = '".$recycleData['method']."', " .
+						"unittype_id = ".$recycleData['unittypeID'].", " .
+						"value = '".$recycleData['value']."' " .
+					"WHERE mix_id = ".$recycleData['mixID'];
+			$this->db->query($query);
+			//echo $query;
+		}		
 
 		private function updateWaste($wasteData) {
 
@@ -462,6 +500,23 @@
 						"'".$wasteData['value']."' )";
 			$this->db->query($query);
 		}
+		
+		private function insertRecycle($recycleData) {
+
+			//screening of quotation marks
+			foreach ($recycleData as $key=>$value)
+			{
+				$recycleData[$key]=mysql_escape_string($value);
+			}
+
+			//$this->db->select_db(DB_NAME);
+			$query = "INSERT INTO recycle (mix_id, method, unittype_id, value) VALUES (" .
+						"".$recycleData['mixID'].", " .
+						"'".$recycleData['method']."', " .
+						"".$recycleData['unittypeID'].", " .
+						"'".$recycleData['value']."' )";
+			$this->db->query($query);
+		}		
 
 		private function formAndEscapeWasteData($mixID, $value, $unittype) {
 			$wasteData = array(
@@ -472,6 +527,16 @@
 			);
 			return $wasteData;
 		}
+		
+		private function formAndEscapeRecycleData($mixID, $value, $unittype = null) {
+			$recycleData = array(
+				'mixID'		=> $this->db->sqltext($mixID),
+				'method'	=> (!$unittype) ? 'percent' : 'weight',						//	method is "percent" or "weight" only.  Weight means that waste set in some unittype.
+				'unittypeID'=> (!$unittype) ? 'null' : $this->db->sqltext($unittype),	//	if method is "percent" then save unittype as null to DB
+				'value'		=> $this->db->sqltext($value)
+			);
+			return $recycleData;
+		}		
 
 		private function checkIfWasteExist($mixID) {
 
@@ -483,6 +548,17 @@
 			$this->db->query($query);
 			return ($this->db->num_rows()) ? true : false;
 		}
+		
+		private function checkIfRecycleExist($mixID) {
+
+			//$mixID=mysql_escape_string($mixID);
+			settype($mixID,"integer");
+
+			//$this->db->select_db(DB_NAME);
+			$query = "SELECT id FROM recycle WHERE mix_id = ".$mixID;
+			$this->db->query($query);
+			return ($this->db->num_rows()) ? true : false;
+		}		
 
 		private function getInsertWasteQuery($mixID) {
 
@@ -563,10 +639,11 @@
 			$this->apmethod_id = isset($this->apmethod_id) ? "'{$this->apmethod_id}'" : "NULL";//Warning: quotes!
 			$this->exempt_rule = isset($this->exempt_rule) ? "'{$this->exempt_rule}'" : "NULL";//Warning: quotes!
 			$this->waste_percent = isset($this->waste_percent) ? "'{$this->waste_percent}'" : "NULL";//Warning: quotes!
+			$this->recycle_percent = isset($this->recycle_percent) ? "'{$this->recycle_percent}'" : "NULL";//Warning: quotes!
 
 			//var_dump($this->exemptRule);
 
-			$query = "INSERT INTO ".TB_USAGE." (equipment_id, department_id, description, voc, voclx, vocwx, creation_time, rule_id,apmethod_id, exempt_rule, waste_percent ) VALUES (
+			$query = "INSERT INTO ".TB_USAGE." (equipment_id, department_id, description, voc, voclx, vocwx, creation_time, rule_id,apmethod_id, exempt_rule, waste_percent, recycle_percent ) VALUES (
 						'{$this->equipment_id}',
 						'{$this->department_id}',
 						'{$this->description}',
@@ -577,7 +654,8 @@
 						 '{$this->rule_id}',
 						 {$this->apmethod_id},
 						 {$this->exempt_rule},
-						 {$this->waste_percent}
+						 {$this->waste_percent},
+						 {$this->recycle_percent}
 						 ) ";
 			/*$query .= (empty($usageData['equipment_id'])) ? " '0', " : "'".$usageData['equipment_id']."', ";
 			$query .= (empty($usageData['department_id'])) ? " '0', " : "'".$usageData['department_id']."', ";
@@ -823,7 +901,19 @@
 			return (!$this->mix_id) ? false : true;
 		}
 
-
+		public function iniRecycle() {
+			if ($this->recycle_percent != null){
+				$this->recycle = array (
+						'mixID'			=> $this->mix_id,
+						'value'			=> $this->recycle_percent
+					);				
+			}else{
+				$this->recycle = array (
+						'mixID'			=> $this->mix_id,
+						'value'			=> "0.00"
+					);
+			}		
+		}
 		/**
 		 * <h1>Init Waste</h1>
 		 *
@@ -1172,12 +1262,14 @@
 			//var_dump($wasteResult);
 
 			$calculator = new Calculator();
-			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult);
+			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$this->recycle);
 			if($this->debug) {
 				echo "<h1>Waste Percent: {$wasteResult['wastePercent']}</h1>";
+				echo "<h1>recycle Percent: {$this->recycle['value']}</h1>";
 			}
 
 			$this->waste_percent = $wasteResult['wastePercent'];
+			$this->recycle_percent = $this->recycle['value'];
 			$this->currentUsage = $this->voc;
 			$this->wastePercent = $wasteResult['wastePercent'];
 			$errors['isWastePercentAbove100'] = $wasteResult['isWastePercentAbove100'];
@@ -1214,6 +1306,10 @@
 			} else
 				return false;
 		}
+		
+		private function selectRecycle($isMWS) {
+
+		}		
 
 
 		private function calculateWaste($unittypeID, $value, $quantitySum = 0, $mixDensity = false) {

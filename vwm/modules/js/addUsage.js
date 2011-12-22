@@ -94,7 +94,13 @@ function initNoMWS() {
 
 	waste.unittype = $("#selectWasteUnittype").attr('value');
 
-
+//RECYCLE	
+	recycle.value = $("#recycleValue").val();
+	$("#recycleValue").change(function(){
+		
+		recycle.value = $(this).val();
+	
+	});	
 }
 
 	/*$(function()
@@ -154,6 +160,14 @@ function initNoMWS() {
 		}
 	}
 
+	function validateRecycle() {
+		
+		if(recycle.value > 100 ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	function getMix() {
 
 		mixObj = new CMix();
@@ -194,6 +208,14 @@ function initNoMWS() {
 			$("#wasteValidError").css("display","none");
 		}
 
+		if(!validateRecycle()){
+			
+			$("#recycleValidError").css("display","inline");
+			return;
+		} else {
+			$("#recycleValidError").css("display","none");
+		}
+		
 		mix = getMix();
 		/*
 		 * Эники беники ели вареники
@@ -204,16 +226,17 @@ function initNoMWS() {
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
 		} else {
+			
 			waste = $.toJSON(waste);
-
+			recycle = $.toJSON(recycle);
 		}
 
 
 
 		if(editForm == false) {
-			urlData = {"action" : "addItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "products" : products.toJson() , "mix" : mix.toJson()};
+			urlData = {"action" : "addItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "recycleJson" : recycle, "products" : products.toJson() , "mix" : mix.toJson()};
 		} else {
-			urlData = {"action" : "editItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "products" : products.toJson() , "mix" : mix.toJson(), "id" : mixID};
+			urlData = {"action" : "editItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "recycleJson" : recycle, "products" : products.toJson() , "mix" : mix.toJson(), "id" : mixID};
 		}
 
 		//alert("Everything is ok!");

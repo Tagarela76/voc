@@ -61,6 +61,7 @@ class CMix extends Controller
 	private function actionViewDetails()
 	{
 		$usage = new Mix($this->db);
+		
 		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
@@ -783,7 +784,7 @@ class CMix extends Controller
 			echo "add mix";
 			var_dump($form);
 		}
-
+		//$debug = true;
 		$departmentID = $form['departmentID'];
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
@@ -799,7 +800,8 @@ class CMix extends Controller
 		$jmix = json_decode($form['mix']);
 		$jmix->dateFormat = $mixDateFormat;
 		$wastes = json_decode($form['wasteJson']);
-
+		$recycle = json_decode($form['recycleJson']);
+		
 		//	Start processing waste
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
@@ -823,7 +825,8 @@ class CMix extends Controller
 				'facilityID'=> $facilityID,
 				'companyID' => $companyID,
 				'jmix'		=> $jmix,
-				'wastes'	=> $wastes
+				'wastes'	=> $wastes,
+				'recycle'	=> $recycle
 			);
 
 			$result = $mWasteStreams->prepare4mixAdd($params);
@@ -861,6 +864,7 @@ class CMix extends Controller
 			}
 		} else {
 			if($debug) {
+				var_dump($wastes , json_decode($form['wasteJson']),$recycle , json_decode($form['recycleJson']));
 				echo "<h1>NO MWS MODULE</h1>";
 			}
 		}
@@ -905,10 +909,10 @@ class CMix extends Controller
 		$mix->getEquipment();
 		$mix->getFacility();
 
-		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $debug);
+		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	}
 
-	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste ,$debug = false) {
+	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste ,$jrecycle, $debug = false) {
 
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
@@ -935,8 +939,11 @@ class CMix extends Controller
 
 		}		else {
 			$w = $jwaste;
+			$r = $jrecycle;
 			$mix->iniWaste(false);
+			$mix->iniRecycle();
 			$mix->waste['value'] = $w->value;
+			$mix->recycle['value'] = $r->value;
 			$mix->waste['unitttypeID'] = $w->unittype;
 			$u = new Unittype($this->db);
 			$unittypeDescr = $u->getUnittypeDetails($w->unittype);
@@ -948,7 +955,8 @@ class CMix extends Controller
 		$mixValidatorResponse = $mixValidator->isValidMix($mix);
 
 		if($debug) {
-			var_dump($mixValidatorResponse,$validationRes);
+			//var_dump($mixValidatorResponse);
+			var_dump($jwaste,$jrecycle,$w->value,$r->value);
 			echo "<h2>VOCs:</h2>";
 			var_dump($mix->voc, $mix->voclx, $mix->vocwx);
 		}
@@ -964,7 +972,16 @@ class CMix extends Controller
 
 		$mix->waste = $jwaste;
 		$mix->debug = $debug;
+		$mix->recycle = $jrecycle;
+		
 		$newMixID = $mix->save($isMWS,$optMix);
+		if($debug) {
+			echo "<h1>optMix:</h1>";
+			var_dump($mix,$newMixID);
+		}		
+		
+		
+		
 		if($debug) {
 			echo "<h1>mix #$newMixID saved!</h1>";
 		}
@@ -1278,6 +1295,8 @@ class CMix extends Controller
 
 			/** Initialize waste **/
 			$optMix->iniWaste($isMWS); // TODO: Доделать если MWS выключен
+			$optMix->iniRecycle();
+
 		}
 		//Init all wastes list for smarty
 		if($isMWS) {
