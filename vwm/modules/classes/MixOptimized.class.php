@@ -947,21 +947,7 @@
 			}	
 	
 			return $this->recycle;
-			/*
-			if ($this->recycle_percent != null){
-				$this->recycle = array (
-						'mixID'			=> $this->mix_id,
-						'value'			=> $this->recycle_percent
-					);				
-			}else{
-				$this->recycle = array (
-						'mixID'			=> $this->mix_id,
-						'value'			=> "0.00"
-					);
-			}
-			*/		
-		
-			
+	
 		}
 		/**
 		 * <h1>Init Waste</h1>

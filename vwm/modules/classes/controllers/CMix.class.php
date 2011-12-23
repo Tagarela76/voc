@@ -1624,7 +1624,7 @@ class CMix extends Controller
 
 			$mix = new MixOptimized($this->db);
 			$mix->iniWaste(false, $unittypeListDefault);
-			$mix->iniRecycle();
+			$mix->iniRecycle(false, $unittypeListDefault);
 			$mix->department_id = $departmentID;
 			$mix->creation_time = strtotime("now");
 		$data->creation_time = $mix->creation_time;

@@ -304,7 +304,7 @@ function createSelectUnittypeClass(id) {
 						
 {*SET RECYCLE*}						
 						<tr class="users_u_top_size users_top_lightgray" >
-							<td colspan="2"><div id='recycle'>Set recycle</div></td>
+							<td colspan="2"><div id='recycle'>Set recycle </div></td>
 						</tr>	
 
 						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
