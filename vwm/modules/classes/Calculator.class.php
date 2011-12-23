@@ -7,6 +7,8 @@ class Calculator {
     
     public function calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult)
     {
+
+		
     	$vocWeight=0;     
     	
     	$percentWithoutWaste=100-$wasteResult['wastePercent'];
@@ -25,7 +27,7 @@ class Calculator {
     	$default= $unitTypeConverter->convertToDefault($vocVolume, "lb");        	
     	
 		$withoutRecycle =  ($vocWeight+$default)*$percentWithoutWaste/100;
-		$withRecycle = $withoutRecycle - ($withoutRecycle*$recycleResult['value'])/100;
+		$withRecycle = $withoutRecycle - ($withoutRecycle*$recycleResult['recyclePercent'])/100;
 
     	return $withRecycle;
     }

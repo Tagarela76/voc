@@ -675,7 +675,7 @@ class CMix extends Controller
 		$jmix->dateFormat = $mixDateFormat;
 
 		$wastes = json_decode($form['wasteJson']);
-
+		$recycle = json_decode($form['recycleJson']);
 		//	Start processing waste
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
@@ -700,7 +700,8 @@ class CMix extends Controller
 				'facilityID'=> $facilityID,
 				'companyID' => $companyID,
 				'jmix'		=> $jmix,
-				'wastes'	=> $wastes
+				'wastes'	=> $wastes,
+				'recycle'	=> $recycle
 			);
 
 			$result = $mWasteStreams->prepare4mixAdd($params);
@@ -775,8 +776,8 @@ class CMix extends Controller
 		$mix->getEquipment();
 		$mix->getFacility();
 
-		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $debug);
-	}
+		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
+	} 
 
 	private function actionAddItemAjax() {
 		$form = $_REQUEST;
@@ -866,7 +867,7 @@ class CMix extends Controller
 			}
 		} else {
 			if($debug) {
-				var_dump($wastes , json_decode($form['wasteJson']),$recycle , json_decode($form['recycleJson']));
+				
 				echo "<h1>NO MWS MODULE</h1>";
 			}
 		}
@@ -943,10 +944,11 @@ class CMix extends Controller
 			$w = $jwaste;
 			$r = $jrecycle;
 			$mix->iniWaste(false);
-			$mix->iniRecycle();
+			$mix->iniRecycle(false);
 			$mix->waste['value'] = $w->value;
 			$mix->recycle['value'] = $r->value;
 			$mix->waste['unitttypeID'] = $w->unittype;
+			$mix->recycle['unitttypeID'] = $r->unittype;
 			$u = new Unittype($this->db);
 			$unittypeDescr = $u->getUnittypeDetails($w->unittype);
 		}
@@ -1297,7 +1299,7 @@ class CMix extends Controller
 
 			/** Initialize waste **/
 			$optMix->iniWaste($isMWS); // TODO: Доделать если MWS выключен
-			$optMix->iniRecycle();
+			$optMix->iniRecycle($isMWS);
 
 		}
 		//Init all wastes list for smarty
@@ -1311,7 +1313,7 @@ class CMix extends Controller
 				$storagesFailed = true;
 			}
 		}
-
+	
 		if(count($form) > 0) {
 
 			switch ($action) {

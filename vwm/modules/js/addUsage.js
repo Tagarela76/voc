@@ -101,7 +101,7 @@ function initNoMWS() {
 		recycle.value = $(this).val();
 	
 	});	
-
+	recycle.unittype = $("#selectRecycleUnittype").attr('value');
 }
 
 	/*$(function()
@@ -437,7 +437,7 @@ function initNoMWS() {
 	      		success: function (response)
 	      			{
 	      				writeUnittype(response,'selectRecycleUnittype')
-	      				waste.unittype = $("#selectRecycleUnittype").attr('value');
+	      				recycle.unittype = $("#selectRecycleUnittype").attr('value');
 	      			}
 				});
 			}

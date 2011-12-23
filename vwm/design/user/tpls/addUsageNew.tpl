@@ -306,7 +306,7 @@ function createSelectUnittypeClass(id) {
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2"><div id='recycle'>Set recycle</div></td>
 						</tr>	
-<div  >
+
 						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
 							<td class="border_users_l border_users_b border_users_r" width="30%" height="20" >
 								Recycle value:
@@ -343,8 +343,8 @@ function createSelectUnittypeClass(id) {
 							<div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>							
 							</td>
 						</tr>
-</div>
-{*}						
+
+					
 
 						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
 							<td class="border_users_l border_users_b border_users_r" height="20">
@@ -356,22 +356,22 @@ function createSelectUnittypeClass(id) {
 								
 									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
-										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}										
-										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
 										{/section}
 										<!-- 'percent' eq $data->waste.unittypeClass or  -->
-										<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>										
+										<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>										
 									</select>
 									<input type="hidden" id="company" value="{$companyID}">
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
 								<div class="floatleft padd_left">	
 									<select name="selectRecycleUnittype" id="selectRecycleUnittype" >									
-										{section name=i loop=$data->waste.unitTypeList}	
-											<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>										
+										{section name=i loop=$data->recycle.unitTypeList}	
+											<option value='{$data->recycle.unitTypeList[i].unittype_id}' {if $data->recycle.unitTypeList[i].unittype_id eq $data->recycle.unittypeID}selected="selected"{/if}>{$data->recycle.unitTypeList[i].description}</option>										
 										{/section}									
 									</select>									
 								</div>
@@ -382,7 +382,7 @@ function createSelectUnittypeClass(id) {
 								</div>
 							</td>
 						</tr>
-{*}						
+					
 					</table>
 							{literal}
 							<script>

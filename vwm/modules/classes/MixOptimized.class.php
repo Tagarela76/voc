@@ -278,9 +278,9 @@
 			}
 			if(!$isMWS and isset($this->recycle) and isset($this->recycle->value) and $this->recycle->value != "" and $this->recycle->value != "0.00") {
 
-				//$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
+				$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
 			}
-			
+
 			return $mixID;
 		}
 
@@ -433,9 +433,9 @@
 			}
 		}
 		
-		private function saveRecycle($mixID, $value, $unittype=null) {
+		private function saveRecycle($mixID, $value, $unittype) {
 			//	form & escape input data
-			$recycleData = $this->formAndEscapeRecycleData($mixID, $value);
+			$recycleData = $this->formAndEscapeRecycleData($mixID, $value, $unittype);
 
 			//	if recycle already saved at DB - update, else - insert
 			if ($this->checkIfRecycleExist($recycleData['mixID'])) {
@@ -900,12 +900,13 @@
 			return (!$this->mix_id) ? false : true;
 		}
 
-		public function iniRecycle() {
-			/*
+		public function iniRecycle($isMWS, $unittypeListDefault = false) {
+			
 			$unittype = new Unittype($this->db);
 			$unitTypeConverter = new UnitTypeConverter();
 
 			$recycleFromDB = $this->selectRecycle($isMWS);
+			
 			if (!$recycleFromDB) {
 				//	default values
 				if (!$unittypeListDefault){ //if unittypeList is empty than set default
@@ -923,7 +924,30 @@
                                         'unitTypeList'   => $unittypeListDefault
 				);
 				}
-			}	*/		
+			}else {
+				foreach($recycleFromDB as $r) {
+					if(!isset($r->pollution_id)) {
+						$recycle['id']	= $r->id;
+						$recycle['value'] = $r->value;
+
+					} else {
+
+					}
+
+					$recycle['id']	= $r->id;
+					$recycle['mixID'] = $r->mix_id;
+					$recycle['value'] = $r->value;
+					$recycle['unitttypeID'] 	= $r->unittype_id;
+					$recycle['unittypeClass'] = ($r->method == 'percent') ? "%" : $unittype->getUnittypeClass($r->unittype_id);
+					$recycle['storage_id'] 	= $r->storage_id;
+					$recycle['unitTypeList'] = (is_null($r->unittype_id)) ? false : $unittype->getUnittypeListDefault($r->method);			
+					
+					$this->recycle = $recycle;
+				}
+			}	
+	
+			return $this->recycle;
+			/*
 			if ($this->recycle_percent != null){
 				$this->recycle = array (
 						'mixID'			=> $this->mix_id,
@@ -934,7 +958,10 @@
 						'mixID'			=> $this->mix_id,
 						'value'			=> "0.00"
 					);
-			}		
+			}
+			*/		
+		
+			
 		}
 		/**
 		 * <h1>Init Waste</h1>
@@ -1279,23 +1306,31 @@
 														$unitTypeConverter,
 														$quantitiWeightSum,
 														$quantitiVolumeSum);
+			
+			$recycleResult = $this->calculateRecyclePercent($this->recycle['unitttypeID'],
+														$this->recycle['value'],
+														$unitTypeConverter,
+														$quantitiWeightSum,
+														$quantitiVolumeSum);			
 
-			//echo "waste result: ";
-			//var_dump($wasteResult);
-
+			/*echo "waste result: ";
+			var_dump($wasteResult);
+			echo "recycle result: ";
+			var_dump($recycleResult);*/
 			$calculator = new Calculator();
-			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$this->recycle);
+			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
 			if($this->debug) {
-				echo "<h1>Waste Percent: {$wasteResult['wastePercent']}</h1>";
-				echo "<h1>recycle Percent: {$this->recycle['value']}</h1>";
+				echo "<h1>Waste Percent: {}</h1>";var_dump($wasteResult);
+				echo "<h1>recycle Percent: {}</h1>";var_dump($recycleResult);
 			}
 
 			$this->waste_percent = $wasteResult['wastePercent'];
 			$this->recycle_percent = $this->recycle['value'];
 			$this->currentUsage = $this->voc;
 			$this->wastePercent = $wasteResult['wastePercent'];
+			$this->recyclePercent = $recycleResult['recyclePercent'];
 			$errors['isWastePercentAbove100'] = $wasteResult['isWastePercentAbove100'];
-
+			$errors['isRecyclePercentAbove100'] = $recycleResult['isRecyclePercentAbove100'];
 			return $errors;
 		}
 
@@ -1336,7 +1371,7 @@
 			$query = "SELECT * FROM recycle WHERE mix_id = ".$mixID;
 			if(!$this->isMWS) { // If module MWS disabled - get one waste.
 
-				$query .= " AND waste_stream_id IS NULL";
+				$query .= " AND recycle_stream_id IS NULL";
 			}
 
 			$this->db->query($query);
@@ -1430,6 +1465,65 @@
 			$result['wastePercent'] = round($result['wastePercent'],2);
 			return  $result;
 		}
+		
+		private function calculateRecyclePercent($unittypeID, $value, UnitTypeConverter $unitTypeConverter, $quantityWeightSum = 0, $quantityVolumeSum = 0) {
+			
+			if($this->debug) {
+				echo "<p>".__FUNCTION__."</p>";
+				echo $this->debug;
+			}
+			$result = array(
+						'recyclePercent' => 0,
+						'isRecycleError' => false,
+						'isRecyclePercentAbove100' => false
+					);
+			$unittype = new Unittype($this->db);
+			// TODO: хрень с тремя буквами unitttypeID, когда MWS выключен - с тремя буквами, когда включен - с одной
+			$uid = $this->recycle['unittypeID'] ? $this->recycle['unittypeID'] : $this->recycle['unitttypeID'];
+
+			$recycleUnitDetails = $unittype->getUnittypeDetails($uid);
+			
+
+
+			if (empty($uid)) {
+				//	percent
+				$result['recyclePercent']= $value;
+			} else {
+
+
+				switch ($unittype->isWeightOrVolume($uid)) {
+
+					case 'volume':
+
+						$recycleVolume = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], 'us gallon');
+						$result['recyclePercent'] = $recycleVolume/$quantityVolumeSum*100;
+						break;
+
+					case 'weight':
+						//echo "weight";
+						//echo "value: $value, description: {$wasteUnitDetails["description"]}";
+						$recycleWeight = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], "lb");
+						$result['recyclePercent'] = $recycleWeight/$quantityWeightSum*100;
+						break;
+
+					case false:
+						$result['isRecycleError'] = true;
+						break;
+				}
+			}
+
+			
+			if ($result['recyclePercent']>100) {
+				$result['recyclePercent'] = 0;
+				$result['isRecyclePercentAbove100'] = true;
+			}
+			if($this->debug) {
+				var_dump($result);
+			}
+			$result['recyclePercent'] = round($result['recyclePercent'],2);
+
+			return  $result;
+		}		
 
 		//	Tracking System
 		private function save2trash($CRUD, $id) {
