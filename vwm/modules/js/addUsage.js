@@ -101,6 +101,7 @@ function initNoMWS() {
 		recycle.value = $(this).val();
 	
 	});	
+
 }
 
 	/*$(function()
@@ -420,6 +421,23 @@ function initNoMWS() {
 	      			{
 	      				writeUnittype(response,'selectWasteUnittype')
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
+	      			}
+				});
+			}
+		} else if (sel.name == 'selectRecycleUnittypeClass') {
+			$("#selectRecycleUnittype").empty();
+			$('#selectRecycleUnittypePreloader').css('display','block');
+			if(sysType.length > 0){
+				$.ajax({
+      			url: "modules/ajax/getUnitTypes.php",
+      			type: "GET",
+	      		async: false,
+	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		dataType: "html",
+	      		success: function (response)
+	      			{
+	      				writeUnittype(response,'selectRecycleUnittype')
+	      				waste.unittype = $("#selectRecycleUnittype").attr('value');
 	      			}
 				});
 			}

@@ -304,46 +304,49 @@ function createSelectUnittypeClass(id) {
 						
 {*SET RECYCLE*}						
 						<tr class="users_u_top_size users_top_lightgray" >
-							<td colspan="2">Set recycle</td>
+							<td colspan="2"><div id='recycle'>Set recycle</div></td>
 						</tr>	
-						<tr>
-							<td class="border_users_l border_users_b border_users_r" width="30%" height="20">
+<div  >
+						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
+							<td class="border_users_l border_users_b border_users_r" width="30%" height="20" >
 								Recycle value:
 							</td>
-							<td class="border_users_r border_users_b">
+							<td class="border_users_r border_users_b" >
 								<div align="left" >											
-								<input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}"> %
+								<input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}"> 
 									{if $validStatus.summary eq 'false'}
 									{if $validStatus.waste.value eq 'failed'}
 									{*ERORR*}
 										<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid waste value. VOC was calculated with waste = 0. Waste value must be a positive number.</font></div>
+										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be a positive number.</font></div>
 									{*/ERORR*}
 									{/if}
 									{if $validStatus.waste.percent eq 'failed'}
 									{*ERORR*}
 										<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid waste value. VOC was calculated with waste = 0. Waste value must be less than products total value.</font></div>
+										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be less than products total value.</font></div>
 									{*/ERORR*}
 									{/if}
 									{if $validStatus.waste.convert eq 'failed'}
 									{*ERORR*}
 										<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate waste for mix. Please enter valid waste value in % or set density for all products used in mix. VOC was calculated with waste = 0.</font></div>
+										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate recycle for mix. Please enter valid recycle value in % or set density for all products used in mix. VOC was calculated with recycle = 0.</font></div>
 									{*/ERORR*}
 									{/if}	
 									{/if}
 							<script type="text/javascript">
 										$("#recycleValue").numeric();
-							</script>									
-									
+							</script>	
+
 								</div>	
 							
 							<div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>							
 							</td>
 						</tr>
-						{*}
-						<tr>
+</div>
+{*}						
+
+						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Recycle unit type :
 							</td>
@@ -351,7 +354,7 @@ function createSelectUnittypeClass(id) {
 							<td class="border_users_r border_users_b">
 								<div class="floatleft">	
 								
-									<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >									 										
+									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
 										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
 										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
@@ -366,7 +369,7 @@ function createSelectUnittypeClass(id) {
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
 								<div class="floatleft padd_left">	
-									<select name="selectWasteUnittype" id="selectWasteUnittype" >									
+									<select name="selectRecycleUnittype" id="selectRecycleUnittype" >									
 										{section name=i loop=$data->waste.unitTypeList}	
 											<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>										
 										{/section}									
@@ -378,8 +381,16 @@ function createSelectUnittypeClass(id) {
 									<img src='images/ajax-loader.gif' height=16  style="float:left;">
 								</div>
 							</td>
-						</tr>{*}						
+						</tr>
+{*}						
 					</table>
+							{literal}
+							<script>
+								$("#recycle").click(function () {
+								$(".recycleview").slideToggle("slow");
+								});
+							</script>
+							{/literal}	
 {/if}
 {*/WASTE*}
 
@@ -694,7 +705,6 @@ function createSelectUnittypeClass(id) {
 		{/if}
 
 		</div>
-
 
 
 <div class="padd7" style="display:none;" id="addProductsContainer">

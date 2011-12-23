@@ -416,7 +416,6 @@
 				$this->db->query($insertProductsQuery);
 			}
 
-
 			return $mixID;
 		}
 
@@ -828,7 +827,7 @@
 			$this->products = array();
 
 			$mixID = mysql_escape_string($this->mix_id);
-
+	
 			/*$query = 'SELECT * FROM '.TB_MIXGROUP.' WHERE mix_id = '.$mixID.'';
 			$this->db->query($query);
 
@@ -902,6 +901,29 @@
 		}
 
 		public function iniRecycle() {
+			/*
+			$unittype = new Unittype($this->db);
+			$unitTypeConverter = new UnitTypeConverter();
+
+			$recycleFromDB = $this->selectRecycle($isMWS);
+			if (!$recycleFromDB) {
+				//	default values
+				if (!$unittypeListDefault){ //if unittypeList is empty than set default
+				$this->recycle = array (
+					'mixID'			=> $mixID,
+					'value'			=> "0.00",
+					'unittypeClass'	=> 'USAWght',
+                                        'unitTypeList'   => $unittype->getUnittypeListDefault()
+				);
+				} else { //else get unittypelist
+				$this->recycle = array (
+					'mixID'			=> $mixID,
+					'value'			=> "0.00",
+					'unittypeClass'	=> 'USAWght',
+                                        'unitTypeList'   => $unittypeListDefault
+				);
+				}
+			}	*/		
 			if ($this->recycle_percent != null){
 				$this->recycle = array (
 						'mixID'			=> $this->mix_id,
@@ -1308,8 +1330,28 @@
 		}
 		
 		private function selectRecycle($isMWS) {
+			if (!isset($this->mix_id)) return false;
+			$mixID = mysql_escape_string($this->mix_id);
 
-		}		
+			$query = "SELECT * FROM recycle WHERE mix_id = ".$mixID;
+			if(!$this->isMWS) { // If module MWS disabled - get one waste.
+
+				$query .= " AND waste_stream_id IS NULL";
+			}
+
+			$this->db->query($query);
+
+			if ($this->db->num_rows() > 0) {
+
+				if(!isMWS) {
+					return $this->db->fetch(0);// If module MWS disabled - get one waste.
+				} else {
+					return $this->db->fetch_all();// Else get all wastes
+				}
+			} else
+				return false;
+		}
+	
 
 
 		private function calculateWaste($unittypeID, $value, $quantitySum = 0, $mixDensity = false) {

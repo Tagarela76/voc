@@ -31,7 +31,7 @@
 			//	LOCAL AREA
 			case 'local':
 				define ('DB_HOST', 'localhost');
-				define ('DB_NAME', 'voc_vps');
+				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
 				define ('DB_PASS', 'rootpass');

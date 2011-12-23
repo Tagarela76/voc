@@ -70,6 +70,8 @@ class CMix extends Controller
 			throw new Exception('deny');
 		}
 		$mixOptimized->getRule();
+		
+		
 		$this->smarty->assign("usage", $mixOptimized);
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
@@ -1620,11 +1622,15 @@ class CMix extends Controller
 
 			$mix = new MixOptimized($this->db);
 			$mix->iniWaste(false, $unittypeListDefault);
+			$mix->iniRecycle();
 			$mix->department_id = $departmentID;
 			$mix->creation_time = strtotime("now");
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
+		$data->recycle = $mix->recycle;
+		
+	
 		$this->smarty->assign('data',$data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 
@@ -1636,6 +1642,7 @@ class CMix extends Controller
 		$data->vocwx			= '0.00';
 		$data->creation_time 	= date("m-d-Y");
 		$data->waste			= false;
+		$data->recycle			= false;
 		return $data;
 	}
 
