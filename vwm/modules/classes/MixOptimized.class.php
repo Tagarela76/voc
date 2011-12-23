@@ -323,6 +323,7 @@
 				//$this->saveWaste($wasteData['mixID'], $wasteData['value'], $wasteData['unittypeID']);
 			}
 			if($this->debug) {
+		 
 				var_dump($this);
 				var_dump($mix);
 			}
@@ -372,6 +373,7 @@
 			$query .= "voclx='{$this->voclx}', ";
 			$query .= "vocwx='{$this->vocwx}', ";
 			$query .= "waste_percent=".((empty($this->waste_percent))?"NULL":"'".$this->waste_percent."'").", ";
+			$query .= "recycle_percent=".((empty($this->recycle_percent))?"NULL":"'".$this->recycle_percent."'").", ";
 			$query .= "description='{$this->description}', ";
 			$query .= "rule_id={$this->rule_id}, ";
 			$query .= (empty($this->exempt_rule)) ? "exempt_rule = NULL, " : "exempt_rule ='".$this->exempt_rule."', ";
@@ -1299,15 +1301,16 @@
 														$quantitiWeightSum,
 														$quantitiVolumeSum);			
 
-			/*echo "waste result: ";
-			var_dump($wasteResult);
-			echo "recycle result: ";
-			var_dump($recycleResult);*/
+
 			$calculator = new Calculator();
 			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
 			if($this->debug) {
 				echo "<h1>Waste Percent: {}</h1>";var_dump($wasteResult);
 				echo "<h1>recycle Percent: {}</h1>";var_dump($recycleResult);
+			echo "<h1>waste result: </h1>";
+			var_dump($wasteResult);
+			echo "<h1>recycle result: </h1>";
+			var_dump($recycleResult);
 			}
 
 			$this->waste_percent = $wasteResult['wastePercent'];
@@ -1424,15 +1427,15 @@
 
 					case 'volume':
 
-						$weistVolume = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], 'us gallon');
-						$result['wastePercent'] = $weistVolume/$quantityVolumeSum*100;
+						$wasteVolume = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], 'us gallon');
+						$result['wastePercent'] = $wasteVolume/$quantityVolumeSum*100;
 						break;
 
 					case 'weight':
 						//echo "weight";
 						//echo "value: $value, description: {$wasteUnitDetails["description"]}";
-						$weistWeight = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], "lb");
-						$result['wastePercent'] = $weistWeight/$quantityWeightSum*100;
+						$wasteWeight = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], "lb");
+						$result['wastePercent'] = $wasteWeight/$quantityWeightSum*100;
 						break;
 
 					case false:
@@ -1483,6 +1486,7 @@
 
 						$recycleVolume = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], 'us gallon');
 						$result['recyclePercent'] = $recycleVolume/$quantityVolumeSum*100;
+
 						break;
 
 					case 'weight':
@@ -1497,8 +1501,12 @@
 						break;
 				}
 			}
-
-			
+if($this->debug) {
+echo'<h1>calculateRecyclePercent</h1>';
+var_dump($unittypeID, $value,'UnitDetails',$recycleUnitDetails,'$quantityWeightSum',$quantityWeightSum ,'$quantityVolumeSum', $quantityVolumeSum,'$recycleVolume',$recycleVolume,'$recycleWeight',$recycleWeight);
+echo'<h1>$result</h1>';			
+var_dump(' $recycleVolume/$quantityVolumeSum*100', $recycleVolume/$quantityVolumeSum*100,' $recycleVolume/$quantityVolumeSum*100',$recycleWeight/$quantityWeightSum*100,$result);
+}
 			if ($result['recyclePercent']>100) {
 				$result['recyclePercent'] = 0;
 				$result['isRecyclePercentAbove100'] = true;

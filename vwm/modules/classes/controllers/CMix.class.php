@@ -639,6 +639,8 @@ class CMix extends Controller
 		if($_REQUEST['debug']) {
 			$debug = true;
 		}
+		
+		
 		if($debug) {
 			var_dump($_REQUEST);
 		}
@@ -775,7 +777,10 @@ class CMix extends Controller
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
-
+			if($debug) {
+				echo "<h1>DATA</h1>";
+				var_dump($wastes, $recycle);
+			}
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	} 
 
