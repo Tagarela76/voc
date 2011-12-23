@@ -600,10 +600,27 @@ class CMix extends Controller
 		$mix->department_id = $departmentID;
 		$mix->getEquipment();
 		$mix->getFacility();
+			if($debug) {
+			echo'<h1>MIX</h1>';
+			var_dump($mix->voc);
+			}
+			$w = $form['wasteJson'];
+			$r = $form['recycleJson'];
+			$mix->iniWaste(false);
+			$mix->iniRecycle(false);
+			$mix->waste['value'] = $w['value'];
+			$mix->recycle['value'] = $r['value'];
+			$mix->waste['unitttypeID'] = $w['unittype'];
+			$mix->recycle['unitttypeID'] = $r['unittype'];
+			
 		$mix->calculateCurrentUsage();
 
+		
 		if($debug) {
-			var_dump($mix);
+			echo'<h1>MIX</h1>';
+			var_dump($w,$form['wasteJson']);
+			echo'MIX';
+			var_dump($mix->voc);
 		}
 
 		$mixValidator = new MixValidatorOptimized();

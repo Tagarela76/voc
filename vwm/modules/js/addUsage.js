@@ -88,20 +88,22 @@ function initNoMWS() {
 
 	waste.value = $("#wasteValue").val();
 	$("#wasteValue").change(function(){
-
+		waste.unittype = $("#selectWasteUnittype").attr('value');
 		waste.value = $(this).val();
+		calculateVOC();
 	});
 
-	waste.unittype = $("#selectWasteUnittype").attr('value');
+	
 
 //RECYCLE	
 	recycle.value = $("#recycleValue").val();
 	$("#recycleValue").change(function(){
-		
+		recycle.unittype = $("#selectRecycleUnittype").attr('value');
 		recycle.value = $(this).val();
+		calculateVOC();
 	
 	});	
-	recycle.unittype = $("#selectRecycleUnittype").attr('value');
+	
 }
 
 	/*$(function()
@@ -419,8 +421,26 @@ function initNoMWS() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-	      				writeUnittype(response,'selectWasteUnittype')
+	      				writeUnittype(response,'selectWasteUnittype');
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
+						calculateVOC();
+	      			}
+				});
+			}
+		} else if (sel.name == 'selectWasteUnittype') {
+
+			if(sysType.length > 0){
+				$.ajax({
+      			url: "modules/ajax/getUnitTypes.php",
+      			type: "GET",
+	      		async: false,
+	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		dataType: "html",
+	      		success: function (response)
+	      			{
+	      				//writeUnittype(response,'selectWasteUnittype');
+	      				waste.unittype = $("#selectWasteUnittype").attr('value');
+						calculateVOC();
 	      			}
 				});
 			}
@@ -436,8 +456,26 @@ function initNoMWS() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-	      				writeUnittype(response,'selectRecycleUnittype')
+	      				writeUnittype(response,'selectRecycleUnittype');
 	      				recycle.unittype = $("#selectRecycleUnittype").attr('value');
+						calculateVOC();
+	      			}
+				});
+			}
+		} else if (sel.name == 'selectRecycleUnittype') {
+
+			if(sysType.length > 0){
+				$.ajax({
+      			url: "modules/ajax/getUnitTypes.php",
+      			type: "GET",
+	      		async: false,
+	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		dataType: "html",
+	      		success: function (response)
+	      			{
+	      				//writeUnittype(response,'selectRecycleUnittype');
+	      				recycle.unittype = $("#selectRecycleUnittype").attr('value');
+						calculateVOC();
 	      			}
 				});
 			}
@@ -846,7 +884,7 @@ function initNoMWS() {
       		url: "index.php",
       		type: "GET",
       		async: true,
-      		data: {"action" : "calculateVOCAjax", "category" : "mix", "departmentID": departmentID, "products" : products.toJson() , "mix" : mix.toJson()},
+      		data: {"action" : "calculateVOCAjax", "category" : "mix", "departmentID": departmentID, "products" : products.toJson() , "mix" : mix.toJson() , "wasteJson" : waste, "recycleJson" : recycle},
       		dataType: "html",
       		success: function (r) {
       			//alert(r);

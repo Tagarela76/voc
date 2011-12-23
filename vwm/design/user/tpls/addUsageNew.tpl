@@ -288,7 +288,7 @@ function createSelectUnittypeClass(id) {
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
 								<div class="floatleft padd_left">
-									<select name="selectWasteUnittype" id="selectWasteUnittype" >
+									<select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$companyID}, {$companyEx})">
 										{section name=i loop=$data->waste.unitTypeList}
 											<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>
 										{/section}
@@ -369,7 +369,7 @@ function createSelectUnittypeClass(id) {
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
 								<div class="floatleft padd_left">	
-									<select name="selectRecycleUnittype" id="selectRecycleUnittype" >									
+									<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$companyID}, {$companyEx})">									
 										{section name=i loop=$data->recycle.unitTypeList}	
 											<option value='{$data->recycle.unitTypeList[i].unittype_id}' {if $data->recycle.unitTypeList[i].unittype_id eq $data->recycle.unittypeID}selected="selected"{/if}>{$data->recycle.unitTypeList[i].description}</option>										
 										{/section}									
