@@ -14,13 +14,13 @@
 
 var companyId="{$companyID}";
 var companyEx="{$companyEx}";
-
+var recycle = new Object();
 {if $show.waste_streams != true}
 
 
 
 var waste = new Object();
-var recycle = new Object();
+
 
 var noMWS = true;
 {else}
@@ -301,8 +301,10 @@ function createSelectUnittypeClass(id) {
 								</div>
 							</td>
 						</tr>
-						
-{*SET RECYCLE*}						
+					</table>
+{/if}							
+{*SET RECYCLE*}		
+<table class="users" cellpadding="0" cellspacing="0" align="center">
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2"><div id='recycle'>Set recycle </div></td>
 						</tr>	
@@ -384,6 +386,7 @@ function createSelectUnittypeClass(id) {
 						</tr>
 					
 					</table>
+								
 							{literal}
 							<script>
 								$("#recycle").click(function () {
@@ -391,7 +394,7 @@ function createSelectUnittypeClass(id) {
 								});
 							</script>
 							{/literal}	
-{/if}
+
 {*/WASTE*}
 
 

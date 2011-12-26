@@ -571,7 +571,7 @@ class CMix extends Controller
 		}
 
 		if($debug) {
-                    var_dump($_REQUEST);
+                    var_dump('$_REQUEST',$_REQUEST);
 		}
 
 		$form = $_REQUEST;
@@ -584,9 +584,8 @@ class CMix extends Controller
 		$mix = $this->buildMix($jmix);
 		$jproducts = json_decode($form['products']);
 
-                if($debug){
-			var_dump($jproducts);
-
+        if($debug){
+			var_dump($jproducts,'+++',json_decode($form['wasteJson']));
 		}
 		$mix->products = $this->buildProducts($jproducts);
 		/*Get FAcility id*/
@@ -600,10 +599,41 @@ class CMix extends Controller
 		$mix->department_id = $departmentID;
 		$mix->getEquipment();
 		$mix->getFacility();
+		
+	
 			if($debug) {
 			echo'<h1>MIX</h1>';
-			var_dump($mix->voc);
+			var_dump($mix);
 			}
+		/*	
+			if (!is_array($form['wasteJson'])){
+				$warr = json_decode($form['wasteJson']);
+				$i=0;
+				while($warr[$i]){
+					$arr = get_object_vars($warr[$i]);
+					$wasteArray[$i] = $arr;
+					if (isset($wasteArray[$i]['pollutions'])){
+						$j = 0;
+						while ($wasteArray[$i]['pollutions'][$j]){
+							var_dump('*',get_object_vars($wasteArray[$i]['pollutions'][$j]));
+							$pollutionsarr[$j] = get_object_vars($wasteArray[$i]['pollutions'][$j]);
+							$pollutionsarr[$j]['value'] = $pollutionsarr[$j]['quantity'];
+							$j++;
+						}
+						$wasteArray[$i] = $pollutionsarr;
+					}else{$wasteArray[$i]['value'] = $wasteArray[$i]['quantity'];
+					}
+					$i++;
+				}
+				var_dump('$wasteArray',$wasteArray);
+				$ttt = get_object_vars($tt[0]);
+				$ttt['value'] = $ttt['quantity'];	
+				$wastearray = $ttt;
+			}else{
+				$wastearray = $form['wasteJson'];
+			}*/
+
+		 
 			$w = $form['wasteJson'];
 			$r = $form['recycleJson'];
 			$mix->iniWaste(false);
@@ -612,13 +642,17 @@ class CMix extends Controller
 			$mix->recycle['value'] = $r['value'];
 			$mix->waste['unitttypeID'] = $w['unittype'];
 			$mix->recycle['unitttypeID'] = $r['unittype'];
-			
-		$mix->calculateCurrentUsage();
+			if($debug) {
+				echo'<h1>calculateCurrentUsage</h1>';
+				var_dump($mix,'*******',$mix->recycle);
+			}			
+			$mix->calculateCurrentUsage();
 
 		
 		if($debug) {
 			echo'<h1>MIX</h1>';
-			var_dump($w,$form['wasteJson']);
+
+			var_dump($mix,'===========');
 			echo'MIX';
 			var_dump($mix->voc);
 		}
@@ -656,7 +690,7 @@ class CMix extends Controller
 		if($_REQUEST['debug']) {
 			$debug = true;
 		}
-		
+
 		
 		if($debug) {
 			var_dump($_REQUEST);
@@ -803,7 +837,7 @@ class CMix extends Controller
 
 	private function actionAddItemAjax() {
 		$form = $_REQUEST;
-
+//$debug = true;
 		if($form['debug']) {
 			$debug = true;
 			echo "add mix";
@@ -839,6 +873,7 @@ class CMix extends Controller
 		if ($showModules['waste_streams']) {
 			if($debug) {
 				echo "<h1>MWS MODULE</h1>";
+				var_dump($recycle);
 			}
 			//	OK, this company has access to waste streams module, so let's setup..
 			$mWasteStreams = new $moduleMap['waste_streams'];
@@ -879,13 +914,15 @@ class CMix extends Controller
 			$result = $mWasteStreams->validateWastes($this->db, $this->xnyo, $facilityID, $companyID, '03-29-2011' , $wastes);
 			if($debug) {
 				echo "<h1>validateWastes</h1>";
-				var_Dump($mWasteStreams);
+				var_Dump($mWasteStreams,$result);
 			}
 			if($result != false){
 				echo json_encode($result);
 				exit;
 			} else {
-				//echo "<p>Waste stream validation failed</p>";
+				if($debug) {
+				echo "<p>Waste stream validation failed</p>";
+				}
 			}
 		} else {
 			if($debug) {
@@ -933,7 +970,10 @@ class CMix extends Controller
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
-
+		if($debug) {
+			var_dump('AddOrEditAjax',$params);
+			
+		}	
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	}
 
@@ -946,13 +986,13 @@ class CMix extends Controller
 				'db' => $this->db
 			);
 			if($debug) {
-				echo "<h3>calculateWaste</h3>";
+				echo "<h3>calculateWaste1</h3>";
 				var_dump($mWasteStreams->resultParams);
 			}
 			$result = $mWasteStreams->calculateWaste($params);
 
 			extract($result); //here extracted $wasteData, $wasteArr and $ws_error
-			if ($ws_error) {//
+			if ($ws_error) {
 				if($debug) {
 					echo "<p>Waste Error</p>";
 					var_dump($ws_error);
@@ -960,21 +1000,34 @@ class CMix extends Controller
 				echo json_encode(array('waste_error' => $ws_error));
 				exit;
 			}
+			
 			$mix->waste = $wasteData;
+				if($debug) {
+					echo "<p>calculateWaste STREAM</p>";
+					var_dump($mWasteStreams,$mix->waste);
+				}			
+			
 
-		}		else {
+		}else {
 			$w = $jwaste;
-			$r = $jrecycle;
+			
 			$mix->iniWaste(false);
-			$mix->iniRecycle(false);
+			
 			$mix->waste['value'] = $w->value;
-			$mix->recycle['value'] = $r->value;
+			
 			$mix->waste['unitttypeID'] = $w->unittype;
-			$mix->recycle['unitttypeID'] = $r->unittype;
+			
 			$u = new Unittype($this->db);
 			$unittypeDescr = $u->getUnittypeDetails($w->unittype);
 		}
-
+		$r = $jrecycle;
+		$mix->iniRecycle(false);
+		$mix->recycle['value'] = $r->value;
+		$mix->recycle['unitttypeID'] = $r->unittype;
+		if($debug) {
+			var_dump('mix->recycle  WSTREAM',$jrecycle);
+			
+		}		
 		$mixValidator = new MixValidatorOptimized();
 		//TODO: stopped here Denis April 4, 2011  -->
 		$mix->calculateCurrentUsage();
@@ -982,7 +1035,7 @@ class CMix extends Controller
 
 		if($debug) {
 			//var_dump($mixValidatorResponse);
-			var_dump($jwaste,$jrecycle,$w->value,$r->value);
+
 			echo "<h2>VOCs:</h2>";
 			var_dump($mix->voc, $mix->voclx, $mix->vocwx);
 		}
@@ -1367,13 +1420,13 @@ class CMix extends Controller
 
 		$jsSources = array (
 			'modules/js/jquery.simpletip-1.3.1.pack.js',
-                        'modules/js/flot/jquery.flot.js',
+            'modules/js/flot/jquery.flot.js',
 			'modules/js/mixValidator.js',
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
 			'modules/js/mixObj.js?key=1234ajSDKFJSDKFJ&rev=11052011',
 			'modules/js/addUsage.js',
-                        'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
+            'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 	    $this->smarty->assign('jsSources',$jsSources);
 
 	    $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');

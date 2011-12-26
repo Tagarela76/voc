@@ -27,6 +27,8 @@ $(document).ready(function() {
 
 		if(noMWS == true) {
 			initNoMWS();
+		}else{
+			initRecycle();
 		}
 
 		getProductInfo();
@@ -87,6 +89,9 @@ var mixValidator = new CMixValidator();
 function initNoMWS() {
 
 	waste.value = $("#wasteValue").val();
+	if($("#selectWasteUnittype").attr('value')) {
+	waste.unittype = $("#selectWasteUnittype").attr('value');
+	}
 	$("#wasteValue").change(function(){
 		waste.unittype = $("#selectWasteUnittype").attr('value');
 		waste.value = $(this).val();
@@ -97,19 +102,30 @@ function initNoMWS() {
 
 //RECYCLE	
 	recycle.value = $("#recycleValue").val();
+	if($("#selectRecycleUnittype").attr('value')) {
+	recycle.unittype = $("#selectRecycleUnittype").attr('value');
+	}	
 	$("#recycleValue").change(function(){
 		recycle.unittype = $("#selectRecycleUnittype").attr('value');
 		recycle.value = $(this).val();
 		calculateVOC();
-	
 	});	
-	
+calculateVOC();	
 }
 
-	/*$(function()
-	{
-
-	});*/
+function initRecycle() {
+	recycle.value = $("#recycleValue").val();
+	if($("#selectRecycleUnittype").attr('value')) {
+	recycle.unittype = $("#selectRecycleUnittype").attr('value');
+	}	
+	$("#recycleValue").change(function(){
+		recycle.unittype = $("#selectRecycleUnittype").attr('value');
+		recycle.value = $(this).val();
+		validateRecycle();
+		calculateVOC();
+	});	
+calculateVOC();	
+}
 
 	function IsNumeric(input)
 	{
@@ -164,8 +180,8 @@ function initNoMWS() {
 	}
 
 	function validateRecycle() {
-		
-		if(recycle.value > 100 ) {
+
+		if(recycle.value > 100 && !recycle.unittype) {
 			return false;
 		} else {
 			return true;
@@ -228,12 +244,12 @@ function initNoMWS() {
 
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
+			recycle = $.toJSON(recycle);
 		} else {
 			
 			waste = $.toJSON(waste);
 			recycle = $.toJSON(recycle);
 		}
-
 
 
 		if(editForm == false) {
@@ -335,7 +351,7 @@ function initNoMWS() {
       		url: "modules/ajax/getProductInfoInMixes.php",
       		type: "GET",
       		async: false,
-      		data: { "product_id":product_id},
+      		data: {"product_id":product_id},
       		dataType: "html",
       		success: function (response)
       			{
@@ -642,7 +658,7 @@ function initNoMWS() {
       		url: "modules/ajax/saveMix.php",
       		type: "GET",
       		async: true,
-      		data: { "action":"getProductInfo", "productID":productID},
+      		data: {"action":"getProductInfo", "productID":productID},
       		dataType: "html",
       		success: function (r) {
       			//$('#addProductPreloader').css('display', 'none');
@@ -719,7 +735,7 @@ function initNoMWS() {
 						txQ.attr("ratio",ratio);
 					}
 					//txQ..attr("onchange","setProductQuantity("+productID+")")
-					txQ.change( { "productID" : productID} ,function(eventObject) {
+					txQ.change( {"productID" : productID} ,function(eventObject) {
 						setProductQuantity(eventObject.data.productID);
 						if(currentSelectedPFP != null){
 							calculateQuantityInPFPProducts(eventObject.data.productID);
@@ -755,7 +771,7 @@ function initNoMWS() {
 
 					//elUnittypeClass.attr("onchange","getUnittypes(this, "+companyId+", "+companyEx+"); setProductUnittype("+productID+"); setProductUnittypeClass("+productID+");");
 
-					elUnittypeClass.change( { "productID" : productID} ,function(eventObject) {
+					elUnittypeClass.change( {"productID" : productID} ,function(eventObject) {
 
 						//console.log($(this).get());
 						//alert($(this).attr("name"));
@@ -782,7 +798,7 @@ function initNoMWS() {
 
 					elUnittypeId.attr('id',id).attr('name',id);
 					//elUnittypeId.attr("onchange","setProductUnittype("+productID+")");
-					elUnittypeId.change({ "productID" : productID}, function(eventObject){
+					elUnittypeId.change({"productID" : productID}, function(eventObject){
 						setProductUnittype(eventObject.data.productID);
 
 						if(currentSelectedPFP != null){
@@ -880,6 +896,11 @@ function initNoMWS() {
 	function calculateVOC() {
 		mix = getMix();
 		//alert(mix.toJson());
+		if(noMWS != true){
+	
+		waste = wasteStreamsCollection.toJson();
+
+		}		
 		$.ajax({
       		url: "index.php",
       		type: "GET",

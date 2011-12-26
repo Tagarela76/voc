@@ -40,7 +40,7 @@ function unitTypeListWithoutPollutions(id)
       		url: "modules/ajax/wasteStreams.php",      		
       		type: "POST",
       		async: false,
-      		data: { "action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue },      			
+      		data: {"action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue},      			
       		dataType: "html",
       		success: function (UTList) {      		
       			
@@ -68,7 +68,7 @@ function unitTypeList(id,idPollution)
       		url: "modules/ajax/wasteStreams.php",      		
       		type: "POST",  
       		async: false,    		
-      		data: { "action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue },      			
+      		data: {"action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue},      			
       		dataType: "html",
       		success: function (UTListForPollutions) {   
       			list=eval("("+UTListForPollutions+")");   		      												
@@ -207,7 +207,7 @@ function viewWasteStreams()
 		strNewWasteStreams+=																		
 		"	</select>"+
 		" <div id =quantityText_"+wsPosition+" style='display:none;' >Quantity:</div><input type='text' name = 'quantityWithoutPollutions_"+wsPosition+"' disabled ='true' style='display:none;'>"+
-		"	<select name='selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"' onCh='"+wsPosition+"' disabled='true' style='display:none;'  >";
+		"	<select name='selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"'onchange='calculateVOC()'  onCh='"+wsPosition+"' disabled='true' style='display:none;'  >";
 		
 		strNewWasteStreams+=selectOptions2UnitTypeClasses();
 		
@@ -348,6 +348,7 @@ function viewWasteStreams()
 			}
 			
 			//wasteStreamsCollection.toJson();
+			
 			});
 		//$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').attr("onchange","wasteSetUnittypeClass(this);");
 		$('select[name=selectWasteUnittypeClassWithoutPollutions_'+wsPosition+']').change( function() {
@@ -367,7 +368,7 @@ function viewWasteStreams()
 		index = $("#selectStorage_"+wsPosition).attr('onCh');
 		//$("#selectStorage_"+wsPosition).attr("onchange","wasteSetStorage("+index+");");
 		
-		$("#selectStorage_"+wsPosition).change( { "index" : index} ,function(eventObject) {
+		$("#selectStorage_"+wsPosition).change( {"index" : index} ,function(eventObject) {
 			wasteSetStorage(eventObject.data.index);
 		});
 		
@@ -381,6 +382,7 @@ function viewWasteStreams()
 		$("#quantityWithoutPollutions_"+wsPosition).change( function() {
 
 			wasteSetQuantity($(this).get());
+			calculateVOC();
 		});
 		
 		document.getElementById("wasteStreamCount").value++;		

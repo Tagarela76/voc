@@ -276,7 +276,7 @@
 			} else {
 				//echo "not MWS!!";
 			}
-			if(!$isMWS and isset($this->recycle) and isset($this->recycle->value) and $this->recycle->value != "" and $this->recycle->value != "0.00") {
+			if(isset($this->recycle) and isset($this->recycle->value) and $this->recycle->value != "" and $this->recycle->value != "0.00") {
 
 				$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
 			}
@@ -321,11 +321,6 @@
 			if (!$isMWS) {
 				//$wasteData = $usageData['waste'];
 				//$this->saveWaste($wasteData['mixID'], $wasteData['value'], $wasteData['unittypeID']);
-			}
-			if($this->debug) {
-		 
-				var_dump($this);
-				var_dump($mix);
 			}
 
 			$updateMixQuery = $this->getUpdateMixQuery();
@@ -1314,7 +1309,7 @@
 			}
 
 			$this->waste_percent = $wasteResult['wastePercent'];
-			$this->recycle_percent = $this->recycle['value'];
+			$this->recycle_percent = $recycleResult['recyclePercent'];
 			$this->currentUsage = $this->voc;
 			$this->wastePercent = $wasteResult['wastePercent'];
 			$this->recyclePercent = $recycleResult['recyclePercent'];
