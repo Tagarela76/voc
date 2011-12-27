@@ -206,14 +206,14 @@ function viewWasteStreams()
 		
 		strNewWasteStreams+=																		
 		"	</select>"+
-		" <div id =quantityText_"+wsPosition+" style='display:none;' >Quantity:</div><input type='text' name = 'quantityWithoutPollutions_"+wsPosition+"' disabled ='true' style='display:none;'>"+
+		" <div id =quantityText_"+wsPosition+" style='display:none;' >Quantity:</div><input type='text' name = 'quantityWithoutPollutions_"+wsPosition+"' disabled ='true' style='display:none;' onblur='calculateVOC()'>"+
 		"	<select name='selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"'onchange='calculateVOC()'  onCh='"+wsPosition+"' disabled='true' style='display:none;'  >";
 		
 		strNewWasteStreams+=selectOptions2UnitTypeClasses();
 		
 		strNewWasteStreams+=																				
 		"	</select>"+		
-		"	<select name='selectWasteUnittypeWithoutPollutions_"+wsPosition+"' disabled='true'  style='display:none;' >"+																				
+		"	<select name='selectWasteUnittypeWithoutPollutions_"+wsPosition+"' disabled='true'  style='display:none;' onchange='calculateVOC()' >"+																				
 		"	</select>"+		
 		"	<span style='display:inline-block'>Storage:<select name='selectStorage_"+wsPosition+"' id='selectStorage_"+wsPosition+"'  onCh='"+wsPosition+"'  class='addInventory'></span>"+																				
 		"	</select>"+																					
@@ -333,6 +333,7 @@ function viewWasteStreams()
 				$("#selectWasteUnittypeWithoutPollutions_"+val).change( function() {
 
 					wasteSetUnittypeId($(this).get());
+					
 				});
 				
 				/*$('select[name=selectWasteUnittypeClassWithoutPollutions_'+val+']').change(function(){
@@ -382,7 +383,7 @@ function viewWasteStreams()
 		$("#quantityWithoutPollutions_"+wsPosition).change( function() {
 
 			wasteSetQuantity($(this).get());
-			calculateVOC();
+	
 		});
 		
 		document.getElementById("wasteStreamCount").value++;		
@@ -808,14 +809,14 @@ function addPollution (id)
 		strNewPollution+=																			
 		"	</select>"+	
 		"	<input type='hidden' id='pollutionSelectedValue_"+id+"_"+idPollution+"' value='"+selVal+"' txt='"+wasteStreamsWithPollutions[idSelectedWasteStream][selVal]+"'>"+				
-		" 	Quantity:<input type='text' name = 'quantity_"+id+"_"+idPollution+"' id='quantity_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>"+
-		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>";
+		" 	Quantity:<input type='text' name = 'quantity_"+id+"_"+idPollution+"' id='quantity_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onblur='calculateVOC()'>"+
+		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='calculateVOC()'>";
 		
 		strNewPollution+=selectOptions2UnitTypeClasses();		
 		
 		strNewPollution+=																		
 		"	</select>"+		
-		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' id='selectWasteUnittype_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"'>"+																				
+		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' id='selectWasteUnittype_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='calculateVOC()'>"+																				
 		"	</select>"+																						
 		"</td>"+
 	"</tr>";	

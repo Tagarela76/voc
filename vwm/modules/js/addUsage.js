@@ -124,7 +124,7 @@ function initRecycle() {
 		validateRecycle();
 		calculateVOC();
 	});	
-calculateVOC();	
+//calculateVOC();	
 }
 
 	function IsNumeric(input)
@@ -892,15 +892,73 @@ calculateVOC();
 			}
 		}
 	}
+	
+	function WasteStreams4CalcVoc(wasteStreams) {
+		if (waste !== '[]'){
+			var quantity = 0;
+			var typeIDarr = []; var allinone = [];
+			obj2 = jQuery.parseJSON(waste);
+			str = object2String(obj2);
+			arr = string2Array(str);
+			console.log(arr);	
+			//console.log(arr[1].pollutions[0].unittypeId);
+			n = 0;
+			i = 0;
+			while (arr[n]) {
+				if (arr[n].pollutions !== undefined) {
+					m = 0;
+					while (arr[n].pollutions[m]) {
+						
+						quantity += parseFloat(arr[n].pollutions[m].quantity);
+						typeIDarr.push(arr[n].pollutions[m].unittypeId);
+						/*allinone[i+m]['quantity'] = parseFloat(arr[n].pollutions[m].quantity);
+						allinone[i+m]['unittypeId'] = arr[n].pollutions[m].unittypeId;*/
+						m ++;i ++;
+					}
+					
+					//alert(arr[n].pollutions);
+				}else{					
 
+					quantity += parseFloat(arr[n].quantity);
+					typeIDarr.push(arr[n].unittypeId);
+					/*
+						allinone[i].quantity = parseFloat(arr[n].quantity);
+						allinone[i].unittypeId = arr[n].unittypeId;	
+						i ++;*/
+				}
+				
+				n ++;
+
+			}
+
+			
+			
+			console.log(typeIDarr);
+			console.log(quantity);
+				
+			
+			result = 'done';
+			
+		}else{
+			result = 'undone';
+		}
+		//return result;
+	}
+	
+	function feedback(val) {
+		console.log(val);
+	}
+	
 	function calculateVOC() {
 		mix = getMix();
-		//alert(mix.toJson());
+		
 		if(noMWS != true){
 	
 		waste = wasteStreamsCollection.toJson();
+		answer = WasteStreams4CalcVoc(waste);
+		}	
 
-		}		
+
 		$.ajax({
       		url: "index.php",
       		type: "GET",
@@ -951,6 +1009,63 @@ calculateVOC();
       		}
 		});
 	}
+	
+	function string2Array(string) {
+		eval("var result = " + string);
+		return result;
+	}	
+	function object2String(obj) {
+		var val, output = "";
+		if (obj) {    
+			output += "{";
+			for (var i in obj) {
+				val = obj[i];
+				switch (typeof val) {
+					case ("object"):
+						if (val[0]) {
+							output += i + ":" + array2String(val) + ",";
+						} else {
+							output += i + ":" + object2String(val) + ",";
+						}
+						break;
+					case ("string"):
+						output += i + ":'" + escape(val) + "',";
+						break;
+					default:
+						output += i + ":" + val + ",";
+				}
+			}
+			output = output.substring(0, output.length-1) + "}";
+		}
+		return output;
+	}	
+	
+	function array2String(array) {
+    var output = "";
+    if (array) {
+        output += "[";
+        for (var i in array) {
+            val = array[i];
+            switch (typeof val) {
+                case ("object"):
+                    if (val[0]) {
+                        output += array2String(val) + ",";
+                    } else {
+                        output += object2String(val) + ",";
+                    }
+                    break;
+                case ("string"):
+                    output += "'" + escape(val) + "',";
+                    break;
+                default:
+                    output += val + ",";
+            }
+        }
+        output = output.substring(0, output.length-1) + "]";
+    }
+    return output;
+}
+
 
 	function setProductUnittype(productID) {
 		p = products.getProduct(productID);

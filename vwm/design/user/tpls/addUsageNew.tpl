@@ -758,6 +758,7 @@ function createSelectUnittypeClass(id) {
 
 		</form>
 </div>
+	
 {if $validStatus.summary eq 'true'}
 	{literal}
 		<script type="text/javascript">
