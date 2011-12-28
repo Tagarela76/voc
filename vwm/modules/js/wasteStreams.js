@@ -206,14 +206,14 @@ function viewWasteStreams()
 		
 		strNewWasteStreams+=																		
 		"	</select>"+
-		" <div id =quantityText_"+wsPosition+" style='display:none;' >Quantity:</div><input type='text' name = 'quantityWithoutPollutions_"+wsPosition+"' disabled ='true' style='display:none;' onblur='calculateVOC()'>"+
-		"	<select name='selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"'onchange='calculateVOC()'  onCh='"+wsPosition+"' disabled='true' style='display:none;'  >";
+		" <div id =quantityText_"+wsPosition+" style='display:none;' >Quantity:</div><input type='text' name = 'quantityWithoutPollutions_"+wsPosition+"' disabled ='true' style='display:none;' onblur='wasteSetQuantity(this);calculateVOC();'>"+
+		"	<select name='selectWasteUnittypeClassWithoutPollutions_"+wsPosition+"'onchange='wasteSetUnittypeClass($(this).get());calculateVOC();'  onCh='"+wsPosition+"' disabled='true' style='display:none;'  >";
 		
 		strNewWasteStreams+=selectOptions2UnitTypeClasses();
 		
 		strNewWasteStreams+=																				
 		"	</select>"+		
-		"	<select name='selectWasteUnittypeWithoutPollutions_"+wsPosition+"' disabled='true'  style='display:none;' onchange='calculateVOC()' >"+																				
+		"	<select name='selectWasteUnittypeWithoutPollutions_"+wsPosition+"' onCh='"+wsPosition+"' disabled='true'  style='display:none;' onchange='wasteSetUnittypeId($(this).get()); calculateVOC();' >"+																				
 		"	</select>"+		
 		"	<span style='display:inline-block'>Storage:<select name='selectStorage_"+wsPosition+"' id='selectStorage_"+wsPosition+"'  onCh='"+wsPosition+"'  class='addInventory'></span>"+																				
 		"	</select>"+																					
@@ -265,6 +265,7 @@ function viewWasteStreams()
 		$('#deleteWasteStream_'+wsPosition).click(function (){
 			var val = parseInt ($(this).attr('onCl'));			
 			delWasteStream(val);
+			calculateVOC();
 			return false;
 		});
 		$('#addPollutions_'+wsPosition).click(function(){
@@ -374,12 +375,13 @@ function viewWasteStreams()
 		});
 		
 		//$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).attr("onchange","wasteSetUnittypeId(this);");
-		$("#selectWasteUnittypeWithoutPollutions_"+wsPosition).change( function() {
+	    $("#selectWasteUnittypeWithoutPollutions_"+wsPosition).change( function() {
 
 			wasteSetUnittypeId($(this).get());
 		});
+
 		
-		//$("#quantityWithoutPollutions_"+wsPosition).attr("onchange","wasteSetQuantity(this);");
+		//$("#quantityWithoutPollutions_"+wsPosition).attr("onchange","wasteSetQuantity(this);");		
 		$("#quantityWithoutPollutions_"+wsPosition).change( function() {
 
 			wasteSetQuantity($(this).get());
@@ -390,10 +392,10 @@ function viewWasteStreams()
 }
 
 function wasteSetUnittypeId(element) {
-	
+
 	var index = parseInt($(element).attr('onCh'));
 	var value = $(element).attr('value');
-	
+		
 	wasteStreamsCollection.setUnittypeId(value, index);
 }
 function wasteSetUnittypeClass(element) {
@@ -403,11 +405,10 @@ function wasteSetUnittypeClass(element) {
 	
 	var value = $("#selectWasteUnittypeWithoutPollutions_"+onCh+" option:selected").val();
 	
-	wasteStreamsCollection.setUnittypeId(  value, onCh);
+	wasteStreamsCollection.setUnittypeId(value, onCh);
 }
 
-function wasteSetQuantity(element) {
-	
+function wasteSetQuantity(element) {	
 	var index = parseInt($(element).attr('onCh'));
 	var value = $(element).val();
 	//alert("index: " + index + " value:" + value);
@@ -456,6 +457,7 @@ $(function()
 		
 		if (elemsArray[key]['unittypeClass']!=null)
 		{
+		
 			$('input[name=quantityWithoutPollutions_'+key+']').attr('value',elemsArray[key]["value"]).attr("onchange","wasteSetQuantity(this)").attr("onch",key);
 			$('select[name = selectWasteUnittypeClassWithoutPollutions_'+key+'] option[value ='+elemsArray[key]["unittypeClass"]+']').attr('selected',true);
 			unitTypeListWithoutPollutions(key);
@@ -693,7 +695,15 @@ function delWasteStream (id)
 }
 
 function delPollution(id,idPollution)
-{		
+{	
+	// for to get rid of the error in addUsage.js line 1209
+	var lastPollution=parseInt($('input:hidden[name=pollutionCount_'+id+']').attr('value'));
+	if (lastPollution == 1){
+		delWasteStream(id);
+		//console.log(lastPollution);	
+		return;
+	}
+	// end
 	$('#addPollutions_'+id).css('display','inline').css('zoom',1);
 	$('#divLine_'+id).css('display','inline').css('zoom',1);	
 	
@@ -759,7 +769,7 @@ function addPollution (id)
 		
 	var idPollution=parseInt($('input:hidden[name=pollutionCount_'+id+']').attr('value'));
 	var idSelectedWasteStream = $('select[name=wasteStreamSelect_'+id+']').attr('value');		
-		
+	
 	var strNewPollution=	
 	"<tr id='pollution_"+id+"_"+idPollution+"' idWasteStream='"+idSelectedWasteStream+"'>"+		
 		"<td class='border_users_l border_users_b border_users_r waste' width='30%' height='20' style='padding-left:30px;'>" +
@@ -810,13 +820,13 @@ function addPollution (id)
 		"	</select>"+	
 		"	<input type='hidden' id='pollutionSelectedValue_"+id+"_"+idPollution+"' value='"+selVal+"' txt='"+wasteStreamsWithPollutions[idSelectedWasteStream][selVal]+"'>"+				
 		" 	Quantity:<input type='text' name = 'quantity_"+id+"_"+idPollution+"' id='quantity_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onblur='calculateVOC()'>"+
-		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='calculateVOC()'>";
+		"	<select name='selectWasteUnittypeClass_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='change_waste_pollution_unittypeClass($(this).get());calculateVOC();'>";
 		
 		strNewPollution+=selectOptions2UnitTypeClasses();		
 		
 		strNewPollution+=																		
 		"	</select>"+		
-		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' id='selectWasteUnittype_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='calculateVOC()'>"+																				
+		"	<select name='selectWasteUnittype_"+id+"_"+idPollution+"' id='selectWasteUnittype_"+id+"_"+idPollution+"' onCh_ws='"+id+"' onCh_pol='"+idPollution+"' onchange='change_waste_pollution_unittypeId($(this).get());calculateVOC();'>"+																				
 		"	</select>"+																						
 		"</td>"+
 	"</tr>";	
@@ -827,6 +837,7 @@ function addPollution (id)
 			var idWs = parseInt ($(this).attr('onCl_ws'));
 			var idPol = parseInt ($(this).attr('onCl_pol'));			
 			delPollution(idWs,idPol);
+			calculateVOC();
 			return false;
 	});
 	//$('select[name=selectPollution_'+id+'_'+idPollution+']').attr('onchange',"wasteSetPollutionId($(this).attr('onCh_ws'),$(this).attr('onCh_pol'),$(this).attr('value'));");

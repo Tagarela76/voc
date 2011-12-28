@@ -644,7 +644,7 @@ class CMix extends Controller
 			$mix->recycle['unitttypeID'] = $r['unittype'];
 			if($debug) {
 				echo'<h1>calculateCurrentUsage</h1>';
-				var_dump($mix,'*******',$mix->recycle);
+				var_dump('*******',$mix->waste,$mix->recycle);
 			}			
 			$mix->calculateCurrentUsage();
 
@@ -653,8 +653,7 @@ class CMix extends Controller
 			echo'<h1>MIX</h1>';
 
 			var_dump($mix,'===========');
-			echo'MIX';
-			var_dump($mix->voc);
+
 		}
 
 		$mixValidator = new MixValidatorOptimized();

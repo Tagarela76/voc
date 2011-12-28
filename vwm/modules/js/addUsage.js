@@ -893,69 +893,271 @@ function initRecycle() {
 		}
 	}
 	
-	function WasteStreams4CalcVoc(wasteStreams) {
+	function WasteStreams4CalcVoc(waste) {
 		if (waste !== '[]'){
 			var quantity = 0;
-			var typeIDarr = []; var allinone = [];
+			var allweight = [];
+			var allvolume = [1,4,8,9,13,14,15,16,17,18,24,25,26,27,28,30,31,32];
+			var typeIDarr = [];var allquan = [];var alltype = [];
 			obj2 = jQuery.parseJSON(waste);
 			str = object2String(obj2);
 			arr = string2Array(str);
-			console.log(arr);	
-			//console.log(arr[1].pollutions[0].unittypeId);
+
+	
+
 			n = 0;
 			i = 0;
 			while (arr[n]) {
 				if (arr[n].pollutions !== undefined) {
 					m = 0;
 					while (arr[n].pollutions[m]) {
-						
-						quantity += parseFloat(arr[n].pollutions[m].quantity);
+						if (arr[n].pollutions[m].quantity){
+							quantity += parseFloat(arr[n].pollutions[m].quantity);
+						}
 						typeIDarr.push(arr[n].pollutions[m].unittypeId);
-						/*allinone[i+m]['quantity'] = parseFloat(arr[n].pollutions[m].quantity);
-						allinone[i+m]['unittypeId'] = arr[n].pollutions[m].unittypeId;*/
-						m ++;i ++;
+						allquan[i] = parseFloat(arr[n].pollutions[m].quantity);
+						alltype[i] = arr[n].pollutions[m].unittypeId;
+						m ++;i = i + m;
 					}
 					
 					//alert(arr[n].pollutions);
 				}else{					
-
-					quantity += parseFloat(arr[n].quantity);
+					if (arr[n].quantity){
+						quantity += parseFloat(arr[n].quantity);
+					}
 					typeIDarr.push(arr[n].unittypeId);
-					/*
-						allinone[i].quantity = parseFloat(arr[n].quantity);
-						allinone[i].unittypeId = arr[n].unittypeId;	
-						i ++;*/
+					
+						allquan[i] = parseFloat(arr[n].quantity);
+						alltype[i] = arr[n].unittypeId;	
+						i ++;
 				}
 				
 				n ++;
 
 			}
+		FlaginVolume = 0;
 
-			
-			
-			console.log(typeIDarr);
-			console.log(quantity);
-				
-			
-			result = 'done';
+
+		for (var i = 0; i < alltype.length; i++) {
+			for (var j = 0; j < allvolume.length; j++) {
+				if (alltype[i] == allvolume[j] ){
+					FlaginVolume ++;
+				}
+			} 
+		}
+
+		if (FlaginVolume != alltype.length && FlaginVolume != 0){
+
+			return ;
+		}
+
+		
+		if (FlaginVolume == 0){
+			ut = 2;
+			convertWaste = WasteConverter(allquan,alltype,ut);
+		}else{
+			ut = 1;
+			convertWaste = WasteConverter(allquan,alltype,ut);
+		}
+		
+		//console.log('result:'+convertWaste);
+		//console.log(allquan.length);
+		//console.log(alltype.length);	
+		var wasteJSON = {"value": convertWaste, "unittype": ut};
+		return wasteJSON;
 			
 		}else{
-			result = 'undone';
+			return;
 		}
-		//return result;
-	}
+
+}
 	
-	function feedback(val) {
-		console.log(val);
-	}
+	function WasteConverter(allquan,alltype,ut) {
+		var convertWastes=0;
+
+		if (ut == 1){
+			for (var i = 0; i < alltype.length; i++) {
+				coeff = chooseVolumeCoefficient(parseFloat(alltype[i]));
+
+				convertWastes = convertWastes + allquan[i]*coeff;
+			}		
+		}else{
+			for (var i = 0; i < alltype.length; i++) {
+				coeff = chooseWeightCoefficient(parseFloat(alltype[i]));
+
+				convertWastes = convertWastes + allquan[i]*coeff;
+			}			
+		}
+		
+	return convertWastes;
+}
+
+	function chooseWeightCoefficient(tipid) {
+	
+		switch (tipid) {
+	/*	case 2:
+			coef = 1;
+			return coef;
+			break*/
+		case 3:
+			coef = 2.206999;
+			return coef;
+			break
+
+		case 5:
+			coef = 2206.999205;
+			return coef;
+			break
+		case 7:
+			coef = 0.0625;
+			return coef;
+			break
+		case 10:
+			coef = 0.000002207;
+			return coef;
+			break
+
+		case 11:
+			coef = 0.002207;
+			return coef;
+			break
+		case 12:
+			coef = 0.000143;
+			return coef;
+			break
+		case 20:
+			coef = 100;
+			return coef;
+			break
+
+		case 22:
+			coef = 0.003906;
+			return coef;
+			break
+		case 23:
+			coef = 0.2205;
+			return coef;
+			break
+		case 33:
+			coef = 112;
+			return coef;
+			break
+
+		default:
+
+			return 1;
+
+		}
+		
+
+}
+
+	function chooseVolumeCoefficient(tipid) {
+	
+		switch (tipid) {
+	/*	case 1:
+			coef = 1;
+			return coef;
+			break*/
+		case 4:
+			coef = 0.264172052;
+			return coef;
+			break
+
+		case 8:
+			coef = 1.200949926;
+			return coef;
+			break
+		case 9:
+			coef = 0.000264172;
+			return coef;
+			break
+		case 13:
+			coef = 1.164;
+			return coef;
+			break
+
+		case 14:
+			coef = 0.007505937;
+			return coef;
+			break
+		case 15:
+			coef = 0.0078125;
+			break
+		case 16:
+			coef = 0.125;
+			return coef;
+			break
+
+		case 17:
+			coef = 0.25;
+			return coef;
+			break
+		case 18:
+			coef = 42;
+			return coef;
+			break
+		case 24:
+			coef = 0.00264172;
+			return coef;
+			break
+
+		case 25:
+			coef = 0.02641721;
+			return coef;
+			break	
+		case 26:
+			coef = 2.641721;
+			return coef;
+			break
+		case 27:
+			coef = 26.4172;
+			return coef;
+			break
+
+		case 28:
+			coef = 264.1721;
+			return coef;
+			break
+		case 30:
+			coef = 9.309177;
+			return coef;
+			break
+		case 31:
+			coef = 0.000264;
+			return coef;
+			break
+
+		case 32:
+			coef = 9.607619;
+			return coef;
+			break	
+
+		default:
+
+			return 1;
+
+		}
+		
+
+}
+
 	
 	function calculateVOC() {
 		mix = getMix();
 		
-		if(noMWS != true){
-	
-		waste = wasteStreamsCollection.toJson();
-		answer = WasteStreams4CalcVoc(waste);
+		if(noMWS != true){	
+			waste = wasteStreamsCollection.toJson();
+
+			//	waste streams to normal view for auoto calc voc
+			answer = WasteStreams4CalcVoc(waste);
+			
+			if (answer == '') {
+				return;
+			}else{
+				waste = answer;
+
+			}
 		}	
 
 
@@ -966,8 +1168,6 @@ function initRecycle() {
       		data: {"action" : "calculateVOCAjax", "category" : "mix", "departmentID": departmentID, "products" : products.toJson() , "mix" : mix.toJson() , "wasteJson" : waste, "recycleJson" : recycle},
       		dataType: "html",
       		success: function (r) {
-      			//alert(r);
-      			//$("#exemptRule").val(r);
 
       			var resp=eval("("+r+")");
 
