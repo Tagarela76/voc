@@ -1153,7 +1153,7 @@ function initRecycle() {
 			answer = WasteStreams4CalcVoc(waste);
 			
 			if (answer == '') {
-				return;
+				return;м
 			}else{
 				waste = answer;
 

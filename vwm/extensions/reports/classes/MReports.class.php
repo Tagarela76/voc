@@ -22,6 +22,7 @@ class MReports {
     	//$debug->printMicrotime(__LINE__,__FILE__);
     	//all ReportCreators files have names in format "R".$reportType.".class.php"
     	$reportClassName = "R".$reportType;
+
     	if (class_exists($reportClassName)) {
     		//ECHO "Class name: $reportClassName";
     		//$debug->printMicrotime(__LINE__,__FILE__);

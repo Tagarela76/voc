@@ -658,8 +658,10 @@ class Controller {
         $reportType = $request['reportType'];
 
         if (!$this->user->checkAccess('reports', $companyID)) {
+			
             throw new Exception('deny');
         }
+	
         //	OK, this company has access to this module, so let's setup..
 
         $ms = new ModuleSystem($this->db); //	TODO: show?
@@ -737,6 +739,8 @@ class Controller {
         $result = $mReport->getAvailableReportsList($this->db, $companyID);
         $this->smarty->assign('reports', $result);
 
+		
+	
         $this->smarty->assign('tpl', 'reports/design/createReport.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
