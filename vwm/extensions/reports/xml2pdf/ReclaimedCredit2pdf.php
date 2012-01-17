@@ -190,6 +190,7 @@ class XML2PDF extends PDF_MC_Table
 		$attribs = &$this->parser->structure[$path]["Attributes"];
 		$tag = $this->parser->structure[$path]["Tag"];
 		$this->DebugPrint( "Start: $tag\n" );
+		//var_dump($path,$attribs,$tag);
 		switch ($tag) 
 		{								
 			case 'PAGE':
@@ -291,56 +292,62 @@ class XML2PDF extends PDF_MC_Table
 			
 			case "TABLE":
 				$this->header();
-				$this->widths = array(50, 50, 80);
+				$this->widths = array(90, 90);
 				$this->SetWidths($this->widths);
-				$this->aligns = array('L','R','R');
+				$this->aligns = array('L','R');
 				$this->SetAligns($this->aligns); 
-				$this->SetFillColor(200,200,200);
+				$this->SetFillColor(200,200);
 				break;	
 				
 			case "MONTH":	
+				
 				$name = $attribs["NAME"];
+			//	$dateObj = DateTime::createFromFormat('Y', $dateBegin);
 				$this->Ln(5);
 				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0],7,"Month ",1,0,'C');
-				$this->Cell($this->widths[1],7,"Rule No. ",1,0,'C');
-				$this->Cell($this->widths[2],7,"Total VOC ",1,0,'C');
+				$this->Cell($this->widths[0]+$this->widths[1],7,$name ,0,0,'L');
+				$this->Ln();
+				$this->Cell($this->widths[0],7,"Date ",1,0,'C');
+				$this->Cell($this->widths[1],7,"Reclaimed Value ",1,0,'C');
+				//$this->Cell($this->widths[2],7,"Total VOC ",1,0,'C');
 				$this->Ln();
 				$this->SetFont('Arial','',12);
 				//Cell($this->widths[0],40,$name,1,0,'C');
-				$this->rows[0] = $name;
+			//	$this->rows[0] = $name;
 				$this->curMonth = $name;
 				$this->b = true;
 				break;
 				
 			case "INFO":
-			if ( $attribs["VOC"] == 'none' ) {
-				if ( isset( $attribs["RULE"] ) ) {
+				
+			if ( $attribs["RECYCLE"] == 'none' ) {
+				/*if ( isset( $attribs["RULE"] ) ) {
 					$this->Cell($this->widths[0],7,$this->curMonth,1,0,'C');
 				} else {
 					$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2],0.5,"",1,0,'C',true);
 					$this->Ln();
 					$this->Cell($this->widths[0],7,"Exemption ",1,0,'L');					
-				}
+				}*/
+				
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[1],7,"none",1,0,'C');
-				$this->Cell($this->widths[2],7,"none",1,0,'C');		
+				$this->Cell($this->widths[0],7,"none",1,0,'C');
+				$this->Cell($this->widths[1],7,"none",1,0,'C');		
 				$this->Ln();		
 			} else {	
-				if( isset( $attribs["RULE"] ) ) {
+				if( isset( $attribs["DATE"] ) ) {
 					$this->SetFont('Arial','',12);
-					$this->rows[1] = $attribs["RULE"];
-					$this->rows[2] = $attribs["VOC"];
+					$this->rows[0] = $attribs["DATE"];
+					$this->rows[1] = $attribs["RECYCLE"]." lbs";
 				} else {
 					$this->SetFont('Arial','',12);
-					if ($this->b) {
+					/*if ($this->b) {
 						$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2],0.5,"",1,0,'C',true);
 						$this->Ln();
 						$this->rows[0] = "Exemption ";
 						$this->b = false;
-					}
-					$this->rows[1] = $attribs["EXEMPT"];
-					$this->rows[2] = $attribs["VOC"];
+					}*/
+					$this->rows[0] = "none";
+					$this->rows[1] = "none";
 			}
 			}
 				break;
@@ -360,33 +367,34 @@ class XML2PDF extends PDF_MC_Table
 		$attribs = &$this->parser->structure[$path]["Attributes"];
 		$tag = $this->parser->structure[$path]["Tag"];
 		$this->DebugPrint( "End: $tag\n" );
+		
 		switch ($tag) 
 		 {			 			
-			case "RULE":	
+			case "DATE":	
 				$this->Ln(5);
 				break;																	
 			case "YEAR":				
 				break;
 			case "TOTAL":
 				
-				$this->rows[0] = "Total VOC's ";
+			/*	$this->rows[0] = "Total VOC's ";
 				$this->Row($this->rows);
 				for ($i=0; $i<=2; $i++){
 					$this->rows[$i] = " ";
-				}
+				}*/
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[0]+$this->widths[1],7,"Total Voc's ".$this->curMonth,1,0,'L',true);
-				$this->Cell($this->widths[2],7,$this->header['TOTAL'],1,0,'R',true);
+				$this->Cell($this->widths[0],7,"Total ",1,0,'L',true);
+				$this->Cell($this->widths[1],7,$this->header['TOTAL']." lbs",1,0,'R',true);
 				$this->Ln();
 				$this->SetFont('Arial','',12);
 				break;	
 			case "FULLTOTAL":
 				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0]+$this->widths[1],7,"Total VOC's:  ",1,0,'L');
-				$this->Cell($this->widths[2],7,$this->header['FULLTOTAL'],1,0,'R');	
+				$this->Cell($this->widths[0],7,"Total for Period:  ",1,0,'L');
+				$this->Cell($this->widths[1],7,$this->header['FULLTOTAL']." lbs",1,0,'R');	
 				break;															
 			case "INFO":
-				if ($attribs["VOC"]!='none') {										
+				if ($attribs["RECYCLE"]!='none') {										
 					$this->Row($this->rows);
 					for ($i=0; $i<=2; $i++){
 						$this->rows[$i] = " ";

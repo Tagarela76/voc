@@ -27,11 +27,7 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 			case "company":
 				$company = new Company($this->db);						
 				$companyDetails = $company -> getCompanyDetails($this->categoryID);
-				$orgInfo = array(
-					'details' => $companyDetails,
-					'category' => "Company",
-					'notes' => ""							
-				); 
+
 				
 				$facility = new Facility($this->db);
 				$facilityList = $facility->getFacilityListByCompany($this->categoryID);						
@@ -39,7 +35,13 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 					$facilityString .= $value['id']. ","; 
 				}		
 				$facilityString = substr($facilityString,0,-1);
-		
+				//$companyDetails['facility_id'] = $facilityString;
+				$orgInfo = array(
+					'details' => $companyDetails,
+					'category' => "Company",
+					'notes' => ""
+					
+				); 				
 				$query = "SELECT m.mix_id, m.creation_time, re.value,re.unittype_id,re.method ".
 					"FROM mix m, department d, recycle re ".
 					"WHERE d.facility_id in (".$facilityString.") ".
@@ -49,6 +51,7 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 			case "facility":
 				$facility = new Facility($this->db);    				
 				$facilityDetails = $facility->getFacilityDetails($this->categoryID);
+
 				$orgInfo = array(
 					'details' => $facilityDetails,
 					'category' => "Facility",
@@ -67,6 +70,7 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 				
 				$facility = new Facility($this->db);
 				$facilityDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
+
 				$orgInfo = array(
 					'details' => $facilityDetails,
 					'category' => "Department",
@@ -197,13 +201,13 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 		);
 		$page->appendChild( $faxTag );
 		
-		if ($orgInfo['category'] != "Company") {
+		//if ($orgInfo['category'] != "Company") {
 			$facilityIdTag = $doc->createElement( "facilityID" );
 			$facilityIdTag->appendChild(
 				$doc->createTextNode( html_entity_decode ($orgInfo['details']['facility_id']))
 			);
 			$page->appendChild($facilityIdTag);
-		}
+		//}
 		
 		$notesTag = $doc->createElement( "notes" );
 		$notesTag->appendChild(
@@ -279,7 +283,7 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 		 */
 		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $dateBegin);
 		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $dateEnd);				
-	
+
 		$tmpYear = $dateBeginObj->format('Y');			
 		$tmpMonth = $dateBeginObj->format('m');
 		$tmpDay = 1;
@@ -288,12 +292,12 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 		$endMonth = $dateEndObj->format('m');
 
 		$total = 0;
-		$tmpResults = array();
 		$results = array();
+		$Recycleresult = array();
 		$fullTotal = 0;
-		
-		//var_dump($tmpYear, $tmpMonth, $tmpDay, $endYear, $endMonth);
-		//exit;
+		//$unittype = new Unittype($this->db);
+
+
 		
 		while ( ( ((int)$tmpYear == (int)$endYear) && ((int)$tmpMonth <= (int)$endMonth) )  || ( (int)$tmpYear<(int)$endYear) )	{
 			
@@ -317,36 +321,40 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 				$tmpQuery .= "AND re.value <> '0.00' ";
 
 				$this->db->query($tmpQuery);
-	
+
 				$result = array();
 				if ($this->db->num_rows()) {
-							
-					for ($j=0; $j<$this->db->num_rows(); $j++) {
+					$num = $this->db->num_rows();
+					for ($j=0; $j<$num; $j++) {
+						$this->db->query($tmpQuery);
+						
 						$data = $this->db->fetch($j);	
 						$createDate[$j] = date($this->dateFormat ,$data->creation_time);
-						$Recycleresult[$j] = $data->value;			
-					
-					 
-
+						//$Recycleresult[$j] = $data->value;	
+						
+						/*Convert recycle value to lbs*/							
+						//$Recycleresult[$j] = $this->Convert($data->mix_id,$data->value, $data->unittype_id,$companyDetails,$unittype);
+						$Recycleresult[$j] = $this->FromAllToLbs($data->mix_id);
+						
 					$result = array(
 						//'rule' => $rule_nr[$j],
 						'date' => $createDate[$j],
 						'recycle' => $Recycleresult[$j]
 					);	
-					$results [] = $result;
+					$results[] = $result;
 					$total += $Recycleresult[$j];
 					
-					}$WasARule = true;
-				} 
+					}
+					$WasARule = true;
+				}
 			
 			if ($WasARule == false) {
 				$results [] = $emptyData[0];
 			}	
-			
 
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
-				'month' => $dateBeginObj->format('M'),
+				'month' => $dateBeginObj->format('F Y'),
 				'total' => $total,
 				'data' => $results
 			);
@@ -365,6 +373,47 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 
 		return $totalResults;			
 	}
+
+/*		private function Convert($mixID,$value, $unittype_id,$companyDetails,Unittype $unittype) {	
+			
+		//$unittype = new Unittype($this->db);
+		$defaultType = $unittype->getDescriptionByID($companyDetails['voc_unittype_id']);	
+		$unitTypeConverter = new UnitTypeConverter($defaultType);
+
+			if (empty($unittype_id)) {
+				//	percent
+				
+				echo 'percent';
+			}	
+						$recycleUnitDetails = $unittype->getUnittypeDetails($unittype_id);
+						if ($unittype->isWeightOrVolume($unittype_id) == 'volume') {
+								$recycleVolume = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], 'us gallon');
+								//$result['recyclePercent'] = $recycleVolume/$quantityVolumeSum*100;
+								return $recycleVolume;
+						}if ($unittype->isWeightOrVolume($unittype_id) == 'weight') {
+								$recycleWeight = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], "lb");
+								return $recycleWeight;
+								//$result['recyclePercent'] = $recycleWeight/$quantityWeightSum*100;
+						}
+	
+		}*/
+		
+	private function FromAllToLbs($mixID) {	
+	$result = 0;		
+	$query ="SELECT mg.quantity_lbs " .
+			"FROM mixgroup mg " .
+			"WHERE mg.mix_id = ".$mixID."";
+	
+			$this->db->query($query);
+			$tmpresult = $this->db->fetch($j);
+			foreach ($tmpresult as $val) {
+				
+				$result += $val->quantity_lbs;
+				
+			}		
+
+	return $result;
+}	
 	
 }	
 ?>
