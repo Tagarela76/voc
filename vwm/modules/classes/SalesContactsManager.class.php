@@ -7,7 +7,8 @@ class SalesContactsManager
 		$this->db=$db;
 	}
 	
-	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter) {
+	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter,$creater_id = null) {
+			
 		$query = "SELECT c. * FROM " . TB_CONTACTS . " c ";
 		$contacts_type_name = mysql_escape_string($contacts_type_name);
 		if(isset($contacts_type_name)) {
@@ -18,10 +19,15 @@ class SalesContactsManager
                 if ($filter!='TRUE') {
 			$query .= " AND $filter";
 		}
-                
+		if(isset($creater_id)) {
+			$query .= " AND c.creater_id = $creater_id";
+		}		
+        $query .= " ORDER BY c.contact ASC";        
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
+		
+		
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();           
 		$contacts = array();
@@ -32,10 +38,16 @@ class SalesContactsManager
 		return $contacts;
 	}
 	
-	public function getSalesContact($contactID) {
+	public function getSalesContact($contactID,$creater_id = null  ) {
 		$query = "SELECT * from " . TB_CONTACTS . " WHERE id = $contactID";
-		
+				if(isset($creater_id)) {
+					$query .= " AND creater_id = $creater_id";
+				}		
 		$this->db->query($query);
+	
+		if (! $this->db->num_rows() > 0){
+			throw new Exception('Permission denied');			
+		}
 		$arr = $this->db->fetch_all_array();
 		$contactsArr = $arr[0];
 		
@@ -43,8 +55,12 @@ class SalesContactsManager
 		return $contact;
 	}
 	
-	public function deleteSalesContact($contactID) {
+	public function deleteSalesContact($contactID, $creater_id = null) {
 		$query = "DELETE FROM ". TB_CONTACTS . " WHERE id = $contactID";
+				if(isset($creater_id)) {
+					$query .= " AND creater_id = $creater_id";
+				}		
+				
 		$query = mysql_escape_string($query);
 		$this->db->query($query);
 			
@@ -55,12 +71,15 @@ class SalesContactsManager
 		}
 	}
 
-	public function getTotalCount( $sub ) {              
+	public function getTotalCount( $sub,$creater_id = null ) {              
 
                 $query = "SELECT count(c.id) as 'count' " .
                             "FROM " . TB_CONTACTS . " c, " . TB_BOOKMARKS_TYPE . " ct " .
                             "WHERE ct.name = '".mysql_escape_string($sub)."' " .
                             "AND c.type = ct.id";
+				if(isset($creater_id)) {
+					$query .= " AND c.creater_id = $creater_id";
+				}
 
 		$this->db->query($query);
 		$r = $this->db->fetch_array(0);
@@ -83,17 +102,21 @@ class SalesContactsManager
 					phone 	= '{$c->phone}',
 					fax		= '{$c->fax}',
 					email	= '{$c->email}',
+					website = '{$c->website}',
 					title	= '{$c->title}',
 					government_agencies = '{$c->government_agencies}',
 					affiliations	= '{$c->affiliations}',
 					industry		= '{$c->industry}',
 					comments		= '{$c->comments}',
 					state			= '{$c->state}',
+					city			= '{$c->city}',
 					zip_code		= '{$c->zip_code}',
 					country_id		= '{$c->country_id}',
 					state_id		= $state_id,
 					mail			= '{$c->mail}',
-					cellphone		= '{$c->cellphone}'
+					cellphone		= '{$c->cellphone}',
+					acc_number		= '{$c->acc_number}',
+					creater_id		= '{$c->creater_id}'
 					WHERE id = {$c->id}";
 		
 		
@@ -110,9 +133,9 @@ class SalesContactsManager
 	public function addContact(SalesContact $c) {
 		if(!$c->errors) {
 
-			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,zip_code,country_id,state_id,mail,cellphone,type) VALUES (
+			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,country_id,state_id,mail,cellphone,type) VALUES (
 						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}', '{$c->title}', '{$c->government_agencies}',  
-						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->zip_code}'  
+						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->city}','{$c->zip_code}','{$c->creater_id}','{$c->acc_number}'  
 						";
 			
 			/**
@@ -179,12 +202,12 @@ class SalesContactsManager
 	 * @param  $contacts - value of field to search, array or string
 	 * @param string $byField - field name
 	 */	
-	public function countSearchedContacts($contacts, $byField1, $byField2, $subNumber) {
+	public function countSearchedContacts($contacts, $byField1, $byField2, $subNumber,$creater_id = null ) {
             
                 
                 $sub = mysql_escape_string($sub);
-		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND (";
-		$query = "SELECT  count(id) contactCount FROM ".TB_CONTACTS." WHERE ((";		
+		$query = "SELECT  * FROM ".TB_CONTACTS."  WHERE type = ".$subNumber." AND (";
+		$query = "SELECT  count(id) contactCount FROM ".TB_CONTACTS." c WHERE ((";		
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -203,9 +226,11 @@ class SalesContactsManager
 		}
 		$sql = implode(' OR ', $sqlParts);
 		$query .= $sql."))";
+				if(isset($creater_id)) {
+					$query .= " AND c.creater_id = $creater_id";
+				}                
                 
-                
-                
+       
                 $this->db->query($query);
 		if ($this->db->num_rows() > 0) {			
 			return $this->db->fetch(0)->contactCount;
@@ -214,7 +239,7 @@ class SalesContactsManager
 	}
         
         
-	public function countContacts($subNumber, $filter) {
+	public function countContacts($subNumber, $filter,$creater_id = null ) {
 		
 		//$departmentID=mysql_escape_string($departmentID);		
 		
@@ -222,8 +247,11 @@ class SalesContactsManager
 		
 		$query = "SELECT count(id) contactsCount FROM ".TB_CONTACTS." WHERE type = $subNumber";                
                 if ($filter != 'TRUE') {
-			$query .= " AND $filter";
+					$query .= " AND $filter";
 		}
+				if(isset($creater_id)) {
+					$query .= " AND creater_id = $creater_id";
+				} 		
                 
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {			

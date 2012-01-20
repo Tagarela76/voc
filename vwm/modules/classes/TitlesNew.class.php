@@ -268,6 +268,7 @@ class TitlesNew {
 				$this->title .= ": Create Report";
 				break;
 			case "sendReport":	
+				
 				switch ($request['reportType']) {
 					case "productQuants":
 						$reportName = "Product List";
@@ -296,6 +297,10 @@ class TitlesNew {
 					case "SummVOC":
 						$reportName = "Monthly VOC summary total";
 						break;
+					case "ReclaimedCredit":
+						$reportName = "Reclaimed Credit Log";
+						break;					
+					
 				}
 				$this->title .= ": Create Report \"" .$reportName. "\"";				//send or create?
 				break;

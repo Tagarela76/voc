@@ -16,7 +16,7 @@
                     </td>
                     <td valign="top" class="report_uploader_c">
                         {*shadow_table*}
-						<h1><b>{$reportName}</b></h1>
+						<h1><b>{$reportName.name}</b></h1>
 						
                         <table width="100%" align="center" cellspacing="0">
                             <tr>

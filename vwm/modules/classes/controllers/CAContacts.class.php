@@ -76,7 +76,9 @@ class CAContacts extends Controller {
 			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
 			$this->smarty->assign('pagination', $pagination);
 		}
-		
+
+		$page = $this->getFromRequest("page");
+		$this->smarty->assign('page', $page);
 		//	set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
@@ -119,7 +121,7 @@ class CAContacts extends Controller {
 				
 				$result = $contactsManager->saveContact($contact);
 				if($result == true) {
-					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
+					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());
 				}
@@ -127,8 +129,10 @@ class CAContacts extends Controller {
 		}
 		$this->smarty->assign("data",$contact);
                 $countries =  $registration->getCountryList();
+				
 		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);														
+		$stateList = $state->getStateList($usaID);	
+
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
 		$this->smarty->assign("countries", $countries);
@@ -140,6 +144,7 @@ class CAContacts extends Controller {
 	}
 	
 	private function actionAddItem() {		
+		
 		$contact = new SalesContact($this->db);
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
@@ -156,7 +161,7 @@ class CAContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-                        var_dump($contact);
+
 			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
@@ -172,6 +177,7 @@ class CAContacts extends Controller {
 			
 			$contact->country_id = $usaID;
 		}
+		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
 		$this->smarty->assign("data",$contact);
 		$countries =  $registration->getCountryList();
 		$state = new State($this->db);
@@ -212,7 +218,7 @@ class CAContacts extends Controller {
 			
 			$manager->deleteSalesContact($id);
 		}
-		header ('Location: admin.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category'));
+		header ('Location: admin.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category').'&suBookmark='.$this->getFromRequest('subBookmark').'');
 		die();
 	}
 	

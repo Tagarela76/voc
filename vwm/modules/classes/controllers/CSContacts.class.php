@@ -18,7 +18,7 @@ class CSContacts extends Controller {
 	protected function bookmarkContacts($vars) {
 		extract($vars);
 		$sub = $this->getFromRequest("subBookmark");
-		if (!isset($sub)) {
+		if (!isset($sub) || $sub == '') {
 			$sub = $this->getFromRequest("bookmark");
 		}
 		$sub = strtolower($sub);
@@ -28,11 +28,13 @@ class CSContacts extends Controller {
 		
 		$filterStr = $this->filterList('contacts');
 		$manager = new SalesContactsManager($this->db);
-
+		$creater_id = $this->user->xnyo->user['user_id'];
 		// search (not empty q)
 		if ($this->getFromRequest('q') != '') {
+			
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
-			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber);
+			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber,$creater_id);
+			
 			$pagination = new Pagination($searchedContactsCount);
 			$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=salescontacts&bookmark=contacts";
 			if ($sub != 'contacts') {
@@ -41,12 +43,14 @@ class CSContacts extends Controller {
 			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);
-			$totalCount = $manager->getTotalCount(strtolower($sub));
+			$totalCount = $manager->getTotalCount(strtolower($sub),$creater_id);
 		} else { // search (empty q)
-			$totalCount = $manager->getTotalCount(strtolower($sub));
+			$totalCount = $manager->getTotalCount(strtolower($sub),$creater_id);
 			//pag for filter
 			if ($this->getFromRequest('searchAction') == 'filter') {
-				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr));
+				
+				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr,$creater_id));
+				
 				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark');
 				if ($this->getFromRequest('filterField') != '') {
 					$pagination->url .= "&filterField=" . $this->getFromRequest('filterField');
@@ -73,10 +77,14 @@ class CSContacts extends Controller {
 			if ($_REQUEST['filterField'] == 'id') {
 				$filterStr = " c." . $filterStr;
 			}
-			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
+			
+			//$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
+			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr,$creater_id);
+			var_dump();
 			$this->smarty->assign('pagination', $pagination);
 		}
-		
+		$page = $this->getFromRequest("page");
+		$this->smarty->assign('page', $page);		
 		//	set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
@@ -91,7 +99,7 @@ class CSContacts extends Controller {
 	private function actionViewDetails() {
 		
 		$manager = new SalesContactsManager($this->db);
-		$contact = $manager->getSalesContact($this->getFromRequest('id'));
+		$contact = $manager->getSalesContact($this->getFromRequest('id'),$this->user->xnyo->user['user_id']);
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign('contact', $contact);
@@ -103,12 +111,12 @@ class CSContacts extends Controller {
 		
 		$id = $this->getFromRequest('id');
 		$contactsManager = new SalesContactsManager($this->db);
-		$contact = $contactsManager->getSalesContact($id);
+		$contact = $contactsManager->getSalesContact($id,$this->user->xnyo->user['user_id']);
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
 		$usaID = $country->getCountryIDByName('USA');
 		$this->smarty->assign($usaID);
-		
+	
 		if ($this->getFromPost('save') == 'Save') {
 			
 			$contact = $this->createContactByForm($_POST);
@@ -131,6 +139,7 @@ class CSContacts extends Controller {
                 $countries =  $registration->getCountryList();
 		$state = new State($this->db);
 		$stateList = $state->getStateList($usaID);		
+		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
 		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign("states", $stateList);	
 		$this->smarty->assign("usaID", $usaID);
@@ -143,12 +152,13 @@ class CSContacts extends Controller {
 	}
 	
 	private function actionAddItem() {		
+		
 		$contact = new SalesContact($this->db);
 		$country = new Country($this->db);
 		$registration = new Registration($this->db);
 		$usaID = $country->getCountryIDByName('USA');
 		$this->smarty->assign($usaID);
-		
+
 		if ($this->getFromPost('save') == 'Save') {
 			
 			$contact = $this->createContactByForm($_POST);
@@ -159,7 +169,7 @@ class CSContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-                       
+      
 			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
@@ -176,6 +186,8 @@ class CSContacts extends Controller {
 			$contact->country_id = $usaID;
 		}
 		$this->smarty->assign("data",$contact);
+		
+		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
 		$countries =  $registration->getCountryList();
 		$state = new State($this->db);
 		$stateList = $state->getStateList($usaID);		
@@ -196,7 +208,7 @@ class CSContacts extends Controller {
 		$manager = new SalesContactsManager($this->db);
 		for ($i=0; $i<$itemsCount; $i++) {
 			if (!is_null($this->getFromRequest('item_'.$i))) {				
-				$contact = $manager->getSalesContact($this->getFromRequest('item_'.$i));				
+				$contact = $manager->getSalesContact($this->getFromRequest('item_'.$i),$this->user->xnyo->user['user_id']);				
 				$item["id"]	= $contact->id;
 				$item["name"] = $contact->contact;				
 				$itemForDelete []= $item;
@@ -214,7 +226,7 @@ class CSContacts extends Controller {
 		for ($i=0; $i<$itemsCount; $i++) {
 			$id = $this->getFromRequest('item_'.$i);
 			
-			$manager->deleteSalesContact($id);
+			$manager->deleteSalesContact($id, $this->user->xnyo->user['user_id']);
 		}
 		header ('Location: sales.php?action=browseCategory&category=salescontacts&bookmark='.$this->getFromRequest('category'));
 		die();

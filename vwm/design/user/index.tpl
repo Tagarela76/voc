@@ -62,7 +62,7 @@
 									<tr>																				
 										{include file="tpls:tpls/categoriesListLeft.tpl"}							
 										<td valign="top"  class="foot_block">
-											{*Categories List*}											
+											{*Categories List*}									
 											{include file="tpls:tpls/login_categoriesList.tpl"}
 											
 											{if $request.category == 'facility' && $request.action == 'browseCategory'}
@@ -137,12 +137,12 @@
 													</td>
 												</tr>
 											</table>						
-												
+										
 											{if $request.action == 'browseCategory'}	
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 											
-                                                                                        
+                                                                      
 											{if $request.action == 'viewDetails' || $request.action == 'viewPFPDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}

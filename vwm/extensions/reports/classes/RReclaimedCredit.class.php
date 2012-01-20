@@ -7,6 +7,7 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 	private $dateFormat;
 
     function RReclaimedCredit($db, $reportRequest) {
+	
     	$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
 		$this->categoryID = $reportRequest->getCategoryID();

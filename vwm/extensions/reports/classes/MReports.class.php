@@ -66,7 +66,7 @@ class MReports {
 	    $result["tpl"] = $this->getInputTPLfileName($reportType);
 	    $result["dataChain"] = new TypeChain(null,'date',$db,$companyID,'company');
 
-	    //getting month list for select tag
+/*	    //getting month list for select tag
 	    $today = date('d-m-Y');
 	    $month = substr($today,3,2);
 	    $year = substr($today,-4);
@@ -82,6 +82,18 @@ class MReports {
 		    }
 	    }
 	    $result["monthes"] = $monthesList;
+		*/
+$dateObj = new DateTime;
+$clone = clone $dateObj;
+
+while ( ( $dateObj->format('Y') - $clone->format('Y') ) <= 2 ){
+		$listdate['text'] = $clone->format('m/y');
+		$listdate['value'] = $clone->format('m/01/y');
+		$mas[] = $listdate;
+		$clone->sub(new DateInterval('P1M')); 
+}
+$result["monthes"] = $mas;
+	var_dump($monthesList);	
 
 	    //getting supplier list for projectCoat report
 	    if ($reportType == "projectCoat") {

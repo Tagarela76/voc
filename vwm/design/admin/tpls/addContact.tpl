@@ -5,7 +5,7 @@
 		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$error_message}
 {/if}
 <div style="padding:7px;">
-<form method='POST' action='admin.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}&subBookmark={if $smarty.request.subBookmark}{$smarty.request.subBookmark}{else}contacts{/if}'>
+<form method='POST' action='admin.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}&subBookmark={if $smarty.request.subBookmark}{$smarty.request.subBookmark}{else}contacts{/if}{if $request.page}&page={$request.page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}'>
 		<table class="users rd" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">
@@ -48,6 +48,23 @@
 					
 						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
 									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.contact}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>
+						
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Title:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='title' value='{$data->title}'> 
+					</div>
+					{if $data->errors.title}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.title}</font>
 						</div>
 					{/if}
 				</td>				
@@ -123,6 +140,23 @@
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
+						Website:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='website' value='{$data->website}'>  
+					</div>
+					{if $data->errors.website}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.website}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>			
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
 						Mailing address:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
@@ -137,23 +171,7 @@
 					{/if}
 				</td>				
 			</tr>
-			
-			<tr height="10px">
-				<td class="border_users_l border_users_b">
-						Title:
-				</td>
-				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='title' value='{$data->title}'> 
-					</div>
-					{if $data->errors.title}
-					
-						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.title}</font>
-						</div>
-					{/if}
-				</td>				
-			</tr>
+
 			
 			<!--<tr height="10px">
 				<td class="border_users_l border_users_b">
@@ -233,7 +251,7 @@
 						
 						<select name="selState" id="selState" {if !$isUsa}style="display:none;"{/if}>
 							{foreach from=$states item=state}
-								<option value="{$state.id}">{$state.name}</option>
+								<option value="{$state.id}" {if $state.id == $data->state_id}selected{/if}>{$state.name}</option>
 							{/foreach}
 						</select>
 						
@@ -253,6 +271,24 @@
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
+						City:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='city' value='{$data->city}'>
+					</div>
+					
+					{if $data->errors.city}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.city}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>			
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
 						Zip Code:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
@@ -268,6 +304,24 @@
 					{/if}
 				</td>				
 			</tr>
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Account number:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='acc_number' value='{$data->acc_number}'>
+					</div>
+					
+					{if $data->errors.acc_number}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.acc_number}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>			
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
@@ -294,9 +348,9 @@
 	<div align="right">
 		<br>
 		<input type='submit' name='save' class="button" value='Save'>
-		<input type='button' class="button" id='cancelButton' value='Cancel' onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{/if}&bookmark={$request.bookmark}'">
+		<input type='button' class="button" id='cancelButton' value='Cancel' onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark="contacts"}salescontacts{/if}&bookmark={$request.bookmark}{if $request.page}&page={$request.page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}'">
 		<span style="padding-right:50">&nbsp;</span>
 		</div>
-		
+		{if $request.action eq "addItem"}<input type='hidden' name='creater_id' value={$creater_id}>{/if}
 		</form>
 </div>

@@ -9,18 +9,23 @@ class SalesContact
 	private $phone;
 	private $fax;
 	private $email;
+	private $website;
 	private $title;
 	private $government_agencies;
 	private $affiliations;
 	private $industry;
 	private $comments;
 	private $state;
+	private $city;
 	private $zip_code;
 	private $country_id;
 	private $state_id;  
 	private $mail;
 	private $cellphone;
 	private $type; //Contacts, Government or Affiliations (table contacts_type)
+	
+	private $creater_id; //ID sales manager who had created this contact 
+	private $acc_number; //ID sales manager who had created this contact 
 	
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
@@ -43,6 +48,7 @@ class SalesContact
 		foreach($array as $key => $value) {
 			try {
 				//Set values trough setter
+				
 				$this->__set($key, $value);
 			}catch(Exception $e) {
 				$this->errors[] = $e->getMessage();
@@ -192,6 +198,17 @@ class SalesContact
 			throw new Exception("mail cannot be empty!");
 		}
 	}
+	private function set_website($value) {
+		try {
+			//$this->checkEmpty($value);
+
+			$value = $this->escapeValue($value);
+			$this->website = $value;
+		} catch(Exception $e) {
+			$this->website["website"] = $e->getMessage();
+			throw new Exception("website cannot be empty!");
+		}
+	}	
 	private function set_title($value) {
 		try {
 			//$this->checkEmpty($value);
@@ -229,6 +246,16 @@ class SalesContact
 			throw new Exception("state cannot be empty!");
 		}
 	}
+	private function set_city($value) {
+		try {
+			//$this->checkEmpty($value);
+			$value = $this->escapeValue($value);
+			$this->city = $value;
+		} catch(Exception $e) {
+			$this->city["city"] = $e->getMessage();
+			throw new Exception("city cannot be empty!");
+		}
+	}	
 	private function set_zip_code($value) {
 		try {
 			//$this->checkEmpty($value);
@@ -250,6 +277,31 @@ class SalesContact
 		}
 		
 	}
+	
+	private function set_creater_id($value) {
+		try {
+			
+			$this->checkNumber($value);
+			$this->creater_id = $value;
+		} catch(Exception $e) {
+			$this->errors["creater_id"] = $e->getMessage();
+			throw new Exception("set creater_id: " . $e->getMessage());
+		}
+		
+	}	
+	
+	private function set_acc_number($value) {
+		try {
+			
+			//$this->checkNumber($value);
+			$this->acc_number = $value;
+		} catch(Exception $e) {
+			$this->errors["acc_number"] = $e->getMessage();
+			throw new Exception("set acc_number: " . $e->getMessage());
+		}
+		
+	}	
+
 	
 	private function set_state_id($value) {
 		try{

@@ -26,6 +26,15 @@
 					<div align="left" >&nbsp;{$contact->contact}</div>								
 				</td>
 			</tr>
+						
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Title:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->title}</div>								
+				</td>
+			</tr>
 			
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
@@ -65,21 +74,22 @@
 			
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
+					Website:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->website}</div>								
+				</td>
+			</tr>			
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
 					Mailing address:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" >&nbsp;{$contact->mail}</div>								
 				</td>
 			</tr>
-			
-			<tr>
-				<td class="border_users_l border_users_b" height="20">
-					Title:
-				</td>
-				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->title}</div>								
-				</td>
-			</tr>
+
 			
 			<!--  <tr>
 				<td class="border_users_l border_users_b" height="20">
@@ -125,6 +135,15 @@
 					<div align="left" >&nbsp;{$contact->state_name}</div>								
 				</td>
 			</tr>
+
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					City:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->city}</div>								
+				</td>
+			</tr>				
 			
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
@@ -152,6 +171,24 @@
 					<div align="left" >&nbsp;{$contact->state_name}</div>								
 				</td>
 			</tr>
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Account number:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->acc_number}</div>								
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Creater Id:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->creater_id}</div>								
+				</td>
+			</tr>				
 				
 						<tr>
              				 <td height="20" class="users_u_bottom">

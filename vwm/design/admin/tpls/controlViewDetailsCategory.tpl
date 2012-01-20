@@ -8,7 +8,7 @@
 	onclick="location.href='?action=browseCategory{if $request.companyID}&companyID={$request.companyID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{/if}&subaction=Filter&category=product&page={$page}'">
 	{else}	
 	<input type="button" class="button" value="<< Back" 
-	onclick="location.href='admin.php?action=browseCategory&category={if $request.category != 'users' }{$parent}&bookmark={$request.category}{else}{$request.category}&bookmark={$request.bookmark}{/if}{if $request.category == 'pfpLibrary' }&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page }&apge={$request.page}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}'">
+	onclick="location.href='admin.php?action=browseCategory&category={if $request.category != 'users' }{$parent}&bookmark={$request.category}{else}{$request.category}&bookmark={$request.bookmark}{/if}{if $request.category == 'pfpLibrary' }&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page }&apge={$request.page}{/if}{if $request.page }&productCategory={$request.productCategory}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}'">
 	{/if}
 	{if $page}
 	<input type="button" class="button" value="Edit" onclick="location.href='admin.php?action=edit&category={$request.category}{if $request.bookmark}&bookmark={$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}&id={$request.id}&page={$page}'">	
