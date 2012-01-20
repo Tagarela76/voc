@@ -252,7 +252,7 @@
 						
 						<select name="selState" id="selState" {if !$isUsa}style="display:none;"{/if}>
 							{foreach from=$states item=state}
-								<option value="{$state.id}">{$state.name}</option>
+								<option value="{$state.id}" {if $state.id == $data->state_id}selected{/if}>{$state.name}</option>
 							{/foreach}
 						</select>
 						
