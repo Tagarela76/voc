@@ -19,7 +19,8 @@ class CASalescontacts extends Controller {
 		$bookmark=$this->getFromRequest('bookmark');
 	
                 $manager = new BookmarksManager($this->db);
-                $bookmarksList = $manager->getBookmarksList();                
+                $bookmarksList = $manager->getBookmarksList();      
+				
                 $totalCount = $manager->getCount();
                 $this->smarty->assign("bookmarks",$bookmarksList);		
 		$this->smarty->assign("itemsCount",$totalCount);		

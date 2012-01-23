@@ -16,6 +16,7 @@ class CAContacts extends Controller {
 	}
 	
 	protected function bookmarkContacts($vars) {
+
 		extract($vars);
 		$sub = $this->getFromRequest("subBookmark");
 		if (!isset($sub) || $sub == '') {

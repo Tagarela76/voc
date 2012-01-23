@@ -19,9 +19,9 @@ class CSSalescontacts extends Controller {
 		$bookmark=$this->getFromRequest('bookmark');
 		
                 $manager = new BookmarksManager($this->db);
-                $bookmarksList = $manager->getBookmarksList();                
+                $bookmarksList = $manager->getBookmarksList($this->user->xnyo->user['user_id']);                
                 $totalCount = $manager->getCount();
-				
+			
         $this->smarty->assign("bookmarks",$bookmarksList);		
 		$this->smarty->assign("itemsCount",$totalCount);		
 		$this->smarty->assign('tpl', 'tpls/bookmarkSales.tpl');

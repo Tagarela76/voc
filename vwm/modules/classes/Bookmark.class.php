@@ -68,6 +68,7 @@ class Bookmark {
         
 	public function saveBookmark() {
 
+		
                 if ($this->id != NULL){
                         $query = "UPDATE " . TB_BOOKMARKS_TYPE . " SET 
 					name = '".mysql_escape_string($this->name)."',
@@ -90,6 +91,7 @@ class Bookmark {
 		$this->db->query($query);
 			
 		if(mysql_error() == '') {
+
 			return true;
 		} else {
 			throw new Exception(mysql_error());

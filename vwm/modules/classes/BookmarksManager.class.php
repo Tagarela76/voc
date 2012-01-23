@@ -17,24 +17,64 @@ class BookmarksManager {
 		return $bookmark;
 	}        
         
-	public function getBookmarkStats($name) {
-		$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='" . $name . "'";
+	public function getBookmarkStats($name,$user_id = null) {
+		//$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='" . $name . "'";
+		$query = "SELECT bt.* FROM " . TB_BOOKMARKS_TYPE . " bt LEFT JOIN " .users2bookmarks. " ub ON bt.id=ub.bookmark_id ";
+		$query .=" WHERE bt.name='" . $name . "'";
+		if ($user_id != null){
+			$query .=" AND ub.user_id = " .$user_id. "";
+		}	
+
 		$this->db->query($query);
+		if (! $this->db->num_rows() > 0){
+			throw new Exception('Permission denied');			
+		}	
+	
 		$subNumber = $this->db->fetch(0)->id;
-		
+			
 		return $subNumber;
-	}        
+	}   
+	
+	public function Users2bookmarks($name,$users_id, $bookmark_id = null) {
+		
+		if ($bookmark_id == null){
+					$query = "SELECT id from " . TB_BOOKMARKS_TYPE . " WHERE name = '".$name."'";
+					$this->db->query($query);
+					$bookmark_id = $this->db->fetch(0)->id;
+		}
+		$query = "DELETE FROM ".users2bookmarks." WHERE bookmark_id = {$bookmark_id}";
+
+		$this->db->query($query);
+					foreach ($users_id as $userid ) {
+
+							$query = "INSERT INTO users2bookmarks (user_id, bookmark_id) VALUES ("
+									. $userid . ","
+									. $bookmark_id. ")";
+							$this->db->query($query);
+	
+					}		
+	}
+	
+	
+					
+						
+	
         
         /**
          *  This method does ....
          * @param array $arrItemID ???
          * @return Bookmark 
          */
-	public function getBookmarksList() {
+	public function getBookmarksList($user_id = null) {
             
-                $itemCount = $this->getCount();
-		$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . "";
-                
+        //$itemCount = $this->getCount();
+		//$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . "";
+		$query = "SELECT DISTINCT bt.* FROM " . TB_BOOKMARKS_TYPE . " bt LEFT JOIN " .users2bookmarks. " ub ON bt.id=ub.bookmark_id";
+		if ($user_id != null){
+			$query .=" WHERE ub.user_id = " .$user_id. "";
+		}
+
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$bookmarks = array();

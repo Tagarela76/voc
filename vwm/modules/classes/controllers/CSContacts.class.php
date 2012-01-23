@@ -24,7 +24,7 @@ class CSContacts extends Controller {
 		$sub = strtolower($sub);
 		$sub = htmlentities($sub);
 		$manager = new BookmarksManager($this->db);
-		$subNumber = $manager->getBookmarkStats($sub);
+		$subNumber = $manager->getBookmarkStats($sub,$this->user->xnyo->user['user_id']);
 		
 		$filterStr = $this->filterList('contacts');
 		$manager = new SalesContactsManager($this->db);
@@ -80,7 +80,7 @@ class CSContacts extends Controller {
 			
 			//$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
 			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr,$creater_id);
-			var_dump();
+
 			$this->smarty->assign('pagination', $pagination);
 		}
 		$page = $this->getFromRequest("page");

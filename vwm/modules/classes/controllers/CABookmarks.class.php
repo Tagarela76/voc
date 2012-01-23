@@ -13,26 +13,36 @@ class CABookmarks extends Controller{
 	}
     
 	private function actionAddItem() {
-		$bookmark = new Bookmark($this->db);
-                $manager = new BookmarksManager($this->db);
-                $bookmarksList = $manager->getBookmarksList();
 		
+		$bookmark = new Bookmark($this->db);
+        $manager = new BookmarksManager($this->db);
+        $bookmarksList = $manager->getBookmarksList();
+
+//Get sales users list
+		$users = new User($this->db);
+		$userlist = $users->getUsersList('sales');
+		$this->smarty->assign("userlist",$userlist);
+	
 		if ($this->getFromPost('save') == 'Save') {
 			
 			$bookmark = $this->bookmarkByForm($_POST,$bookmark);
+
                         $bookmark->controller = $this->getFromRequest("bookmark");
                         if(!empty($bookmark->errors)) {
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
-                                    $result = $bookmark->saveBookmark();                               
-				if($result == true) {
-                                       header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");                                      
+					
+                    $result = $bookmark->saveBookmark();                               
+
+				if ($result == true) {
+					$manager->Users2bookmarks($_POST['name'],$_POST['Username']);
+					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
 				} else {
 					$this->smarty->assign("error_message",$bookmark->getErrorMessage());
 				}
 			}
 		}
-                
+	        
 		$this->smarty->assign("data",$bookmark);	
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -50,9 +60,15 @@ class CABookmarks extends Controller{
 		$id = $this->db->fetch_all_array();
 		$bookmarksManager = new BookmarksManager($this->db);
 		$bookmark = $bookmarksManager->getBookmark($id[0]["id"]);
-                
+        
+		$query = "SELECT user_id from users2bookmarks WHERE bookmark_id = '".$id[0]["id"]."'";
+		$this->db->query($query);
+		$users_id = $this->db->fetch_all_array();
+
+		
 		if ($this->getFromPost('save') == 'Save') {
 			$bookmark = $this->bookmarkByForm($_POST,$bookmark);
+				
                         $bookmark->controller = $this->getFromRequest("bookmark");
 			if(!empty($bookmark->errors)) {
 				
@@ -60,13 +76,19 @@ class CABookmarks extends Controller{
 			} else {
                                 $result = $bookmark->saveBookmark();
 				if($result == true) {
+					$bookmarksManager->Users2bookmarks($_POST['name'],$_POST['Username'],$id[0]["id"]);
 					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts");
 				} else {
 					$this->smarty->assign("error_message",$bookmark->getErrorMessage());
 				}
 			}
 		}
-                
+//Get sales users list
+		$users = new User($this->db);
+		$userlist = $users->getUsersList('sales');
+		$this->smarty->assign("userlist",$userlist);		
+        $this->smarty->assign("users_id",$users_id);
+		
 		$this->smarty->assign("data",$bookmark);
 		$this->smarty->assign('tpl', 'tpls/addBookmark.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -83,6 +105,7 @@ class CABookmarks extends Controller{
 					
 					$submass[0]['id'] = $subtodelete->id;
 					$submass[0]['name'] = $subtodelete->name;
+				
 					$this->smarty->assign("flashback", "salescontacts");
                    	$this->finalDeleteItemACommon($submass);
 					

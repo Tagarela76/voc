@@ -54,9 +54,9 @@
 											{/if}
 												{*/SORT*}
 
-                                                                                        {if $request.category == 'salescontacts'}
+                                                                                        {*if $request.category == 'salescontacts'}
                                                                                           {include file="tpls:tpls/subBookmarks.tpl"}
-                                                                                        {/if}
+                                                                                        {/if*}
 												{if $request.action == 'browseCategory'}
 													<table width='100%'>
 														<tr>

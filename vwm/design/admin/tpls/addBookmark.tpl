@@ -27,7 +27,28 @@
 				</td>				
 			</tr>
 			
-			<tr>
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Users:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						{section name=i loop=$userlist}
+							
+							<input type='checkbox' name='Username[]' value='{$userlist[i].user_id}' {section name=j loop=$users_id}{if $userlist[i].user_id == $users_id[j].user_id}checked{/if}{/section} />  <span style=''>{$userlist[i].username}</span>
+							
+						{/section}
+					</div>
+					
+					{if $data->errors.name}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.name}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>			
+
              	 <td height="20" class="users_u_bottom">
              	 	All Fields marked with a red * are required
                  </td>
