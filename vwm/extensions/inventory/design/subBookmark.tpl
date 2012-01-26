@@ -1,5 +1,5 @@
 				{if $request.category == "department" && $request.bookmark == "inventory"}
-				
+
                 <div>
     				{if $request.tab == Inventory::PAINT_MATERIAL}
 						<a href="?action=browseCategory&category=department&id={$request.id}&bookmark=inventory&tab=material" {if $request.tab eq 'material'}class="active_link" {/if}>{$smarty.const.LABEL_PAINT_PRODUCT_BOOKMARK_DEP}</a>

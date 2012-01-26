@@ -137,17 +137,16 @@
 													</td>
 												</tr>
 											</table>						
-												
-											{if $request.action == 'browseCategory'}	
+		
+											{if $request.action == 'browseCategory' && $request.bookmark != 'inventory'}	
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
-											
-                                                                                        
+
+                                                                                
 											{if $request.action == 'viewDetails' || $request.action == 'viewPFPDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
 											{/if}
-                                                                                        
-								
+
 											{include file="tpls:$tpl"}			
 																			
 										</td>										

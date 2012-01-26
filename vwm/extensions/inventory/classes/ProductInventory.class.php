@@ -10,9 +10,14 @@ class ProductInventory {
 	
 	private $id;
 	private $product_id;
+	private $name;
 	private $in_stock;
 	private $in_stock_unit_type = self::GALLON_UNIT_TYPE_ID;
-
+	
+	public $pxCount;
+	public $errors;
+	public $url;
+	private $product_nr;
 	/**
 	 * @var float usage for period 
 	 */
@@ -30,14 +35,29 @@ class ProductInventory {
 
 	const GALLON_UNIT_TYPE_ID = 1;
 
-	public function __construct(db $db) {
+	public function __construct(db $db, Array $array = null) {
 		$this->db = $db;
 		
 		//	first day of this month by default
 		$this->period_start_date = new DateTime('first day of this month');
 		//	this is today by default
 		$this->period_end_date = new DateTime();
+		
+		
+		if(isset($array)) {
+			$this->initByArray($array);
+		}		
 	}
+	
+	private function initByArray($array) {                        
+		foreach($array as $key => $value) {
+			try {
+				$this->__set($key, $value);
+			}catch(Exception $e) {
+				$this->errors[] = $e->getMessage();
+			}
+		}
+	}	
 
 	/**
 	 * 
@@ -84,6 +104,59 @@ class ProductInventory {
 			//Do nothing
 		}
 	}
+	
+    public function get_usage(){
+		return $this->usage;
+	}
+	
+    public function get_name(){
+		return $this->name;
+	}	
+	
+	public function get_in_stock(){
+		return $this->in_stock;
+	}
+	
+	public function get_product_nr(){
+		return $this->product_nr;
+	}
+	
+	public function get_product_id(){
+		return $this->product_id;
+	}		
+	
+	public function set_product_nr($value) {
+		try {
+			$this->product_nr = $value;
+		} catch(Exception $e) {
+			throw new Exception("Id cannot be empty!" . $e->getMessage());
+		}
+	}
+	
+	private function set_sum($value) {
+		try {
+			$this->usage = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Usage cannot be empty!" . $e->getMessage());
+		}
+	}
+	
+	private function set_name($value) {
+		try {
+			$this->name = $value;
+		} catch(Exception $e) {
+			throw new Exception("Name cannot be empty!" . $e->getMessage());
+		}
+	}	
+	
+	private function set_product_id($value) {
+		try {
+			$this->product_id = $value;
+		} catch(Exception $e) {
+			throw new Exception("Product id cannot be empty!" . $e->getMessage());
+		}
+	}		
 
 }
 

@@ -271,7 +271,7 @@
 					$controllerObj=new $className($smarty,$xnyo,$db,$user,$action);
 					$controllerObj->runAction();
 				}
-				else
+				else 
 					throw new Exception('404');				
 			}
 			else 

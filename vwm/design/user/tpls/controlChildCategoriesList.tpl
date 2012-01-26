@@ -91,7 +91,7 @@
 											</div>
 											{/if}
 									{/if}
-                                                                        </div>
+                                                                    </div>
                                     {if ($childCategory != "company" && $show.reports) || ($request.category == "company")}
                                             <div class="button_float_left">
                                             <div class="button_alpha report_button">
@@ -165,7 +165,6 @@
 
 
 <em class="bb"><b>&nbsp;</b></em>
-
 
 
 

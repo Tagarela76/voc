@@ -16,7 +16,7 @@
 		 * @param array parameters: $facility obj, $request [$departments obj], $sort
 		 */
 		public function prepareList($params) {
-			extract($params);    		
+			extract($params); 		
 			$result = array();
 			//	prepare inventory list depending from caller	    		    		    		    	    	    	    
 			if (isset($departments) && $request['tab'] == Inventory::PAINT_MATERIAL) {
@@ -37,7 +37,8 @@
 			
 			//	set link url
 			foreach ($result['childCategoryItems'] as $inventory) {								
-				$inventory->url = "?action=viewDetails&category=inventory&id=".$inventory->getID()."&".$request['category']."ID=".$request['id'];																					
+				$inventory->url = "?action=viewDetails&category=inventory&id=".$inventory->getID()."&".$request['category']."ID=".$request['id'];		
+				
 			}	
 			$result['tpl'] = 'inventory/design/inventoryListoop.tpl';
 			

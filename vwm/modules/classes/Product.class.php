@@ -784,8 +784,6 @@ class Product extends ProductProperties {
 		return $result;
 	}
 
-
-
 	private function checkIsProduct2CompanyLink($productID = false, $companyID = false) {
 
 		$productID=mysql_escape_string($productID);

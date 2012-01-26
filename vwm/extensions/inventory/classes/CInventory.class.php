@@ -84,7 +84,17 @@ class CInventory extends Controller
 
 	private function actionViewDetails()
 		{
-		if (!is_null($this->getFromRequest('facilityID')))
+		$productID = $this->getFromRequest('id');
+		$category = 'facility';
+		$id = $this->getFromRequest('facilityID');
+		$ProductInventory = new ProductInventory($this->db);
+		$inventoryManager = new InventoryManager($this->db);
+		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
+		
+		
+		$this->smarty->assign("product",$product);
+		$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$id);
+/*		if (!is_null($this->getFromRequest('facilityID')))
 		{
 			$facility = new Facility($this->db);
 			$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
@@ -136,7 +146,10 @@ class CInventory extends Controller
 
 		$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'),array('bookmark'=>'inventory','tab'=>$result['inventory']->getType()));
 		$this->smarty->assign('backUrl','?action=browseCategory&category='.$backCategory.'&id='.$this->getFromRequest($backCategory.'ID').'&bookmark=inventory&tab='.$result['inventory']->getType());
+		
+ */		$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 		$this->smarty->display("tpls:index.tpl");
+ 
 		}
 
 	private function actionAddItem() {
@@ -259,17 +272,9 @@ class CInventory extends Controller
 	}
 
 	private function actionEdit() {
-		if (!is_null($this->getFromRequest('departmentID'))) {
-								//	Access control
-								if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {
-									throw new Exception('deny');
-								}
-
-								$backCategory = 'department';
-								$department = new Department($this->db);
-								$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentID'));
-								$facilityID = $departmentDetails['facility_id'];
-							} elseif (!is_null($this->getFromRequest('facilityID'))) {
+		
+		
+							if (!is_null($this->getFromRequest('facilityID'))) {
 								//	Access control
 								if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityID'))) {
 									throw new Exception('deny');
@@ -277,10 +282,19 @@ class CInventory extends Controller
 
 								$backCategory = 'facility';
 								$facilityID = $this->getFromRequest('facilityID');
-							} else {
-								throw new Exception('404');
-							}
 
+							}
+		$productID = $this->getFromRequest('id');
+		$category = 'facility';
+		$id = $this->getFromRequest('facilityID');
+		$ProductInventory = new ProductInventory($this->db);
+		$inventoryManager = new InventoryManager($this->db);
+		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
+
+		var_dump($product);
+		$this->smarty->assign("product",$product);
+		
+		
 							$form = $_POST;
 
 							if (count($form) > 0) {
@@ -293,9 +307,9 @@ class CInventory extends Controller
 								$form['unitAmount'] = str_replace(',','.',$form['unitAmount']);
 								$form['unitQuantity'] = str_replace(',','.',$form['unitQuantity']);
 							}
-
+/*
 							//	IF ERRORS OR NO POST REQUEST
-															$facility = new Facility($this->db);
+								$facility = new Facility($this->db);
 								$facilityDetails = $facility->getFacilityDetails($facilityID);
 								$companyID = $facilityDetails['company_id'];
 
@@ -329,7 +343,7 @@ class CInventory extends Controller
 							}
 
 							$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
-
+*/
 							//	set js scripts
 							$jsSources = array(
 								'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
@@ -340,7 +354,7 @@ class CInventory extends Controller
 							$this->smarty->assign('cssSources', $cssSources);
 
 							//	set tpl
-//							$smarty->assign('tpl', "tpls/inventory/addInventoryNew.tpl");
+		$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
 
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -351,21 +365,64 @@ class CInventory extends Controller
 	 */
 	protected function bookmarkInventory($vars)
 	{
-
+		/*New inventory 26 Jan 2012*/		
 		extract($vars);
 
 		$sortStr=$this->sortList('inventory',3);
 
 		$this->smarty->assign('tab',$this->getFromRequest('tab'));
 
-		$facility->initializeByID($this->getFromRequest('id'));
+		//$facility->initializeByID($this->getFromRequest('id'));
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
 			throw new Exception('deny');
 		}
 		//	OK, this company has access to this module, so let's setup..
-		$mInventory = new $moduleMap['inventory'];
+		$category = 'facility';
+		$id = $this->getFromRequest('id');
+		
+		//Product Usage
+		$ProductInventory = new ProductInventory($this->db);
 
+		$inventoryManager = new InventoryManager($this->db);
+		$limit = 50;
+		$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id);		
+			foreach ($data as $value) {
+
+				$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$id;		
+				
+			
+			//	ini indicator (gauge)	
+			$limit = 50;
+			$pxCount = round(200 * $value->usage / $limit);
+			if ($pxCount > 200) {
+					$pxCount = 200;
+			}				
+
+			$value->pxCount = $pxCount;	
+			
+			}
+		$this->smarty->assign('inStock',$limit);
+		
+		$this->smarty->assign('Products',$data);
+		$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');		
+	
+		
+		
+
+
+		
+		
+		
+		
+		
+		
+		
+		
+/*		
+//TODEL
+		$mInventory = new $moduleMap['inventory'];
+		$facility->initializeByID($this->getFromRequest('id'));
 		//	ini VOC indicator (gauge)
 		$this->setIndicator($facility->getMonthlyLimit(), $facility->getCurrentUsage());
 
@@ -376,7 +433,7 @@ class CInventory extends Controller
 		);
 
 		$result = $mInventory->prepareList($params);
-
+//TODEL
 		$export=$this->getFromRequest('export');
 		if ($export) {
 			//	EXPORT THIS PAGE
@@ -415,7 +472,9 @@ class CInventory extends Controller
 			//	set js scripts
 			$jsSources = array('modules/js/checkBoxes.js');
 			$this->smarty->assign('jsSources', $jsSources);
+			$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');
 		}
+*/	
 	}
 
 	/**
