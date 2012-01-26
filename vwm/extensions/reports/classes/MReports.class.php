@@ -93,7 +93,7 @@ while ( ( $dateObj->format('Y') - $clone->format('Y') ) <= 2 ){
 		$clone->sub(new DateInterval('P1M')); 
 }
 $result["monthes"] = $mas;
-	var_dump($monthesList);	
+	
 
 	    //getting supplier list for projectCoat report
 	    if ($reportType == "projectCoat") {

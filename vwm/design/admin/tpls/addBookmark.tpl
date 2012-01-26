@@ -35,17 +35,12 @@
 					<div align="left" style='display:inline; float:left;'>
 						{section name=i loop=$userlist}
 							
-							<input type='checkbox' name='Username[]' value='{$userlist[i].user_id}' {section name=j loop=$users_id}{if $userlist[i].user_id == $users_id[j].user_id}checked{/if}{/section} />  <span style=''>{$userlist[i].username}</span>
+							<input type='checkbox' id='Userid_{$smarty.section.i.index}' name='Username[]' value='{$userlist[i].user_id}' {section name=j loop=$users_id}{if $userlist[i].user_id == $users_id[j].user_id}checked{/if}{/section} /><label for='Userid_{$smarty.section.i.index}'>  <span style=''>{$userlist[i].username}</span></label>
 							
 						{/section}
 					</div>
 					
-					{if $data->errors.name}
-					
-						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.name}</font>
-						</div>
-					{/if}
+
 				</td>				
 			</tr>			
 
