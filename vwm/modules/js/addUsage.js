@@ -199,6 +199,8 @@ function initRecycle() {
 		mixObj.setEquipment($("#selectEquipment option:selected").val());
 		mixObj.setRule($("#rule option:selected").val());
 		mixObj.selectUnittypeClass = $("#selectUnittypeClass option:selected").val();
+		mixObj.setNotes($("#notes").val());
+	
 		return mixObj;
 	}
 

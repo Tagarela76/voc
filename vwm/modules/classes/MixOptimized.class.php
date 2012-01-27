@@ -20,6 +20,7 @@
 		public $apmethod_id;
 		public $waste_percent;
 		public $recycle_percent;
+		public $notes;
 
 		public $url;
 		public $rule;
@@ -372,6 +373,7 @@
 			$query .= "description='{$this->description}', ";
 			$query .= "rule_id={$this->rule_id}, ";
 			$query .= (empty($this->exempt_rule)) ? "exempt_rule = NULL, " : "exempt_rule ='".$this->exempt_rule."', ";
+			$query .= (empty($this->notes)) ? "notes = NULL, " : "notes ='".$this->notes."', ";
 			/*
 			 * DEPRECATED , now mix creation_time is timestump
 			 * if (empty($this->creation_time)) {
@@ -636,10 +638,11 @@
 			$this->exempt_rule = isset($this->exempt_rule) ? "'{$this->exempt_rule}'" : "NULL";//Warning: quotes!
 			$this->waste_percent = isset($this->waste_percent) ? "'{$this->waste_percent}'" : "NULL";//Warning: quotes!
 			$this->recycle_percent = isset($this->recycle_percent) ? "'{$this->recycle_percent}'" : "NULL";//Warning: quotes!
+			$this->notes = isset($this->notes) ? "'{$this->notes}'" : "NULL";//Warning: quotes!
 
 			//var_dump($this->exemptRule);
 
-			$query = "INSERT INTO ".TB_USAGE." (equipment_id, department_id, description, voc, voclx, vocwx, creation_time, rule_id,apmethod_id, exempt_rule, waste_percent, recycle_percent ) VALUES (
+			$query = "INSERT INTO ".TB_USAGE." (equipment_id, department_id, description, voc, voclx, vocwx, creation_time, rule_id,apmethod_id, exempt_rule,notes, waste_percent, recycle_percent ) VALUES (
 						'{$this->equipment_id}',
 						'{$this->department_id}',
 						'{$this->description}',
@@ -650,6 +653,7 @@
 						 '{$this->rule_id}',
 						 {$this->apmethod_id},
 						 {$this->exempt_rule},
+						 {$this->notes},
 						 {$this->waste_percent},
 						 {$this->recycle_percent}
 						 ) ";

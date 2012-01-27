@@ -109,6 +109,17 @@
                             </div>
                         </td>
                     </tr>
+					
+                    <tr>
+                        <td class="" height="20">
+                            Notes:
+                        </td>
+                        <td class="">
+                            <div align="left">
+                                &nbsp; {$usage->notes} 
+                            </div>
+                        </td>
+                    </tr>					
                 </table>
             </td>
             <td width="50%"style="padding:0 5px 0 2px" valign="top" class="border_users_r">

@@ -12,6 +12,10 @@ function CMix() {
 		this.excemptRule = rule;
 	}
 	
+	this.setNotes = function(notes) {
+		this.notes = notes;
+	}	
+	
 	this.setMixDate = function(date) {
 		this.creationTime = date;
 	}

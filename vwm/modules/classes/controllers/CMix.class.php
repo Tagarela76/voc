@@ -71,6 +71,7 @@ class CMix extends Controller
 		}
 		$mixOptimized->getRule();
 		
+
 		
 		$this->smarty->assign("usage", $mixOptimized);
 		$apMethodObject = new Apmethod($this->db);
@@ -705,9 +706,8 @@ class CMix extends Controller
 		$mix = new MixOptimized($this->db, $form['id']);
 
 
-
 		if($debug) {
-			var_dump($mix);
+			var_dump('!!!!!!!!!',$mix);
 		}
 
 		$departmentID = $mix->department_id;
@@ -757,6 +757,10 @@ class CMix extends Controller
 			);
 
 			$result = $mWasteStreams->prepare4mixAdd($params);
+			
+		if($debug) {
+			var_dump('$result',$result);
+		}			
 			foreach ($result as $key=>$value) {
 				$this->smarty->assign($key,$value);
 			}
@@ -1122,6 +1126,7 @@ class CMix extends Controller
 		$optMix->exempt_rule	= $m->excemptRule;
 		$optMix->creation_time	= $m->creationTime;
 		$optMix->apmethod_id	= $m->APMethod;
+		$optMix->notes	= $m->notes;
 		$optMix->valid			= true;
 		$optMix->unittypeClass	= $m->selectUnittypeClass;
 
@@ -1138,6 +1143,7 @@ class CMix extends Controller
 		$basemix->rule_id		= $formMix->rule;
 		$basemix->exempt_rule	= $formMix->excemptRule;
 		$basemix->creation_time	= $formMix->creationTime;
+		$basemix->notes	= $formMix->notes;
 		$basemix->apmethod_id	= $formMix->APMethod;
 		$basemix->valid			= true;
 		$basemix->unittypeClass	= $formMix->selectUnittypeClass;

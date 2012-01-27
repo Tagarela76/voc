@@ -173,6 +173,18 @@ function createSelectUnittypeClass(id) {
 							{/literal}
 							</td>
 						</tr>
+						
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" height="20">
+								Notes:
+							</td>
+							<td class="border_users_b border_users_r">
+								<div class="floatleft">
+									<textarea name="notes" id="notes" >{$data->notes}</textarea>
+								</div>
+							</td>
+						</tr>
+						
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								AP method:
