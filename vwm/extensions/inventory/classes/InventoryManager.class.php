@@ -88,7 +88,7 @@ public function getProductsSupplierList($category, $categoryID, $productID = nul
 				break;
 		}
 
-			$tables .= ", ".TB_PRODUCT." p, supplier s";
+			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
 		
 		
 		$query = "SELECT DISTINCT p.supplier_id, s.original_id, s.supplier ";
@@ -107,16 +107,22 @@ public function getProductsSupplierList($category, $categoryID, $productID = nul
 		
 		$arr = $this->db->fetch_all_array();
 		
-		/*if ($this->db->num_rows() == 1){
-			$productUsageData = new ProductInventory($this->db, $arr[0]);
-		}else{
-		$productUsageData = array();
+
+		$SupData = array();
 			foreach($arr as $b) {
-				$productinv = new ProductInventory($this->db, $b);
-				$productUsageData[] = $productinv;                        
+				if ( $b['supplier_id'] <> $b['original_id'] ){
+					$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id='" .$b['original_id']. "' ORDER BY supplier ASC";
+					$this->db->query($query);
+					$suppliername = $this->db->fetch_all_array();
+					$b['supplier'] = $suppliername[0]['supplier'];
+					$SupData[] = $b;
+				}else{
+					$SupData[] = $b;
+				}
+               
 			}
-		}*/
-		return $arr;
+	
+		return $SupData;
 	}	
 	
 	

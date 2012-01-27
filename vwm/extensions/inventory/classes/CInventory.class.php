@@ -424,6 +424,8 @@ class CInventory extends Controller
 				$supplierlist = $inventoryManager->getProductsSupplierList('facility',$this->getFromRequest('id'));
 				var_dump($supplierlist);
 				
+				
+				$this->smarty->assign('supplierlist',$supplierlist);	
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscounts.tpl');	
 				break;
 			case 'settings':

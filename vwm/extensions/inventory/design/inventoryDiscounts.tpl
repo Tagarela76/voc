@@ -52,22 +52,22 @@
         
     </tr>
 
-{if $Products|@count > 0}  
+{if $supplierlist|@count > 0}  
     {*BEGIN LIST*}  
-    {foreach from=$Products item=Product} 
+    {foreach from=$supplierlist item=supplier} 
     <tr class="hov_company" height="10px">
 
         <td class="border_users_r border_users_l border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$supplier->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_id}
+                    {$supplier.supplier}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$supplier->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_nr}
+                    {$supplier.product_nr}
                 </div>
             </a>
         </td>
