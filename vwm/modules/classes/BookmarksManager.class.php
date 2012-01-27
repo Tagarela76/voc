@@ -12,7 +12,7 @@ class BookmarksManager {
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$bookmarksArr = $arr[0];
-		
+
 		$bookmark = new Bookmark($this->db, $bookmarksArr);
 		return $bookmark;
 	}        

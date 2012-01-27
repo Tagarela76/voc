@@ -17,15 +17,21 @@ class CSContacts extends Controller {
 	
 	protected function bookmarkContacts($vars) {
 		extract($vars);
+
 		$sub = $this->getFromRequest("subBookmark");
 		if (!isset($sub) || $sub == '') {
-			$sub = $this->getFromRequest("bookmark");
+			if (isset($bookmarksList[0])) {
+				$sub = $bookmarksList[0]->get_name();
+				header ("Location: ?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark={$sub}");
+			} else {
+				$sub = $this->getFromRequest("bookmark");
+			}
 		}
 		$sub = strtolower($sub);
 		$sub = htmlentities($sub);
 		$manager = new BookmarksManager($this->db);
 		$subNumber = $manager->getBookmarkStats($sub,$this->user->xnyo->user['user_id']);
-		
+
 		$filterStr = $this->filterList('contacts');
 		$manager = new SalesContactsManager($this->db);
 		$creater_id = $this->user->xnyo->user['user_id'];
@@ -83,6 +89,7 @@ class CSContacts extends Controller {
 
 			$this->smarty->assign('pagination', $pagination);
 		}
+
 		$page = $this->getFromRequest("page");
 		$this->smarty->assign('page', $page);		
 		//	set js scripts

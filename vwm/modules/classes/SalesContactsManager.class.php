@@ -19,15 +19,14 @@ class SalesContactsManager
                 if ($filter!='TRUE') {
 			$query .= " AND $filter";
 		}
-		if(isset($creater_id)) {
+/*		if(isset($creater_id)) {
 			$query .= " AND c.creater_id = $creater_id";
-		}		
+		}*/		
         $query .= " ORDER BY c.contact ASC";        
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-		
-		
+			
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();           
 		$contacts = array();
@@ -40,9 +39,9 @@ class SalesContactsManager
 	
 	public function getSalesContact($contactID,$creater_id = null  ) {
 		$query = "SELECT * from " . TB_CONTACTS . " WHERE id = $contactID";
-				if(isset($creater_id)) {
+			/*	if(isset($creater_id)) {
 					$query .= " AND creater_id = $creater_id";
-				}		
+				}	*/	
 		$this->db->query($query);
 	
 		if (! $this->db->num_rows() > 0){
@@ -57,9 +56,9 @@ class SalesContactsManager
 	
 	public function deleteSalesContact($contactID, $creater_id = null) {
 		$query = "DELETE FROM ". TB_CONTACTS . " WHERE id = $contactID";
-				if(isset($creater_id)) {
+			/*	if(isset($creater_id)) {
 					$query .= " AND creater_id = $creater_id";
-				}		
+				}		*/
 				
 		$query = mysql_escape_string($query);
 		$this->db->query($query);
@@ -77,9 +76,9 @@ class SalesContactsManager
                             "FROM " . TB_CONTACTS . " c, " . TB_BOOKMARKS_TYPE . " ct " .
                             "WHERE ct.name = '".mysql_escape_string($sub)."' " .
                             "AND c.type = ct.id";
-				if(isset($creater_id)) {
+				/*if(isset($creater_id)) {
 					$query .= " AND c.creater_id = $creater_id";
-				}
+				}*/
 
 		$this->db->query($query);
 		$r = $this->db->fetch_array(0);
@@ -249,9 +248,9 @@ class SalesContactsManager
                 if ($filter != 'TRUE') {
 					$query .= " AND $filter";
 		}
-				if(isset($creater_id)) {
+				/*if(isset($creater_id)) {
 					$query .= " AND creater_id = $creater_id";
-				} 		
+				} */		
                 
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {			
