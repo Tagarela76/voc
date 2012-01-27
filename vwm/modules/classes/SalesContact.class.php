@@ -27,6 +27,9 @@ class SalesContact
 	private $creater_id; //ID sales manager who had created this contact 
 	private $acc_number; //ID sales manager who had created this contact 
 	
+	private $paint_supplier; //List of contact's suppliers
+	private $paint_system; //contact paint system	
+	
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
 	
@@ -97,6 +100,17 @@ class SalesContact
 		
 	}
 	
+/*	public function get_acc_number() {
+		if(!isset($this->state_id) and isset($this->state)) {
+			return $this->state;
+		} else if (isset($this->state_id)) {
+			$state = new State($this->db);
+			$details = $state->getStateDetails($this->state_id);
+			return $details['name'];
+		}
+		
+	}	
+*/	
 	/**
 	 * SETTERS
 	 */
@@ -301,6 +315,30 @@ class SalesContact
 		}
 		
 	}	
+	
+	private function set_paint_supplier($value) {
+		try {
+			
+			//$this->checkNumber($value);
+			$this->paint_supplier = $value;
+		} catch(Exception $e) {
+			$this->errors["paint_supplier"] = $e->getMessage();
+			throw new Exception("set paint_supplier: " . $e->getMessage());
+		}
+		
+	}
+	
+	private function set_paint_system($value) {
+		try {
+			
+			//$this->checkNumber($value);
+			$this->paint_system = $value;
+		} catch(Exception $e) {
+			$this->errors["paint_system"] = $e->getMessage();
+			throw new Exception("set paint_system: " . $e->getMessage());
+		}
+		
+	}		
 
 	
 	private function set_state_id($value) {

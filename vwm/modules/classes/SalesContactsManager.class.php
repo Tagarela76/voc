@@ -115,6 +115,8 @@ class SalesContactsManager
 					mail			= '{$c->mail}',
 					cellphone		= '{$c->cellphone}',
 					acc_number		= '{$c->acc_number}',
+					paint_supplier		= '{$c->paint_supplier}',
+					paint_system		= '{$c->paint_system}',
 					creater_id		= '{$c->creater_id}'
 					WHERE id = {$c->id}";
 		
@@ -132,9 +134,9 @@ class SalesContactsManager
 	public function addContact(SalesContact $c) {
 		if(!$c->errors) {
 
-			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,country_id,state_id,mail,cellphone,type) VALUES (
+			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
 						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}', '{$c->title}', '{$c->government_agencies}',  
-						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->city}','{$c->zip_code}','{$c->creater_id}','{$c->acc_number}'  
+						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->city}','{$c->zip_code}','{$c->creater_id}','{$c->acc_number}','{$c->paint_supplier}','{$c->paint_system}'  
 						";
 			
 			/**

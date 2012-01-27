@@ -322,6 +322,42 @@
 						</div>
 					{/if}
 				</td>				
+			</tr>
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Paint Supplier:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='paint_supplier' value='{$data->paint_supplier}'>
+					</div>
+					
+					{if $data->errors.paint_supplier}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.paint_supplier}</font>
+						</div>
+					{/if}
+				</td>				
+			</tr>
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Paint System:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<input type='text' name='paint_system' value='{$data->paint_system}'>
+					</div>
+					
+					{if $data->errors.paint_system}
+					
+						<div style="margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">{$data->errors.paint_system}</font>
+						</div>
+					{/if}
+				</td>				
 			</tr>			
 			
 			<tr height="10px">

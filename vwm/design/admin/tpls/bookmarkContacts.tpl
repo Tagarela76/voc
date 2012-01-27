@@ -21,6 +21,7 @@
 		<tr  class="users_u_top_size users_top_blue">
 			<td  class="users_u_top_blue"  width="5%" ><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></td>
 			<td  class="">ID Number</td>
+			<td  class="">Account Number</td>
 			<td  class="">Company</td>
 			<td  class="">Contact</td>
 			<td  class="">Phone</td>
@@ -36,6 +37,9 @@
 			<td>State</td>
 			<td  class="">City</td>
 			<td>Zip Code</td>
+			
+			<td>Paint Supplier</td>
+			<td>Paint System</td>
 			<!--  <td>Affiliations</td>
 			
 			<td  class="">Government Agencies</td>-->
@@ -58,6 +62,10 @@
 			</td>
 			
             <td class="border_users_b border_users_l" >
+				<a href="{$contacts[i]->viewDetailsUrl}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->acc_number}</div ></a>
+			</td>			
+			
+            <td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrl}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->company}</div ></a>
 			</td>
 			
@@ -78,7 +86,7 @@
 			</td>
 			
 			<td class="border_users_b border_users_l" >
-				<a href="{$contacts[i]->viewDetailsUrl}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->website}</div ></a>
+				<a target="_blank" href="{$contacts[i]->website}"><div style="width:100%;">{$contacts[i]->website}</div ></a>
 			</td>			
 			
 			<td class="border_users_b border_users_l" >
@@ -112,6 +120,14 @@
 			<td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->zip_code}</div ></a>
 			</td>
+			
+			<td class="border_users_b border_users_l" >
+				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_supplier}</div ></a>
+			</td>	
+			
+			<td class="border_users_b border_users_l" >
+				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_system}</div ></a>
+			</td>			
 			
 			<!--<td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrl}"><div style="width:100%;">{$contacts[i]->affiliations}</div ></a>

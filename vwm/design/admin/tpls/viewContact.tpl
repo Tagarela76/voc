@@ -183,6 +183,24 @@
 			
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
+					Paint Supplier:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->paint_supplier}</div>								
+				</td>
+			</tr>	
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Paint System:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$contact->paint_system}</div>								
+				</td>
+			</tr>			
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
 					Creater Id:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
