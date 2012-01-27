@@ -4,11 +4,10 @@
 <div class="padd7">
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_violet" height="27px">
-<!--        <td class="users_top_violet users_u_top_violet" width="60">
+        <td class="users_top_violet users_u_top_violet" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
--->
-        <td class="users_top_violet users_u_top_violet">
+        <td class="users_top_violet">
            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	ID Number 		
@@ -19,20 +18,20 @@
         <td class="users_top_violet">
              <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Product Name 	
+                	Inventory Name 	
 					{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
         </td>
-        <td class="users_u_top_r_violet">
+        <td class="{if !$accessory}users_top_violet{else}users_u_top_r_violet{/if}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Usage	
+                	Inventory description 	
 					{if $sort==5 || $sort==6}<img src="{if $sort==5}images/asc2.gif{/if}{if $sort==6}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
         </td>
-        {*if !$accessory}
+        {if !$accessory}
         <td class="users_top_violet">
            
             	<div style='width:100%;  color:white;'>						
@@ -57,42 +56,39 @@
 				</div>					
 			
         </td>
-        {/if*}
+        {/if}
         
     </tr>
 
-{if $Products|@count > 0}  
+{if $childCategoryItems|@count > 0}  
     {*BEGIN LIST*}  
-    {foreach from=$Products item=Product} 
+    {foreach from=$childCategoryItems item=inventory} 
     <tr class="hov_company" height="10px">
-<!--        <td class="border_users_b  border_users_l border_users_r">
-            <input type="checkbox" value="{*$Product->getID()*}" name="id[]">
-        </td> -->
-        <td class="border_users_r border_users_l border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+        <td class="border_users_b  border_users_l border_users_r">
+            <input type="checkbox" value="{$inventory->getID()}" name="id[]">
+        </td>
+        <td class="border_users_r border_users_b">
+            <a href="{$inventory->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_id}
+                    {$inventory->getID()}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$inventory->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_nr}
+                    {$inventory->getName()}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$inventory->url}" class="id_company1">
                 <div style="width:100%;">
-                    
-					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->get_usage()
-							vocLimit=$Product->in_stock
-							pxCount =$Product->pxCount }					
+                    {$inventory->getDescription()}
                 </div>
             </a>
         </td>
-        {*if !$accessory}
+        {if !$accessory}
         <td class="border_users_r border_users_b">
             <a href="{$inventory->url}" class="id_company1">
                 <div style="width:100%;">
@@ -114,11 +110,11 @@
                 </div>
             </a>
         </td>
-        {/if*}
+        {/if}
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="{*if !$accessory}7{else}4{/if*}3" class="border_users_l border_users_r">
+        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -126,7 +122,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="{*if !$accessory}7{else}4{/if*}3" class="border_users_l border_users_r" align="center">
+        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r" align="center">
             No inventories in the facility
         </td>
     </tr>
@@ -135,7 +131,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="{*if !$accessory}5{else}2{/if*}" height="15" class="border_users">
+        <td colspan="{if !$accessory}5{else}2{/if}" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

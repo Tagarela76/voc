@@ -84,16 +84,19 @@ class CInventory extends Controller
 
 	private function actionViewDetails()
 		{
+
+			
+		
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$id = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
 		$inventoryManager = new InventoryManager($this->db);
 		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
-		
-		
+	
 		$this->smarty->assign("product",$product);
-		$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$id);
+		$this->smarty->assign("parentCategory",$category);
+		$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$id."&tab=".$this->getFromRequest('tab'));
 /*		if (!is_null($this->getFromRequest('facilityID')))
 		{
 			$facility = new Facility($this->db);
@@ -149,8 +152,8 @@ class CInventory extends Controller
 		
  */		$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 		$this->smarty->display("tpls:index.tpl");
- 
-		}
+
+	}
 
 	private function actionAddItem() {
 		// inventory from?
@@ -291,21 +294,28 @@ class CInventory extends Controller
 		$inventoryManager = new InventoryManager($this->db);
 		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
 
-		var_dump($product);
 		$this->smarty->assign("product",$product);
-		
+
 		
 							$form = $_POST;
 
 							if (count($form) > 0) {
 								//protected from xss
-								$form["inventory_name"]=Reform::HtmlEncode($form["inventory_name"]);
-								$form["inventory_desc"]=Reform::HtmlEncode($form["inventory_desc"]);
-								$form['OS_use'] = str_replace(',','.',$form['OS_use']);
-								$form['CS_use'] = str_replace(',','.',$form['CS_use']);
-								$form['totalQty'] = str_replace(',','.',$form['totalQty']);
-								$form['unitAmount'] = str_replace(',','.',$form['unitAmount']);
-								$form['unitQuantity'] = str_replace(',','.',$form['unitQuantity']);
+								$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
+								$form["limit"]=Reform::HtmlEncode($form["limit"]);
+								$form['amount'] = Reform::HtmlEncode($form['amount']);
+								
+								$ProductInventory->set_amount($form['amount']);
+								$ProductInventory->set_in_stock($form['in_stock']);
+								$ProductInventory->set_inventory_limit($form['limit']);
+								$ProductInventory->set_product_id($form['product_id']);
+								$ProductInventory->set_in_stock_unit_type($form['in_stock_unit_type']);
+								$ProductInventory->set_inventory_id($form['inventory_id']);
+								$result = $ProductInventory->save();
+								if ($result == 'true'){
+									header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+								}
+							
 							}
 /*
 							//	IF ERRORS OR NO POST REQUEST
@@ -343,7 +353,7 @@ class CInventory extends Controller
 							}
 
 							$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
-*/
+
 							//	set js scripts
 							$jsSources = array(
 								'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
@@ -352,7 +362,7 @@ class CInventory extends Controller
 							$this->smarty->assign('jsSources', $jsSources);
 							$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 							$this->smarty->assign('cssSources', $cssSources);
-
+*/
 							//	set tpl
 		$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
 
@@ -368,44 +378,64 @@ class CInventory extends Controller
 		/*New inventory 26 Jan 2012*/		
 		extract($vars);
 
-		$sortStr=$this->sortList('inventory',3);
-
-		$this->smarty->assign('tab',$this->getFromRequest('tab'));
-
-		//$facility->initializeByID($this->getFromRequest('id'));
+		$sortStr = $this->sortList('inventory',3);
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
 			throw new Exception('deny');
 		}
 		//	OK, this company has access to this module, so let's setup..
-		$category = 'facility';
-		$id = $this->getFromRequest('id');
-		
-		//Product Usage
-		$ProductInventory = new ProductInventory($this->db);
+		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
+		switch ($tab){
+			case 'products':
+				$category = 'facility';
+				$id = $this->getFromRequest('id');
 
-		$inventoryManager = new InventoryManager($this->db);
-		$limit = 50;
-		$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id);		
-			foreach ($data as $value) {
+				//Product Usage
+				$ProductInventory = new ProductInventory($this->db);
 
-				$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$id;		
+				$inventoryManager = new InventoryManager($this->db);
+
+				$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id);		
+					foreach ($data as $value) {
+
+						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$id."&tab=".$this->getFromRequest('tab')."";		
+
+
+					//	ini indicator (gauge)	
+
+					$pxCount = round(200 * $value->usage / $value->in_stock);
+					if ($pxCount > 200) {
+							$pxCount = 200;
+					}				
+
+					$value->pxCount = $pxCount;	
+
+					}
+
+				$this->smarty->assign('Products',$data);
+				$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');	
+				break;
+			case 'orders':
+				$this->smarty->assign('tpl','inventory/design/inventoryOrders.tpl');	
+				break;
+			case 'discounts':
+				$inventoryManager = new InventoryManager($this->db);
 				
-			
-			//	ini indicator (gauge)	
-			$limit = 50;
-			$pxCount = round(200 * $value->usage / $limit);
-			if ($pxCount > 200) {
-					$pxCount = 200;
-			}				
+				$supplierlist = $inventoryManager->getProductsSupplierList('facility',$this->getFromRequest('id'));
+				var_dump($supplierlist);
+				
+				$this->smarty->assign('tpl','inventory/design/inventoryDiscounts.tpl');	
+				break;
+			case 'settings':
 
-			$value->pxCount = $pxCount;	
-			
-			}
-		$this->smarty->assign('inStock',$limit);
+				break;	
+			default :
+				throw new Exception('Unknown Tab for Inventory');
+				break;			
+		}
 		
-		$this->smarty->assign('Products',$data);
-		$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');		
+
+	
 	
 		
 		

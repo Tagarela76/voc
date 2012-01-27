@@ -13,6 +13,8 @@ class ProductInventory {
 	private $name;
 	private $in_stock;
 	private $in_stock_unit_type = self::GALLON_UNIT_TYPE_ID;
+	private $amount;
+	private $limit;
 	
 	public $pxCount;
 	public $errors;
@@ -56,6 +58,36 @@ class ProductInventory {
 			}catch(Exception $e) {
 				$this->errors[] = $e->getMessage();
 			}
+		}
+	}
+	
+	public function save() {
+
+                if ($this->id != NULL){
+                        $query = "UPDATE product2inventory SET 
+						in_stock = '".mysql_escape_string($this->in_stock)."',
+						amount = '".mysql_escape_string($this->amount)."',
+						inventory_limit = '".mysql_escape_string($this->limit)."'
+						WHERE inventory_id = {$this->id}";
+                }
+                else {                        
+   
+                            $query = "INSERT INTO product2inventory VALUES (NULL,'"
+												.($this->product_id)."','" 
+                                                .($this->in_stock)."','" 
+												.($this->limit)."','"
+												.($this->in_stock_unit_type)."','"
+												.($this->amount). "')";
+                                               
+
+                }	
+
+		$this->db->query($query);
+			
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
 		}
 	}	
 
@@ -113,9 +145,13 @@ class ProductInventory {
 		return $this->name;
 	}	
 	
+	public function get_in_stock_unit_type(){
+		return $this->in_stock_unit_type;
+	}
+	
 	public function get_in_stock(){
 		return $this->in_stock;
-	}
+	}	
 	
 	public function get_product_nr(){
 		return $this->product_nr;
@@ -123,7 +159,19 @@ class ProductInventory {
 	
 	public function get_product_id(){
 		return $this->product_id;
-	}		
+	}
+	
+	public function get_inventry_id(){
+		return $this->id;
+	}	
+	
+	public function get_amount(){
+		return $this->amount;
+	}
+	
+	public function get_inventry_limit(){
+		return $this->limit;
+	}	
 	
 	public function set_product_nr($value) {
 		try {
@@ -133,7 +181,7 @@ class ProductInventory {
 		}
 	}
 	
-	private function set_sum($value) {
+	public function set_sum($value) {
 		try {
 			$this->usage = $value;
 	
@@ -142,7 +190,7 @@ class ProductInventory {
 		}
 	}
 	
-	private function set_name($value) {
+	public function set_name($value) {
 		try {
 			$this->name = $value;
 		} catch(Exception $e) {
@@ -150,13 +198,44 @@ class ProductInventory {
 		}
 	}	
 	
-	private function set_product_id($value) {
+	public function set_product_id($value) {
 		try {
 			$this->product_id = $value;
 		} catch(Exception $e) {
 			throw new Exception("Product id cannot be empty!" . $e->getMessage());
 		}
-	}		
+	}
+	
+	public function set_inventory_id($value) {
+		try {
+			$this->id = $value;
+		} catch(Exception $e) {
+			throw new Exception("Inventory id cannot be empty!" . $e->getMessage());
+		}
+	}	
+	
+	public function set_in_stock($value) {
+
+			$this->in_stock = $value;
+
+	}
+	public function set_in_stock_unit_type($value) {
+
+			$this->in_stock_unit_type = $value;
+
+	}	
+	
+	public function set_amount($value) {
+
+			$this->amount = $value;
+
+	}	
+	
+	public function set_inventory_limit($value) {
+
+			$this->limit = $value;
+
+	}	
 
 }
 

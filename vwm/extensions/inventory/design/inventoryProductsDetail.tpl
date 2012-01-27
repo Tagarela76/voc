@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->get_product_nr()}
+                    &nbsp;{$product->product_nr}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->get_in_stock()}
+                    &nbsp;{$product->in_stock}
                 </div>
             </td>
         </tr>
@@ -42,10 +42,40 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->get_usage()}
+                    &nbsp;{$product->usage}
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Limit : 
+            </td>
+            <td class="border_users_l border_users_r border_users_b">
+                <div align="left">
+                    &nbsp;{$product->limit}
+                </div>
+            </td>
+        </tr>	
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Amount : 
+            </td>
+            <td class="border_users_l border_users_r border_users_b">
+                <div align="left">
+                    &nbsp;{$product->amount}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Unit type : 
+            </td>
+            <td class="border_users_l border_users_r border_users_b">
+                <div align="left">
+                    &nbsp;{$product->in_stock_unit_type}
+                </div>
+            </td>
+        </tr>		
 				
 
                 </table>
