@@ -77,7 +77,7 @@ class CAContacts extends Controller {
 			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
 			$this->smarty->assign('pagination', $pagination);
 		}
-		var_dump($contactsList[0]);
+
 		$page = $this->getFromRequest("page");
 		$this->smarty->assign('page', $page);
 		//	set js scripts
