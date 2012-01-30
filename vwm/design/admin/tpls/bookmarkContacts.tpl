@@ -86,7 +86,7 @@
 			</td>
 			
 			<td class="border_users_b border_users_l" >
-				<a target="_blank" href="{$contacts[i]->website}"><div style="width:100%;">{$contacts[i]->website}</div ></a>
+				<a target="_blank" href="{if $contacts[i]->website|substr:0:4 != 'http'}http://{$contacts[i]->website}{else}{$contacts[i]->website}{/if}"><div style="width:100%;">{$contacts[i]->website}</div ></a>
 			</td>			
 			
 			<td class="border_users_b border_users_l" >

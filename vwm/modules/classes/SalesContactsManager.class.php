@@ -92,7 +92,12 @@ class SalesContactsManager
 		if(!isset($state_id)) {
 			$state_id = " NULL ";
 		}
-		
+/*$web = $c->website;
+if (substr($web, 0, 4) != 'http'){
+	$website = 'http://'.$c->website;
+}else{
+	$website = $c->website;
+}	*/	
 		
 		
 		$query = "UPDATE " . TB_CONTACTS . " SET 
@@ -133,9 +138,16 @@ class SalesContactsManager
 	
 	public function addContact(SalesContact $c) {
 		if(!$c->errors) {
+/*$web = $c->website;
+if (substr($web, 0, 4) != 'http'){
+	$website = 'http://'.$c->website;
+}else{
+	$website = $c->website;
+}*/
 
-			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
-						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}', '{$c->title}', '{$c->government_agencies}',  
+
+			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,website,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
+						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}','{$c->website}', '{$c->title}', '{$c->government_agencies}',  
 						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->city}','{$c->zip_code}','{$c->creater_id}','{$c->acc_number}','{$c->paint_supplier}','{$c->paint_system}'  
 						";
 			

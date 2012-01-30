@@ -77,7 +77,7 @@ class CAContacts extends Controller {
 			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
 			$this->smarty->assign('pagination', $pagination);
 		}
-
+		var_dump($contactsList[0]);
 		$page = $this->getFromRequest("page");
 		$this->smarty->assign('page', $page);
 		//	set js scripts
@@ -95,6 +95,7 @@ class CAContacts extends Controller {
 		
 		$manager = new SalesContactsManager($this->db);
 		$contact = $manager->getSalesContact($this->getFromRequest('id'));
+
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
