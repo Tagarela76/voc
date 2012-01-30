@@ -686,6 +686,7 @@ class CMix extends Controller
 	}
 
 	private function  actionEditItemAjax() {
+//$debug = true;		
 		if($_REQUEST['debug']) {
 			$debug = true;
 		}
@@ -703,11 +704,11 @@ class CMix extends Controller
 		}
 
 		$mix = new MixOptimized($this->db, $form['id']);
-
+		$productsOldVal = $mix->products;
 
 
 		if($debug) {
-			var_dump($mix);
+			var_dump('MIX@@',$mix);
 		}
 
 		$departmentID = $mix->department_id;
@@ -802,7 +803,7 @@ class CMix extends Controller
 
 		$jproducts = json_decode($form['products']);
 		if($debug){
-			var_dump($jproducts);
+			var_dump('$jproducts',$jproducts);
 
 		}
 
@@ -831,7 +832,7 @@ class CMix extends Controller
 				echo "<h1>DATA</h1>";
 				var_dump($wastes, $recycle);
 			}
-		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
+		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug, $productsOldVal);
 	} 
 
 	private function actionAddItemAjax() {
@@ -842,7 +843,7 @@ class CMix extends Controller
 			echo "add mix";
 			var_dump($form);
 		}
-		//$debug = true;
+
 		$departmentID = $form['departmentID'];
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
@@ -976,7 +977,7 @@ class CMix extends Controller
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	}
 
-	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste ,$jrecycle, $debug = false) {
+	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste ,$jrecycle, $debug = false, $productsOldVal = null) {
 
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
@@ -1024,7 +1025,7 @@ class CMix extends Controller
 		$mix->recycle['value'] = $r->value;
 		$mix->recycle['unitttypeID'] = $r->unittype;
 		if($debug) {
-			var_dump('mix->recycle  WSTREAM',$jrecycle);
+			var_dump('$mix->products',$mix->products);
 			
 		}		
 		$mixValidator = new MixValidatorOptimized();
@@ -1081,6 +1082,12 @@ class CMix extends Controller
 		if($debug) {
 			echo "<h1>DONE!</h1>";
 		}
+/* INVENTORY CREATING ORDER */		
+		$InventoryManager = new InventoryManager($this->db);
+		$InventoryManager->inventoryInstockDegreece($productsOldVal, $mix);
+		$result = $InventoryManager->runInventoryOrderingSystem($mix);
+		
+/* */		
 		echo "DONE";
 		exit;
 	}

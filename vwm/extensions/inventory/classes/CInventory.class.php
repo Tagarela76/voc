@@ -84,19 +84,20 @@ class CInventory extends Controller
 
 	private function actionViewDetails()
 		{
-
 			
-		
+		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$id = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
-		$inventoryManager = new InventoryManager($this->db);
-		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
+		$inventoryManager = new InventoryManager($this->db);		
+		switch ($tab){
+			case 'products':
+				$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
 	
-		$this->smarty->assign("product",$product);
-		$this->smarty->assign("parentCategory",$category);
-		$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$id."&tab=".$this->getFromRequest('tab'));
+				$this->smarty->assign("product",$product);
+				$this->smarty->assign("parentCategory",$category);
+				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$id."&tab=".$this->getFromRequest('tab'));
 /*		if (!is_null($this->getFromRequest('facilityID')))
 		{
 			$facility = new Facility($this->db);
@@ -150,7 +151,22 @@ class CInventory extends Controller
 		$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'),array('bookmark'=>'inventory','tab'=>$result['inventory']->getType()));
 		$this->smarty->assign('backUrl','?action=browseCategory&category='.$backCategory.'&id='.$this->getFromRequest($backCategory.'ID').'&bookmark=inventory&tab='.$result['inventory']->getType());
 		
- */		$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
+ */		
+				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
+				break;
+			case 'orders':
+				
+				break;
+
+			case 'settings':
+
+				break;	
+			default :
+				throw new Exception('Unknown Tab for Inventory');
+				break;			
+		}
+
+
 		$this->smarty->display("tpls:index.tpl");
 
 	}
@@ -287,85 +303,142 @@ class CInventory extends Controller
 								$facilityID = $this->getFromRequest('facilityID');
 
 							}
+		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));							
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$id = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
 		$inventoryManager = new InventoryManager($this->db);
-		$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
+		switch ($tab){
+			case 'products':		
+				$product = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $id, $productID);
 
-		$this->smarty->assign("product",$product);
+				$this->smarty->assign("product",$product);
 
-		
-							$form = $_POST;
 
-							if (count($form) > 0) {
-								//protected from xss
-								$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
-								$form["limit"]=Reform::HtmlEncode($form["limit"]);
-								$form['amount'] = Reform::HtmlEncode($form['amount']);
-								
-								$ProductInventory->set_amount($form['amount']);
-								$ProductInventory->set_in_stock($form['in_stock']);
-								$ProductInventory->set_inventory_limit($form['limit']);
-								$ProductInventory->set_product_id($form['product_id']);
-								$ProductInventory->set_in_stock_unit_type($form['in_stock_unit_type']);
-								$ProductInventory->set_inventory_id($form['inventory_id']);
-								$result = $ProductInventory->save();
-								if ($result == 'true'){
-									header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
-								}
+									$form = $_POST;
+
+									if (count($form) > 0) {
+										//protected from xss
+										$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
+										$form["limit"]=Reform::HtmlEncode($form["limit"]);
+										$form['amount'] = Reform::HtmlEncode($form['amount']);
+
+										$ProductInventory->set_amount($form['amount']);
+										$ProductInventory->set_in_stock($form['in_stock']);
+										$ProductInventory->set_inventory_limit($form['limit']);
+										$ProductInventory->set_product_id($form['product_id']);
+										$ProductInventory->set_in_stock_unit_type($form['in_stock_unit_type']);
+										$ProductInventory->set_inventory_id($form['inventory_id']);
+										$result = $ProductInventory->save();
+										if ($result == 'true'){
+											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+										}
+
+									}
+		/*
+									//	IF ERRORS OR NO POST REQUEST
+										$facility = new Facility($this->db);
+										$facilityDetails = $facility->getFacilityDetails($facilityID);
+										$companyID = $facilityDetails['company_id'];
+
+										$this->setNavigationUpNew('department', $this->getFromRequest($backCategory.'ID'));
+										$this->setPermissionsNew('viewData');
+									$ms = new ModuleSystem($this->db);
+									$moduleMap = $ms->getModulesMap();
+									foreach($moduleMap as $key=>$module) {
+										$showModules[$key] = $this->user->checkAccess($key, $companyID);
+									}
+									$this->smarty->assign('show',$showModules);
+
+									if(!$showModules['inventory']) {
+										throw new Exception('deny');
+									}
+
+									//	ok, we have access to inventory..
+									$mIventory = new $moduleMap['inventory'];
+
+									$params = array(
+											'db' => $this->db,
+											'request' => $this->getFromRequest(),
+											'form' => $form,
+											'facilityID' => $facilityID,
+											'smarty' => $this->smarty
+									);
+									$result = $mIventory->prepareEdit($params);
+
+									foreach ($result as $key=>$value) {
+										$this->smarty->assign($key,$value);
+									}
+
+									$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
+
+									//	set js scripts
+									$jsSources = array(
+										'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+										'modules/js/inventory.js'
+									);
+									$this->smarty->assign('jsSources', $jsSources);
+									$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+									$this->smarty->assign('cssSources', $cssSources);
+		*/
+
+				$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
+				break;
+			case 'discounts':
+				
+				
+				$supplierDiscount = $inventoryManager->getSupplierDiscounts($id,$this->getFromRequest('id'));
+
+									$form = $_POST;
+
+									if (count($form) > 0) {
+										//protected from xss
+										$form["discount"]=Reform::HtmlEncode($form["discount"]);
+										$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
+										$form['supplier_id'] = Reform::HtmlEncode($form['supplier_id']);
+										$form['discount_id'] = Reform::HtmlEncode($form['discount_id']);
+										$form['supplier'] = Reform::HtmlEncode($form['supplier']);
+										
+										$result = $inventoryManager->updateSupplierDiscounts($form);
+									
+										if ($result == 'true'){
+											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+										}
+
+									}				
+				
+				
+				$this->smarty->assign('supplier',$supplierDiscount);	
+				$this->smarty->assign('tpl','inventory/design/inventoryDiscountsEdit.tpl');	
+			break;
+			case 'settings':
+				
+				$inventoryEmail = $inventoryManager->getSupplierSettings($id);
+				
+									$form = $_POST;
+
+									if (count($form) > 0) {
+										//protected from xss
+										$form["email_all"]=Reform::HtmlEncode($form["email_all"]);
+										$form["email_manager"]=Reform::HtmlEncode($form["email_manager"]);
+										$form['facilityID'] = Reform::HtmlEncode($form['facilityID']);
+
 							
-							}
-/*
-							//	IF ERRORS OR NO POST REQUEST
-								$facility = new Facility($this->db);
-								$facilityDetails = $facility->getFacilityDetails($facilityID);
-								$companyID = $facilityDetails['company_id'];
-
-								$this->setNavigationUpNew('department', $this->getFromRequest($backCategory.'ID'));
-								$this->setPermissionsNew('viewData');
-							$ms = new ModuleSystem($this->db);
-							$moduleMap = $ms->getModulesMap();
-							foreach($moduleMap as $key=>$module) {
-								$showModules[$key] = $this->user->checkAccess($key, $companyID);
-							}
-							$this->smarty->assign('show',$showModules);
-
-							if(!$showModules['inventory']) {
-								throw new Exception('deny');
-							}
-
-							//	ok, we have access to inventory..
-							$mIventory = new $moduleMap['inventory'];
-
-							$params = array(
-									'db' => $this->db,
-									'request' => $this->getFromRequest(),
-									'form' => $form,
-									'facilityID' => $facilityID,
-									'smarty' => $this->smarty
-							);
-							$result = $mIventory->prepareEdit($params);
-
-							foreach ($result as $key=>$value) {
-								$this->smarty->assign($key,$value);
-							}
-
-							$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
-
-							//	set js scripts
-							$jsSources = array(
-								'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-								'modules/js/inventory.js'
-							);
-							$this->smarty->assign('jsSources', $jsSources);
-							$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
-							$this->smarty->assign('cssSources', $cssSources);
-*/
-							//	set tpl
-		$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
-
+										$result = $inventoryManager->updateSupplierSettings($form);
+									
+										if ($result == 'true'){
+											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=products");
+										}
+									}
+													
+				$this->smarty->assign('email',$inventoryEmail);	
+				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
+				break;	
+			default :
+				throw new Exception('Unknown Tab for Inventory');
+				break;				
+		}
 		$this->smarty->display("tpls:index.tpl");
 	}
 
@@ -377,7 +450,8 @@ class CInventory extends Controller
 	{
 		/*New inventory 26 Jan 2012*/		
 		extract($vars);
-
+		$category = 'facility';
+		$id = $this->getFromRequest('id');		
 		$sortStr = $this->sortList('inventory',3);
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
@@ -387,9 +461,6 @@ class CInventory extends Controller
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
 		switch ($tab){
 			case 'products':
-				$category = 'facility';
-				$id = $this->getFromRequest('id');
-
 				//Product Usage
 				$ProductInventory = new ProductInventory($this->db);
 
@@ -421,8 +492,15 @@ class CInventory extends Controller
 			case 'discounts':
 				$inventoryManager = new InventoryManager($this->db);
 				
-				$supplierlist = $inventoryManager->getProductsSupplierList('facility',$this->getFromRequest('id'));
-				var_dump($supplierlist);
+				$SupData = $inventoryManager->getProductsSupplierList('facility',$this->getFromRequest('id'));
+				$supplierlist = array();
+					foreach ( $SupData as $supplier) {
+
+						$supplier['url'] = "?action=edit&category=inventory&id=".$supplier['original_id']."&".$category."ID=".$id."&tab=".$this->getFromRequest('tab')."";
+						$supplierlist[] = $supplier;
+						
+					}				
+
 				
 				
 				$this->smarty->assign('supplierlist',$supplierlist);	

@@ -3,11 +3,11 @@
 {/if}
 <div class="padd7">
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
-    <tr class="users_top_violet" height="27px">
-        <td class="users_top_violet users_u_top_violet" width="60">
+    <tr class="users_top_blue" height="27px">
+        <td class="users_top_blue users_u_top_blue" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
-        <td class="users_top_violet">
+        <td class="users_top_blue">
            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	ID Number 		
@@ -15,7 +15,7 @@
 				</div>					
 			</a>   
         </td>
-        <td class="users_top_violet">
+        <td class="users_top_blue">
              <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Inventory Name 	
@@ -23,7 +23,7 @@
 				</div>					
 			</a> 
         </td>
-        <td class="{if !$accessory}users_top_violet{else}users_u_top_r_violet{/if}">
+        <td class="{if !$accessory}users_top_blue{else}users_u_top_r_blue{/if}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Inventory description 	
@@ -32,7 +32,7 @@
 			</a> 
         </td>
         {if !$accessory}
-        <td class="users_top_violet">
+        <td class="users_top_blue">
            
             	<div style='width:100%;  color:white;'>						
                 	Supplier	
@@ -40,7 +40,7 @@
 				</div>					
 			 
         </td>
-        <td class="users_top_violet">
+        <td class="users_top_blue">
             
             	<div style='width:100%;  color:white;'>						
                 	Product NR 	
@@ -48,7 +48,7 @@
 				</div>					
 			
         </td>
-        <td class="users_u_top_r_violet">
+        <td class="users_u_top_r_blue">
             
             	<div style='width:100%;  color:white;'>						
                 	Product Description 	
