@@ -330,6 +330,7 @@ class CInventory extends Controller
 										$ProductInventory->set_product_id($form['product_id']);
 										$ProductInventory->set_in_stock_unit_type($form['in_stock_unit_type']);
 										$ProductInventory->set_inventory_id($form['inventory_id']);
+										$ProductInventory->set_facility_id($id);
 										$result = $ProductInventory->save();
 										if ($result == 'true'){
 											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));

@@ -978,7 +978,7 @@ class CMix extends Controller
 	}
 
 	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste ,$jrecycle, $debug = false, $productsOldVal = null) {
-
+//$debug =true;
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
 			$params = array (
@@ -1084,9 +1084,9 @@ class CMix extends Controller
 		}
 /* INVENTORY CREATING ORDER */		
 		$InventoryManager = new InventoryManager($this->db);
-		$InventoryManager->inventoryInstockDegreece($productsOldVal, $mix);
+		//$InventoryManager->inventoryInstockDegreece($productsOldVal, $mix);
 		$result = $InventoryManager->runInventoryOrderingSystem($mix);
-		
+		mail('2reckiy@gmail.com', 'My Subject', '$message');
 /* */		
 		echo "DONE";
 		exit;

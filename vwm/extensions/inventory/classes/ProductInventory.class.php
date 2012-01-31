@@ -10,6 +10,7 @@ class ProductInventory {
 	
 	private $id;
 	private $product_id;
+	private $facility_id;
 	private $name;
 	private $in_stock;
 	private $in_stock_unit_type = self::GALLON_UNIT_TYPE_ID;
@@ -74,6 +75,7 @@ class ProductInventory {
    
                             $query = "INSERT INTO product2inventory VALUES (NULL,'"
 												.($this->product_id)."','" 
+												.($this->facility_id)."','" 
                                                 .($this->in_stock)."','" 
 												.($this->limit)."','"
 												.($this->in_stock_unit_type)."','"
@@ -161,6 +163,10 @@ class ProductInventory {
 		return $this->product_id;
 	}
 	
+	public function get_facility_id(){
+		return $this->facility_id;
+	}	
+	
 	public function get_inventry_id(){
 		return $this->id;
 	}	
@@ -205,6 +211,14 @@ class ProductInventory {
 			throw new Exception("Product id cannot be empty!" . $e->getMessage());
 		}
 	}
+	
+	public function set_facility_id($value) {
+		try {
+			$this->facility_id = $value;
+		} catch(Exception $e) {
+			throw new Exception("Product id cannot be empty!" . $e->getMessage());
+		}
+	}	
 	
 	public function set_inventory_id($value) {
 		try {
