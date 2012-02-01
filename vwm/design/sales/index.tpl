@@ -49,6 +49,7 @@
 													$request.bookmark == 'supplier'||
 													$request.bookmark == 'agency'||
 													$request.bookmark == 'product'||
+													$request.category == 'salescontacts' ||
 													$request.category == 'users'}
 											{include file="tpls:tpls/sort.tpl"}
 											{/if}

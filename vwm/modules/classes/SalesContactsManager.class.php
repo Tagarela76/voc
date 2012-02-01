@@ -7,26 +7,31 @@ class SalesContactsManager
 		$this->db=$db;
 	}
 	
-	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter,$creater_id = null) {
-			
+	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter,$creater_id = null,$sortStr = null ) {
+	
 		$query = "SELECT c. * FROM " . TB_CONTACTS . " c ";
 		$contacts_type_name = mysql_escape_string($contacts_type_name);
-		if(isset($contacts_type_name)) {
-			$query .=  ", " . TB_BOOKMARKS_TYPE . " ct ";
-			$query .= " WHERE c.type = ct.id AND ct.name = '$contacts_type_name'";
+		if(isset($contacts_type_name) && $contacts_type_name != '') {
+			$query .=  ", " . TB_BOOKMARKS_TYPE . " bt , contacts2type ct, country co ";
+			$query .= " WHERE ct.type_id = bt.id AND bt.name = '$contacts_type_name' AND ct.contact_id = c.id AND co.country_id = c.country_id ";
 		}
                 
-                if ($filter!='TRUE') {
+                if ($filter != 'TRUE') {
 			$query .= " AND $filter";
 		}
 /*		if(isset($creater_id)) {
 			$query .= " AND c.creater_id = $creater_id";
-		}*/		
-        $query .= " ORDER BY c.contact ASC";        
+		}*/	
+		if (isset($sortStr)) {
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY c.contact ASC";
+		}		
+                
 		if (isset($pagination)) {
 			$query .= " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-			
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();           
 		$contacts = array();
@@ -36,14 +41,53 @@ class SalesContactsManager
 		}
 		return $contacts;
 	}
+	public function saveSalesContactType($contactID,$types  ) {
+		$query = "DELETE FROM contacts2type WHERE contact_id = '{$contactID}'";
+		$this->db->query($query);
+		if (isset($types) && $types != null){
+			foreach ($types as $type){
+				$query = "INSERT INTO contacts2type VALUES ( NULL, '{$contactID}','{$type}')";
+				$this->db->query($query);
+			}
+		}
+				$query = "INSERT INTO contacts2type VALUES ( NULL, '{$contactID}','4')";
+				$this->db->query($query);		
+
+	}
+	
+	public function getSalesContactType($contactID) {
+		$query = "SELECT ct.type_id, bt.name from contacts2type ct , " . TB_BOOKMARKS_TYPE . " bt WHERE ct.contact_id = $contactID AND ct.type_id = bt.id ";
+		$this->db->query($query);
+
+		if (! $this->db->num_rows() > 0){
+			throw new Exception('Permission denied');			
+		}
+		$arr = $this->db->fetch_all_array();
+		return $arr;
+	}
+	
+	public function getSalesContactTypeList() {
+		$query = "SELECT * from " . TB_BOOKMARKS_TYPE . " WHERE name != 'all'";
+		$this->db->query($query);
+
+		if (! $this->db->num_rows() > 0){
+			throw new Exception('Permission denied');			
+		}
+		$arr = $this->db->fetch_all_array();
+		return $arr;
+	}	
+	
 	
 	public function getSalesContact($contactID,$creater_id = null  ) {
-		$query = "SELECT * from " . TB_CONTACTS . " WHERE id = $contactID";
+		$query = "SELECT c.* from " . TB_CONTACTS . " c ";
+		//$query .= ", ct.type_id  LEFT JOIN contacts2type ct ON c.id = ct.contact_id	";
+		$query .= " WHERE c.id = $contactID ";
 			/*	if(isset($creater_id)) {
 					$query .= " AND creater_id = $creater_id";
 				}	*/	
+
 		$this->db->query($query);
-	
+
 		if (! $this->db->num_rows() > 0){
 			throw new Exception('Permission denied');			
 		}
@@ -51,6 +95,13 @@ class SalesContactsManager
 		$contactsArr = $arr[0];
 		
 		$contact = new SalesContact($this->db,$contactsArr);
+		$types = $this->getSalesContactType($contactID);
+		foreach ($types as $type){
+			$tmp[] = $type;
+		
+		}
+		$contact->type = $tmp;
+
 		return $contact;
 	}
 	
@@ -71,14 +122,17 @@ class SalesContactsManager
 	}
 
 	public function getTotalCount( $sub,$creater_id = null ) {              
-
+ 
                 $query = "SELECT count(c.id) as 'count' " .
-                            "FROM " . TB_CONTACTS . " c, " . TB_BOOKMARKS_TYPE . " ct " .
-                            "WHERE ct.name = '".mysql_escape_string($sub)."' " .
-                            "AND c.type = ct.id";
+                            "FROM " . TB_CONTACTS . " c, " . TB_BOOKMARKS_TYPE . " bt , contacts2type ct " .
+                            "WHERE ct.type_id = bt.id AND bt.name = '".mysql_escape_string($sub)."' " .
+                            "AND ct.contact_id = c.id";
 				/*if(isset($creater_id)) {
 					$query .= " AND c.creater_id = $creater_id";
 				}*/
+		if ($sub == 'all'){
+			$query = "SELECT count(c.id) as 'count'  FROM " . TB_CONTACTS . " c";
+		}
 
 		$this->db->query($query);
 		$r = $this->db->fetch_array(0);
@@ -186,9 +240,9 @@ if (substr($web, 0, 4) != 'http'){
 		$this->db->query($query);
 		$subNumber = $this->db->fetch(0)->id;
                 
-                $query = "SELECT id, company, LOCATE('".$occurrence."', company) occurrenceCmp, contact, LOCATE('".$occurrence."', contact) occurrenceCnt FROM ".TB_CONTACTS.
-			 " WHERE type = '".$subNumber."' 
-                          AND (LOCATE('".$occurrence."', company)>0 OR  LOCATE('".$occurrence."', contact)>0) 
+                $query = "SELECT c.id, c.company, LOCATE('".$occurrence."', c.company) occurrenceCmp, c.contact, LOCATE('".$occurrence."', c.contact) occurrenceCnt FROM ".TB_CONTACTS.
+			 " c, contacts2type ct  WHERE ct.type_id = '".$subNumber."' AND ct.contact_id = c.id  
+                          AND (LOCATE('".$occurrence."', c.company)>0 OR  LOCATE('".$occurrence."', c.contact)>0) 
                           LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
                 //var_dump($query);
@@ -219,8 +273,8 @@ if (substr($web, 0, 4) != 'http'){
             
                 
                 $sub = mysql_escape_string($sub);
-		$query = "SELECT  * FROM ".TB_CONTACTS."  WHERE type = ".$subNumber." AND (";
-		$query = "SELECT  count(id) contactCount FROM ".TB_CONTACTS." c WHERE ((";		
+	//	$query = "SELECT  * FROM ".TB_CONTACTS."  WHERE type = ".$subNumber." AND (";
+		$query = "SELECT  count(c.id) contactCount FROM ".TB_CONTACTS." c WHERE ((";		
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -243,7 +297,7 @@ if (substr($web, 0, 4) != 'http'){
 					$query .= " AND c.creater_id = $creater_id";
 				}                
                 
-       
+     
                 $this->db->query($query);
 		if ($this->db->num_rows() > 0) {			
 			return $this->db->fetch(0)->contactCount;
@@ -253,19 +307,19 @@ if (substr($web, 0, 4) != 'http'){
         
         
 	public function countContacts($subNumber, $filter,$creater_id = null ) {
-		
+
 		//$departmentID=mysql_escape_string($departmentID);		
 		
 		//$this->db->select_db(DB_NAME);
 		
-		$query = "SELECT count(id) contactsCount FROM ".TB_CONTACTS." WHERE type = $subNumber";                
+		$query = "SELECT count(c.id) contactsCount FROM ".TB_CONTACTS." c , contacts2type ct WHERE ct.contact_id = c.id AND ct.type_id = $subNumber";                
                 if ($filter != 'TRUE') {
 					$query .= " AND $filter";
 		}
 				/*if(isset($creater_id)) {
 					$query .= " AND creater_id = $creater_id";
 				} */		
-                
+       
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {			
 			return $this->db->fetch(0)->contactsCount;
@@ -280,9 +334,9 @@ if (substr($web, 0, 4) != 'http'){
 	* @param string $byField - field name
         * @param string $subNumber - number of subBookmark
 	*/
-	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null) {
+	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null, $sortStr = null) {
         
-		$query = "SELECT  * FROM ".TB_CONTACTS." WHERE type = ".$subNumber." AND ((";
+		$query = "SELECT  c.* FROM ".TB_CONTACTS." c , contacts2type ct  WHERE ct.type_id = ".$subNumber." AND ct.contact_id = c.id AND ((";
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -303,12 +357,16 @@ if (substr($web, 0, 4) != 'http'){
                 
 		$sql = implode(' OR ', $sqlParts);
 		$query .= $sql."))";		
-		
+		if (isset($sortStr)) {
+			$query .=  $sortStr;
+		}		
                 
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}	
 		
+		
+
 		$this->db->query($query);	
 		if ($this->db->num_rows() > 0) {	
 			$searchedContacts = $this->db->fetch_all_array();

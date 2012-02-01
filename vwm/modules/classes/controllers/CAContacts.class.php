@@ -30,6 +30,22 @@ class CAContacts extends Controller {
 		$filterStr = $this->filterList('contacts');
 		$manager = new SalesContactsManager($this->db);
 
+		
+		/*SORT*/
+		$sortStr="";
+		if (!is_null($this->getFromRequest('sort')))
+		{
+			$sort= new Sort($this->db,'contacts',0);
+			$sortStr = $sort->getSubQuerySort($this->getFromRequest('sort'));										
+			$this->smarty->assign('sort',$this->getFromRequest('sort'));
+		}
+		else									
+			$this->smarty->assign('sort',0);
+		if (!is_null($this->getFromRequest('searchAction')))									
+			$this->smarty->assign('searchAction',$this->getFromRequest('searchAction'));
+		/*/SORT*/
+		
+	
 		// search (not empty q)
 		if ($this->getFromRequest('q') != '') {
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
@@ -39,15 +55,20 @@ class CAContacts extends Controller {
 			if ($sub != 'contacts') {
 				$pagination->url .= "&subBookmark=" . urlencode($sub);
 			}
-			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
+			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);
 			$totalCount = $manager->getTotalCount(strtolower($sub));
 		} else { // search (empty q)
 			$totalCount = $manager->getTotalCount(strtolower($sub));
 			//pag for filter
+			// kostyl'!!
+			if ($_REQUEST['filterField'] == 'id') {
+				$filterStr = " c." . $filterStr;
+			}			
 			if ($this->getFromRequest('searchAction') == 'filter') {
-				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr));
+				$count = $manager->countContacts($subNumber, $filterStr);
+				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark');
 				if ($this->getFromRequest('filterField') != '') {
 					$pagination->url .= "&filterField=" . $this->getFromRequest('filterField');
@@ -70,13 +91,16 @@ class CAContacts extends Controller {
 					$pagination->url .= "&subBookmark=" . urlencode($sub);
 				}
 			}
-			// kostyl'!!
-			if ($_REQUEST['filterField'] == 'id') {
-				$filterStr = " c." . $filterStr;
-			}
-			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
+
+			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr, null ,$sortStr);
 			$this->smarty->assign('pagination', $pagination);
+			
+			
 		}
+		
+
+
+
 
 		$page = $this->getFromRequest("page");
 		$this->smarty->assign('page', $page);
@@ -115,12 +139,15 @@ class CAContacts extends Controller {
 			
 			$contact = $this->createContactByForm($_POST);
 			$contact->id = $id;
-                        
+            		           
 			if(!empty($contact->errors)) {
 				
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {
+				//SAVE CONTACT TPES
+				$contactsManager->saveSalesContactType($id,$_POST['type']);
 				
+
 				$result = $contactsManager->saveContact($contact);
 				if($result == true) {
 					header("Location: admin.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
@@ -129,8 +156,11 @@ class CAContacts extends Controller {
 				}
 			}
 		}
+		
+		$ContactTypeList = $contactsManager->getSalesContactTypeList();
+		$this->smarty->assign("typelist",$ContactTypeList);
 		$this->smarty->assign("data",$contact);
-                $countries =  $registration->getCountryList();
+        $countries =  $registration->getCountryList();
 				
 		$state = new State($this->db);
 		$stateList = $state->getStateList($usaID);	
@@ -232,7 +262,9 @@ class CAContacts extends Controller {
 		} else {
 			unset($form['txState']);
 			$form['state_id'] = $form['selState'];
+			$form['state'] = $form['state_name_5'];
 		}
+		
 		$contact = new SalesContact($this->db);		
 		foreach($form as $key => $value) {
 			try {

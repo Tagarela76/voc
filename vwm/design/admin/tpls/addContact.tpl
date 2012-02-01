@@ -72,6 +72,23 @@
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
+						Type:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+					{foreach from=$typelist item=types}
+						<input id='{$types.id}{$types.name}' type='checkbox' name='type[]' value='{$types.id}' {foreach from=$data->type item=type}{if $type.type_id == $types.id }checked{/if}{/foreach}><label for="{$types.id}{$types.name}">{$types.name}</label>&nbsp;
+					{/foreach}
+						
+					{*foreach from=$data->type item=type}<input id='{$type.type_id}{$type.name}' type='checkbox' name='type' value='{$type.type_id}'><label for="{$type.type_id}{$type.name}">{$type.name}</label>&nbsp;{/foreach*}
+						 
+					</div>
+
+				</td>				
+			</tr>			
+			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
 						Phone:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
@@ -249,14 +266,14 @@
 							{assign var='isUsa' value=false}
 						{/if}
 						
-						<select name="selState" id="selState" {if !$isUsa}style="display:none;"{/if}>
+						<select name="selState"  onchange="get_state_name();"  id="selState" {if !$isUsa}style="display:none;"{/if}>
 							{foreach from=$states item=state}
-								<option value="{$state.id}" {if $state.id == $data->state_id}selected{/if}>{$state.name}</option>
+								<option value="{$state.id}" {if $state.id == $data->state_id}selected{/if} >{$state.name}</option>
 							{/foreach}
 						</select>
-						
+						{literal}<script>function get_state_name(){$('#state_name_5').attr('value', $('#selState :selected').html());}</script>{/literal}
 						<input type='text' name='txState' id="txState" value='{$data->state}' {if $isUsa}style="display:none;"{/if}>
-						  
+						<input type="hidden" name="state_name_5" id="state_name_5"  />  
 						<input type="hidden" name="state_select_type" id="state_select_type" {if $isUsa}value="select"{else}value="text"{/if} />
 						
 					</div>

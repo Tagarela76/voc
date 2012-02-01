@@ -27,6 +27,12 @@ class CSContacts extends Controller {
 				$sub = $this->getFromRequest("bookmark");
 			}
 		}
+/*	
+		if (!isset($sub) || $sub == '') {
+			$sub = $this->getFromRequest("bookmark");
+		}	
+ */	 
+	
 		$sub = strtolower($sub);
 		$sub = htmlentities($sub);
 		$manager = new BookmarksManager($this->db);
@@ -36,6 +42,21 @@ class CSContacts extends Controller {
 		$manager = new SalesContactsManager($this->db);
 		$creater_id = $this->user->xnyo->user['user_id'];
 		// search (not empty q)
+		
+		/*SORT*/
+		$sortStr="";
+		if (!is_null($this->getFromRequest('sort')))
+		{
+			$sort= new Sort($this->db,'contacts',0);
+			$sortStr = $sort->getSubQuerySort($this->getFromRequest('sort'));										
+			$this->smarty->assign('sort',$this->getFromRequest('sort'));
+		}
+		else									
+			$this->smarty->assign('sort',0);
+		if (!is_null($this->getFromRequest('searchAction')))									
+			$this->smarty->assign('searchAction',$this->getFromRequest('searchAction'));
+		/*/SORT*/		
+		
 		if ($this->getFromRequest('q') != '') {
 			
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
@@ -46,13 +67,17 @@ class CSContacts extends Controller {
 			if ($sub != 'contacts') {
 				$pagination->url .= "&subBookmark=" . urlencode($sub);
 			}
-			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination);
+			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);
 			$totalCount = $manager->getTotalCount(strtolower($sub),$creater_id);
 		} else { // search (empty q)
 			$totalCount = $manager->getTotalCount(strtolower($sub),$creater_id);
 			//pag for filter
+			// kostyl'!!
+			if ($_REQUEST['filterField'] == 'id') {
+				$filterStr = " c." . $filterStr;
+			}
 			if ($this->getFromRequest('searchAction') == 'filter') {
 				
 				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr,$creater_id));
@@ -79,13 +104,10 @@ class CSContacts extends Controller {
 					$pagination->url .= "&subBookmark=" . urlencode($sub);
 				}
 			}
-			// kostyl'!!
-			if ($_REQUEST['filterField'] == 'id') {
-				$filterStr = " c." . $filterStr;
-			}
+
 			
 			//$contactsList = $manager->getContactsList($pagination, $sub, $filterStr);
-			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr,$creater_id);
+			$contactsList = $manager->getContactsList($pagination, $sub, $filterStr,$creater_id, $sortStr);
 
 			$this->smarty->assign('pagination', $pagination);
 		}

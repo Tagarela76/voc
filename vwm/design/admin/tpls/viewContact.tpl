@@ -206,7 +206,16 @@
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" >&nbsp;{$contact->creater_id}</div>								
 				</td>
-			</tr>				
+			</tr>	
+			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Type:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >{foreach from=$contact->type item=type}&nbsp;{$type.name}.&nbsp;{/foreach}</div>								
+				</td>
+			</tr>			
 				
 						<tr>
              				 <td height="20" class="users_u_bottom">

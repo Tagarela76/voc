@@ -35,6 +35,22 @@ class Sort {
     			break;  
     		}
     		break;
+		
+    		case 'contacts':    		
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" c.company ASC";
+    			break;
+    			case 2:$subQuery.=" c.company DESC";
+    			break;
+    			case 3:$subQuery.=" c.contact ASC";
+    			break;
+    			case 4:$subQuery.=" c.contact DESC";
+    			break;
+    			default:$subQuery="";
+    			break;  
+    		}
+    		break;		
     		
     		case 'logbook':
     		switch($numSort)
