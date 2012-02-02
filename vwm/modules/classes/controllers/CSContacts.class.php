@@ -19,14 +19,16 @@ class CSContacts extends Controller {
 		extract($vars);
 
 		$sub = $this->getFromRequest("subBookmark");
+
 		if (!isset($sub) || $sub == '') {
 			if (isset($bookmarksList[0])) {
 				$sub = $bookmarksList[0]->get_name();
-				header ("Location: ?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark={$this->getFromRequest('subBookmark')}");
+				header ("Location: ?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark={$sub}");
 			} else {
 				$sub = $this->getFromRequest("bookmark");
 			}
 		}
+
 /*	
 		if (!isset($sub) || $sub == '') {
 			$sub = $this->getFromRequest("bookmark");
