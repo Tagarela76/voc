@@ -86,39 +86,17 @@
             <a href="{$Product->url}" class="id_company1">
                 <div style="width:100%;">
                     
-					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->get_usage()
+					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->usage
 							vocLimit=$Product->in_stock
 							pxCount =$Product->pxCount }					
                 </div>
             </a>
         </td>
-        {*if !$accessory}
-        <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
-                <div style="width:100%;">
-                    {$inventory->getSupplier()}
-                </div>
-            </a>
-        </td>
-        <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
-                <div style="width:100%;">
-                    {$inventory->getProductNR()}
-                </div>
-            </a>
-        </td>
-        <td class="border_users_b border_users_r">
-            <a href="{$inventory->url}" class="id_company1">
-                <div style="width:100%;">
-                    {$inventory->getProductDescription()}
-                </div>
-            </a>
-        </td>
-        {/if*}
+
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="{*if !$accessory}7{else}4{/if*}3" class="border_users_l border_users_r">
+        <td colspan="3" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -126,7 +104,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="{*if !$accessory}7{else}4{/if*}3" class="border_users_l border_users_r" align="center">
+        <td colspan="3" class="border_users_l border_users_r" align="center">
             No inventories in the facility
         </td>
     </tr>
@@ -135,10 +113,10 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="{*if !$accessory}5{else}2{/if*}" height="15" class="border_users">
+        <td colspan="" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
     </tr>
 </table></div>
-</form>	{*this FORM opened at controlInsideDepartment.tpl*}
+</form>	

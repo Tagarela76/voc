@@ -18,7 +18,7 @@
         <td class="users_top_blue">
              <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Inventory Name 	
+                	Amount
 					{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
@@ -26,16 +26,16 @@
         <td class="{if !$accessory}users_top_blue{else}users_u_top_r_blue{/if}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Inventory description 	
+                	Order Name	
 					{if $sort==5 || $sort==6}<img src="{if $sort==5}images/asc2.gif{/if}{if $sort==6}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
         </td>
-        {if !$accessory}
+
         <td class="users_top_blue">
            
             	<div style='width:100%;  color:white;'>						
-                	Supplier	
+                	Status	
 						
 				</div>					
 			 
@@ -43,78 +43,108 @@
         <td class="users_top_blue">
             
             	<div style='width:100%;  color:white;'>						
-                	Product NR 	
+                	Created Date	
 								
 				</div>					
 			
         </td>
-        <td class="users_u_top_r_blue">
+        <td class="users_top_blue">
             
             	<div style='width:100%;  color:white;'>						
-                	Product Description 	
+                	Price 	
 							
 				</div>					
 			
         </td>
-        {/if}
+        <td class="users_top_blue">
+            
+            	<div style='width:100%;  color:white;'>						
+                	Discount 	
+							
+				</div>					
+			
+        </td>		
+        <td class="users_u_top_r_blue">
+            
+            	<div style='width:100%;  color:white;'>						
+                	Total 	
+							
+				</div>					
+			
+        </td>		
+
         
     </tr>
 
-{if $childCategoryItems|@count > 0}  
+{if $orderList|@count > 0}  
     {*BEGIN LIST*}  
-    {foreach from=$childCategoryItems item=inventory} 
+    {foreach from=$orderList item=order} 
     <tr class="hov_company" height="10px">
         <td class="border_users_b  border_users_l border_users_r">
-            <input type="checkbox" value="{$inventory->getID()}" name="id[]">
+            <input type="checkbox" value="{$order.order_id}" name="id[]">
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getID()}
+                    {$order.order_id}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getName()}
+                    {$order.amount}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getDescription()}
+                    {$order.order_name}
                 </div>
             </a>
         </td>
-        {if !$accessory}
+
         <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getSupplier()}
+                   {if $order.order_status == 1}In Progress {elseif $order.order_status == 2}Confirm{elseif $order.order_status == 3}Completed{elseif $order.order_status == 4}Cnceled{/if}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getProductNR()}
+                    {$order.order_created_date}
                 </div>
             </a>
         </td>
+        <td class="border_users_r border_users_b">
+            <a href="{$order.url}" class="id_company1">
+                <div style="width:100%;">
+                    {$order.price}
+                </div>
+            </a>
+        </td>
+        <td class="border_users_r border_users_b">
+            <a href="{$order.url}" class="id_company1">
+                <div style="width:100%;">
+                    {$order.discount} %
+                </div>
+            </a>
+        </td>		
         <td class="border_users_b border_users_r">
-            <a href="{$inventory->url}" class="id_company1">
+            <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$inventory->getProductDescription()}
+                    {$order.order_total} $
                 </div>
             </a>
         </td>
-        {/if}
+
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r">
+        <td colspan="9" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -122,8 +152,8 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="{if !$accessory}7{else}4{/if}" class="border_users_l border_users_r" align="center">
-            No inventories in the facility
+        <td colspan="9" class="border_users_l border_users_r" align="center">
+            No Orders in the facility
         </td>
     </tr>
     {*END	EMPTY LIST*}
@@ -131,10 +161,10 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="{if !$accessory}5{else}2{/if}" height="15" class="border_users">
+        <td colspan="7" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
     </tr>
 </table></div>
-</form>	{*this FORM opened at controlInsideDepartment.tpl*}
+</form>

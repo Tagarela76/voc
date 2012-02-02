@@ -47,63 +47,6 @@ class InventoryManager {
 		}
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";
-		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
-		echo $query;
-		$this->db->query($query);
-		
-		$arr = $this->db->fetch_all_array();
-		
-		if ($this->db->num_rows() == 1){
-			$productUsageData = new ProductInventory($this->db, $arr[0]);
-		}else{
-		$productUsageData = array();
-			foreach($arr as $b) {
-				$productinv = new ProductInventory($this->db, $b);
-				$productUsageData[] = $productinv;                        
-			}
-		}
-		return $productUsageData;
-	}
-	
-	public function getProductsSupplierList($category, $categoryID, $productID = null) {
-            
-        $categoryDependedSql = "";
-		$tables = TB_USAGE." m, ".TB_MIXGROUP." mg";
-		switch ($category) {
-			case "company":
-				$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-				$categoryDependedSql = " m.department_id = d.department_id "
-                                                        ." AND d.facility_id = f.facility_id "
-                                                        ." AND f.company_id = {$categoryID} ";
-				break;
-			case "facility":
-				$tables .= ", ".TB_DEPARTMENT." d ";
-				$categoryDependedSql = " m.department_id = d.department_id AND d.facility_id = {$categoryID} ";
-				break;
-			case "department":				
-				$categoryDependedSql = " m.department_id = {$categoryID} ";
-				break;
-			default :
-				throw new Exception('Unknown category for DailyEmissions');
-				break;
-		}
-
-			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
-		
-		
-		$query = "SELECT DISTINCT p.supplier_id, s.original_id, s.supplier, di.discount ";
-				
-		$query .=	" FROM {$tables} " .
-					" LEFT JOIN discounts2inventory di ".
-					" ON di.supplier_id =  s.original_id AND di.facility_id = {$categoryID} ".
-					" WHERE {$categoryDependedSql} " ;
-		if ($productID){
-			$query .= " AND p.product_id  = {$productID} ";
-		}			
-		$query .=	" AND p.product_id = mg.product_id " .
-					" AND m.mix_id = mg.mix_id ".
-					" AND p.supplier_id  = s.supplier_id ";
-
 
 		//echo $query;
 		$this->db->query($query);
@@ -111,21 +54,160 @@ class InventoryManager {
 		$arr = $this->db->fetch_all_array();
 		
 
-		$SupData = array();
-			foreach($arr as $b) { 
-				if ( $b['supplier_id'] <> $b['original_id'] ){
-					$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id='" .$b['original_id']. "' ORDER BY supplier ASC";
-					$this->db->query($query);
-					$suppliername = $this->db->fetch_all_array();
-					$b['supplier'] = $suppliername[0]['supplier'];
-					$SupData[] = $b;
-				}else{
-					$SupData[] = $b;
+		$productUsageData = array();
+			foreach($arr as $b) {
+				$productinv = new ProductInventory($this->db, $b);
+				$productUsageData[] = $productinv;                        
+			}
+
+		return $productUsageData;
+	}
+	
+	public function getProductsSupplierList($categoryID, $productID = null) {
+        if ($productID){ 
+			$categoryDependedSql = "";
+			$tables = TB_USAGE." m, ".TB_MIXGROUP." mg";
+
+			$tables .= ", ".TB_DEPARTMENT." d ";
+			$categoryDependedSql = " m.department_id = d.department_id AND d.facility_id = {$categoryID} ";
+			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
+
+
+			$query	=    "SELECT DISTINCT p.supplier_id, s.original_id, s.supplier, di.discount ";
+
+			$query .=	" FROM {$tables} " .
+						" LEFT JOIN discounts2inventory di ".
+						" ON di.supplier_id =  s.original_id AND di.facility_id = {$categoryID} ".
+						" WHERE {$categoryDependedSql} " ;
+
+			$query .=   " AND p.product_id  = {$productID} ";
+
+			$query .=	" AND p.product_id = mg.product_id " .
+						" AND m.mix_id = mg.mix_id ".
+						" AND p.supplier_id  = s.supplier_id ";
+
+			$this->db->query($query);
+
+			$arr = $this->db->fetch_all_array();
+
+
+			$SupData = array();
+				foreach($arr as $b) { 
+					if ( $b['supplier_id'] <> $b['original_id'] ){
+						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id='" .$b['original_id']. "' ORDER BY supplier ASC";
+						$this->db->query($query);
+						$suppliername = $this->db->fetch_all_array();
+						$b['supplier'] = $suppliername[0]['supplier'];
+						$SupData[] = $b;
+					}else{
+						$SupData[] = $b;
+					}
+
 				}
-               
+
+			return $SupData;		
+		
+		
+		}else{		
+			$query	=	"SELECT DISTINCT di.*, s.supplier ";
+
+			$query .=	" FROM discounts2inventory di, " . TB_SUPPLIER . " s   " .
+						" WHERE di.facility_id =  {$categoryID} AND di.supplier_id = s.original_id AND s.supplier_id = s.original_id";	
+			$this->db->query($query);
+
+			$SupData = $this->db->fetch_all_array();
+			return $SupData;						
+		}
+
+	
+
+	}	
+	
+	public function getSupplierOrders($facilityID) {
+        $time = new DateTime('first day of this month');
+
+        $query = "SELECT io.*, pi.amount ";
+				
+		$query .=	" FROM inventory_order io , product2inventory pi " .
+
+					" WHERE io.order_facility_id = {$facilityID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} AND io.order_created_date >= {$time->getTimestamp()}";
+
+		$this->db->query($query);
+		
+		$arr = $this->db->fetch_all_array();
+		
+
+		$SupData = array();
+			foreach($arr as $b) {
+
+					$SupData[] = $b;
+            
 			}
 	
 		return $SupData;
+	}
+	
+	public function getSupplierOrdersStatusList() {
+        $query = "SELECT * FROM inventory_order_status ";
+
+		$this->db->query($query);
+		
+		$arr = $this->db->fetch_all_array();
+		
+		//echo $query;
+		$SupData = array();
+			foreach($arr as $b) {
+
+					$SupData[] = $b;
+            
+			}
+	
+		return $SupData;
+	}	
+	
+	public function getSupplierOrderDetails($facilityID,$orderID) {
+        $time = new DateTime('first day of this month');
+
+        $query = "SELECT io.*, pi.amount ";
+				
+		$query .=	" FROM inventory_order io , product2inventory pi " .
+
+					" WHERE io.order_id = {$orderID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} AND io.order_created_date >= {$time->getTimestamp()}";
+
+		$this->db->query($query);
+	
+		$arr = $this->db->fetch_all_array();
+		
+		//echo $query;
+		$SupData = array();
+			foreach($arr as $b) {
+
+					$SupData[] = $b;
+            
+			}
+	
+		return $SupData;
+	}	
+	
+	public function updateSupplierOrder( $form ) {
+
+										
+		if ($form['order_id'] == null){
+			//$query = "INSERT INTO inventory_order VALUES () ";
+				
+
+		}else{
+            $query = "UPDATE inventory_order SET order_status = '{$form['status']}' WHERE order_id = {$form['order_id']}";			
+
+		}
+
+		$this->db->query($query);
+		
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
 	}	
 	
 	public function getSupplierDiscounts($facilityID, $supplierID ) {
@@ -138,8 +220,7 @@ class InventoryManager {
 				  " WHERE s.supplier_id =  {$supplierID} ";
 
 
-		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
-              //echo $query;
+		//echo $query;
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -163,9 +244,7 @@ class InventoryManager {
 				
 
 		}else{
-            $query = "UPDATE discounts2inventory SET 
-			discount = '".mysql_escape_string($form['discount'])."'
-			WHERE discount_id = {$form['discount_id']}";			
+            $query = "UPDATE discounts2inventory SET discount = '{$form['discount']}' WHERE discount_id = {$form['discount_id']}";			
 
 		}
 
@@ -340,7 +419,7 @@ class InventoryManager {
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
 					$newOrder->order_total = $productUsageData->amount * $price;
 										
-					$supplierDetails = $this->getProductsSupplierList('facility',$mix->facility_id,$productUsageData->product_id);
+					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 					
 					$this->checkSupplierEmail($supplierDetails[0]['email']);
 
@@ -348,7 +427,7 @@ class InventoryManager {
 							
 					
 				}else{
-					$supplierDetails = $this->getProductsSupplierList('facility',$mix->facility_id,$productUsageData->product_id);
+					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 
 					$supplierDetails[0]['email'] = '2reckiy@gmail.com';
 					$this->checkSupplierEmail($supplierDetails[0]['email']);
