@@ -22,7 +22,7 @@ class CSContacts extends Controller {
 		if (!isset($sub) || $sub == '') {
 			if (isset($bookmarksList[0])) {
 				$sub = $bookmarksList[0]->get_name();
-				header ("Location: ?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark={$sub}");
+				header ("Location: ?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark={$this->getFromRequest('subBookmark')}");
 			} else {
 				$sub = $this->getFromRequest("bookmark");
 			}
@@ -65,7 +65,7 @@ class CSContacts extends Controller {
 			$pagination = new Pagination($searchedContactsCount);
 			$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=salescontacts&bookmark=contacts";
 			if ($sub != 'contacts') {
-				$pagination->url .= "&subBookmark=" . urlencode($sub);
+				$pagination->url .= "&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 			}
 			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
@@ -82,7 +82,7 @@ class CSContacts extends Controller {
 				
 				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr,$creater_id));
 				
-				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark');
+				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark')."&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 				if ($this->getFromRequest('filterField') != '') {
 					$pagination->url .= "&filterField=" . $this->getFromRequest('filterField');
 				}
@@ -99,9 +99,9 @@ class CSContacts extends Controller {
 			// q is empty
 			else {
 				$pagination = new Pagination($totalCount);
-				$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts";
+				$pagination->url = "?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 				if ($subNumber != 1) {
-					$pagination->url .= "&subBookmark=" . urlencode($sub);
+					$pagination->url .= "&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 				}
 			}
 
@@ -158,7 +158,7 @@ class CSContacts extends Controller {
 				
 				$result = $contactsManager->saveContact($contact);
 				if($result == true) {
-					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts");
+					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
 				} else {
 					$this->smarty->assign("error_message",$contact->getErrorMessage());
 				}

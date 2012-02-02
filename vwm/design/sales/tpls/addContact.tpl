@@ -5,7 +5,7 @@
 		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$error_message}
 {/if}
 <div style="padding:7px;">
-<form method='POST' action='sales.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}&subBookmark={if $smarty.request.subBookmark}{$smarty.request.subBookmark}{else}contacts{/if}'>
+<form method='POST' action='sales.php?action={$request.action}&category=contacts{if $request.action neq "addItem"}&id={$request.id}{/if}&subBookmark={if $smarty.request.subBookmark}{$smarty.request.subBookmark}{else}contacts{/if}{if $request.page}&page={$request.page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}'>
 		<table class="users rd" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" height="30" width="20%">
