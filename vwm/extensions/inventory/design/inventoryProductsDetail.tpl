@@ -78,9 +78,6 @@
         </tr>		
 				
 
-                </table>
-            </td>
-        </tr>
         <tr>
             <td height="15" class="users_u_bottom">
             </td>
@@ -89,3 +86,4 @@
         </tr>
     </table>
 </div>
+{include file="tpls:inventory/design/inventoryOrders.tpl"}

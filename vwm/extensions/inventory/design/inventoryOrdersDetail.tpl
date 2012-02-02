@@ -87,11 +87,7 @@
                 </div>
             </td>
         </tr>		
-				
 
-                </table>
-            </td>
-        </tr>
         <tr>
             <td height="15" class="users_u_bottom">
             </td>

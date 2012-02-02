@@ -123,20 +123,24 @@ class InventoryManager {
 
 	}	
 	
-	public function getSupplierOrders($facilityID) {
+	public function getSupplierOrders($facilityID, $productID = null) {
         $time = new DateTime('first day of this month');
 
         $query = "SELECT io.*, pi.amount ";
 				
 		$query .=	" FROM inventory_order io , product2inventory pi " .
 
-					" WHERE io.order_facility_id = {$facilityID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} AND io.order_created_date >= {$time->getTimestamp()}";
-
+					" WHERE io.order_facility_id = {$facilityID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} ";
+		if ($productID != null){
+			$query .=	" AND io.order_product_id = {$productID} ";
+		}else{
+			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
+		}
+		
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
-		
-
+		//echo $query;
 		$SupData = array();
 			foreach($arr as $b) {
 
@@ -187,6 +191,28 @@ class InventoryManager {
 			}
 	
 		return $SupData;
+	}
+	
+	public function getLastOrderId() {
+        $query = "SELECT io.order_id ";
+				
+		$query .=	" FROM inventory_order io " .
+
+					" ORDER BY io.order_created_date DESC LIMIT 1";
+
+		$this->db->query($query);
+	
+		$arr = $this->db->fetch_all_array();
+		
+		//echo $query;
+		$data = array();
+			foreach($arr as $b) {
+
+					$data = $b;
+            
+			}
+	
+		return $data;
 	}	
 	
 	public function updateSupplierOrder( $form ) {
@@ -396,6 +422,7 @@ class InventoryManager {
 	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
+		$text = $this->getEmailText($mix->facility_id);
 		// TODO reduce the amount of product in stock with type convert!!
 		foreach ($productObjArray as $productObj){
 
@@ -418,20 +445,18 @@ class InventoryManager {
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
 					$newOrder->order_total = $productUsageData->amount * $price;
-										
-					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
-					
-					$this->checkSupplierEmail($supplierDetails[0]['email']);
-
 					$newOrder->save();
-							
-					
-				}else{
-					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 
+					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
+					
+					$supplierDetails[0]['email'] = '2reckiy@gmail.com';			
+
+					$this->checkSupplierEmail($supplierDetails[0]['email'],$text);
+				}else{
+/*					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 					$supplierDetails[0]['email'] = '2reckiy@gmail.com';
 					$this->checkSupplierEmail($supplierDetails[0]['email']);
-					
+*/					
 					
 				}
 				
@@ -443,24 +468,86 @@ class InventoryManager {
 	}
 	
 	
-	private function checkSupplierEmail($email){
+	private function checkSupplierEmail($email,$text){
 		$user = new User($this->db);
 		$userDetails = $user->getUserDetails($_SESSION['user_id']);
 		if (isset($email) && $email != ''){
-			$this->sendEmailToAll($email,$userDetails['email']);
+			$this->sendEmailToAll($email,$userDetails['email'], $text['email_all']);
 		}else{
-			$this->sendEmailToManager($userDetails['email']);
+			$this->sendEmailToManager($userDetails['email'],$text['email_manager']);
 		}
 	}	
 
-	private function sendEmailToAll($supplierEmail, $userEmail){
-	
+	private function sendEmailToAll($supplierEmail, $userEmail, $text){
+		$hash = array();
+		$hash = $this->generateOrderHash($supplierEmail);
+		
+
+
+		$links  = "\r\n"."For confirm this order click here: <a href='hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='hash={$hash[cancel]}'>CANCEL</a>";
+		$text .= $links;
+		$h = 'Cc: '.$userEmail. "\r\n";
+		$subject = "*** New Order on www.vocwebmanager.com ***";
+
+		mail($to, $subject, $text, $h);
+
 	}	
 	
-	private function sendEmailToManager($userEmail){
+	private function sendEmailToManager($userEmail,$text){
+		
+		$subject = "*** New Order on www.vocwebmanager.com ***";
+
+		mail($userEmail, $subject, $text);		
+		
+	}
+	
+	private function getEmailText($facilityID){
+		$query = "SELECT * FROM email2inventory WHERE facility_id = {$facilityID} ";
+		$this->db->query($query);
+		$arr = $this->db->fetch_all_array();
+		$text = array();
+			foreach($arr as $b) {
+					$text = $b;
+			}
+		return $text;		
+	}	
+	
+	
+	
+	private function generateOrderHash($forIncode){
+		$newHash = array();
+		$orderID = $this->getLastOrderId();
+
+		$newHash['order_id'] = $orderID['order_id'];
+		$newHash['cancel'] = md5($newHash['order_id']."cancel".time().$forIncode);
+		$newHash['confirm'] = md5($newHash['order_id']."confirm".time().$forIncode);
+		$newHash['sent_date'] = time();
+		$this->saveOrderHash($newHash);
+		return $newHash;
 		
 	}	
 
+	private function saveOrderHash($hash){
+		
+		$query = "INSERT INTO inventory_order_hash VALUES (NULL,". $hash['order_id'] .",'cancel','". $hash['cancel'] ."','". $hash['sent_date'] ."') ";
+		$this->db->query($query);
+
+		$query = "INSERT INTO inventory_order_hash VALUES (NULL,". $hash['order_id'] .",'confirm','". $hash['confirm'] ."','". $hash['sent_date'] ."') ";
+		$this->db->query($query);
+
+	}	
+	
+	public function getOrderDetailsByHash($hash){
+		
+		$query = "SELECT * FROM inventory_order_hash WHERE hash= '$hash'";
+		$this->db->query($query);
+		$arr = $this->db->fetch_all_array();
+		$text = array();
+			foreach($arr as $b) {
+					$text = $b;
+			}
+		return $text;		
+	}	
 	
 		
 }

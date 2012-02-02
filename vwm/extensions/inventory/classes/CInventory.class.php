@@ -98,6 +98,20 @@ class CInventory extends Controller
 				$this->smarty->assign("product",$product);
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
+			//ORDERS FOR THIS PODUCT
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $product->product_id);
+				
+				foreach ($orderList as $order){
+					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
+					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
+					$order['discount'] = $SupData[0]['discount'];
+					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=orders";
+					$arr[] = $order;
+				}
+
+				$orderList = $arr;
+				$this->smarty->assign('orderList',$orderList);	
+			//
 /*		if (!is_null($this->getFromRequest('facilityID')))
 		{
 			$facility = new Facility($this->db);
@@ -151,13 +165,13 @@ class CInventory extends Controller
 		$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'),array('bookmark'=>'inventory','tab'=>$result['inventory']->getType()));
 		$this->smarty->assign('backUrl','?action=browseCategory&category='.$backCategory.'&id='.$this->getFromRequest($backCategory.'ID').'&bookmark=inventory&tab='.$result['inventory']->getType());
 		
- */		
+ */				
 				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 				break;
 			case 'orders':
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
-					$orderDetails[0]['order_created_date'] = date('m-d-Y',$orderDetails[0]['order_created_date']);
+					$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
 					$orderDetails[0]['discount'] = $SupData[0]['discount'];				
 				
 				
@@ -424,7 +438,7 @@ class CInventory extends Controller
 			case 'orders':
 				
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
-
+				
 				$form = $_POST;
 				if (count($form) > 0) {
 					//protected from xss
@@ -439,6 +453,7 @@ class CInventory extends Controller
 				$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
 				$this->smarty->assign('status',$statuslist);
+				
 				$this->smarty->assign('order',$orderDetails[0]);	
 				$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');	
 			break;			
@@ -523,7 +538,7 @@ class CInventory extends Controller
 				
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
-					$order['order_created_date'] = date('m-d-Y',$order['order_created_date']);
+					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
 					$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
 					$arr[] = $order;
@@ -705,5 +720,26 @@ class CInventory extends Controller
 			$this->smarty->assign('jsSources', $jsSources);
 		}
 		}
+	public function actionProcessororder(){
+		
+		$hash = $this->getFromRequest('hash');
+		
+		$inventoryManager = new InventoryManager($this->db);
+		$orderDetails = $inventoryManager->getOrderDetailsByHash($hash);
+		if ($orderDetails['hash_type'] == 'confirm'){
+			$orderDetails['status'] = 2;
+		}elseif($orderDetails['hash_type'] == 'cancel'){
+			$orderDetails['status'] = 4;
+		}
+		
+		$result = $inventoryManager->updateSupplierOrder($orderDetails);
+		if($result){
+			
+		}
+		
+		$this->smarty->display("tpls:inventory/design/processororder.tpl");
+		var_dump('DONE',$this->getFromRequest(),$orderDetails);
+	}		
+		
 }
 ?>

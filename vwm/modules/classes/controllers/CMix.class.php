@@ -1086,7 +1086,7 @@ class CMix extends Controller
 		$InventoryManager = new InventoryManager($this->db);
 		//$InventoryManager->inventoryInstockDegreece($productsOldVal, $mix);
 		$result = $InventoryManager->runInventoryOrderingSystem($mix);
-		mail('2reckiy@gmail.com', 'My Subject', '$message');
+
 /* */		
 		echo "DONE";
 		exit;

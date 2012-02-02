@@ -4,10 +4,12 @@
 <div class="padd7">
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_blue" height="27px">
+		{if $request.tab != 'products'}
         <td class="users_top_blue users_u_top_blue" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
-        <td class="users_top_blue">
+		{/if}
+        <td class="{if $request.tab != 'products'}users_top_blue{else}users_top_blue users_u_top_blue{/if}">
            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	ID Number 		
@@ -80,10 +82,12 @@
     {*BEGIN LIST*}  
     {foreach from=$orderList item=order} 
     <tr class="hov_company" height="10px">
+		{if $request.tab != 'products'}
         <td class="border_users_b  border_users_l border_users_r">
             <input type="checkbox" value="{$order.order_id}" name="id[]">
         </td>
-        <td class="border_users_r border_users_b">
+		{/if}
+        <td class="{if $request.tab != 'products'}border_users_r border_users_b{else}border_users_b  border_users_l border_users_r{/if}">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
                     {$order.order_id}
@@ -144,7 +148,7 @@
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="9" class="border_users_l border_users_r">
+        <td colspan="{if $request.tab != 'products'}9{else}8{/if}" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -152,7 +156,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="9" class="border_users_l border_users_r" align="center">
+        <td colspan="{if $request.tab != 'products'}9{else}8{/if}" class="border_users_l border_users_r" align="center">
             No Orders in the facility
         </td>
     </tr>
@@ -161,7 +165,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="7" height="15" class="border_users">
+        <td colspan="{if $request.tab != 'products'}7{else}6{/if}" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
