@@ -33,7 +33,7 @@ class InventoryManager {
 			$tables .= ", ".TB_PRODUCT." p";
 		
 		
-		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name,p.product_id, pi.inventory_id, pi.in_stock, pi.amount, pi.inventory_limit, pi.in_stock_unit_type ";
+		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name,p.product_id, pi.* ";
 				
 		$query .= " FROM {$tables} " .
 				  " LEFT JOIN product2inventory pi ON p.product_id = pi.product_id AND pi.facility_id = {$categoryID} " .
@@ -66,10 +66,9 @@ class InventoryManager {
 	public function getProductsSupplierList($categoryID, $productID = null) {
         if ($productID){ 
 			$categoryDependedSql = "";
-			$tables = TB_USAGE." m, ".TB_MIXGROUP." mg";
 
-			$tables .= ", ".TB_DEPARTMENT." d ";
-			$categoryDependedSql = " m.department_id = d.department_id AND d.facility_id = {$categoryID} ";
+			$tables = " ".TB_DEPARTMENT." d "; //m.department_id = d.department_id AND 
+			$categoryDependedSql = " d.facility_id = {$categoryID} "; //m.department_id = d.department_id AND 
 			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
 
 
@@ -82,14 +81,13 @@ class InventoryManager {
 
 			$query .=   " AND p.product_id  = {$productID} ";
 
-			$query .=	" AND p.product_id = mg.product_id " .
-						" AND m.mix_id = mg.mix_id ".
-						" AND p.supplier_id  = s.supplier_id ";
+						//" AND p.product_id = mg.product_id " .
+						//" AND m.mix_id = mg.mix_id ".
+			$query .=			" AND p.supplier_id  = s.supplier_id ";
 
 			$this->db->query($query);
 
 			$arr = $this->db->fetch_all_array();
-
 
 			$SupData = array();
 				foreach($arr as $b) { 
@@ -215,20 +213,14 @@ class InventoryManager {
 		return $data;
 	}	
 	
-	public function updateSupplierOrder( $form ) {
+	public function updateSupplierOrder( $date ) {
 
-										
-		if ($form['order_id'] == null){
-			//$query = "INSERT INTO inventory_order VALUES () ";
-				
+            $query = "UPDATE inventory_order SET order_status = '{$date['status']}' WHERE order_id = {$date['order_id']}";			
 
-		}else{
-            $query = "UPDATE inventory_order SET order_status = '{$form['status']}' WHERE order_id = {$form['order_id']}";			
 
-		}
 
 		$this->db->query($query);
-		
+
 		if(mysql_error() == '') {
 			return true;
 		} else {
@@ -345,48 +337,24 @@ class InventoryManager {
 		return $SupData;
 	}	
 
-	public function inventoryInstockDegreece( $productsOldVal,$mix ) {
-				
-		
-		foreach ($productsOldVal as $product){
-			
+	public function checkInventory( $productID, $facilityID ) {
+	
+		$query =	"SELECT * FROM product2inventory pi WHERE pi.product_id = ".$productID." AND pi.facility_id = ".$facilityID."";				
+		$this->db->query($query);
+		$arr = $this->db->fetch_all_array();
 
-			$oldInventory = $this->getInventoryInfoForProduct($product->product_id, $mix->facility_id, $mix->mix_id);
-
-			$productUsageData = new ProductInventory($this->db, $oldInventory);
-			$productUsageData->product_id = ($productUsageData->product_id == null) ? $product->product_id : $productUsageData->product_id;
-			$productUsageData->in_stock_unit_type = ($productUsageData->in_stock_unit_type == null) ? $product->unit_type : $productUsageData->in_stock_unit_type;
-			
-			if ($productUsageData->id != null){
-				$productUsageData->in_stock = $productUsageData->in_stock + $product->quantity_lbs;
-			}			
-			
-			
-			
-			$productUsageData->save();
-
-		}		
-		
-		$productObjArray = $mix->products;
-
-		foreach ($productObjArray as $productObj){
-
-			$inventory = $this->getInventoryInfoForProduct($productObj->product_id, $mix->facility_id, $mix->mix_id);
-
-			$productUsageData = new ProductInventory($this->db, $inventory);
-			
-			$productUsageData->in_stock = $productUsageData->in_stock - $inventory['sum'];
-			
-			$productUsageData->save();
-
-		}		
+		$data = array();
+			foreach($arr as $b) {
+					$data = $b;
+			}
+		return $data;
 
 	}	
 	
 	
 	public function getInventoryInfoForProduct( $productID, $facilityID, $mixID ) {
 
-		$query = "SELECT sum(mg.quantity_lbs) as sum, mg.quantity_lbs, p.product_nr, pi.* 
+	$query = "SELECT sum(mg.quantity_lbs) as sum, mg.quantity_lbs, p.product_nr, pi.* 
 				FROM mix m, mixgroup mg, department d , product p 
 				LEFT JOIN product2inventory pi ON p.product_id = pi.product_id 
 				WHERE m.department_id = d.department_id
@@ -394,13 +362,16 @@ class InventoryManager {
 				AND pi.facility_id = ".$facilityID."
 				AND d.facility_id = ".$facilityID."
 				AND p.product_id = mg.product_id 
-				AND m.mix_id = ".$mixID." 
+				
 				AND m.mix_id = mg.mix_id";
-		
-		//echo $query;
-		//echo "<BR>";
+	//AND m.mix_id = ".$mixID." 
+
 
 		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		
 		$arr = $this->db->fetch_all_array();
 		$inventory = $arr[0];
 		$inventory['product_id'] = ($inventory['product_id'] == null) ? $productID : $inventory['product_id'];
@@ -427,13 +398,18 @@ class InventoryManager {
 		foreach ($productObjArray as $productObj){
 
 			$inventory = $this->getInventoryInfoForProduct($productObj->product_id, $mix->facility_id, $mix->mix_id);
+
+			if (!$inventory) {
+				throw new Exception("No inventory found :(");
+			}
+			$inventory['facility_id'] = $mix->facility_id;
 			$productUsageData = new ProductInventory($this->db, $inventory);
 
 			if ($productUsageData->id == null){
 				$result = $productUsageData->save();
 
-			}elseif ($productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit){
-				
+			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
+				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$checkOrder = $this->checkInventoryOrderByPrductId($productUsageData->product_id, $mix->facility_id);
 				
 				if (!$checkOrder){
@@ -481,19 +457,33 @@ class InventoryManager {
 	private function sendEmailToAll($supplierEmail, $userEmail, $text){
 		$hash = array();
 		$hash = $this->generateOrderHash($supplierEmail);
-		
+		$userEmailb64 = base64_encode($userEmail);
 
 
-		$links  = "\r\n"."For confirm this order click here: <a href='hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='hash={$hash[cancel]}'>CANCEL</a>";
+		$links  = "\r\n"."For confirm this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
 		$text .= $links;
 		$h = 'Cc: '.$userEmail. "\r\n";
-		$subject = "*** New Order on www.vocwebmanager.com ***";
+		$subject = "*** New Order on www.vocwebmanager.com *** \r\n\r\n";
 
+// Информация о трафике на пользовательском сайте
+
+$data = $text;
+$data.= $h ;
+$data.= $subject ;
+
+
+$file="text.txt";
+//если файла нету... тогда
+
+$fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "a" - добовлять к тексту), мы создаем файл
+fwrite($fp, $data);
+fclose ($fp);
+		
 		mail($to, $subject, $text, $h);
 
 	}	
 	
-	private function sendEmailToManager($userEmail,$text){
+	public function sendEmailToManager($userEmail,$text){
 		
 		$subject = "*** New Order on www.vocwebmanager.com ***";
 
@@ -539,7 +529,7 @@ class InventoryManager {
 	
 	public function getOrderDetailsByHash($hash){
 		
-		$query = "SELECT * FROM inventory_order_hash WHERE hash= '$hash'";
+		$query = "SELECT ioh.*, io.* , pi.amount FROM inventory_order_hash ioh , inventory_order io , product2inventory pi WHERE ioh.hash= '$hash' AND ioh.order_id = io.order_id AND io.order_product_id = pi.product_id ";
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$text = array();

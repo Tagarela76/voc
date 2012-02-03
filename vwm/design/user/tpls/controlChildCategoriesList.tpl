@@ -18,7 +18,7 @@
 											<div class="button_float_left">
 												<div  class="button_alpha addDelete_button">
                                                 	<input type="submit" name="action" value="addItem">
-
+												
                                             	</div>
 											</div>
 												{/if}
@@ -41,8 +41,12 @@
                                             	{else}
 
                                                 	<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
+													
+									
                                                 {/if}
                                             </div>
+
+											
 											</div>
 											{/if}
 
@@ -56,7 +60,7 @@
 												</div>
 											{/if}
 
-											{if $childCategoryItems|@count > 0 || $request.bookmark == 'logbook'}
+											{if $childCategoryItems|@count > 0 || $request.bookmark == 'logbook' }
                                             	{if ($request.bookmark=="equipment" && $permissions.equipment.delete) ||
                                             		($request.bookmark=="user" && $permissions.user.delete) ||
                                             		($request.bookmark=="accessory" && $permissions.data.delete) ||
@@ -80,9 +84,20 @@
                                            		</div>
 												{/if*}
                                            	{/if}
+											{if $request.tab == "orders" && $request.bookmark == "inventory" && $request.category == "facility"}
+										
+											<div class="button_float_left">
+												<input type="submit" class="button" value="Cancel" onclick="location.href='?action=edit&category={$request.category}&facilityID={$request.id}&tab={$request.tab}'">
+												<input type="hidden" name="action" value="edit">
+												<input type="hidden" name="cancel" value="true">
+											
+											</div>
+											
+											{/if}
                                             {if $request.bookmark=="docs"}
 											<div class="button_float_left">
 												<input type="submit" class="button" name="action" value="Edit" onclick="location.href='?action=edit&category=docs&facilityID={$request.id}'">
+												
 											</div>
 											<div class="button_float_left">
 												<div class="button_alpha delete_button">
@@ -137,7 +152,7 @@
 
 
 										{*INDICATOR*}
-                                            {if $request.category == 'department' || $request.category == 'facility'}
+                                            {if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
                                         <div class="button_float_right">
                                             	{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
 										</div>

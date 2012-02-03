@@ -195,7 +195,7 @@ class CInventory extends Controller
 
 	private function actionAddItem() {
 		// inventory from?
-		if (is_null($this->getFromRequest('facilityID')) && !is_null($this->getFromRequest('departmentID'))) {
+/*		if (is_null($this->getFromRequest('facilityID')) && !is_null($this->getFromRequest('departmentID'))) {
 			$parentCategory = "department";
 			$request = $this->getFromRequest();
 			$request['id'] = $this->getFromRequest('departmentID');
@@ -309,6 +309,58 @@ class CInventory extends Controller
 		foreach ($result as $key=>$value) {
 			$this->smarty->assign($key,$value);
 		}
+		
+ */		
+			$error = $this->getFromRequest('error');
+
+			
+				$inventoryManager = new InventoryManager($this->db);
+				$product = new Product($this->db);
+				$facility = new Facility($this->db);
+
+				$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+				$companyID = $facilityDetails['company_id'];
+				
+				$productLst = $product->getProductList($companyID);
+				if ( $error == null ){
+				$form = $_POST;
+				if (count($form) > 0) {
+					
+					$newOrder = new OrderInventory($this->db);
+					$ProductInventory = new ProductInventory($this->db);
+					$checkInventory = $inventoryManager->checkInventory($form['order_product_id'], $form["facilityID"]);
+					
+					if (empty($checkInventory)){
+						
+						$ProductInventory->set_amount($form['amount']);
+						$ProductInventory->set_product_id($form['order_product_id']);
+						$ProductInventory->set_facility_id($form["facilityID"]);
+						$ProductInventory->save();
+					}
+					$checkOrder = $inventoryManager->checkInventoryOrderByPrductId($form['order_product_id'], $form["facilityID"]);
+
+					if ($checkOrder['order_status'] != 1 && $checkOrder['order_status'] != 2){
+						//TODO get price
+						$price = 10;
+						$newOrder->order_product_id =  $form['order_product_id'];
+						$newOrder->order_facility_id = $form["facilityID"];
+						$newOrder->order_name = 'Order for product "'.$form["product_nr"].'"';
+						$newOrder->order_total = $form['amount'] * $price;
+						$newOrder->order_status = 1;
+						$newOrder->order_created_date = time();
+						$result = $newOrder->save();
+					}
+					
+					if ($result == 'true'){
+						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+					}else{
+						header("Location: ?action=addItem&category=inventory&facilityID={$form['facilityID']}&tab=".$this->getFromRequest('tab')."&error=exist");
+					}
+				}
+		}
+
+		$this->smarty->assign('products', $productLst);
+		$this->smarty->assign('tpl', "inventory/design/inventoryOrdersAdd.tpl");
 		$this->smarty->display("tpls:index.tpl");
 	}
 
@@ -325,7 +377,8 @@ class CInventory extends Controller
 								$facilityID = $this->getFromRequest('facilityID');
 
 							}
-		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));							
+		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
+		$request = $this->getFromRequest();
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
@@ -436,26 +489,55 @@ class CInventory extends Controller
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscountsEdit.tpl');	
 			break;
 			case 'orders':
-				
-				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
-				
-				$form = $_POST;
-				if (count($form) > 0) {
-					//protected from xss
-					$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
-					$form['order_id'] = Reform::HtmlEncode($form['order_id']);
-					$form['status'] = Reform::HtmlEncode($form['status']);
-					$result = $inventoryManager->updateSupplierOrder($form);
-					if ($result == 'true'){
-						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
-					}
-				}				
-				$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+				if ($request['cancel']){
+						if ($request['cancel'] == 'confirm'){
+							
+							for ($i =0;$i < $request['itemsCount']; $i++){
+								$orderDetailsArr = array();
+								if (isset($request['item_'.$i])){
+									$orderDetailsArr['order_id'] = $request['item_'.$i];
+									$orderDetailsArr['status'] = 4;
 
-				$this->smarty->assign('status',$statuslist);
-				
-				$this->smarty->assign('order',$orderDetails[0]);	
-				$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');	
+									$inventoryManager->updateSupplierOrder($orderDetailsArr);
+								}
+							}
+
+							header("Location: ?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=".$request['tab']);
+						}else{					
+							foreach ($request['id'] as $orderId){
+								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($facilityID,$orderId);
+								$orderDetailsArr[0]['status'] = '4';
+								$arr[] =  $orderDetailsArr[0];
+
+
+								
+							}
+						}
+					$this->smarty->assign('cancelUrl',"?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab={$request[tab]}");
+					$this->smarty->assign('itemsCount',count($arr));
+					$this->smarty->assign('itemForDelete',$arr);
+					$this->smarty->assign('tpl','inventory/design/deleteOrder.tpl');
+				}else{
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
+
+					$form = $_POST;
+					if (count($form) > 0) {
+						//protected from xss
+						$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
+						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
+						$form['status'] = Reform::HtmlEncode($form['status']);
+						$result = $inventoryManager->updateSupplierOrder($form);
+						if ($result == 'true'){
+							header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
+						}
+					}				
+					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+
+					$this->smarty->assign('status',$statuslist);
+
+					$this->smarty->assign('order',$orderDetails[0]);	
+					$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
+				}
 			break;			
 			
 			case 'settings':
@@ -512,7 +594,8 @@ class CInventory extends Controller
 				$ProductInventory = new ProductInventory($this->db);
 
 
-				$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);		
+				$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
+				
 					foreach ($data as $value) {
 
 						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
@@ -538,6 +621,7 @@ class CInventory extends Controller
 				
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
+					//var_dump($order,$SupData);
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
 					$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
@@ -723,23 +807,51 @@ class CInventory extends Controller
 	public function actionProcessororder(){
 		
 		$hash = $this->getFromRequest('hash');
+		$to = $this->getFromRequest('to');
 		
+		$userEmail = base64_decode($to);
+
+		$request = $this->getFromRequest();
 		$inventoryManager = new InventoryManager($this->db);
 		$orderDetails = $inventoryManager->getOrderDetailsByHash($hash);
-		if ($orderDetails['hash_type'] == 'confirm'){
-			$orderDetails['status'] = 2;
-		}elseif($orderDetails['hash_type'] == 'cancel'){
-			$orderDetails['status'] = 4;
-		}
+
+		if (isset($request['result']) && $request['result'] != ''){
+			if ($request['result'] == 'yes'){
+				if ($orderDetails['hash_type'] == 'confirm'){
+					$orderDetails['status'] = 2;
+				}elseif($orderDetails['hash_type'] == 'cancel'){
+					$orderDetails['status'] = 4;
+				}
+				
+				$result = $inventoryManager->updateSupplierOrder($orderDetails);
+					if($result){
+						$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails['order_name']." was change by supplier. Order status: ".$orderDetails['hash_type']."ed.");
 		
-		$result = $inventoryManager->updateSupplierOrder($orderDetails);
-		if($result){
+						header("Location: ?action=processororderResult&category=inventory&result=positive");
 			
+					}				
+			}else{
+				header("Location: ?action=processororderResult&category=inventory&result=negative");
+			}
+
 		}
-		
+		$orderDetails['order_created_date'] = date('m/d/Y',$orderDetails['order_created_date']);
+		$this->smarty->assign('order',$orderDetails);
+		$this->smarty->assign('request',$request);
 		$this->smarty->display("tpls:inventory/design/processororder.tpl");
-		var_dump('DONE',$this->getFromRequest(),$orderDetails);
-	}		
+
+		$this->smarty->display('tpls:inventory/design/inventoryOrdersDetail.tpl');	
+		
+	}	
+	
+	public function actionProcessororderResult(){
+
+		$request = $this->getFromRequest();
+		$this->smarty->assign('request',$request);
+		$this->smarty->display("tpls:inventory/design/processororderResult.tpl");
+
+	}	
+
 		
 }
 ?>

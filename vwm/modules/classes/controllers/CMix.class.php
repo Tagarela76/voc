@@ -1081,6 +1081,7 @@ class CMix extends Controller
 
 		if($debug) {
 			echo "<h1>DONE!</h1>";
+			var_dump($mix);
 		}
 /* INVENTORY CREATING ORDER */		
 		$InventoryManager = new InventoryManager($this->db);

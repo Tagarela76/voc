@@ -46,6 +46,7 @@
                 </div>
             </td>
         </tr>
+{if $request.action != 'processororder'}		
         <tr>
             <td class="border_users_l border_users_b" height="20">
                 Price : 
@@ -66,6 +67,7 @@
                 </div>
             </td>
         </tr>
+{/if}		
         <tr>
             <td class="border_users_l border_users_b" height="20">
                 Total : 

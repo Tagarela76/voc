@@ -254,7 +254,7 @@
 			// Filter for free access to class 					
 			if (!$user->isLoggedIn() && $_GET["action"] != 'auth' 
 					&& !(($_GET['action'] == "sendContactEmail" || $_GET['action'] == "requestRepresentativeForms") && $_GET['category'] == "common")
-					&& !($_GET['action'] == 'processororder' && $_GET['category'] == "inventory")) {
+					&& !(($_GET['action'] == 'processororder' || $_GET['action'] == 'processororderResult') && $_GET['category'] == "inventory")) {
 				for($l = 0; $l<strlen($queryStr); $l++) {
 					if ($queryStr[$l] == '&') $queryStr[$l] = '!'; 
 				}
