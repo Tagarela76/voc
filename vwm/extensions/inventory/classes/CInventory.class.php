@@ -95,9 +95,17 @@ class CInventory extends Controller
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
 			//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);				
-				var_dump($orderList);
-				$productarr = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID, $productID);
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);		
+
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+				}else{
+					$dateBegin = $ProductInventory->period_start_date;
+				}
+
+				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
+				
 				$product = $productarr[0];
 				$this->smarty->assign("product",$product);
 				$this->smarty->assign("parentCategory",$category);
@@ -555,21 +563,36 @@ class CInventory extends Controller
 						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
 						$form['status'] = Reform::HtmlEncode($form['status']);
 						$form['order_completed_date'] = time();
-						$result = $inventoryManager->updateSupplierOrder($form);
 						
-						if ($result == 'true'){
 							if ($form['status'] == 3){
-								$productDetails = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
+								
+							//ORDERS FOR THIS PODUCT
+								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
+
+								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+								}else{
+									$dateBegin = $ProductInventory->period_start_date;
+								}
+							//
+								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
+
 								$addToStock = $product->in_stock - $product->usage + $product->amount;
 								$product->in_stock = $addToStock;
 								$result = $product->save();
 								
 							}
+							
+						$result = $inventoryManager->updateSupplierOrder($form);
+						
+
+
 							if ($result == 'true'){
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
-						}
+					
 					}				
 					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
@@ -634,15 +657,38 @@ class CInventory extends Controller
 			case 'products':
 				//Product Usage
 				$ProductInventory = new ProductInventory($this->db);
+				$supplierPrductIdList = $inventoryManager->getInventoryPrductIdByFacility($facilityID);
 
+				// kostyl' for product usage after completed oreder
+				foreach ($supplierPrductIdList as $id){
+					
+				//ORDERS FOR THIS PODUCT
+					$orderList = $inventoryManager->getSupplierOrders($facilityID, $id);		
 
-				$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
+					if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+						$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+					}else{
+						$dateBegin = $ProductInventory->period_start_date;
+					}
+					
+					$dataArr[] = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID,$id);
+					
 				
+				}
+				foreach ($dataArr as $arr) {
+					$data[] = $arr[0];
+				}
+
+				//$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
+							
 					foreach ($data as $value) {
-
+						
 						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
-
-
+						if ($value->usage == null){
+							$value->set_sum(0);
+						}
+							
 					//	ini indicator (gauge)	
 
 					$pxCount = round(200 * $value->usage / $value->in_stock);

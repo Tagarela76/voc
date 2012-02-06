@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->usage}, lbs
+                    &nbsp;{if $product->usage}{$product->usage}, lbs{else}0, lbs{/if}
                 </div>
             </td>
         </tr>

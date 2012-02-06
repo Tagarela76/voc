@@ -48,12 +48,43 @@ class InventoryManager {
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";
 
-//		/echo $query;
+/*			
+		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name,p.product_id ";
+		if (!$productID){
+			$query .= " ,pi.* ";
+			
+		}				
+		$query .= " FROM {$tables} " ;
+		if (!$productID){
+			$query .= " LEFT JOIN product2inventory pi ON p.product_id = pi.product_id AND pi.facility_id = {$categoryID} ";
+			
+		}				  
+		$query .= " WHERE {$categoryDependedSql} " .
+					"AND p.product_id = mg.product_id " .
+					"AND m.mix_id = mg.mix_id " .
+					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'";
+
+		if ($productID){
+			$query .= "AND p.product_id = {$productID} ";
+			$inventoryDetails = $this->checkInventory( $productID, $categoryID );
+		}
+		$query .= " GROUP BY mg.product_id " .
+				  " ORDER BY p.product_id ";			
+*/		
+		//echo $query;
 		$this->db->query($query);
+
 		
 		$arr = $this->db->fetch_all_array();
+		// If no usage for the period of the last delivery
+		if (!$arr){
+			if ($productID){
+				$inventoryDetails = $this->checkInventory( $productID, $categoryID );
+				$arr[] = $inventoryDetails;
+				//var_dump($arr);
+			}			
+		}
 		
-
 		$productUsageData = array();
 			foreach($arr as $b) {
 				$productinv = new ProductInventory($this->db, $b);
@@ -63,12 +94,12 @@ class InventoryManager {
 		return $productUsageData;
 	}
 	
-	public function getProductsSupplierList($categoryID, $productID = null) {
+	public function getProductsSupplierList($facilityID, $productID = null) {
         if ($productID){ 
 			$categoryDependedSql = "";
 
 			$tables = " ".TB_DEPARTMENT." d "; //m.department_id = d.department_id AND 
-			$categoryDependedSql = " d.facility_id = {$categoryID} "; //m.department_id = d.department_id AND 
+			$categoryDependedSql = " d.facility_id = {$facilityID} "; //m.department_id = d.department_id AND 
 			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
 
 
@@ -76,7 +107,7 @@ class InventoryManager {
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
-						" ON di.supplier_id =  s.original_id AND di.facility_id = {$categoryID} ".
+						" ON di.supplier_id =  s.original_id AND di.facility_id = {$facilityID} ".
 						" WHERE {$categoryDependedSql} " ;
 
 			$query .=   " AND p.product_id  = {$productID} ";
@@ -110,7 +141,7 @@ class InventoryManager {
 			$query	=	"SELECT DISTINCT di.*, s.supplier ";
 
 			$query .=	" FROM discounts2inventory di, " . TB_SUPPLIER . " s   " .
-						" WHERE di.facility_id =  {$categoryID} AND di.supplier_id = s.original_id AND s.supplier_id = s.original_id";	
+						" WHERE di.facility_id =  {$facilityID} AND di.supplier_id = s.original_id AND s.supplier_id = s.original_id";	
 			$this->db->query($query);
 
 			$SupData = $this->db->fetch_all_array();
@@ -335,11 +366,29 @@ class InventoryManager {
 			}
 	
 		return $SupData;
+	}
+	
+	public function getInventoryPrductIdByFacility($facilityID) {
+            
+        $query = "SELECT product_id FROM product2inventory WHERE facility_id = {$facilityID} ";
+
+		$this->db->query($query);
+		
+		$arr = $this->db->fetch_all_array();
+
+		$SupData = array();
+			foreach($arr as $b) {
+
+					$SupData[] = $b['product_id'];
+            
+			}
+	
+		return $SupData;
 	}	
 
 	public function checkInventory( $productID, $facilityID ) {
 	
-		$query =	"SELECT * FROM product2inventory pi WHERE pi.product_id = ".$productID." AND pi.facility_id = ".$facilityID."";				
+		$query =	"SELECT pi.* , p.product_nr  FROM product2inventory pi , ".TB_PRODUCT." p WHERE pi.product_id = ".$productID." AND pi.facility_id = ".$facilityID." AND p.product_id = {$productID} ";				
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 
@@ -363,10 +412,10 @@ class InventoryManager {
 				AND d.facility_id = ".$facilityID."
 				AND p.product_id = mg.product_id 
 				
-				AND m.mix_id = mg.mix_id";
-	//AND m.mix_id = ".$mixID." 
+				AND m.mix_id = mg.mix_id";	
+	$query .= " AND m.mix_id = ".$mixID.""; 
 
-
+		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;

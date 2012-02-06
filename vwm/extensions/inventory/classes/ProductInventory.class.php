@@ -196,6 +196,15 @@ class ProductInventory {
 		}
 	}
 	
+	public function set_usage($value) {
+		try {
+			$this->usage = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Usage cannot be empty!" . $e->getMessage());
+		}
+	}	
+	
 	public function set_name($value) {
 		try {
 			$this->name = $value;
