@@ -848,35 +848,52 @@ class CInventory extends Controller
 		$request = $this->getFromRequest();
 		$inventoryManager = new InventoryManager($this->db);
 		$orderDetails = $inventoryManager->getOrderDetailsByHash($hash);
-		$result = $orderDetails;
-		if (isset($request['result']) && $request['result'] != ''){
-			if ($request['result'] == 'yes'){
-				if ($orderDetails['hash_type'] == 'confirm'){
-					$orderDetails['status'] = 2;
-				}elseif($orderDetails['hash_type'] == 'cancel'){
-					$orderDetails['status'] = 4;
-				}
-				
-				$result = $inventoryManager->updateSupplierOrder($orderDetails);
-					if($result){
-						$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails['order_name']." was change by supplier. Order status: ".$orderDetails['hash_type']."ed.");
 		
-						header("Location: ?action=processororderResult&category=inventory&result=positive");
-			
-					}				
-			}else{
-				header("Location: ?action=processororderResult&category=inventory&result=negative");
-			}
-
+		if ($orderDetails == false || $orderDetails->order_status == OrderInventory::COMPLETED) {
+			throw new Exception('deny');
 		}
-		$orderDetails['order_created_date'] = date('m/d/Y',$orderDetails['order_created_date']);
-		$this->smarty->assign('result',$result);
+		
+		$inventoryAsArray = $inventoryManager->checkInventory($orderDetails->order_product_id, $orderDetails->order_facility_id);
+		$productInventory = new ProductInventory($this->db, $inventoryAsArray);
+		
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($orderDetails->order_facility_id);		
+				
+		if (isset($request['result']) && $request['result'] != ''){
+			switch($request['result']) {
+				case 'confirm':
+					$orderDetails->order_status = OrderInventory::CONFIRM;
+					break;
+				case 'cancel':
+					$orderDetails->order_status = OrderInventory::CANCELED;
+					break;
+				default :
+					throw new Exception('deny');
+					break;
+			}			
+			
+			$arrayForUpdate = array(
+				'status'	=> $orderDetails->order_status,
+				'order_id'	=> $orderDetails->order_id
+			);
+			$result = $inventoryManager->updateSupplierOrder($arrayForUpdate);
+			if($result){
+				$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails->order_name." was change by supplier.");
+				header("Location: ?action=processororderResult&category=inventory&result=positive");										
+			}else{
+				throw new Exception('deny');
+			}
+		}
+		
+		//$this->smarty->assign('result',$result);
 		$this->smarty->assign('order',$orderDetails);
+		$this->smarty->assign('inventory',$productInventory);
+		$this->smarty->assign('facility',$facilityDetails);
 		$this->smarty->assign('request',$request);
 		$this->smarty->display("tpls:inventory/design/processororder.tpl");
-		if ($result){
+		/*if ($result){
 			$this->smarty->display('tpls:inventory/design/inventoryOrdersDetail.tpl');	
-		}
+		}*/
 	}	
 	
 	public function actionProcessororderResult(){

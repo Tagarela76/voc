@@ -206,7 +206,13 @@ class OrderInventory {
 	
 	public function set_order_created_date($value) {
 		try {
-			$this->order_created_date = $value;
+			if ($value instanceof DateTime) {
+				$this->order_created_date = $value;	
+			} else {
+				//	this is unixtimestamp
+				$this->order_created_date = DateTime::createFromFormat('U', $value);
+			}
+			
 		} catch(Exception $e) {
 			throw new Exception("Date cannot be empty!" . $e->getMessage());
 		}
