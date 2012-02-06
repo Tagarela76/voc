@@ -71,7 +71,7 @@ class InventoryManager {
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";			
 */		
-		//echo $query;
+//		/echo $query;
 		$this->db->query($query);
 
 		
@@ -117,13 +117,14 @@ class InventoryManager {
 			$query .=			" AND p.supplier_id  = s.supplier_id ";
 
 			$this->db->query($query);
-
+//echo $query;
 			$arr = $this->db->fetch_all_array();
 
 			$SupData = array();
 				foreach($arr as $b) { 
 					if ( $b['supplier_id'] <> $b['original_id'] ){
 						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id='" .$b['original_id']. "' ORDER BY supplier ASC";
+						
 						$this->db->query($query);
 						$suppliername = $this->db->fetch_all_array();
 						$b['supplier'] = $suppliername[0]['supplier'];
@@ -152,7 +153,7 @@ class InventoryManager {
 
 	}	
 	
-	public function getSupplierOrders($facilityID, $productID = null) {
+	public function getSupplierOrders($facilityID, $productID = null, Pagination $pagination = null) {
         $time = new DateTime('first day of this month');
 
         $query = "SELECT io.*, pi.amount ";
@@ -165,7 +166,13 @@ class InventoryManager {
 		}else{
 			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
 		}
+	
 		$query .=" ORDER BY io.order_completed_date DESC";
+		if (isset($pagination)) {
+			//, Pagination $pagination = null
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}			
+		
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -179,6 +186,14 @@ class InventoryManager {
 	
 		return $SupData;
 	}
+	
+	public function getCountSupplierOrders($facilityID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM inventory_order WHERE order_facility_id = {$facilityID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}	
 	
 	public function getSupplierOrdersStatusList() {
         $query = "SELECT * FROM inventory_order_status ";
@@ -368,10 +383,12 @@ class InventoryManager {
 		return $SupData;
 	}
 	
-	public function getInventoryPrductIdByFacility($facilityID) {
+	public function getInventoryPrductIdByFacility($facilityID, Pagination $ppagination = null) {
             
         $query = "SELECT product_id FROM product2inventory WHERE facility_id = {$facilityID} ";
-
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -384,6 +401,14 @@ class InventoryManager {
 			}
 	
 		return $SupData;
+	}	
+	
+	public function getCountInventoryPrduct($facilityID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM product2inventory WHERE facility_id = {$facilityID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
 	}	
 
 	public function checkInventory( $productID, $facilityID ) {

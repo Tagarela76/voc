@@ -61,7 +61,7 @@
                     <div align="left">
                         <input type='text' name='in_stock' value='{$product->in_stock}'>
                     </div>
-								<div class="floatleft">	
+								<!--div class="floatleft">	
 								
 									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
@@ -75,7 +75,7 @@
 									</select>
 									<input type="hidden" id="company" value="{$companyID}">
 									<input type="hidden" id="companyEx" value="{$companyEx}">
-								</div>
+								</div-->
 								
 								
 					{if $validStatus.summary eq 'false'}

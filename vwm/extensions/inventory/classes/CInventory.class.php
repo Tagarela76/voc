@@ -653,12 +653,23 @@ class CInventory extends Controller
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
 	
 
+			
+			
 		switch ($tab){
 			case 'products':
 				//Product Usage
 				$ProductInventory = new ProductInventory($this->db);
-				$supplierPrductIdList = $inventoryManager->getInventoryPrductIdByFacility($facilityID);
+				
+				// Pagination	
+				$count = $inventoryManager->getCountInventoryPrduct($facilityID);
+				$pagination = new Pagination($count);
+				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=products";
+				$this->smarty->assign('pagination', $pagination);			
+				
+				$supplierPrductIdList = $inventoryManager->getInventoryPrductIdByFacility($facilityID, $pagination);
 
+
+			
 				// kostyl' for product usage after completed oreder
 				foreach ($supplierPrductIdList as $id){
 					
@@ -705,7 +716,16 @@ class CInventory extends Controller
 				break;
 			case 'orders':
 				
-				$orderList = $inventoryManager->getSupplierOrders($facilityID);
+				// Pagination	
+				$count = $inventoryManager->getCountSupplierOrders($facilityID);
+
+				$pagination = new Pagination($count);
+				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
+				$this->smarty->assign('pagination', $pagination);				
+				
+				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination);
+				
+
 				
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);

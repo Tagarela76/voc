@@ -2,6 +2,9 @@
 	{assign var='accessory' value=true}
 {/if}
 <div class="padd7">
+{*PAGINATION*}
+		{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}	
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_violet" height="27px">
 <!--        <td class="users_top_violet users_u_top_violet" width="60">
