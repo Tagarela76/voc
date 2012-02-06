@@ -134,7 +134,7 @@ class InventoryManager {
 		}else{
 			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
 		}
-		
+		$query .=" ORDER BY io.order_completed_date DESC";
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -213,9 +213,9 @@ class InventoryManager {
 		return $data;
 	}	
 	
-	public function updateSupplierOrder( $date ) {
+	public function updateSupplierOrder( $data ) {
 
-            $query = "UPDATE inventory_order SET order_status = '{$date['status']}' WHERE order_id = {$date['order_id']}";			
+            $query = "UPDATE inventory_order SET order_status = '{$data['status']}', order_completed_date = '{$data['order_completed_date']}' WHERE order_id = {$data['order_id']}";			
 
 
 

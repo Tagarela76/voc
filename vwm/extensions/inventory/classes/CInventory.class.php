@@ -86,20 +86,23 @@ class CInventory extends Controller
 		{
 			
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
-		$productID = $this->getFromRequest('id');
+
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
 		$inventoryManager = new InventoryManager($this->db);		
 		switch ($tab){
 			case 'products':
+				$productID	 = $this->getFromRequest('id');
+			//ORDERS FOR THIS PODUCT
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);				
+				var_dump($orderList);
 				$productarr = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				$product = $productarr[0];
 				$this->smarty->assign("product",$product);
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
-			//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($facilityID, $product->product_id);
+
 				
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
@@ -385,21 +388,25 @@ class CInventory extends Controller
 		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+		$companyID = $facilityDetails['company_id'];
+		
+		// UNITTYPE{
 		$type = new Unittype($this->db);		
 
 	
 
-		$unitTypeEx = $type->getDefaultUnitTypelist($facilityDetails['company_id']);
+		$unitType = $type->getDefaultUnitTypelist($companyID);
 
-		$unitTypeClass = $type->getUnittypeListDefaultByCompanyId($unitTypeEx[0]);
-	
+		
+		$unitTypeEx = $type->getUnitTypeExist($companyID);
+
+		$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 		$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
-		
-		
+
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('TypeEx', $unitTypeClass);		
-	//	var_dump($unitTypeEx);
-		
+		//var_dump($unitTypeEx,$unittypeListDefault);
+		// }UNITTYPE
 		
 		
 		
@@ -547,6 +554,7 @@ class CInventory extends Controller
 						$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
 						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
 						$form['status'] = Reform::HtmlEncode($form['status']);
+						$form['order_completed_date'] = time();
 						$result = $inventoryManager->updateSupplierOrder($form);
 						
 						if ($result == 'true'){

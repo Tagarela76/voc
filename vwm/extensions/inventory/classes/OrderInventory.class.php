@@ -23,6 +23,7 @@ class OrderInventory {
 	 * @var DateTime The day when order was created
 	 */
 	private $order_created_date;
+	private $order_completed_date;
 
 
 	const IN_PROGRESS = 1;
@@ -57,12 +58,13 @@ class OrderInventory {
 
                 if ($this->order_id != NULL){
                         $query = "UPDATE inventory_order SET 
-						order_product_id = '".mysql_escape_string($this->order_product_id)."',
-						order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
-						order_name = '".mysql_escape_string($this->order_name)."',
-						order_status = '".mysql_escape_string($this->order_status)."',
-						order_total	= '".mysql_escape_string($this->order_total)."'	
-						WHERE order_id = {$this->order_id}";
+							order_product_id = '".mysql_escape_string($this->order_product_id)."',
+							order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
+							order_name = '".mysql_escape_string($this->order_name)."',
+							order_status = '".mysql_escape_string($this->order_status)."',
+							order_order_completed_date = '".mysql_escape_string($this->order_completed_date)."',
+							order_total	= '".mysql_escape_string($this->order_total)."'	
+							WHERE order_id = {$this->order_id}";
                 }
                 else {                        
    
@@ -72,7 +74,7 @@ class OrderInventory {
                                                 .($this->order_name)."','" 
 												.($this->order_status)."','"
 												.($this->order_created_date)."','"
-												.($this->order_total). "')";
+												.($this->order_total). "',NULL)";
                                                
 
                 }	
@@ -144,6 +146,10 @@ class OrderInventory {
 		return $this->order_created_date;
 	}
 	
+    public function get_order_completed_date(){
+		return $this->order_completed_date;
+	}	
+	
     public function get_order_name(){
 		return $this->order_name;
 	}	
@@ -207,6 +213,14 @@ class OrderInventory {
 	public function set_order_created_date($value) {
 		try {
 			$this->order_created_date = $value;
+		} catch(Exception $e) {
+			throw new Exception("Date cannot be empty!" . $e->getMessage());
+		}
+	}
+	
+	public function set_order_completed_date($value) {
+		try {
+			$this->order_completed_date = $value;
 		} catch(Exception $e) {
 			throw new Exception("Date cannot be empty!" . $e->getMessage());
 		}
