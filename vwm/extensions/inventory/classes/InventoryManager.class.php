@@ -401,8 +401,20 @@ class InventoryManager {
 	}	
 	
 	
-	public function getInventoryInfoForProduct( $productID, $facilityID, $mixID ) {
+	public function getInventoryInfoForProduct( $productID, $facilityID, $mixID = null) {
+							//ORDERS FOR THIS PODUCT
+								$orderList = $this->getSupplierOrders($facilityID, $productID);		
 
+								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+								}else{
+									$dateBegin = new DateTime('first day of this month');
+								}
+							//
+								$endDate = new DateTime();
+						
+						
 	$query = "SELECT sum(mg.quantity_lbs) as sum, mg.quantity_lbs, p.product_nr, pi.* 
 				FROM mix m, mixgroup mg, department d , product p 
 				LEFT JOIN product2inventory pi ON p.product_id = pi.product_id 
@@ -411,9 +423,9 @@ class InventoryManager {
 				AND pi.facility_id = ".$facilityID."
 				AND d.facility_id = ".$facilityID."
 				AND p.product_id = mg.product_id 
-				
+				AND m.creation_time BETWEEN '".$dateBegin."' AND '".$endDate->getTimestamp()."'
 				AND m.mix_id = mg.mix_id";	
-	$query .= " AND m.mix_id = ".$mixID.""; 
+	//$query .= " AND m.mix_id = ".$mixID.""; 
 
 		//echo $query;
 		$this->db->query($query);
