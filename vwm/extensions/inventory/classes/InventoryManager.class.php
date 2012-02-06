@@ -378,13 +378,27 @@ class InventoryManager {
 		return $inventory;
 	}	
 	
-	public function checkInventoryOrderByPrductId($product_id,$facility_id){
-		
-        $query = "SELECT * FROM inventory_order WHERE order_product_id = {$product_id} AND order_facility_id = {$facility_id} ";
+	
+	/**
+	 * Check for active orders by product
+	 * @param int $product_id
+	 * @param int $facility_id
+	 * @return boolean false if no active orders, true if this product has order with any not completed status
+	 */
+	public function isThereActiveOrdersByProductID($product_id, $facility_id){
+				
+        $query = "SELECT * 
+				FROM inventory_order 
+				WHERE order_product_id = {$product_id} 
+				AND order_facility_id = {$facility_id}
+				AND order_status NOT IN (".OrderInventory::COMPLETED.", ".OrderInventory::CANCELED.")";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
+		} else {
+			return true;
 		}		
+		//
 		$arr = $this->db->fetch_all_array();
 
 		$data = array();
@@ -414,9 +428,9 @@ class InventoryManager {
 
 			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
-				$checkOrder = $this->checkInventoryOrderByPrductId($productUsageData->product_id, $mix->facility_id);
+				$isThereActiveOrders = $this->isThereActiveOrdersByProductID($productUsageData->product_id, $mix->facility_id);
 				
-				if (!$checkOrder){
+				if (!$isThereActiveOrders){
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
 					//TODO get price
