@@ -84,16 +84,7 @@
                                            		</div>
 												{/if*}
                                            	{/if}
-											{if $request.tab == "orders" && $request.bookmark == "inventory" && $request.category == "facility"}
-										
-											<div class="button_float_left">
-												<input type="submit" class="button" value="Cancel" onclick="location.href='?action=edit&category={$request.category}&facilityID={$request.id}&tab={$request.tab}'">
-												<input type="hidden" name="action" value="edit">
-												<input type="hidden" name="cancel" value="true">
 											
-											</div>
-											
-											{/if}
                                             {if $request.bookmark=="docs"}
 											<div class="button_float_left">
 												<input type="submit" class="button" name="action" value="Edit" onclick="location.href='?action=edit&category=docs&facilityID={$request.id}'">

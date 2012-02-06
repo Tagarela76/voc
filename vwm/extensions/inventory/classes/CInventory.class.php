@@ -340,9 +340,9 @@ class CInventory extends Controller
 						$ProductInventory->set_facility_id($form["facilityID"]);
 						$ProductInventory->save();
 					}
-					$checkOrder = $inventoryManager->checkInventoryOrderByPrductId($form['order_product_id'], $form["facilityID"]);
+					$isThereActiveOrders = $inventoryManager->isThereActiveOrdersByProductID($form['order_product_id'], $form["facilityID"]);
 
-					if ($checkOrder['order_status'] != 1 && $checkOrder['order_status'] != 2){
+					if (!$isThereActiveOrders){
 						//TODO get price
 						$price = 10;
 						$newOrder->order_product_id =  $form['order_product_id'];
