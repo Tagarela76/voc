@@ -446,15 +446,7 @@ class InventoryManager {
 			return false;
 		} else {
 			return true;
-		}		
-		//
-		$arr = $this->db->fetch_all_array();
-
-		$data = array();
-			foreach($arr as $b) {
-					$data = $b;
-			}
-		return $data;		
+		}				
 	}
 	
 	public function runInventoryOrderingSystem( $mix ) {
@@ -594,20 +586,28 @@ fclose ($fp);
 
 	}	
 	
-	public function getOrderDetailsByHash($hash){
+	
+	/**
+	 *
+	 * @param type $hash
+	 * @return OrderInventory 
+	 */
+	public function getOrderDetailsByHash($hash){		
 		
-		$query = "SELECT ioh.*, io.* , pi.amount FROM inventory_order_hash ioh , inventory_order io , product2inventory pi WHERE ioh.hash= '$hash' AND ioh.order_id = io.order_id AND io.order_product_id = pi.product_id AND io.order_status != 3";
+		$query = "SELECT ioh.*, io.* , pi.amount 
+				FROM inventory_order_hash ioh , inventory_order io , product2inventory pi 
+				WHERE ioh.hash= '".mysql_escape_string($hash)."' 
+				AND ioh.order_id = io.order_id 
+				AND io.order_product_id = pi.product_id 
+				AND io.order_status != ".OrderInventory::COMPLETED;
 		
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
-		}		
-		$arr = $this->db->fetch_all_array();
-		$text = array();
-			foreach($arr as $b) {
-					$text = $b;
-			}
-		return $text;		
+		}
+				
+		$arr = $this->db->fetch_all_array();						
+		return new OrderInventory($this->db, $arr[0]);		
 	}	
 	
 		
