@@ -61,6 +61,23 @@
                     <div align="left">
                         <input type='text' name='in_stock' value='{$product->in_stock}'>
                     </div>
+								<div class="floatleft">	
+								
+									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >									 										
+										{section name=j loop=$typeEx}
+										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{/section}
+							
+									</select>
+									<input type="hidden" id="company" value="{$companyID}">
+									<input type="hidden" id="companyEx" value="{$companyEx}">
+								</div>
+								
+								
 					{if $validStatus.summary eq 'false'}
                     {if $validStatus.inventory_desc eq 'failed'}
                     {*ERORR*}

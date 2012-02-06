@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->in_stock}
+                    &nbsp;{$product->in_stock}, lbs
                 </div>
             </td>
         </tr>
@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->usage}
+                    &nbsp;{$product->usage}, lbs
                 </div>
             </td>
         </tr>
@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->limit}
+                    &nbsp;{$product->limit}, lbs
                 </div>
             </td>
         </tr>	
@@ -62,7 +62,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->amount}
+                    &nbsp;{$product->amount}, lbs
                 </div>
             </td>
         </tr>

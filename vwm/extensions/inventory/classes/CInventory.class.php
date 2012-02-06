@@ -382,6 +382,27 @@ class CInventory extends Controller
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
+		
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+		$type = new Unittype($this->db);		
+
+	
+
+		$unitTypeEx = $type->getDefaultUnitTypelist($facilityDetails['company_id']);
+
+		$unitTypeClass = $type->getUnittypeListDefaultByCompanyId($unitTypeEx[0]);
+	
+		$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
+		
+		
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('TypeEx', $unitTypeClass);		
+	//	var_dump($unitTypeEx);
+		
+		
+		
+		
 		$ProductInventory = new ProductInventory($this->db);
 		$inventoryManager = new InventoryManager($this->db);
 		switch ($tab){
@@ -518,7 +539,7 @@ class CInventory extends Controller
 					$this->smarty->assign('itemForDelete',$arr);
 					$this->smarty->assign('tpl','inventory/design/deleteOrder.tpl');
 				}else{
-					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
 
 					$form = $_POST;
 					if (count($form) > 0) {
@@ -527,8 +548,19 @@ class CInventory extends Controller
 						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
 						$form['status'] = Reform::HtmlEncode($form['status']);
 						$result = $inventoryManager->updateSupplierOrder($form);
+						
 						if ($result == 'true'){
-							header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
+							if ($form['status'] == 3){
+								$productDetails = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
+								$product = $productDetails[0];
+								$addToStock = $product->in_stock - $product->usage + $product->amount;
+								$product->in_stock = $addToStock;
+								$result = $product->save();
+								
+							}
+							if ($result == 'true'){
+								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
+							}
 						}
 					}				
 					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
@@ -588,6 +620,8 @@ class CInventory extends Controller
 		}
 		//	OK, this company has access to this module, so let's setup..
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
+	
+
 		switch ($tab){
 			case 'products':
 				//Product Usage
@@ -814,7 +848,7 @@ class CInventory extends Controller
 		$request = $this->getFromRequest();
 		$inventoryManager = new InventoryManager($this->db);
 		$orderDetails = $inventoryManager->getOrderDetailsByHash($hash);
-
+		$result = $orderDetails;
 		if (isset($request['result']) && $request['result'] != ''){
 			if ($request['result'] == 'yes'){
 				if ($orderDetails['hash_type'] == 'confirm'){
@@ -836,12 +870,13 @@ class CInventory extends Controller
 
 		}
 		$orderDetails['order_created_date'] = date('m/d/Y',$orderDetails['order_created_date']);
+		$this->smarty->assign('result',$result);
 		$this->smarty->assign('order',$orderDetails);
 		$this->smarty->assign('request',$request);
 		$this->smarty->display("tpls:inventory/design/processororder.tpl");
-
-		$this->smarty->display('tpls:inventory/design/inventoryOrdersDetail.tpl');	
-		
+		if ($result){
+			$this->smarty->display('tpls:inventory/design/inventoryOrdersDetail.tpl');	
+		}
 	}	
 	
 	public function actionProcessororderResult(){

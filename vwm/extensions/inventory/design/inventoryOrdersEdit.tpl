@@ -85,6 +85,7 @@
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
 			<input type='hidden' name="order_id" value='{$order.order_id}'>
+			<input type='hidden' name="amount" value='{$order.amount}'>
                   
         </div>	
 			 

@@ -8,7 +8,7 @@ class InventoryManager {
         }
 
 	public function getProductUsageGetAll(DateTime $beginDate, DateTime $endDate, $category, $categoryID, $productID = null) {
-            
+
         $categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_MIXGROUP." mg";
 		switch ($category) {
@@ -48,7 +48,7 @@ class InventoryManager {
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";
 
-		//echo $query;
+//		/echo $query;
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -382,6 +382,9 @@ class InventoryManager {
 		
         $query = "SELECT * FROM inventory_order WHERE order_product_id = {$product_id} AND order_facility_id = {$facility_id} ";
 		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 
 		$data = array();
@@ -406,14 +409,15 @@ class InventoryManager {
 			$productUsageData = new ProductInventory($this->db, $inventory);
 
 			if ($productUsageData->id == null){
-				$result = $productUsageData->save();
+				
+				$productUsageData->save();
 
 			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$checkOrder = $this->checkInventoryOrderByPrductId($productUsageData->product_id, $mix->facility_id);
 				
 				if (!$checkOrder){
-					
+					//Create new Order
 					$newOrder = new OrderInventory($this->db);
 					//TODO get price
 					$price = 10;
@@ -424,7 +428,7 @@ class InventoryManager {
 					$newOrder->save();
 
 					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
-					
+					//TODO NEED supplier email
 					$supplierDetails[0]['email'] = '2reckiy@gmail.com';			
 
 					$this->checkSupplierEmail($supplierDetails[0]['email'],$text);
@@ -529,8 +533,12 @@ fclose ($fp);
 	
 	public function getOrderDetailsByHash($hash){
 		
-		$query = "SELECT ioh.*, io.* , pi.amount FROM inventory_order_hash ioh , inventory_order io , product2inventory pi WHERE ioh.hash= '$hash' AND ioh.order_id = io.order_id AND io.order_product_id = pi.product_id ";
+		$query = "SELECT ioh.*, io.* , pi.amount FROM inventory_order_hash ioh , inventory_order io , product2inventory pi WHERE ioh.hash= '$hash' AND ioh.order_id = io.order_id AND io.order_product_id = pi.product_id AND io.order_status != 3";
+		
 		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 		$text = array();
 			foreach($arr as $b) {
