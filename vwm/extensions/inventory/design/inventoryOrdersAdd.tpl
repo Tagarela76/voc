@@ -76,7 +76,7 @@ $(document).ready(function() {
                 </td>
                 <td class="border_users_r border_users_b">
 
-					<input type='text' name="amount" value=''>
+					<input type='text' name="order_amount" value=''>
 				
                 </td>
             </tr>

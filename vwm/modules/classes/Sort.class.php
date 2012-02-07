@@ -171,6 +171,34 @@ class Sort {
     			break;  
     		}
     		break;
+		
+    		case 'orders':
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" io.order_id ASC";
+    			break;
+    			case 2:$subQuery.=" io.order_id DESC";
+    			break;
+    			case 3:$subQuery.=" io.order_amount ASC";
+    			break;
+    			case 4:$subQuery.=" io.order_amount DESC";
+    			break;
+    			case 5:$subQuery.=" io.order_name ASC";
+    			break;
+    			case 6:$subQuery.=" io.order_name DESC";
+    			break; 
+    			case 7:$subQuery.=" io.order_status ASC";
+    			break;
+    			case 8:$subQuery.=" io.order_status DESC";
+    			break;	
+    			case 9:$subQuery.=" io.order_created_date ASC";
+    			break;
+    			case 10:$subQuery.=" io.order_created_date DESC";
+    			break;			
+    			default:$subQuery="";
+    			break;  
+    		}
+    		break;		
     		
     		case 'chemicalInventory':
     		switch($numSort)

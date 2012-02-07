@@ -12,6 +12,7 @@ class OrderInventory {
 	private $order_product_id;
 	private $order_facility_id;
 	private $order_name;
+	private $order_amount;
 	private $order_status = self::IN_PROGRESS;
 	
 	private $order_total;
@@ -61,6 +62,7 @@ class OrderInventory {
 							order_product_id = '".mysql_escape_string($this->order_product_id)."',
 							order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
 							order_name = '".mysql_escape_string($this->order_name)."',
+							order_amount = '".mysql_escape_string($this->order_amount)."',
 							order_status = '".mysql_escape_string($this->order_status)."',
 							order_order_completed_date = '".mysql_escape_string($this->order_completed_date)."',
 							order_total	= '".mysql_escape_string($this->order_total)."'	
@@ -72,6 +74,7 @@ class OrderInventory {
 												.($this->order_product_id)."','" 
 												.($this->order_facility_id)."','" 
                                                 .($this->order_name)."','" 
+												.($this->order_amount)."','" 
 												.($this->order_status)."','"
 												.($this->order_created_date)."','"
 												.($this->order_total). "',NULL)";
@@ -154,6 +157,10 @@ class OrderInventory {
 		return $this->order_name;
 	}	
 	
+    public function get_order_amount(){
+		return $this->order_amount;
+	}	
+	
 	public function get_order_status(){
 		return $this->order_status;
 	}
@@ -199,6 +206,14 @@ class OrderInventory {
 			$this->order_name = $value;
 		} catch(Exception $e) {
 			throw new Exception("Name cannot be empty!" . $e->getMessage());
+		}
+	}
+	
+	public function set_order_amount($value) {
+		try {
+			$this->order_amount = $value;
+		} catch(Exception $e) {
+			throw new Exception("Amount cannot be empty!" . $e->getMessage());
 		}
 	}	
 	

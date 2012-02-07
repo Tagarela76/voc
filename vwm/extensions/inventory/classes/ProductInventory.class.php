@@ -68,6 +68,7 @@ class ProductInventory {
                         $query = "UPDATE product2inventory SET 
 						in_stock = '".mysql_escape_string($this->in_stock)."',
 						amount = '".mysql_escape_string($this->amount)."',
+						in_stock_unit_type = '".mysql_escape_string($this->in_stock_unit_type)."',
 						inventory_limit = '".mysql_escape_string($this->limit)."'
 						WHERE inventory_id = {$this->id}";
                 }

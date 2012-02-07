@@ -82,8 +82,7 @@ class CInventory extends Controller
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 		}
 
-	private function actionViewDetails()
-		{
+	private function actionViewDetails(){
 			
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
 
@@ -95,7 +94,10 @@ class CInventory extends Controller
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
 			//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);		
+				// SOrt
+				$sortStr = $this->sortList('orders',5);
+				
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID,null,$sortStr);		
 
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 
@@ -181,9 +183,9 @@ class CInventory extends Controller
 				break;
 			case 'orders':
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
-					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
-					$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
-					$orderDetails[0]['discount'] = $SupData[0]['discount'];				
+				$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
+				$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
+				$orderDetails[0]['discount'] = $SupData[0]['discount'];				
 				
 				
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$orderDetails[0]['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab'));
@@ -357,8 +359,9 @@ class CInventory extends Controller
 						$newOrder->order_facility_id = $form["facilityID"];
 						$newOrder->order_name = 'Order for product "'.$form["product_nr"].'"';
 						$newOrder->order_total = $form['amount'] * $price;
-						$newOrder->order_status = 1;
+						$newOrder->order_status = OrderInventory::IN_PROGRESS;
 						$newOrder->order_created_date = time();
+						$newOrder->order_amount = $form['amount'];
 						$result = $newOrder->save();
 					}
 					
@@ -397,36 +400,49 @@ class CInventory extends Controller
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails['company_id'];
-		
-		// UNITTYPE{
-		$type = new Unittype($this->db);		
+		$this->smarty->assign('companyID', $companyID);
+		$ProductInventory = new ProductInventory($this->db);
+		$inventoryManager = new InventoryManager($this->db);		
 
 	
 
-		$unitType = $type->getDefaultUnitTypelist($companyID);
-
-		
-		$unitTypeEx = $type->getUnitTypeExist($companyID);
-
-		$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
-
-		$this->smarty->assign('unitTypeEx', $unitTypeEx);
-		$this->smarty->assign('TypeEx', $unitTypeClass);		
-		//var_dump($unitTypeEx,$unittypeListDefault);
-		// }UNITTYPE
-		
-		
-		
-		$ProductInventory = new ProductInventory($this->db);
-		$inventoryManager = new InventoryManager($this->db);
 		switch ($tab){
-			case 'products':		
+			case 'products':
+				
+				
 				$productarr = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				$product = $productarr[0];
 				$this->smarty->assign("product",$product);
 
+// UNITTYPE{
 
+		$type = new Unittype($this->db);		
+
+		$res = $inventoryManager->getDefaultTypesAndUnitTypes($companyID);
+		$typeEx = $res['typeEx'];
+		$companyEx = $res['companyEx'];
+		$unitTypeEx = $res['unitTypeEx'];	
+
+		
+		$unittypeList = $inventoryManager->getUnitTypeList($companyID);
+		$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+			//$unitType = $type->getDefaultUnitTypelist($companyID);
+			//$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
+		$this->smarty->assign('unitTypeClass', $unitTypeClass);
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('typeEx', $typeEx);		
+		$this->smarty->assign('companyEx', $companyEx);
+		$this->smarty->assign('unittype', $unittypeList);
+		//$this->smarty->assign('unittype', $unittypeListDefault);
+//		/var_dump($unitTypeEx);
+		
+		$jsSources = array (
+
+
+			'modules/js/addUsage.js');
+	    $this->smarty->assign('jsSources',$jsSources);	
+// }UNITTYPE
+		
 									$form = $_POST;
 
 									if (count($form) > 0) {
@@ -439,12 +455,14 @@ class CInventory extends Controller
 										$ProductInventory->set_in_stock($form['in_stock']);
 										$ProductInventory->set_inventory_limit($form['limit']);
 										$ProductInventory->set_product_id($form['product_id']);
-										$ProductInventory->set_in_stock_unit_type($form['in_stock_unit_type']);
+										$ProductInventory->set_in_stock_unit_type($form['selectUnittype']);
 										$ProductInventory->set_inventory_id($form['inventory_id']);
 										$ProductInventory->set_facility_id($facilityID);
 										$result = $ProductInventory->save();
 										if ($result == 'true'){
 											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+										}else{
+											echo $result;
 										}
 
 									}
@@ -554,8 +572,20 @@ class CInventory extends Controller
 					$this->smarty->assign('itemForDelete',$arr);
 					$this->smarty->assign('tpl','inventory/design/deleteOrder.tpl');
 				}else{
+					
+					
 					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+					// For orders with status: Canceled or Completed denied edit function
+					if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
+						$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
+						$this->smarty->assign('status',$statuslist);
+
+						$this->smarty->assign('order',$orderDetails[0]);	
+						$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');					
+					}else{
+						throw new Exception('deny');
+					}
 					$form = $_POST;
 					if (count($form) > 0) {
 						//protected from xss
@@ -564,11 +594,11 @@ class CInventory extends Controller
 						$form['status'] = Reform::HtmlEncode($form['status']);
 						$form['order_completed_date'] = time();
 						
-							if ($form['status'] == 3){
+							if ($form['status'] == OrderInventory::COMPLETED){
 								
 							//ORDERS FOR THIS PODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
-
+	
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -579,7 +609,7 @@ class CInventory extends Controller
 								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
 
-								$addToStock = $product->in_stock - $product->usage + $product->amount;
+								$addToStock = $product->in_stock - $product->usage + $orderList[0]['order_amount'];
 								$product->in_stock = $addToStock;
 								$result = $product->save();
 								
@@ -593,13 +623,7 @@ class CInventory extends Controller
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
 					
-					}				
-					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
-
-					$this->smarty->assign('status',$statuslist);
-
-					$this->smarty->assign('order',$orderDetails[0]);	
-					$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
+					}	
 				}
 			break;			
 			
@@ -644,7 +668,7 @@ class CInventory extends Controller
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('id');	
 		$inventoryManager = new InventoryManager($this->db);
-		$sortStr = $this->sortList('inventory',3);
+
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
 			throw new Exception('deny');
@@ -657,9 +681,12 @@ class CInventory extends Controller
 			
 		switch ($tab){
 			case 'products':
+				// SOrt
+				$sortStr = $this->sortList('inventory',3);
+				//var_dump($sortStr);				
 				//Product Usage
 				$ProductInventory = new ProductInventory($this->db);
-				
+
 				// Pagination	
 				$count = $inventoryManager->getCountInventoryPrduct($facilityID);
 				$pagination = new Pagination($count);
@@ -715,6 +742,8 @@ class CInventory extends Controller
 				$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');	
 				break;
 			case 'orders':
+				// SOrt
+				$sortStr = $this->sortList('orders',5);
 				
 				// Pagination	
 				$count = $inventoryManager->getCountSupplierOrders($facilityID);
@@ -723,7 +752,7 @@ class CInventory extends Controller
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
 				$this->smarty->assign('pagination', $pagination);				
 				
-				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination);
+				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination,$sortStr);
 				
 
 				

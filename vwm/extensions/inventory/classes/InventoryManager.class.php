@@ -7,7 +7,7 @@ class InventoryManager {
                 $this->db=$db;
         }
 
-	public function getProductUsageGetAll(DateTime $beginDate, DateTime $endDate, $category, $categoryID, $productID = null) {
+	public function getProductUsageGetAll(DateTime $beginDate, DateTime $endDate, $category, $categoryID, $productID = null, $sortStr = null) {
 
         $categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_MIXGROUP." mg";
@@ -45,9 +45,12 @@ class InventoryManager {
 		if ($productID){
 			$query .= "AND p.product_id = {$productID} ";
 		}
-		$query .= " GROUP BY mg.product_id " .
-				  " ORDER BY p.product_id ";
-
+		$query .= " GROUP BY mg.product_id ";
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY p.product_id ";
+		}
 /*			
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name,p.product_id ";
 		if (!$productID){
@@ -71,7 +74,7 @@ class InventoryManager {
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";			
 */		
-//		/echo $query;
+		//echo $query;
 		$this->db->query($query);
 
 		
@@ -153,26 +156,31 @@ class InventoryManager {
 
 	}	
 	
-	public function getSupplierOrders($facilityID, $productID = null, Pagination $pagination = null) {
+	public function getSupplierOrders($facilityID, $productID = null, Pagination $pagination = null, Sort $sortStr = null) {
         $time = new DateTime('first day of this month');
 
-        $query = "SELECT io.*, pi.amount ";
+        $query = "SELECT io.* ";
 				
-		$query .=	" FROM inventory_order io , product2inventory pi " .
+		$query .=	" FROM inventory_order io" .
 
-					" WHERE io.order_facility_id = {$facilityID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} ";
+					" WHERE io.order_facility_id = {$facilityID} ";
 		if ($productID != null){
 			$query .=	" AND io.order_product_id = {$productID} ";
 		}else{
 			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
 		}
-	
-		$query .=" ORDER BY io.order_completed_date DESC";
+		if ($sortStr != null) {
+			//, Pagination $pagination = null
+			$query .= $sortStr;
+		}else{
+			$query .=" ORDER BY io.order_completed_date DESC ";
+		}	
+		
 		if (isset($pagination)) {
 			//, Pagination $pagination = null
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}			
-		
+		//echo $query;
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -517,6 +525,7 @@ class InventoryManager {
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
 					$newOrder->order_total = $productUsageData->amount * $price;
+					$newOrder->order_amount = $productUsageData->amount;
 					$newOrder->save();
 
 					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
@@ -647,5 +656,64 @@ fclose ($fp);
 		return new OrderInventory($this->db, $arr[0]);		
 	}	
 	
-		
+	public function getDefaultTypesAndUnitTypes($companyID) {
+
+		$cUnitTypeEx = new Unittype($this->db);
+		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
+		$companyEx = 1;
+		if (!$unitTypeEx) {
+			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
+			$companyEx = 0;
+		}
+
+        $k = 1;
+		$count = 1;
+		$flag = 1;
+		$typeEx = Array();
+
+                // 80% of U.S. customers use the system USAWeight, so make it default
+                //$usWgt = Array('OZS', 'LBS', 'GRAIN', 'CWT');
+				$usWgt = Array('7', '2', '12', '20');
+                for ($ii=0; $ii<count($unitTypeEx); $ii++){
+                    for ($jj=0; $jj<count($usWgt); $jj++){
+                        if ($unitTypeEx[$ii]['unittype_id'] == $usWgt[$jj]){
+                                $typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$ii]['unittype_id']);
+                        }
+                    }
+                }
+                if ($typeEx[0] == ''){
+                    $typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+                }
+
+		while ($unitTypeEx[$k]){
+			$idn = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$k]['unittype_id']);
+
+			for($j=0; $j < $count; $j++) {
+				if ($idn == $typeEx[$j] ) {
+					$flag=0;
+					break;
+				}
+			}
+			if ($flag) {
+				$typeEx[$count] = $idn;
+				$count++;
+			}
+			$k++;
+			$flag = 1;
+		}
+
+		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
+	}
+	
+	public function getUnitTypeList($companyID) {
+		$unittype = new Unittype($this->db);
+		$cUnitTypeEx = new Unittype($this->db);
+		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
+		if ($unitTypeEx === null) {
+			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
+		}
+		$unitTypeClass = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+		$unittypeList = $unittype->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
+		return $unittypeList;
+	}	
 }

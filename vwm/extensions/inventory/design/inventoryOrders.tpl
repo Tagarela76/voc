@@ -36,18 +36,22 @@
 
         <td class="users_top_blue">
            
+            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Status	
-						
+					{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
+			</a> 					
 			 
         </td>
         <td class="users_top_blue">
             
+            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Created Date	
-								
+					{if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
+			</a> 				
 			
         </td>
         <td class="users_top_blue">
@@ -97,7 +101,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.amount}
+                    {$order.order_amount}
                 </div>
             </a>
         </td>
