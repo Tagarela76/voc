@@ -40,7 +40,7 @@ class InventoryManager {
 				  " WHERE {$categoryDependedSql} " .
 					"AND p.product_id = mg.product_id " .
 					"AND m.mix_id = mg.mix_id " .
-					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'";
+					"AND m.creation_time BETWEEN ".$beginDate->getTimestamp()." AND ".$endDate->getTimestamp()." ";
 
 		if ($productID){
 			$query .= "AND p.product_id = {$productID} ";
@@ -74,11 +74,13 @@ class InventoryManager {
 		$query .= " GROUP BY mg.product_id " .
 				  " ORDER BY p.product_id ";			
 */		
-		//echo $query;
+
+		
 		$this->db->query($query);
 
 		
 		$arr = $this->db->fetch_all_array();
+
 		// If no usage for the period of the last delivery
 		if (!$arr){
 			if ($productID){
@@ -126,7 +128,7 @@ class InventoryManager {
 			$SupData = array();
 				foreach($arr as $b) { 
 					if ( $b['supplier_id'] <> $b['original_id'] ){
-						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id='" .$b['original_id']. "' ORDER BY supplier ASC";
+						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id=" .$b['original_id']. " ORDER BY supplier ASC";
 						
 						$this->db->query($query);
 						$suppliername = $this->db->fetch_all_array();
@@ -269,7 +271,7 @@ class InventoryManager {
 	
 	public function updateSupplierOrder( $data ) {
 
-            $query = "UPDATE inventory_order SET order_status = '{$data['status']}', order_completed_date = '{$data['order_completed_date']}' WHERE order_id = {$data['order_id']}";			
+            $query = "UPDATE inventory_order SET order_status = {$data['status']}, order_completed_date = {$data['order_completed_date']} WHERE order_id = {$data['order_id']}";			
 
 
 
@@ -316,7 +318,7 @@ class InventoryManager {
 				
 
 		}else{
-            $query = "UPDATE discounts2inventory SET discount = '{$form['discount']}' WHERE discount_id = {$form['discount_id']}";			
+            $query = "UPDATE discounts2inventory SET discount = {$form['discount']} WHERE discount_id = {$form['discount_id']}";			
 
 		}
 
@@ -391,7 +393,7 @@ class InventoryManager {
 		return $SupData;
 	}
 	
-	public function getInventoryPrductIdByFacility($facilityID, Pagination $ppagination = null) {
+	public function getInventoryPrductIdByFacility($facilityID, Pagination $pagination = null) {
             
         $query = "SELECT product_id FROM product2inventory WHERE facility_id = {$facilityID} ";
 		if (isset($pagination)) {
@@ -443,6 +445,7 @@ class InventoryManager {
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 								}else{
 									$dateBegin = new DateTime('first day of this month');
+									$dateBegin = $dateBegin->getTimestamp();
 								}
 							//
 								$endDate = new DateTime();
@@ -456,7 +459,7 @@ class InventoryManager {
 				AND pi.facility_id = ".$facilityID."
 				AND d.facility_id = ".$facilityID."
 				AND p.product_id = mg.product_id 
-				AND m.creation_time BETWEEN '".$dateBegin."' AND '".$endDate->getTimestamp()."'
+				AND m.creation_time BETWEEN ".$dateBegin." AND ".$endDate->getTimestamp()."
 				AND m.mix_id = mg.mix_id";	
 	//$query .= " AND m.mix_id = ".$mixID.""; 
 
@@ -547,8 +550,55 @@ class InventoryManager {
 		}
 		
 	}
-	
-	
+
+	public function unitTypeConverter($inventory) {
+		// UNITTYPE CONVERTER
+		$unittype = new Unittype($this->db);
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($inventory->product_id);
+		$densityObj = new Density($this->db, $productDetails['densityUnitID']);
+
+		//	check density
+		if (empty($productDetails['density']) || $productDetails['density'] == '0.00') {
+			$productDetails['density'] = false;
+			$isThereProductWithoutDensity = true;
+		}
+
+		// get Density Type
+		$densityType = array(
+			'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+		);
+
+
+		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
+		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+		$unitTypeConverter = new UnitTypeConverter($defaultType);
+		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
+		//quantity array in gallon
+		/* $quantitiVolumeSum = $unitTypeConverter->convertFromTo($data[0]->usage,
+		  "us gallon",
+		  $unittypeDetails['description'],
+		  $productDetails['density'],
+		  $densityType);//	in volume ;
+		 * 
+		 */
+		//$inventory->set_sum();
+
+		if ($quantitiWeightSum != null && $quantitiWeightSum != 0 && $quantitiWeightSum != ''){
+			$data = array();
+			$data['usage'] = number_format($quantitiWeightSum, 2, '.', '');
+			$data['unittype'] = $unittypeDetails['name'];
+
+			return  $data;
+		}else{
+			return false;
+		}
+		
+		//var_dump($inventory->product_nr,$quantitiWeightSum,$unittypeDetails['description'],$inventory->usage);
+
+	}
+
 	private function checkSupplierEmail($email,$text){
 		$user = new User($this->db);
 		$userDetails = $user->getUserDetails($_SESSION['user_id']);

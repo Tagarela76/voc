@@ -72,7 +72,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->in_stock_unit_type}
+                    &nbsp;{*$product->in_stock_unit_type*}{$typeName}
                 </div>
             </td>
         </tr>		

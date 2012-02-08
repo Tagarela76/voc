@@ -144,7 +144,7 @@
         <td class="border_users_b border_users_r">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.order_total} $
+                    $ {$order.order_total}
                 </div>
             </a>
         </td>

@@ -108,11 +108,13 @@ class SalesContactsManager
 	}
 	
 	public function addContact(SalesContact $c) {
+
+	//	".mysql_real_escape_string
 		if(!$c->errors) {
 
 			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,title,government_agencies,affiliations,industry,comments,state,zip_code,country_id,state_id,mail,cellphone,type) VALUES (
-						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}', '{$c->title}', '{$c->government_agencies}',  
-						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->zip_code}'  
+						'".mysql_real_escape_string($c->company)."', '".mysql_real_escape_string($c->contact)."', '".mysql_real_escape_string($c->phone)."', '".mysql_real_escape_string($c->fax)."', '".mysql_real_escape_string($c->email)."', '".mysql_real_escape_string($c->title)."', '".mysql_real_escape_string($c->government_agencies)."',  
+						'".mysql_real_escape_string($c->affiliations)."','".mysql_real_escape_string($c->industry)."','".mysql_real_escape_string($c->comments)."','".mysql_real_escape_string($c->state)."','".mysql_real_escape_string($c->zip_code)."'  
 						";
 			
 			/**
@@ -124,7 +126,7 @@ class SalesContactsManager
 			$query .= isset($country_id) ? " , ".$c->country_id : " , NULL ";
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
-			$query .= " , '{$c->mail}', '{$c->cellphone}' ,";
+			$query .= " , '".mysql_real_escape_string($c->mail)."', '".mysql_real_escape_string($c->cellphone)."' ,";
 			
 			$query .= " (select id from ".TB_BOOKMARKS_TYPE." where name = '".htmlentities($c->type)."' limit 1) ";
 			
@@ -133,6 +135,7 @@ class SalesContactsManager
 			//For Debug
 			//$this->db->beginTransaction(); 
 			//echo $query; exit;
+	
 			$this->db->query($query);
 			
 			if(mysql_error() == '') {

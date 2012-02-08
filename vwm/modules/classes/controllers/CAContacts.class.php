@@ -156,7 +156,7 @@ class CAContacts extends Controller {
 				$sub = "contacts";
 			}
 			$contact->type = $sub;
-                        var_dump($contact);
+                       
 			if(!empty($contact->errors)) {			
 				$this->smarty->assign("error_message","Errors on the form");
 			} else {

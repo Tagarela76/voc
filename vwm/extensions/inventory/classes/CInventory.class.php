@@ -93,7 +93,7 @@ class CInventory extends Controller
 		switch ($tab){
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
-			//ORDERS FOR THIS PODUCT
+			//ORDERS FOR THIS PRODUCT
 				// SOrt
 				$sortStr = $this->sortList('orders',5);
 				
@@ -109,6 +109,15 @@ class CInventory extends Controller
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				
 				$product = $productarr[0];
+				if ($product->usage != 0){
+					$result = $inventoryManager->unitTypeConverter($product);
+					if ($result){
+						$product->set_sum($result['usage']);
+						$this->smarty->assign('typeName',$result['unittype']);
+					}else{
+						throw new Exception('Can\'t convert to this type!');
+					}
+				}
 				$this->smarty->assign("product",$product);
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
@@ -197,7 +206,7 @@ class CInventory extends Controller
 
 				break;	
 			default :
-				throw new Exception('Unknown Tab for Inventory');
+				throw new Exception('404');
 				break;			
 		}
 
@@ -412,6 +421,16 @@ class CInventory extends Controller
 				
 				$productarr = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				$product = $productarr[0];
+				if ($product->usage != 0){
+					$result = $inventoryManager->unitTypeConverter($product);
+					if ($result){
+						$product->set_sum($result['usage']);
+							$this->smarty->assign('typeName',$result['unittype']);
+					}else{
+						throw new Exception('Can\'t convert to this type!');
+					}
+				}
+				
 				$this->smarty->assign("product",$product);
 
 // UNITTYPE{
@@ -424,8 +443,16 @@ class CInventory extends Controller
 		$unitTypeEx = $res['unitTypeEx'];	
 
 		
-		$unittypeList = $inventoryManager->getUnitTypeList($companyID);
-		$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+	//	$unittypeList = $inventoryManager->getUnitTypeList($companyID);
+		
+		if ( $product->in_stock_unit_type != '' && $product->in_stock_unit_type != '0'){
+			
+			$unitTypeClass = $type->getUnittypeClass($product->in_stock_unit_type);
+		}else{
+			$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+		}
+		$unittypeList = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
+		
 			//$unitType = $type->getDefaultUnitTypelist($companyID);
 			//$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
 		$this->smarty->assign('unitTypeClass', $unitTypeClass);
@@ -434,8 +461,8 @@ class CInventory extends Controller
 		$this->smarty->assign('companyEx', $companyEx);
 		$this->smarty->assign('unittype', $unittypeList);
 		//$this->smarty->assign('unittype', $unittypeListDefault);
-//		/var_dump($unitTypeEx);
-		
+
+
 		$jsSources = array (
 
 
@@ -651,7 +678,7 @@ class CInventory extends Controller
 				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
 				break;	
 			default :
-				throw new Exception('Unknown Tab for Inventory');
+				throw new Exception('404');
 				break;				
 		}
 		$this->smarty->display("tpls:index.tpl");
@@ -681,9 +708,7 @@ class CInventory extends Controller
 			
 		switch ($tab){
 			case 'products':
-				// SOrt
-				$sortStr = $this->sortList('inventory',3);
-				//var_dump($sortStr);				
+				
 				//Product Usage
 				$ProductInventory = new ProductInventory($this->db);
 
@@ -714,19 +739,33 @@ class CInventory extends Controller
 					
 				
 				}
+
 				foreach ($dataArr as $arr) {
 					$data[] = $arr[0];
 				}
 
 				//$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
-							
+
+
 					foreach ($data as $value) {
 						
 						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
 						if ($value->usage == null){
 							$value->set_sum(0);
 						}
+						
+					if ($value->usage != 0){
+						$result = $inventoryManager->unitTypeConverter($value);
+						if ($result){
+							$value->set_sum($result['usage']);
+							$tarr[] = $result['unittype'];
+							$this->smarty->assign('typeName',$tarr);
 							
+						}else{
+							throw new Exception('Can\'t convert to this type!');
+						}
+					}
+	
 					//	ini indicator (gauge)	
 
 					$pxCount = round(200 * $value->usage / $value->in_stock);
@@ -737,7 +776,7 @@ class CInventory extends Controller
 					$value->pxCount = $pxCount;	
 
 					}
-
+					
 				$this->smarty->assign('Products',$data);
 				$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');	
 				break;
@@ -766,13 +805,15 @@ class CInventory extends Controller
 				}
 
 				$orderList = $arr;
+				$jsSources = array('modules/js/checkBoxes.js');
+				$this->smarty->assign('jsSources', $jsSources);				
 				$this->smarty->assign('orderList',$orderList);
 				$this->smarty->assign('tpl','inventory/design/inventoryOrders.tpl');	
 				break;
 			case 'discounts':
 				
 				
-				$SupData = $inventoryManager->getProductsSupplierList($this->getFromRequest('id'));
+				$SupData = $inventoryManager->getProductsSupplierList($facilityID);
 
 
 				$supplierlist = array();
@@ -792,7 +833,7 @@ class CInventory extends Controller
 
 				break;	
 			default :
-				throw new Exception('Unknown Tab for Inventory');
+				throw new Exception('404');
 				break;			
 		}
 		

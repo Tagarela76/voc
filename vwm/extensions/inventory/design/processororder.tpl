@@ -96,7 +96,7 @@
 									</td>
 									<td class="border_users_l border_users_r border_users_b">
 										<div align="left">
-											&nbsp;{$order->order_total} $
+											&nbsp;$ {$order->order_total} 
 										</div>
 									</td>
 								</tr>	
@@ -116,7 +116,7 @@
 								</td>
 								<td class="border_users_l border_users_r border_users_b">
 									<div align="left">
-										&nbsp;{$order->order_total} $
+										&nbsp;$ {$order->order_total}
 									</div>
 								</td>
 							</tr>	

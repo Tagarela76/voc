@@ -30,7 +30,7 @@
         <td class="users_u_top_r_violet">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Usage, LBS	
+                	Usage
 					{if $sort==5 || $sort==6}<img src="{if $sort==5}images/asc2.gif{/if}{if $sort==6}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
@@ -91,7 +91,7 @@
                     
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->usage
 							vocLimit=$Product->in_stock
-							pxCount =$Product->pxCount }					
+							pxCount =$Product->pxCount } 
                 </div>
             </a>
         </td>
