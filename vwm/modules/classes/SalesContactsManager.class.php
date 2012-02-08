@@ -155,29 +155,29 @@ if (substr($web, 0, 4) != 'http'){
 		
 		
 		$query = "UPDATE " . TB_CONTACTS . " SET 
-					company = '{$c->company}',
-					contact = '{$c->contact}',
-					phone 	= '{$c->phone}',
-					fax		= '{$c->fax}',
-					email	= '{$c->email}',
-					website = '{$c->website}',
-					title	= '{$c->title}',
-					government_agencies = '{$c->government_agencies}',
-					affiliations	= '{$c->affiliations}',
-					industry		= '{$c->industry}',
-					comments		= '{$c->comments}',
-					state			= '{$c->state}',
-					city			= '{$c->city}',
-					zip_code		= '{$c->zip_code}',
-					country_id		= '{$c->country_id}',
+					company = '".mysql_real_escape_string($c->company)."',
+					contact = '".mysql_real_escape_string($c->contact)."',
+					phone 	= '".mysql_real_escape_string($c->phone)."',
+					fax		= '".mysql_real_escape_string($c->fax)."',
+					email	= '".mysql_real_escape_string($c->email)."',
+					website = '".mysql_real_escape_string($c->website)."',
+					title	= '".mysql_real_escape_string($c->title)."',
+					government_agencies = '".mysql_real_escape_string($c->government_agencies)."',
+					affiliations	= '".mysql_real_escape_string($c->affiliations)."',
+					industry		= '".mysql_real_escape_string($c->industry)."',
+					comments		= '".mysql_real_escape_string($c->comments)."',
+					state			= '".mysql_real_escape_string($c->state)."',
+					city			= '".mysql_real_escape_string($c->city)."',
+					zip_code		= '".mysql_real_escape_string($c->zip_code)."',
+					country_id		= '".mysql_real_escape_string($c->country_id)."',
 					state_id		= $state_id,
-					mail			= '{$c->mail}',
-					cellphone		= '{$c->cellphone}',
-					acc_number		= '{$c->acc_number}',
-					paint_supplier		= '{$c->paint_supplier}',
-					paint_system		= '{$c->paint_system}',
-					creater_id		= '{$c->creater_id}'
-					WHERE id = {$c->id}";
+					mail			= '".mysql_real_escape_string($c->mail)."',
+					cellphone		= '".mysql_real_escape_string($c->cellphone)."',
+					acc_number		= '".mysql_real_escape_string($c->acc_number)."',
+					paint_supplier		= '".mysql_real_escape_string($c->paint_supplier)."',
+					paint_system		= '".mysql_real_escape_string($c->paint_system)."',
+					creater_id		= '".mysql_real_escape_string($c->creater_id)."'
+					WHERE id = ".mysql_real_escape_string($c->id)."";
 		
 		
 		
@@ -201,8 +201,8 @@ if (substr($web, 0, 4) != 'http'){
 
 
 			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,website,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
-						'{$c->company}', '{$c->contact}', '{$c->phone}', '{$c->fax}', '{$c->email}','{$c->website}', '{$c->title}', '{$c->government_agencies}',  
-						'{$c->affiliations}','{$c->industry}','{$c->comments}','{$c->state}','{$c->city}','{$c->zip_code}','{$c->creater_id}','{$c->acc_number}','{$c->paint_supplier}','{$c->paint_system}'  
+						'".mysql_real_escape_string($c->company)."', '".mysql_real_escape_string($c->contact)."', '".mysql_real_escape_string($c->phone)."', '".mysql_real_escape_string($c->fax)."', '".mysql_real_escape_string($c->email)."','".mysql_real_escape_string($c->website)."', '".mysql_real_escape_string($c->title)."', '".mysql_real_escape_string($c->government_agencies)."',  
+						'".mysql_real_escape_string($c->affiliations)."','".mysql_real_escape_string($c->industry)."','".mysql_real_escape_string($c->comments)."','".mysql_real_escape_string($c->state)."','".mysql_real_escape_string($c->city)."','".mysql_real_escape_string($c->zip_code)."','".mysql_real_escape_string($c->creater_id)."','".mysql_real_escape_string($c->acc_number)."','".mysql_real_escape_string($c->paint_supplier)."','".mysql_real_escape_string($c->paint_system)."'  
 						";
 			
 			/**
@@ -214,7 +214,7 @@ if (substr($web, 0, 4) != 'http'){
 			$query .= isset($country_id) ? " , ".$c->country_id : " , NULL ";
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
-			$query .= " , '{$c->mail}', '{$c->cellphone}' ,";
+			$query .= " , '".mysql_real_escape_string($c->mail)."', '".mysql_real_escape_string($c->cellphone)."' ,";
 			
 			$query .= " (select id from ".TB_BOOKMARKS_TYPE." where name = '".htmlentities($c->type)."' limit 1) ";
 			
