@@ -198,7 +198,12 @@ if (substr($web, 0, 4) != 'http'){
 }else{
 	$website = $c->website;
 }*/
-
+			$query = "select id from ".TB_BOOKMARKS_TYPE." where name = '".htmlentities($c->type)."' limit 1";
+			$this->db->query($query);
+			$typeID = '';
+			if ($this->db->num_rows() > 0) {
+				$typeID = $this->db->fetch(0)->id;
+			}
 
 			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,website,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
 						'".mysql_real_escape_string($c->company)."', '".mysql_real_escape_string($c->contact)."', '".mysql_real_escape_string($c->phone)."', '".mysql_real_escape_string($c->fax)."', '".mysql_real_escape_string($c->email)."','".mysql_real_escape_string($c->website)."', '".mysql_real_escape_string($c->title)."', '".mysql_real_escape_string($c->government_agencies)."',  
@@ -214,10 +219,8 @@ if (substr($web, 0, 4) != 'http'){
 			$query .= isset($country_id) ? " , ".$c->country_id : " , NULL ";
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
-			$query .= " , '".mysql_real_escape_string($c->mail)."', '".mysql_real_escape_string($c->cellphone)."' ,";
-			
-			$query .= " (select id from ".TB_BOOKMARKS_TYPE." where name = '".htmlentities($c->type)."' limit 1) ";
-			
+			$query .= " , '".mysql_real_escape_string($c->mail)."', '".mysql_real_escape_string($c->cellphone)."' , '{$typeID}'";		
+
 			$query .= " )";
 			
 			//For Debug
@@ -226,6 +229,15 @@ if (substr($web, 0, 4) != 'http'){
 			$this->db->query($query);
 			
 			if(mysql_error() == '') {
+				$contactID = $this->db->getLastInsertedID();
+				$c->id = $contactID;
+				
+				//	save to MM table
+				if ($typeID == 4 || $typeID == '') {
+					$this->saveSalesContactType($contactID);
+				} else {
+					$this->saveSalesContactType($contactID, array($typeID));
+				}
 				return true;
 			} else {
 				throw new Exception(mysql_error());
