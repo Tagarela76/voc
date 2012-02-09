@@ -347,14 +347,14 @@ class CInventory extends Controller
 				if ( $error == null ){
 				$form = $_POST;
 				if (count($form) > 0) {
+
 					
-					$newOrder = new OrderInventory($this->db);
 					$ProductInventory = new ProductInventory($this->db);
 					$checkInventory = $inventoryManager->checkInventory($form['order_product_id'], $form["facilityID"]);
 					
 					if (empty($checkInventory)){
 						
-						$ProductInventory->set_amount($form['amount']);
+						$ProductInventory->set_amount($form['order_amount']);
 						$ProductInventory->set_product_id($form['order_product_id']);
 						$ProductInventory->set_facility_id($form["facilityID"]);
 						$ProductInventory->save();
@@ -363,14 +363,18 @@ class CInventory extends Controller
 
 					if (!$isThereActiveOrders){
 						//TODO get price
+						
 						$price = 10;
-						$newOrder->order_product_id =  $form['order_product_id'];
+						$newOrder = new OrderInventory($this->db,$form);
+				
 						$newOrder->order_facility_id = $form["facilityID"];
 						$newOrder->order_name = 'Order for product "'.$form["product_nr"].'"';
-						$newOrder->order_total = $form['amount'] * $price;
-						$newOrder->order_status = OrderInventory::IN_PROGRESS;
+						$newOrder->order_total = $form['order_amount'] * $price;
+					/*	$newOrder->order_product_id =  $form['order_product_id'];
+					 	$newOrder->order_status = OrderInventory::IN_PROGRESS;
 						$newOrder->order_created_date = time();
-						$newOrder->order_amount = $form['amount'];
+						$newOrder->order_amount = $form['order_amount'];*/
+
 						$result = $newOrder->save();
 					}
 					
@@ -381,7 +385,8 @@ class CInventory extends Controller
 					}
 				}
 		}
-
+		$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
+	    $this->smarty->assign('jsSources',$jsSources);
 		$this->smarty->assign('products', $productLst);
 		$this->smarty->assign('tpl', "inventory/design/inventoryOrdersAdd.tpl");
 		$this->smarty->display("tpls:index.tpl");
@@ -462,9 +467,8 @@ class CInventory extends Controller
 		$this->smarty->assign('unittype', $unittypeList);
 		//$this->smarty->assign('unittype', $unittypeListDefault);
 
-
 		$jsSources = array (
-
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
 
 			'modules/js/addUsage.js');
 	    $this->smarty->assign('jsSources',$jsSources);	
@@ -545,7 +549,9 @@ class CInventory extends Controller
 			case 'discounts':
 				
 				
-				$supplierDiscount = $inventoryManager->getSupplierDiscounts($facilityID,$this->getFromRequest('id'));
+				//$supplierDiscount = $inventoryManager->getSupplierDiscounts($facilityID,$this->getFromRequest('id'));
+				$supplierDiscount = $inventoryManager->getProductsSupplierList($facilityID,$this->getFromRequest('id'));
+				$discount = $supplierDiscount[0];
 
 									$form = $_POST;
 
@@ -558,15 +564,16 @@ class CInventory extends Controller
 										$form['supplier'] = Reform::HtmlEncode($form['supplier']);
 
 										$result = $inventoryManager->updateSupplierDiscounts($form);
-									
+					
 										if ($result == 'true'){
 											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
 										}
 
 									}				
 				
-				
-				$this->smarty->assign('supplier',$supplierDiscount);	
+				$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
+				$this->smarty->assign('jsSources',$jsSources);				
+				$this->smarty->assign('supplier',$discount);	
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscountsEdit.tpl');	
 			break;
 			case 'orders':
@@ -602,6 +609,7 @@ class CInventory extends Controller
 					
 					
 					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+				
 					// For orders with status: Canceled or Completed denied edit function
 					if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
 						$statuslist = $inventoryManager->getSupplierOrdersStatusList();
@@ -786,7 +794,7 @@ class CInventory extends Controller
 				
 				// Pagination	
 				$count = $inventoryManager->getCountSupplierOrders($facilityID);
-
+				
 				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
 				$this->smarty->assign('pagination', $pagination);				
@@ -811,15 +819,14 @@ class CInventory extends Controller
 				$this->smarty->assign('tpl','inventory/design/inventoryOrders.tpl');	
 				break;
 			case 'discounts':
+				$sortStr = $this->sortList('discounts',4);
 				
-				
-				$SupData = $inventoryManager->getProductsSupplierList($facilityID);
-
+				$SupData = $inventoryManager->getProductsSupplierList($facilityID, null,$sortStr);
 
 				$supplierlist = array();
 					foreach ( $SupData as $supplier) {
 
-						$supplier['url'] = "?action=edit&category=inventory&id=".$supplier['supplier_id']."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
+						$supplier['url'] = "?action=edit&category=inventory&id=".$supplier['product_id']."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
 						$supplierlist[] = $supplier;
 						
 					}				

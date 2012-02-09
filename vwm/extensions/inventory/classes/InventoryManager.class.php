@@ -99,28 +99,28 @@ class InventoryManager {
 		return $productUsageData;
 	}
 	
-	public function getProductsSupplierList($facilityID, $productID = null) {
-        if ($productID){ 
-			$categoryDependedSql = "";
+	public function getProductsSupplierList($facilityID, $productID = null , $sortStr = null) {
 
-			$tables = " ".TB_DEPARTMENT." d "; //m.department_id = d.department_id AND 
-			$categoryDependedSql = " d.facility_id = {$facilityID} "; //m.department_id = d.department_id AND 
-			$tables .= ", ".TB_PRODUCT." p, " . TB_SUPPLIER . " s";
+			$tables = " ".TB_PRODUCT." p, " . TB_SUPPLIER . " s ,  product2inventory pi "; //m.department_id = d.department_id AND 
+			
+			
 
 
-			$query	=    "SELECT DISTINCT p.supplier_id, s.original_id, s.supplier, di.discount ";
+			$query	=    "SELECT p.supplier_id, p.product_nr , s.original_id , di.discount, di.discount_id, s.supplier, pi.product_id ";
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
-						" ON di.supplier_id =  s.original_id AND di.facility_id = {$facilityID} ".
-						" WHERE {$categoryDependedSql} " ;
-
-			$query .=   " AND p.product_id  = {$productID} ";
-
-						//" AND p.product_id = mg.product_id " .
-						//" AND m.mix_id = mg.mix_id ".
-			$query .=			" AND p.supplier_id  = s.supplier_id ";
-
+						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} ".
+						" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} " ;
+			if ($productID){
+				$query .=   " AND p.product_id  = {$productID} ";
+			}
+				$query .=   " AND p.product_id = pi.product_id ";
+			
+			if ($sortStr){
+				$query .=   " {$sortStr} ";
+			}
+			
 			$this->db->query($query);
 //echo $query;
 			$arr = $this->db->fetch_all_array();
@@ -128,7 +128,7 @@ class InventoryManager {
 			$SupData = array();
 				foreach($arr as $b) { 
 					if ( $b['supplier_id'] <> $b['original_id'] ){
-						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id=" .$b['original_id']. " ORDER BY supplier ASC";
+						$query = "SELECT supplier FROM " . TB_SUPPLIER . " WHERE original_id=supplier_id AND original_id=" .$b['original_id']. " ";
 						
 						$this->db->query($query);
 						$suppliername = $this->db->fetch_all_array();
@@ -142,17 +142,18 @@ class InventoryManager {
 
 			return $SupData;		
 		
-		
+/*		
 		}else{		
 			$query	=	"SELECT DISTINCT di.*, s.supplier ";
 
 			$query .=	" FROM discounts2inventory di, " . TB_SUPPLIER . " s   " .
 						" WHERE di.facility_id =  {$facilityID} AND di.supplier_id = s.original_id AND s.supplier_id = s.original_id";	
 			$this->db->query($query);
-
+echo $query;
 			$SupData = $this->db->fetch_all_array();
-			return $SupData;						
-		}
+			return $SupData;	
+*/				
+
 
 	
 
@@ -226,11 +227,11 @@ class InventoryManager {
 	public function getSupplierOrderDetails($facilityID,$orderID) {
         $time = new DateTime('first day of this month');
 
-        $query = "SELECT io.*, pi.amount ";
+        $query = "SELECT io.*";
 				
-		$query .=	" FROM inventory_order io , product2inventory pi " .
+		$query .=	" FROM inventory_order io " .
 
-					" WHERE io.order_id = {$orderID} AND pi.product_id = io.order_product_id AND pi.facility_id = {$facilityID} AND io.order_created_date >= {$time->getTimestamp()}";
+					" WHERE io.order_id = {$orderID}  AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
 	
@@ -294,7 +295,7 @@ class InventoryManager {
 				  " WHERE s.supplier_id =  {$supplierID} ";
 
 
-		//echo $query;
+		echo $query;
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -314,11 +315,11 @@ class InventoryManager {
 
 										
 		if ($form['discount_id'] == null){
-			$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['facilityID'] .",". $form['supplier_id'] .",". $form['discount'] .") ";
+			$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
 				
 
 		}else{
-            $query = "UPDATE discounts2inventory SET discount = {$form['discount']} WHERE discount_id = {$form['discount_id']}";			
+            $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." WHERE discount_id = {$form['discount_id']}";			
 
 		}
 
@@ -359,8 +360,8 @@ class InventoryManager {
 
 		}else{
             $query = "UPDATE email2inventory SET 
-			email_all = '".mysql_escape_string($form['email_all'])."',
-			email_manager = '".mysql_escape_string($form['email_manager'])."'
+			email_all = '".  mysql_real_escape_string($form['email_all'])."',
+			email_manager = '".mysql_real_escape_string($form['email_manager'])."'
 			WHERE email_id = {$form['email_id']} ";			
 
 		}

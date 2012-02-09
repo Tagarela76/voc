@@ -28,7 +28,7 @@ $(document).ready(function() {
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&facilityID={$request.facilityID}&tab={$request.tab}'>
+	<form method='POST' id='formA' action='?action={$request.action}&category=inventory&id={$request.id}&facilityID={$request.facilityID}&tab={$request.tab}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
@@ -76,8 +76,29 @@ $(document).ready(function() {
                 </td>
                 <td class="border_users_r border_users_b">
 
-					<input type='text' name="order_amount" value=''>
-				
+					<input type='text' name="order_amount" id="order_amount" value=''>
+						{literal}
+							<script type="text/javascript">
+								$("#order_amount").numeric();
+								function check_amount(){
+									var amount = $("#order_amount").val();
+									var form = $("#formA");
+									if(amount == "" && amount == 0) {
+
+										$("#error_amount .error_text").text("Type amount!");
+										$("#error_amount").css('display','inline');
+										$("#order_amount").focus();
+										$("#order_amount").select();
+										return false;
+									}else{
+										form.submit();
+									}
+								}		
+							</script>	
+						{/literal}
+                    <div class="error_amount" id="error_amount" style="display: none;">
+                        <span id="" class="error_text">Error!</span>
+                    </div>						
                 </td>
             </tr>
 		
@@ -95,10 +116,10 @@ $(document).ready(function() {
         <div align="right" class="margin7">
  <span style="color: red; font-size: 14px;">{if $request.action eq "addItem"}Be careful! Will be sent a letter with order's info to the supplier!{else}
 	 Be careful! You must to phone to the supplier, to inform about new order! {/if}</span>
-				<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=inventory&tab={$request.tab}'">
+			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=inventory&tab={$request.tab}'">
 			
       	
-            <input type='submit' class="button" value='Save'>
+            <input type='button' class="button" value='Save' onclick='check_amount();'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
 			<input type='hidden' name="order_id" value='{$order.order_id}'>
 			<input type="hidden" name="product_nr" id="product_nr"  value=""/>

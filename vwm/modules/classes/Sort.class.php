@@ -199,6 +199,30 @@ class Sort {
     			break;  
     		}
     		break;		
+		
+    		case 'discounts':
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" product_id ASC";
+    			break;
+    			case 2:$subQuery.=" product_id DESC";
+    			break;
+    			case 3:$subQuery.=" supplier ASC";
+    			break;
+    			case 4:$subQuery.=" supplier DESC";
+    			break;
+    			case 5:$subQuery.=" product_nr ASC";
+    			break;
+    			case 6:$subQuery.=" product_nr DESC";
+    			break;
+    			case 7:$subQuery.=" discount ASC";
+    			break;
+    			case 8:$subQuery.=" discount DESC";
+    			break;
+    			default:$subQuery=" product_id ASC";
+    			break;  
+    		}
+    		break;		
     		
     		case 'chemicalInventory':
     		switch($numSort)

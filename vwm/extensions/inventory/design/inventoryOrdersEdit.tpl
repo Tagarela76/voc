@@ -62,7 +62,7 @@
                 </td>
                 <td class="border_users_r border_users_b">
 
-					{$order.amount}
+					{$order.order_amount}
 				
                 </td>
             </tr>

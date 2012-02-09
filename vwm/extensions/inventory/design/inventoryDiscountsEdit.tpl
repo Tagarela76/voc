@@ -40,6 +40,16 @@
 				
                 </td>
             </tr>
+            <tr>
+                <td class="border_users_r border_users_l border_users_b" height="20">
+                    Product Name :
+                </td>
+                <td class="border_users_r border_users_b">
+
+					{$supplier.product_nr}
+				
+                </td>
+            </tr>			
 	
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
@@ -48,18 +58,11 @@
                 <td class="border_users_r border_users_b">
 
                     <div align="left">
-                        <input type='text' name='discount' value='{$supplier.discount}'> %
+                        <input type='text' name='discount' id='discount' value='{$supplier.discount}'> %
                     </div>
-					{if $validStatus.summary eq 'false'}
-                    {if $validStatus.inventory_desc eq 'failed'}
-                    {*ERORR*}
-                    <div class="error_img">
-                        <span class="error_text">Error!</span>
-                    </div>
-                    {*/ERORR*}
-                    {/if}
-                    {/if}
-
+<script type="text/javascript">
+								$("#discount").numeric();
+</script>
                 </td>
             </tr>				
 			
@@ -78,8 +81,9 @@
       	
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
-			<input type='hidden' name="supplier_id" value='{$request.id}'>
+			<input type='hidden' name="product_id" value='{$request.id}'>
 			<input type='hidden' name="discount_id" value='{$supplier.discount_id}'>
+			<input type='hidden' name="supplier_id" value='{$supplier.original_id}'>
 			<input type='hidden' name="supplier" value='{$supplier.supplier}'>
         </div>									
     </form>

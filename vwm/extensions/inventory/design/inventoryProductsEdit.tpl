@@ -59,10 +59,12 @@
                 <td class="border_users_r border_users_b">
 
                     <div align="left">
-                        <input type='text' name='in_stock' value='{$product->in_stock}'>
+                        <input type='text' name='in_stock' id='in_stock' value='{$product->in_stock}'>
 										
                     </div>
-
+							<script type="text/javascript">
+										$("#in_stock").numeric();
+							</script>
 								
 				
 								
@@ -90,8 +92,12 @@
                 <td class="border_users_r border_users_b">
 
                     <div align="left">
-                        <input type='text' name='limit' value='{$product->limit}'>
+                        <input type='text' name='limit' id='limit' value='{$product->limit}'>
                     </div>
+							<script type="text/javascript">
+										$("#limit").numeric();
+							</script>
+													
 					{if $validStatus.summary eq 'false'}
                     {if $validStatus.inventory_desc eq 'failed'}
                     {*ERORR*}
@@ -111,8 +117,11 @@
                 <td class="border_users_r border_users_b">
 
                     <div align="left">
-                        <input type='text' name='amount' value='{$product->amount}'>
+                        <input type='text' name='amount' id='amount' value='{$product->amount}'>
                     </div>
+							<script type="text/javascript">
+										$("#amount").numeric();
+							</script>					
 					{if $validStatus.summary eq 'false'}
                     {if $validStatus.inventory_desc eq 'failed'}
                     {*ERORR*}
