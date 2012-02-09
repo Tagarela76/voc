@@ -12,13 +12,15 @@
 									$request.category=="department" && $permissions.department.edit || 
 									$request.category=="equipment" 	&& $permissions.equipment.edit || 
 									$request.category=="accessory" 	&& $permissions.data.edit ||
-									$request.category=="inventory" 	&& $permissions.data.edit || 
+									$request.category=="inventory"							  || 
 									$request.category=="mix" 		&& $permissions.data.edit || 
 									$request.category=="logbook" || 
 									($request.category=="wastestorage" && $data->active!=0)}	
-																		
-									{if $editUrl}									
-									<input type="button" class="button" value="Edit" onclick="location.href='{$editUrl}'">
+																
+									{if $editUrl}
+										{if $order.order_status != 3 && $order.order_status != 4}
+											<input type="button" class="button" value="Edit" onclick="location.href='{$editUrl}'">
+										{/if}	
 									{else}
 									<input type="button" class="button" value="Edit" onclick="location.href='?action=edit&category={$request.category}&id={$request.id}'">
 									{/if}								                            

@@ -45,8 +45,24 @@
 	
 	$xnyo->filter_get_var('action', 'text');
 	$xnyo->filter_post_var('action', 'text');
+	
+// Inventory Order Email response handler
+	/*
+	if (isset($_GET['action']) && $_GET['action'] == 'processororder'){
+		$action=$_GET['action'];
+		if (isset($_GET['bookmark'])){	
+			$className="C".ucfirst($_GET['bookmark']);	
+			if (class_exists($className)){
+					$controllerObj=new $className($smarty,$xnyo,$db,$user,$action);
+					$controllerObj->runAction();
+			}	
+	
+		}	
 
-
+	$smarty->display("tpls:processororder.tpl");
+	die();		
+	}	
+*/
 	//	deny access to system while updating jobs
 	if (MAINTENANCE) 
 	{
@@ -235,8 +251,10 @@
 			//$smarty->assign("action", $_GET["action"]);
 			$user = new User($db, $xnyo, $access, $auth);
 			
-								
-			if (!$user->isLoggedIn() && $_GET["action"] != 'auth' && !(($_GET['action'] == "sendContactEmail" || $_GET['action'] == "requestRepresentativeForms") and $_GET['category'] == "common")) {
+			// Filter for free access to class 					
+			if (!$user->isLoggedIn() && $_GET["action"] != 'auth' 
+					&& !(($_GET['action'] == "sendContactEmail" || $_GET['action'] == "requestRepresentativeForms") && $_GET['category'] == "common")
+					&& !(($_GET['action'] == 'processororder' || $_GET['action'] == 'processororderResult') && $_GET['category'] == "inventory")) {
 				for($l = 0; $l<strlen($queryStr); $l++) {
 					if ($queryStr[$l] == '&') $queryStr[$l] = '!'; 
 				}
@@ -271,7 +289,7 @@
 					$controllerObj=new $className($smarty,$xnyo,$db,$user,$action);
 					$controllerObj->runAction();
 				}
-				else
+				else 
 					throw new Exception('404');				
 			}
 			else 

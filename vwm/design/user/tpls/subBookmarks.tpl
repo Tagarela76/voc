@@ -1,4 +1,4 @@
-{*INVENTORY MODULE*}	
+{*INVENTORY MODULE*}
 	{if $show.inventory}
 		{if $permissions.data.view}
 			{include file="tpls:inventory/design/subBookmark.tpl"}                     	

@@ -784,8 +784,6 @@ class Product extends ProductProperties {
 		return $result;
 	}
 
-
-
 	private function checkIsProduct2CompanyLink($productID = false, $companyID = false) {
 
 		$productID=mysql_escape_string($productID);
@@ -1008,7 +1006,7 @@ class Product extends ProductProperties {
 					'name'						=>	$productData->name,
 					'voclx'						=>	$productData->voclx,
 					'vocwx'						=>	$productData->vocwx,
-					'supplier_id'				=>	$productData->supplier,	//clean it
+					'supplier_id'				=>	$productData->supplier_id,	//clean it, was $productData->supplier why?
 					'supplier'					=>	$productData->supplier,
 					'coating'					=>	$productData->coat_desc,
 					'percent_volatile_weight'	=>	$productData->percent_volatile_weight,

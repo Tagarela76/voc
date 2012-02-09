@@ -54,7 +54,7 @@ class Inventory implements iInventory {
 	
 	const PAINT_MATERIAL = 'material';
 	const PAINT_ACCESSORY = 'accessory';
-	
+
 	/**
 	 * 
 	 * constructor

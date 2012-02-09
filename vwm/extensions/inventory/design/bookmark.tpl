@@ -1,5 +1,5 @@
 <td>
-    <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=inventory&tab=material">
+    <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=inventory&tab=products">
     	
 		{if $request.bookmark != "inventory"}
         

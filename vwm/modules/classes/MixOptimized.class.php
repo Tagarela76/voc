@@ -281,7 +281,7 @@
 
 				$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
 			}
-
+			
 			return $mixID;
 		}
 
@@ -414,7 +414,8 @@
 
 				$this->db->query($insertProductsQuery);
 			}
-
+			
+			$this->mix_id = $mixID;
 			return $mixID;
 		}
 

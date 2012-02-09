@@ -96,4 +96,4 @@
 {*PAGINATION*}
 {include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
-</form>	{*close FORM tag opened at controlCategoriesList.tpl*}
+</form>	

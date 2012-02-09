@@ -191,6 +191,8 @@ if (substr($web, 0, 4) != 'http'){
 	}
 	
 	public function addContact(SalesContact $c) {
+
+	//	".mysql_real_escape_string
 		if(!$c->errors) {
 /*$web = $c->website;
 if (substr($web, 0, 4) != 'http'){
@@ -205,9 +207,11 @@ if (substr($web, 0, 4) != 'http'){
 				$typeID = $this->db->fetch(0)->id;
 			}
 
+
 			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,website,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,country_id,state_id,mail,cellphone,type) VALUES (
 						'".mysql_real_escape_string($c->company)."', '".mysql_real_escape_string($c->contact)."', '".mysql_real_escape_string($c->phone)."', '".mysql_real_escape_string($c->fax)."', '".mysql_real_escape_string($c->email)."','".mysql_real_escape_string($c->website)."', '".mysql_real_escape_string($c->title)."', '".mysql_real_escape_string($c->government_agencies)."',  
 						'".mysql_real_escape_string($c->affiliations)."','".mysql_real_escape_string($c->industry)."','".mysql_real_escape_string($c->comments)."','".mysql_real_escape_string($c->state)."','".mysql_real_escape_string($c->city)."','".mysql_real_escape_string($c->zip_code)."','".mysql_real_escape_string($c->creater_id)."','".mysql_real_escape_string($c->acc_number)."','".mysql_real_escape_string($c->paint_supplier)."','".mysql_real_escape_string($c->paint_system)."'  
+
 						";
 			
 			/**
@@ -219,13 +223,16 @@ if (substr($web, 0, 4) != 'http'){
 			$query .= isset($country_id) ? " , ".$c->country_id : " , NULL ";
 			$query .= isset($state_id) ? " , ".$c->state_id : " , NULL ";
 			
+
 			$query .= " , '".mysql_real_escape_string($c->mail)."', '".mysql_real_escape_string($c->cellphone)."' , '{$typeID}'";		
+
 
 			$query .= " )";
 			
 			//For Debug
 			//$this->db->beginTransaction(); 
 			//echo $query; exit;
+	
 			$this->db->query($query);
 			
 			if(mysql_error() == '') {
