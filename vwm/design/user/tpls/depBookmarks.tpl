@@ -40,13 +40,13 @@
                     </td>
                     {/if}
 					
-					{*INVENTORY MODULE*}	
+					{*INVENTORY MODULE}	
 					{if $show.inventory}
                     	{if $permissions.data.view}
 							{include file="tpls:inventory/design/depBookmark.tpl"}                     
                     	{/if}          
 					{/if}   
-                	{*/INVENTORY MODULE*}
+                	{/INVENTORY MODULE*}
                                         
                     
                     {if $permissions.equipment.view}

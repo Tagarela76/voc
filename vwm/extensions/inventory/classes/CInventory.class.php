@@ -117,7 +117,12 @@ class CInventory extends Controller
 					}else{
 						throw new Exception('Can\'t convert to this type!');
 					}
+				}else{
+					$type = new Unittype($this->db);
+					$typeName = $type->getUnittypeDetails($product->in_stock_unit_type);
+					$this->smarty->assign('typeName',$typeName['name']);
 				}
+		
 				$this->smarty->assign("product",$product);
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
@@ -422,19 +427,32 @@ class CInventory extends Controller
 
 		switch ($tab){
 			case 'products':
+
+			//ORDERS FOR THIS PRODUCT
+
 				
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);		
+
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+				}else{
+					$dateBegin = $ProductInventory->period_start_date;
+				}
+
+				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				
-				$productarr = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				$product = $productarr[0];
 				if ($product->usage != 0){
 					$result = $inventoryManager->unitTypeConverter($product);
 					if ($result){
 						$product->set_sum($result['usage']);
-							$this->smarty->assign('typeName',$result['unittype']);
+						$this->smarty->assign('typeName',$result['unittype']);
 					}else{
 						throw new Exception('Can\'t convert to this type!');
 					}
-				}
+				}				
+
 				
 				$this->smarty->assign("product",$product);
 
@@ -457,7 +475,7 @@ class CInventory extends Controller
 			$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 		}
 		$unittypeList = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
-		
+	
 			//$unitType = $type->getDefaultUnitTypelist($companyID);
 			//$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
 		$this->smarty->assign('unitTypeClass', $unitTypeClass);
@@ -761,19 +779,23 @@ class CInventory extends Controller
 						if ($value->usage == null){
 							$value->set_sum(0);
 						}
-						
+					// UNITTEPY	
 					if ($value->usage != 0){
 						$result = $inventoryManager->unitTypeConverter($value);
 						if ($result){
 							$value->set_sum($result['usage']);
-							$tarr[] = $result['unittype'];
-							$this->smarty->assign('typeName',$tarr);
+							$typeNameArr[$value->product_id] = $result['unittype'];
+							
 							
 						}else{
 							throw new Exception('Can\'t convert to this type!');
 						}
+					}else{
+						$type = new Unittype($this->db);
+						$typeName = $type->getUnittypeDetails($value->in_stock_unit_type);
+						$typeNameArr[$value->product_id] = $typeName['name'];
 					}
-	
+					$this->smarty->assign('typeName',$typeNameArr);
 					//	ini indicator (gauge)	
 
 					$pxCount = round(200 * $value->usage / $value->in_stock);

@@ -47,7 +47,7 @@
                 <td class="border_users_r border_users_b">
 
                     
-                    {$product->usage}
+                   {if $product->usage}{$product->usage}{else}0{/if}
 
 
                 </td>

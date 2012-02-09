@@ -88,10 +88,15 @@
         <td class="border_users_r border_users_b">
             <a href="{$Product->url}" class="id_company1">
                 <div style="width:100%;">
-                    
+					<div style="float:right;padding: 2px 0px 0px 5px; width: 70px;">
+						{foreach from=$typeName item=type key=key}
+							{if $Product->product_id == $key}, {$type}{/if}
+						{/foreach}	                    
+					</div>	
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->usage
 							vocLimit=$Product->in_stock
-							pxCount =$Product->pxCount } 
+							pxCount =$Product->pxCount }
+							
                 </div>
             </a>
         </td>
