@@ -52,7 +52,8 @@
 			
 			
 			<td>Paint Supplier</td>
-			<td class="users_u_top_r_blue">Paint System</td>			
+			<td >Paint System</td>	
+			<td class="users_u_top_r_blue">Jobber</td>
 		</tr>
 		</thead>
 		
@@ -227,9 +228,12 @@
 				<a href="{$contacts[i]->viewDetailsUrlSales}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_supplier}</div ></a>
 			</td>	
 			
-			<td class="border_users_b border_users_l border_users_r" >
+			<td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrlSales}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_system}</div ></a>
 			</td>
+			<td class="border_users_b border_users_l border_users_r" >
+				<a href="{$contacts[i]->viewDetailsUrlSales}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->jobber}</div ></a>
+			</td>			
 	</tr>
 {/section}		 
 {section name=i loop=$category}						

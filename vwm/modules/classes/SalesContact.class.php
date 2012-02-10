@@ -29,6 +29,7 @@ class SalesContact
 	
 	private $paint_supplier; //List of contact's suppliers
 	private $paint_system; //contact paint system	
+	private $jobber; //
 	
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
@@ -339,6 +340,18 @@ class SalesContact
 		}
 		
 	}		
+	
+	private function set_jobber($value) {
+		try {
+			
+			//$this->checkNumber($value);
+			$this->jobber = $value;
+		} catch(Exception $e) {
+			$this->errors["jobber"] = $e->getMessage();
+			throw new Exception("Jobber cannot be empty! " . $e->getMessage());
+		}
+		
+	}	
 
 	
 	private function set_state_id($value) {

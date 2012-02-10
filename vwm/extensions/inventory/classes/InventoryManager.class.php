@@ -75,7 +75,7 @@ class InventoryManager {
 				  " ORDER BY p.product_id ";			
 */		
 
-		
+		//echo $query;
 		$this->db->query($query);
 
 		
@@ -443,7 +443,8 @@ echo $query;
 
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 
-									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+									//$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+									$dateBegin = $orderList[0]['order_completed_date'];
 								}else{
 									$dateBegin = new DateTime('first day of this month');
 									$dateBegin = $dateBegin->getTimestamp();
@@ -451,7 +452,7 @@ echo $query;
 							//
 								$endDate = new DateTime();
 						
-						
+				
 	$query = "SELECT sum(mg.quantity_lbs) as sum, mg.quantity_lbs, p.product_nr, pi.* 
 				FROM mix m, mixgroup mg, department d , product p 
 				LEFT JOIN product2inventory pi ON p.product_id = pi.product_id 
@@ -534,7 +535,7 @@ echo $query;
 
 					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 					//TODO NEED supplier email
-					$supplierDetails[0]['email'] = '2reckiy@gmail.com';			
+					$supplierDetails[0]['email'] = 'jgypsyn@gyantgroup.com';			
 
 					$this->checkSupplierEmail($supplierDetails[0]['email'],$text);
 				}else{
@@ -616,13 +617,12 @@ echo $query;
 		$userEmailb64 = base64_encode($userEmail);
 
 
-		$links  = "\r\n"."For confirm this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+		$links  = "\r\n"."For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
 		$text .= $links;
 		$h = 'Cc: '.$userEmail. "\r\n";
 		$subject = "*** New Order on www.vocwebmanager.com *** \r\n\r\n";
 
-// Информация о трафике на пользовательском сайте
-
+/*
 $data = $text;
 $data.= $h ;
 $data.= $subject ;
@@ -634,8 +634,10 @@ $file="text.txt";
 $fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "a" - добовлять к тексту), мы создаем файл
 fwrite($fp, $data);
 fclose ($fp);
+*/	
 		
-		mail($to, $subject, $text, $h);
+		mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
+		mail('denis.nt@kttsoft.com ', $subject, $text, $h);
 
 	}	
 	

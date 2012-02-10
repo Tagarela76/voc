@@ -52,7 +52,8 @@
 			
 			
 			<td>Paint Supplier</td>
-			<td class="users_u_top_r_blue">Paint System</td>
+			<td >Paint System</td>
+			<td class="users_u_top_r_blue">Jobber</td>
 			<!--  <td>Affiliations</td>
 			
 			<td  class="">Government Agencies</td>-->
@@ -138,8 +139,12 @@
 				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_supplier}</div ></a>
 			</td>	
 			
-			<td class="border_users_b border_users_l border_users_r" >
+			<td class="border_users_b border_users_l" >
 				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->paint_system}</div ></a>
+			</td>		
+			
+			<td class="border_users_b border_users_l border_users_r" >
+				<a href="{$contacts[i]->viewDetailsUrl}{if $page }&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$contacts[i]->jobber}</div ></a>
 			</td>			
 
 	</tr>
@@ -164,7 +169,7 @@
 
 {*BEGIN	EMPTY LIST*}
 		<tr class="">
-		    <td  class="border_users_l border_users_r" style='text-align:center; vertical-align:middle;' colspan="19" >No Contacts</td>
+		    <td  class="border_users_l border_users_r" style='text-align:center; vertical-align:middle;' colspan="20" >No Contacts</td>
 		</tr>
 {*END	EMPTY LIST*}
 
@@ -174,7 +179,7 @@
 		<tfoot>
 		<tr>
 			  <td class="users_u_bottom"></td>
-        	  <td colspan="19" height="30" class="users_u_bottom_r"></td>
+        	  <td colspan="20" height="30" class="users_u_bottom_r"></td>
 		</tr>	
 		</tfoot>		
 	</table>

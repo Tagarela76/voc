@@ -93,6 +93,7 @@ class CInventory extends Controller
 		switch ($tab){
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
+				$error = false;
 			//ORDERS FOR THIS PRODUCT
 				// SOrt
 				$sortStr = $this->sortList('orders',5);
@@ -115,7 +116,9 @@ class CInventory extends Controller
 						$product->set_sum($result['usage']);
 						$this->smarty->assign('typeName',$result['unittype']);
 					}else{
-						throw new Exception('Can\'t convert to this type!');
+						//throw new Exception('Can\'t convert to this type!');
+						$error[] = 'Can\'t convert to this type! Product : '.$product->product_nr;
+					
 					}
 				}else{
 					$type = new Unittype($this->db);
@@ -127,7 +130,10 @@ class CInventory extends Controller
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$product->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
 
-				
+				if ($error){
+					$this->smarty->assign('error',$error);
+					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
+				}					
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
@@ -430,7 +436,7 @@ class CInventory extends Controller
 
 			//ORDERS FOR THIS PRODUCT
 
-				
+				$error = false;
 				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);		
 
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
@@ -449,10 +455,14 @@ class CInventory extends Controller
 						$product->set_sum($result['usage']);
 						$this->smarty->assign('typeName',$result['unittype']);
 					}else{
-						throw new Exception('Can\'t convert to this type!');
+						//throw new Exception('Can\'t convert to this type!');
+						$error[] = 'Can\'t convert to this type! Product : '.$product->product_nr;
 					}
 				}				
-
+				if ($error){
+					$this->smarty->assign('error',$error);
+					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
+				}
 				
 				$this->smarty->assign("product",$product);
 
@@ -772,7 +782,7 @@ class CInventory extends Controller
 
 				//$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
 
-
+				$error = false;
 					foreach ($data as $value) {
 						
 						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
@@ -788,7 +798,8 @@ class CInventory extends Controller
 							
 							
 						}else{
-							throw new Exception('Can\'t convert to this type!');
+							//throw new Exception('Can\'t convert to this type!');
+							$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr;  
 						}
 					}else{
 						$type = new Unittype($this->db);
@@ -809,6 +820,10 @@ class CInventory extends Controller
 					
 				$this->smarty->assign('Products',$data);
 				$this->smarty->assign('tpl','inventory/design/inventoryProducts.tpl');	
+				if ($error){
+					$this->smarty->assign('error',$error);
+					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
+				}
 				break;
 			case 'orders':
 				// SOrt

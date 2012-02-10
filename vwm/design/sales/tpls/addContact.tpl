@@ -22,7 +22,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>	
-						<input type='text' name='company' value='{$data->company}'> 
+						<input type='text' name='company' value='{$data->company|escape}'> 
 					</div>
 					
 					{if $data->errors.company}
@@ -41,7 +41,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='contact' value='{$data->contact}'>  <span style='color:Red;'>*</span>
+						<input type='text' name='contact' value='{$data->contact|escape}'>  <span style='color:Red;'>*</span>
 					</div>
 					
 					{if $data->errors.contact}
@@ -59,7 +59,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='title' value='{$data->title}'> 
+						<input type='text' name='title' value='{$data->title|escape}'> 
 					</div>
 					{if $data->errors.title}
 					
@@ -161,7 +161,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='mail' value='{$data->mail}'>  
+						<input type='text' name='mail' value='{$data->mail|escape}'>  
 					</div>
 					{if $data->errors.mail}
 					
@@ -203,7 +203,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='industry' value='{$data->industry}'>
+						<input type='text' name='industry' value='{$data->industry|escape}'>
 					</div>
 					{if $data->errors.industry}
 					
@@ -276,7 +276,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='city' value='{$data->city}'>
+						<input type='text' name='city' value='{$data->city|escape}'>
 					</div>
 					
 					{if $data->errors.city}
@@ -312,7 +312,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='acc_number' value='{$data->acc_number}'>
+						<input type='text' name='acc_number' value='{$data->acc_number|escape}'>
 					</div>
 					
 					{if $data->errors.acc_number}
@@ -330,7 +330,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='paint_supplier' value='{$data->paint_supplier}'>
+						<input type='text' name='paint_supplier' value='{$data->paint_supplier|escape}'>
 					</div>
 					
 					{if $data->errors.paint_supplier}
@@ -348,7 +348,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name='paint_system' value='{$data->paint_system}'>
+						<input type='text' name='paint_system' value='{$data->paint_system|escape}'>
 					</div>
 					
 					{if $data->errors.paint_system}
@@ -359,6 +359,16 @@
 					{/if}
 				</td>				
 			</tr>			
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Jobber:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<textarea name='jobber' rows="5" >{$data->jobber|escape}</textarea>
+					</div>
+				</td>				
+			</tr>			
 			
 			<tr height="10px">
 				<td class="border_users_l border_users_b">
@@ -366,7 +376,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<textarea name='comments' rows="5" >{$data->comments}</textarea>
+						<textarea name='comments' rows="5" >{$data->comments|escape}</textarea>
 					</div>
 				</td>				
 			</tr>

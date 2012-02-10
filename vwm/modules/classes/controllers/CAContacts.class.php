@@ -134,9 +134,9 @@ class CAContacts extends Controller {
 		$registration = new Registration($this->db);
 		$usaID = $country->getCountryIDByName('USA');
 		$this->smarty->assign($usaID);
-		
+
 		if ($this->getFromPost('save') == 'Save') {
-			
+	
 			$contact = $this->createContactByForm($_POST);
 			$contact->id = $id;
             		           
@@ -158,6 +158,7 @@ class CAContacts extends Controller {
 		}
 		
 		$ContactTypeList = $contactsManager->getSalesContactTypeList();
+
 		$this->smarty->assign("typelist",$ContactTypeList);
 		$this->smarty->assign("data",$contact);
         $countries =  $registration->getCountryList();

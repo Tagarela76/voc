@@ -86,4 +86,11 @@
         </tr>
     </table>
 </div>
+{if $error}
+{foreach from=$error item=msg}
+	<span style='color:red; padding-left: 20px' >
+	{$msg}<br>
+	</span>
+{/foreach}	
+{/if}					
 {include file="tpls:inventory/design/inventoryOrders.tpl"}

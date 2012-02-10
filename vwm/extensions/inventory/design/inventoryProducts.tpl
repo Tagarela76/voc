@@ -128,3 +128,12 @@
     </tr>
 </table></div>
 </form>	
+
+
+{if $error}
+{foreach from=$error item=msg}
+	<span style='color:red; padding-left: 20px' >
+	{$msg}<br>
+	</span>
+{/foreach}	
+{/if}
