@@ -106,7 +106,7 @@ class InventoryManager {
 			
 
 
-			$query	=    "SELECT p.supplier_id, p.product_nr , s.original_id , di.discount, di.discount_id, s.supplier, pi.product_id ";
+			$query	=    "SELECT p.supplier_id, p.product_nr , s.original_id , di.discount, di.discount_id, s.supplier, pi.product_id , pi.in_stock_unit_type";
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
@@ -159,19 +159,24 @@ echo $query;
 
 	}	
 	
-	public function getSupplierOrders($facilityID, $productID = null, Pagination $pagination = null, Sort $sortStr = null) {
+	public function getSupplierOrders($facilityID = null, $productID = null, Pagination $pagination = null, Sort $sortStr = null) {
         $time = new DateTime('first day of this month');
 
         $query = "SELECT io.* ";
 				
 		$query .=	" FROM inventory_order io" .
 
-					" WHERE io.order_facility_id = {$facilityID} ";
+					" WHERE ";
+		 
+		if ($facilityID != null){
+			$query .=	" io.order_facility_id = {$facilityID} AND ";
+		}		
 		if ($productID != null){
-			$query .=	" AND io.order_product_id = {$productID} ";
+			$query .=	" io.order_product_id = {$productID} ";
 		}else{
-			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
+			$query .=	" io.order_created_date >= {$time->getTimestamp()} ";
 		}
+		
 		if ($sortStr != null) {
 			//, Pagination $pagination = null
 			$query .= $sortStr;
@@ -185,7 +190,9 @@ echo $query;
 		}			
 		//echo $query;
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
 		$arr = $this->db->fetch_all_array();
 		//echo $query;
 		$SupData = array();
@@ -295,7 +302,7 @@ echo $query;
 				  " WHERE s.supplier_id =  {$supplierID} ";
 
 
-		echo $query;
+		//echo $query;
 		$this->db->query($query);
 		
 		$arr = $this->db->fetch_all_array();
@@ -310,6 +317,28 @@ echo $query;
 	
 		return $SupData;
 	}
+	
+	public function getDiscountsBySupplier($supplierID ) {
+            
+        $query = "SELECT di.* ";
+				
+		$query .= " FROM discounts2inventory di ".
+				  " WHERE di.supplier_id =  {$supplierID} ";
+
+
+		//echo $query;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+
+		$SupData = array();
+			foreach($arr as $b) {
+					$SupData[] = $b;
+			}
+		return $SupData;
+	}	
 	
 	public function updateSupplierDiscounts( $form ) {
 

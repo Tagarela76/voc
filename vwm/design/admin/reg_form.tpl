@@ -173,6 +173,9 @@
 							{elseif $bookmark=="sales"}
 								Sales level
 								<input type="hidden" name="accesslevel_id" value="4">	
+							{elseif $bookmark=="supplier"}
+								Supplier level
+								<input type="hidden" name="accesslevel_id" value="5">									
 							{/if}
 							</div>
 							</td>
@@ -181,7 +184,7 @@
 						
 						
 
-					{if $bookmark!="admin" and $bookmark!="sales"}	
+					{if $bookmark!="admin" and $bookmark!="sales" and $bookmark!="supplier"}	
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Company:
@@ -241,7 +244,28 @@
 							
 							</td>
 						</tr>
-					{/if}					
+					{/if}	
+					
+					{*if $bookmark=="supplier"}	
+							<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Supplier:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >	<select id="selectDepartment" name="department_id">
+							{if isset($department)}
+								{section name=i loop=$department}
+									<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name}</option>
+								{/section}
+							{/if}
+	
+							</select>
+							<span id='depError' class="error_text" style="display:none">Error</span>
+							</div>
+							
+							</td>
+						</tr>
+					{/if*}					
 						
 						<tr>
              				 <td height="20" class="users_u_bottom">

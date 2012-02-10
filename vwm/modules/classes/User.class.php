@@ -22,10 +22,12 @@ class User {
 	
 
 	function User($db, $xnyo, $access, $auth) {
+		
 		$this->db=$db;
 		$this->xnyo=$xnyo;
 		$this->access=$access;
 		$this->auth=$auth;
+		
 	}
 	
 	function addUser($userData) {
@@ -109,6 +111,9 @@ class User {
 			case 4:
 				$aroGroupName = 'sales';
 				break;
+			case 5:
+				$aroGroupName = 'supplier';
+				break;			
 			default:
 				throw new Exception('Incorrect access level');
 		}
@@ -319,6 +324,9 @@ class User {
 				case "sales":
 					$access_level=4;
 					break;
+				case "supplier":
+					$access_level=5;
+					break;				
 			}
 			$query="SELECT * FROM ".TB_USER." WHERE accesslevel_id=$access_level AND $filter $sort";
 			
@@ -763,6 +771,9 @@ class User {
 				case "admin":
 					$access_level=3;
 					break;
+				case "supplier":
+					$access_level=5;
+					break;				
 			}
 			$query="SELECT COUNT(*) cnt FROM ".TB_USER." WHERE accesslevel_id=$access_level AND $filter";
 		}		

@@ -54,9 +54,31 @@ class Product extends ProductProperties {
 		} else
 			return false;
 	}
+	
+	public function getProductPrice($supplierID, $companyID = 0, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
+		$query =	"SELECT p.product_id, p.product_nr, pp.price, pp.price_id, c.company_id, c.name " .
+					"FROM " . TB_SUPPLIER . " s ,  " . TB_FACILITY . " f , " . TB_COMPANY . " c , price4product pp  , ". TB_PRODUCT . " p ".
+					"LEFT JOIN product2inventory pi ON pi.product_id = p.product_id ".
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND s.original_id =" . (int) $supplierID . " AND pp.product_id = p.product_id ".
+					"AND f.facility_id = pi.facility_id AND f.company_id = c.company_id ORDER BY  p.product_id ASC";
 
+		$this->db->query($query);
+//echo $query;
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$productPrice = array();
+			foreach($arr as $b) {
 
+					$productPrice[] = $b;
+            
+			}		
+
+		return $productPrice;
+	}
 
 	private function getPaintMaterialByProductID($productID) {
 		$query = "SELECT id FROM ".TB_MATERIAL2INVENTORY." WHERE product_id=".(int)$productID;

@@ -50,6 +50,10 @@ class Controller {
 			case "sales":
 				$className = "CS" . ucfirst($controller);
 				break;
+			
+			case "supplier":
+				$className = "CSup" . ucfirst($controller);
+				break;			
 			default:
 				$className = "C" . ucfirst($controller);
 				break;
@@ -96,6 +100,9 @@ class Controller {
 			case "sales":
 				$functionName = 'action' . ucfirst($this->action) . 'SCommon';
 				break;
+			case "supplier":
+				$functionName = 'action' . ucfirst($this->action) . 'SupCommon';
+				break;			
 			default :
 				$functionName = 'action' . ucfirst($this->action) . 'Common';
 		}
