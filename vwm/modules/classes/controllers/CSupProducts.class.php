@@ -19,30 +19,39 @@ class CSupProducts extends Controller {
 		$this->bookmarkClients();
 	}
 	
-	protected function bookmarkProducts() {
-		$supplierID = 9;
+	protected function bookmarkProducts($vars) {
+		extract($vars);
+
+		$request = $this->getFromRequest();
+		if (!$request.supplierID){
+			$supplierID = $supplierIDS[0]['supplier_id'];
+		}else{
+			$supplierID = $request['supplierID'];
+		}
 		$productManager = new Product($this->db);
 		
 		
-		$products = $productManager->getProductPrice($supplierID);
+		$products = $productManager->getProductPriceBySupplier($supplierID);
 		//$this->user->xnyo->user['user_id']
 		foreach ($products as $product){
+			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);
 			
-			$price4prduct->supman = $supplierID;
-			$price4prduct->url = "supplier.php?action=viewDetails&category=prducts&id=".$price4prduct->price_id."";
+			$price4prduct->supman_id = $supplierID;
+			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&supplierID={$supplierID}";
 			//$price4prduct->save();
 			$productsArr[] = $price4prduct;
-					
+			if ($comapnyArray){
+				$comapnyList[] = $comapnyArray;
+			}		
 		}
-var_dump($products[0]);
-
 
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign('products', $productsArr);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("itemsCount", $totalCount);
+		$this->smarty->assign("comapnyList", $comapnyList);
 		$this->smarty->assign('tpl', 'tpls/bookmarkProducts.tpl');
 		$this->smarty->assign('pagination', $pagination);
                
@@ -55,51 +64,45 @@ var_dump($products[0]);
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign('contact', $contact);
-		$this->smarty->assign('tpl', 'tpls/dashboard.tpl');
+		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionEdit() {
-		
-		$id = $this->getFromRequest('id');
-		$contactsManager = new SalesContactsManager($this->db);
-		$contact = $contactsManager->getSalesContact($id,$this->user->xnyo->user['user_id']);
-		$country = new Country($this->db);
-		$registration = new Registration($this->db);
-		$usaID = $country->getCountryIDByName('USA');
-		$this->smarty->assign($usaID);
-	
-		if ($this->getFromPost('save') == 'Save') {
+		$request = $this->getFromRequest();
+		$priceID = $request['id'];
+		$supplierID = $request['supplierID'];
+		$productManager = new Product($this->db);
+
+		$product = $productManager->getProductPriceBySupplier($supplierID,$priceID);	
+		if (!$product) throw new Exception('404');
+
+
+// UNITTYPE{
+
+		$type = new Unittype($this->db);
+		$unittypeDetails = $type->getUnittypeDetails($product[0]['unittype']);
+
+			$form = $_POST;
+
+			if (count($form) > 0) {
+				$price4prduct = new ProductPrice($this->db, $product[0]);
 			
-			$contact = $this->createContactByForm($_POST);
-			$contact->id = $id;
-                        
-			if(!empty($contact->errors)) {
-				
-				$this->smarty->assign("error_message","Errors on the form");
-			} else {
-				
-				$result = $contactsManager->saveContact($contact);
-				if($result == true) {
-					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
-				} else {
-					$this->smarty->assign("error_message",$contact->getErrorMessage());
+				$price4prduct->price = $form['price'];
+	
+				$result = $price4prduct->save();
+				if ($result == 'true') {
+					header("Location: ?action=browseCategory&category=sales&bookmark=products");
 				}
 			}
-		}
-		$this->smarty->assign("data",$contact);
-                $countries =  $registration->getCountryList();
-		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);		
-		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
-		$this->smarty->assign("request",$this->getFromRequest());
-		$this->smarty->assign("states", $stateList);	
-		$this->smarty->assign("usaID", $usaID);
-		$this->smarty->assign("countries", $countries);
-		$jsSources = array();											
-		array_push($jsSources, 'modules/js/addContact.js');	
+
+
+		$jsSources = array('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
 		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
+		$this->smarty->assign("product", $product[0]);
+		$this->smarty->assign("unittype", $unittypeDetails);
+		$this->smarty->assign("request", $request);
+		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	

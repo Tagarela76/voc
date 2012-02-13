@@ -24,7 +24,15 @@ class CSupSales extends Controller
 		array_push($jsSources, 'modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		
-		$this->smarty->assign('request', $request);				
+		$this->smarty->assign('request', $request);
+		$inventoryManager = new InventoryManager($this->db);
+		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
+
+		$vars=array	(
+						'supplierIDS'		=>$supplierIDS
+					);
+
+		$this->smarty->assign('supplierID', $supplierIDS[0]['supplier_id']);
 		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'supplier');
 		$this->smarty->display("tpls:index.tpl");		
 	}

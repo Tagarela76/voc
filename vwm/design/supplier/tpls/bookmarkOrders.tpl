@@ -5,22 +5,22 @@
 	{if $color eq "orange"}
 		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
 	{/if}
-	{if $color eq "blue"}
-		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
+	{if $color eq "green"}
+		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 	{/if}
-	{if $color eq "blue2" && $itemsCount == 0}
-		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
+	{if $color eq "green2" && $itemsCount == 0}
+		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 	{/if}
 
 <div class="padd7">
 	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
-    <tr class="users_top_blue" height="27px">
+    <tr class="users_top_green" height="27px">
 		{if $request.tab != 'products'}
-        <td class="users_top_blue users_u_top_blue" width="60">
+        <td class="users_top_green users_u_top_green" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
 		{/if}
-        <td class="{if $request.tab != 'products'}users_top_blue{else}users_top_blue users_u_top_blue{/if}">
+        <td class="{if $request.tab != 'products'}users_top_green{else}users_top_green users_u_top_green{/if}">
            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	ID Number 		
@@ -28,7 +28,7 @@
 				</div>					
 			</a>   
         </td>
-        <td class="users_top_blue">
+        <td class="users_top_green">
              <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Amount
@@ -36,7 +36,7 @@
 				</div>					
 			</a> 
         </td>
-        <td class="{if !$accessory}users_top_blue{else}users_u_top_r_blue{/if}">
+        <td class="{if !$accessory}users_top_green{else}users_u_top_r_green{/if}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Order Name	
@@ -45,7 +45,7 @@
 			</a> 
         </td>
 
-        <td class="users_top_blue">
+        <td class="users_top_green">
            
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
@@ -55,7 +55,7 @@
 			</a> 					
 			 
         </td>
-        <td class="users_top_blue">
+        <td class="users_top_green">
             
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
@@ -65,7 +65,7 @@
 			</a> 				
 			
         </td>
-        <td class="users_top_blue">
+        <td class="users_top_green">
             
             	<div style='width:100%;  color:white;'>						
                 	Price 	
@@ -73,7 +73,7 @@
 				</div>					
 			
         </td>
-        <td class="users_top_blue">
+        <td class="users_top_green">
             
             	<div style='width:100%;  color:white;'>						
                 	Discount 	
@@ -81,7 +81,7 @@
 				</div>					
 			
         </td>		
-        <td class="users_top_blue">
+        <td class="users_top_green">
             
             	<div style='width:100%;  color:white;'>						
                 	Total 	
@@ -89,7 +89,7 @@
 				</div>					
 			
         </td>
-        <td class="users_u_top_r_blue">
+        <td class="users_u_top_r_green">
             
             	<div style='width:100%;  color:white;'>						
                 	Client 	

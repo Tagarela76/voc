@@ -41,26 +41,26 @@
 		</thead>
 		
 		<tbody>
-{if $itemsCount > 0}						 
+{if $clients > 0}						 
 
 {*BEGIN LIST*}				
 {section name=i loop=$clients}	
 	<tr class="hov_company">
 
 			<td class="border_users_l border_users_b">
-				<input type="checkbox"  value="{$clients[i]->id}" name="item_{$smarty.section.i.index}" onclick="return CheckCB(this);">
+				<input type="checkbox"  value="{$clients[i].company_id}" name="item_{$smarty.section.i.index}" onclick="return CheckCB(this);">
 			</td>
 			
 			<td class="border_users_b border_users_l" >
-				<a href="{$clients[i]->viewDetailsUrlSales}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i]->id}</div ></a>
+				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].company_id}</div ></a>
 			</td>
 			
             <td class="border_users_b border_users_l" >
-				<a href="{$clients[i]->viewDetailsUrlSales}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i]->company}</div ></a>
+				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].name}</div ></a>
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r" >
-				<a href="{$clients[i]->viewDetailsUrlSales}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i]->contact}{if $clients[i]->title}, {$clients[i]->title}{/if}</div ></a>
+				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].discount} %</div ></a>
 			</td>	
 		
 	</tr>

@@ -38,6 +38,7 @@ class CSupOrders extends Controller {
 					$o['discount'] = $SupData[0]['discount'];
 					$o['unittype'] = $SupData[0]['in_stock_unit_type'];
 					
+				//	$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
 					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
 					$o['client'] = $facilityDetails['title'];
 					$orderList[] = $o;
@@ -64,6 +65,7 @@ class CSupOrders extends Controller {
 		$inventoryManager = new InventoryManager($this->db);
 		$facilityID = $this->getFromRequest('$facilityID');
 		$orderID = $this->getFromRequest('id');
+		
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
 		$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
@@ -81,6 +83,62 @@ class CSupOrders extends Controller {
 	
 	private function actionEdit() {
 		
+		$inventoryManager = new InventoryManager($this->db);
+		$facilityID = $this->getFromRequest('$facilityID');
+		$orderID = $this->getFromRequest('id');
+		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+
+		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
+			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+			$this->smarty->assign('status', $statuslist);
+			$this->smarty->assign('order', $orderDetails[0]);
+			
+			//$this->user->xnyo->user['user_id']
+			
+			$this->smarty->assign("parent", $this->parent_category);
+			$this->smarty->assign("request", $this->getFromRequest());
+			$this->smarty->assign('tpl', 'tpls/orderEdit.tpl');
+			
+		} else {
+			throw new Exception('deny');
+		}
+
+		$form = $_POST;
+		if (count($form) > 0) {
+			//protected from xss
+			$form['order_completed_date'] = time();
+
+			if ($form['status'] == OrderInventory::COMPLETED) {
+
+				//ORDERS FOR THIS PODUCT
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
+
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
+
+					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+				} else {
+					$dateBegin = $ProductInventory->period_start_date;
+				}
+				//
+				$category = "facility";
+				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
+				$product = $productDetails[0];
+
+				$addToStock = $product->in_stock - $product->usage + $orderList[0]['order_amount'];
+				$product->in_stock = $addToStock;
+				$result = $product->save();
+			}
+
+			$result = $inventoryManager->updateSupplierOrder($form);
+
+
+
+			if ($result == 'true') {
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
+			}
+		}	
+$this->smarty->display("tpls:index.tpl");		
+/*		
 		$id = $this->getFromRequest('id');
 		$contactsManager = new SalesContactsManager($this->db);
 		$contact = $contactsManager->getSalesContact($id,$this->user->xnyo->user['user_id']);
@@ -121,6 +179,8 @@ class CSupOrders extends Controller {
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
+ * 
+ */
 	}
 	
 	private function actionAddItem() {		

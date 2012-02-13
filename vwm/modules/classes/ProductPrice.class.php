@@ -13,7 +13,7 @@ class ProductPrice {
 	private $price;
 	private $unittype = self::GALLON;
 
-	private $supman; // Person from supplier
+	private $supman_id; // Person from supplier
 	public $errors;
 
 
@@ -50,13 +50,13 @@ class ProductPrice {
 							product_id = '".mysql_escape_string($this->product_id)."',
 							price = '".mysql_escape_string($this->price)."',
 							unittype = '".mysql_escape_string($this->unittype)."',
-							supman_id = '".mysql_escape_string($this->supman)."'
+							supman_id = '".mysql_escape_string($this->supman_id)."'
 							WHERE price_id = {$this->price_id}";
                 }
                 else {                        
    
                             $query = "INSERT INTO price4product VALUES (NULL,'"
-												.mysql_escape_string($this->supman)."','" 
+												.mysql_escape_string($this->supman_id)."','" 
 												.mysql_escape_string($this->product_id)."','" 
                                                 .mysql_escape_string($this->unittype)."','" 
 												.mysql_escape_string($this->price)."')";
@@ -137,8 +137,8 @@ class ProductPrice {
 		return $this->unittype;
 	}
 	
-    public function get_supman(){
-		return $this->supman;
+    public function get_supman_id(){
+		return $this->supman_id;
 	}		
 
 	
@@ -178,9 +178,9 @@ class ProductPrice {
 		}
 	}
 	
-	public function set_supman($value) {
+	public function set_supman_id($value) {
 		try {
-			$this->supman = $value;
+			$this->supman_id = $value;
 		} catch(Exception $e) {
 			throw new Exception("supman cannot be empty!" . $e->getMessage());
 		}

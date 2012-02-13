@@ -19,29 +19,37 @@ class CSupClients extends Controller {
 		$this->bookmarkClients();
 	}
 	
-	protected function bookmarkClients() {
-	
+	protected function bookmarkClients($vars) {
+		extract($vars);
+
+		$request = $this->getFromRequest();
+		if (!$request.supplierID){
+			$supplierID = $supplierIDS[0]['supplier_id'];
+		}else{
+			$supplierID = $request['supplierID'];
+		}
+		
 		$inventoryManager = new InventoryManager($this->db);
-		$facilityManager = new Facility($this->db);
-		$supplierID = 9;
 		$result = $inventoryManager->getDiscountsBySupplier($supplierID);
 		if ($result){
 			$discountList = $result;
+			$tmpArr = array ();
+			foreach ($discountList as $discount){
+				$discount['url'] = "?action=viewDetails&category=clients&companyID={$discount['company_id']}&facilityID={$discount['facility_id']}&supplierID={$supplierID}";
+				$tmpArr[] = $discount;
+			}
+			$discountList = $tmpArr;
 		}
-			
-		foreach ($discountList as $client){
-		//	$facilityDetails = $facilityManager->getFacilityDetails($client['facility_id']);
-			
-		}
-		
-		var_dump($discountList);
-//	set js scripts
 
+		
+
+		//set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign('clients', $discountList);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("itemsCount", $totalCount);
+		$this->smarty->assign("request",$request);
 		$this->smarty->assign('tpl', 'tpls/bookmarkClients.tpl');
 		$this->smarty->assign('pagination', $pagination);
                
@@ -49,108 +57,104 @@ class CSupClients extends Controller {
 	
 
 	private function actionViewDetails() {
+		
+
+		$request = $this->getFromRequest();
+		$supplierID = $request['supplierID'];
+
+		$inventoryManager = new InventoryManager($this->db);
+		
+		
+		
+		$facilityID = $this->getFromRequest('facilityID');
+		$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);		
+		if ($result){
+			$client = $result;
+		}		
 
 		//$this->user->xnyo->user['user_id']
 		$this->smarty->assign("parent",$this->parent_category);
-		$this->smarty->assign("request",$this->getFromRequest());
-		$this->smarty->assign('contact', $contact);
-		$this->smarty->assign('tpl', 'tpls/dashboard.tpl');
+		$this->smarty->assign("request",$request);
+		$this->smarty->assign('client', $client);
+		$this->smarty->assign('tpl', 'tpls/clientDetail.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionEdit() {
 		
-		$id = $this->getFromRequest('id');
-		$contactsManager = new SalesContactsManager($this->db);
-		$contact = $contactsManager->getSalesContact($id,$this->user->xnyo->user['user_id']);
-		$country = new Country($this->db);
-		$registration = new Registration($this->db);
-		$usaID = $country->getCountryIDByName('USA');
-		$this->smarty->assign($usaID);
-	
-		if ($this->getFromPost('save') == 'Save') {
-			
-			$contact = $this->createContactByForm($_POST);
-			$contact->id = $id;
-                        
-			if(!empty($contact->errors)) {
-				
-				$this->smarty->assign("error_message","Errors on the form");
-			} else {
-				
-				$result = $contactsManager->saveContact($contact);
-				if($result == true) {
-					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
-				} else {
-					$this->smarty->assign("error_message",$contact->getErrorMessage());
+		$inventoryManager = new InventoryManager($this->db);
+
+		$request = $this->getFromRequest();
+		$supplierID = $request['supplierID'];
+		
+		$facilityID = $this->getFromRequest('facilityID');
+		$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);	;
+		if ($result){
+			$client = $result;
+		}		
+		var_dump($client);
+		
+
+			$error = $this->getFromRequest('error');
+
+				if ( $error == null ){
+				$form = $_POST;
+
+				if (count($form) > 0) {
+					
+					if ($result == 'true'){
+						header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+					}else{
+						header("Location: ?action=addItem&category=clients&error=exist");
+					}
 				}
-			}
-		}
-		$this->smarty->assign("data",$contact);
-                $countries =  $registration->getCountryList();
-		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);		
-		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
+		}		
+		
+		
+		$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
+	    $this->smarty->assign('jsSources',$jsSources);		
+		$this->smarty->assign('client', $client);
 		$this->smarty->assign("request",$this->getFromRequest());
-		$this->smarty->assign("states", $stateList);	
-		$this->smarty->assign("usaID", $usaID);
-		$this->smarty->assign("countries", $countries);
-		$jsSources = array();											
-		array_push($jsSources, 'modules/js/addContact.js');	
-		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
+		$this->smarty->assign('tpl', 'tpls/clientEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");
+		
 	}
 	
 	private function actionAddItem() {		
-		
-		$contact = new SalesContact($this->db);
-		$country = new Country($this->db);
-		$registration = new Registration($this->db);
-		$usaID = $country->getCountryIDByName('USA');
-		$this->smarty->assign($usaID);
-
-		if ($this->getFromPost('save') == 'Save') {
-			
-			$contact = $this->createContactByForm($_POST);
-			
-			$sub = $this->getFromRequest("subBookmark");
-			
-			if(!isset($sub)) {
-				$sub = "contacts";
-			}
-			$contact->type = $sub;
-      
-			if(!empty($contact->errors)) {			
-				$this->smarty->assign("error_message","Errors on the form");
-			} else {
-				$contactsManager = new SalesContactsManager($this->db);
-				$result = $contactsManager->addContact($contact);
-				if($result) {
-					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&subBookmark=$sub");
-				} else {
-					$this->smarty->assign("error_message",$contact->getErrorMessage());
-				}
-			}
-		} else {
-			
-			$contact->country_id = $usaID;
+		$inventoryManager = new InventoryManager($this->db);
+		$companyManager = new Company($this->db);
+		$request = $this->getFromRequest();
+		$supplierID = 9;
+		$result = $inventoryManager->getDiscountsBySupplier($supplierID);
+		if ($result){
+			$discountList = $result;
 		}
-		$this->smarty->assign("data",$contact);
+		$companyList = $companyManager->getCompanyList();
 		
-		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
-		$countries =  $registration->getCountryList();
-		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);		
-		$this->smarty->assign("request",$this->getFromRequest());
-		$this->smarty->assign("states", $stateList);	
-		$this->smarty->assign("usaID", $usaID);
-		$this->smarty->assign("countries", $countries);
-		$jsSources = array();											
-		array_push($jsSources, 'modules/js/addContact.js');	
-		$this->smarty->assign('jsSources', $jsSources);		
-		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
+
+			$error = $this->getFromRequest('error');
+
+				if ( $error == null ){
+				$form = $_POST;
+
+				if (count($form) > 0) {
+					
+					if ($result == 'true'){
+						header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+					}else{
+						header("Location: ?action=addItem&category=clients&error=exist");
+					}
+				}
+		}		
+		
+		
+		$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
+	    $this->smarty->assign('jsSources',$jsSources);		
+		$this->smarty->assign('companies', $companyList);
+		$this->smarty->assign('request', $request);
+		$this->smarty->assign('tpl', 'tpls/clientAdd.tpl');
 		$this->smarty->display("tpls:index.tpl");
+
 	}
 	
 	private function actionDeleteItem() {

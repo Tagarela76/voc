@@ -9,39 +9,14 @@
 <div class="control_panel_center">
 
 <table  cellpadding="0" cellspacing="0" class="controlCategoriesList" style="height:30px">
-	
-	{*  <tr>
-		{if $itemsCount > 0}
-		<td rowspan=3 class="control_list" style="width:130px">
-			<span style='display:inline-block'>
-				Select: 
-				<a onclick="CheckAll(this)" class="id_company1" >All</a>									
-				 /
-				<a onclick="unCheckAll(this)" class="id_company1">None</a>
-			</span>
-		</td>
-		{/if}
-	</tr>*}
 	<tr>
-		
 		<td>
 		<div style="float:left; width:80px">
 		
-		{if $request.category=="users"}
+		{if $request.category=="sales" && $request.bookmark == 'clients'}
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem">
 			</div>
-		{elseif $request.category=="tables" && $request.bookmark != 'tabs'}
-			<div class="add_button button_alpha">
-				<input type="submit" name="action" value="addItem"  >
-			</div>
-		{elseif $request.category=="salescontacts" && $request.bookmark == "contacts"}
-			<div class="add_button button_alpha">
-				<input type="submit" name="action" value="addItem"  >
-			</div>
-			
-			
-			
 		{/if}
 		
 		</div>
@@ -56,14 +31,7 @@
 		
 		
 	{if $request.bookmark=="product"}
-		
-		{*{if $itemsCount > 0}
-		<div style="float:left; width:80px">
-		<div class="button_alpha group_button">
-			<input type="submit" name="action" value="groupProducts">
-		</div>	
-		</div>
-		{/if}*}	
+
 		
 		</td>
 									
@@ -99,9 +67,9 @@
 				<input type="hidden" name="category" value="{$request.bookmark}">
 			{elseif $request.category eq 'issue'}
 				<input type="hidden" name="category" value="{$request.category}">
-			{elseif $request.category == 'salescontacts' and $request.bookmark == 'contacts'}
-				<input type="hidden" name="category" value="contacts">
-				<input type="hidden" name="bookmark" value="contacts">
+			{elseif $request.category == 'sales' and $request.bookmark == 'clients'}
+				<input type="hidden" name="category" value="clients">
+				<input type="hidden" name="bookmark" value="clients">
 				<!--  <input type="hidden" name="category" value="{$request.category}"> -->
 				{if $smarty.request.subBookmark}
 					<input type="hidden" name="subBookmark" value="{$smarty.request.subBookmark}">
@@ -111,7 +79,10 @@
 				<input type="hidden" name="category" value="{$request.category}">
 				<input type="hidden" name="bookmark" value="{$request.bookmark}">
 			{/if}
-				<input type="hidden" name="itemsCount" value="{$itemsCount}">			
+				{if $itemsCount}
+					<input type="hidden" name="itemsCount" value="{$itemsCount}">			
+				{/if}			
+				
 			</div>
 		</td>
 	</tr>

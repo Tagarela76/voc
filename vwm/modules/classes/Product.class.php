@@ -55,14 +55,50 @@ class Product extends ProductProperties {
 			return false;
 	}
 	
-	public function getProductPrice($supplierID, $companyID = 0, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductPrice($productID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
-		$query =	"SELECT p.product_id, p.product_nr, pp.price, pp.price_id, c.company_id, c.name " .
-					"FROM " . TB_SUPPLIER . " s ,  " . TB_FACILITY . " f , " . TB_COMPANY . " c , price4product pp  , ". TB_PRODUCT . " p ".
-					"LEFT JOIN product2inventory pi ON pi.product_id = p.product_id ".
+		$query =	"SELECT pp.* " .
+					"FROM price4product pp  ".
+					"WHERE pp.product_id = " . (int) $productID . " ";
+
+		if ($priceID){
+			$query .= " AND pp.price_id = " . (int) $priceID . "";
+		}
+
+
+		$this->db->query($query);
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$productPrice = array();
+			foreach($arr as $b) {
+
+					$productPrice[] = $b;
+            
+			}		
+
+		return $productPrice;
+	}
+	
+	public function getProductPriceBySupplier($supplierID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+
+		$query =	"SELECT p.product_id, p.product_nr, pp.* " .
+				// " . TB_FACILITY . " f , " . TB_COMPANY . " c ,
+					"FROM " . TB_SUPPLIER . " s , price4product pp  , ". TB_PRODUCT . " p ".
+					//"LEFT JOIN product2inventory pi ON pi.product_id = p.product_id ".
 					"WHERE p.supplier_id = s.supplier_id " .
-					"AND s.original_id =" . (int) $supplierID . " AND pp.product_id = p.product_id ".
-					"AND f.facility_id = pi.facility_id AND f.company_id = c.company_id ORDER BY  p.product_id ASC";
+					"AND s.original_id = " . (int) $supplierID . " AND pp.product_id = p.product_id ";
+					//"AND f.facility_id = pi.facility_id ".
+					//"AND f.company_id = c.company_id ";
+		if ($priceID){
+			$query .= " AND pp.price_id = " . (int) $priceID . "";
+		}
+		if ($productID){
+			$query .= " AND p.product_id = " . (int) $productID . "";
+		}		
+			$query .= " GROUP BY p.product_id ORDER BY  p.product_id ASC";
 
 		$this->db->query($query);
 //echo $query;
@@ -78,7 +114,33 @@ class Product extends ProductProperties {
 			}		
 
 		return $productPrice;
-	}
+	}	
+	
+	public function getCompanyListWhichProductUse($prductID) {
+
+		$query =	"SELECT p.product_id, c.name " .
+					"FROM product p, company c, facility f,product2inventory pi ".
+					"WHERE f.facility_id = pi.facility_id AND f.company_id = c.company_id AND pi.product_id = p.product_id " .
+					"AND p.product_id = " . (int) $prductID . " ";
+
+			$query .= " ORDER BY c.name ASC";
+
+		$this->db->query($query);
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$companyList = $this->db->fetch_all_array();
+		return $companyList;
+	}	
+/*
+ 
+ 
+
+
+
+
+ */
 
 	private function getPaintMaterialByProductID($productID) {
 		$query = "SELECT id FROM ".TB_MATERIAL2INVENTORY." WHERE product_id=".(int)$productID;

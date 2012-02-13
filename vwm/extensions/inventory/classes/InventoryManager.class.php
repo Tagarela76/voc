@@ -241,7 +241,9 @@ echo $query;
 					" WHERE io.order_id = {$orderID}  AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
-	
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}	
 		$arr = $this->db->fetch_all_array();
 		
 		//echo $query;
@@ -294,17 +296,20 @@ echo $query;
 	
 	public function getSupplierDiscounts($facilityID, $supplierID ) {
             
-        $query = "SELECT di.*, s.supplier ";
+        $query = "SELECT di.*, s.supplier, c.company_id, c.name   ";
 				
-		$query .= " FROM supplier s " .
+		$query .= " FROM supplier s,  " . TB_FACILITY . " f , " . TB_COMPANY . " c " .
 				  " LEFT JOIN discounts2inventory di ".
 				  " ON di.supplier_id =  {$supplierID} AND di.facility_id = {$facilityID} ".
 				  " WHERE s.supplier_id =  {$supplierID} ";
+				  $query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
 
 
 		//echo $query;
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}			
 		$arr = $this->db->fetch_all_array();
 		
 		
@@ -320,12 +325,12 @@ echo $query;
 	
 	public function getDiscountsBySupplier($supplierID ) {
             
-        $query = "SELECT di.* ";
+        $query = "SELECT di.*, c.company_id, c.name  ";
 				
-		$query .= " FROM discounts2inventory di ".
+		$query .= " FROM discounts2inventory di,  " . TB_FACILITY . " f , " . TB_COMPANY . " c ".
 				  " WHERE di.supplier_id =  {$supplierID} ";
 
-
+		$query .=	"AND f.facility_id = di.facility_id AND f.company_id = c.company_id ORDER BY  c.company_id ASC";
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -528,6 +533,21 @@ echo $query;
 		}				
 	}
 	
+	public function getSaleUserSupplierLst($userID) {
+	
+		$query = "SELECT supplier_id FROM users2supplier WHERE user_id = {$userID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+		$data = array();
+			foreach($arr as $b) {
+					$data[] = $b;
+			}
+		return $data;
+	}	
+	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
 		$text = $this->getEmailText($mix->facility_id);
@@ -553,12 +573,15 @@ echo $query;
 				if (!$isThereActiveOrders){
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
-					//TODO get price
-					$price = 10;
+					// PRICE FOR PRODUCT
+					$priceManager = new Product($this->db);
+					$price = $priceManager->getProductPrice($productUsageData->product_id);
+					//TODO: CALC right price for product unittype 
+
 					$newOrder->order_product_id = $productUsageData->product_id;
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
-					$newOrder->order_total = $productUsageData->amount * $price;
+					$newOrder->order_total = $productUsageData->amount * $price[0]['price'];
 					$newOrder->order_amount = $productUsageData->amount;
 					$newOrder->save();
 

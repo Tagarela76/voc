@@ -1,25 +1,11 @@
-
-	{if $color eq "green"}
-		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
-	{/if}
-	{if $color eq "orange"}
-		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
-	{/if}
-	{if $color eq "blue"}
-		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
-	{/if}
-	{if $color eq "blue2" && $itemsCount == 0}
-		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
-	{/if}
-
 <div class="padd7" align="center">
 {*PAGINATION*}
 		{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
 	<table  class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">
 		<thead>	
-		<tr  class="users_u_top_size users_top_blue">
-			<td  class="users_u_top_blue"  width="5%" ><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></td>
+		<tr  class="users_u_top_size users_top_violet">
+			<td  class="users_u_top_violet"  width="5%" ><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></td>
 			<td  class="">Product ID</td>
 			<td  class="">
 				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
@@ -35,7 +21,7 @@
 					</div>					
 				</a> 
 			</td>
-			<td  class="users_u_top_r_blue">
+			<td  class="users_u_top_r_violet">
 				
 		            <div style='width:100%;  color:white;'>						
 		                Clients  {if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
@@ -70,7 +56,13 @@
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r" >
-				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$product->name}</div ></a>
+				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">
+					{foreach from=$comapnyList item=comapnyArr}	
+						{foreach from=$comapnyArr item=comapny}	
+							{if $product->product_id == $comapny.product_id}{$comapny.name}. {/if}
+						{/foreach}		
+					{/foreach}
+					</div ></a>
 			</td>			
 		
 	</tr>
