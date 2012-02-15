@@ -105,7 +105,7 @@ class CSupProducts extends Controller {
 		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
+/*	
 	private function actionAddItem() {		
 		
 		$contact = new SalesContact($this->db);
@@ -210,7 +210,7 @@ class CSupProducts extends Controller {
 		}		
 		return $contact;
 	}
-        
+ */       
 
 	
 	

@@ -28,7 +28,7 @@ $(document).ready(function() {
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' id='formP' action='?action={$request.action}&category=products&id={$request.id}'>
+	<form method='POST' id='formP' action='?action={$request.action}&category=products&id={$request.id}&supplierID={$request.supplierID}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">

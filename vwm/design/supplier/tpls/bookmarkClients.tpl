@@ -56,7 +56,7 @@
 			</td>
 			
             <td class="border_users_b border_users_l" >
-				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].name}</div ></a>
+				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].name} >> {$clients[i].fname}</div ></a>
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r" >

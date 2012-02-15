@@ -19,37 +19,44 @@ class CSupOrders extends Controller {
 		$this->bookmarkOrders();
 	}
 	
-	protected function bookmarkOrders() {
+	protected function bookmarkOrders($vars) {
+		extract($vars);
+
+		$request = $this->getFromRequest();
+		if (!$request.supplierID){
+			$supplierID = $supplierIDS[0]['supplier_id'];
+		}else{
+			$supplierID = $request['supplierID'];
+		}		
 		// SOrt
-		$sortStr = $this->sortList('orders',5);	
+		$sortStr = $this->sortList('orders',5);
+
 		$inventoryManager = new InventoryManager($this->db);
 		$productManager = new Product($this->db);
 		$facilityManager = new Facility($this->db);
-		
-		$products = $productManager->getProductListByMFG(9);
+
+		$products = $productManager->getProductListByMFG($supplierID);
+	
 		foreach($products as $product){
 			$order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
-			
+
 			if ($order){
 				foreach ($order as $o){
 					$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
 					$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
 					$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
-					$o['discount'] = $SupData[0]['discount'];
 					$o['unittype'] = $SupData[0]['in_stock_unit_type'];
-					
-				//	$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
 					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
 					$o['client'] = $facilityDetails['title'];
+					
 					$orderList[] = $o;
 				}				
 
-				
 			}
 		}
 		$this->smarty->assign('orderList', $orderList);
-	//	var_dump($orderList);
-//	set js scripts
+
+//set js scripts
 
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign("parent",$this->parent_category);
@@ -69,7 +76,7 @@ class CSupOrders extends Controller {
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
 		$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
-		$orderDetails[0]['discount'] = $SupData[0]['discount'];
+		//$orderDetails[0]['discount'] = $SupData[0]['discount'];
 
 
 		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "");
@@ -112,7 +119,7 @@ class CSupOrders extends Controller {
 
 				//ORDERS FOR THIS PODUCT
 				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
-
+				$ProductInventory = new ProductInventory($this->db);
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -121,6 +128,7 @@ class CSupOrders extends Controller {
 				}
 				//
 				$category = "facility";
+				
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
 				$product = $productDetails[0];
 
@@ -182,7 +190,7 @@ $this->smarty->display("tpls:index.tpl");
  * 
  */
 	}
-	
+/*	
 	private function actionAddItem() {		
 		
 		$contact = new SalesContact($this->db);
@@ -287,7 +295,7 @@ $this->smarty->display("tpls:index.tpl");
 		}		
 		return $contact;
 	}
-        
+  */      
 
 	
 	

@@ -95,20 +95,20 @@ class CInventory extends Controller
 				$productID	 = $this->getFromRequest('id');
 				$error = false;
 			//ORDERS FOR THIS PRODUCT
-				// SOrt
-				$sortStr = $this->sortList('orders',5);
+				//SOrt
+				//$sortStr = $this->sortList('orders',5);
 				
-				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID,null,$sortStr);		
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID,null);		
 
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
-
+							
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				}else{
 					$dateBegin = $ProductInventory->period_start_date;
 				}
 
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
-				
+		
 				$product = $productarr[0];
 				if ($product->usage != 0){
 					$result = $inventoryManager->unitTypeConverter($product);
@@ -373,14 +373,28 @@ class CInventory extends Controller
 					$isThereActiveOrders = $inventoryManager->isThereActiveOrdersByProductID($form['order_product_id'], $form["facilityID"]);
 
 					if (!$isThereActiveOrders){
-						//TODO get price
-						
-						$price = 10;
+
+						// PRICE FOR PRODUCT
+						$priceManager = new Product($this->db);
 						$newOrder = new OrderInventory($this->db,$form);
-				
+						$price = $priceManager->getProductPrice($form['order_product_id']);
+						//TODO: CALC right price for product unittype 
+					
+						$newOrder->order_price = $price[0]['price'];
+						
+						// Discount if isset for separate product, else for whole facility 
+						$discount = 0;
+						$result = $inventoryManager->getSupplierSeparateDiscount($form["facilityID"], $price[0]['supman_id'], $form['order_product_id']);
+						if (!$result){
+							$result2 = $inventoryManager->getSupplierWholeDiscount($price[0]['supman_id'],$form["facilityID"]);
+							$discount = $result2[0]['discount'];
+						}else{
+							$discount = $result[0]['discount'];
+						}						
+						$newOrder->order_discount = $discount;
 						$newOrder->order_facility_id = $form["facilityID"];
 						$newOrder->order_name = 'Order for product "'.$form["product_nr"].'"';
-						$newOrder->order_total = $form['order_amount'] * $price;
+						$newOrder->order_total = $form['order_amount'] * $newOrder->order_price - ( ($form['order_amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					/*	$newOrder->order_product_id =  $form['order_product_id'];
 					 	$newOrder->order_status = OrderInventory::IN_PROGRESS;
 						$newOrder->order_created_date = time();
@@ -661,7 +675,7 @@ class CInventory extends Controller
 								
 							//ORDERS FOR THIS PODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
-	
+								$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -672,8 +686,9 @@ class CInventory extends Controller
 								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
 
-								$addToStock = $product->in_stock - $product->usage + $orderList[0]['order_amount'];
+								$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
 								$product->in_stock = $addToStock;
+
 								$result = $product->save();
 								
 							}
@@ -789,11 +804,11 @@ class CInventory extends Controller
 						if ($value->usage == null){
 							$value->set_sum(0);
 						}
-					// UNITTEPY	
+					// UNITTYPE	
 					if ($value->usage != 0){
 						$result = $inventoryManager->unitTypeConverter($value);
 						if ($result){
-							$value->set_sum($result['usage']);
+							$value->usage = $result['usage'];
 							$typeNameArr[$value->product_id] = $result['unittype'];
 							
 							
@@ -837,14 +852,13 @@ class CInventory extends Controller
 				$this->smarty->assign('pagination', $pagination);				
 				
 				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination,$sortStr);
-				
 
 				
 				foreach ($orderList as $order){
 					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
 					//var_dump($order,$SupData);
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
-					$order['discount'] = $SupData[0]['discount'];
+					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
 					$arr[] = $order;
 				}

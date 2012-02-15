@@ -28,11 +28,11 @@ $(document).ready(function() {
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' id='formA' action='?action={$request.action}&category=clients'>
+	<form method='POST' id='formA' action='?action={$request.action}&category=clients&discountID={$client.discount_id}&facilityID={$request.facilityID}&productID={$request.productID}&supplierID={$request.supplierID}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
-                    <span>{if $request.action eq "addItem"}Adding for a new client{else}Editing client{/if}</span>
+                    <span>{if $request.action eq "edit"}Editing client discount{else}Editing client discount for separate product{/if}</span>
                 </td>
                 <td class="users_u_top_r">
                 </td>
@@ -43,12 +43,23 @@ $(document).ready(function() {
                     Company :
                 </td>
                 <td class="border_users_r border_users_b">
-
-{$client.name}									
+					{$client.name} > {$client.fname}								
                 </td>
             </tr>				
+{if $request.action == 'editPDiscount'}				
+
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
+                    Product Name :
+                </td>
+                <td class="border_users_r border_users_b">
+					{$client.product_nr}						
+                </td>
+            </tr>
+	
+{/if}
+            <tr>
+               <td class="border_users_r border_users_l border_users_b" height="20">
                     Discount :
                 </td>
                 <td class="border_users_r border_users_b">
@@ -91,11 +102,12 @@ $(document).ready(function() {
         </table>
 					
         <div align="right" class="margin7">
-			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=sales&bookmark=clients'">
+			
+			<input type='button' class="button" value='Cancel' onclick="location.href='?action=viewDetails&category=clients&facilityID={$client.facility_id}&supplierID={$client.supplier_id}'">
 			
       	
             <input type='button' class="button" value='Save' onclick='check_amount();'>
-			<input type="hidden" name="company" id="company"  value=""/>
+			<input type="hidden" name="discount_id" id="discount_id"  value="{$client.discount_id}"/>
                   
         </div>	
 			 

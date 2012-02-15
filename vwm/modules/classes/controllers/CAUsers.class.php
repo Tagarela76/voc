@@ -129,6 +129,7 @@ class CAUsers extends Controller {
 		else
 		{			
 			$bookmark = $this->getFromRequest('bookmark');
+			
 			if ($bookmark != 'admin') {
 				$company=new Company($this->db);
 				$companyList=$company->getCompanyList();

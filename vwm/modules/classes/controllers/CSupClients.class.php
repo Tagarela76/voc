@@ -30,7 +30,7 @@ class CSupClients extends Controller {
 		}
 		
 		$inventoryManager = new InventoryManager($this->db);
-		$result = $inventoryManager->getDiscountsBySupplier($supplierID);
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID);
 		if ($result){
 			$discountList = $result;
 			$tmpArr = array ();
@@ -47,6 +47,7 @@ class CSupClients extends Controller {
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign('clients', $discountList);
+		$this->smarty->assign('supplierID', $supplierID);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign("request",$request);
@@ -67,15 +68,25 @@ class CSupClients extends Controller {
 		
 		
 		$facilityID = $this->getFromRequest('facilityID');
-		$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);		
+		
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID);
 		if ($result){
 			$client = $result;
+		}	
+		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID);	
+		if ($result){
+			foreach ($result as $prdct){
+				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&supplierID={$supplierID}";
+				$pdiscount[] = $prdct;
+			}
 		}		
+	//	$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);	
 
 		//$this->user->xnyo->user['user_id']
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$request);
-		$this->smarty->assign('client', $client);
+		$this->smarty->assign('client', $client[0]);
+		$this->smarty->assign('clients', $pdiscount);
 		$this->smarty->assign('tpl', 'tpls/clientDetail.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -86,14 +97,13 @@ class CSupClients extends Controller {
 
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
-		
 		$facilityID = $this->getFromRequest('facilityID');
-		$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);	;
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID);
 		if ($result){
 			$client = $result;
+		}else{
+			throw new Exception('404');
 		}		
-		var_dump($client);
-		
 
 			$error = $this->getFromRequest('error');
 
@@ -101,7 +111,8 @@ class CSupClients extends Controller {
 				$form = $_POST;
 
 				if (count($form) > 0) {
-					
+				
+					$result = $inventoryManager->updateSupplierDiscounts($form);			
 					if ($result == 'true'){
 						header("Location: ?action=browseCategory&category=sales&bookmark=clients");
 					}else{
@@ -113,24 +124,27 @@ class CSupClients extends Controller {
 		
 		$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
 	    $this->smarty->assign('jsSources',$jsSources);		
-		$this->smarty->assign('client', $client);
-		$this->smarty->assign("request",$this->getFromRequest());
+		$this->smarty->assign('client', $client[0]);
+		$this->smarty->assign("request",$request);
 		$this->smarty->assign('tpl', 'tpls/clientEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");
 		
 	}
 	
-	private function actionAddItem() {		
-		$inventoryManager = new InventoryManager($this->db);
-		$companyManager = new Company($this->db);
-		$request = $this->getFromRequest();
-		$supplierID = 9;
-		$result = $inventoryManager->getDiscountsBySupplier($supplierID);
-		if ($result){
-			$discountList = $result;
-		}
-		$companyList = $companyManager->getCompanyList();
+	private function actionEditPDiscount() {
 		
+		$inventoryManager = new InventoryManager($this->db);
+		$request = $this->getFromRequest();
+		$supplierID = $request['supplierID'];
+		$productID = $request['productID'];
+		$facilityID = $request['facilityID'];
+		
+		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID, $supplierID, $productID);
+		if ($result){
+			$discount = $result;
+		}else{
+			throw new Exception('404');
+		}		
 
 			$error = $this->getFromRequest('error');
 
@@ -138,9 +152,10 @@ class CSupClients extends Controller {
 				$form = $_POST;
 
 				if (count($form) > 0) {
-					
+
+					$result = $inventoryManager->updateSupplierDiscounts($form);			
 					if ($result == 'true'){
-						header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+						header("Location: ?action=viewDetails&category=clients&facilityID={$discount[0]['facility_id']}&supplierID={$discount[0]['supplier_id']}");
 					}else{
 						header("Location: ?action=addItem&category=clients&error=exist");
 					}
@@ -150,13 +165,63 @@ class CSupClients extends Controller {
 		
 		$jsSources = array ('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
 	    $this->smarty->assign('jsSources',$jsSources);		
+		$this->smarty->assign('client', $discount[0]);
+		$this->smarty->assign("request",$request);
+		$this->smarty->assign('tpl', 'tpls/clientEdit.tpl');
+		$this->smarty->display("tpls:index.tpl");
+		
+	}	
+	
+	private function actionAddItem() {
+		$inventoryManager = new InventoryManager($this->db);
+		$companyManager = new Company($this->db);
+
+		$request = $this->getFromRequest();
+		$supplierID = $request['supplierID'];
+		// Check user supplier in GET
+		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
+		foreach($supplierIDS as $sid){
+			$supplierIDArray[] = $sid['supplier_id'];
+		}
+		if (!in_array($supplierID, $supplierIDArray)){
+			throw new Exception('404');
+		}
+		
+		$companyList = $companyManager->getCompanyList();
+		$facility = new Facility($this->db);
+		$facilityList = $facility->getFacilityListByCompany($companyList[0]['id']);
+		$this->smarty->assign("facility", $facilityList);
+		
+
+		$error = $this->getFromRequest('error');
+
+		if ($error == null) {
+			$form = $_POST;
+
+			if (count($form) > 0) {
+			
+				$form['supplier_id'] = $supplierID;
+
+				$checkID = $inventoryManager->checkDiscountID($form['companyID'], $form['facilityID']);
+				if ($checkID){
+					$form['discount_id'] = $checkID[0]['discount_id'];
+				}
+				$result = $inventoryManager->updateSupplierDiscounts($form);
+
+				if ($result) {
+					header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+				} else {
+					header("Location: ?action=addItem&category=clients&error=exist");
+				}
+			}
+		}
+
 		$this->smarty->assign('companies', $companyList);
 		$this->smarty->assign('request', $request);
 		$this->smarty->assign('tpl', 'tpls/clientAdd.tpl');
 		$this->smarty->display("tpls:index.tpl");
-
 	}
-	
+/*	
 	private function actionDeleteItem() {
 		$itemsCount= $this->getFromRequest('itemsCount');
 		$itemForDelete = array();
@@ -210,7 +275,7 @@ class CSupClients extends Controller {
 		}		
 		return $contact;
 	}
-        
+*/        
 
 	
 	

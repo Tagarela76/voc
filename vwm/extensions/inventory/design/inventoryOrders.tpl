@@ -130,14 +130,14 @@
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.price}
+                    {$order.order_price}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.discount} %
+                    {$order.order_discount} %
                 </div>
             </a>
         </td>		

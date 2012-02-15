@@ -56,7 +56,7 @@
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r" >
-				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">
+				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}" style="text-decoration: none;"><div style="width:100%;">
 					{foreach from=$comapnyList item=comapnyArr}	
 						{foreach from=$comapnyArr item=comapny}	
 							{if $product->product_id == $comapny.product_id}{$comapny.name}. {/if}

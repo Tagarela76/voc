@@ -15,6 +15,8 @@ class OrderInventory {
 	private $order_amount;
 	private $order_status = self::IN_PROGRESS;
 	
+	private $order_price;
+	private $order_discount;
 	private $order_total;
 
 	public $errors;
@@ -59,25 +61,29 @@ class OrderInventory {
 
                 if ($this->order_id != NULL){
                         $query = "UPDATE inventory_order SET 
-							order_product_id = '".mysql_escape_string($this->order_product_id)."',
-							order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
-							order_name = '".mysql_escape_string($this->order_name)."',
-							order_amount = '".mysql_escape_string($this->order_amount)."',
-							order_status = '".mysql_escape_string($this->order_status)."',
-							order_order_completed_date = '".mysql_escape_string($this->order_completed_date)."',
-							order_total	= '".mysql_escape_string($this->order_total)."'	
-							WHERE order_id = {$this->order_id}";
+								order_product_id = '".mysql_escape_string($this->order_product_id)."',
+								order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
+								order_name = '".mysql_escape_string($this->order_name)."',
+								order_amount = '".mysql_escape_string($this->order_amount)."',
+								order_status = '".mysql_escape_string($this->order_status)."',
+								order_order_completed_date = '".mysql_escape_string($this->order_completed_date)."',
+								order_price = '".mysql_escape_string($this->order_price)."',
+								order_discount = '".mysql_escape_string($this->order_discount)."',	
+								order_total	= '".mysql_escape_string($this->order_total)."'	
+								WHERE order_id = {$this->order_id}";
                 }
                 else {                        
    
                             $query = "INSERT INTO inventory_order VALUES (NULL,'"
-												.($this->order_product_id)."','" 
-												.($this->order_facility_id)."','" 
-                                                .($this->order_name)."','" 
-												.($this->order_amount)."','" 
-												.($this->order_status)."','"
-												.($this->order_created_date)."','"
-												.($this->order_total). "',NULL)";
+												.mysql_escape_string($this->order_product_id)."','" 
+												.mysql_escape_string($this->order_facility_id)."','" 
+                                                .mysql_escape_string($this->order_name)."','" 
+												.mysql_escape_string($this->order_amount)."','" 
+												.mysql_escape_string($this->order_status)."','"
+												.mysql_escape_string($this->order_created_date)."','"
+												.mysql_escape_string($this->order_price). "','"
+												.mysql_escape_string($this->order_discount). "','"
+												.mysql_escape_string($this->order_total). "',NULL)";
                                                
 
                 }	
@@ -165,6 +171,12 @@ class OrderInventory {
 		return $this->order_status;
 	}
 	
+	public function get_order_price(){
+		return $this->order_price;
+	}	
+	public function get_order_discount(){
+		return $this->order_discount;
+	}		
 	public function get_order_total(){
 		return $this->order_total;
 	}	
@@ -247,6 +259,16 @@ class OrderInventory {
 		}
 	}	
 	
+	public function set_order_price($value) {
+
+			$this->order_price = $value;
+	}
+	
+	public function set_order_discount($value) {
+
+			$this->order_discount = $value;
+	}	
+		
 	public function set_order_total($value) {
 
 			$this->order_total = $value;

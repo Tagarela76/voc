@@ -170,7 +170,8 @@ echo $query;
 		 
 		if ($facilityID != null){
 			$query .=	" io.order_facility_id = {$facilityID} AND ";
-		}		
+		}
+		
 		if ($productID != null){
 			$query .=	" io.order_product_id = {$productID} ";
 		}else{
@@ -294,15 +295,21 @@ echo $query;
 		}
 	}	
 	
-	public function getSupplierDiscounts($facilityID, $supplierID ) {
+	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null ) {
             
-        $query = "SELECT di.*, s.supplier, c.company_id, c.name   ";
+        $query = "SELECT di.*, p.product_nr, c.company_id, c.name, f.name as fname   ";
 				
-		$query .= " FROM supplier s,  " . TB_FACILITY . " f , " . TB_COMPANY . " c " .
-				  " LEFT JOIN discounts2inventory di ".
-				  " ON di.supplier_id =  {$supplierID} AND di.facility_id = {$facilityID} ".
-				  " WHERE s.supplier_id =  {$supplierID} ";
-				  $query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
+		$query .=	" FROM product p,  " . TB_FACILITY . " f , " . TB_COMPANY . " c " .
+					" LEFT JOIN discounts2inventory di ".
+					" ON di.supplier_id =  {$supplierID} AND di.facility_id = {$facilityID} ".
+					" WHERE p.product_id = di.product_id ";
+		if ($productID){
+			$query .=	" AND di.product_id = {$productID} ";
+		}else{
+			$query .=	" AND di.product_id IS NOT NULL ";
+		}			
+		
+		$query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
 
 
 		//echo $query;
@@ -316,21 +323,25 @@ echo $query;
 		$SupData = array();
 			foreach($arr as $b) {
 
-					$SupData = $b;
+					$SupData[] = $b;
             
 			}
 	
 		return $SupData;
 	}
 	
-	public function getDiscountsBySupplier($supplierID ) {
+	public function getSupplierWholeDiscount($supplierID, $facilityID = null) {
             
-        $query = "SELECT di.*, c.company_id, c.name  ";
+        $query = "SELECT di.*, c.company_id, c.name, f.name as fname ";
 				
 		$query .= " FROM discounts2inventory di,  " . TB_FACILITY . " f , " . TB_COMPANY . " c ".
-				  " WHERE di.supplier_id =  {$supplierID} ";
+				  " WHERE di.supplier_id =  {$supplierID} AND di.product_id is NULL ";
+		if ($facilityID != null){
+			$query .= " AND di.facility_id = {$facilityID} ";
+		}		  
 
-		$query .=	"AND f.facility_id = di.facility_id AND f.company_id = c.company_id ORDER BY  c.company_id ASC";
+		
+		$query .= " AND f.facility_id = di.facility_id AND f.company_id = c.company_id ORDER BY  c.company_id ASC";
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -339,24 +350,46 @@ echo $query;
 		$arr = $this->db->fetch_all_array();
 
 		$SupData = array();
-			foreach($arr as $b) {
+		foreach($arr as $b) {
 					$SupData[] = $b;
-			}
+		}
+		return $SupData;
+	}
+	
+	public function getDiscountsByID($discountID) {
+            
+        $query = "SELECT di.*, c.name, f.name as fname, p.product_nr ";
+				
+		$query .= " FROM discounts2inventory di,  " . TB_FACILITY . " f , " . TB_COMPANY . " c , product p".
+				  " WHERE di.discount_id = {$discountID} AND p.product_id = di.product_id ";
+
+		
+		$query .= " AND f.facility_id = di.facility_id AND f.company_id = c.company_id ";
+		//echo $query;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$SupData = $this->db->fetch_all_array();
+
 		return $SupData;
 	}	
 	
 	public function updateSupplierDiscounts( $form ) {
 
-										
+								
 		if ($form['discount_id'] == null){
-			$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
-				
-
+			if (isset($form['product_id'])){
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
+			}else{
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
+			}
+			
 		}else{
             $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." WHERE discount_id = {$form['discount_id']}";			
 
 		}
-
+		//echo $query;
 		$this->db->query($query);
 		
 		if(mysql_error() == '') {
@@ -470,6 +503,20 @@ echo $query;
 
 	}	
 	
+	public function checkDiscountID( $companyID, $facilityID ) {
+	
+		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.facility_id = ".$facilityID." AND di.product_id IS NULL ";				
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}else{
+			$arr = $this->db->fetch_all_array();
+			return $arr;
+		}
+
+
+	}		
+	
 	
 	public function getInventoryInfoForProduct( $productID, $facilityID, $mixID = null) {
 							//ORDERS FOR THIS PODUCT
@@ -526,6 +573,7 @@ echo $query;
 				AND order_facility_id = {$facility_id}
 				AND order_status NOT IN (".OrderInventory::COMPLETED.", ".OrderInventory::CANCELED.")";
 		$this->db->query($query);
+		
 		if ($this->db->num_rows() == 0) {
 			return false;
 		} else {
@@ -551,7 +599,7 @@ echo $query;
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
 		$text = $this->getEmailText($mix->facility_id);
-		// TODO reduce the amount of product in stock with type convert!!
+				
 		foreach ($productObjArray as $productObj){
 
 			$inventory = $this->getInventoryInfoForProduct($productObj->product_id, $mix->facility_id, $mix->mix_id);
@@ -569,21 +617,39 @@ echo $query;
 			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$isThereActiveOrders = $this->isThereActiveOrdersByProductID($productUsageData->product_id, $mix->facility_id);
-				
+
 				if (!$isThereActiveOrders){
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
+										
+
 					// PRICE FOR PRODUCT
 					$priceManager = new Product($this->db);
 					$price = $priceManager->getProductPrice($productUsageData->product_id);
+					$priceObj = new ProductPrice($this->db, $price[0]);
 					//TODO: CALC right price for product unittype 
-
+					$newOrder->order_price = $price[0]['price'];
+					
+					// Discount if isset for separate product, else for whole facility 
+					$discount = 0;
+					$result = $this->getSupplierSeparateDiscount($mix->facility_id, $price[0]['supman_id'], $productUsageData->product_id);
+					if (!$result){
+						$result2 = $this->getSupplierWholeDiscount($price[0]['supman_id'],$mix->facility_id);
+						$discount = $result2[0]['discount'];
+					}else{
+						$discount = $result[0]['discount'];
+					}
+					//UNITTYPE CONVERT ORDER AMOUNT TYPE TO	PRICE TYPE
+					$amount2Type = $this->unitTypeConverter($productUsageData, $priceObj);
+					
 					$newOrder->order_product_id = $productUsageData->product_id;
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
-					$newOrder->order_total = $productUsageData->amount * $price[0]['price'];
+					$newOrder->order_discount = $discount;
+					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
-					$newOrder->save();
+					
+				    $newOrder->save();
 
 					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
 					//TODO NEED supplier email
@@ -591,21 +657,16 @@ echo $query;
 
 					$this->checkSupplierEmail($supplierDetails[0]['email'],$text);
 				}else{
-/*					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
-					$supplierDetails[0]['email'] = '2reckiy@gmail.com';
-					$this->checkSupplierEmail($supplierDetails[0]['email']);
-*/					
+					// remind for needing product and completed order
 					
 				}
 				
-			}else{
-				
-			}			
+			}		
 		}
 		
 	}
 
-	public function unitTypeConverter($inventory) {
+	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null) {
 		// UNITTYPE CONVERTER
 		$unittype = new Unittype($this->db);
 		$product = new Product($this->db);
@@ -629,21 +690,23 @@ echo $query;
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-		//quantity array in gallon
-		/* $quantitiVolumeSum = $unitTypeConverter->convertFromTo($data[0]->usage,
-		  "us gallon",
-		  $unittypeDetails['description'],
-		  $productDetails['density'],
-		  $densityType);//	in volume ;
-		 * 
-		 */
-		//$inventory->set_sum();
+		
+		if ($price){
+			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
+			$unitTypeConverter = new UnitTypeConverter($defaultType);
+			$typeName = $unittype->getUnittypeDetails($price->unittype);			
+			$quantitiVolumeSum = $unitTypeConverter->convertFromTo($inventory->amount,$unittypeDetails['description'], $typeName['description'], $productDetails['density'], $densityType);//	in volume ;
+		}
+
 
 		if ($quantitiWeightSum != null && $quantitiWeightSum != 0 && $quantitiWeightSum != ''){
 			$data = array();
 			$data['usage'] = number_format($quantitiWeightSum, 2, '.', '');
 			$data['unittype'] = $unittypeDetails['name'];
-
+			if ($quantitiVolumeSum != null && $quantitiVolumeSum != 0 && $quantitiVolumeSum != ''){
+				$data['amount'] = number_format($quantitiVolumeSum, 2, '.', '');
+				$data['amountType'] = $typeName['name'];
+			}
 			return  $data;
 		}else{
 			return false;

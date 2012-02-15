@@ -50,6 +50,7 @@
 													$request.bookmark == 'agency'||
 													$request.bookmark == 'product'||
 													$request.category == 'salescontacts' ||
+
 													$request.category == 'users'}
 											{include file="tpls:tpls/sort.tpl"}
 											{/if}
@@ -121,7 +122,7 @@
 									{/if}
 
 										{if !$doNotShowControls}
-											{if $request.action == 'browseCategory'}
+											{if $request.action == 'browseCategory' && $request.bookmark != 'orders' && $request.bookmark != 'products'}
 												{include file="tpls:tpls/controlCategoriesList.tpl"}
 											{elseif $request.action == 'viewDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}

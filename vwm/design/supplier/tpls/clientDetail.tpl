@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$client.name}
+                    &nbsp;{$client.name} > {$client.fname}
                 </div>
             </td>
         </tr>
@@ -46,3 +46,4 @@
         </tr>
     </table>
 </div>
+{include file="tpls:tpls/productDiscount.tpl"}
