@@ -282,9 +282,11 @@ echo $query;
 	
 	public function updateSupplierOrder( $data ) {
 
-            $query = "UPDATE inventory_order SET order_status = {$data['status']}, order_completed_date = {$data['order_completed_date']} WHERE order_id = {$data['order_id']}";			
-
-
+        $query = "UPDATE inventory_order SET order_status = {$data['status']} ";
+		if (isset($data['order_completed_date'])){		
+			$query .= " , order_completed_date = {$data['order_completed_date']} ";
+		}
+		$query .= " WHERE order_id = {$data['order_id']} ";			
 
 		$this->db->query($query);
 
