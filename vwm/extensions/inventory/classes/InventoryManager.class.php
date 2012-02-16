@@ -649,7 +649,7 @@ echo $query;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
 					
-				    //$newOrder->save();
+				    $newOrder->save();
 
 					
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
