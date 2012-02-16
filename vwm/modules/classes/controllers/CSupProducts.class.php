@@ -4,7 +4,7 @@ class CSupProducts extends Controller {
 	
 	function CSupProducts($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
-		$this->category='prducts';
+		$this->category='products';
 		$this->parent_category='sales';		
 	}
 	
@@ -50,10 +50,10 @@ class CSupProducts extends Controller {
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign('products', $productsArr);
 		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign("itemsCount", $totalCount);
+
 		$this->smarty->assign("comapnyList", $comapnyList);
 		$this->smarty->assign('tpl', 'tpls/bookmarkProducts.tpl');
-		$this->smarty->assign('pagination', $pagination);
+
                
 	}
 	
@@ -81,26 +81,42 @@ class CSupProducts extends Controller {
 // UNITTYPE{
 
 		$type = new Unittype($this->db);
-		$unittypeDetails = $type->getUnittypeDetails($product[0]['unittype']);
+		//$unittypeDetails = $type->getUnittypeDetails($product[0]['unittype']);
 
 			$form = $_POST;
 
 			if (count($form) > 0) {
 				$price4prduct = new ProductPrice($this->db, $product[0]);
-			
+
 				$price4prduct->price = $form['price'];
-	
+				$price4prduct->unittype = $form['selectUnittype'];
 				$result = $price4prduct->save();
 				if ($result == 'true') {
 					header("Location: ?action=browseCategory&category=sales&bookmark=products");
 				}
 			}
 
+		$res = $type->getAllClassesOfUnitTypes();
+		foreach ($res as $tEx){
+			$typeEx[] = $tEx['name'];
+		}
+		$unitTypeClass = $type->getUnittypeClass($product[0]['unittype']);
+		$unittypeList = $type->getUnittypeListDefault($unitTypeClass);
+	
+		$this->smarty->assign('unitTypeClass', $unitTypeClass);
+		$this->smarty->assign('typeEx', $typeEx);		
+		$this->smarty->assign('unittype', $unittypeList);
+// }UNITTYPE
+			
+			
 
-		$jsSources = array('modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js');
-		$this->smarty->assign('jsSources', $jsSources);
+		$jsSources = array (
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+
+			'modules/js/addUsage.js');
+	    $this->smarty->assign('jsSources',$jsSources);	
 		$this->smarty->assign("product", $product[0]);
-		$this->smarty->assign("unittype", $unittypeDetails);
+		//$this->smarty->assign("unittype", $unittypeDetails);
 		$this->smarty->assign("request", $request);
 		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");

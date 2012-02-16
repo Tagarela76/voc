@@ -673,7 +673,7 @@ class CInventory extends Controller
 						
 							if ($form['status'] == OrderInventory::COMPLETED){
 								
-							//ORDERS FOR THIS PODUCT
+							//ORDERS FOR THIS PRODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
 								$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){

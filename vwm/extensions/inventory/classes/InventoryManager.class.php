@@ -195,7 +195,7 @@ echo $query;
 			return false;
 		}
 		$arr = $this->db->fetch_all_array();
-		//echo $query;
+	
 		$SupData = array();
 			foreach($arr as $b) {
 
@@ -649,13 +649,11 @@ echo $query;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
 					
-				    $newOrder->save();
+				    //$newOrder->save();
 
-					$supplierDetails = $this->getProductsSupplierList($mix->facility_id,$productUsageData->product_id);
-					//TODO NEED supplier email
-					$supplierDetails[0]['email'] = 'jgypsyn@gyantgroup.com';			
-
-					$this->checkSupplierEmail($supplierDetails[0]['email'],$text);
+					
+					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
+					$this->checkSupplierEmail($supplierDetails['email'],$text);
 				}else{
 					// remind for needing product and completed order
 					
@@ -716,6 +714,20 @@ echo $query;
 
 	}
 
+	public function getSupplierEmail($supplierID){
+		$query = "SELECT u.email FROM user u , users2supplier us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+		$email = array();
+			foreach($arr as $b) {
+					$email = $b;
+			}
+		return $email;
+	}	
+
 	private function checkSupplierEmail($email,$text){
 		$user = new User($this->db);
 		$userDetails = $user->getUserDetails($_SESSION['user_id']);
@@ -736,7 +748,6 @@ echo $query;
 		$text .= $links;
 		$h = 'Cc: '.$userEmail. "\r\n";
 		$subject = "*** New Order on www.vocwebmanager.com *** \r\n\r\n";
-
 /*
 $data = $text;
 $data.= $h ;
@@ -750,7 +761,6 @@ $fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "
 fwrite($fp, $data);
 fclose ($fp);
 */	
-		
 		mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
 		mail('denis.nt@kttsoft.com ', $subject, $text, $h);
 
@@ -768,11 +778,10 @@ fclose ($fp);
 		$query = "SELECT * FROM email2inventory WHERE facility_id = {$facilityID} ";
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
-		$text = array();
-			foreach($arr as $b) {
-					$text = $b;
-			}
-		return $text;		
+		foreach($arr as $e) {
+				$email = $e;
+		}
+		return $email;		
 	}	
 	
 	
@@ -797,6 +806,19 @@ fclose ($fp);
 
 		$query = "INSERT INTO inventory_order_hash VALUES (NULL,". $hash['order_id'] .",'confirm','". $hash['confirm'] ."','". $hash['sent_date'] ."') ";
 		$this->db->query($query);
+
+	}	
+	
+	public function updateSupplierDetails($userID, $email){
+		
+		$query = "UPDATE user SET email = '".mysql_escape_string($email)."' WHERE user_id = {$userID} ";
+		$this->db->query($query);
+		
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}		
 
 	}	
 	

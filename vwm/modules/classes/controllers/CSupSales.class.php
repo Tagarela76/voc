@@ -31,7 +31,7 @@ class CSupSales extends Controller
 		$vars=array	(
 						'supplierIDS'		=>$supplierIDS
 					);
-
+		$this->smarty->assign("parent",$this->category);
 		$this->smarty->assign('supplierID', $supplierIDS[0]['supplier_id']);
 		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'supplier');
 		$this->smarty->display("tpls:index.tpl");		

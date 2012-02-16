@@ -180,7 +180,28 @@
 							</div>
 							</td>
 						</tr>
+				{if $bookmark=="supplier"}
+							<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Supplier:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >
+							<select id="selectSupplier" name="supplier_id" >
+							{if isset($supplier)}
+								{section name=i loop=$supplier}
+									<option value="{$supplier[i].supplier_id}" {if $supplier[i].supplier_id == $reg_field.supplier_id} selected='selected' {/if} >{$supplier[i].supplier}</option>
+								{/section}
+							{/if}
+	
+							</select>
+								<span id='facError' class="error_text" style="display:none">Error</span>
+							</div>							
+							</td>
+						</tr>
 						
+											</tr>
+					{/if}							
 						
 						
 

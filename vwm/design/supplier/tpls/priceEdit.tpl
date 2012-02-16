@@ -84,7 +84,27 @@ $(document).ready(function() {
                 </td>
                 <td class="border_users_r border_users_b">
 
-{$unittype.description}									
+{$unittype.description}	
+                    <div align="left">
+
+									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(document.getElementById('selectUnittypeClass'))" >									 										
+										{section name=j loop=$typeEx}
+										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{/section}
+							
+									</select>&nbsp; 
+					
+									<select name="selectUnittype" id="selectUnittype" >	
+										{section name=i loop=$unittype}	
+											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $product.unittype}selected="selected"{/if}>{$unittype[i].description}</option>										
+										{/section}
+
+									</select>							
+                    </div>
                 </td>
             </tr>	
 

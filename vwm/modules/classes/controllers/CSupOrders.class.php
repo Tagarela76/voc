@@ -36,7 +36,7 @@ class CSupOrders extends Controller {
 		$facilityManager = new Facility($this->db);
 
 		$products = $productManager->getProductListByMFG($supplierID);
-	
+
 		foreach($products as $product){
 			$order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
 
@@ -120,6 +120,7 @@ class CSupOrders extends Controller {
 				//ORDERS FOR THIS PODUCT
 				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
 				$ProductInventory = new ProductInventory($this->db);
+				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -132,7 +133,7 @@ class CSupOrders extends Controller {
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
 				$product = $productDetails[0];
 
-				$addToStock = $product->in_stock - $product->usage + $orderList[0]['order_amount'];
+				$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
 				$product->in_stock = $addToStock;
 				$result = $product->save();
 			}

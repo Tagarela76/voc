@@ -39,6 +39,7 @@ class User {
 		$facility_id = $userData["facility_id"] == null	? "NULL" : $userData["facility_id"];
 		$department_id = $userData["department_id"] == null ? "NULL": $userData["department_id"];
 		$creater_id = $userData["creater_id"] == null ? "NULL" : $userData["creater_id"];		
+		$supplier_id = $userData["supplier_id"] == null	? "NULL" : $userData["supplier_id"];
 		
 		$query="INSERT INTO ".TB_USER." (accessname, password, username, phone, mobile, email, accesslevel_id, company_id, facility_id, department_id, grace, creater_id) VALUES (";
 		$query.="'".$userData["accessname"]."', ";
@@ -58,6 +59,8 @@ class User {
 		$this->db->query($query);
 		$insertedUserID = $this->db->getLastInsertedID();
 		
+		$sql = "INSERT INTO users2supplier (id , user_id, supplier_id) VALUES (NULL , {$insertedUserID} , {$supplier_id})";
+		$this->db->query($sql);
 		/**
 		 * add new User in Bridge
 		 

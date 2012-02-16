@@ -122,7 +122,7 @@
 									{/if}
 
 										{if !$doNotShowControls}
-											{if $request.action == 'browseCategory' && $request.bookmark != 'orders' && $request.bookmark != 'products'}
+											{if $request.action == 'browseCategory' && $request.bookmark != 'orders' && $request.bookmark != 'products' && $request.category != 'profile'}
 												{include file="tpls:tpls/controlCategoriesList.tpl"}
 											{elseif $request.action == 'viewDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}

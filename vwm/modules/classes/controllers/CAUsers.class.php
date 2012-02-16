@@ -99,7 +99,8 @@ class CAUsers extends Controller {
 			}
 			if ($this->user->isValidRegData($data, $check)) 
 			{	//echo "HERE USER SAVED WITH NEXT DATA:";var_dump($data);die();						
-				$this->user->addUser($data);								
+				$userID = $this->user->addUser($data);
+				
 				header ('Location: admin.php?action=browseCategory&category=users&bookmark='.$this->getFromRequest('bookmark'));										
 				die();								
 			} 
@@ -129,7 +130,11 @@ class CAUsers extends Controller {
 		else
 		{			
 			$bookmark = $this->getFromRequest('bookmark');
-			
+			if ($bookmark == 'supplier') {
+				$suppl = new BookmarksManager($this->db);
+				$supplierList = $suppl->getOriginSupplier();
+				$this->smarty->assign("supplier",$supplierList);
+			}			
 			if ($bookmark != 'admin') {
 				$company=new Company($this->db);
 				$companyList=$company->getCompanyList();
