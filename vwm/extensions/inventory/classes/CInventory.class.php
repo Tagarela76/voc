@@ -600,6 +600,7 @@ class CInventory extends Controller
 									if (count($form) > 0) {
 										//protected from xss
 										$form["discount"]=Reform::HtmlEncode($form["discount"]);
+										$form["companyID"]=$companyID;
 										$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
 										$form['supplier_id'] = Reform::HtmlEncode($form['supplier_id']);
 										$form['discount_id'] = Reform::HtmlEncode($form['discount_id']);

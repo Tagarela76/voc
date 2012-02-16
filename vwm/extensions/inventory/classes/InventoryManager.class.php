@@ -296,7 +296,7 @@ echo $query;
 	}	
 	
 	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null ) {
-            
+/*            
         $query = "SELECT di.*, p.product_nr, c.company_id, c.name, f.name as fname   ";
 				
 		$query .=	" FROM product p,  " . TB_FACILITY . " f , " . TB_COMPANY . " c " .
@@ -310,8 +310,18 @@ echo $query;
 		}			
 		
 		$query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
+*/
+$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.supplier_id
+FROM  facility f, company c, supplier s,product p
+LEFT JOIN discounts2inventory di ON di.product_id = p.product_id
+WHERE p.supplier_id = s.supplier_id";
+		if ($productID){
+			$query .=	" AND di.product_id = {$productID} ";
 
-
+		}
+$query .=	" AND s.original_id = {$supplierID} ".
+			" AND f.facility_id = {$facilityID} ".
+			" AND f.company_id = c.company_id";
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -389,7 +399,7 @@ echo $query;
             $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." WHERE discount_id = {$form['discount_id']}";			
 
 		}
-		//echo $query;
+
 		$this->db->query($query);
 		
 		if(mysql_error() == '') {
@@ -503,9 +513,10 @@ echo $query;
 
 	}	
 	
-	public function checkDiscountID( $companyID, $facilityID ) {
+	public function checkDiscountID( $companyID, $facilityID, $supplierID ) {
 	
-		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.facility_id = ".$facilityID." AND di.product_id IS NULL ";				
+		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.facility_id = ".$facilityID." AND di.supplier_id = ".$supplierID." AND di.product_id IS NULL ";				
+		
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -621,7 +632,7 @@ echo $query;
 				if (!$isThereActiveOrders){
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
-										
+							
 
 					// PRICE FOR PRODUCT
 					$priceManager = new Product($this->db);
@@ -649,7 +660,7 @@ echo $query;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
 					
-				    //$newOrder->save();
+				    $newOrder->save();
 
 					
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);

@@ -32,7 +32,11 @@ class CSupProducts extends Controller {
 		
 		
 		$products = $productManager->getProductPriceBySupplier($supplierID);
-		//$this->user->xnyo->user['user_id']
+		if (!$products){
+			$products = $productManager->getProductListByMFG($supplierID);
+		}
+		
+
 		foreach ($products as $product){
 			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);
