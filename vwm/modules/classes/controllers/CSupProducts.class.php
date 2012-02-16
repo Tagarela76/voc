@@ -34,13 +34,18 @@ class CSupProducts extends Controller {
 		$products = $productManager->getProductPriceBySupplier($supplierID);
 		if (!$products){
 			$products = $productManager->getProductListByMFG($supplierID);
+			foreach ($products as $product){
+				$priceProduct = new ProductPrice($this->db, $product);
+				$priceProduct->supman_id = $supplierID;
+				$priceProduct->save();
+			}
+			
 		}
-		
-
+		$products = $productManager->getProductPriceBySupplier($supplierID);
 		foreach ($products as $product){
 			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);
-			
+	
 			$price4prduct->supman_id = $supplierID;
 			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&supplierID={$supplierID}";
 			//$price4prduct->save();

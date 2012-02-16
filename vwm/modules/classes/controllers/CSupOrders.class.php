@@ -115,10 +115,10 @@ class CSupOrders extends Controller {
 		$form = $_POST;
 		if (count($form) > 0) {
 			//protected from xss
-			$form['order_completed_date'] = time();
+			
 
 			if ($form['status'] == OrderInventory::COMPLETED) {
-
+				$form['order_completed_date'] = time();
 				//ORDERS FOR THIS PODUCT
 				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
 				$ProductInventory = new ProductInventory($this->db);
