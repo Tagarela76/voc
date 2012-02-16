@@ -31,6 +31,7 @@ class CSupClients extends Controller {
 		
 		$inventoryManager = new InventoryManager($this->db);
 		$result = $inventoryManager->getSupplierWholeDiscount($supplierID);
+
 		if ($result){
 			$discountList = $result;
 			$tmpArr = array ();
@@ -74,6 +75,7 @@ class CSupClients extends Controller {
 			$client = $result;
 		}	
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID);	
+		
 		if ($result){
 			foreach ($result as $prdct){
 				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&supplierID={$supplierID}";
@@ -99,6 +101,7 @@ class CSupClients extends Controller {
 		$supplierID = $request['supplierID'];
 		$facilityID = $this->getFromRequest('facilityID');
 		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID);
+
 		if ($result){
 			$client = $result;
 		}else{
@@ -202,10 +205,11 @@ class CSupClients extends Controller {
 			
 				$form['supplier_id'] = $supplierID;
 
-				$checkID = $inventoryManager->checkDiscountID($form['companyID'], $form['facilityID']);
+				$checkID = $inventoryManager->checkDiscountID($form['companyID'], $form['facilityID'],$form['supplier_id']);
 				if ($checkID){
 					$form['discount_id'] = $checkID[0]['discount_id'];
 				}
+						
 				$result = $inventoryManager->updateSupplierDiscounts($form);
 
 				if ($result) {
