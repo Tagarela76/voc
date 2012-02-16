@@ -91,10 +91,12 @@ class CSupOrders extends Controller {
 	private function actionEdit() {
 		
 		$inventoryManager = new InventoryManager($this->db);
-		$facilityID = $this->getFromRequest('$facilityID');
+		
+		
+		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
-
+				
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 			$this->smarty->assign('status', $statuslist);
@@ -143,6 +145,12 @@ class CSupOrders extends Controller {
 
 
 			if ($result == 'true') {
+				
+				$text = $inventoryManager->getEmailText($facilityID);
+				$clientEmail = $inventoryManager->getClientEmail($facilityID);
+				foreach($clientEmail as $email){
+					$inventoryManager->checkSupplierEmail($email['email'],$text);				
+				}
 				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
 			}
 		}	

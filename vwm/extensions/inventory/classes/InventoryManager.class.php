@@ -726,9 +726,25 @@ echo $query;
 					$email = $b;
 			}
 		return $email;
+	}
+	
+	public function getClientEmail($facilityID){
+		$query = "SELECT u.email FROM user u, facility f WHERE u.facility_id = {$facilityID} OR u.company_id = f.company_id AND f.facility_id = {$facilityID} ";
+
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+		
+		$email = array();
+			foreach($arr as $b) {
+					$email[] = $b;
+			}
+		return $email;
 	}	
 
-	private function checkSupplierEmail($email,$text){
+	public function checkSupplierEmail($email,$text){
 		$user = new User($this->db);
 		$userDetails = $user->getUserDetails($_SESSION['user_id']);
 		if (isset($email) && $email != ''){
@@ -738,7 +754,7 @@ echo $query;
 		}
 	}	
 
-	private function sendEmailToAll($supplierEmail, $userEmail, $text){
+	public function sendEmailToAll($supplierEmail, $userEmail, $text){
 		$hash = array();
 		$hash = $this->generateOrderHash($supplierEmail);
 		$userEmailb64 = base64_encode($userEmail);
@@ -761,6 +777,8 @@ $fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "
 fwrite($fp, $data);
 fclose ($fp);
 */	
+		mail($supplierEmail, $subject, $text, $h);
+		mail($userEmail, $subject, $text, $h);
 		mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
 		mail('denis.nt@kttsoft.com ', $subject, $text, $h);
 
@@ -774,8 +792,9 @@ fclose ($fp);
 		
 	}
 	
-	private function getEmailText($facilityID){
+	public function getEmailText($facilityID){
 		$query = "SELECT * FROM email2inventory WHERE facility_id = {$facilityID} ";
+		
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		foreach($arr as $e) {

@@ -78,7 +78,7 @@
 					
         <div align="right" class="margin7">
  <span style="color: red; font-size: 14px;">{if $request.action eq "addItem"}Be careful! Will be sent a letter with order's changes to the client!{else}
-	 Be careful! You must to phone to the client, to inform about changes in the order! {/if}</span>
+	 Be careful! Will be sent a e-mail with order's changes to the client! {/if}</span>
 				<input type='button' class="button" value='Cancel' onclick="location.href='supplier.php?action=browseCategory&category=sales&bookmark=orders'">
 			
       	
