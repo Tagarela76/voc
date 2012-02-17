@@ -142,22 +142,39 @@ class CSupOrders extends Controller {
 
 
 			if ($result == 'true') {
-				
-				$text = $inventoryManager->getEmailText($facilityID);
+
 				$clientEmail = $inventoryManager->getClientEmail($facilityID);
-				
+		switch ($form['status']){
+			case OrderInventory::IN_PROGRESS:
+				$status = 'IN PROGRESSED';
+			break;	
+			case OrderInventory::CONFIRM:
+				$status = 'CONFIRMED';
+			break;
+			case OrderInventory::COMPLETED:
+				$status = 'COMPLETED';
+			break;
+			case OrderInventory::CANCELED:
+				$status = 'CANCELED';
+			break;	
+		}
 				foreach($clientEmail as $email){
 					// EMAIL NOTIFICATION FOR CLIENT 
 					
 					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
 					
 					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
+
 					if ($ifEmail){
-						$inventoryManager->sendEmailToAll($email['email'],$userDetails['email'], $text['email_all']);
-					}else{
-						$inventoryManager->sendEmailToManager($userDetails['email'],$text['email_manager']);
-					}					
+						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility";
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
+					}
+						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						$inventoryManager->sendEmailToManager($userDetails['email'] , $text);
+									
 					
 									
 				}

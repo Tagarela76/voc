@@ -611,7 +611,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
-		$text = $this->getEmailText($mix->facility_id);
+		//$text = $this->getEmailText($mix->facility_id);
 				
 		foreach ($productObjArray as $productObj){
 
@@ -640,6 +640,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					$priceManager = new Product($this->db);
 					$price = $priceManager->getProductPrice($productUsageData->product_id);
 					$priceObj = new ProductPrice($this->db, $price[0]);
+					
 					//TODO: CALC right price for product unittype 
 					$newOrder->order_price = $price[0]['price'];
 					
@@ -671,10 +672,21 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					$user = new User($this->db);
 					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
 					if ($ifEmail){
-						$this->sendEmailToAll($supplierDetails['email'],$userDetails['email'], $text['email_all']);
-					}else{
-						$this->sendEmailToManager($userDetails['email'],$text['email_manager']);
-					}					
+						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ";
+						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
+						$isNewOrder = true;
+						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+					}
+						$supplierManager = new Supplier($this->db);
+						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						
+						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
+						$text['msg'] .= "\n"." Supplier: ".$supDetails['supplier_desc']; 
+						$text['msg'] .= "\n"." Contact: ".$supDetails['contact']; 
+						$text['msg'] .= "\n"." Address: ".$supDetails['address']; 
+						$text['msg'] .= "\n"." Phone: ".$supDetails['phone']; 
+						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
+						$this->sendEmailToManager($userDetails['email'],$text);
+										
 				}else{
 					// remind for needing product and completed order
 					
@@ -824,30 +836,30 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		}
 	}	
 
-	public function sendEmailToAll($supplierEmail, $userEmail, $text){
-		$hash = array();
-		$hash = $this->generateOrderHash($supplierEmail);
-		$userEmailb64 = base64_encode($userEmail);
+	public function sendEmailToSupplier($supplierEmail, $text, $isNewOrder = false){
+		if ($isNewOrder){
+			$hash = array();
+			$hash = $this->generateOrderHash($supplierEmail);
+			$userEmailb64 = base64_encode($userEmail);
 
-		$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
-		$text .= $links;
+			$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+			$text['msg'] .= $links;
+			$theme = "*** New Order on www.vocwebmanager.com ***";
+		}
 		//	E-mail notification about new order
 		$email = new EMail();
 
-		$to = array($supplierEmail,
-			$userEmail
-		);
+		$to = array($supplierEmail);
 		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
-		$theme = "*** New Order on www.vocwebmanager.com ***" . $_POST["accessname"];
-		$message = $text;
+		$theme = $text['title'];
+		$message = $text['msg'];
 		$email->sendMail($from, $to, $theme, $message);
 
-		/*
-$data = $text;
-$data.= $h ;
-$data.= $subject ;
-
+/*
+$data = $from;
+$data.= $theme ;
+$data.= $message ;
 
 $file="text.txt";
 //если файла нету... тогда
@@ -863,27 +875,33 @@ fclose ($fp);
 
 	}	
 	
-	public function sendEmailToManager($userEmail,$text){
-		
-		$links  = "\r\n"."For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
-		$text .= $links;
+	public function sendEmailToManager($userEmail, $text) {
 
 		//	E-mail notification about new order
 
-			$email = new EMail();
+		$email = new EMail();
 
-			$to = array(
-						$userEmail
-			);
+		$to = array(
+			$userEmail
+		);
 
-			//$from = "authentification@vocwebmanager.com";
-			$from = AUTH_SENDER . "@" . DOMAIN;
+		//$from = "authentification@vocwebmanager.com";
+		$from = AUTH_SENDER . "@" . DOMAIN;
+		$theme = $text['title'];
 
-			$theme = "*** New Order on www.vocwebmanager.com ***";
+		$message =$text['msg'];
+		$email->sendMail($from, $to, $theme, $message);		
+/*
+		$data = $from;
+		$data.= $theme;
+		$data.= $message;
+		$file = "text1.txt";
+//если файла нету... тогда
 
-			$message = $text;
-			$email->sendMail($from, $to, $theme, $message);		
-		
+		$fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "a" - добовлять к тексту), мы создаем файл
+		fwrite($fp, $data);
+		fclose($fp);
+*/
 	}
 	
 	public function getEmailText($facilityID){

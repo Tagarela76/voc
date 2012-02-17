@@ -421,30 +421,29 @@ class CInventory extends Controller
 	private function actionEdit() {
 		
 		
-							if (!is_null($this->getFromRequest('facilityID'))) {
-								//	Access control
-								if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityID'))) {
-									throw new Exception('deny');
-								}
+		if (!is_null($this->getFromRequest('facilityID'))) {
+			//	Access control
+			if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityID'))) {
+				throw new Exception('deny');
+			}
 
-								$backCategory = 'facility';
-								$facilityID = $this->getFromRequest('facilityID');
-
-							}
-		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
+			$backCategory = 'facility';
+			$facilityID = $this->getFromRequest('facilityID');
+		}
+		$this->smarty->assign('tab', $tab = $this->getFromRequest('tab'));
 		$request = $this->getFromRequest();
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
-		
+
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails['company_id'];
 		$this->smarty->assign('companyID', $companyID);
 		$ProductInventory = new ProductInventory($this->db);
-		$inventoryManager = new InventoryManager($this->db);		
+		$inventoryManager = new InventoryManager($this->db);
 
-	
+
 
 		switch ($tab){
 			case 'products':
@@ -727,6 +726,7 @@ class CInventory extends Controller
 									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
 									$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is ".$orderDetails[0]['order_id'];
 									$email->sendMail($from, $to, $theme, $message);		
+			
 									
 									$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
 								}
@@ -734,8 +734,40 @@ class CInventory extends Controller
 						if ($result1){	
 							$result2 = $inventoryManager->updateSupplierOrder($form);
 						}
+//						
+						
+						
+						switch ($form['status']) {
+							case OrderInventory::IN_PROGRESS:
+								$status = 'IN PROGRESSED';
+								break;
+							case OrderInventory::CONFIRM:
+								$status = 'CONFIRMED';
+								break;
+							case OrderInventory::COMPLETED:
+								$status = 'COMPLETED';
+								break;
+							case OrderInventory::CANCELED:
+								$status = 'CANCELED';
+								break;
+						}
+						// EMAIL NOTIFICATION
+						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
+						$supplierDetails = $inventoryManager->getSupplierEmail($supplierID[0]['original_id']);
+						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
 
+						$user = new User($this->db);
+						$userDetails = $user->getUserDetails($_SESSION['user_id']);
 
+						if ($ifEmail) {
+							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility is {$status}";
+							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
+							$inventoryManager->sendEmailToSupplier($supplierDetails['email'], $text);
+						}
+							$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
+							$inventoryManager->sendEmailToManager($userDetails['email'], $text);
+//
 							if ($result2){
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
@@ -1119,7 +1151,9 @@ class CInventory extends Controller
 			);
 			$result = $inventoryManager->updateSupplierOrder($arrayForUpdate);
 			if($result){
-				$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails->order_name." was change by supplier.");
+				$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed";
+				$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
+				$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed by supplier.");
 				header("Location: ?action=processororderResult&category=inventory&result=positive");										
 			}else{
 				throw new Exception('deny');
