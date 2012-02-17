@@ -144,6 +144,7 @@ class CInventory extends Controller
 
 				$orderList = $arr;
 				$this->smarty->assign('orderList',$orderList);	
+				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 			//
 /*		if (!is_null($this->getFromRequest('facilityID')))
 		{
@@ -199,7 +200,7 @@ class CInventory extends Controller
 		$this->smarty->assign('backUrl','?action=browseCategory&category='.$backCategory.'&id='.$this->getFromRequest($backCategory.'ID').'&bookmark=inventory&tab='.$result['inventory']->getType());
 		
  */				
-				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
+				
 				break;
 			case 'orders':
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
@@ -463,6 +464,7 @@ class CInventory extends Controller
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				
 				$product = $productarr[0];
+				
 				if ($product->usage != 0){
 					$result = $inventoryManager->unitTypeConverter($product);
 					if ($result){
@@ -519,6 +521,7 @@ class CInventory extends Controller
 									$form = $_POST;
 
 									if (count($form) > 0) {
+							
 										//protected from xss
 										$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
 										$form["limit"]=Reform::HtmlEncode($form["limit"]);
@@ -531,13 +534,22 @@ class CInventory extends Controller
 										$ProductInventory->set_in_stock_unit_type($form['selectUnittype']);
 										$ProductInventory->set_inventory_id($form['inventory_id']);
 										$ProductInventory->set_facility_id($facilityID);
-										$result = $ProductInventory->save();
-										if ($result == 'true'){
-											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
-										}else{
-											echo $result;
-										}
+												
+										// CONVERT IN STOCK VALUE
+										$inStock = $inventoryManager->unitTypeConverterForStock($ProductInventory,$product);
 
+										if ($inStock){
+											$ProductInventory->set_in_stock($inStock['in_stock']);
+											$result = $ProductInventory->save();
+											if ($result == 'true'){
+												header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
+											}else{
+												echo $result;
+											}
+										}else{
+											$error[] = 'Can\'t convert to this type! Product : '.$product->product_nr;
+											$this->smarty->assign('error',$error);
+										}
 									}
 		/*
 									//	IF ERRORS OR NO POST REQUEST
@@ -627,7 +639,7 @@ class CInventory extends Controller
 								$orderDetailsArr = array();
 								if (isset($request['item_'.$i])){
 									$orderDetailsArr['order_id'] = $request['item_'.$i];
-									$orderDetailsArr['status'] = 4;
+									$orderDetailsArr['status'] = OrderInventory::CANCELED;
 
 									$inventoryManager->updateSupplierOrder($orderDetailsArr);
 								}
@@ -639,9 +651,6 @@ class CInventory extends Controller
 								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($facilityID,$orderId);
 								$orderDetailsArr[0]['status'] = '4';
 								$arr[] =  $orderDetailsArr[0];
-
-
-								
 							}
 						}
 					$this->smarty->assign('cancelUrl',"?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab={$request[tab]}");
@@ -670,35 +679,64 @@ class CInventory extends Controller
 						$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
 						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
 						$form['status'] = Reform::HtmlEncode($form['status']);
-						$form['order_completed_date'] = time();
 						
+							$result1 = true;
 							if ($form['status'] == OrderInventory::COMPLETED){
-								
+								$form['order_completed_date'] = time();
+							
 							//ORDERS FOR THIS PRODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
 								$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
-								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 
+								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 								}else{
 									$dateBegin = $ProductInventory->period_start_date;
 								}
-							//
+
 								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
 
-								$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
-								$product->in_stock = $addToStock;
+								$result = $inventoryManager->unitTypeConverter($product);
+								if ($result){
+									$product->usage = $result['usage'];
+									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+									$product->in_stock = $addToStock;
+									$result1 = $product->save();									
+								}else{
+									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
 
-								$result = $product->save();
-								
+									// For orders with status: Canceled or Completed denied edit function
+									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
+										$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+
+										$this->smarty->assign('status',$statuslist);
+
+										$this->smarty->assign('order',$orderDetails[0]);	
+										$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');					
+									}else{
+										throw new Exception('deny');
+									}
+									$result1 = false;
+									$this->smarty->assign('check','false');	
+									
+									//	E-mail notification about density not found
+									$email = new EMail();
+									$to = array('denis.nt@kttsoft.com');
+									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
+									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
+									$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is ".$orderDetails[0]['order_id'];
+									$email->sendMail($from, $to, $theme, $message);		
+									
+									$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
+								}
 							}
-							
-						$result = $inventoryManager->updateSupplierOrder($form);
-						
+						if ($result1){	
+							$result2 = $inventoryManager->updateSupplierOrder($form);
+						}
 
 
-							if ($result == 'true'){
+							if ($result2){
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
 					

@@ -121,7 +121,7 @@
         <td>
             <a href="{$childCategoryItems[i].url}" class="id_company1">
                 <div>
-                    {$childCategoryItems[i].supplier_id}
+                    {$childCategoryItems[i].supplier}
                 </div>
             </a>
         </td>

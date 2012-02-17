@@ -70,19 +70,16 @@ class CSupOrders extends Controller {
 
 	private function actionViewDetails() {
 		$inventoryManager = new InventoryManager($this->db);
-		$facilityID = $this->getFromRequest('$facilityID');
+		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
 		
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
-		$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
-		//$orderDetails[0]['discount'] = $SupData[0]['discount'];
 
 
 		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "");
 		$this->smarty->assign('order', $orderDetails[0]);
 		$this->smarty->assign('tpl', 'tpls/orderDetail.tpl');
-		//$this->user->xnyo->user['user_id']
 		$this->smarty->assign("parent", $this->parent_category);
 		$this->smarty->assign("request", $this->getFromRequest());
 		$this->smarty->display("tpls:index.tpl");
@@ -96,7 +93,7 @@ class CSupOrders extends Controller {
 		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
-				
+
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 			$this->smarty->assign('status', $statuslist);
@@ -148,9 +145,23 @@ class CSupOrders extends Controller {
 				
 				$text = $inventoryManager->getEmailText($facilityID);
 				$clientEmail = $inventoryManager->getClientEmail($facilityID);
+				
 				foreach($clientEmail as $email){
-					$inventoryManager->checkSupplierEmail($email['email'],$text);				
+					// EMAIL NOTIFICATION FOR CLIENT 
+					
+					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
+					
+					$user = new User($this->db);
+					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+					if ($ifEmail){
+						$inventoryManager->sendEmailToAll($email['email'],$userDetails['email'], $text['email_all']);
+					}else{
+						$inventoryManager->sendEmailToManager($userDetails['email'],$text['email_manager']);
+					}					
+					
+									
 				}
+				
 				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
 			}
 		}	

@@ -90,7 +90,7 @@
                 <div style="width:100%;">
 					<div style="float:right;padding: 2px 0px 0px 5px; width: 70px;">
 						{foreach from=$typeName item=type key=key}
-							{if $Product->product_id == $key}, {$type}{/if}
+							{if $Product->product_id == $key}{if $type}, {$type}{/if}{/if}
 						{/foreach}	                    
 					</div>	
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->usage

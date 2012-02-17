@@ -664,9 +664,17 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					
 				    $newOrder->save();
 
-					
+					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
-					$this->checkSupplierEmail($supplierDetails['email'],$text);
+					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
+					
+					$user = new User($this->db);
+					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+					if ($ifEmail){
+						$this->sendEmailToAll($supplierDetails['email'],$userDetails['email'], $text['email_all']);
+					}else{
+						$this->sendEmailToManager($userDetails['email'],$text['email_manager']);
+					}					
 				}else{
 					// remind for needing product and completed order
 					
@@ -699,9 +707,10 @@ $query .=	" AND s.original_id = {$supplierID} ".
 
 		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+		
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-		
+
 		if ($price){
 			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
@@ -726,6 +735,54 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		//var_dump($inventory->product_nr,$quantitiWeightSum,$unittypeDetails['description'],$inventory->usage);
 
 	}
+	
+	public function unitTypeConverterForStock(ProductInventory $inventory, ProductInventory $inStock = null) {
+		// UNITTYPE CONVERTER
+		$unittype = new Unittype($this->db);
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($inventory->product_id);
+		$densityObj = new Density($this->db, $productDetails['densityUnitID']);
+
+		//	check density
+		if (empty($productDetails['density']) || $productDetails['density'] == '0.00') {
+			$productDetails['density'] = false;
+			$isThereProductWithoutDensity = true;
+		}
+
+		// get Density Type
+		$densityType = array(
+			'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+		);
+
+
+		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
+		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+		
+		$unitTypeConverter = new UnitTypeConverter($defaultType);
+		//$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
+
+		if ($inStock){
+	
+			$inStockDetails = $unittype->getUnittypeDetails($inStock->in_stock_unit_type);
+			
+			$inStockValue = $unitTypeConverter->convertFromTo($inventory->in_stock, $inStockDetails['description'], $unittypeDetails['description'], $productDetails['density'], $densityType);
+		
+			
+		}
+	
+		if ($inStockValue != null && $inStockValue != 0 && $inStockValue != ''){
+
+				$data['in_stock'] = number_format($inStockValue, 2, '.', '');
+	
+			return  $data;
+		}else{
+			return false;
+		}
+		
+		//var_dump($inventory->product_nr,$quantitiWeightSum,$unittypeDetails['description'],$inventory->usage);
+
+	}	
 
 	public function getSupplierEmail($supplierID){
 		$query = "SELECT u.email FROM user u , users2supplier us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
@@ -742,12 +799,13 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	}
 	
 	public function getClientEmail($facilityID){
-		$query = "SELECT u.email FROM user u, facility f WHERE u.facility_id = {$facilityID} OR u.company_id = f.company_id AND f.facility_id = {$facilityID} ";
+		$query = "SELECT f.email FROM facility f WHERE f.facility_id = {$facilityID} ";
 
 		$this->db->query($query);
+		echo 	$query;
 		if ($this->db->num_rows() == 0) {
 			return false;
-		}		
+		}	
 		$arr = $this->db->fetch_all_array();
 		
 		$email = array();
@@ -757,13 +815,12 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		return $email;
 	}	
 
-	public function checkSupplierEmail($email,$text){
-		$user = new User($this->db);
-		$userDetails = $user->getUserDetails($_SESSION['user_id']);
+	public function checkSupplierEmail($email){
+
 		if (isset($email) && $email != ''){
-			$this->sendEmailToAll($email,$userDetails['email'], $text['email_all']);
+			return true;
 		}else{
-			$this->sendEmailToManager($userDetails['email'],$text['email_manager']);
+			return false;
 		}
 	}	
 
@@ -772,12 +829,21 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		$hash = $this->generateOrderHash($supplierEmail);
 		$userEmailb64 = base64_encode($userEmail);
 
-
-		$links  = "\r\n"."For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+		$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
 		$text .= $links;
-		$h = 'Cc: '.$userEmail. "\r\n";
-		$subject = "*** New Order on www.vocwebmanager.com *** \r\n\r\n";
-/*
+		//	E-mail notification about new order
+		$email = new EMail();
+
+		$to = array($supplierEmail,
+			$userEmail
+		);
+		//$from = "authentification@vocwebmanager.com";
+		$from = AUTH_SENDER . "@" . DOMAIN;
+		$theme = "*** New Order on www.vocwebmanager.com ***" . $_POST["accessname"];
+		$message = $text;
+		$email->sendMail($from, $to, $theme, $message);
+
+		/*
 $data = $text;
 $data.= $h ;
 $data.= $subject ;
@@ -790,18 +856,33 @@ $fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "
 fwrite($fp, $data);
 fclose ($fp);
 */	
-		mail($supplierEmail, $subject, $text, $h);
-		mail($userEmail, $subject, $text, $h);
-		mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
-		mail('denis.nt@kttsoft.com ', $subject, $text, $h);
+		//mail($supplierEmail, $subject, $text, $h);
+		//mail($userEmail, $subject, $text, $h);
+		//mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
+		//mail('denis.nt@kttsoft.com ', $subject, $text, $h);
 
 	}	
 	
 	public function sendEmailToManager($userEmail,$text){
 		
-		$subject = "*** New Order on www.vocwebmanager.com ***";
+		$links  = "\r\n"."For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+		$text .= $links;
 
-		mail($userEmail, $subject, $text);		
+		//	E-mail notification about new order
+
+			$email = new EMail();
+
+			$to = array(
+						$userEmail
+			);
+
+			//$from = "authentification@vocwebmanager.com";
+			$from = AUTH_SENDER . "@" . DOMAIN;
+
+			$theme = "*** New Order on www.vocwebmanager.com ***";
+
+			$message = $text;
+			$email->sendMail($from, $to, $theme, $message);		
 		
 	}
 	
