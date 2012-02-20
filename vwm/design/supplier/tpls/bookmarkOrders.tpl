@@ -89,14 +89,22 @@
 				</div>					
 			
         </td>
-        <td class="users_u_top_r_green">
+        <td class="users_top_green">
             
             	<div style='width:100%;  color:white;'>						
                 	Client 	
 							
 				</div>					
 			
-        </td>			
+        </td>
+        <td class="users_u_top_r_green">
+            
+            	<div style='width:100%;  color:white;'>						
+                	
+							
+				</div>					
+			
+        </td>		
 
         
     </tr>
@@ -173,12 +181,22 @@
                    {$order.client}
                 </div>
             </a>
+        </td>	
+		
+        <td class="border_users_b border_users_r" align="center">
+
+                <div style="width:100%;">
+					{if $order.order_status == 1 || $order.order_status == 2}
+						<a href="{$order.completeUrl}">COMPLETE THIS ORDER</a>
+					{/if}	  
+                </div>
+
         </td>		
 
     </tr>
     {/foreach} 
     <tr>
-        <td colspan="10" class="border_users_l border_users_r">
+        <td colspan="11" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -186,7 +204,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr>
-        <td colspan="10" class="border_users_l border_users_r" align="center">
+        <td colspan="11" class="border_users_l border_users_r" align="center">
             No Orders
         </td>
     </tr>
@@ -195,7 +213,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="8" height="15" class="border_users">
+        <td colspan="9" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

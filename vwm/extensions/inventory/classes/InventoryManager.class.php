@@ -239,7 +239,7 @@ echo $query;
 				
 		$query .=	" FROM inventory_order io " .
 
-					" WHERE io.order_id = {$orderID}  AND io.order_created_date >= {$time->getTimestamp()}";
+					" WHERE io.order_id = {$orderID} AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -313,17 +313,22 @@ echo $query;
 		
 		$query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
 */
-$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.supplier_id
-FROM  facility f, company c, supplier s,product p
-LEFT JOIN discounts2inventory di ON di.product_id = p.product_id
-WHERE p.supplier_id = s.supplier_id";
-		if ($productID){
-			$query .=	" AND di.product_id = {$productID} ";
+		$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
+		FROM  company c, supplier s, facility f, product p
+		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id";
 
-		}
-$query .=	" AND s.original_id = {$supplierID} ".
-			" AND f.facility_id = {$facilityID} ".
-			" AND f.company_id = c.company_id";
+
+
+		$query .=	" WHERE p.supplier_id = s.supplier_id".
+					" AND s.original_id = {$supplierID} ".
+					" AND f.facility_id = {$facilityID} ".
+					" AND f.company_id = c.company_id ";
+				if ($productID){
+					$query .=	" AND p.product_id = {$productID} ";
+
+				}					
+		$query .=	" GROUP BY p.product_id ";
+
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -344,16 +349,29 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	
 	public function getSupplierWholeDiscount($supplierID, $facilityID = null) {
             
-        $query = "SELECT di.*, c.company_id, c.name, f.name as fname ";
+        $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
-		$query .= " FROM discounts2inventory di,  " . TB_FACILITY . " f , " . TB_COMPANY . " c ".
-				  " WHERE di.supplier_id =  {$supplierID} AND di.product_id is NULL ";
+		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
+					
+		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} ".
+					" AND di.product_id IS NULL ";
 		if ($facilityID != null){
 			$query .= " AND di.facility_id = {$facilityID} ";
-		}		  
+		}		
+		$query .=	" WHERE f.company_id = c.company_id ".
+					" AND m.department_id = d.department_id ".
+					" AND p.product_id = mg.product_id ".
+					" AND m.mix_id = mg.mix_id ".
+					" AND m.department_id = d.department_id ".
+					" AND d.facility_id = f.facility_id ".
+					" AND s.supplier_id = p.supplier_id ".
+					" AND s.original_id = {$supplierID} ";
+		if ($facilityID != null){
+			$query .= " AND f.facility_id = {$facilityID} ";
+		}	
+	
+		$query .=	" GROUP BY c.name ORDER BY c.company_id ASC ";
 
-		
-		$query .= " AND f.facility_id = di.facility_id AND f.company_id = c.company_id ORDER BY  c.company_id ASC";
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -391,7 +409,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 
 								
 		if ($form['discount_id'] == null){
-			if (isset($form['product_id'])){
+			if ($form['product_id'] != ''){
 				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
 			}else{
 				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
@@ -668,7 +686,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
-					
+			
 					$user = new User($this->db);
 					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
 					if ($ifEmail){
@@ -680,13 +698,13 @@ $query .=	" AND s.original_id = {$supplierID} ".
 						$supplierManager = new Supplier($this->db);
 						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						
 						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
-						$text['msg'] .= "\n"." Supplier: ".$supDetails['supplier_desc']; 
-						$text['msg'] .= "\n"." Contact: ".$supDetails['contact']; 
-						$text['msg'] .= "\n"." Address: ".$supDetails['address']; 
-						$text['msg'] .= "\n"." Phone: ".$supDetails['phone']; 
+						$text['msg'] .= "\r\n" ." Supplier: ".$supDetails['supplier_desc']; 
+						$text['msg'] .= "\r\n" ." Contact: ".$supDetails['contact']; 
+						$text['msg'] .= "\r\n" ." Address: ".$supDetails['address']; 
+						$text['msg'] .= "\r\n" ." Phone: ".$supDetails['phone']; 
 						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
 						$this->sendEmailToManager($userDetails['email'],$text);
-										
+								
 				}else{
 					// remind for needing product and completed order
 					
@@ -814,7 +832,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		$query = "SELECT f.email FROM facility f WHERE f.facility_id = {$facilityID} ";
 
 		$this->db->query($query);
-		echo 	$query;
+		//echo 	$query;
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}	
@@ -903,6 +921,7 @@ fclose ($fp);
 		fclose($fp);
 */
 	}
+
 	
 	public function getEmailText($facilityID){
 		$query = "SELECT * FROM email2inventory WHERE facility_id = {$facilityID} ";
