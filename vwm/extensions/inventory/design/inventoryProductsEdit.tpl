@@ -183,7 +183,13 @@
         </table>
 					
         <div align="right" class="margin7">
-
+{if $error && $error != ''}
+{foreach from=$error item=msg}
+	<span style='color:red; padding-left: 20px' >
+	{$msg}<br>
+	</span>
+{/foreach}	
+{/if}
 				<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=inventory&tab={$request.tab}'">
 			
       	

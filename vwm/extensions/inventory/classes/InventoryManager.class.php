@@ -239,7 +239,7 @@ echo $query;
 				
 		$query .=	" FROM inventory_order io " .
 
-					" WHERE io.order_id = {$orderID}  AND io.order_created_date >= {$time->getTimestamp()}";
+					" WHERE io.order_id = {$orderID} AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -313,17 +313,22 @@ echo $query;
 		
 		$query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
 */
-$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.supplier_id
-FROM  facility f, company c, supplier s,product p
-LEFT JOIN discounts2inventory di ON di.product_id = p.product_id
-WHERE p.supplier_id = s.supplier_id";
-		if ($productID){
-			$query .=	" AND di.product_id = {$productID} ";
+		$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
+		FROM  company c, supplier s, facility f, product p
+		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id";
 
-		}
-$query .=	" AND s.original_id = {$supplierID} ".
-			" AND f.facility_id = {$facilityID} ".
-			" AND f.company_id = c.company_id";
+
+
+		$query .=	" WHERE p.supplier_id = s.supplier_id".
+					" AND s.original_id = {$supplierID} ".
+					" AND f.facility_id = {$facilityID} ".
+					" AND f.company_id = c.company_id ";
+				if ($productID){
+					$query .=	" AND p.product_id = {$productID} ";
+
+				}					
+		$query .=	" GROUP BY p.product_id ";
+
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -344,16 +349,29 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	
 	public function getSupplierWholeDiscount($supplierID, $facilityID = null) {
             
-        $query = "SELECT di.*, c.company_id, c.name, f.name as fname ";
+        $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
-		$query .= " FROM discounts2inventory di,  " . TB_FACILITY . " f , " . TB_COMPANY . " c ".
-				  " WHERE di.supplier_id =  {$supplierID} AND di.product_id is NULL ";
+		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
+					
+		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} ".
+					" AND di.product_id IS NULL ";
 		if ($facilityID != null){
 			$query .= " AND di.facility_id = {$facilityID} ";
-		}		  
+		}		
+		$query .=	" WHERE f.company_id = c.company_id ".
+					" AND m.department_id = d.department_id ".
+					" AND p.product_id = mg.product_id ".
+					" AND m.mix_id = mg.mix_id ".
+					" AND m.department_id = d.department_id ".
+					" AND d.facility_id = f.facility_id ".
+					" AND s.supplier_id = p.supplier_id ".
+					" AND s.original_id = {$supplierID} ";
+		if ($facilityID != null){
+			$query .= " AND f.facility_id = {$facilityID} ";
+		}	
+	
+		$query .=	" GROUP BY c.name ORDER BY c.company_id ASC ";
 
-		
-		$query .= " AND f.facility_id = di.facility_id AND f.company_id = c.company_id ORDER BY  c.company_id ASC";
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -391,7 +409,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 
 								
 		if ($form['discount_id'] == null){
-			if (isset($form['product_id'])){
+			if ($form['product_id'] != ''){
 				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
 			}else{
 				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
@@ -611,7 +629,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
-		$text = $this->getEmailText($mix->facility_id);
+		//$text = $this->getEmailText($mix->facility_id);
 				
 		foreach ($productObjArray as $productObj){
 
@@ -640,6 +658,7 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					$priceManager = new Product($this->db);
 					$price = $priceManager->getProductPrice($productUsageData->product_id);
 					$priceObj = new ProductPrice($this->db, $price[0]);
+					
 					//TODO: CALC right price for product unittype 
 					$newOrder->order_price = $price[0]['price'];
 					
@@ -664,9 +683,28 @@ $query .=	" AND s.original_id = {$supplierID} ".
 					
 				    $newOrder->save();
 
-					
+					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
-					$this->checkSupplierEmail($supplierDetails['email'],$text);
+					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
+			
+					$user = new User($this->db);
+					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+					if ($ifEmail){
+						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ";
+						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
+						$isNewOrder = true;
+						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+					}
+						$supplierManager = new Supplier($this->db);
+						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						
+						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
+						$text['msg'] .= "\r\n" ." Supplier: ".$supDetails['supplier_desc']; 
+						$text['msg'] .= "\r\n" ." Contact: ".$supDetails['contact']; 
+						$text['msg'] .= "\r\n" ." Address: ".$supDetails['address']; 
+						$text['msg'] .= "\r\n" ." Phone: ".$supDetails['phone']; 
+						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
+						$this->sendEmailToManager($userDetails['email'],$text);
+								
 				}else{
 					// remind for needing product and completed order
 					
@@ -699,9 +737,10 @@ $query .=	" AND s.original_id = {$supplierID} ".
 
 		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+		
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-		
+
 		if ($price){
 			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
@@ -726,6 +765,54 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		//var_dump($inventory->product_nr,$quantitiWeightSum,$unittypeDetails['description'],$inventory->usage);
 
 	}
+	
+	public function unitTypeConverterForStock(ProductInventory $inventory, ProductInventory $inStock = null) {
+		// UNITTYPE CONVERTER
+		$unittype = new Unittype($this->db);
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($inventory->product_id);
+		$densityObj = new Density($this->db, $productDetails['densityUnitID']);
+
+		//	check density
+		if (empty($productDetails['density']) || $productDetails['density'] == '0.00') {
+			$productDetails['density'] = false;
+			$isThereProductWithoutDensity = true;
+		}
+
+		// get Density Type
+		$densityType = array(
+			'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+		);
+
+
+		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
+		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+		
+		$unitTypeConverter = new UnitTypeConverter($defaultType);
+		//$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
+
+		if ($inStock){
+	
+			$inStockDetails = $unittype->getUnittypeDetails($inStock->in_stock_unit_type);
+			
+			$inStockValue = $unitTypeConverter->convertFromTo($inventory->in_stock, $inStockDetails['description'], $unittypeDetails['description'], $productDetails['density'], $densityType);
+		
+			
+		}
+	
+		if ($inStockValue != null && $inStockValue != 0 && $inStockValue != ''){
+
+				$data['in_stock'] = number_format($inStockValue, 2, '.', '');
+	
+			return  $data;
+		}else{
+			return false;
+		}
+		
+		//var_dump($inventory->product_nr,$quantitiWeightSum,$unittypeDetails['description'],$inventory->usage);
+
+	}	
 
 	public function getSupplierEmail($supplierID){
 		$query = "SELECT u.email FROM user u , users2supplier us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
@@ -742,12 +829,13 @@ $query .=	" AND s.original_id = {$supplierID} ".
 	}
 	
 	public function getClientEmail($facilityID){
-		$query = "SELECT u.email FROM user u, facility f WHERE u.facility_id = {$facilityID} OR u.company_id = f.company_id AND f.facility_id = {$facilityID} ";
+		$query = "SELECT f.email FROM facility f WHERE f.facility_id = {$facilityID} ";
 
 		$this->db->query($query);
+		//echo 	$query;
 		if ($this->db->num_rows() == 0) {
 			return false;
-		}		
+		}	
 		$arr = $this->db->fetch_all_array();
 		
 		$email = array();
@@ -757,31 +845,39 @@ $query .=	" AND s.original_id = {$supplierID} ".
 		return $email;
 	}	
 
-	public function checkSupplierEmail($email,$text){
-		$user = new User($this->db);
-		$userDetails = $user->getUserDetails($_SESSION['user_id']);
+	public function checkSupplierEmail($email){
+
 		if (isset($email) && $email != ''){
-			$this->sendEmailToAll($email,$userDetails['email'], $text['email_all']);
+			return true;
 		}else{
-			$this->sendEmailToManager($userDetails['email'],$text['email_manager']);
+			return false;
 		}
 	}	
 
-	public function sendEmailToAll($supplierEmail, $userEmail, $text){
-		$hash = array();
-		$hash = $this->generateOrderHash($supplierEmail);
-		$userEmailb64 = base64_encode($userEmail);
+	public function sendEmailToSupplier($supplierEmail, $text, $isNewOrder = false){
+		if ($isNewOrder){
+			$hash = array();
+			$hash = $this->generateOrderHash($supplierEmail);
+			$userEmailb64 = base64_encode($userEmail);
 
+			$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+			$text['msg'] .= $links;
+			$theme = "*** New Order on www.vocwebmanager.com ***";
+		}
+		//	E-mail notification about new order
+		$email = new EMail();
 
-		$links  = "\r\n"."For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>"."\r\n"."For cancel this order click here: <a href='http://localhost/voc_src/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
-		$text .= $links;
-		$h = 'Cc: '.$userEmail. "\r\n";
-		$subject = "*** New Order on www.vocwebmanager.com *** \r\n\r\n";
+		$to = array($supplierEmail);
+		//$from = "authentification@vocwebmanager.com";
+		$from = AUTH_SENDER . "@" . DOMAIN;
+		$theme = $text['title'];
+		$message = $text['msg'];
+		$email->sendMail($from, $to, $theme, $message);
+
 /*
-$data = $text;
-$data.= $h ;
-$data.= $subject ;
-
+$data = $from;
+$data.= $theme ;
+$data.= $message ;
 
 $file="text.txt";
 //если файла нету... тогда
@@ -790,20 +886,42 @@ $fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "
 fwrite($fp, $data);
 fclose ($fp);
 */	
-		mail($supplierEmail, $subject, $text, $h);
-		mail($userEmail, $subject, $text, $h);
-		mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
-		mail('denis.nt@kttsoft.com ', $subject, $text, $h);
+		//mail($supplierEmail, $subject, $text, $h);
+		//mail($userEmail, $subject, $text, $h);
+		//mail('jgypsyn@gyantgroup.com', $subject, $text, $h);
+		//mail('denis.nt@kttsoft.com ', $subject, $text, $h);
 
 	}	
 	
-	public function sendEmailToManager($userEmail,$text){
-		
-		$subject = "*** New Order on www.vocwebmanager.com ***";
+	public function sendEmailToManager($userEmail, $text) {
 
-		mail($userEmail, $subject, $text);		
-		
+		//	E-mail notification about new order
+
+		$email = new EMail();
+
+		$to = array(
+			$userEmail
+		);
+
+		//$from = "authentification@vocwebmanager.com";
+		$from = AUTH_SENDER . "@" . DOMAIN;
+		$theme = $text['title'];
+
+		$message =$text['msg'];
+		$email->sendMail($from, $to, $theme, $message);		
+/*
+		$data = $from;
+		$data.= $theme;
+		$data.= $message;
+		$file = "text1.txt";
+//если файла нету... тогда
+
+		$fp = fopen($file, "a"); // ("r" - считывать "w" - создавать "a" - добовлять к тексту), мы создаем файл
+		fwrite($fp, $data);
+		fclose($fp);
+*/
 	}
+
 	
 	public function getEmailText($facilityID){
 		$query = "SELECT * FROM email2inventory WHERE facility_id = {$facilityID} ";
