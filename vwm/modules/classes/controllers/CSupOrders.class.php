@@ -94,6 +94,7 @@ class CSupOrders extends Controller {
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
+			$facilityID = $orderDetails[0]['order_facility_id'];
 			$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
 			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id'] . "");
 			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders");
@@ -104,7 +105,7 @@ class CSupOrders extends Controller {
 			throw new Exception('deny');
 		}		
 		
-		var_dump($orderDetails[0]);
+
 		$form = $_POST;
 		if (count($form) > 0) {
 				$form['status'] = OrderInventory::COMPLETED;
@@ -113,25 +114,58 @@ class CSupOrders extends Controller {
 				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
 				$ProductInventory = new ProductInventory($this->db);
 				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
-				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				} else {
 					$dateBegin = $ProductInventory->period_start_date;
 				}
 				//
 				$category = "facility";
-				
-				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
+			
+				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
 				$product = $productDetails[0];
+								$result = $inventoryManager->unitTypeConverter($product);
+								if ($result){
+									$product->usage = $result['usage'];
+									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+									$product->in_stock = $addToStock;
+									$result1 = $product->save();
+									
+								}else{
+									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
 
-				$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
-				$product->in_stock = $addToStock;
-				$product->save();
-		
-		$result = $inventoryManager->updateSupplierOrder($form);	
-		
-		if ($result == 'true') {
+									// For orders with status: Canceled or Completed denied edit function
+									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
+										$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+
+										$this->smarty->assign('status',$statuslist);
+
+										$this->smarty->assign('order',$orderDetails[0]);	
+										$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');					
+									}else{
+										throw new Exception('deny');
+									}
+									$result1 = false;
+									$this->smarty->assign('check','false');	
+									
+									//	E-mail notification about density not found
+									$email = new EMail();
+									$to = array('denis.nt@kttsoft.com');
+									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
+									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
+									$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is ".$orderDetails[0]['order_id'];
+									$email->sendMail($from, $to, $theme, $message);		
+			
+									
+									$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
+								}	
+
+
+		if ($result1) {		
+			$result2 = $inventoryManager->updateSupplierOrder($form);	
+		}
+		if ($result2 == 'true') {
 
 		$clientEmail = $inventoryManager->getClientEmail($facilityID);
 		switch ($form['status']){
