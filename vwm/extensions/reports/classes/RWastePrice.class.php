@@ -123,8 +123,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 
 		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd);
 		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
-		var_dump($voc_arr);	
-		
+
 
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
 	
@@ -260,7 +259,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		
 		$tableTag = $doc->createElement( "table" );		
 		$page->appendChild( $tableTag );		
-	
+
 		//by month
 		foreach ($voc_arr['data'] as $vocByMonth) {
 			$monthTag = $doc->createElement( "month" );		
@@ -274,46 +273,49 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			
 			//by rule or exempt rule
 			foreach ($vocByMonth['data'] as $vocByRule) {
-				for ($i=1;$i<=count($vocByRule['mixName']);$i++){
-					
-					$infoTag = $doc->createElement( "info" );
-					$monthTag->appendChild( $infoTag );
+				if ($vocByRule['mixName'] != 'none'){
+					for ($i=1;$i<=count($vocByRule['mixName']);$i++){
 
-						$ruleTag = $doc->createAttribute( "mixName" );
-						$ruleTag->appendChild(
-							$doc->createTextNode( html_entity_decode ($vocByRule['mixName'][$i]))
-						);
-					
-					foreach ($vocByRule['productName'] as $product){ 
-						
-						for ($j=0;$j<count($product);$j++){
-							
-							$infoTag->appendChild( $ruleTag );
-							$vocTag = $doc->createAttribute( "productName".$j );
-							$vocTag->appendChild(
-								$doc->createTextNode($product[$j])
+						$infoTag = $doc->createElement( "info" );
+						$monthTag->appendChild( $infoTag );
+
+							$ruleTag = $doc->createAttribute( "mixName" );
+							$ruleTag->appendChild(
+								$doc->createTextNode( html_entity_decode ($vocByRule['mixName'][$i]))
 							);
-							$infoTag->appendChild( $vocTag );
-						}
-					
-					}
 
-							
-					$infoTag->appendChild( $ruleTag );
-					$mixTag = $doc->createAttribute( "mixPrice" );
-					$mixTag->appendChild(
-					$doc->createTextNode($vocByRule['mixPrice'][$i])
-					);
-					$infoTag->appendChild( $mixTag );
-					
-					$infoTag->appendChild( $ruleTag );
-					$mixTag = $doc->createAttribute( "wastePrice" );
-					$mixTag->appendChild(
-					$doc->createTextNode($vocByRule['wastePrice'][$i])
-					);
-					$infoTag->appendChild( $mixTag );					
-				
-				}	
+
+
+							for ($j=0;$j<count($vocByRule['productName'][$i]);$j++){
+
+								$infoTag->appendChild( $ruleTag );
+								$vocTag = $doc->createAttribute( "productName".$j );
+								$vocTag->appendChild(
+									$doc->createTextNode($vocByRule['productName'][$i][$j])
+								);
+								$infoTag->appendChild( $vocTag );
+
+							}
+
+
+
+
+						$infoTag->appendChild( $ruleTag );
+						$mixTag = $doc->createAttribute( "mixPrice" );
+						$mixTag->appendChild(
+						$doc->createTextNode($vocByRule['mixPrice'][$i])
+						);
+						$infoTag->appendChild( $mixTag );
+
+						$infoTag->appendChild( $ruleTag );
+						$mixTag = $doc->createAttribute( "wastePrice" );
+						$mixTag->appendChild(
+						$doc->createTextNode($vocByRule['wastePrice'][$i])
+						);
+						$infoTag->appendChild( $mixTag );					
+
+					}
+				}
 			}
 			
 			$totalTag = $doc->createElement( "totalMix" );
@@ -338,8 +340,10 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		$fullTotalTag->appendChild(
 			$doc->createTextNode($voc_arr['totalWaste'])
 		);
-		$tableTag->appendChild( $fullTotalTag );		
+		$tableTag->appendChild( $fullTotalTag );	
+
 		$doc->save($fileName);
+		
 	}	
 	
 		private function group($query, $dateBegin, $dateEnd) {
@@ -402,19 +406,21 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 				$this->db->query($tmpQuery);
 
 				$res = array();
+				$mixName = array();
 				if ($this->db->num_rows()) {
 					$num = $this->db->num_rows();
 					for ($j=0; $j<$num; $j++) {
 						$this->db->query($tmpQuery);
 						
 						$data = $this->db->fetch($j);	
-						//$count = count($mixName);
-						
+
 						$data->usage = $data->quantity_lbs;
 						$data->in_stock_unit_type = $data->order_unittype;
 
 						$count=(count($mixName))? count($mixName) : 0;
 						if ($mixName[$count] != $data->description){
+							$tmpName = array();
+							
 							$mixName[$count+1] = $data->description;
 							$productName[$count+1][] = $data->product_nr;
 							$quanLbs[$count+1][] = $data->quantity_lbs;
@@ -427,15 +433,18 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 								$wastePrice[$count+1] = $waste + $recycle;
 								
 								$totalMix += $mixPrice[count($mixPrice)];
-								$totalWaste += $wastePrice[count($wastePrice)];								
+								$totalWaste = $wastePrice[count($wastePrice)];								
 							}else{
 								//TODO can't convert
 							}
 							
-							$tmpName = $data->product_nr;
-						}elseif ($tmpName != $data->product_nr){
+							$tmpName[] = $data->product_nr;
+						}elseif (!in_array($data->product_nr, $tmpName)){
+
 							$productName[$count][] = $data->product_nr;
 							$quanLbs[$count][] = $data->quantity_lbs;
+							
+							$tmpName[] = $data->product_nr;
 							$unittype2price = $inventoryManager->unitTypeConverter($data);
 							if ($unittype2price){
 								$mixPrice[$count] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
@@ -444,12 +453,13 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 								$wastePrice[$count] = $waste + $recycle;	
 								
 								$totalMix += $mixPrice[count($mixPrice)];
-								$totalWaste += $wastePrice[count($wastePrice)];								
+								$totalWaste = $wastePrice[count($wastePrice)];								
 							}else{
 								//TODO can't convert
 							}
 						}
 
+					}//end for
 					$res = array(
 						'mixName' => $mixName,
 						'productName' => $productName,
@@ -457,10 +467,6 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						'mixPrice' => $mixPrice,
 						'wastePrice' => $wastePrice
 					);
-					
-					
-
-					}//end for
 					$results[] = $res;
 					$WasARule = true;
 					

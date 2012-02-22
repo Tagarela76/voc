@@ -639,8 +639,16 @@ echo $query;
 				throw new Exception("No inventory found :(");
 			}
 			$inventory['facility_id'] = $mix->facility_id;
+		
+			
 			$productUsageData = new ProductInventory($this->db, $inventory);
-
+			
+		// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
+			$inStock2Type = $this->unitTypeConverter($productUsageData);
+			if 	($inStock2Type){
+				$inventory['sum'] = $inStock2Type['usage'];
+			}
+			
 			if ($productUsageData->id == null){
 				
 				$productUsageData->save();
@@ -682,7 +690,7 @@ echo $query;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
 					
-				    $newOrder->save();
+				    //$newOrder->save();
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);

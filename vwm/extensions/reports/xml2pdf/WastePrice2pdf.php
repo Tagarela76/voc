@@ -106,6 +106,7 @@ class XML2PDF extends PDF_MC_Table
 		$this->header = array();
 		$this->footer = array();
 		$this->filename = $filename;
+		
 		$error = XMLParseFile ($this->parser, $this->filename, 0, "", 1,"ISO-8859-1");
 		if (strcmp ($error, "")) 
 		{
@@ -292,11 +293,11 @@ class XML2PDF extends PDF_MC_Table
 			
 			case "TABLE":
 				$this->header();
-				$this->widths = array(90, 90);
+				$this->widths = array(90, 90, 45, 45);
 				$this->SetWidths($this->widths);
-				$this->aligns = array('L','R');
+				$this->aligns = array('C','C', 'C','C');
 				$this->SetAligns($this->aligns); 
-				$this->SetFillColor(200,200);
+				$this->SetFillColor(200,200, 200,200);
 				break;	
 				
 			case "MONTH":	
@@ -305,10 +306,12 @@ class XML2PDF extends PDF_MC_Table
 			//	$dateObj = DateTime::createFromFormat('Y', $dateBegin);
 				$this->Ln(5);
 				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0]+$this->widths[1],7,$name ,0,0,'L');
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3],7,$name ,0,0,'L');
 				$this->Ln();
-				$this->Cell($this->widths[0],7,"Date ",1,0,'C');
-				$this->Cell($this->widths[1],7,"Reclaimed Value ",1,0,'C');
+				$this->Cell($this->widths[0],7,"Mix Description",1,0,'C');
+				$this->Cell($this->widths[1],7,"Products",1,0,'C');
+				$this->Cell($this->widths[2],7,"Mix Price",1,0,'C');
+				$this->Cell($this->widths[3],7,"Waste Price",1,0,'C');
 				//$this->Cell($this->widths[2],7,"Total VOC ",1,0,'C');
 				$this->Ln();
 				$this->SetFont('Arial','',12);
@@ -320,7 +323,7 @@ class XML2PDF extends PDF_MC_Table
 				
 			case "INFO":
 				
-			if ( $attribs["RECYCLE"] == 'none' ) {
+			if ( $attribs["MIXNAME"] == 'none' ) {
 				/*if ( isset( $attribs["RULE"] ) ) {
 					$this->Cell($this->widths[0],7,$this->curMonth,1,0,'C');
 				} else {
@@ -331,31 +334,45 @@ class XML2PDF extends PDF_MC_Table
 				
 				$this->SetFont('Arial','I',12);
 				$this->Cell($this->widths[0],7,"none",1,0,'C');
-				$this->Cell($this->widths[1],7,"none",1,0,'C');		
+				$this->Cell($this->widths[1],7,"none",1,0,'C');	
+				$this->Cell($this->widths[2],7,"none",1,0,'C');
+				$this->Cell($this->widths[3],7,"none",1,0,'C');					
 				$this->Ln();		
 			} else {	
-				if( isset( $attribs["DATE"] ) ) {
+
 					$this->SetFont('Arial','',12);
-					$this->rows[0] = $attribs["DATE"];
-					$this->rows[1] = $attribs["RECYCLE"]." lbs";
-				} else {
-					$this->SetFont('Arial','',12);
-					/*if ($this->b) {
-						$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2],0.5,"",1,0,'C',true);
-						$this->Ln();
-						$this->rows[0] = "Exemption ";
-						$this->b = false;
-					}*/
-					$this->rows[0] = "none";
-					$this->rows[1] = "none";
-			}
+					$this->rows[0] = $attribs["MIXNAME"];
+					$this->rows[1] = $attribs["PRODUCTNAME0"];
+					
+					$p = 1;
+					while ($attribs["PRODUCTNAME".$p]){
+						$this->rows[1] .= ", ".$attribs["PRODUCTNAME".$p];
+						$p++;
+					}
+					if ($attribs["MIXPRICE"] != 0){
+						$this->rows[2] = "$".$attribs["MIXPRICE"];
+					}else{
+						$this->rows[2] = "$ 0.00";
+					}
+					
+					if ($attribs["WASTEPRICE"] == 0 ){
+						$this->rows[3] = "$ 0.00";
+					}else{
+						$this->rows[3] = "$".$attribs["WASTEPRICE"];
+					}
+				
+
 			}
 				break;
 				
-			case "TOTAL":
+			case "TOTALMIX":
 				break;	
-			case "FULLTOTAL":
-				break;						
+			case "FULLTOTALMIX":
+				break;		
+			case "TOTALWASTE":
+				break;	
+			case "FULLTOTALWASTE":
+				break;			
 														
 		} /* switch */
 		
@@ -375,26 +392,35 @@ class XML2PDF extends PDF_MC_Table
 				break;																	
 			case "YEAR":				
 				break;
-			case "TOTAL":
-				
-			/*	$this->rows[0] = "Total VOC's ";
-				$this->Row($this->rows);
-				for ($i=0; $i<=2; $i++){
-					$this->rows[$i] = " ";
-				}*/
+			case "TOTALMIX":
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[0],7,"Total ",1,0,'L',true);
-				$this->Cell($this->widths[1],7,$this->header['TOTAL']." lbs",1,0,'R',true);
-				$this->Ln();
+				$this->Cell($this->widths[0]+$this->widths[1],7,"TOTAL ",1,0,'L',true);
+				$this->Cell($this->widths[2],7,"$".$this->header['TOTALMIX'],1,0,'C',true);
 				$this->SetFont('Arial','',12);
 				break;	
-			case "FULLTOTAL":
+			case "TOTALWASTE":
+				$this->SetFont('Arial','I',12);
+				$this->Cell($this->widths[3],7,"$".$this->header['TOTALWASTE'],1,0,'C',true);
+				$this->Ln();
+				$this->SetFont('Arial','',12);
+				break;			
+			case "FULLTOTALMIX":
+				$this->Ln(2);
 				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0],7,"Total for Period:  ",1,0,'L');
-				$this->Cell($this->widths[1],7,$this->header['FULLTOTAL']." lbs",1,0,'R');	
-				break;															
+				$this->Cell($this->widths[0]+$this->widths[1],7,"Total for Period:  ",1,0,'L');
+				$this->Cell($this->widths[2],7,"$".$this->header['FULLTOTALMIX'],1,0,'C');	
+				$this->SetFont('Arial','',12);
+				break;	
+			case "FULLTOTALWASTE":
+
+				$this->SetFont('Arial','B',15);
+
+				$this->Cell($this->widths[3],7,"$".$this->header['FULLTOTALWASTE'],1,0,'C');	
+				$this->Ln();
+				$this->SetFont('Arial','',12);
+				break;			
 			case "INFO":
-				if ($attribs["RECYCLE"]!='none') {										
+				if ($attribs["MIXNAME"]!='none') {										
 					$this->Row($this->rows);
 					for ($i=0; $i<=2; $i++){
 						$this->rows[$i] = " ";
@@ -457,14 +483,22 @@ class XML2PDF extends PDF_MC_Table
 			case 'NOTES':
 				$this->header['NOTES'] = $data;
 				break;
-								
-			case 'TOTAL':
-				$this->header['TOTAL'] = $data;							
+							
+			case 'TOTALMIX':
+				$this->header['TOTALMIX'] = ($data) ? $data : '0.00';							
 				break;	
 			
-			case 'FULLTOTAL':
-				$this->header['FULLTOTAL'] = $data;							
-				break;					
+			case 'TOTALWASTE':
+				$this->header['TOTALWASTE'] = ($data) ? $data : '0.00';							
+				break;			
+			
+			case 'FULLTOTALMIX':
+				$this->header['FULLTOTALMIX'] = ($data) ? $data : '0.00';							
+				break;	
+			
+			case 'FULLTOTALWASTE':
+				$this->header['FULLTOTALWASTE'] = ($data) ? $data : '0.00';							
+				break;				
 
 			case 'PERIOD':
 				$this->header['PERIOD'] = $data;							
