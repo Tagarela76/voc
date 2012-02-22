@@ -34,7 +34,7 @@
 						
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
-								Accessname
+								Accessname*
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 								<div align="left" >	&nbsp;{$user.accessname}</div>						
@@ -43,7 +43,7 @@
 						
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
-								Username
+								Username**
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 								<div align="left" >	&nbsp;{$user.username}</div>						
@@ -106,4 +106,6 @@
                  			</td>
 						</tr>
 			</table>
+<br />* You'll use this to log in to the voc web manager. Other user will no see your access name	
+<br />** This is your real name. We'll can print it on some reports or show it to other users						
 	</div>

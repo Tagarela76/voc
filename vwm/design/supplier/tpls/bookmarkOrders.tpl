@@ -13,7 +13,7 @@
 	{/if}
 
 <div class="padd7">
-	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
+	<table class="users"cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_green" height="27px">
 		{if $request.tab != 'products'}
         <td class="users_top_green users_u_top_green" width="60">
@@ -195,11 +195,7 @@
 
     </tr>
     {/foreach} 
-    <tr>
-        <td colspan="11" class="border_users_l border_users_r">
-            &nbsp;
-        </td>
-    </tr>
+
     {*END LIST*}
 {else}
     {*BEGIN	EMPTY LIST*}
@@ -214,6 +210,7 @@
         <td class="users_u_bottom">
         </td>
         <td colspan="9" height="15" class="border_users">
+			
         </td>
         <td class="users_u_bottom_r">
         </td>
