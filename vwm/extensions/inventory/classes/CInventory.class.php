@@ -382,7 +382,7 @@ class CInventory extends Controller
 						//TODO: CALC right price for product unittype 
 					
 						$newOrder->order_price = $price[0]['price'];
-						
+						$newOrder->order_unittype = $price[0]['unittype'];
 						// Discount if isset for separate product, else for whole facility 
 						$discount = 0;
 						$result = $inventoryManager->getSupplierSeparateDiscount($form["facilityID"], $price[0]['supman_id'], $form['order_product_id']);
@@ -648,7 +648,7 @@ class CInventory extends Controller
 						}else{					
 							foreach ($request['id'] as $orderId){
 								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($facilityID,$orderId);
-								$orderDetailsArr[0]['status'] = '4';
+								$orderDetailsArr[0]['status'] = OrderInventory::CANCELED;
 								$arr[] =  $orderDetailsArr[0];
 							}
 						}

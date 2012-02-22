@@ -14,7 +14,7 @@ class OrderInventory {
 	private $order_name;
 	private $order_amount;
 	private $order_status = self::IN_PROGRESS;
-	
+	private $order_unittype;
 	private $order_price;
 	private $order_discount;
 	private $order_total;
@@ -68,6 +68,7 @@ class OrderInventory {
 								order_status = '".mysql_escape_string($this->order_status)."',
 								order_order_completed_date = '".mysql_escape_string($this->order_completed_date)."',
 								order_price = '".mysql_escape_string($this->order_price)."',
+								order_unittype = '".mysql_escape_string($this->order_unittype)."',
 								order_discount = '".mysql_escape_string($this->order_discount)."',	
 								order_total	= '".mysql_escape_string($this->order_total)."'	
 								WHERE order_id = {$this->order_id}";
@@ -81,6 +82,7 @@ class OrderInventory {
 												.mysql_escape_string($this->order_amount)."','" 
 												.mysql_escape_string($this->order_status)."','"
 												.mysql_escape_string($this->order_created_date)."','"
+												.mysql_escape_string($this->order_unittype)."','"
 												.mysql_escape_string($this->order_price). "','"
 												.mysql_escape_string($this->order_discount). "','"
 												.mysql_escape_string($this->order_total). "',NULL)";
@@ -181,6 +183,10 @@ class OrderInventory {
 		return $this->order_total;
 	}	
 	
+	public function get_order_unittype(){
+		return $this->order_unittype;
+	}	
+	
 	public function get_order_id(){
 		return $this->order_id;
 	}	
@@ -272,6 +278,12 @@ class OrderInventory {
 	public function set_order_total($value) {
 
 			$this->order_total = $value;
+
+	}
+	
+	public function set_order_unittype($value) {
+
+			$this->order_unittype = $value;
 
 	}	
 }
