@@ -37,7 +37,8 @@
 
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
-					Login:
+					Login*:
+					
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" >
@@ -90,7 +91,7 @@
 						
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
-								User name:
+								User name**:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 							<div align="left" >	<input type='text' name='username' value='{$reg_field.username}'></div>
@@ -297,6 +298,7 @@
                  			</td>
            				</tr>	
 			</table>
+
 	<div align="right">
 		<br>
 		{if $request.action eq "edit"}					
@@ -305,7 +307,8 @@
 			<input type='submit' id='saveButton' class="button" name='save' value='Register'>
 		{/if}
 		<span style="padding-right:50">&nbsp;</span>
-		</div>
-		
+	</div>
+<br />* You'll use this to log in to the voc web manager. Other user will no see your access name	
+<br />** This is your real name. We'll can print it on some reports or show it to other users		
 </form>				
 </div>	
