@@ -520,7 +520,7 @@ class CInventory extends Controller
 									$form = $_POST;
 
 									if (count($form) > 0) {
-							
+						
 										//protected from xss
 										$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
 										$form["limit"]=Reform::HtmlEncode($form["limit"]);

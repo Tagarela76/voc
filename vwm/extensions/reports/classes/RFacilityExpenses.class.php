@@ -449,30 +449,6 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 
 		return $totalResults;			
 	}
-
-/*		private function Convert($mixID,$value, $unittype_id,$companyDetails,Unittype $unittype) {	
-			
-		//$unittype = new Unittype($this->db);
-		$defaultType = $unittype->getDescriptionByID($companyDetails['voc_unittype_id']);	
-		$unitTypeConverter = new UnitTypeConverter($defaultType);
-
-			if (empty($unittype_id)) {
-				//	percent
-				
-				echo 'percent';
-			}	
-						$recycleUnitDetails = $unittype->getUnittypeDetails($unittype_id);
-						if ($unittype->isWeightOrVolume($unittype_id) == 'volume') {
-								$recycleVolume = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], 'us gallon');
-								//$result['recyclePercent'] = $recycleVolume/$quantityVolumeSum*100;
-								return $recycleVolume;
-						}if ($unittype->isWeightOrVolume($unittype_id) == 'weight') {
-								$recycleWeight = $unitTypeConverter->convertFromTo($value, $recycleUnitDetails["description"], "lb");
-								return $recycleWeight;
-								//$result['recyclePercent'] = $recycleWeight/$quantityWeightSum*100;
-						}
-	
-		}*/
 		
 	private function FromAllToLbs($mixID) {	
 	$result = 0;		

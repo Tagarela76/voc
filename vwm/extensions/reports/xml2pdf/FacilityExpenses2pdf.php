@@ -294,9 +294,9 @@ class XML2PDF extends PDF_MC_Table
 				$this->header();
 				$this->widths = array(90, 90);
 				$this->SetWidths($this->widths);
-				$this->aligns = array('L','R');
+				$this->aligns = array('L','C');
 				$this->SetAligns($this->aligns); 
-				$this->SetFillColor(200,200);
+				$this->SetFillColor(200,200, 200,200);
 				break;	
 				
 			case "MONTH":	
@@ -383,8 +383,8 @@ class XML2PDF extends PDF_MC_Table
 					$this->rows[$i] = " ";
 				}*/
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[0],7,"Total ",1,0,'L',true);
-				$this->Cell($this->widths[1],7,"$".$this->header['TOTAL'],1,0,'R',true);
+				$this->Cell($this->widths[0],7,"Total ",1,0,'C',true);
+				$this->Cell($this->widths[1],7,"$".$this->header['TOTAL'],1,0,'C',true);
 				$this->Ln();
 				$this->SetFont('Arial','',12);
 				break;	
@@ -392,11 +392,11 @@ class XML2PDF extends PDF_MC_Table
 				
 				$this->SetFont('Arial','B',15);
 				$this->Ln(2);
-				$this->Cell($this->widths[0],7,"Total for Period:  ",1,0,'L');
-				$this->Cell($this->widths[1],7,"$".$this->header['FULLTOTAL'],1,0,'R');	
+				$this->Cell($this->widths[0],7,"Total for Period:  ",1,0,'C');
+				$this->Cell($this->widths[1],7,"$".$this->header['FULLTOTAL'],1,0,'C');	
 				break;															
 			case "INFO":
-				if ($attribs["RECYCLE"]!='none') {										
+				if ($attribs["DEPNAME"]!='none') {										
 					$this->Row($this->rows);
 					for ($i=0; $i<=2; $i++){
 						$this->rows[$i] = " ";
