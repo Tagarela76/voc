@@ -639,7 +639,7 @@ echo $query;
 				throw new Exception("No inventory found :(");
 			}
 			$inventory['facility_id'] = $mix->facility_id;
-		
+			$inventory['in_stock_unit_type'] = $productObj->unittypeDetails['unittype_id'];
 			
 			$productUsageData = new ProductInventory($this->db, $inventory);
 			
@@ -648,7 +648,7 @@ echo $query;
 			if 	($inStock2Type){
 				$inventory['sum'] = $inStock2Type['usage'];
 			}
-	
+
 			if ($productUsageData->id == null){
 				
 				$productUsageData->save();
