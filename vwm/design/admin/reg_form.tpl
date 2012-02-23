@@ -191,7 +191,7 @@
 							<select id="selectSupplier" name="supplier_id" >
 							{if isset($supplier)}
 								{section name=i loop=$supplier}
-									<option value="{$supplier[i].supplier_id}" {if $supplier[i].supplier_id == $reg_field.supplier_id} selected='selected' {/if} >{$supplier[i].supplier}</option>
+									<option value="{$supplier[i].supplier_id}" {if $supplier[i].supplier == $reg_field.supplier_id} selected='selected' {/if} >{$supplier[i].supplier}</option>
 								{/section}
 							{/if}
 	

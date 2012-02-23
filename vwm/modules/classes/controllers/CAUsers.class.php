@@ -65,6 +65,7 @@ class CAUsers extends Controller {
 			$url="admin.php?action=viewDetails&category=users&bookmark=$bookmark&id=".$usersList[$i]['user_id']; //we can cut out the bookmark(it's no needed)
 			$usersList[$i]['url']=$url;
 		}
+
 		$this->smarty->assign("category",$usersList);
 		$this->smarty->assign("itemsCount",$itemsCount);
 		$jsSources = array('modules/js/checkBoxes.js');
@@ -76,6 +77,7 @@ class CAUsers extends Controller {
 	
 	private function actionViewDetails() {
 		$userDetails=$this->user->getUserDetails($this->getFromRequest('id'));
+
 		$this->smarty->assign("user", $userDetails);
 		$this->smarty->assign('tpl', 'tpls/viewUser.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -181,14 +183,18 @@ class CAUsers extends Controller {
 			if ($this->user->isValidRegData($data, $check)) {
 				
 				$data['user_id'] = $this->getFromRequest('id'); 
+				
 				if ($data['password'] == "__updatingUserFlag=WeCanLiveThisFieldEmptyButValidationWillBeFailed__") {
+					
 					$this->user->setUserDetails($data);							
 				} else {
+					
 					$this->user->setUserDetails($data, true);
 				}								
 				header ('Location: admin.php?action=browseCategory&category=users&bookmark='.$this->getFromRequest('bookmark'));								
 				die();								
 			} else {
+
 				$data['password']="";
 				$data['confirm_password']="";
 				if ($data['accesslevel_id']!=3) {
@@ -205,12 +211,30 @@ class CAUsers extends Controller {
 						$departmentList=$department->getDepartmentListByFacility($data['facility_id']);
 						$this->smarty->assign("department",$departmentList);
 					}
+					if ($data['accesslevel_id']==5) {
+						$suppl = new BookmarksManager($this->db);
+						$supplierList = $suppl->getOriginSupplier();
+						$supList = $this->user->getSupplierStartPoint($data['user_id']);
+						$data['supplier_id'] = $supList[0]['supplier'];
+						$this->smarty->assign("supplier",$supplierList);
+					}					
+					
+					
 				}								
 				$this->smarty->assign('check', $check);								
 			}							
 		} else {						
 			$data = $this->user->getUserDetails($this->getFromRequest('id'), true);
 			$data['password']="";//because from user details we get md5 of password
+			
+			$bookmark = 'supplier';
+			if ($bookmark == 'supplier') {
+				$suppl = new BookmarksManager($this->db);
+				$supplierList = $suppl->getOriginSupplier();
+				$supList = $this->user->getSupplierStartPoint($data['user_id']);
+				$data['supplier_id'] = $supList[0]['supplier'];
+				$this->smarty->assign("supplier",$supplierList);
+			}	
 			$bookmark = 'admin';
 			if ($data['accesslevel_id']!=3) {
 				$company=new Company($this->db);
@@ -235,6 +259,9 @@ class CAUsers extends Controller {
 			if ($data['accesslevel_id'] == 4){
 				$bookmark = 'sales';
 			}
+			if ($data['accesslevel_id'] == 5){
+				$bookmark = 'supplier';
+			}			
 		}
 		$this->smarty->assign("bookmark",$bookmark);
 		$this->smarty->assign("reg_field",$data);	
