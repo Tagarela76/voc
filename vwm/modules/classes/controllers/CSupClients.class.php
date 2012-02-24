@@ -99,11 +99,13 @@ class CSupClients extends Controller {
 		}	
 	
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID);	
-		
+
 		if ($result){
 			foreach ($result as $prdct){
 				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&supplierID={$supplierID}";
+				$prdct['discount'] = ($prdct['discount']) ? $prdct['discount'] : 0;
 				$pdiscount[] = $prdct;
+				
 			}
 		}		
 	//	$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);	
