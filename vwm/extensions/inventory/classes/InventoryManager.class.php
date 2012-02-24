@@ -173,7 +173,18 @@ echo $query;
 		}
 		
 		if ($productID != null){
-			$query .=	" io.order_product_id = {$productID} ";
+			if (is_array($productID)){
+				$expression = "(".$productID[0]['product_id'];
+				foreach($productID as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+				
+				$query .=	" io.order_product_id IN  {$expression} ";
+			}else{
+				$query .=	" io.order_product_id = {$productID} ";
+			}
+			
 		}else{
 			$query .=	" io.order_created_date >= {$time->getTimestamp()} ";
 		}
@@ -206,9 +217,26 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getCountSupplierOrders($facilityID) {
+	public function getCountFacilityOrders($facilityID) {
 	
 		$query = "SELECT COUNT(*) cnt FROM inventory_order WHERE order_facility_id = {$facilityID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}	
+	
+	public function getCountSupplierOrders($products) {
+		if ($products && is_array($products)){
+				$expression = "(".$products[0]['product_id'];
+				foreach($products as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+
+		}
+		
+		$query = "SELECT COUNT(*) cnt FROM inventory_order io WHERE ";
+		$query .=	" io.order_product_id IN  {$expression} ";
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
@@ -347,7 +375,7 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getSupplierWholeDiscount($supplierID, $facilityID = null) {
+	public function getSupplierWholeDiscount($supplierID, $facilityID = null,Pagination $pagination = null,Sort $sortStr = null) {
             
         $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
@@ -370,8 +398,15 @@ echo $query;
 			$query .= " AND f.facility_id = {$facilityID} ";
 		}	
 	
-		$query .=	" GROUP BY c.name ORDER BY c.company_id ASC ";
-
+		$query .=	" GROUP BY c.name ";
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY c.company_id ASC ";
+		}		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -385,6 +420,14 @@ echo $query;
 		}
 		return $SupData;
 	}
+	
+	public function getCountSupplierDiscounts($supplierID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM discounts2inventory WHERE product_id IS NULL AND supplier_id = {$supplierID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}		
 	
 	public function getDiscountsByID($discountID) {
             

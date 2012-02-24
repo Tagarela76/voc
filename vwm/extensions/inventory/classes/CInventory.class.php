@@ -89,7 +89,11 @@ class CInventory extends Controller
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
-		$inventoryManager = new InventoryManager($this->db);		
+		$inventoryManager = new InventoryManager($this->db);	
+		
+		$this->setListCategoriesLeftNew($category, $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+		$this->setPermissionsNew('facility');			
+
 		switch ($tab){
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
@@ -206,8 +210,10 @@ class CInventory extends Controller
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
 				$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 				$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
-				$orderDetails[0]['discount'] = $SupData[0]['discount'];				
-				
+				$orderDetails[0]['discount'] = ($SupData[0]['discount']) ? $SupData[0]['discount'] : 0 ;				
+				$type = new Unittype($this->db);
+				$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+				$orderDetails[0]['type'] = $typeName['name'];				
 				
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$orderDetails[0]['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab'));
 				$this->smarty->assign('order',$orderDetails[0]);	
@@ -346,13 +352,15 @@ class CInventory extends Controller
 		
  */		
 			$error = $this->getFromRequest('error');
-
+			$facilityID = $this->getFromRequest('facilityID');
+			$this->setListCategoriesLeftNew('facility', $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+			$this->setPermissionsNew('facility');
 			
 				$inventoryManager = new InventoryManager($this->db);
 				$product = new Product($this->db);
 				$facility = new Facility($this->db);
 
-				$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+				$facilityDetails = $facility->getFacilityDetails($facilityID);
 				$companyID = $facilityDetails['company_id'];
 				
 				$productLst = $product->getProductList($companyID);
@@ -435,7 +443,10 @@ class CInventory extends Controller
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
-
+		
+		$this->setListCategoriesLeftNew($category, $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+		$this->setPermissionsNew('facility');
+		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails['company_id'];
@@ -776,32 +787,6 @@ class CInventory extends Controller
 				}
 			break;			
 			
-			case 'settings':
-				
-				$inventoryEmail = $inventoryManager->getSupplierSettings($facilityID);
-				
-									$form = $_POST;
-
-									if (count($form) > 0) {
-										//protected from xss
-										$form["email_all"]=Reform::HtmlEncode($form["email_all"]);
-										$form["email_manager"]=Reform::HtmlEncode($form["email_manager"]);
-										$form['facilityID'] = Reform::HtmlEncode($form['facilityID']);
-
-							
-										$result = $inventoryManager->updateSupplierSettings($form);
-									
-										if ($result == 'true'){
-											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=products");
-										}
-									}
-													
-				$this->smarty->assign('email',$inventoryEmail);	
-				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
-				break;	
-			default :
-				throw new Exception('404');
-				break;				
 		}
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -824,6 +809,7 @@ class CInventory extends Controller
 		}
 		//	OK, this company has access to this module, so let's setup..
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
+		
 	
 
 			
@@ -916,13 +902,16 @@ class CInventory extends Controller
 				$sortStr = $this->sortList('orders',5);
 				
 				// Pagination	
-				$count = $inventoryManager->getCountSupplierOrders($facilityID);
+				$count = $inventoryManager->getCountFacilityOrders($facilityID);
 				
 				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
 				$this->smarty->assign('pagination', $pagination);				
 				
 				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination,$sortStr);
+				
+				$type = new Unittype($this->db);
+				
 
 				
 				foreach ($orderList as $order){
@@ -931,6 +920,8 @@ class CInventory extends Controller
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
 					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
+					$typeName = $type->getUnittypeDetails($order['order_unittype']);	
+					$order['type'] = $typeName['name'];		
 					$arr[] = $order;
 				}
 
@@ -958,12 +949,34 @@ class CInventory extends Controller
 				$this->smarty->assign('supplierlist',$supplierlist);	
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscounts.tpl');	
 				break;
+			
 			case 'settings':
+				
+				$inventoryEmail = $inventoryManager->getSupplierSettings($facilityID);
+				
+									$form = $_POST;
 
+									if (count($form) > 0) {
+										//protected from xss
+										$form["email_all"]=Reform::HtmlEncode($form["email_all"]);
+										$form["email_manager"]=Reform::HtmlEncode($form["email_manager"]);
+										$form['facilityID'] = Reform::HtmlEncode($form['facilityID']);
+
+							
+										$result = $inventoryManager->updateSupplierSettings($form);
+									
+										if ($result == 'true'){
+											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=settings");
+										}
+									}
+													
+				$this->smarty->assign('email',$inventoryEmail);	
+				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
 				break;	
 			default :
 				throw new Exception('404');
-				break;			
+				break;		
+		
 		}
 		
 

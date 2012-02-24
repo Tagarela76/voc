@@ -36,10 +36,19 @@ class CSupOrders extends Controller {
 		$facilityManager = new Facility($this->db);
 
 		$products = $productManager->getProductListByMFG($supplierID);
+		// Pagination	
+		$count = $inventoryManager->getCountSupplierOrders($products);
+		$pagination = new Pagination($count);
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders";
+		$this->smarty->assign('pagination', $pagination);
+	
+		$order = $inventoryManager->getSupplierOrders(null, $products, $pagination, $sortStr);
 
-		foreach($products as $product){
-			$order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
 
+		/* 		foreach($products as $product){
+		  $order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
+
+		 */
 			if ($order){
 				foreach ($order as $o){
 					$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
@@ -54,7 +63,7 @@ class CSupOrders extends Controller {
 				}				
 
 			}
-		}
+
 		$this->smarty->assign('orderList', $orderList);
 
 //set js scripts
@@ -64,7 +73,7 @@ class CSupOrders extends Controller {
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign('tpl', 'tpls/bookmarkOrders.tpl');
-		$this->smarty->assign('pagination', $pagination);
+
                
 	}
 	

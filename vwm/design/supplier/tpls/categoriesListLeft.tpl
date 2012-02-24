@@ -11,7 +11,7 @@
 						</ul>
 					</div>
 				</div>
-
+{*
 				<div align="left" width="100%"  class="{if $parent == 'profile'}left_m_active {else} left_m{/if}" >
 					<div align="left" width="100%">
 						<ul class="link">
@@ -21,7 +21,7 @@
 						</ul>
 					</div>
 				</div>
-			
+*}			
 			</td>
 		</tr>
 	</table>

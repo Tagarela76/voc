@@ -60,7 +60,7 @@
 							<td  valign="top" align="center" >											
 								<table width="100%" height="100%"   height="100%" cellspacing="0" cellpadding="0">
 									<tr>																				
-										{include file="tpls:tpls/categoriesListLeft.tpl"}							
+										{include file="tpls:tpls/categoriesListLeft.tpl"}					
 										<td valign="top"  class="foot_block">
 											{*Categories List*}									
 											{include file="tpls:tpls/login_categoriesList.tpl"}

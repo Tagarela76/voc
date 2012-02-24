@@ -35,7 +35,13 @@ class Product extends ProductProperties {
 			return false;
 	}
 
-
+	public function getCountSupplierProducts($supplierID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM product p, supplier s WHERE p.supplier_id = s.supplier_id AND s.original_id = {$supplierID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}
 
 	public function getProductListByMFG($supplierID, $companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		$products = $this->selectProductsByCompany($companyID, $supplierID, $pagination,$filter,$sort);
@@ -82,7 +88,7 @@ class Product extends ProductProperties {
 		return $productPrice;
 	}
 	
-	public function getProductPriceBySupplier($supplierID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductPriceBySupplier($supplierID, $priceID = null, Pagination $pagination = null, Sort $sortStr = null) {
 
 		$query =	"SELECT p.product_id, p.product_nr, pp.* " .
 				// " . TB_FACILITY . " f , " . TB_COMPANY . " c ,
@@ -98,8 +104,16 @@ class Product extends ProductProperties {
 		if ($productID){
 			$query .= " AND p.product_id = " . (int) $productID . "";
 		}		
-			$query .= " GROUP BY p.product_id ORDER BY  p.product_id ASC";
-
+			$query .= " GROUP BY p.product_id ";
+	
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY p.product_id ASC ";
+		}		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
 		$this->db->query($query);
 //echo $query;
 		if ($this->db->num_rows() == 0) {

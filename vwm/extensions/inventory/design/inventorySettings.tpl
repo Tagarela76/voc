@@ -16,7 +16,7 @@
 {/if}
 
 <div style="padding:7px;">
-	<form method='POST' action='?action={$request.action}&category=inventory&facilityID={$request.facilityID}&tab={$request.tab}'>
+	<form method='POST' action='?action={$request.action}&category=facility&id={$request.id}&bookmark=inventory&tab={$request.tab}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
@@ -60,11 +60,11 @@
 					
         <div align="right" class="margin7">
 
-				<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=inventory&tab=products'">
+				<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=inventory&tab=settings'">
 			
       	
             <input type='submit' class="button" value='Save'>
-			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
+			<input type='hidden' name="facilityID" value='{$request.id}'>
 			<input type='hidden' name="email_id" value='{$email.email_id}'>
 
         </div>									

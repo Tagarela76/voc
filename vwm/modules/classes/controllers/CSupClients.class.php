@@ -28,11 +28,34 @@ class CSupClients extends Controller {
 		}else{
 			$supplierID = $request['supplierID'];
 		}
-		
 		$inventoryManager = new InventoryManager($this->db);
-		$result = $inventoryManager->getSupplierWholeDiscount($supplierID);
+		// SOrt
+		$sortStr = $this->sortList('clients',2);
+
+		
+
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,null,$pagination,$sortStr);
 
 		if ($result){
+			foreach ($result as $discount){
+				if (!$discount['discount_id']){
+					$data['discount_id'] = $discount['discount_id'];
+					$data['companyID'] = $discount['company_id'];
+					$data['facilityID'] = $discount['facility_id'];
+					$data['supplier_id'] = $discount['supplier_id'];
+					$data['discount'] = 0;
+					
+					$inventoryManager->updateSupplierDiscounts($data);
+				}
+			}
+			// Pagination	
+			$count = $inventoryManager->getCountSupplierDiscounts($supplierID);
+			$pagination = new Pagination($count);
+			$pagination->url = "?action=browseCategory&category=sales&bookmark=clients";
+			$this->smarty->assign('pagination', $pagination);	
+			
+			$result = $inventoryManager->getSupplierWholeDiscount($supplierID,null,$pagination,$sortStr);
+
 			$discountList = $result;
 			$tmpArr = array ();
 			foreach ($discountList as $discount){
@@ -53,7 +76,7 @@ class CSupClients extends Controller {
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign("request",$request);
 		$this->smarty->assign('tpl', 'tpls/bookmarkClients.tpl');
-		$this->smarty->assign('pagination', $pagination);
+
                
 	}
 	
@@ -74,6 +97,7 @@ class CSupClients extends Controller {
 		if ($result){
 			$client = $result;
 		}	
+	
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID);	
 		
 		if ($result){

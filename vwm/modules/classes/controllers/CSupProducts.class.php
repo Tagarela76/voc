@@ -29,7 +29,9 @@ class CSupProducts extends Controller {
 			$supplierID = $request['supplierID'];
 		}
 		$productManager = new Product($this->db);
-		
+
+		// SOrt
+		$sortStr = $this->sortList('productsPrice',2);		
 		
 		$products = $productManager->getProductPriceBySupplier($supplierID);
 		if (!$products){
@@ -41,7 +43,14 @@ class CSupProducts extends Controller {
 			}
 			
 		}
-		$products = $productManager->getProductPriceBySupplier($supplierID);
+		// Pagination	
+		$count = $productManager->getCountSupplierProducts($supplierID);
+		$pagination = new Pagination($count);
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=products";
+		$this->smarty->assign('pagination', $pagination);
+		
+		$products = $productManager->getProductPriceBySupplier($supplierID, null, $pagination, $sortStr);
+
 		foreach ($products as $product){
 			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);

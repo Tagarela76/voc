@@ -405,13 +405,15 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 								//TODO can't convert
 							}
 						}
-						
+						$expenses[count($depName)] = number_format($expenses[count($depName)], 2, '.', '');			
 
 					}//end for
+					
 					$res = array(
 						'depName' => $depName,
 						'expenses' => $expenses
 					);
+					
 					$results[] = $res;
 					$WasARule = true;
 					
@@ -424,6 +426,8 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 			foreach($expenses as $sum){
 				$total += $sum;
 			}
+			$total = number_format($total, 2, '.', '');
+			
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
@@ -446,7 +450,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 			'total' => $fullTotalMix,
 			'data' => $resultByMonth
 		); 
-
+		
 		return $totalResults;			
 	}
 		
