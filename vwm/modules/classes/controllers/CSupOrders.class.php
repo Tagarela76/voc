@@ -44,21 +44,23 @@ class CSupOrders extends Controller {
 	
 		$order = $inventoryManager->getSupplierOrders(null, $products, $pagination, $sortStr);
 
-
 		/* 		foreach($products as $product){
 		  $order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
 
 		 */
+			$type = new Unittype($this->db);
+		
 			if ($order){
 				foreach ($order as $o){
 					$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
 					$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
 					$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
-					$o['unittype'] = $SupData[0]['in_stock_unit_type'];
+					//$o['unittype'] = $SupData[0]['in_stock_unit_type'];
 					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
 					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."";
 					$o['client'] = $facilityDetails['title'];
-					
+					$typeName = $type->getUnittypeDetails($o['order_unittype']);
+					$o['type'] = $typeName['name'];					
 					$orderList[] = $o;
 				}				
 
@@ -85,7 +87,9 @@ class CSupOrders extends Controller {
 		
 		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
-
+		$type = new Unittype($this->db);
+		$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+		$orderDetails[0]['type'] = $typeName['name'];
 
 		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "");
 		$this->smarty->assign('order', $orderDetails[0]);
@@ -230,6 +234,9 @@ class CSupOrders extends Controller {
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 			$this->smarty->assign('status', $statuslist);
+			$type = new Unittype($this->db);
+			$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+			$orderDetails[0]['type'] = $typeName['name'];			
 			$this->smarty->assign('order', $orderDetails[0]);
 			
 			//$this->user->xnyo->user['user_id']
