@@ -210,6 +210,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
 					}
 				}
+						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
@@ -322,6 +323,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
 					}
 				}
+						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
