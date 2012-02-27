@@ -515,12 +515,52 @@ echo $query;
 		}
 	}
 	
+	public function updateSupplierEmails( $form ) {
+
+		$query = "INSERT INTO email2supplier VALUES (NULL,". $form['supplier_id'] .",'". mysql_escape_string($form['email']) ."') ";
+		$this->db->query($query);
+
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}	
+	
+	public function beforeUpdateSupplierEmails( $form ) {
+
+		$query = "DELETE FROM email2supplier WHERE supplier_id = {$form['supplier_id']}  ";
+		$this->db->query($query);	
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}	
+	
+	public function getSupplierUsersEmails( $supplierID ) {
+
+		$query = "SELECT * FROM email2supplier WHERE supplier_id = {$supplierID} ";
+		$this->db->query($query);	
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$SupData = array();
+			foreach($arr as $b) {
+					$SupData[] = $b;
+			}
+		return $SupData;		
+	}	
+		
 	public function getInventoryByID($inventoryID) {
             
         $query = "SELECT * FROM product2inventory WHERE inventory_id = {$inventoryID} ";
 
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 		
 		
@@ -541,7 +581,9 @@ echo $query;
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 
 		$SupData = array();
@@ -567,7 +609,9 @@ echo $query;
 		$query =	"SELECT pi.* , p.product_nr  FROM product2inventory pi , ".TB_PRODUCT." p WHERE pi.product_id = ".$productID." AND pi.facility_id = ".$facilityID." AND p.product_id = {$productID} ";				
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
-
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
 		$data = array();
 			foreach($arr as $b) {
 					$data = $b;
@@ -737,6 +781,8 @@ echo $query;
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
+					$supplierUsersEmais = $this->getSupplierUsersEmails($priceObj->supman_id);
+
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
 			
 					$user = new User($this->db);
@@ -746,6 +792,11 @@ echo $query;
 						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
 						$isNewOrder = true;
 						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+						if ($supplierUsersEmais){
+							foreach($supplierUsersEmais as $userEmail){
+								$this->sendEmailToSupplier($userEmail['email'],$text,$isNewOrder );
+							}
+						}						
 					}
 						$supplierManager = new Supplier($this->db);
 						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						

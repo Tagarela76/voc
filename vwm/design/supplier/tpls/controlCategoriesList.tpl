@@ -13,7 +13,7 @@
 		<td>
 		<div style="float:left; width:80px">
 		
-		{if $request.category=="sales" && $request.bookmark == 'clients'}
+		{if ($request.category=="sales" && $request.bookmark == 'clients') || $request.category=="usersSupplier" }
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem">
 			</div>
@@ -78,7 +78,8 @@
 				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
-				<input type="hidden" name="bookmark" value="{$request.bookmark}">
+				{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}
+				<input type="hidden" name="supplierID" value="{$supplierID}">
 			{/if}
 				{if $itemsCount}
 					<input type="hidden" name="itemsCount" value="{$itemsCount}">			
