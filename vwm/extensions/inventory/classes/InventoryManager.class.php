@@ -968,7 +968,7 @@ echo $query;
 			$theme = "*** New Order on www.vocwebmanager.com ***";
 		}
 		//	E-mail notification about new order
-		$email = new EMail();
+		$email = new EMail(true);
 
 		$to = array($supplierEmail);
 		//$from = "authentification@vocwebmanager.com";
@@ -1000,7 +1000,7 @@ fclose ($fp);
 
 		//	E-mail notification about new order
 
-		$email = new EMail();
+		$email = new EMail(true);
 
 		$to = array(
 			$userEmail

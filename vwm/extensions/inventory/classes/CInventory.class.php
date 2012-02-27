@@ -731,7 +731,7 @@ class CInventory extends Controller
 									$this->smarty->assign('check','false');	
 									
 									//	E-mail notification about density not found
-									$email = new EMail();
+									$email = new EMail(true);
 									$to = array('denis.nt@kttsoft.com');
 									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
 									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
