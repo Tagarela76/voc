@@ -8,7 +8,7 @@ class EMail {
 
     function EMail($isHtml = false) {
 		if ($isHtml){
-			$mimeType = "text/html; charset=iso-8859-1";
+			$this->mimeType = "text/html; charset=iso-8859-1";
 		}
     }
     
@@ -16,7 +16,7 @@ class EMail {
     	$headers = array(
 			'From'=> $from,
 			'Subject' => $subject,
-			'Content-type' => $mimeType);
+			'Content-type' => $this->mimeType);
 		
 		$mime = new Mail_Mime("\n");
 		$mime->setTxtBody($message);

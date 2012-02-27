@@ -109,7 +109,7 @@ class CSupOrders extends Controller {
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$facilityID = $orderDetails[0]['order_facility_id'];
 			$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
-			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id'] . "");
+			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id']);
 			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders");
 			$this->smarty->assign("itemType", 'order');
 			$this->smarty->assign('order', $orderDetails[0]);
@@ -137,8 +137,10 @@ class CSupOrders extends Controller {
 				$category = "facility";
 			
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+
 				$product = $productDetails[0];
 								$result = $inventoryManager->unitTypeConverter($product);
+								
 								if ($result){
 									$product->usage = $result['usage'];
 									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
@@ -159,6 +161,7 @@ class CSupOrders extends Controller {
 									}else{
 										throw new Exception('deny');
 									}
+									
 									$result1 = false;
 									$this->smarty->assign('check','false');	
 									
@@ -171,7 +174,7 @@ class CSupOrders extends Controller {
 									$email->sendMail($from, $to, $theme, $message);		
 			
 									
-									$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
+									$this->smarty->assign('tpl','tpls/orderComplete.tpl');
 								}	
 
 
@@ -181,6 +184,7 @@ class CSupOrders extends Controller {
 		if ($result2 == 'true') {
 
 		$clientEmail = $inventoryManager->getClientEmail($facilityID);
+		
 		switch ($form['status']){
 			case OrderInventory::IN_PROGRESS:
 				$status = 'IN PROGRESSED';
@@ -199,10 +203,10 @@ class CSupOrders extends Controller {
 					// EMAIL NOTIFICATION FOR CLIENT 
 					
 					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-					
+/*				
 					$user = new User($this->db);
 					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
-
+*/
 					if ($ifEmail){
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
 						
@@ -214,17 +218,18 @@ class CSupOrders extends Controller {
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($userDetails['email'] , $text);
-									
+						$inventoryManager->sendEmailToManager($facilityDetails['email'] , $text);
+						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
-						$supplierUsersEmais = $this->getSupplierUsersEmails($supplierID[0]['original_id']);
+						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
-								$this->sendEmailToManager($userEmail['email'],$text );
+								$inventoryManager->sendEmailToManager($userEmail['email'],$text );
+								
 							}
 						}						
 									
-				
+			
 				
 				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
 			}		
@@ -312,10 +317,10 @@ class CSupOrders extends Controller {
 					// EMAIL NOTIFICATION FOR CLIENT 
 					
 					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-					
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
-
+/*					
+					$user = new Facility($this->db);
+					$userDetails = $user->getFacilityDetails($_SESSION['user_id']);	
+*/
 					if ($ifEmail){
 						
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
@@ -327,13 +332,13 @@ class CSupOrders extends Controller {
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($userDetails['email'] , $text);
+						$inventoryManager->sendEmailToManager($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
-						$supplierUsersEmais = $this->getSupplierUsersEmails($supplierID[0]['original_id']);
+						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
-								$this->sendEmailToManager($userEmail['email'],$text );
+								$inventoryManager->sendEmailToManager($userEmail['email'],$text );
 							}
 						}					
 					

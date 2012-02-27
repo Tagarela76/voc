@@ -785,8 +785,7 @@ echo $query;
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
 			
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+				
 					if ($ifEmail){
 						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ";
 						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
@@ -799,14 +798,18 @@ echo $query;
 						}						
 					}
 						$supplierManager = new Supplier($this->db);
-						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						
+						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
+						
+						$facilityManager = new Facility($this->db);
+						$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);	
+						
 						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
 						$text['msg'] .= "\r\n" ." Supplier: ".$supDetails['supplier_desc']; 
 						$text['msg'] .= "\r\n" ." Contact: ".$supDetails['contact']; 
 						$text['msg'] .= "\r\n" ." Address: ".$supDetails['address']; 
 						$text['msg'] .= "\r\n" ." Phone: ".$supDetails['phone']; 
 						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
-						$this->sendEmailToManager($userDetails['email'],$text);
+						$this->sendEmailToManager($facilityDetails['email'],$text);
 								
 				}else{
 					// remind for needing product and completed order
@@ -820,6 +823,7 @@ echo $query;
 
 	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null) {
 		// UNITTYPE CONVERTER
+
 		$unittype = new Unittype($this->db);
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($inventory->product_id);
