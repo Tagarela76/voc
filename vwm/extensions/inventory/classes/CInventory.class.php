@@ -781,12 +781,16 @@ class CInventory extends Controller
 								}
 							}							
 						}
-						
-						
-							$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
-							$inventoryManager->sendEmailToManager($facilityDetails['email'], $text);
-//
+							$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+							if ($userDetails){
+								$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+								$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
+								foreach($userDetails as $user){
+									$email = $inventoryManager->getManagerEmail($user['user_id']);
+									$inventoryManager->sendEmailToManager($email,$text);
+								}								
+
+							}
 							if ($result2){
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
@@ -810,7 +814,10 @@ class CInventory extends Controller
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('id');	
 		$inventoryManager = new InventoryManager($this->db);
-
+		
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($facilityID);
+		
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
 			throw new Exception('deny');
@@ -956,26 +963,53 @@ class CInventory extends Controller
 				break;
 			
 			case 'settings':
+				$accessname = $this->user->xnyo->user['accessname'];
+				$access = $this->user->getUserAccessLevelIDByAccessname($accessname);
+				$companyID = $facilityDetails['company_id'];
+				$department = new Department($this->db);
+				$departmentDetails = $department->getDepartmentListByFacility($facilityID);
+				$users = $inventoryManager->getManagerList($companyID);
 				
-				$inventoryEmail = $inventoryManager->getSupplierSettings($facilityID);
 				
-									$form = $_POST;
+				
+				$comapnyUserList = $this->user->getUserListByCompany($companyID);
+				foreach($comapnyUserList as $user){
+					
+					if ($user['accesslevel_id'] == 0 || $user['accesslevel_id'] == 3){
+						$Carr[] = $user;
+					}					 
+				}	
+				$comapnyUserList = $Carr;
+				
+				$facilityUserList = $this->user->getUserListByFacility($facilityID);
 
-									if (count($form) > 0) {
-										//protected from xss
-										$form["email_all"]=Reform::HtmlEncode($form["email_all"]);
-										$form["email_manager"]=Reform::HtmlEncode($form["email_manager"]);
-										$form['facilityID'] = Reform::HtmlEncode($form['facilityID']);
+				foreach($facilityUserList as $user){
+					
+					if ($user['accesslevel_id'] == 1){
+						$Farr[] = $user;
+					}					 
+				}	
+				$facilityUserList = $Farr;
+			
+				foreach($departmentDetails as $id){
+					$arr = $this->user->getUserListByDepartment($id['id']);
+					if ($arr){
+						$departmentUserList[] = $arr;
+					}					 
+				}
+					 
+				$form = $_POST;
+					if (count($form) > 0) {
+						$inventoryManager->updateManagerEmails($form);
+						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=settings");
 
-							
-										$result = $inventoryManager->updateSupplierSettings($form);
-									
-										if ($result == 'true'){
-											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=settings");
-										}
-									}
-													
-				$this->smarty->assign('email',$inventoryEmail);	
+				}
+				$this->smarty->assign('duser',$departmentUserList);
+				$this->smarty->assign('cuser',$comapnyUserList);			
+				$this->smarty->assign('fuser',$facilityUserList);									
+				$this->smarty->assign('access',$access);	
+				$this->smarty->assign('emails',$users);	
+				$this->smarty->assign('companyID',$companyID);
 				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
 				break;	
 			default :
@@ -1132,9 +1166,9 @@ class CInventory extends Controller
 	public function actionProcessororder(){
 		
 		$hash = $this->getFromRequest('hash');
-		$to = $this->getFromRequest('to');
+		//$to = $this->getFromRequest('to');
 		
-		$userEmail = base64_decode($to);
+		//$userEmail = base64_decode($to);
 
 		$request = $this->getFromRequest();
 		$inventoryManager = new InventoryManager($this->db);
@@ -1154,9 +1188,11 @@ class CInventory extends Controller
 			switch($request['result']) {
 				case 'confirm':
 					$orderDetails->order_status = OrderInventory::CONFIRM;
+					$status = "CONFIRM";
 					break;
 				case 'cancel':
 					$orderDetails->order_status = OrderInventory::CANCELED;
+					$status = "CANCELED";
 					break;
 				default :
 					throw new Exception('deny');
@@ -1170,9 +1206,17 @@ class CInventory extends Controller
 			$result = $inventoryManager->updateSupplierOrder($arrayForUpdate);
 			//var_dump($facilityDetails,$result);
 			if($result){
-				$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed";
-				$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
-				$inventoryManager->sendEmailToManager($facilityDetails['email'], $text);
+				$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+				if ($userDetails){
+					$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed to ".$status."";
+					$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
+					foreach($userDetails as $user){
+						$email = $inventoryManager->getManagerEmail($user['user_id']);
+						$inventoryManager->sendEmailToManager($email,$text);
+					}
+					
+				}
+			
 				header("Location: ?action=processororderResult&category=inventory&result=positive");										
 			}else{
 				throw new Exception('deny');

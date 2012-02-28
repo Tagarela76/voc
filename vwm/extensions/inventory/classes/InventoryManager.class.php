@@ -525,6 +525,58 @@ echo $query;
 		} else {
 			throw new Exception(mysql_error());
 		}
+	}
+	public function getManagerList($companyID) {
+		$query = "SELECT * FROM email2manager WHERE company_id = {$companyID} ";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$SupData = array();
+			foreach($arr as $b) {
+					$SupData[] = $b;
+			}
+		return $SupData;
+	}	
+	public function getManagerEmail($userID) {
+		$query = "SELECT email FROM user WHERE user_id = {$userID} ";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
+	}	
+	
+	public function updateManagerEmails( $form ) {
+		$query = "DELETE FROM email2manager WHERE company_id = {$form['companyID']}  ";
+		$this->db->query($query);
+		if (isset($form['cuser'])){
+			foreach($form['cuser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}
+		if (isset($form['fuser'])){
+			foreach($form['fuser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}
+		if (isset($form['duser'])){
+			foreach($form['duser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}		
+
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
 	}	
 	
 	public function beforeUpdateSupplierEmails( $form ) {
@@ -801,15 +853,20 @@ echo $query;
 						$supplierManager = new Supplier($this->db);
 						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
 
+						$userDetails = $this->getManagerList($facilityDetails['company_id']);	
 						
-						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
-						$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
-						$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
-						$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
-						$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
-						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
-						$this->sendEmailToManager($facilityDetails['email'],$text);
-								
+						if ($userDetails){
+							$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
+							$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
+							$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
+							$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
+							$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
+							$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";
+							foreach($userDetails as $user){
+								$email = $this->getManagerEmail($user['user_id']);
+								$this->sendEmailToManager($email,$text);
+							}
+						}		
 				}else{
 					// remind for needing product and completed order
 					
@@ -966,14 +1023,15 @@ echo $query;
 			$hash = $this->generateOrderHash($supplierEmail);
 			$userEmailb64 = base64_encode($userEmail);
 
-			$links = "<br>" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "<br>" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+			$links = "<br>" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&hash={$hash[confirm]}'>CONFIRM</a>" . "<br>" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&hash={$hash[cancel]}'>CANCEL</a>";
 			$text['msg'] .= $links;
 			$theme = "*** New Order on www.vocwebmanager.com ***";
 		}
 		//	E-mail notification about new order
 		$email = new EMail(true);
 
-		$to = array(html_entity_decode($supplierEmail));
+		//$to = html_entity_decode($supplierEmail);
+		$to = $supplierEmail;
 		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
 		$theme = $text['title'];
@@ -1005,16 +1063,15 @@ fclose ($fp);
 
 		$email = new EMail(true);
 
-		$to = array(
-			html_entity_decode($userEmail)
-		);
+		//$to = html_entity_decode($userEmail);
+		$to = $userEmail;
 
-		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
 		$theme = $text['title'];
 
 		$message =$text['msg'];
 		$email->sendMail($from, $to, $theme, $message);		
+		
 /*
 		$data = $from;
 		$data.= $theme;

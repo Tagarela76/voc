@@ -261,8 +261,11 @@ $(document).ready(function() {
     } 									
 </script>	
 {/literal}
+
+{if $emails}
 {foreach from=$emails item=email}
 	{literal}
 		<script type='text/javascript'> addEmail('{/literal}{$email.email}{literal}'); </script>
 	{/literal}
 {/foreach}
+{/if}

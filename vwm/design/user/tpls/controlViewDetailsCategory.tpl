@@ -31,15 +31,15 @@
 									$request.category=="equipment" 	&& $permissions.equipment.delete || 
 									$request.category=="accessory" 	&& $permissions.data.delete ||
 									$request.category=="inventory" 	&& $permissions.data.delete || 
-									$request.category=="mix" 		&& $permissions.data.delete 
+									$request.category=="mix" 		&& $permissions.data.delete
 								}
 								
 									{if $deleteUrl}
 									<input type="button" class="button" value="Delete" onclick="location.href='{$deleteUrl}'">
-									{else}									
+									{elseif $request.tab!="orders" }									
                             		<input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&category={$request.category}&id={$request.id}&departmentID={$request.departmentID}'">
 									{/if}
-                                                                        {/if}
+                                {/if}
 								
 								{if $request.category == "mix" and $request.action !== 'viewPFPDetails'}
 									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>

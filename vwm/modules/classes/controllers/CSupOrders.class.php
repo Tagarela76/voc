@@ -117,7 +117,6 @@ class CSupOrders extends Controller {
 		} else {
 			throw new Exception('deny');
 		}		
-		
 
 		$form = $_POST;
 		if (count($form) > 0) {
@@ -183,7 +182,7 @@ class CSupOrders extends Controller {
 		}
 		if ($result2 == 'true') {
 
-		$clientEmail = $inventoryManager->getClientEmail($facilityID);
+		//$clientEmail = $inventoryManager->getClientEmail($facilityID);
 		
 		switch ($form['status']){
 			case OrderInventory::IN_PROGRESS:
@@ -199,32 +198,33 @@ class CSupOrders extends Controller {
 				$status = 'CANCELED';
 			break;	
 		}
-				foreach($clientEmail as $email){
-					// EMAIL NOTIFICATION FOR CLIENT 
-					
-					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-/*				
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
-*/
-					if ($ifEmail){
-						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-						
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
-					}
-				}
+		
 						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+						
+					if ($userDetails){
+						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						foreach($userDetails as $user){
+							$email = $inventoryManager->getManagerEmail($user['user_id']);
+							$inventoryManager->sendEmailToManager($email,$text);
+						}						
+
+					}
+				
+
+						
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($facilityDetails['email'] , $text);
+						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
 						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
+						
 						if ($supplierUsersEmais){
-							foreach($supplierUsersEmais as $userEmail){
-								$inventoryManager->sendEmailToManager($userEmail['email'],$text );
+							foreach($supplierUsersEmais as $supplierEmail){
+								$inventoryManager->sendEmailToSupplier($supplierEmail['email'],$text );
 								
 							}
 						}						
@@ -298,7 +298,7 @@ class CSupOrders extends Controller {
 
 		if ($result == true) {
 
-		$clientEmail = $inventoryManager->getClientEmail($facilityID);
+
 		switch ($form['status']){
 			case OrderInventory::IN_PROGRESS:
 				$status = 'IN PROGRESSED';
@@ -313,32 +313,30 @@ class CSupOrders extends Controller {
 				$status = 'CANCELED';
 			break;	
 		}
-				foreach($clientEmail as $email){
-					// EMAIL NOTIFICATION FOR CLIENT 
-					
-					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-/*					
-					$user = new Facility($this->db);
-					$userDetails = $user->getFacilityDetails($_SESSION['user_id']);	
-*/
-					if ($ifEmail){
-						
-						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
-					}
-				}
+// EMAIL NOTIFICATION FOR CLIENT 		
 						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+						
+					if ($userDetails){
+						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						foreach($userDetails as $user){
+							$email = $inventoryManager->getManagerEmail($user['user_id']);
+							$inventoryManager->sendEmailToManager($email,$text);
+						}						
+
+					}		
+
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($facilityDetails['email'] , $text);
+						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
 						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
-								$inventoryManager->sendEmailToManager($userEmail['email'],$text );
+								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text );
 							}
 						}					
 					

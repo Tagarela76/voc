@@ -17,44 +17,100 @@
 
 <div style="padding:7px;">
 	<form method='POST' action='?action={$request.action}&category=facility&id={$request.id}&bookmark=inventory&tab={$request.tab}'>
-        <table class="users" align="center" cellpadding="0" cellspacing="0">
+        <table class="users" align="center" cellpadding="0" cellspacing="0"	>
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
                     <span>Editing settings</span>
-                </td>
-                <td class="users_u_top_r">
-                </td>
+				</td>
+                <td class="users_u_top_r" >
+
+				</td>				
             </tr>
+{if ($access == 3 || $access == 0) && $cuser}
             <tr>
-                <td class="border_users_r border_users_l border_users_b" height="20">
-                    E-mail to all :
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+                    <input type="checkbox" id="companylvl" /> <label for="companylvl">Company Level </label>
                 </td>
-                <td class="border_users_r border_users_b">
 
-					<textarea name='email_all' style="width: 380px;height: 168px;">{$email.email_all}</textarea>
-				
-                </td>
             </tr>
-	
+            <tr id="companylvlview" style="display: none;">
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+					 <div style="padding-left: 15px;">
+					{foreach from=$cuser item=user}
+						<input type="checkbox" id="{$user.user_id}" value="{$user.user_id}" name="cuser[]" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/>	
+					{/foreach}	
+					 </div>	                    
+                </td>
+
+            </tr>			
+{literal}
+<script>
+	$("#companylvl").click(function () {
+	$("#companylvlview").slideToggle("slow");
+	});
+</script>
+{/literal}				
+{/if}
+
+{if $access != 2 && $fuser}
             <tr>
-                <td class="border_users_r border_users_l border_users_b" height="20">
-                    E-mail only to Manager :
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+                    <input type="checkbox" id="facilitylvl" /> <label for="companylvl">Facility Level </label>
                 </td>
-                <td class="border_users_r border_users_b">
 
-                    <div align="left">
-                        <textarea name='email_manager' style="width: 380px;height: 168px;">{$email.email_manager}</textarea>
-                    </div>
-
-
+            </tr>
+            <tr id="facilitylvlview" style="display: none;">
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+					 <div style="padding-left: 15px;">
+					{foreach from=$fuser item=user}
+						<input type="checkbox" id="{$user.user_id}" name="fuser[]" value="{$user.user_id}" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/> 	
+					{/foreach}	
+					 </div>	
                 </td>
-            </tr>				
-			
+
+            </tr>			
+{literal}
+<script>
+	$("#facilitylvl").click(function () {
+	$("#facilitylvlview").slideToggle("slow");
+	});
+</script>
+{/literal}				
+{/if}				
+
+{if $duser}
             <tr>
-                <td class="users_u_bottom">
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+                    <input type="checkbox" id="departmentlvl" /> <label for="departmentlvl">Department Level </label>
                 </td>
-                <td bgcolor="" height="20" class="users_u_bottom_r">
+
+            </tr>
+            <tr id="departmentlvlview" style="display: none;">
+                <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
+					 <div style="padding-left: 15px;">
+					{foreach from=$duser item=userarr}
+						{foreach from=$userarr item=user}
+							<input type="checkbox" id="{$user.user_id}" name="duser[]" value="{$user.user_id}" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/>	
+						{/foreach}
+					{/foreach}	
+					 </div>	
                 </td>
+
+            </tr>			
+{literal}
+<script>
+	$("#departmentlvl").click(function () {
+	$("#departmentlvlview").slideToggle("slow");
+	});
+</script>
+{/literal}				
+{/if}			
+            <tr>
+                <td class="users_u_bottom "bgcolor="" height="20">
+                </td>
+                <td class="users_u_bottom_r"bgcolor="" height="20">
+                </td>				
+
             </tr>
         </table>
 					
@@ -65,7 +121,7 @@
       	
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.id}'>
-			<input type='hidden' name="email_id" value='{$email.email_id}'>
+			<input type='hidden' name="companyID" value='{$companyID}'>
 
         </div>									
     </form>
