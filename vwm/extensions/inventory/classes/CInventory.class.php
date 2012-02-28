@@ -767,11 +767,12 @@ class CInventory extends Controller
 						$supplierDetails = $inventoryManager->getSupplierEmail($supplierID[0]['original_id']);
 						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
 
-						/*$user = new User($this->db);
-						$userDetails = $user->getUserDetails($_SESSION['user_id']);*/
+						$facilityManager = new Facility($this->db);
+						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						
 						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						if ($ifEmail) {
-							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility is {$status}";
+							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
 							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
 							$inventoryManager->sendEmailToSupplier($supplierDetails['email'], $text);
 							if ($supplierUsersEmais){
@@ -781,8 +782,7 @@ class CInventory extends Controller
 							}							
 						}
 						
-							$facilityManager = new Facility($this->db);
-							$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);						
+						
 							$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
 							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
 							$inventoryManager->sendEmailToManager($facilityDetails['email'], $text);
@@ -818,9 +818,6 @@ class CInventory extends Controller
 		//	OK, this company has access to this module, so let's setup..
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
 		
-	
-
-			
 			
 		switch ($tab){
 			case 'products':
@@ -1175,7 +1172,7 @@ class CInventory extends Controller
 			if($result){
 				$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed";
 				$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
-				$inventoryManager->sendEmailToManager($facilityDetails['email'], "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed by supplier.");
+				$inventoryManager->sendEmailToManager($facilityDetails['email'], $text);
 				header("Location: ?action=processororderResult&category=inventory&result=positive");										
 			}else{
 				throw new Exception('deny');

@@ -53,7 +53,7 @@
                                 <option value='{$status[i].status_id}' {if $status[i].status_id  eq $order.order_status}  selected="selected" {/if}> {$status[i].status_name}  </option>
                             {/section}
                             </select>
-							{if $check && $check == 'false'}<span style="color: red; font-size: 14px;"> Error! Can't convert product usage to stock unit type, because the density  do not specify! Call John! </span>{/if}
+							
 					</div>
                 </td>
             </tr>	

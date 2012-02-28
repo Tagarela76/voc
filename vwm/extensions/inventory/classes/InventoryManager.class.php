@@ -753,8 +753,7 @@ echo $query;
 					$priceManager = new Product($this->db);
 					$price = $priceManager->getProductPrice($productUsageData->product_id);
 					$priceObj = new ProductPrice($this->db, $price[0]);
-					
-					//TODO: CALC right price for product unittype 
+
 					$newOrder->order_price = $price[0]['price'];
 					
 					// Discount if isset for separate product, else for whole facility 
@@ -784,10 +783,12 @@ echo $query;
 					$supplierUsersEmais = $this->getSupplierUsersEmails($priceObj->supman_id);
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
-			
+						
+					$facilityManager = new Facility($this->db);
+					$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);				
 				
 					if ($ifEmail){
-						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ";
+						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ".$facilityDetails['title'];
 						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
 						$isNewOrder = true;
 						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
@@ -799,15 +800,13 @@ echo $query;
 					}
 						$supplierManager = new Supplier($this->db);
 						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
-						
-						$facilityManager = new Facility($this->db);
-						$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);	
+
 						
 						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
-						$text['msg'] .= "\r\n" ." Supplier: ".$supDetails['supplier_desc']; 
-						$text['msg'] .= "\r\n" ." Contact: ".$supDetails['contact']; 
-						$text['msg'] .= "\r\n" ." Address: ".$supDetails['address']; 
-						$text['msg'] .= "\r\n" ." Phone: ".$supDetails['phone']; 
+						$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
+						$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
+						$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
+						$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
 						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
 						$this->sendEmailToManager($facilityDetails['email'],$text);
 								
@@ -967,14 +966,14 @@ echo $query;
 			$hash = $this->generateOrderHash($supplierEmail);
 			$userEmailb64 = base64_encode($userEmail);
 
-			$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+			$links = "<br>" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "<br>" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
 			$text['msg'] .= $links;
 			$theme = "*** New Order on www.vocwebmanager.com ***";
 		}
 		//	E-mail notification about new order
 		$email = new EMail(true);
 
-		$to = array($supplierEmail);
+		$to = array(html_entity_decode($supplierEmail));
 		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
 		$theme = $text['title'];
@@ -1007,7 +1006,7 @@ fclose ($fp);
 		$email = new EMail(true);
 
 		$to = array(
-			$userEmail
+			html_entity_decode($userEmail)
 		);
 
 		//$from = "authentification@vocwebmanager.com";

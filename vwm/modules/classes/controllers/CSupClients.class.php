@@ -32,7 +32,6 @@ class CSupClients extends Controller {
 		// SOrt
 		$sortStr = $this->sortList('clients',2);
 
-		
 
 		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,null,$pagination,$sortStr);
 
