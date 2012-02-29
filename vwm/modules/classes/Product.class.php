@@ -210,7 +210,11 @@ class Product extends ProductProperties {
 			'boiling_range_from'		=>	$data->boiling_range_from,
 			'boiling_range_to'			=>	$data->boiling_range_to,
 			'percent_volatile_weight'	=>	$data->percent_volatile_weight,
-			'percent_volatile_volume'	=>	$data->percent_volatile_volume
+			'percent_volatile_volume'	=>	$data->percent_volatile_volume,
+			
+			'product_instock'	=>	$data->product_instock,
+			'product_limit'	=>	$data->product_limit,
+			'product_amount'	=>	$data->product_amount
 		);
 		$hazardous = new Hazardous($this->db);
 		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
@@ -291,7 +295,7 @@ class Product extends ProductProperties {
 
 		$query="INSERT INTO ".TB_PRODUCT." (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 				"specific_gravity, specific_gravity_unit_id, specialty_coating, aerosol, boiling_range_from, boiling_range_to, " .
-				"supplier_id, percent_volatile_weight, percent_volatile_volume) VALUES (";
+				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype) VALUES (";
 
 		$query.="'".$productData["product_nr"]."', ";
 		$query.="'".$productData["name"]."', ";
@@ -308,7 +312,13 @@ class Product extends ProductProperties {
 		$query.="'".$productData["boiling_range_to"]."', ";
 		$query.="'".$productData["supplier_id"]."', ";
 		$query.="'".$productData["percent_volatile_weight"]."', ";
-		$query.="'".$productData["percent_volatile_volume"]."' ";
+		$query.="'".$productData["percent_volatile_volume"]."', ";
+		
+		$query.="'".$productData["product_instock"]."', ";
+		$query.="'".$productData["product_limit"]."', ";
+		$query.="'".$productData["product_amount"]."', ";
+		$query.="'".$productData["product_stocktype"]."', ";
+		
 
 		$query.=')';
 
@@ -424,7 +434,12 @@ class Product extends ProductProperties {
 		$query .= "boiling_range_to = '".$productData["boiling_range_to"]."', ";
 		$query .= "supplier_id = '".$productData["supplier_id"]."', ";
 		$query .= "percent_volatile_weight = '".$productData["percent_volatile_weight"]."', ";
-		$query .= "percent_volatile_volume = '".$productData["percent_volatile_volume"]."' ";
+		$query .= "percent_volatile_volume = '".$productData["percent_volatile_volume"]."', ";
+		
+		$query .= "product_instock = '".$productData["product_instock"]."', ";
+		$query .= "product_limit = '".$productData["product_limit"]."', ";
+		$query .= "product_amount = '".$productData["product_amount"]."', ";
+		$query .= "product_stocktype = '".$productData["product_stocktype"]."' ";
 
 		$query .= " WHERE product_id = ".$productData['product_id'];
 

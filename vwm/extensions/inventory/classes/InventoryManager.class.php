@@ -766,6 +766,17 @@ echo $query;
 		return $data;
 	}	
 	
+	public function getInitialInStockValues($prodictID) {
+	
+		$query = "SELECT product_instock,product_limit, product_amount,product_stocktype FROM product WHERE product_id = {$prodictID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$data = $this->db->fetch_array(0);
+
+		return $data;
+	}	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
 		//$text = $this->getEmailText($mix->facility_id);
@@ -777,8 +788,16 @@ echo $query;
 			if (!$inventory) {
 				throw new Exception("No inventory found :(");
 			}
+			$initialInstock = $this->getInitialInStockValues($productObj->product_id);			
 			$inventory['facility_id'] = $mix->facility_id;
-			$inventory['in_stock_unit_type'] = $productObj->unittypeDetails['unittype_id'];
+			if ($initialInstock['product_stocktype'] && $initialInstock['product_stocktype']!= 0){
+				$inventory['in_stock_unit_type'] = $initialInstock['product_stocktype'];
+				$inventory['in_stock'] = $initialInstock['product_instock'];
+				$inventory['amount'] = $initialInstock['product_amount'];
+				$inventory['inventory_limit'] = $initialInstock['product_limit'];
+			}else{
+				$inventory['in_stock_unit_type'] = $productObj->unittypeDetails['unittype_id'];
+			}
 			
 			$productUsageData = new ProductInventory($this->db, $inventory);
 			

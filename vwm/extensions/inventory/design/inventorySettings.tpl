@@ -35,7 +35,7 @@
             </tr>
             <tr id="companylvlview" style="display: none;">
                 <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
-					 <div style="padding-left: 15px;">
+					 <div style="padding-left: 15px;" id="company">
 					{foreach from=$cuser item=user}
 						<input type="checkbox" id="{$user.user_id}" value="{$user.user_id}" name="cuser[]" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/>	
 					{/foreach}	
@@ -48,6 +48,19 @@
 	$("#companylvl").click(function () {
 	$("#companylvlview").slideToggle("slow");
 	});
+		
+function countCChecked() {
+	var n = $("#company > input:checked").length;
+	if (n > 0 ){
+		$("#companylvlview").show("slow");
+		$("#companylvl").attr("checked","checked");
+	}else{
+		$("#companylvlview").hide("slow");
+		$("#companylvl").attr("checked","");
+	}		
+}
+countCChecked();
+$("#company > input").click(countCChecked);		
 </script>
 {/literal}				
 {/if}
@@ -55,13 +68,13 @@
 {if $access != 2 && $fuser}
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
-                    <input type="checkbox" id="facilitylvl" /> <label for="companylvl">Facility Level </label>
+                    <input type="checkbox" id="facilitylvl" onclick=""/> <label for="facilitylvl">Facility Level</label>
                 </td>
 
             </tr>
             <tr id="facilitylvlview" style="display: none;">
                 <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
-					 <div style="padding-left: 15px;">
+					 <div style="padding-left: 15px;" id="facility">
 					{foreach from=$fuser item=user}
 						<input type="checkbox" id="{$user.user_id}" name="fuser[]" value="{$user.user_id}" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/> 	
 					{/foreach}	
@@ -71,9 +84,22 @@
             </tr>			
 {literal}
 <script>
-	$("#facilitylvl").click(function () {
+$("#facilitylvl").click(function () {
 	$("#facilitylvlview").slideToggle("slow");
-	});
+});
+		
+function countFChecked() {
+	var n = $("#facility > input:checked").length;
+	if (n > 0 ){
+		$("#facilitylvlview").show("slow");
+		$("#facilitylvl").attr("checked","checked");
+	}else{
+		$("#facilitylvlview").hide("slow");
+		$("#facilitylvl").attr("checked","");
+	}		
+}
+countFChecked();
+$("#facility > input").click(countFChecked);		
 </script>
 {/literal}				
 {/if}				
@@ -87,7 +113,7 @@
             </tr>
             <tr id="departmentlvlview" style="display: none;">
                 <td class="border_users_r border_users_l border_users_b" height="20" colspan="2">
-					 <div style="padding-left: 15px;">
+					 <div style="padding-left: 15px;" id="department">
 					{foreach from=$duser item=userarr}
 						{foreach from=$userarr item=user}
 							<input type="checkbox" id="{$user.user_id}" name="duser[]" value="{$user.user_id}" {foreach from=$emails item=email}{if $email.user_id == $user.user_id}checked{/if}{/foreach}/> <label for="{$user.user_id}">{$user.username} ({$user.email})</label><br/>	
@@ -102,6 +128,19 @@
 	$("#departmentlvl").click(function () {
 	$("#departmentlvlview").slideToggle("slow");
 	});
+		
+function countDChecked() {
+	var n = $("#department > input:checked").length;
+	if (n > 0 ){
+		$("#departmentlvlview").show("slow");
+		$("#departmentlvl").attr("checked","checked");
+	}else{
+		$("#departmentlvlview").hide("slow");
+		$("#departmentlvl").attr("checked","");
+	}		
+}
+countDChecked();
+$("#department > input").click(countDChecked);		
 </script>
 {/literal}				
 {/if}			

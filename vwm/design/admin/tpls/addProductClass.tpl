@@ -344,7 +344,7 @@
 				
 				<select name="selectSupplier" id="selectSupplier">
 					{section name=i loop=$supplier}
-						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier} </option>
+						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier_desc} </option>
 					{/section}
 				</select>
 				
@@ -561,7 +561,72 @@
 							</div>
 							</td>
 						</tr>																			
+						<tr class="users_u_top_size users_top_lightgray" >
+							<td>
+								Add initial stock values								
+							</td>
+							<td>	
+								&nbsp;							
+
+							</td>	
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								In stock :
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >	
+								<input type='text' name="stock" id="stock" value="{$data.product_instock}" />
+
+							</div>
+							</td>
+						</tr>
 						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								 Limit :
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >	
+								<input type='text' name='limit' id='limit' value='{$data.product_limit}'></div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+									Amount :
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >	<input type='text' name='amount' id='amount' value='{$data.product_amount}'></div>
+
+							</td>
+						</tr>		
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+									Unit type :
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >	
+									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(document.getElementById('selectUnittypeClass'))" >									 										
+										{section name=j loop=$typeEx}
+										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{/section}
+							
+									</select>&nbsp; 
+									<select name="selectUnittype" id="selectUnittype" >	
+										{section name=i loop=$unittype}	
+											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $stockType}selected="selected"{/if}>{$unittype[i].description}</option>										
+										{/section}
+
+									</select>							
+							</div>
+
+							</td>
+						</tr>						
 						<tr>
              				 <td height="20" class="users_u_bottom">
              	 				&nbsp;
@@ -658,6 +723,13 @@
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
+
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"></script>
+<script type="text/javascript">
+	$("#limit").numeric();
+	$("#stock").numeric();
+	$("#amount").numeric();
+</script>	
 {*END OF SETTINGS*}		
 		
 
