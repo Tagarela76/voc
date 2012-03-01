@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{if $order.order_status == 1}In Progress {elseif $order.order_status == 2}Confirm{elseif $order.order_status == 3}Completed{elseif $order.order_status == 4}Cnceled{/if}
+                    &nbsp;{if $order.order_status == 1}In Progress {elseif $order.order_status == 2}Confirm{elseif $order.order_status == 3}Completed{elseif $order.order_status == 4}Canceled{/if}
                 </div>
             </td>
         </tr>

@@ -98,14 +98,13 @@ class CInventory extends Controller
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
 				$error = false;
+				$type = new Unittype($this->db);
 			//ORDERS FOR THIS PRODUCT
 				//SOrt
 				//$sortStr = $this->sortList('orders',5);
 				
 				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID,null);		
-				if (!$orderList){
-					throw new Exception('404');
-				}
+
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 							
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -127,7 +126,7 @@ class CInventory extends Controller
 					
 					}
 				}else{
-					$type = new Unittype($this->db);
+					
 					$typeName = $type->getUnittypeDetails($product->in_stock_unit_type);
 					$this->smarty->assign('typeName',$typeName['name']);
 				}
@@ -141,10 +140,13 @@ class CInventory extends Controller
 					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
 				}					
 				foreach ($orderList as $order){
-					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
+				
+					//var_dump($order,$SupData);
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
-					$order['discount'] = $SupData[0]['discount'];
+					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=orders";
+					$typeName = $type->getUnittypeDetails($order['order_unittype']);	
+					$order['type'] = $typeName['name'];		
 					$arr[] = $order;
 				}
 
@@ -939,8 +941,7 @@ class CInventory extends Controller
 
 				
 				foreach ($orderList as $order){
-					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
-					//var_dump($order,$SupData);
+
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
 					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";

@@ -791,6 +791,7 @@ echo $query;
 			if (!$inventory) {
 				throw new Exception("No inventory found :(");
 			}
+			
 			$initialInstock = $this->getInitialInStockValues($productObj->product_id);			
 			$inventory['facility_id'] = $mix->facility_id;
 			if ($initialInstock['product_stocktype'] && $initialInstock['product_stocktype']!= 0){
@@ -804,7 +805,7 @@ echo $query;
 			
 			$productUsageData = new ProductInventory($this->db, $inventory);
 			
-		// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
+			// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
 			$inStock2Type = $this->unitTypeConverter($productUsageData);
 			if 	($inStock2Type){
 				$inventory['sum'] = $inStock2Type['usage'];
@@ -814,7 +815,9 @@ echo $query;
 				
 				$productUsageData->save();
 
-			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
+			}
+			
+			if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$isThereActiveOrders = $this->isThereActiveOrdersByProductID($productUsageData->product_id, $mix->facility_id);
 
@@ -888,7 +891,8 @@ echo $query;
 								$email = $this->getManagerEmail($user['user_id']);
 								$this->sendEmailToManager($email,$text);
 							}
-						}		
+						}
+						
 				}else{
 					// remind for needing product and completed order
 					

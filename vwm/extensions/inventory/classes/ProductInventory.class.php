@@ -42,7 +42,9 @@ class ProductInventory {
 		$this->db = $db;
 		
 		//	first day of this month by default
-		$this->period_start_date = new DateTime('first day of this month');
+		$date = new DateTime('first day of this month');
+		$date->setTime(0, 0, 0);
+		$this->period_start_date = $date;
 		//	this is today by default
 		$this->period_end_date = new DateTime();
 		

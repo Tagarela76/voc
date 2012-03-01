@@ -116,7 +116,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                   {if $order.order_status == 1}In Progress {elseif $order.order_status == 2}Confirm{elseif $order.order_status == 3}Completed{elseif $order.order_status == 4}Cnceled{/if}
+                   {if $order.order_status == 1}In Progress {elseif $order.order_status == 2}Confirm{elseif $order.order_status == 3}Completed{elseif $order.order_status == 4}Canceled{/if}
                 </div>
             </a>
         </td>

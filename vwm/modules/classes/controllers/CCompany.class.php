@@ -209,6 +209,7 @@ class CCompany extends Controller
 		$form = $_POST;
 
 		if (count($form) > 0) {
+			
 			//	"Init state" dances
 			$registration = new Registration($this->db);
 			if($registration->isOwnState($form["country"]))
@@ -249,6 +250,7 @@ class CCompany extends Controller
 				$companies = new Company($this->db);
 				//	setter injection
 				$companies->setTrashRecord(new Trash($this->db));
+				
 				$companyID = $companies->addNewCompany($companyData);
 
 				if (isset($companyID)) {
