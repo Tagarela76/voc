@@ -103,7 +103,9 @@ class CInventory extends Controller
 				//$sortStr = $this->sortList('orders',5);
 				
 				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID,null);		
-
+				if (!$orderList){
+					throw new Exception('404');
+				}
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 							
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -208,6 +210,10 @@ class CInventory extends Controller
 				break;
 			case 'orders':
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
+				if (!$orderDetails){
+					throw new Exception('404');
+				}
+
 				$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 				$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
 				$orderDetails[0]['discount'] = ($SupData[0]['discount']) ? $SupData[0]['discount'] : 0 ;				
@@ -473,6 +479,9 @@ class CInventory extends Controller
 
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				
+				if (!$productarr[0]->id){
+					throw new Exception('404');
+				}				
 				$product = $productarr[0];
 				
 				if ($product->usage != 0){
@@ -615,6 +624,9 @@ class CInventory extends Controller
 				
 				//$supplierDiscount = $inventoryManager->getSupplierDiscounts($facilityID,$this->getFromRequest('id'));
 				$supplierDiscount = $inventoryManager->getProductsSupplierList($facilityID,$this->getFromRequest('id'));
+				if (!$supplierDiscount){
+					throw new Exception('404');
+				}				
 				$discount = $supplierDiscount[0];
 
 									$form = $_POST;

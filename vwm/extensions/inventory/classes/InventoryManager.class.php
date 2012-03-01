@@ -169,7 +169,7 @@ echo $query;
 					" WHERE ";
 		 
 		if ($facilityID != null){
-			$query .=	" io.order_facility_id = {$facilityID} AND ";
+			$query .=	" io.order_facility_id = {$facilityID} ";
 		}
 		
 		if ($productID != null){
@@ -180,14 +180,15 @@ echo $query;
 				}
 				$expression .= ")";
 				
-				$query .=	" io.order_product_id IN  {$expression} ";
+				$query .=	" AND io.order_product_id IN  {$expression} ";
 			}else{
-				$query .=	" io.order_product_id = {$productID} ";
+				$query .=	" AND io.order_product_id = {$productID} ";
 			}
 			
-		}else{
-			$query .=	" io.order_created_date >= {$time->getTimestamp()} ";
 		}
+		/*else{
+			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
+		}*/
 		
 		if ($sortStr != null) {
 			//, Pagination $pagination = null
@@ -267,15 +268,17 @@ echo $query;
 				
 		$query .=	" FROM inventory_order io " .
 
-					" WHERE io.order_id = {$orderID} AND io.order_created_date >= {$time->getTimestamp()}";
+					" WHERE io.order_id = {$orderID} ";
+		//$query .=	" AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
+	//	echo $query; 
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}	
 		$arr = $this->db->fetch_all_array();
 		
-		//echo $query;
+		
 		$SupData = array();
 			foreach($arr as $b) {
 

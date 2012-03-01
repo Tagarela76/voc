@@ -42,17 +42,17 @@ class User {
 		$supplier_id = $userData["supplier_id"] == null	? "NULL" : $userData["supplier_id"];
 		
 		$query="INSERT INTO ".TB_USER." (accessname, password, username, phone, mobile, email, accesslevel_id, company_id, facility_id, department_id, grace, creater_id) VALUES (";
-		$query.="'".$userData["accessname"]."', ";
+		$query.="'".mysql_escape_string($userData["accessname"])."', ";
 		$query.="'".md5($userData["password"])."', ";
-		$query.="'".$userData["username"]."', ";
-		$query.="'".$userData["phone"]."', ";
-		$query.="'".$userData["mobile"]."', ";
-		$query.="'".$userData["email"]."', ";
+		$query.="'".mysql_escape_string($userData["username"])."', ";
+		$query.="'".mysql_escape_string($userData["phone"])."', ";
+		$query.="'".mysql_escape_string($userData["mobile"])."', ";
+		$query.="'".mysql_escape_string($userData["email"])."', ";
 		$query.=$accesslevel_id.", ";
 		$query.=$company_id.", ";
 		$query.=$facility_id.", ";	
 		$query.=$department_id.", ";
-		$query.="'".$userData["grace"]."', ";
+		$query.="'".mysql_escape_string($userData["grace"])."', ";
 		$query.=$creater_id;		
 		$query.=')';
 		
@@ -602,14 +602,15 @@ class User {
 		if ($_POST['password'] != $_POST['confirm_password']) {
 			$isValid=false;
 			$check['password']='different';
-		} elseif (strlen(trim($_POST['password'])) == 0) {
+		} 
+		/*elseif (strlen(trim($_POST['password'])) == 0) {
 			$isValid=false;
 			$check['password']='failed';
 		} elseif (strlen(trim($_POST['confirm_password'])) == 0) {
 			$isValid=false;
 			$check['confirm_password']='failed';						
 		}
-				
+			*/	
 		return $isValid;
 	}
 	
