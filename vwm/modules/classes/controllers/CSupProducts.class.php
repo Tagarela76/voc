@@ -23,7 +23,7 @@ class CSupProducts extends Controller {
 		extract($vars);
 
 		$request = $this->getFromRequest();
-		if (!$request.supplierID){
+		if (!$request['supplierID']){
 			$supplierID = $supplierIDS[0]['supplier_id'];
 		}else{
 			$supplierID = $request['supplierID'];

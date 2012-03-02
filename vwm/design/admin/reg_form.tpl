@@ -184,15 +184,15 @@
 				{if $bookmark=="supplier"}
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
-								Supplier:
+								Jobber:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 							<div align="left" >
-							<select id="selectSupplier" name="supplier_id" >
-							{if isset($supplier)}
-								{section name=i loop=$supplier}
-									<option value="{$supplier[i].supplier_id}" {if $supplier[i].supplier == $reg_field.supplier_id} selected='selected' {/if} >{$supplier[i].supplier}</option>
-								{/section}
+							<select id="selectSupplier" name="jobber_id" >
+							{if isset($jobbers)}
+								{foreach item=jobber from=$jobbers}
+									<option value="{$jobber->jobber_id}" {if $jobber->jobber_id == $reg_field.jobber_id} selected='selected' {/if} >{$jobber->name}</option>
+								{/foreach}
 							{/if}
 	
 							</select>

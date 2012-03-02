@@ -169,7 +169,7 @@ echo $query;
 					" WHERE ";
 		 
 		if ($facilityID != null){
-			$query .=	" io.order_facility_id = {$facilityID} ";
+			$query .=	" io.order_facility_id = {$facilityID} AND ";
 		}
 		
 		if ($productID != null){
@@ -180,9 +180,9 @@ echo $query;
 				}
 				$expression .= ")";
 				
-				$query .=	" AND io.order_product_id IN  {$expression} ";
+				$query .=	" io.order_product_id IN  {$expression} ";
 			}else{
-				$query .=	" AND io.order_product_id = {$productID} ";
+				$query .=	" io.order_product_id = {$productID} ";
 			}
 			
 		}
@@ -756,7 +756,7 @@ echo $query;
 	
 	public function getSaleUserSupplierLst($userID) {
 	
-		$query = "SELECT supplier_id FROM users2supplier WHERE user_id = {$userID}";
+		$query = "SELECT supplier_id FROM users2jobber WHERE user_id = {$userID}";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -1004,7 +1004,7 @@ echo $query;
 	}	
 
 	public function getSupplierEmail($supplierID){
-		$query = "SELECT u.email FROM user u , users2supplier us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
+		$query = "SELECT u.email FROM user u , users2jobber us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;

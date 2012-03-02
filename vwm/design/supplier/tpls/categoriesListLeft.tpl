@@ -1,4 +1,5 @@
 <td class="dotted_right bg_left " valign="top" width="180px" >
+	{if $request.category != 'root' && $request.action != 'addItem' }
 	<table cellspacing="0" cellpadding="0" width="180px">
 		<tr>
 			<td width="100%">
@@ -34,4 +35,5 @@
 			</td>
 		</tr>
 	</table>
+{/if}
 </td>

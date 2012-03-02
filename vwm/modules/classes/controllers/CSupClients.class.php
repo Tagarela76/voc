@@ -23,11 +23,13 @@ class CSupClients extends Controller {
 		extract($vars);
 
 		$request = $this->getFromRequest();
-		if (!$request.supplierID){
-			$supplierID = $supplierIDS[0]['supplier_id'];
+		if (!$request['jobberID']){
+			$jobberID = $jobberID['jobberID'];
 		}else{
-			$supplierID = $request['supplierID'];
+			$jobberID = $request['jobberID'];
 		}
+		
+
 		$inventoryManager = new InventoryManager($this->db);
 		// SOrt
 		$sortStr = $this->sortList('clients',2);

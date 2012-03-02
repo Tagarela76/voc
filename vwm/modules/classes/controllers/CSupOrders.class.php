@@ -23,11 +23,11 @@ class CSupOrders extends Controller {
 		extract($vars);
 
 		$request = $this->getFromRequest();
-		if (!$request.supplierID){
+		if (!$request['supplierID']){
 			$supplierID = $supplierIDS[0]['supplier_id'];
 		}else{
 			$supplierID = $request['supplierID'];
-		}		
+		}	
 		// SOrt
 		$sortStr = $this->sortList('orders',5);
 
@@ -36,8 +36,9 @@ class CSupOrders extends Controller {
 		$facilityManager = new Facility($this->db);
 
 		$products = $productManager->getProductListByMFG($supplierID);
+
 		// Pagination	
-		$count = $inventoryManager->getCountSupplierOrders($products);
+		$count = $inventoryManager->getCountSupplierOrders($products);	
 		$pagination = new Pagination($count);
 		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders";
 		$this->smarty->assign('pagination', $pagination);
