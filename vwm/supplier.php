@@ -53,13 +53,19 @@ try {
 							$_SESSION['accessname'] = $_POST['accessname'];
 							$_SESSION['username'] = $user->getUsernamebyAccessname($_POST["accessname"]);
 							$accessLevelName = $user->getUserAccessLevel($_SESSION['user_id']);
-$smarty->assign("accessName", $accessLevelName);
+							if ($accessLevel==5){
+								$inventoryManager = new InventoryManager($db);
+								$jobberID = $inventoryManager->getSaleUserJobberID($_SESSION['user_id']);
+								$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberID['jobber_id']);
+								
+							}
+							$smarty->assign("accessName", $accessLevelName);
 							switch ($accessLevelName) {
 								case "SuperuserLevel":																	
 									header("Location: supplier.php?action=browseCategory&category=root");	
 								break;
 								default:
-									header("Location: supplier.php?action=browseCategory&category=sales&bookmark=clients");		
+									header("Location: supplier.php?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobberID['jobber_id']}&supplierID={$supplierIDS[0]['supplier_id']}");		
 								break;
 							}
 												

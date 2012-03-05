@@ -40,7 +40,7 @@ class CSupProfile extends Controller
 				}
 		}		
 
-		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
+		$supplierIDS = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
 		$vars=array	(
 						'supplierIDS'=>$supplierIDS
 					);

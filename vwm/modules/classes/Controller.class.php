@@ -1012,6 +1012,21 @@ class Controller {
                 $this->smarty->assign("upCategory", $departmentList);
                 $this->smarty->assign("upCategoryName", LABEL_LEFT_DEPARTMENTS_TITLE);
                 break;
+            case "sales":
+                $inventoryManager = new InventoryManager($this->db);
+                $jobberDetails = $inventoryManager->getJobberDetails($id);
+                $jobberList = $inventoryManager->getJobberList();
+				
+                for ($i = 0; $i < count($jobberList); $i++) {
+					$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberList[$i]['jobber_id']);
+                    $url = "?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobberList[$i]['jobber_id']}&supplierID={$supplierIDS[0]['supplier_id']}";
+                    $jobberList[$i]['url'] = $url;
+					$jobberList[$i]['id'] = $jobberList[$i]['jobber_id'];
+
+                }
+                $this->smarty->assign("upCategory", $jobberList);
+                $this->smarty->assign("upCategoryName", LABEL_LEFT_DEPARTMENTS_TITLE);
+                break;				
         }
         $this->smarty->assign("leftCategoryID", $id);
     }
@@ -1021,6 +1036,18 @@ class Controller {
             case "root":
                 $this->smarty->assign('urlRoot', '?action=browseCategory&category=root');
                 break;
+            case "sales":
+                $this->smarty->assign('urlRoot', '?action=browseCategory&category=root');
+
+                $company = new Company($this->db);
+                $companyDetails = $company->getCompanyDetails($id);
+
+                $this->smarty->assign('urlCompany', "?action=browseCategory&category=company&id=" . $id);
+                $this->smarty->assign('companyName', $companyDetails['name']);
+                $this->smarty->assign('address', $companyDetails['address']);
+                $this->smarty->assign('contact', $companyDetails['contact']);
+                $this->smarty->assign('phone', $companyDetails['phone']);
+                break;			
             case "company":
                 $this->smarty->assign('urlRoot', '?action=browseCategory&category=root');
 
@@ -1191,7 +1218,19 @@ class Controller {
                 }
 
                 break;
-
+            case "sales":
+                $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
+                $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
+                $permissions['company']['view'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
+                $permissions['viewCategory'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
+                $permissions['deleteCategory'] = $this->user->isHaveAccessTo('delete', 'company') ? true : false;
+                $permissions['viewItem'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                $permissions['addItem'] = $this->user->isHaveAccessTo('add', 'facility') ? true : false;
+                $permissions['deleteItem'] = $this->user->isHaveAccessTo('delete', 'facility') ? true : false;
+                if ($permissions['deleteItem'] == true || $permissions['addItem'] == true) {
+                    $permissions['showSelectAll'] = true;
+                }
+                break;
             case "viewRoot":
                 $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
                 break;
@@ -1246,6 +1285,7 @@ class Controller {
                 break;
         }
         $this->smarty->assign('permissions', $permissions);
+		return $permissions;
     }
 
     function noname($request=null) {

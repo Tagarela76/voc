@@ -847,12 +847,12 @@ class CInventory extends Controller
 				$ProductInventory = new ProductInventory($this->db);
 
 				// Pagination	
-				$count = $inventoryManager->getCountInventoryPrduct($facilityID);
+				$count = $inventoryManager->getCountInventoryProduct($facilityID);
 				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=products";
 				$this->smarty->assign('pagination', $pagination);			
 				
-				$supplierPrductIdList = $inventoryManager->getInventoryPrductIdByFacility($facilityID, $pagination);
+				$supplierPrductIdList = $inventoryManager->getInventoryProductIdByFacility($facilityID, $pagination);
 
 
 			

@@ -290,11 +290,11 @@
            {if $request.action == 'addItem'}
            		<input type='button' name='cancel' class="button button_big" value='Cancel' onclick='location.href="?action=browseCategory&category=root"'>
 			{elseif $request.action == 'edit'}
-				<input type='button' name='cancel' class="button button_big" value='Cancel' onclick='location.href="?action=browseCategory&category={$request.category}&id={$request.id}"'>
+				<input type='button' name='cancel' class="button button_big" value='Cancel' onclick='location.href="?action=browseCategory&category={$request.category}&bookmark=clients&jobberID={$request.jobberID}&supplierID={$request.supplierID}"'>
 			{/if}
 				<input type='submit' name='save' class="button button_big" value='Save'>
        </div> 
-
+{if $request.action == 'edit'}<input id="jobberID" type="hidden" name="jobberID" value="{$request.jobberID}">{/if} 
 {*JQUERY POPUP SETTINGS*}
 <link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
 
@@ -345,9 +345,9 @@
 
                                         <td align="center" style="width:40px">
                                             <input type="checkbox" id="supplier[]" name="supplier[]" value="{$supplier[i].original_id}"
-												{section  name=j loop=$defaultUnitTypelist}
-													{$defaultUnitTypelist[j]}
-													{if $unitTypelist[i].unittype_id  == $defaultUnitTypelist[j]}
+												{section  name=j loop=$jobberSupplier}
+													
+													{if $supplier[i].original_id  == $jobberSupplier[j].supplier_id}
 													 checked 
 													{/if}
 												{/section}
@@ -367,7 +367,7 @@
                         </tr>
                     </table>
                     <input id="categoryName" type="hidden" name="categoryName" value="{$request.category}">
-					{if $request.action == 'edit'}<input id="companyID" type="hidden" name="companyID" value="{$companyID}">{/if} 
+					 
 					<input id="unitCount" type="hidden" name="unitCount" value="{$smarty.section.i.index}">
 
     </div>

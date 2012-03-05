@@ -28,7 +28,7 @@ $(document).ready(function() {
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' id='formP' action='?action={$request.action}&category=products&id={$request.id}&supplierID={$request.supplierID}'>
+	<form method='POST' id='formP' action='?action={$request.action}&category=products&id={$request.id}{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
@@ -119,11 +119,11 @@ $(document).ready(function() {
         </table>
 					
         <div align="right" class="margin7">
-			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=sales&bookmark=products'">
+			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=sales&bookmark=products{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'">
 			
       	
             <input type='button' class="button" value='Save' onclick='check_price();'>
-
+			
 			<input type="hidden" name="price_id" id="price_id"  value="{$product.price_id}"/>
                   
         </div>	

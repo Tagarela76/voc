@@ -99,7 +99,7 @@ class InventoryManager {
 		return $productUsageData;
 	}
 	
-	public function getProductsSupplierList($facilityID, $productID = null , $sortStr = null) {
+	public function getProductsSupplierList($facilityID, $productID = null ,$jobberID, $sortStr = null) {
 
 			$tables = " ".TB_PRODUCT." p, " . TB_SUPPLIER . " s ,  product2inventory pi "; //m.department_id = d.department_id AND 
 			
@@ -110,7 +110,7 @@ class InventoryManager {
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
-						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} ".
+						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} AND di.jobber_id = {$jobberID} ".
 						" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} " ;
 			if ($productID){
 				$query .=   " AND p.product_id  = {$productID} ";
@@ -159,7 +159,7 @@ echo $query;
 
 	}	
 	
-	public function getSupplierOrders($facilityID = null, $productID = null, Pagination $pagination = null, Sort $sortStr = null) {
+	public function getSupplierOrders($facilityID = null, $productID = null, $jobberID, Pagination $pagination = null, Sort $sortStr = null) {
         $time = new DateTime('first day of this month');
 
         $query = "SELECT io.* ";
@@ -180,12 +180,13 @@ echo $query;
 				}
 				$expression .= ")";
 				
-				$query .=	" io.order_product_id IN  {$expression} ";
+				$query .=	" io.order_product_id IN  {$expression} AND ";
 			}else{
-				$query .=	" io.order_product_id = {$productID} ";
+				$query .=	" io.order_product_id = {$productID} AND ";
 			}
 			
 		}
+		$query .=	" io.order_jobber_id = {$jobberID} ";
 		/*else{
 			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
 		}*/
@@ -226,7 +227,7 @@ echo $query;
 		return $row['cnt'];
 	}	
 	
-	public function getCountSupplierOrders($products) {
+	public function getCountSupplierOrders($products,$jobberID) {
 		if ($products && is_array($products)){
 				$expression = "(".$products[0]['product_id'];
 				foreach($products as $id){
@@ -236,7 +237,7 @@ echo $query;
 
 		}
 		
-		$query = "SELECT COUNT(*) cnt FROM inventory_order io WHERE ";
+		$query = "SELECT COUNT(*) cnt FROM inventory_order io WHERE order_jobber_id = {$jobberID} ";
 		$query .=	" io.order_product_id IN  {$expression} ";
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
@@ -261,7 +262,7 @@ echo $query;
 		return $SupData;
 	}	
 	
-	public function getSupplierOrderDetails($facilityID,$orderID) {
+	public function getSupplierOrderDetails($orderID) {
         $time = new DateTime('first day of this month');
 
         $query = "SELECT io.*";
@@ -328,7 +329,7 @@ echo $query;
 		}
 	}	
 	
-	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null ) {
+	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null, $jobberID ) {
 /*            
         $query = "SELECT di.*, p.product_nr, c.company_id, c.name, f.name as fname   ";
 				
@@ -346,7 +347,7 @@ echo $query;
 */
 		$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
 		FROM  company c, supplier s, facility f, product p
-		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id";
+		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id AND di.jobber_id = {$jobberID} ";
 
 
 
@@ -360,7 +361,8 @@ echo $query;
 				}					
 		$query .=	" GROUP BY p.product_id ";
 
-		//echo $query;
+//echo $query;
+
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -378,13 +380,13 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getSupplierWholeDiscount($supplierID, $facilityID = null,Pagination $pagination = null,Sort $sortStr = null) {
+	public function getSupplierWholeDiscount($supplierID, $facilityID = null,$jobberID, Pagination $pagination = null,Sort $sortStr = null) {
             
         $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
 		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
 					
-		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} ".
+		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} AND di.jobber_id = {$jobberID} ".
 					" AND di.product_id IS NULL ";
 		if ($facilityID != null){
 			$query .= " AND di.facility_id = {$facilityID} ";
@@ -424,9 +426,9 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getCountSupplierDiscounts($supplierID) {
+	public function getCountSupplierDiscounts($supplierID,$jobberID) {
 	
-		$query = "SELECT COUNT(*) cnt FROM discounts2inventory WHERE product_id IS NULL AND supplier_id = {$supplierID}";
+		$query = "SELECT COUNT(*) cnt FROM discounts2inventory WHERE product_id IS NULL AND supplier_id = {$supplierID} AND jobber_id = {$jobberID}";
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
@@ -456,9 +458,9 @@ echo $query;
 								
 		if ($form['discount_id'] == null){
 			if ($form['product_id'] != ''){
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
 			}else{
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
 			}
 			
 		}else{
@@ -629,7 +631,7 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getInventoryPrductIdByFacility($facilityID, Pagination $pagination = null) {
+	public function getInventoryProductIdByFacility($facilityID, Pagination $pagination = null) {
             
         $query = "SELECT product_id FROM product2inventory WHERE facility_id = {$facilityID} ";
 		if (isset($pagination)) {
@@ -651,7 +653,7 @@ echo $query;
 		return $SupData;
 	}	
 	
-	public function getCountInventoryPrduct($facilityID) {
+	public function getCountInventoryProduct($facilityID) {
 	
 		$query = "SELECT COUNT(*) cnt FROM product2inventory WHERE facility_id = {$facilityID}";
 		$this->db->query($query);
@@ -675,9 +677,9 @@ echo $query;
 
 	}	
 	
-	public function checkDiscountID( $companyID, $facilityID, $supplierID ) {
+	public function checkDiscountID( $companyID, $facilityID, $supplierID, $jobberID ) {
 	
-		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.facility_id = ".$facilityID." AND di.supplier_id = ".$supplierID." AND di.product_id IS NULL ";				
+		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.jobber_id = ".$jobberID." AND di.facility_id = ".$facilityID." AND di.supplier_id = ".$supplierID." AND di.product_id IS NULL ";				
 		
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -754,20 +756,54 @@ echo $query;
 		}				
 	}
 	
-	public function getSaleUserSupplierLst($userID) {
+	public function getSaleUserJobberID($userID) {
 	
-		$query = "SELECT supplier_id FROM users2jobber WHERE user_id = {$userID}";
+		$query = "SELECT jobber_id FROM users2jobber WHERE user_id = {$userID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$id = $this->db->fetch_array(0);
+
+		return $id;
+	}
+	
+	public function getSuppliersByJobberID($jobberID) {
+	
+		$query = "SELECT supplier_id FROM supplier2jobber WHERE jobber_id = {$jobberID}";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}		
 		$arr = $this->db->fetch_all_array();
-		$data = array();
-			foreach($arr as $b) {
-					$data[] = $b;
-			}
-		return $data;
+
+		return $arr;
+	}
+	
+	public function getJobberDetails($jobberID) {
+	
+		$query = "SELECT * FROM jobber WHERE jobber_id = {$jobberID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
 	}	
+	
+	public function getJobberList() {
+	
+		$query = "SELECT * FROM jobber";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+
+		return $arr;
+	}	
+	
 	
 	public function getInitialInStockValues($prodictID) {
 	

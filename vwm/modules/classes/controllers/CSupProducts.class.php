@@ -28,12 +28,14 @@ class CSupProducts extends Controller {
 		}else{
 			$supplierID = $request['supplierID'];
 		}
+
 		$productManager = new Product($this->db);
 
 		// SOrt
 		$sortStr = $this->sortList('productsPrice',2);		
 		
 		$products = $productManager->getProductPriceBySupplier($supplierID);
+
 		if (!$products){
 			$products = $productManager->getProductListByMFG($supplierID);
 			foreach ($products as $product){
@@ -46,7 +48,7 @@ class CSupProducts extends Controller {
 		// Pagination	
 		$count = $productManager->getCountSupplierProducts($supplierID);
 		$pagination = new Pagination($count);
-		$pagination->url = "?action=browseCategory&category=sales&bookmark=products";
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 		
 		$products = $productManager->getProductPriceBySupplier($supplierID, null, $pagination, $sortStr);
@@ -56,7 +58,7 @@ class CSupProducts extends Controller {
 			$price4prduct = new ProductPrice($this->db, $product);
 	
 			$price4prduct->supman_id = $supplierID;
-			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&supplierID={$supplierID}";
+			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 			//$price4prduct->save();
 			$productsArr[] = $price4prduct;
 			if ($comapnyArray){
@@ -110,7 +112,7 @@ class CSupProducts extends Controller {
 				$price4prduct->unittype = $form['selectUnittype'];
 				$result = $price4prduct->save();
 				if ($result == 'true') {
-					header("Location: ?action=browseCategory&category=sales&bookmark=products");
+					header("Location: ?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 				}
 			}
 

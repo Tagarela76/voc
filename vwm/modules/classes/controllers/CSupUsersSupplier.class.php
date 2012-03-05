@@ -27,7 +27,7 @@ class CSupUsersSupplier extends Controller
 		
 		$this->smarty->assign('request', $request);
 		$inventoryManager = new InventoryManager($this->db);
-		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
+		$supplierIDS = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
 
 		$vars=array	(
 						'supplierIDS'		=>$supplierIDS
@@ -51,7 +51,7 @@ class CSupUsersSupplier extends Controller
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
 		// Check user supplier in GET
-		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
+		$supplierIDS = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
 		foreach($supplierIDS as $sid){
 			$supplierIDArray[] = $sid['supplier_id'];
 		}

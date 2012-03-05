@@ -28,6 +28,7 @@ class CSupOrders extends Controller {
 		}else{
 			$supplierID = $request['supplierID'];
 		}	
+		$jobberID = $request['jobberID'];
 		// SOrt
 		$sortStr = $this->sortList('orders',5);
 
@@ -38,12 +39,12 @@ class CSupOrders extends Controller {
 		$products = $productManager->getProductListByMFG($supplierID);
 
 		// Pagination	
-		$count = $inventoryManager->getCountSupplierOrders($products);	
+		$count = $inventoryManager->getCountSupplierOrders($products,$jobberID);	
 		$pagination = new Pagination($count);
-		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders";
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 	
-		$order = $inventoryManager->getSupplierOrders(null, $products, $pagination, $sortStr);
+		$order = $inventoryManager->getSupplierOrders(null, $products,$jobberID, $pagination, $sortStr);
 
 		/* 		foreach($products as $product){
 		  $order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
@@ -54,11 +55,11 @@ class CSupOrders extends Controller {
 			if ($order){
 				foreach ($order as $o){
 					$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
-					$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
+					//$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
 					$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
 					//$o['unittype'] = $SupData[0]['in_stock_unit_type'];
-					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
-					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."";
+					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 					$o['client'] = $facilityDetails['title'];
 					$typeName = $type->getUnittypeDetails($o['order_unittype']);
 					$o['type'] = $typeName['name'];					
@@ -85,14 +86,15 @@ class CSupOrders extends Controller {
 		$inventoryManager = new InventoryManager($this->db);
 		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
-		
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$request = $this->getFromRequest();
+		$orderDetails = $inventoryManager->getSupplierOrderDetails($orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
 		$type = new Unittype($this->db);
 		$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
 		$orderDetails[0]['type'] = $typeName['name'];
 
-		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "");
+		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 		$this->smarty->assign('order', $orderDetails[0]);
 		$this->smarty->assign('tpl', 'tpls/orderDetail.tpl');
 		$this->smarty->assign("parent", $this->parent_category);
@@ -105,13 +107,13 @@ class CSupOrders extends Controller {
 		$request = $this->getFromRequest();
 		$orderID = $request['id'];
 		
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$orderDetails = $inventoryManager->getSupplierOrderDetails( $orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$facilityID = $orderDetails[0]['order_facility_id'];
 			$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
-			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id']);
-			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders");
+			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			$this->smarty->assign("itemType", 'order');
 			$this->smarty->assign('order', $orderDetails[0]);
 			$this->smarty->assign("request", $this->getFromRequest());
@@ -124,9 +126,9 @@ class CSupOrders extends Controller {
 				$form['status'] = OrderInventory::COMPLETED;
 				$form['order_completed_date'] = time();
 				//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'],$request['jobberID']);
 				$ProductInventory = new ProductInventory($this->db);
-				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+				$order = $inventoryManager->getSupplierOrderDetails($form['order_id']);
 
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -148,7 +150,7 @@ class CSupOrders extends Controller {
 									$result1 = $product->save();
 									
 								}else{
-									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+									$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
 									// For orders with status: Canceled or Completed denied edit function
 									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
@@ -220,7 +222,7 @@ class CSupOrders extends Controller {
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
-						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
+						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
 						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						
 						if ($supplierUsersEmais){
@@ -232,7 +234,7 @@ class CSupOrders extends Controller {
 									
 			
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}		
 		}
 		$this->smarty->display("tpls:index.tpl");
@@ -245,7 +247,7 @@ class CSupOrders extends Controller {
 		
 		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$orderDetails = $inventoryManager->getSupplierOrderDetails($orderID);
 
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
@@ -273,9 +275,9 @@ class CSupOrders extends Controller {
 			if ($form['status'] == OrderInventory::COMPLETED) {
 				$form['order_completed_date'] = time();
 				//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'],$request['jobberID']);
 				$ProductInventory = new ProductInventory($this->db);
-				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+				$order = $inventoryManager->getSupplierOrderDetails( $form['order_id']);
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -333,7 +335,7 @@ class CSupOrders extends Controller {
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
-						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
+						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
 						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
@@ -344,7 +346,7 @@ class CSupOrders extends Controller {
 									
 
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}
 		}	
 $this->smarty->display("tpls:index.tpl");		

@@ -3,6 +3,9 @@
 	<input type="hidden" name="action" value="browseCategory">
 	<input type="hidden" name="category" value="{$request.category}">
 	<input type="hidden" name="bookmark" value="{$request.bookmark}">
+	<input type="hidden" name="jobberID" value="{$request.jobberID}">
+	<input type="hidden" name="supplierID" value="{$request.supplierID}">	
+
 	{if $request.subBookmark}<input type="hidden" name="subBookmark" value="{$request.subBookmark}">{/if}
 	
 	{if $searchAction=='filter'}

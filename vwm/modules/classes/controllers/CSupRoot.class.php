@@ -20,10 +20,14 @@ class CSupRoot extends Controller
 
 		$request = $this->getFromRequest();
 		$jobberManager = new JobberManager($this->db);
+		
+		$inventoryManager = new InventoryManager($this->db);
+				
 		$jobberList = $jobberManager->getJobberList();
 		if ($jobberList){
 			foreach($jobberList as $jobber){
-				$jobber->url = "?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobber->jobber_id}";
+				$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobber->jobber_id);
+				$jobber->url = "?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobber->jobber_id}&supplierID={$supplierIDS[0]['supplier_id']}";
 				$arr[] = $jobber;
 			}
 			$jobberList = $arr;
@@ -33,13 +37,9 @@ class CSupRoot extends Controller
 		
 		$itemsCount = $jobberManager->getJobberCount();
 		$this->smarty->assign('itemsCount', $itemsCount);
-		
-		$inventoryManager = new InventoryManager($this->db);
-		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
 
-		$vars=array	(
-						'supplierIDS'		=>$supplierIDS
-					);
+	
+
 		$this->smarty->assign('childCategory', 'sales');
 		
 							

@@ -63,14 +63,12 @@
 		
 	{/if}		
 			<div id='hiddens'>	
-			{if $request.category eq 'tables'}				
-				<input type="hidden" name="category" value="{$request.bookmark}">
-			{elseif $request.category eq 'issue'}
-				<input type="hidden" name="category" value="{$request.category}">
-			{elseif $request.category == 'sales' and $request.bookmark == 'clients'}
+
+			{if $request.category == 'sales' and $request.bookmark == 'clients'}
 				<input type="hidden" name="category" value="clients">
 				<input type="hidden" name="bookmark" value="clients">
-				<input type="hidden" name="supplierID" value="{$supplierID}">
+				<input type="hidden" name="supplierID" value="{$request.supplierID}">
+				<input type="hidden" name="jobberID" value="{$request.jobberID}">
 				<!--  <input type="hidden" name="category" value="{$request.category}"> -->
 				{if $smarty.request.subBookmark}
 					<input type="hidden" name="subBookmark" value="{$smarty.request.subBookmark}">
