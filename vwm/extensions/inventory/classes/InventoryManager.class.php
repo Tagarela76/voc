@@ -181,10 +181,10 @@ echo $query;
 				
 		$query .=	" FROM inventory_order io" .
 
-					" WHERE ";
+					" WHERE io.order_jobber_id IS NOT NULL ";
 		 
 		if ($facilityID != null){
-			$query .=	" io.order_facility_id = {$facilityID} ";
+			$query .=	" AND io.order_facility_id = {$facilityID}";
 		}
 		
 		if ($productID != null){
