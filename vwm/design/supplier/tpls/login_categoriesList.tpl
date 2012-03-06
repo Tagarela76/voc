@@ -81,7 +81,7 @@
 		  
 		<td   class=" padd_bot10  " valign="top" width="5%">
 			<div  class="margintop10" align="center">	<input type="button" class="button" value="Logout" onclick="location.href='?action=logout'"> </div>	
-			<div  class="margintop10" align="center">	<input type="button" class="button" value="Users" onclick="location.href='?action=browseCategory&category=usersSupplier'"> </div>
+			<div  class="margintop10" align="center">	<input type="button" class="button" value="Users" onclick="location.href='?action=browseCategory&category=usersSupplier&jobberID={$request.jobberID}&supplierID={$request.supplierID}'"> </div>
 			
 			<!--div  class="margintop10" align="center">	<input type="button" class="button" value="Stats" onclick="location.href='?action=stats'"> </div-->
 		</td>

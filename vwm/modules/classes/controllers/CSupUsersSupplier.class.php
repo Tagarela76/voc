@@ -27,17 +27,26 @@ class CSupUsersSupplier extends Controller
 		
 		$this->smarty->assign('request', $request);
 		$inventoryManager = new InventoryManager($this->db);
-		$supplierIDS = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
-
-		$vars=array	(
-						'supplierIDS'		=>$supplierIDS
-					);
+		if (!$request['jobberID']){
+			
+			$jobberID = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
+					
+			$jobberID = $jobberID['jobber_id'];
+		}else{
+			$jobberID = $request['jobberID'];
+		}
+		$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberID);
 		
-		$emails = $inventoryManager->getSupplierUsersEmails($supplierIDS[0]['supplier_id']);
+		$emails = $inventoryManager->getSupplierUsersEmails($jobberID);
 		foreach ($emails as $email){
-			$email['url'] = "?action=editEmail&category=usersSupplier&supplierID={$supplierIDS[0]['supplier_id']}";
+			$email['url'] = "?action=editEmail&category=usersSupplier&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 			$emailArr [] = $email;
 		}
+		$jobberDetails = $inventoryManager->getJobberDetails($request['jobberID']);
+
+		$this->smarty->assign("jobberDetails", $jobberDetails);		
+		$this->setListCategoriesLeftNew('sales', $this->getFromRequest('jobberID'));	
+		
 		$this->smarty->assign("emails",$emailArr);
 		$this->smarty->assign("parent",$this->category);
 		$this->smarty->assign('supplierID', $supplierIDS[0]['supplier_id']);
@@ -46,34 +55,47 @@ class CSupUsersSupplier extends Controller
 	}
 	
 	private function actionAddItem() {
-		$inventoryManager = new InventoryManager($this->db);
+		$inventoryManager = new InventoryManager($this->db);		
+		
+		
 
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
+		if (!$request['jobberID']){
+			
+			$jobberID = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
+					
+			$jobberID = $jobberID['jobber_id'];
+		}else{
+			$jobberID = $request['jobberID'];
+		}		
 		// Check user supplier in GET
-		$supplierIDS = $inventoryManager->getSaleUserJobberID($this->user->xnyo->user['user_id']);
+		$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberID);
 		foreach($supplierIDS as $sid){
 			$supplierIDArray[] = $sid['supplier_id'];
 		}
 		if (!in_array($supplierID, $supplierIDArray)){
 			throw new Exception('404');
 		}
-		$emails = $inventoryManager->getSupplierUsersEmails($supplierID);
+		$emails = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
 		
 			$form = $_POST;
 
 			if (count($form) > 0) {
-			
+	
 				$data['supplier_id'] = $supplierID;
+				$data['jobber_id'] = $request['jobberID'];
+			
 				$inventoryManager->beforeUpdateSupplierEmails($data);
 				$i=1;
 				$name = 'email'.$i;
 				while(isset($form[$name])){
 					$data['email'] = $form[$name];
+							
 					$inventoryManager->updateSupplierEmails($data);
 					$i++;$name = 'email'.$i;
 				}
-				header("Location: ?action=browseCategory&category=usersSupplier");
+				header("Location: ?action=browseCategory&category=usersSupplier&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 
 			}
 		

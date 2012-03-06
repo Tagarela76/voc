@@ -64,7 +64,7 @@
 	{/if}		
 			<div id='hiddens'>	
 
-			{if $request.category == 'sales' and $request.bookmark == 'clients'}
+			{if ($request.category == 'sales' and $request.bookmark == 'clients') }
 				<input type="hidden" name="category" value="clients">
 				<input type="hidden" name="bookmark" value="clients">
 				<input type="hidden" name="supplierID" value="{$request.supplierID}">
@@ -75,6 +75,10 @@
 				{/if}
 			{elseif $request.category eq 'root'}
 				<input type="hidden" name="category" value="sales">
+			{elseif $request.category == 'usersSupplier'}
+				<input type="hidden" name="supplierID" value="{$request.supplierID}">
+				<input type="hidden" name="jobberID" value="{$request.jobberID}">
+				<input type="hidden" name="category" value="{$request.category}">
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
 				{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}

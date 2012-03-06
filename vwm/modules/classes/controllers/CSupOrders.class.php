@@ -139,50 +139,50 @@ class CSupOrders extends Controller {
 				$category = "facility";
 			
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
-
+var_dump($productDetails);die();
 				$product = $productDetails[0];
-								$result = $inventoryManager->unitTypeConverter($product);
-								
-								if ($result){
-									$product->usage = $result['usage'];
-									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
-									$product->in_stock = $addToStock;
-									$result1 = $product->save();
-									
-								}else{
-									$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
+				
+				$result = $inventoryManager->unitTypeConverter($product);
 
-									// For orders with status: Canceled or Completed denied edit function
-									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
-										$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+				if ($result) {
+					$product->usage = $result['usage'];
+					$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+					$product->in_stock = $addToStock;
+					$result1 = $product->save();
+				} else {
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
-										$this->smarty->assign('status',$statuslist);
+				// For orders with status: Canceled or Completed denied edit function
+				if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
+					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
-										$this->smarty->assign('order',$orderDetails[0]);	
-										$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');					
-									}else{
-										throw new Exception('deny');
-									}
-									
-									$result1 = false;
-									$this->smarty->assign('check','false');	
-									
-									//	E-mail notification about density not found
-									$email = new EMail();
-									$to = array('denis.nt@kttsoft.com');
-									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
-									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
-									$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is ".$orderDetails[0]['order_id'];
-									$email->sendMail($from, $to, $theme, $message);		
-			
-									
-									$this->smarty->assign('tpl','tpls/orderComplete.tpl');
-								}	
+					$this->smarty->assign('status', $statuslist);
+
+					$this->smarty->assign('order', $orderDetails[0]);
+					$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
+				} else {
+					throw new Exception('deny');
+				}
+
+					$result1 = false;
+					$this->smarty->assign('check', 'false');
+
+					//	E-mail notification about density not found
+					$email = new EMail();
+					$to = array('denis.nt@kttsoft.com');
+					$from = AUTH_SENDER . "@" . DOMAIN; //$from = "authentification@vocwebmanager.com";
+					$theme = $orderDetails[0]['order_name'] . '. Problem with status changing to "completed"';
+					$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is " . $orderDetails[0]['order_id'];
+					$email->sendMail($from, $to, $theme, $message);
 
 
-		if ($result1) {		
-			$result2 = $inventoryManager->updateSupplierOrder($form);	
-		}
+					$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
+			}
+
+
+			if ($result1) {		
+				$result2 = $inventoryManager->updateSupplierOrder($form);	
+			}
 		if ($result2 == 'true') {
 
 		//$clientEmail = $inventoryManager->getClientEmail($facilityID);
@@ -223,7 +223,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
-						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
+						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
 						
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $supplierEmail){
@@ -336,7 +336,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
-						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
+						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
 								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text );

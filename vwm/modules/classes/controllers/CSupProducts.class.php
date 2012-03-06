@@ -28,19 +28,20 @@ class CSupProducts extends Controller {
 		}else{
 			$supplierID = $request['supplierID'];
 		}
-
+		$jobberID = $request['jobberID'];
 		$productManager = new Product($this->db);
 
 		// SOrt
 		$sortStr = $this->sortList('productsPrice',2);		
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID);
+		$products = $productManager->getProductPriceBySupplier($supplierID,null,$jobberID);
 
 		if (!$products){
 			$products = $productManager->getProductListByMFG($supplierID);
 			foreach ($products as $product){
 				$priceProduct = new ProductPrice($this->db, $product);
 				$priceProduct->supman_id = $supplierID;
+				$priceProduct->jobber_id = $jobberID;
 				$priceProduct->save();
 			}
 			
@@ -51,12 +52,12 @@ class CSupProducts extends Controller {
 		$pagination->url = "?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID, null, $pagination, $sortStr);
-
+		$products = $productManager->getProductPriceBySupplier($supplierID, null,$jobberID, $pagination, $sortStr);
+	
 		foreach ($products as $product){
 			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);
-	
+			$price4prduct->jobber_id = $jobberID;
 			$price4prduct->supman_id = $supplierID;
 			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 			//$price4prduct->save();
@@ -92,9 +93,10 @@ class CSupProducts extends Controller {
 		$request = $this->getFromRequest();
 		$priceID = $request['id'];
 		$supplierID = $request['supplierID'];
+		
 		$productManager = new Product($this->db);
 
-		$product = $productManager->getProductPriceBySupplier($supplierID,$priceID);	
+		$product = $productManager->getProductPriceBySupplier($supplierID,$priceID,$request['jobberID']);	
 		if (!$product) throw new Exception('404');
 
 

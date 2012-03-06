@@ -75,7 +75,7 @@ class InventoryManager {
 				  " ORDER BY p.product_id ";			
 */		
 
-		//echo $query;
+		echo $query;
 		$this->db->query($query);
 
 		
@@ -382,22 +382,22 @@ echo $query;
 	
 	public function getSupplierWholeDiscount($supplierID, $facilityID = null,$jobberID, Pagination $pagination = null,Sort $sortStr = null) {
             
-        $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
+        $query =	"SELECT di.discount_id ,di.discount,di.product_id,di.jobber_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
 		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
 					
-		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} AND di.jobber_id = {$jobberID} ".
+		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} ".
 					" AND di.product_id IS NULL ";
 		if ($facilityID != null){
 			$query .= " AND di.facility_id = {$facilityID} ";
 		}		
 		$query .=	" WHERE f.company_id = c.company_id ".
-					" AND m.department_id = d.department_id ".
 					" AND p.product_id = mg.product_id ".
 					" AND m.mix_id = mg.mix_id ".
 					" AND m.department_id = d.department_id ".
 					" AND d.facility_id = f.facility_id ".
 					" AND s.supplier_id = p.supplier_id ".
+					" AND di.jobber_id = {$jobberID} ".
 					" AND s.original_id = {$supplierID} ";
 		if ($facilityID != null){
 			$query .= " AND f.facility_id = {$facilityID} ";
@@ -522,7 +522,7 @@ echo $query;
 	
 	public function updateSupplierEmails( $form ) {
 
-		$query = "INSERT INTO email2supplier VALUES (NULL,". $form['supplier_id'] .",'". mysql_escape_string($form['email']) ."') ";
+		$query = "INSERT INTO email2supplier VALUES (NULL,". $form['jobber_id'] .",'". mysql_escape_string($form['email']) ."') ";
 		$this->db->query($query);
 
 		if(mysql_error() == '') {
@@ -586,7 +586,8 @@ echo $query;
 	
 	public function beforeUpdateSupplierEmails( $form ) {
 
-		$query = "DELETE FROM email2supplier WHERE supplier_id = {$form['supplier_id']}  ";
+		$query = "DELETE FROM email2supplier WHERE jobber_id = {$form['jobber_id']}  ";
+		echo $query;
 		$this->db->query($query);	
 		if(mysql_error() == '') {
 			return true;
@@ -595,9 +596,9 @@ echo $query;
 		}
 	}	
 	
-	public function getSupplierUsersEmails( $supplierID ) {
+	public function getSupplierUsersEmails( $jobberID ) {
 
-		$query = "SELECT * FROM email2supplier WHERE supplier_id = {$supplierID} ";
+		$query = "SELECT * FROM email2supplier WHERE jobber_id = {$jobberID} ";
 		$this->db->query($query);	
 		if ($this->db->num_rows() == 0) {
 			return false;

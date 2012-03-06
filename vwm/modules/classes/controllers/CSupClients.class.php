@@ -37,10 +37,12 @@ class CSupClients extends Controller {
 		if ($result){
 			foreach ($result as $discount){
 				if (!$discount['discount_id']){
+					
 					$data['discount_id'] = $discount['discount_id'];
 					$data['companyID'] = $discount['company_id'];
 					$data['facilityID'] = $discount['facility_id'];
 					$data['supplier_id'] = $discount['supplier_id'];
+					$data['jobberID'] = $discount['jobber_id'];
 					$data['discount'] = 0;
 					
 					$inventoryManager->updateSupplierDiscounts($data);
@@ -94,6 +96,8 @@ class CSupClients extends Controller {
 		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID,$request['jobberID']);
 		if ($result){
 			$client = $result;
+		}else{
+			throw new Exception('404');
 		}	
 	
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID,null,$request['jobberID']);	

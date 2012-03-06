@@ -99,11 +99,11 @@ class CSupSales extends Controller
 		
 		$inventoryManager = new InventoryManager($this->db);
 		$jobberDetails = $inventoryManager->getJobberDetails($request['jobberID']);
-
+		$this->smarty->assign("jobberDetails", $jobberDetails);
 		$urlRoot = "?action=browseCategory&category=root";
 		$this->smarty->assign('urlRoot', $urlRoot);	
 
-		$this->smarty->assign("jobberDetails", $jobberDetails);
+		
 		$this->smarty->assign('request', $request);
 		
 		$this->smarty->assign('tpl', 'tpls/viewJobber.tpl');
