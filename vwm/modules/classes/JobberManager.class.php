@@ -57,6 +57,19 @@ class JobberManager {
 		return $list;
 	}	
 	
+	public function getFacilityJobberList($facilityID) {
+
+		$query = "SELECT * FROM facility2jobber WHERE facility_id = {$facilityID}";
+		$this->db->query($query);
+		//echo 	$query;
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}	
+		$arr = $this->db->fetch_all_array();
+			
+		return $arr;
+	}	
+	
 	public function deleteJobber($jobberID) {
 
 
@@ -65,6 +78,17 @@ class JobberManager {
 
 
 		$query = "DELETE FROM supplier2jobber WHERE jobber_id = {$jobberID}";
+	
+		$this->db->query($query);		
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}
+	public function deleteJobber2Facility($facilityID) {
+
+		$query = "DELETE FROM supplier2jobber WHERE facility_id = {$facilityID}";
 	
 		$this->db->query($query);		
 		if(mysql_error() == '') {
@@ -85,6 +109,25 @@ class JobberManager {
 		}
 		
 		//echo 	$query;
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}	
+	
+	public function updateJobberFacility($facilityID, $jobberArr) {
+
+		$query = "DELETE FROM facility2jobber WHERE facility_id = {$facilityID}";
+		$this->db->query($query);
+		
+		foreach ($jobberArr as $id){
+			$query = "INSERT INTO facility2jobber VALUES (NULL, ".$facilityID." , ".$id." )";
+			
+			$this->db->query($query);	
+		}
+		
+		
 		if(mysql_error() == '') {
 			return true;
 		} else {

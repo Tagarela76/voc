@@ -45,6 +45,21 @@ class InventoryManager {
 		if ($productID){
 			$query .= "AND p.product_id = {$productID} ";
 		}
+		if ($productID != null){
+			if (is_array($productID)){
+				$expression = "(".$productID[0]['product_id'];
+				foreach($productID as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+				
+				$query .= "AND p.product_id IN {$expression} ";
+			}else{
+				$query .= "AND p.product_id = {$productID} ";
+			}
+			
+		}		
+		
 		$query .= " GROUP BY mg.product_id ";
 		if ($sortStr){
 			$query .= $sortStr;
@@ -75,7 +90,7 @@ class InventoryManager {
 				  " ORDER BY p.product_id ";			
 */		
 
-		echo $query;
+		//echo $query;
 		$this->db->query($query);
 
 		
@@ -99,30 +114,30 @@ class InventoryManager {
 		return $productUsageData;
 	}
 	
-	public function getProductsSupplierList($facilityID, $productID = null ,$jobberID, $sortStr = null) {
+	public function getProductsSupplierList($facilityID, $productID = null ,$jobberID = null, $sortStr = null) {
 
 			$tables = " ".TB_PRODUCT." p, " . TB_SUPPLIER . " s ,  product2inventory pi "; //m.department_id = d.department_id AND 
-			
-			
-
 
 			$query	=    "SELECT p.supplier_id, p.product_nr , s.original_id , di.discount, di.discount_id, s.supplier, pi.product_id , pi.in_stock_unit_type";
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
-						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} AND di.jobber_id = {$jobberID} ".
-						" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} " ;
+						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} ";
+						if ($jobberID){
+							$query .= " AND di.jobber_id = {$jobberID} ";
+						}		
+			$query .=	" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} AND p.product_id = pi.product_id " ;
+					
 			if ($productID){
 				$query .=   " AND p.product_id  = {$productID} ";
 			}
-				$query .=   " AND p.product_id = pi.product_id ";
-			
+		
 			if ($sortStr){
 				$query .=   " {$sortStr} ";
 			}
-			
+
 			$this->db->query($query);
-//echo $query;
+
 			$arr = $this->db->fetch_all_array();
 
 			$SupData = array();
@@ -159,17 +174,17 @@ echo $query;
 
 	}	
 	
-	public function getSupplierOrders($facilityID = null, $productID = null, $jobberID, Pagination $pagination = null, Sort $sortStr = null) {
+	public function getSupplierOrders($facilityID = null, $productID = null, $jobberID = null, Pagination $pagination = null, Sort $sortStr = null) {
         $time = new DateTime('first day of this month');
 
-        $query = "SELECT io.* ";
+        $query =	"SELECT io.* ";
 				
 		$query .=	" FROM inventory_order io" .
 
 					" WHERE ";
 		 
 		if ($facilityID != null){
-			$query .=	" io.order_facility_id = {$facilityID} AND ";
+			$query .=	" io.order_facility_id = {$facilityID} ";
 		}
 		
 		if ($productID != null){
@@ -180,13 +195,16 @@ echo $query;
 				}
 				$expression .= ")";
 				
-				$query .=	" io.order_product_id IN  {$expression} AND ";
+				$query .=	" AND io.order_product_id IN  {$expression} ";
 			}else{
-				$query .=	" io.order_product_id = {$productID} AND ";
+				$query .=	" AND io.order_product_id = {$productID} ";
 			}
 			
 		}
-		$query .=	" io.order_jobber_id = {$jobberID} ";
+		if ($jobberID != null){
+			$query .=	" AND io.order_jobber_id = {$jobberID} ";
+		}		
+		
 		/*else{
 			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
 		}*/
@@ -464,7 +482,7 @@ echo $query;
 			}
 			
 		}else{
-            $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." WHERE discount_id = {$form['discount_id']}";			
+            $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." , jobber_id = ".mysql_real_escape_string($form['jobberID'])."  WHERE discount_id = {$form['discount_id']}";			
 
 		}
 
@@ -704,6 +722,7 @@ echo $query;
 									$dateBegin = $orderList[0]['order_completed_date'];
 								}else{
 									$dateBegin = new DateTime('first day of this month');
+									$dateBegin->setTime(0, 0, 0);
 									$dateBegin = $dateBegin->getTimestamp();
 								}
 							//
@@ -803,6 +822,25 @@ echo $query;
 		$arr = $this->db->fetch_all_array();
 
 		return $arr;
+	}
+	
+	public function getJobberIDForInventory($facilityID, $productID) {
+	
+		$query =	"SELECT sj.jobber_id FROM facility2jobber fj, supplier2jobber sj, product p, supplier s ";
+		$query .=	" WHERE fj.facility_id = {$facilityID} ".
+					" AND fj.jobber_id = sj.jobber_id ".
+					" AND p.product_id = {$productID} ".
+					" AND p.supplier_id = s.supplier_id ".
+					" AND s.supplier_id = s.supplier_id ".
+					" AND sj.supplier_id = s.original_id ";
+		//echo $query;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
 	}	
 	
 	
@@ -889,6 +927,14 @@ echo $query;
 					$newOrder->order_unittype = $priceObj->unittype;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
+					
+					// GET JOBBER
+					$jobberID = $this->getJobberIDForInventory($newOrder->order_facility_id, $newOrder->order_product_id);
+					if($jobberID){
+						$newOrder->order_jobber_id = $jobberID['jobber_id'];
+					}else{
+						$newOrder->order_jobber_id = 0;
+					}
 					
 				    $newOrder->save();
 

@@ -628,9 +628,12 @@ class CInventory extends Controller
 				$supplierDiscount = $inventoryManager->getProductsSupplierList($facilityID,$this->getFromRequest('id'));
 				if (!$supplierDiscount){
 					throw new Exception('404');
-				}				
+				}
+				
 				$discount = $supplierDiscount[0];
-
+				if (!$discount['discount']){
+					$discount['discount'] = 0;
+				}
 									$form = $_POST;
 
 									if (count($form) > 0) {
@@ -641,7 +644,12 @@ class CInventory extends Controller
 										$form['supplier_id'] = Reform::HtmlEncode($form['supplier_id']);
 										$form['discount_id'] = Reform::HtmlEncode($form['discount_id']);
 										$form['supplier'] = Reform::HtmlEncode($form['supplier']);
-
+										$jobberID = $inventoryManager->getJobberIDForInventory($form["facilityID"],$form["product_id"]);
+										if($jobberID){
+											$form['jobberID'] = $jobberID;
+										}else{
+											$form['jobberID'] = 0;
+										}
 										$result = $inventoryManager->updateSupplierDiscounts($form);
 					
 										if ($result == 'true'){
@@ -821,17 +829,17 @@ class CInventory extends Controller
 	 * bookmarkInventory($vars)
 	 * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
 	 */
-	protected function bookmarkInventory($vars)
-	{
+	protected function bookmarkInventory($vars){
 		/*New inventory 26 Jan 2012*/		
 		extract($vars);
+	
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('id');	
 		$inventoryManager = new InventoryManager($this->db);
 		
-		$facility = new Facility($this->db);
-		$facilityDetails = $facility->getFacilityDetails($facilityID);
-		
+		//$facility = new Facility($this->db);
+		//$facilityDetails = $facility->getFacilityDetails($facilityID);
+
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
 			throw new Exception('deny');
@@ -934,8 +942,8 @@ class CInventory extends Controller
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
 				$this->smarty->assign('pagination', $pagination);				
 				
-				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination,$sortStr);
-				
+				$orderList = $inventoryManager->getSupplierOrders($facilityID,null,null, $pagination,$sortStr);
+
 				$type = new Unittype($this->db);
 				
 
@@ -959,12 +967,15 @@ class CInventory extends Controller
 			case 'discounts':
 				$sortStr = $this->sortList('discounts',4);
 				
-				$SupData = $inventoryManager->getProductsSupplierList($facilityID, null,$sortStr);
-
+				$SupData = $inventoryManager->getProductsSupplierList($facilityID, null,null,$sortStr);
+				
 				$supplierlist = array();
 					foreach ( $SupData as $supplier) {
 
 						$supplier['url'] = "?action=edit&category=inventory&id=".$supplier['product_id']."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
+						if (!$supplier['discount']){
+							$supplier['discount'] = 0;
+						}
 						$supplierlist[] = $supplier;
 						
 					}				

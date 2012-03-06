@@ -109,7 +109,7 @@
                                 elem_name = NewRow.id='trmultiemail_'+l;
                               
                                
-								document.getElementById('trmultiemail_'+l).innerHTML ='<td class="border_users_r border_users_l border_users_b" height="20"></td><td class="border_users_r border_users_b" id="multiemail_'+l+'"><input class="email" name="email'+l+'" type="text" id="email'+l+'" size="10" value="'+multiemail+'"/> <input type="button" id="button_add_email" onclick="addEmail()" value="add"/><input type="button" id="button_delte_email" onclick="delete_tr(this)" value="delete"/><div class="error_email" id="error_email'+l+'" style="display: none;"><span id="" class="error_text">Error!</span></div></td>';
+								document.getElementById('trmultiemail_'+l).innerHTML ='<tr ><td class="border_users_r border_users_l border_users_b" height="20"></td><td class="border_users_r border_users_b" id="multiemail_'+l+'"><input class="email" name="email'+l+'" type="text" id="email'+l+'" size="10" value="'+multiemail+'"/> <input type="button" id="button_add_email" onclick="addEmail()" value="add"/><input type="button" id="button_delte_email" onclick="delete_tr(this)" value="delete"/><div class="error_email" id="error_email'+l+'" style="display: none;"><span id="" class="error_text">Error!</span></div></td></tr>';
 
                             
                                

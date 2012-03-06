@@ -264,7 +264,7 @@
 
 					{if isset($supplier)}
 						 <div class="floatleft">
-                          <input type="button" value="Choose Supplier" onclick="showJobber(); return false;">
+                          <input type="button" value="Choose Supplier" onclick="showSupplier(); return false;">
 						 </div>
 					{/if}
 					{if $validStatus.summary eq 'false'}
@@ -309,8 +309,8 @@
 {*END OF SETTINGS*}		
 		
 
-{*SELECT_DEFAULT_UNIT_TYPES_POPUP*}
-<div id="Jobberlist" title="Select Supplier" style="display:none;">
+{*SELECT_SUPPLIER_POPUP*}
+<div id="Supplierlist" title="Select Supplier" style="display:none;">
                     <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
                         <tr>
                             <td class="control_list" colspan="3" style="border-bottom:0px solid #fff;padding-left:0px">
@@ -339,7 +339,7 @@
 
 									
 									
-                                    {section name=i loop=$supplier}
+                                    {section name=i loop=$supplier }
                                    
                                     <tr name="unitTypelist" id="row_{$smarty.section.i.index}">
 
@@ -353,7 +353,7 @@
 												{/section}
 											>											
                                         </td>
-                                        <td id="JobberName_{$smarty.section.i.index}" style="padding: 5px;">
+                                        <td id="SupplierName_{$smarty.section.i.index}" style="padding: 5px;">
                                             {$supplier[i].supplier}
                                         </td>
 
@@ -367,8 +367,7 @@
                         </tr>
                     </table>
                     <input id="categoryName" type="hidden" name="categoryName" value="{$request.category}">
-					 
-					<input id="unitCount" type="hidden" name="unitCount" value="{$smarty.section.i.index}">
+
 
     </div>
 </div>
@@ -377,7 +376,7 @@
 
 {*DATA TO SAVE FROM POPUPS*}
 <div style="display:none;">
-	<div id="jobber_data">
+	<div id="supplier_data">
 
 	</div>
 

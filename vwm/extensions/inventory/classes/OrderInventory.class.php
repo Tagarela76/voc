@@ -10,6 +10,7 @@ class OrderInventory {
 	
 	private $order_id;
 	private $order_product_id;
+	private $order_jobber_id;
 	private $order_facility_id;
 	private $order_name;
 	private $order_amount;
@@ -63,6 +64,7 @@ class OrderInventory {
                         $query = "UPDATE inventory_order SET 
 								order_product_id = '".mysql_escape_string($this->order_product_id)."',
 								order_facility_id = '".mysql_escape_string($this->order_facility_id)."',
+								order_jobber_id = '".mysql_escape_string($this->order_jobber_id)."',
 								order_name = '".mysql_escape_string($this->order_name)."',
 								order_amount = '".mysql_escape_string($this->order_amount)."',
 								order_status = '".mysql_escape_string($this->order_status)."',
@@ -76,6 +78,7 @@ class OrderInventory {
                 else {                        
    
                             $query = "INSERT INTO inventory_order VALUES (NULL,'"
+												.mysql_escape_string($this->order_jobber_id)."','"
 												.mysql_escape_string($this->order_product_id)."','" 
 												.mysql_escape_string($this->order_facility_id)."','" 
                                                 .mysql_escape_string($this->order_name)."','" 
@@ -149,6 +152,10 @@ class OrderInventory {
 		return $this->order_product_id;
 	}
 	
+	public function get_order_jobber_id(){
+		return $this->order_jobber_id;
+	}	
+
 	public function get_order_facility_id(){
 		return $this->order_facility_id;
 	}	
@@ -209,6 +216,15 @@ class OrderInventory {
 			throw new Exception("Product id cannot be empty!" . $e->getMessage());
 		}
 	}
+	
+	public function set_order_jobber_id($value) {
+		try {
+			$this->order_jobber_id = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Jobber id cannot be empty!" . $e->getMessage());
+		}
+	}	
 	
 	public function set_order_facility_id($value) {
 		try {

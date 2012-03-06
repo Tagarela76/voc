@@ -139,7 +139,7 @@ class CSupOrders extends Controller {
 				$category = "facility";
 			
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
-var_dump($productDetails);die();
+
 				$product = $productDetails[0];
 				
 				$result = $inventoryManager->unitTypeConverter($product);

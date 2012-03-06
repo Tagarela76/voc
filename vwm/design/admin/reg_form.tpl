@@ -181,7 +181,7 @@
 							</div>
 							</td>
 						</tr>
-				{if $bookmark=="supplier"}
+					{if $bookmark=="supplier"}
 							<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Jobber:
@@ -201,7 +201,6 @@
 							</td>
 						</tr>
 						
-											</tr>
 					{/if}							
 						
 						

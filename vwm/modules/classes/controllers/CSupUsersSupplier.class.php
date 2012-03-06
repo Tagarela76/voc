@@ -45,7 +45,7 @@ class CSupUsersSupplier extends Controller
 		$jobberDetails = $inventoryManager->getJobberDetails($request['jobberID']);
 
 		$this->smarty->assign("jobberDetails", $jobberDetails);		
-		$this->setListCategoriesLeftNew('sales', $this->getFromRequest('jobberID'));	
+		//$this->setListCategoriesLeftNew('sales', $this->getFromRequest('jobberID'));	
 		
 		$this->smarty->assign("emails",$emailArr);
 		$this->smarty->assign("parent",$this->category);

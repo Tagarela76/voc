@@ -886,14 +886,21 @@ class Validation {
 			}
 		}
 		
-
-			if ($data['supplier']) {
+/*
+			if (isset($data['supplier'])) {
 				$result['supplier']='success';
 			} else {
 				$result['supplier']='failed';
 				$result['summary']='false';
 			}
-		
+			
+			if (isset($data['jobber'])) {
+				$result['jobber']='success';
+			} else {
+				$result['jobber']='failed';
+				$result['summary']='false';
+			}			
+*/		
 		
 		if (isset($data['id'])) {
 			if ($this->check_id($data['id'])) {

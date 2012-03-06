@@ -100,18 +100,26 @@ function saveFacilityDetails()
 	if (action == 'edit') {
 		var id=document.addFacility.id.value;
 	}
-	
+	var jobberList = $('#jobber_data > input');
+	var jobber = [];
+	for(var i = 0; i < jobberList.length; i++){
+		jobber[i]= jobberList[i].value;
+	}
+console.log(jobber);
+
 	$.ajax({
       url: "modules/ajax/saveFacility.php",      		
       type: "POST",
       async: false,
       data: { "epa":epa,"voc_limit":voc_limit,"voc_annual_limit":voc_annual_limit,"name":fac_name,"address":address,"city":city,
       		"county":county,"selectState":selectState,"textState":textState,"zip":zip,"country":country,"phone":phone,
-      		"fax":fax,"email":email,"contact":contact,"title":title,"action":action,"id":id},      			
+      		"fax":fax,"email":email,"contact":contact,"title":title,"jobber[]":jobber,"action":action,"id":id},      			
       dataType: "html",
       success: 	function (response) 
      			{   
-      				jsonResponse=eval("("+response+")");		      																
+      				jsonResponse=eval("("+response+")");
+			
+console.log(response);					
       				answer(jsonResponse);										
       			}        		   			   	
 	});
