@@ -106,3 +106,58 @@
 				}	
 			});
 	});	
+
+function checkJobbers(jobberID){
+	$.ajax({
+      url: "modules/ajax/jobbers4facility.php",      		
+      type: "POST",
+      async: false,
+      data: {"id":jobberID},      			
+      dataType: "html",
+      success: 	function (response) 
+     			{   
+      				jsonResponse=eval("("+response+")");
+					answer(jsonResponse);										
+      			}        		   			   	
+	});
+}
+
+function answer(jsonResponse) {
+arr = isArray(jsonResponse);
+		$('input[id^=jobber]').each(function(el)
+		{
+			if($(this).attr('checked')==true)
+				$(this).attr('temp','true')
+		});$('input[id^=jobber]').each(function(el)
+		{
+			if($(this).attr('checked')==true)
+				$(this).attr('temp','true')
+		});
+
+	if (jsonResponse != 'false') {	//	It's more than 1 jobber with the same supplier		
+		if ( isArray(jsonResponse) ){
+			for(var i =0; i < jsonResponse.length; i++){
+		
+				$('input[id^=jobber]').each(function(el)
+				{
+					if($(this).attr('value')==jsonResponse[i]){
+						if ($(this).css('display') == 'none'){
+							$(this).show("slow");
+						}else{
+							$(this).hide("slow");
+						}
+						
+					}
+						
+						
+				});
+			}
+		}		
+		
+	}
+
+}
+
+function isArray(obj) {
+    return obj.constructor == Array;
+}

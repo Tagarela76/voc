@@ -311,7 +311,7 @@
 													 checked 
 													{/if}
 												{/section}
-											>											
+											onclick="checkJobbers(this.value);">											
                                         </td>
                                         <td id="JobberName_{$smarty.section.i.index}" style="padding: 5px;">
                                             {$jobberList[i]->name}

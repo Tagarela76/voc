@@ -105,7 +105,7 @@ function saveFacilityDetails()
 	for(var i = 0; i < jobberList.length; i++){
 		jobber[i]= jobberList[i].value;
 	}
-console.log(jobber);
+
 
 	$.ajax({
       url: "modules/ajax/saveFacility.php",      		
@@ -118,9 +118,7 @@ console.log(jobber);
       success: 	function (response) 
      			{   
       				jsonResponse=eval("("+response+")");
-			
-console.log(response);					
-      				answer(jsonResponse);										
+					answer(jsonResponse);										
       			}        		   			   	
 	});
 	 

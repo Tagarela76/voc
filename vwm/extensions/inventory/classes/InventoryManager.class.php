@@ -939,7 +939,7 @@ echo $query;
 					$newOrder->save();
 
 					// EMAIL NOTIFICATION
-					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
+					$supplierDetails = $this->getSupplierEmail($jobberID['jobber_id']);
 					$supplierUsersEmais = $this->getJobberUsersEmails($jobberID);
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
@@ -1091,8 +1091,8 @@ echo $query;
 
 	}	
 
-	public function getSupplierEmail($supplierID){
-		$query = "SELECT u.email FROM user u , users2jobber us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
+	public function getSupplierEmail($jobberID){
+		$query = "SELECT u.email FROM user u , users2jobber us WHERE us.jobber_id = {$jobberID} AND us.user_id = u.user_id ";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
