@@ -61,9 +61,16 @@ class CAUsers extends Controller {
 		
 		$usersList=$this->user->getUsersList($bookmark,$pagination, $filterStr,$sortStr);
 		$itemsCount=count($usersList);
+
 		for ($i=0; $i<$itemsCount; $i++) {
 			$url="admin.php?action=viewDetails&category=users&bookmark=$bookmark&id=".$usersList[$i]['user_id']; //we can cut out the bookmark(it's no needed)
 			$usersList[$i]['url']=$url;
+			
+			if ($bookmark == 'supplier') {
+				$startPoint = $this->user->getJobberStartPoint($usersList[$i]['user_id']);
+				$usersList[$i]['startPoint'] = $startPoint[0]['name'];
+
+			}			
 		}
 
 		$this->smarty->assign("category",$usersList);
@@ -77,6 +84,12 @@ class CAUsers extends Controller {
 	
 	private function actionViewDetails() {
 		$userDetails=$this->user->getUserDetails($this->getFromRequest('id'));
+		$bookmark = $this->getFromRequest('bookmark');		
+			if ($bookmark == 'supplier') {
+				$startPoint = $this->user->getJobberStartPoint($userDetails['user_id']);
+				$userDetails['startPoint'] = $startPoint[0]['name'];
+
+			}	
 
 		$this->smarty->assign("user", $userDetails);
 		$this->smarty->assign('tpl', 'tpls/viewUser.tpl');
@@ -163,9 +176,10 @@ class CAUsers extends Controller {
 	
 	private function actionEdit() {
 		
-		if ($_POST['save'] == 'Save')
-		{
+		if ($_POST['save'] == 'Save'){
+			
 			$data = $this->getFromPost();
+			
 			$data['grace']=14;//???
 			$bookmark = $this->getFromRequest('bookmark');
 			$check = array();
@@ -215,7 +229,7 @@ class CAUsers extends Controller {
 					if ($data['accesslevel_id']==5) {
 						$suppl = new BookmarksManager($this->db);
 						$supplierList = $suppl->getOriginSupplier();
-						$supList = $this->user->getSupplierStartPoint($data['user_id']);
+						$supList = $this->user->getJobberStartPoint($data['user_id']);
 						$data['supplier_id'] = $supList[0]['supplier'];
 						$this->smarty->assign("supplier",$supplierList);
 					}					
@@ -229,13 +243,16 @@ class CAUsers extends Controller {
 			$data['password']="";//because from user details we get md5 of password
 			
 			$bookmark = 'supplier';
-			if ($bookmark == 'supplier') {
+			if ($data['accesslevel_id'] == 5) {
 				$jobberManager = new JobberManager($this->db);
 				$supplierList = $jobberManager->getJobberList();
-
 				$this->smarty->assign("jobbers",$supplierList);
+				$startPoint = $this->user->getJobberStartPoint($data['user_id']);
+				$data['startPoint'] = $startPoint[0]['name'];
+				$data['jobber_id'] = $startPoint[0]['jobber_id'];
+			
 			}				
-				
+			
 			$bookmark = 'admin';
 			if ($data['accesslevel_id']!=3) {
 				$company=new Company($this->db);
@@ -262,6 +279,7 @@ class CAUsers extends Controller {
 			}
 			if ($data['accesslevel_id'] == 5){
 				$bookmark = 'supplier';
+			
 			}			
 		}
 		$this->smarty->assign("bookmark",$bookmark);

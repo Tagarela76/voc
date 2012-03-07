@@ -59,8 +59,10 @@ class User {
 		$this->db->query($query);
 		$insertedUserID = $this->db->getLastInsertedID();
 		
-		$sql = "INSERT INTO users2jobber (id , user_id, jobber_id) VALUES (NULL , {$insertedUserID} , {$jobber_id})";
-		$this->db->query($sql);
+		if ($accesslevel_id == 5){
+			$sql = "INSERT INTO users2jobber (id , user_id, jobber_id) VALUES (NULL , {$insertedUserID} , {$jobber_id})";
+			$this->db->query($sql);
+		}
 		/**
 		 * add new User in Bridge
 		 
@@ -115,7 +117,7 @@ class User {
 				$aroGroupName = 'sales';
 				break;
 			case 5:
-				$aroGroupName = 'supplier';
+				$aroGroupName = 'jobber'.$separator.$userData["jobber_id"];
 				break;			
 			default:
 				throw new Exception('Incorrect access level');
@@ -131,7 +133,7 @@ class User {
 			//	ARO GROUP NOT FOUND
 			throw new Exception('ARO group not found');
 		}		
-		
+	
 		return $insertedUserID;						  							
 	}
 	
@@ -162,7 +164,7 @@ class User {
 		$userDetails['startPoint']=$this->getUserStartPoint($userDetails['user_id']);
 		if (!$userDetails['startPoint']){
 
-					$sp=$this->getSupplierStartPoint($userDetails['user_id']);
+					$sp=$this->getJobberStartPoint($userDetails['user_id']);
 					if ($sp){
 						$supList = '';
 						foreach($sp as $sup){
@@ -256,12 +258,17 @@ class User {
 			$query.="department_id=".	$userData['department_id']." ";			
 			
 			$query.="WHERE user_id=".	$userData["user_id"];
-		}		
+		}	
+		
 		$this->db->query($query);
-			$query="UPDATE users2supplier SET ";
-			$query.="supplier_id=".		$userData['supplier_id']."";			
-			$query.="WHERE user_id=".	$userData["user_id"];
-		$this->db->query($query);	
+
+		if ($userData['accesslevel_id']==5){
+			$query=" UPDATE users2jobber SET ";
+			$query.="jobber_id=".		$userData['jobber_id']." ";			
+			$query.=" WHERE user_id=".	$userData["user_id"];
+
+			$this->db->query($query);	
+		}
 //		// set user data to Bridge XML
 //		$userData4Brdige = $userData;
 //		$userID = (int)$userData4Brdige["user_id"];
@@ -302,7 +309,7 @@ class User {
 				$aroGroupName = 'sales';
 				break;
 			case 5:
-				$aroGroupName = 'supplier';
+				$aroGroupName = 'jobber'.$separator.$userData["jobber_id"];	
 				break;			
 			default:
 				throw new Exception('Incorrect access level');
@@ -376,7 +383,7 @@ class User {
 			}
 			if ($itemID == 'supplier'){
 				for ($i=0; $i < count($users); $i++) {
-					$sp=$this->getSupplierStartPoint($users[$i]['user_id']);
+					$sp=$this->getJobberStartPoint($users[$i]['user_id']);
 					if ($sp){
 						$supList = '';
 						foreach($sp as $sup){
@@ -755,14 +762,15 @@ class User {
 		return $path;
 	}
 	
-	public function getSupplierStartPoint($userID) {
+	public function getJobberStartPoint($userID) {
 		//$this->db->select_db(DB_NAME);
-		$query="SELECT s.supplier FROM users2supplier us, supplier s WHERE us.supplier_id = s.original_id AND s.supplier_id = s.original_id AND us.user_id=".$userID;
+		$query="SELECT j.name, j.jobber_id FROM users2jobber uj, jobber j WHERE uj.jobber_id = j.jobber_id AND uj.user_id=".$userID;
 		$this->db->query($query);
 
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}
+		
 		$data=$this->db->fetch_all_array();
 
 		return $data;

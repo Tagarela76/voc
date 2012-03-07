@@ -71,7 +71,7 @@ class Product extends ProductProperties {
 			$query .= " AND pp.jobber_id = " . (int) $jobberID . "";
 		}
 
-
+//echo $query;
 		$this->db->query($query);
 
 		if ($this->db->num_rows() == 0) {

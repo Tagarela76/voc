@@ -1,6 +1,6 @@
 <table class="top_block" width="100%" cellpadding="0" cellspacing="0">
 	<tr>
-		<td class="mg_left20" width="40%"  bgcolor="" valign="top">	
+		<td class="padd7" width="40%"  bgcolor="" valign="top">	
 			{if $request.category eq "root"}
 
 				{if !$permissions.root.view}

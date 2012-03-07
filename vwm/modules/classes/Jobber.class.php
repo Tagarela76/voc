@@ -163,7 +163,10 @@ class Jobber {
 
 			$this->db->query("SELECT LAST_INSERT_ID() id");
 			$this->jobber_id = $this->db->fetch(0)->id;
-/*
+
+
+
+  		}
 			//----------------------------------------------------------------
 			//GACL
 			//----------------------------------------------------------------
@@ -181,15 +184,12 @@ class Jobber {
 			$jobberGroup = array($aro_group_jobber);
 			$rootGroup = array($aro_group_root);
 
-			$gacl_api->add_acl($acoArray,NULL,$jobberGroup,NULL,NULL,1,1,NULL,'company\'s users has access to company ACO ');
+			$gacl_api->add_acl($acoArray,NULL,$jobberGroup,NULL,NULL,1,1,NULL,'jobber\'s users has access to company ACO ');
 			$gacl_api->add_acl($acoArray,NULL,$rootGroup,NULL,NULL,1,1,NULL,'root\'s users has access to company ACO ');
 			//-----------------------------------------------------------------
 
 			//	save to trash_bin
-			$this->save2trash('C', $this->jobber_id);
-*/
-  		}
- 	
+			$this->save2trash('C', $this->jobber_id); 	
 //echo $query;
 		if (mysql_error() == '') {
 			return $this->jobber_id;

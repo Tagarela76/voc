@@ -98,33 +98,7 @@
                     {/if}
                 </td>
             </tr>
-			
-            <tr>
-                <td class="border_users_l border_users_b us_gray">
-                    State:
-                </td>
-                <td class="border_users_l border_users_r border_users_b">
-                    <div class="floatleft" style="padding:0px;">
-                        <div style="float:left;">
-                            <select name="selectState" id="selectState" {if $selectMode  eq true}  style="display: block" {else}  style="display: none"{/if}>
-							{section name=i loop=$state}
-                                <option value='{$state[i].id}' {if $state[i].id  eq $data.state}  selected="selected" {/if}> {$state[i].name}  </option>
-                            {/section}
-                            </select>
-                            <input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state}{/if}' {if $selectMode  eq true}  style="display: none" {else}  style="display: block" {/if} maxlength="96">
-                        </div>{if $validStatus.summary eq 'false'}
-                        {if $validStatus.state eq 'failed'}
-                        {*ERORR*}
-                        <div class="error_img">
-                            <span class="error_text">Error!</span>
-                        </div>
-                        {*/ERORR*}
-                        {/if}
-                        {/if}
-                    </div>
-                </td>
-            </tr>
-			
+
             <tr>
                 <td class="border_users_l border_users_b us_gray">
                     Zip/Postal code:
@@ -160,6 +134,32 @@
                 </td>
             </tr>
 			
+            <tr>
+                <td class="border_users_l border_users_b us_gray">
+                    State:
+                </td>
+                <td class="border_users_l border_users_r border_users_b">
+                    <div class="floatleft" style="padding:0px;">
+                        <div style="float:left;">
+                            <select name="selectState" id="selectState" {if $selectMode  eq true}  style="display: block" {else}  style="display: none"{/if}>
+							{section name=i loop=$state}
+                                <option value='{$state[i].id}' {if $state[i].id  eq $data.state}  selected="selected" {/if}> {$state[i].name}  </option>
+                            {/section}
+                            </select>
+                            <input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state}{/if}' {if $selectMode  eq true}  style="display: none" {else}  style="display: block" {/if} maxlength="96">
+                        </div>{if $validStatus.summary eq 'false'}
+                        {if $validStatus.state eq 'failed'}
+                        {*ERORR*}
+                        <div class="error_img">
+                            <span class="error_text">Error!</span>
+                        </div>
+                        {*/ERORR*}
+                        {/if}
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+						
             <tr>
                 <td class="border_users_l border_users_b us_gray">
                     Phone:
@@ -258,7 +258,7 @@
 		
             <tr>
                 <td class="border_users_l border_users_b us_gray" height="23px">
-                    Jobber:
+                    Supplier:
                 </td>
                 <td class="border_users_r border_users_l border_users_b">
 
@@ -377,7 +377,9 @@
 {*DATA TO SAVE FROM POPUPS*}
 <div style="display:none;">
 	<div id="supplier_data">
-
+{literal}		
+<script>addSupplierData();</script>
+{/literal}	
 	</div>
 
 </div>

@@ -891,7 +891,7 @@ echo $query;
 				$productUsageData->save();
 
 			}
-			
+		
 			if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$isThereActiveOrders = $this->isThereActiveOrdersByProductID($productUsageData->product_id, $mix->facility_id);
@@ -905,7 +905,7 @@ echo $query;
 					$jobberID = $this->getJobberIDForInventory($mix->facility_id, $productUsageData->product_id);
 					// PRICE FOR PRODUCT
 					$priceManager = new Product($this->db);
-					$price = $priceManager->getProductPrice($productUsageData->product_id,$jobberID);
+					$price = $priceManager->getProductPrice($productUsageData->product_id,$jobberID['jobber_id']);
 					$priceObj = new ProductPrice($this->db, $price[0]);
 
 					$newOrder->order_price = $price[0]['price'];
@@ -936,7 +936,7 @@ echo $query;
 						$newOrder->order_jobber_id = 0;
 					}
 					
-				    $newOrder->save();
+					$newOrder->save();
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);

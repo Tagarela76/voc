@@ -23,7 +23,7 @@
                 Location/Contact
             </td>            
         </tr>
-		
+
 	{if $childCategoryItems|@count > 0}                
 		{foreach from=$childCategoryItems item=jobber}
 		<tr class="hov_company" height="10px">
@@ -58,7 +58,7 @@
         {*BEGIN	EMPTY LIST*}        
         <tr>
             <td colspan="4"class="border_users_l border_users_r" align="center">
-                No Jobbers!{$childCategoryItems}
+                No Jobbers!
             </td>
         </tr>        		
         {*END	EMPTY LIST*}
