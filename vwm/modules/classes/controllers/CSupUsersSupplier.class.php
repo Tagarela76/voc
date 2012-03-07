@@ -37,7 +37,7 @@ class CSupUsersSupplier extends Controller
 		}
 		$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberID);
 		
-		$emails = $inventoryManager->getSupplierUsersEmails($jobberID);
+		$emails = $inventoryManager->getJobberUsersEmails($jobberID);
 		foreach ($emails as $email){
 			$email['url'] = "?action=editEmail&category=usersSupplier&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 			$emailArr [] = $email;
@@ -77,7 +77,7 @@ class CSupUsersSupplier extends Controller
 		if (!in_array($supplierID, $supplierIDArray)){
 			throw new Exception('404');
 		}
-		$emails = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
+		$emails = $inventoryManager->getJobberUsersEmails($request['jobberID']);
 		
 			$form = $_POST;
 
@@ -86,13 +86,13 @@ class CSupUsersSupplier extends Controller
 				$data['supplier_id'] = $supplierID;
 				$data['jobber_id'] = $request['jobberID'];
 			
-				$inventoryManager->beforeUpdateSupplierEmails($data);
+				$inventoryManager->beforeUpdateJobberEmails($data);
 				$i=1;
 				$name = 'email'.$i;
 				while(isset($form[$name])){
 					$data['email'] = $form[$name];
 							
-					$inventoryManager->updateSupplierEmails($data);
+					$inventoryManager->updateJobberEmails($data);
 					$i++;$name = 'email'.$i;
 				}
 				header("Location: ?action=browseCategory&category=usersSupplier&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");

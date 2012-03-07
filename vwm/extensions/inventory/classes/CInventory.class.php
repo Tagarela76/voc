@@ -211,7 +211,8 @@ class CInventory extends Controller
 				
 				break;
 			case 'orders':
-				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
+				$orderDetails = $inventoryManager->getSupplierOrderDetails($this->getFromRequest('id'));
+				
 				if (!$orderDetails){
 					throw new Exception('404');
 				}
@@ -680,7 +681,7 @@ class CInventory extends Controller
 							header("Location: ?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=".$request['tab']);
 						}else{					
 							foreach ($request['id'] as $orderId){
-								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($facilityID,$orderId);
+								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($orderId);
 								$orderDetailsArr[0]['status'] = OrderInventory::CANCELED;
 								$arr[] =  $orderDetailsArr[0];
 							}
@@ -692,7 +693,7 @@ class CInventory extends Controller
 				}else{
 					
 					
-					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 				
 					// For orders with status: Canceled or Completed denied edit function
 					if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
@@ -716,9 +717,13 @@ class CInventory extends Controller
 							if ($form['status'] == OrderInventory::COMPLETED){
 								$form['order_completed_date'] = time();
 							
-							//ORDERS FOR THIS PRODUCT
+								//ORDERS FOR THIS PRODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
-								$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+								$order = $inventoryManager->getSupplierOrderDetails( $form['order_id']);
+
+								// FOR CONVERT ORDER AMOUNT TO STOCK UNITTPE
+								$orderObj = new OrderInventory($this->db,$order[0]);
+								$orderObj->unittype = $orderObj->order_unittype;
 
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -729,14 +734,17 @@ class CInventory extends Controller
 								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
 
-								$result = $inventoryManager->unitTypeConverter($product);
+								$result = $inventoryManager->unitTypeConverter($product,$orderObj,true);
+								
+
 								if ($result){
 									$product->usage = $result['usage'];
-									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+									$addToStock = $product->in_stock - $product->usage + $result['amount'];
 									$product->in_stock = $addToStock;
+									
 									$result1 = $product->save();									
 								}else{
-									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+									$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
 									// For orders with status: Canceled or Completed denied edit function
 									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
@@ -792,7 +800,9 @@ class CInventory extends Controller
 						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						
-						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($supplierID[0]['original_id']);
+			
+						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($jobberID);
 						if ($ifEmail) {
 							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
 							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";

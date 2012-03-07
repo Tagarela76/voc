@@ -61,14 +61,14 @@ class Product extends ProductProperties {
 			return false;
 	}
 	
-	public function getProductPrice($productID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductPrice($productID, $jobberID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
 		$query =	"SELECT pp.* " .
 					"FROM price4product pp  ".
 					"WHERE pp.product_id = " . (int) $productID . " ";
 
-		if ($priceID){
-			$query .= " AND pp.price_id = " . (int) $priceID . "";
+		if ($jobberID){
+			$query .= " AND pp.jobber_id = " . (int) $jobberID . "";
 		}
 
 

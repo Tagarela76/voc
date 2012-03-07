@@ -281,7 +281,7 @@ echo $query;
 	}	
 	
 	public function getSupplierOrderDetails($orderID) {
-        $time = new DateTime('first day of this month');
+       // $time = new DateTime('first day of this month');
 
         $query = "SELECT io.*";
 				
@@ -291,7 +291,7 @@ echo $query;
 		//$query .=	" AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
-	//	echo $query; 
+		//echo $query; 
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}	
@@ -538,9 +538,9 @@ echo $query;
 		}
 	}
 	
-	public function updateSupplierEmails( $form ) {
+	public function updateJobberEmails( $form ) {
 
-		$query = "INSERT INTO email2supplier VALUES (NULL,". $form['jobber_id'] .",'". mysql_escape_string($form['email']) ."') ";
+		$query = "INSERT INTO email2jobber VALUES (NULL,". $form['jobber_id'] .",'". mysql_escape_string($form['email']) ."') ";
 		$this->db->query($query);
 
 		if(mysql_error() == '') {
@@ -602,9 +602,9 @@ echo $query;
 		}
 	}	
 	
-	public function beforeUpdateSupplierEmails( $form ) {
+	public function beforeUpdateJobberEmails( $form ) {
 
-		$query = "DELETE FROM email2supplier WHERE jobber_id = {$form['jobber_id']}  ";
+		$query = "DELETE FROM email2jobber WHERE jobber_id = {$form['jobber_id']}  ";
 		echo $query;
 		$this->db->query($query);	
 		if(mysql_error() == '') {
@@ -614,9 +614,9 @@ echo $query;
 		}
 	}	
 	
-	public function getSupplierUsersEmails( $jobberID ) {
+	public function getJobberUsersEmails( $jobberID ) {
 
-		$query = "SELECT * FROM email2supplier WHERE jobber_id = {$jobberID} ";
+		$query = "SELECT * FROM email2jobber WHERE jobber_id = {$jobberID} ";
 		$this->db->query($query);	
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -900,10 +900,12 @@ echo $query;
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
 							
-
+					
+					// GET JOBBER
+					$jobberID = $this->getJobberIDForInventory($mix->facility_id, $productUsageData->product_id);
 					// PRICE FOR PRODUCT
 					$priceManager = new Product($this->db);
-					$price = $priceManager->getProductPrice($productUsageData->product_id);
+					$price = $priceManager->getProductPrice($productUsageData->product_id,$jobberID);
 					$priceObj = new ProductPrice($this->db, $price[0]);
 
 					$newOrder->order_price = $price[0]['price'];
@@ -924,12 +926,10 @@ echo $query;
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
 					$newOrder->order_discount = $discount;
-					$newOrder->order_unittype = $priceObj->unittype;
+					$newOrder->order_unittype = $productUsageData->in_stock_unit_type;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
-					
-					// GET JOBBER
-					$jobberID = $this->getJobberIDForInventory($newOrder->order_facility_id, $newOrder->order_product_id);
+
 					if($jobberID){
 						$newOrder->order_jobber_id = $jobberID['jobber_id'];
 					}else{
@@ -940,7 +940,7 @@ echo $query;
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
-					$supplierUsersEmais = $this->getSupplierUsersEmails($priceObj->supman_id);
+					$supplierUsersEmais = $this->getJobberUsersEmails($jobberID);
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
 						
@@ -986,7 +986,7 @@ echo $query;
 		
 	}
 
-	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null) {
+	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null, $IsConvertOrderAmountToStockUnittype = false) {
 		// UNITTYPE CONVERTER
 
 		$unittype = new Unittype($this->db);
@@ -1009,14 +1009,18 @@ echo $query;
 
 		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
-		
+	
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-
+	
 		if ($price){
 			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
-			$typeName = $unittype->getUnittypeDetails($price->unittype);			
+			$typeName = $unittype->getUnittypeDetails($price->unittype);
+			if ($IsConvertOrderAmountToStockUnittype){
+				$unittypeDetails = $unittype->getUnittypeDetails($price->unittype);
+				$typeName = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+			}
 			$quantitiVolumeSum = $unitTypeConverter->convertFromTo($inventory->amount,$unittypeDetails['description'], $typeName['description'], $productDetails['density'], $densityType);//	in volume ;
 		}
 
@@ -1029,6 +1033,7 @@ echo $query;
 				$data['amount'] = number_format($quantitiVolumeSum, 2, '.', '');
 				$data['amountType'] = $typeName['name'];
 			}
+			
 			return  $data;
 		}else{
 			return false;

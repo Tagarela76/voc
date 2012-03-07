@@ -223,7 +223,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
-						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
 						
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $supplierEmail){
@@ -336,7 +336,7 @@ class CSupOrders extends Controller {
 						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
-						$supplierUsersEmais = $inventoryManager->getSupplierUsersEmails($request['jobberID']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){
 								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text );

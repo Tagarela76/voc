@@ -30,7 +30,7 @@
 									$request.category=="department" && $permissions.department.delete || 
 									$request.category=="equipment" 	&& $permissions.equipment.delete || 
 									$request.category=="accessory" 	&& $permissions.data.delete ||
-									$request.category=="inventory" 	&& $permissions.data.delete || 
+									 
 									$request.category=="mix" 		&& $permissions.data.delete
 								}
 								
