@@ -89,11 +89,16 @@ class CInventory extends Controller
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
 		$ProductInventory = new ProductInventory($this->db);
-		$inventoryManager = new InventoryManager($this->db);		
+		$inventoryManager = new InventoryManager($this->db);	
+		
+		$this->setListCategoriesLeftNew($category, $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+		$this->setPermissionsNew('facility');			
+
 		switch ($tab){
 			case 'products':
 				$productID	 = $this->getFromRequest('id');
 				$error = false;
+				$type = new Unittype($this->db);
 			//ORDERS FOR THIS PRODUCT
 				//SOrt
 				//$sortStr = $this->sortList('orders',5);
@@ -121,7 +126,7 @@ class CInventory extends Controller
 					
 					}
 				}else{
-					$type = new Unittype($this->db);
+					
 					$typeName = $type->getUnittypeDetails($product->in_stock_unit_type);
 					$this->smarty->assign('typeName',$typeName['name']);
 				}
@@ -135,10 +140,13 @@ class CInventory extends Controller
 					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
 				}					
 				foreach ($orderList as $order){
-					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
+				
+					//var_dump($order,$SupData);
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
-					$order['discount'] = $SupData[0]['discount'];
+					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=orders";
+					$typeName = $type->getUnittypeDetails($order['order_unittype']);	
+					$order['type'] = $typeName['name'];		
 					$arr[] = $order;
 				}
 
@@ -203,11 +211,18 @@ class CInventory extends Controller
 				
 				break;
 			case 'orders':
-				$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$this->getFromRequest('id'));
+				$orderDetails = $inventoryManager->getSupplierOrderDetails($this->getFromRequest('id'));
+				
+				if (!$orderDetails){
+					throw new Exception('404');
+				}
+
 				$SupData = $inventoryManager->getProductsSupplierList($facilityID, $orderDetails[0]['order_product_id']);
 				$orderDetails[0]['order_created_date'] = date('m/d/Y',$orderDetails[0]['order_created_date']);
-				$orderDetails[0]['discount'] = $SupData[0]['discount'];				
-				
+				$orderDetails[0]['discount'] = ($SupData[0]['discount']) ? $SupData[0]['discount'] : 0 ;				
+				$type = new Unittype($this->db);
+				$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+				$orderDetails[0]['type'] = $typeName['name'];				
 				
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$orderDetails[0]['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab'));
 				$this->smarty->assign('order',$orderDetails[0]);	
@@ -346,13 +361,15 @@ class CInventory extends Controller
 		
  */		
 			$error = $this->getFromRequest('error');
-
+			$facilityID = $this->getFromRequest('facilityID');
+			$this->setListCategoriesLeftNew('facility', $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+			$this->setPermissionsNew('facility');
 			
 				$inventoryManager = new InventoryManager($this->db);
 				$product = new Product($this->db);
 				$facility = new Facility($this->db);
 
-				$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+				$facilityDetails = $facility->getFacilityDetails($facilityID);
 				$companyID = $facilityDetails['company_id'];
 				
 				$productLst = $product->getProductList($companyID);
@@ -435,7 +452,10 @@ class CInventory extends Controller
 		$productID = $this->getFromRequest('id');
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('facilityID');
-
+		
+		$this->setListCategoriesLeftNew($category, $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	
+		$this->setPermissionsNew('facility');
+		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails['company_id'];
@@ -462,6 +482,9 @@ class CInventory extends Controller
 
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
 				
+				if (!$productarr[0]->id){
+					throw new Exception('404');
+				}				
 				$product = $productarr[0];
 				
 				if ($product->usage != 0){
@@ -604,8 +627,14 @@ class CInventory extends Controller
 				
 				//$supplierDiscount = $inventoryManager->getSupplierDiscounts($facilityID,$this->getFromRequest('id'));
 				$supplierDiscount = $inventoryManager->getProductsSupplierList($facilityID,$this->getFromRequest('id'));
+				if (!$supplierDiscount){
+					throw new Exception('404');
+				}
+				
 				$discount = $supplierDiscount[0];
-
+				if (!$discount['discount']){
+					$discount['discount'] = 0;
+				}
 									$form = $_POST;
 
 									if (count($form) > 0) {
@@ -616,7 +645,12 @@ class CInventory extends Controller
 										$form['supplier_id'] = Reform::HtmlEncode($form['supplier_id']);
 										$form['discount_id'] = Reform::HtmlEncode($form['discount_id']);
 										$form['supplier'] = Reform::HtmlEncode($form['supplier']);
-
+										$jobberID = $inventoryManager->getJobberIDForInventory($form["facilityID"],$form["product_id"]);
+										if($jobberID){
+											$form['jobberID'] = $jobberID;
+										}else{
+											$form['jobberID'] = 0;
+										}
 										$result = $inventoryManager->updateSupplierDiscounts($form);
 					
 										if ($result == 'true'){
@@ -647,7 +681,7 @@ class CInventory extends Controller
 							header("Location: ?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=".$request['tab']);
 						}else{					
 							foreach ($request['id'] as $orderId){
-								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($facilityID,$orderId);
+								$orderDetailsArr = $inventoryManager->getSupplierOrderDetails($orderId);
 								$orderDetailsArr[0]['status'] = OrderInventory::CANCELED;
 								$arr[] =  $orderDetailsArr[0];
 							}
@@ -659,7 +693,7 @@ class CInventory extends Controller
 				}else{
 					
 					
-					$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 				
 					// For orders with status: Canceled or Completed denied edit function
 					if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
@@ -683,9 +717,13 @@ class CInventory extends Controller
 							if ($form['status'] == OrderInventory::COMPLETED){
 								$form['order_completed_date'] = time();
 							
-							//ORDERS FOR THIS PRODUCT
+								//ORDERS FOR THIS PRODUCT
 								$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);		
-								$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+								$order = $inventoryManager->getSupplierOrderDetails( $form['order_id']);
+
+								// FOR CONVERT ORDER AMOUNT TO STOCK UNITTPE
+								$orderObj = new OrderInventory($this->db,$order[0]);
+								$orderObj->unittype = $orderObj->order_unittype;
 
 								if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
 									$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -696,14 +734,17 @@ class CInventory extends Controller
 								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
 								$product = $productDetails[0];
 
-								$result = $inventoryManager->unitTypeConverter($product);
+								$result = $inventoryManager->unitTypeConverter($product,$orderObj,true);
+								
+
 								if ($result){
 									$product->usage = $result['usage'];
-									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+									$addToStock = $product->in_stock - $product->usage + $result['amount'];
 									$product->in_stock = $addToStock;
+									
 									$result1 = $product->save();									
 								}else{
-									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+									$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
 									// For orders with status: Canceled or Completed denied edit function
 									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
@@ -720,7 +761,7 @@ class CInventory extends Controller
 									$this->smarty->assign('check','false');	
 									
 									//	E-mail notification about density not found
-									$email = new EMail();
+									$email = new EMail(true);
 									$to = array('denis.nt@kttsoft.com');
 									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
 									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
@@ -756,18 +797,32 @@ class CInventory extends Controller
 						$supplierDetails = $inventoryManager->getSupplierEmail($supplierID[0]['original_id']);
 						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
 
-						$user = new User($this->db);
-						$userDetails = $user->getUserDetails($_SESSION['user_id']);
-
+						$facilityManager = new Facility($this->db);
+						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						
+			
+						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($jobberID);
 						if ($ifEmail) {
-							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility is {$status}";
+							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
 							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
 							$inventoryManager->sendEmailToSupplier($supplierDetails['email'], $text);
+							if ($supplierUsersEmais){
+								foreach($supplierUsersEmais as $userEmail){
+									$inventoryManager->sendEmailToSupplier($userEmail['email'],$text);
+								}
+							}							
 						}
-							$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
-							$inventoryManager->sendEmailToManager($userDetails['email'], $text);
-//
+							$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+							if ($userDetails){
+								$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
+								$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
+								foreach($userDetails as $user){
+									$email = $inventoryManager->getManagerEmail($user['user_id']);
+									$inventoryManager->sendEmailToManager($email,$text);
+								}								
+
+							}
 							if ($result2){
 								header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$request['tab']);
 							}
@@ -776,32 +831,6 @@ class CInventory extends Controller
 				}
 			break;			
 			
-			case 'settings':
-				
-				$inventoryEmail = $inventoryManager->getSupplierSettings($facilityID);
-				
-									$form = $_POST;
-
-									if (count($form) > 0) {
-										//protected from xss
-										$form["email_all"]=Reform::HtmlEncode($form["email_all"]);
-										$form["email_manager"]=Reform::HtmlEncode($form["email_manager"]);
-										$form['facilityID'] = Reform::HtmlEncode($form['facilityID']);
-
-							
-										$result = $inventoryManager->updateSupplierSettings($form);
-									
-										if ($result == 'true'){
-											header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=products");
-										}
-									}
-													
-				$this->smarty->assign('email',$inventoryEmail);	
-				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
-				break;	
-			default :
-				throw new Exception('404');
-				break;				
 		}
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -810,13 +839,16 @@ class CInventory extends Controller
 	 * bookmarkInventory($vars)
 	 * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
 	 */
-	protected function bookmarkInventory($vars)
-	{
+	protected function bookmarkInventory($vars){
 		/*New inventory 26 Jan 2012*/		
 		extract($vars);
+	
 		$category = 'facility';
 		$facilityID = $this->getFromRequest('id');	
 		$inventoryManager = new InventoryManager($this->db);
+		
+		//$facility = new Facility($this->db);
+		//$facilityDetails = $facility->getFacilityDetails($facilityID);
 
 		if (!$this->user->checkAccess('inventory', $facilityDetails['company_id']))
 		{
@@ -824,9 +856,7 @@ class CInventory extends Controller
 		}
 		//	OK, this company has access to this module, so let's setup..
 		$this->smarty->assign('tab',$tab = $this->getFromRequest('tab'));
-	
-
-			
+		
 			
 		switch ($tab){
 			case 'products':
@@ -835,12 +865,12 @@ class CInventory extends Controller
 				$ProductInventory = new ProductInventory($this->db);
 
 				// Pagination	
-				$count = $inventoryManager->getCountInventoryPrduct($facilityID);
+				$count = $inventoryManager->getCountInventoryProduct($facilityID);
 				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=products";
 				$this->smarty->assign('pagination', $pagination);			
 				
-				$supplierPrductIdList = $inventoryManager->getInventoryPrductIdByFacility($facilityID, $pagination);
+				$supplierPrductIdList = $inventoryManager->getInventoryProductIdByFacility($facilityID, $pagination);
 
 
 			
@@ -916,21 +946,25 @@ class CInventory extends Controller
 				$sortStr = $this->sortList('orders',5);
 				
 				// Pagination	
-				$count = $inventoryManager->getCountSupplierOrders($facilityID);
+				$count = $inventoryManager->getCountFacilityOrders($facilityID);
 				
 				$pagination = new Pagination($count);
 				$pagination->url = "?action=browseCategory&category=facility&id={$facilityID}&bookmark=inventory&tab=orders";
 				$this->smarty->assign('pagination', $pagination);				
 				
-				$orderList = $inventoryManager->getSupplierOrders($facilityID,null, $pagination,$sortStr);
+				$orderList = $inventoryManager->getSupplierOrders($facilityID,null,null, $pagination,$sortStr);
+
+				$type = new Unittype($this->db);
+				
 
 				
 				foreach ($orderList as $order){
-					$SupData = $inventoryManager->getProductsSupplierList($facilityID, $order['order_product_id']);
-					//var_dump($order,$SupData);
+
 					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
 					//$order['discount'] = $SupData[0]['discount'];
 					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
+					$typeName = $type->getUnittypeDetails($order['order_unittype']);	
+					$order['type'] = $typeName['name'];		
 					$arr[] = $order;
 				}
 
@@ -943,12 +977,15 @@ class CInventory extends Controller
 			case 'discounts':
 				$sortStr = $this->sortList('discounts',4);
 				
-				$SupData = $inventoryManager->getProductsSupplierList($facilityID, null,$sortStr);
-
+				$SupData = $inventoryManager->getProductsSupplierList($facilityID, null,null,$sortStr);
+				
 				$supplierlist = array();
 					foreach ( $SupData as $supplier) {
 
 						$supplier['url'] = "?action=edit&category=inventory&id=".$supplier['product_id']."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";
+						if (!$supplier['discount']){
+							$supplier['discount'] = 0;
+						}
 						$supplierlist[] = $supplier;
 						
 					}				
@@ -958,12 +995,61 @@ class CInventory extends Controller
 				$this->smarty->assign('supplierlist',$supplierlist);	
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscounts.tpl');	
 				break;
+			
 			case 'settings':
+				$accessname = $this->user->xnyo->user['accessname'];
+				$access = $this->user->getUserAccessLevelIDByAccessname($accessname);
+				$companyID = $facilityDetails['company_id'];
+				$department = new Department($this->db);
+				$departmentDetails = $department->getDepartmentListByFacility($facilityID);
+				$users = $inventoryManager->getManagerList($companyID);
+				
+				
+				
+				$comapnyUserList = $this->user->getUserListByCompany($companyID);
+				foreach($comapnyUserList as $user){
+					
+					if ($user['accesslevel_id'] == 0 || $user['accesslevel_id'] == 3){
+						$Carr[] = $user;
+					}					 
+				}	
+				$comapnyUserList = $Carr;
+				
+				$facilityUserList = $this->user->getUserListByFacility($facilityID);
 
+				foreach($facilityUserList as $user){
+					
+					if ($user['accesslevel_id'] == 1){
+						$Farr[] = $user;
+					}					 
+				}	
+				$facilityUserList = $Farr;
+			
+				foreach($departmentDetails as $id){
+					$arr = $this->user->getUserListByDepartment($id['id']);
+					if ($arr){
+						$departmentUserList[] = $arr;
+					}					 
+				}
+					 
+				$form = $_POST;
+					if (count($form) > 0) {
+						$inventoryManager->updateManagerEmails($form);
+						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=settings");
+
+				}
+				$this->smarty->assign('duser',$departmentUserList);
+				$this->smarty->assign('cuser',$comapnyUserList);			
+				$this->smarty->assign('fuser',$facilityUserList);									
+				$this->smarty->assign('access',$access);	
+				$this->smarty->assign('emails',$users);	
+				$this->smarty->assign('companyID',$companyID);
+				$this->smarty->assign('tpl','inventory/design/inventorySettings.tpl');
 				break;	
 			default :
 				throw new Exception('404');
-				break;			
+				break;		
+		
 		}
 		
 
@@ -1114,9 +1200,9 @@ class CInventory extends Controller
 	public function actionProcessororder(){
 		
 		$hash = $this->getFromRequest('hash');
-		$to = $this->getFromRequest('to');
+		//$to = $this->getFromRequest('to');
 		
-		$userEmail = base64_decode($to);
+		//$userEmail = base64_decode($to);
 
 		$request = $this->getFromRequest();
 		$inventoryManager = new InventoryManager($this->db);
@@ -1136,9 +1222,11 @@ class CInventory extends Controller
 			switch($request['result']) {
 				case 'confirm':
 					$orderDetails->order_status = OrderInventory::CONFIRM;
+					$status = "CONFIRM";
 					break;
 				case 'cancel':
 					$orderDetails->order_status = OrderInventory::CANCELED;
+					$status = "CANCELED";
 					break;
 				default :
 					throw new Exception('deny');
@@ -1150,10 +1238,19 @@ class CInventory extends Controller
 				'order_id'	=> $orderDetails->order_id
 			);
 			$result = $inventoryManager->updateSupplierOrder($arrayForUpdate);
+			//var_dump($facilityDetails,$result);
 			if($result){
-				$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed";
-				$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
-				$inventoryManager->sendEmailToManager($userEmail, "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed by supplier.");
+				$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+				if ($userDetails){
+					$text['msg']= "Status of ".$orderDetails->order_name." id: ".$orderDetails->order_id." was changed to ".$status."";
+					$text['title']= "Status of ".$orderDetails->order_name." was changed by supplier.";
+					foreach($userDetails as $user){
+						$email = $inventoryManager->getManagerEmail($user['user_id']);
+						$inventoryManager->sendEmailToManager($email,$text);
+					}
+					
+				}
+			
 				header("Location: ?action=processororderResult&category=inventory&result=positive");										
 			}else{
 				throw new Exception('deny');

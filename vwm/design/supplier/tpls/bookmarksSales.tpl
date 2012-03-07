@@ -11,7 +11,7 @@
 	<table cellspacing="0" cellpadding="0"height="100%" class="bookmarks_big" style="margin-left:10px">
 		<tr>
 			<td>
-				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=clients">
+				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=clients{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}">
 					{if $request.bookmark != "clients"}
 						<div class="deactiveBookmark_big">
 							<div class="deactiveBookmark_right_big">
@@ -27,7 +27,7 @@
 				</a>
 			</td>
 			<td>
-				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=orders">
+				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=orders{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}">
 					{if $request.bookmark != "orders"}
 						<div class="deactiveBookmark">
 							<div class="deactiveBookmark_right">
@@ -43,7 +43,7 @@
 				</a>
 			</td>
 			<td>
-				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=products">
+				<a href="supplier.php?action=browseCategory&category={$request.category}&bookmark=products{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}">
 					{if $request.bookmark != "products"}
 						<div class="deactiveBookmark">
 							<div class="deactiveBookmark_right">

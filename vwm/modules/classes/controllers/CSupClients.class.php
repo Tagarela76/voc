@@ -21,22 +21,45 @@ class CSupClients extends Controller {
 	
 	protected function bookmarkClients($vars) {
 		extract($vars);
-
 		$request = $this->getFromRequest();
-		if (!$request.supplierID){
+		if (!$request['supplierID']){
 			$supplierID = $supplierIDS[0]['supplier_id'];
 		}else{
 			$supplierID = $request['supplierID'];
 		}
-		
+		$jobberID = $request['jobberID'];
 		$inventoryManager = new InventoryManager($this->db);
-		$result = $inventoryManager->getSupplierWholeDiscount($supplierID);
+		// SOrt
+		$sortStr = $this->sortList('clients',2);
+
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,null,$jobberID,$pagination,$sortStr);
 
 		if ($result){
+			foreach ($result as $discount){
+				if (!$discount['discount_id']){
+					
+					$data['discount_id'] = $discount['discount_id'];
+					$data['companyID'] = $discount['company_id'];
+					$data['facilityID'] = $discount['facility_id'];
+					$data['supplier_id'] = $discount['supplier_id'];
+					$data['jobberID'] = $discount['jobber_id'];
+					$data['discount'] = 0;
+					
+					$inventoryManager->updateSupplierDiscounts($data);
+				}
+			}
+			// Pagination	
+			$count = $inventoryManager->getCountSupplierDiscounts($supplierID,$jobberID);
+			$pagination = new Pagination($count);
+			$pagination->url = "?action=browseCategory&category=sales&bookmark=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+			$this->smarty->assign('pagination', $pagination);	
+			
+			$result = $inventoryManager->getSupplierWholeDiscount($supplierID,null,$jobberID,$pagination,$sortStr);
+
 			$discountList = $result;
 			$tmpArr = array ();
 			foreach ($discountList as $discount){
-				$discount['url'] = "?action=viewDetails&category=clients&companyID={$discount['company_id']}&facilityID={$discount['facility_id']}&supplierID={$supplierID}";
+				$discount['url'] = "?action=viewDetails&category=clients&companyID={$discount['company_id']}&facilityID={$discount['facility_id']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 				$tmpArr[] = $discount;
 			}
 			$discountList = $tmpArr;
@@ -53,7 +76,7 @@ class CSupClients extends Controller {
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign("request",$request);
 		$this->smarty->assign('tpl', 'tpls/bookmarkClients.tpl');
-		$this->smarty->assign('pagination', $pagination);
+
                
 	}
 	
@@ -70,21 +93,26 @@ class CSupClients extends Controller {
 		
 		$facilityID = $this->getFromRequest('facilityID');
 		
-		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID);
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID,$request['jobberID']);
 		if ($result){
 			$client = $result;
+		}else{
+			throw new Exception('404');
 		}	
-		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID);	
-		
+	
+		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID,null,$request['jobberID']);	
+
 		if ($result){
 			foreach ($result as $prdct){
-				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&supplierID={$supplierID}";
+				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+				$prdct['discount'] = ($prdct['discount']) ? $prdct['discount'] : 0;
 				$pdiscount[] = $prdct;
+				
 			}
 		}		
 	//	$result = $inventoryManager->getSupplierDiscounts($facilityID,$supplierID);	
 
-		//$this->user->xnyo->user['user_id']
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$request);
 		$this->smarty->assign('client', $client[0]);
@@ -100,7 +128,7 @@ class CSupClients extends Controller {
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
 		$facilityID = $this->getFromRequest('facilityID');
-		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID);
+		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID,$request['jobberID']);
 
 		if ($result){
 			$client = $result;
@@ -114,12 +142,12 @@ class CSupClients extends Controller {
 				$form = $_POST;
 
 				if (count($form) > 0) {
-				
+					$form['jobberID'] = $request['jobberID'];
 					$result = $inventoryManager->updateSupplierDiscounts($form);			
 					if ($result == 'true'){
-						header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+						header("Location: ?action=browseCategory&category=sales&bookmark=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 					}else{
-						header("Location: ?action=addItem&category=clients&error=exist");
+						header("Location: ?action=addItem&category=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}&error=exist");
 					}
 				}
 		}		
@@ -141,8 +169,8 @@ class CSupClients extends Controller {
 		$supplierID = $request['supplierID'];
 		$productID = $request['productID'];
 		$facilityID = $request['facilityID'];
-		
-		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID, $supplierID, $productID);
+
+		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID, $supplierID, $productID,$request['jobberID']);
 		if ($result){
 			$discount = $result;
 		}else{
@@ -155,10 +183,10 @@ class CSupClients extends Controller {
 				$form = $_POST;
 
 				if (count($form) > 0) {
-
+					$form['jobberID'] = $request['jobberID'];
 					$result = $inventoryManager->updateSupplierDiscounts($form);			
 					if ($result == 'true'){
-						header("Location: ?action=viewDetails&category=clients&facilityID={$discount[0]['facility_id']}&supplierID={$discount[0]['supplier_id']}");
+						header("Location: ?action=viewDetails&category=clients&facilityID={$discount[0]['facility_id']}&supplierID={$discount[0]['supplier_id']}&jobberID={$request['jobberID']}");
 					}else{
 						header("Location: ?action=addItem&category=clients&error=exist");
 					}
@@ -181,14 +209,7 @@ class CSupClients extends Controller {
 
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
-		// Check user supplier in GET
-		$supplierIDS = $inventoryManager->getSaleUserSupplierLst($this->user->xnyo->user['user_id']);
-		foreach($supplierIDS as $sid){
-			$supplierIDArray[] = $sid['supplier_id'];
-		}
-		if (!in_array($supplierID, $supplierIDArray)){
-			throw new Exception('404');
-		}
+
 		
 		$companyList = $companyManager->getCompanyList();
 		$facility = new Facility($this->db);
@@ -204,8 +225,8 @@ class CSupClients extends Controller {
 			if (count($form) > 0) {
 			
 				$form['supplier_id'] = $supplierID;
-
-				$checkID = $inventoryManager->checkDiscountID($form['companyID'], $form['facilityID'],$form['supplier_id']);
+				$form['jobberID'] = $request['jobberID'];
+				$checkID = $inventoryManager->checkDiscountID($form['companyID'], $form['facilityID'],$form['supplier_id'],$request['jobberID']);
 				if ($checkID){
 					$form['discount_id'] = $checkID[0]['discount_id'];
 				}
@@ -213,9 +234,9 @@ class CSupClients extends Controller {
 				$result = $inventoryManager->updateSupplierDiscounts($form);
 
 				if ($result) {
-					header("Location: ?action=browseCategory&category=sales&bookmark=clients");
+					header("Location: ?action=browseCategory&category=sales&bookmark=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 				} else {
-					header("Location: ?action=addItem&category=clients&error=exist");
+					header("Location: ?action=addItem&category=clients&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}&error=exist");
 				}
 			}
 		}

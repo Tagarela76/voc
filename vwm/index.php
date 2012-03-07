@@ -224,12 +224,15 @@
 										header("Location: ?action=browseCategory&category=department&id=".$department_id."&bookmark=mix");
 									}
 									break;
+								default:
+									header ('Location: '.$xnyo->logout_redirect_url.'?error=auth&url='.$queryStrPost);
+								break;	
 							}							
 						} else {
 							for($l = 0; $l<strlen($queryStrPost); $l++) {
 								if ($queryStrPost[$l] == '&') $queryStrPost[$l] = '!'; 
 							}
-							header ('Location: '.$xnyo->logout_redirect_url.'?error=auth&url='.$queryStrPost);
+							header ('Location: '.$xnyo->logout_redirect_url.'?error=auth');
 						}						
 						break;
 						

@@ -431,9 +431,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 								$waste = $mixPrice[$count+1] * $data->waste_percent / 100;
 								$recycle = ( $mixPrice[$count+1] - $waste ) * $data->recycle_percent / 100;
 								$wastePrice[$count+1] = $waste + $recycle;
-								
-								$totalMix += $mixPrice[count($mixPrice)];
-								$totalWaste = $wastePrice[count($wastePrice)];								
+							
 							}else{
 								//TODO can't convert
 							}
@@ -450,10 +448,12 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 								$mixPrice[$count] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
 								$waste = $mixPrice[$count] * $data->waste_percent / 100;
 								$recycle = ( $mixPrice[$count] - $waste ) * $data->recycle_percent / 100;
+								$waste = number_format($waste, 2, '.', '');
+								$recycle = number_format($recycle, 2, '.', '');								
+								
 								$wastePrice[$count] = $waste + $recycle;	
 								
-								$totalMix += $mixPrice[count($mixPrice)];
-								$totalWaste = $wastePrice[count($wastePrice)];								
+							
 							}else{
 								//TODO can't convert
 							}
@@ -475,8 +475,17 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 
 			if ($WasARule == false) {
 				$results [] = $emptyData[0];
-			}	
+			}
+			for($i=1;$i<=count($mixPrice);$i++){
+				$totalMix += $mixPrice[$i];
+				$totalWaste += $wastePrice[$i];	
 
+			}
+			
+			
+			$totalMix = number_format($totalMix, 2, '.', '');
+			$totalWaste = number_format($totalWaste, 2, '.', '');
+			
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
@@ -488,19 +497,21 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			$fullTotalWaste += $totalWaste;
 			$totalMix = 0;
 			$totalWaste = 0;
-//var_dump($res);
+//
 			$dateBeginObj = $tmpDateEndObj;
 			if ($dateBeginObj == DateTime::createFromFormat($this->dateFormat, $dateEnd)) {
 				break;
 			}
 		}
+		$fullTotalMix = number_format($fullTotalMix, 2, '.', '');
+		$fullTotalWaste = number_format($fullTotalWaste, 2, '.', '');
 		$totalResults = array(
 			'totalMix' => $fullTotalMix,
 			'totalWaste' => $fullTotalWaste,
 			'data' => $resultByMonth
 		); 
 
-		return $totalResults;			
+return $totalResults;			
 	}
 
 /*		private function Convert($mixID,$value, $unittype_id,$companyDetails,Unittype $unittype) {	

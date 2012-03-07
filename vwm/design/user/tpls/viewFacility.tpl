@@ -166,6 +166,23 @@
                 </div>
             </td>
         </tr>
+		
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Jobbers:
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left">
+					{if $jobberDetails}
+						{$jobberDetails[0].name}
+						{section name=i loop=$jobberDetails start=1}
+							, {$jobberDetails[i].name}
+						{/section}	
+					{/if}
+                </div>
+            </td>
+        </tr>
+		
         <tr>
             <td height="20" class="users_u_bottom">
             </td>

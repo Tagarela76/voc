@@ -13,7 +13,8 @@ class ProductPrice {
 	private $price;
 	private $unittype = self::GALLON;
 
-	private $supman_id; // Person from supplier
+	private $supman_id; // supplier
+	private $jobber_id; // Person from jobber
 	public $errors;
 
 
@@ -48,6 +49,7 @@ class ProductPrice {
                 if ($this->price_id != NULL){
                         $query = "UPDATE price4product SET 
 							product_id = '".mysql_escape_string($this->product_id)."',
+							jobber_id = '".mysql_escape_string($this->jobber_id)."',	
 							price = '".mysql_escape_string($this->price)."',
 							unittype = '".mysql_escape_string($this->unittype)."',
 							supman_id = '".mysql_escape_string($this->supman_id)."'
@@ -56,6 +58,7 @@ class ProductPrice {
                 else {                        
    
                             $query = "INSERT INTO price4product VALUES (NULL,'"
+												.mysql_escape_string($this->jobber_id)."','" 
 												.mysql_escape_string($this->supman_id)."','" 
 												.mysql_escape_string($this->product_id)."','" 
                                                 .mysql_escape_string($this->unittype)."','" 
@@ -139,7 +142,11 @@ class ProductPrice {
 	
     public function get_supman_id(){
 		return $this->supman_id;
-	}		
+	}	
+	
+    public function get_jobber_id(){
+		return $this->jobber_id;
+	}	
 
 	
 	public function set_price_id($value) {
@@ -183,6 +190,14 @@ class ProductPrice {
 			$this->supman_id = $value;
 		} catch(Exception $e) {
 			throw new Exception("supman cannot be empty!" . $e->getMessage());
+		}
+	}
+	
+	public function set_jobber_id($value) {
+		try {
+			$this->jobber_id = $value;
+		} catch(Exception $e) {
+			throw new Exception("Jobber ID cannot be empty!" . $e->getMessage());
 		}
 	}	
 

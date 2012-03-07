@@ -9,6 +9,18 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 </div>
+{*JQUERY POPUP SETTINGS*}
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
+{*END OF SETTINGS*}
 <div class="padd7">
 	<form name="addFacility">
 
@@ -232,7 +244,23 @@
                             {*/ERROR*}
 				</td>
 			</tr>
-						
+            <tr>
+                <td class="border_users_l border_users_b us_gray" height="23px">
+                    Jobber:
+                </td>
+                <td class="border_users_r border_users_l border_users_b">
+
+					{if isset($jobberList)}
+						 <div class="floatleft">
+                          <input type="button" value="Choose Jobber" onclick="showJobber(); return false;">
+						 </div>
+					{/if}
+							{*ERROR*}
+                                 <div id="error_jobber" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
+                            {*/ERROR*}				
+
+                </td>
+            </tr>						
 			<tr>
 				<td class="users_u_bottom">
 			   	</td>
@@ -241,8 +269,77 @@
 			</tr>						
 			
 		</table>
-		
-		
+{*SELECT_JOBBER_POPUP*}
+<div id="Jobberlist" title="Select Jobber" style="display:none;">
+                    <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
+                        <tr>
+                            <td class="control_list" colspan="3" style="border-bottom:0px solid #fff;padding-left:0px">
+                                Select: <a onclick="CheckClassOfUnitTypes(document.getElementById('popup_table_jobber'))" name="allRules" class="id_company1">All</a>
+                                /<a onclick="unCheckClassOfUnitTypes(document.getElementById('popup_table_jobber'))" name="allRules" class="id_company1">None</a>
+                           </td>
+                        </tr>
+                    </table>
+					<div style="overflow:auto;height:400px;">
+                    <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center" id="popup_table_jobber">
+                        <tr class="table_popup_rule">
+
+                            <td align="center" style="width:40px">
+                                Select
+                            </td>
+                            <td style="padding: 5px;">
+                                Jobber Name
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td colspan="2"  style="padding:0px;border-bottom:0px;">
+							
+                              
+                                <table id="class_{$smarty.section.k.index}" name="class_{$smarty.section.k.index}" width="100%" cellpadding=0 cellspacing=0>
+
+									
+									
+                                    {section name=i loop=$jobberList}
+                                   
+                                    <tr name="unitTypelist" id="row_{$smarty.section.i.index}">
+
+                                        <td align="center" style="width:40px">
+                                            <input type="checkbox" id="jobber[]" name="jobber[]" value="{$jobberList[i]->jobber_id}"
+												{section  name=j loop=$facilityJobber}
+													
+													{if $jobberList[i]->jobber_id  == $facilityJobber[j].jobber_id}
+													 checked 
+													{/if}
+												{/section}
+											>											
+                                        </td>
+                                        <td id="JobberName_{$smarty.section.i.index}" style="padding: 5px;">
+                                            {$jobberList[i]->name}
+                                        </td>
+
+                                    </tr>
+                                  							
+                                    {/section}									
+                                </table>
+
+								
+                            </td>
+                        </tr>
+                    </table>
+                    <input id="categoryName" type="hidden" name="categoryName" value="{$request.category}">
+
+
+    </div>
+</div>
+{*END OF POPUP*}		
+{*DATA TO SAVE FROM POPUPS*}
+<div style="display:none;">
+	<div id="jobber_data">
+
+	</div>
+
+</div>
+{*/END OF DATA*}		
 		<table cellpadding="5" cellspacing="0" align="center" width="95%">
 			<tr>
 				<td>

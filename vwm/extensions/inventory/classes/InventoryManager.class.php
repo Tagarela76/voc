@@ -45,6 +45,21 @@ class InventoryManager {
 		if ($productID){
 			$query .= "AND p.product_id = {$productID} ";
 		}
+		if ($productID != null){
+			if (is_array($productID)){
+				$expression = "(".$productID[0]['product_id'];
+				foreach($productID as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+				
+				$query .= "AND p.product_id IN {$expression} ";
+			}else{
+				$query .= "AND p.product_id = {$productID} ";
+			}
+			
+		}		
+		
 		$query .= " GROUP BY mg.product_id ";
 		if ($sortStr){
 			$query .= $sortStr;
@@ -99,30 +114,30 @@ class InventoryManager {
 		return $productUsageData;
 	}
 	
-	public function getProductsSupplierList($facilityID, $productID = null , $sortStr = null) {
+	public function getProductsSupplierList($facilityID, $productID = null ,$jobberID = null, $sortStr = null) {
 
 			$tables = " ".TB_PRODUCT." p, " . TB_SUPPLIER . " s ,  product2inventory pi "; //m.department_id = d.department_id AND 
-			
-			
-
 
 			$query	=    "SELECT p.supplier_id, p.product_nr , s.original_id , di.discount, di.discount_id, s.supplier, pi.product_id , pi.in_stock_unit_type";
 
 			$query .=	" FROM {$tables} " .
 						" LEFT JOIN discounts2inventory di ".
-						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} ".
-						" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} " ;
+						" ON di.product_id = pi.product_id AND di.facility_id = {$facilityID} ";
+						if ($jobberID){
+							$query .= " AND di.jobber_id = {$jobberID} ";
+						}		
+			$query .=	" WHERE p.supplier_id  = s.supplier_id AND pi.facility_id = {$facilityID} AND p.product_id = pi.product_id " ;
+					
 			if ($productID){
 				$query .=   " AND p.product_id  = {$productID} ";
 			}
-				$query .=   " AND p.product_id = pi.product_id ";
-			
+		
 			if ($sortStr){
 				$query .=   " {$sortStr} ";
 			}
-			
+
 			$this->db->query($query);
-//echo $query;
+
 			$arr = $this->db->fetch_all_array();
 
 			$SupData = array();
@@ -159,24 +174,40 @@ echo $query;
 
 	}	
 	
-	public function getSupplierOrders($facilityID = null, $productID = null, Pagination $pagination = null, Sort $sortStr = null) {
+	public function getSupplierOrders($facilityID = null, $productID = null, $jobberID = null, Pagination $pagination = null, Sort $sortStr = null) {
         $time = new DateTime('first day of this month');
 
-        $query = "SELECT io.* ";
+        $query =	"SELECT io.* ";
 				
 		$query .=	" FROM inventory_order io" .
 
-					" WHERE ";
+					" WHERE io.order_jobber_id IS NOT NULL ";
 		 
 		if ($facilityID != null){
-			$query .=	" io.order_facility_id = {$facilityID} AND ";
+			$query .=	" AND io.order_facility_id = {$facilityID}";
 		}
 		
 		if ($productID != null){
-			$query .=	" io.order_product_id = {$productID} ";
-		}else{
-			$query .=	" io.order_created_date >= {$time->getTimestamp()} ";
+			if (is_array($productID)){
+				$expression = "(".$productID[0]['product_id'];
+				foreach($productID as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+				
+				$query .=	" AND io.order_product_id IN  {$expression} ";
+			}else{
+				$query .=	" AND io.order_product_id = {$productID} ";
+			}
+			
 		}
+		if ($jobberID != null){
+			$query .=	" AND io.order_jobber_id = {$jobberID} ";
+		}		
+		
+		/*else{
+			$query .=	" AND io.order_created_date >= {$time->getTimestamp()} ";
+		}*/
 		
 		if ($sortStr != null) {
 			//, Pagination $pagination = null
@@ -206,9 +237,26 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getCountSupplierOrders($facilityID) {
+	public function getCountFacilityOrders($facilityID) {
 	
 		$query = "SELECT COUNT(*) cnt FROM inventory_order WHERE order_facility_id = {$facilityID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}	
+	
+	public function getCountSupplierOrders($products,$jobberID) {
+		if ($products && is_array($products)){
+				$expression = "(".$products[0]['product_id'];
+				foreach($products as $id){
+					$expression .= ",".$id['product_id'];
+				}
+				$expression .= ")";
+
+		}
+		
+		$query = "SELECT COUNT(*) cnt FROM inventory_order io WHERE order_jobber_id = {$jobberID} ";
+		$query .=	" io.order_product_id IN  {$expression} ";
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
@@ -232,22 +280,24 @@ echo $query;
 		return $SupData;
 	}	
 	
-	public function getSupplierOrderDetails($facilityID,$orderID) {
-        $time = new DateTime('first day of this month');
+	public function getSupplierOrderDetails($orderID) {
+       // $time = new DateTime('first day of this month');
 
         $query = "SELECT io.*";
 				
 		$query .=	" FROM inventory_order io " .
 
-					" WHERE io.order_id = {$orderID} AND io.order_created_date >= {$time->getTimestamp()}";
+					" WHERE io.order_id = {$orderID} ";
+		//$query .=	" AND io.order_created_date >= {$time->getTimestamp()}";
 
 		$this->db->query($query);
+		//echo $query; 
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}	
 		$arr = $this->db->fetch_all_array();
 		
-		//echo $query;
+		
 		$SupData = array();
 			foreach($arr as $b) {
 
@@ -297,7 +347,7 @@ echo $query;
 		}
 	}	
 	
-	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null ) {
+	public function getSupplierSeparateDiscount($facilityID, $supplierID, $productID = null, $jobberID ) {
 /*            
         $query = "SELECT di.*, p.product_nr, c.company_id, c.name, f.name as fname   ";
 				
@@ -315,7 +365,7 @@ echo $query;
 */
 		$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
 		FROM  company c, supplier s, facility f, product p
-		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id";
+		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id AND di.jobber_id = {$jobberID} ";
 
 
 
@@ -329,7 +379,8 @@ echo $query;
 				}					
 		$query .=	" GROUP BY p.product_id ";
 
-		//echo $query;
+//echo $query;
+
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -347,9 +398,9 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getSupplierWholeDiscount($supplierID, $facilityID = null) {
+	public function getSupplierWholeDiscount($supplierID, $facilityID = null,$jobberID, Pagination $pagination = null,Sort $sortStr = null) {
             
-        $query =	"SELECT di.discount_id ,di.discount,di.product_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
+        $query =	"SELECT di.discount_id ,di.discount,di.product_id,di.jobber_id, s.original_id as supplier_id, c.company_id, c.name,f.facility_id, f.name AS fname ";
 				
 		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
 					
@@ -359,19 +410,26 @@ echo $query;
 			$query .= " AND di.facility_id = {$facilityID} ";
 		}		
 		$query .=	" WHERE f.company_id = c.company_id ".
-					" AND m.department_id = d.department_id ".
 					" AND p.product_id = mg.product_id ".
 					" AND m.mix_id = mg.mix_id ".
 					" AND m.department_id = d.department_id ".
 					" AND d.facility_id = f.facility_id ".
 					" AND s.supplier_id = p.supplier_id ".
+					" AND di.jobber_id = {$jobberID} ".
 					" AND s.original_id = {$supplierID} ";
 		if ($facilityID != null){
 			$query .= " AND f.facility_id = {$facilityID} ";
 		}	
 	
-		$query .=	" GROUP BY c.name ORDER BY c.company_id ASC ";
-
+		$query .=	" GROUP BY c.name ";
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY c.company_id ASC ";
+		}		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
 		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -385,6 +443,14 @@ echo $query;
 		}
 		return $SupData;
 	}
+	
+	public function getCountSupplierDiscounts($supplierID,$jobberID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM discounts2inventory WHERE product_id IS NULL AND supplier_id = {$supplierID} AND jobber_id = {$jobberID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}		
 	
 	public function getDiscountsByID($discountID) {
             
@@ -410,13 +476,13 @@ echo $query;
 								
 		if ($form['discount_id'] == null){
 			if ($form['product_id'] != ''){
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
 			}else{
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
 			}
 			
 		}else{
-            $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." WHERE discount_id = {$form['discount_id']}";			
+            $query = "UPDATE discounts2inventory SET discount = ".mysql_real_escape_string($form['discount'])." , jobber_id = ".mysql_real_escape_string($form['jobberID'])."  WHERE discount_id = {$form['discount_id']}";			
 
 		}
 
@@ -472,12 +538,105 @@ echo $query;
 		}
 	}
 	
+	public function updateJobberEmails( $form ) {
+
+		$query = "INSERT INTO email2jobber VALUES (NULL,". $form['jobber_id'] .",'". mysql_escape_string($form['email']) ."') ";
+		$this->db->query($query);
+
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}
+	public function getManagerList($companyID) {
+		$query = "SELECT * FROM email2manager WHERE company_id = {$companyID} ";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$SupData = array();
+			foreach($arr as $b) {
+					$SupData[] = $b;
+			}
+		return $SupData;
+	}	
+	public function getManagerEmail($userID) {
+		$query = "SELECT email FROM user WHERE user_id = {$userID} ";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
+	}	
+	
+	public function updateManagerEmails( $form ) {
+		$query = "DELETE FROM email2manager WHERE company_id = {$form['companyID']}  ";
+		$this->db->query($query);
+		if (isset($form['cuser'])){
+			foreach($form['cuser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}
+		if (isset($form['fuser'])){
+			foreach($form['fuser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}
+		if (isset($form['duser'])){
+			foreach($form['duser'] as $id){
+				$query = "INSERT INTO email2manager VALUES (NULL,".  mysql_escape_string($id) .",'". mysql_escape_string($form['companyID']) ."') ";
+				$this->db->query($query);
+			}
+		}		
+
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}	
+	
+	public function beforeUpdateJobberEmails( $form ) {
+
+		$query = "DELETE FROM email2jobber WHERE jobber_id = {$form['jobber_id']}  ";
+		echo $query;
+		$this->db->query($query);	
+		if(mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}	
+	
+	public function getJobberUsersEmails( $jobberID ) {
+
+		$query = "SELECT * FROM email2jobber WHERE jobber_id = {$jobberID} ";
+		$this->db->query($query);	
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$SupData = array();
+			foreach($arr as $b) {
+					$SupData[] = $b;
+			}
+		return $SupData;		
+	}	
+		
 	public function getInventoryByID($inventoryID) {
             
         $query = "SELECT * FROM product2inventory WHERE inventory_id = {$inventoryID} ";
 
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 		
 		
@@ -491,14 +650,16 @@ echo $query;
 		return $SupData;
 	}
 	
-	public function getInventoryPrductIdByFacility($facilityID, Pagination $pagination = null) {
+	public function getInventoryProductIdByFacility($facilityID, Pagination $pagination = null) {
             
         $query = "SELECT product_id FROM product2inventory WHERE facility_id = {$facilityID} ";
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
 		$this->db->query($query);
-		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
 		$arr = $this->db->fetch_all_array();
 
 		$SupData = array();
@@ -511,7 +672,7 @@ echo $query;
 		return $SupData;
 	}	
 	
-	public function getCountInventoryPrduct($facilityID) {
+	public function getCountInventoryProduct($facilityID) {
 	
 		$query = "SELECT COUNT(*) cnt FROM product2inventory WHERE facility_id = {$facilityID}";
 		$this->db->query($query);
@@ -524,7 +685,9 @@ echo $query;
 		$query =	"SELECT pi.* , p.product_nr  FROM product2inventory pi , ".TB_PRODUCT." p WHERE pi.product_id = ".$productID." AND pi.facility_id = ".$facilityID." AND p.product_id = {$productID} ";				
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
-
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
 		$data = array();
 			foreach($arr as $b) {
 					$data = $b;
@@ -533,9 +696,9 @@ echo $query;
 
 	}	
 	
-	public function checkDiscountID( $companyID, $facilityID, $supplierID ) {
+	public function checkDiscountID( $companyID, $facilityID, $supplierID, $jobberID ) {
 	
-		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.facility_id = ".$facilityID." AND di.supplier_id = ".$supplierID." AND di.product_id IS NULL ";				
+		$query =	"SELECT di.discount_id FROM discounts2inventory di WHERE di.company_id = ".$companyID." AND di.jobber_id = ".$jobberID." AND di.facility_id = ".$facilityID." AND di.supplier_id = ".$supplierID." AND di.product_id IS NULL ";				
 		
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
@@ -559,6 +722,7 @@ echo $query;
 									$dateBegin = $orderList[0]['order_completed_date'];
 								}else{
 									$dateBegin = new DateTime('first day of this month');
+									$dateBegin->setTime(0, 0, 0);
 									$dateBegin = $dateBegin->getTimestamp();
 								}
 							//
@@ -612,21 +776,85 @@ echo $query;
 		}				
 	}
 	
-	public function getSaleUserSupplierLst($userID) {
+	public function getSaleUserJobberID($userID) {
 	
-		$query = "SELECT supplier_id FROM users2supplier WHERE user_id = {$userID}";
+		$query = "SELECT jobber_id FROM users2jobber WHERE user_id = {$userID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$id = $this->db->fetch_array(0);
+
+		return $id;
+	}
+	
+	public function getSuppliersByJobberID($jobberID) {
+	
+		$query = "SELECT supplier_id FROM supplier2jobber WHERE jobber_id = {$jobberID}";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}		
 		$arr = $this->db->fetch_all_array();
-		$data = array();
-			foreach($arr as $b) {
-					$data[] = $b;
-			}
-		return $data;
+
+		return $arr;
+	}
+	
+	public function getJobberDetails($jobberID) {
+	
+		$query = "SELECT * FROM jobber WHERE jobber_id = {$jobberID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
 	}	
 	
+	public function getJobberList() {
+	
+		$query = "SELECT * FROM jobber";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+
+		return $arr;
+	}
+	
+	public function getJobberIDForInventory($facilityID, $productID) {
+	
+		$query =	"SELECT sj.jobber_id FROM facility2jobber fj, supplier2jobber sj, product p, supplier s ";
+		$query .=	" WHERE fj.facility_id = {$facilityID} ".
+					" AND fj.jobber_id = sj.jobber_id ".
+					" AND p.product_id = {$productID} ".
+					" AND p.supplier_id = s.supplier_id ".
+					" AND s.supplier_id = s.supplier_id ".
+					" AND sj.supplier_id = s.original_id ";
+		//echo $query;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
+	}	
+	
+	
+	public function getInitialInStockValues($prodictID) {
+	
+		$query = "SELECT product_instock,product_limit, product_amount,product_stocktype FROM product WHERE product_id = {$prodictID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$data = $this->db->fetch_array(0);
+
+		return $data;
+	}	
 	public function runInventoryOrderingSystem( $mix ) {
 		$productObjArray = $mix->products;
 		//$text = $this->getEmailText($mix->facility_id);
@@ -638,22 +866,33 @@ echo $query;
 			if (!$inventory) {
 				throw new Exception("No inventory found :(");
 			}
+			
+			$initialInstock = $this->getInitialInStockValues($productObj->product_id);			
 			$inventory['facility_id'] = $mix->facility_id;
-		
+			if ($initialInstock['product_stocktype'] && $initialInstock['product_stocktype']!= 0){
+				$inventory['in_stock_unit_type'] = $initialInstock['product_stocktype'];
+				$inventory['in_stock'] = $initialInstock['product_instock'];
+				$inventory['amount'] = $initialInstock['product_amount'];
+				$inventory['inventory_limit'] = $initialInstock['product_limit'];
+			}else{
+				$inventory['in_stock_unit_type'] = $productObj->unittypeDetails['unittype_id'];
+			}
 			
 			$productUsageData = new ProductInventory($this->db, $inventory);
 			
-		// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
+			// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
 			$inStock2Type = $this->unitTypeConverter($productUsageData);
 			if 	($inStock2Type){
 				$inventory['sum'] = $inStock2Type['usage'];
 			}
-	
+
 			if ($productUsageData->id == null){
 				
 				$productUsageData->save();
 
-			}else if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
+			}
+			
+			if ($productUsageData->in_stock - $inventory['sum']  <= $productUsageData->limit){
 				//$productUsageData->in_stock - $productObj->quantity  <= $productUsageData->limit
 				$isThereActiveOrders = $this->isThereActiveOrdersByProductID($productUsageData->product_id, $mix->facility_id);
 
@@ -661,13 +900,14 @@ echo $query;
 					//Create new Order
 					$newOrder = new OrderInventory($this->db);
 							
-
+					
+					// GET JOBBER
+					$jobberID = $this->getJobberIDForInventory($mix->facility_id, $productUsageData->product_id);
 					// PRICE FOR PRODUCT
 					$priceManager = new Product($this->db);
-					$price = $priceManager->getProductPrice($productUsageData->product_id);
+					$price = $priceManager->getProductPrice($productUsageData->product_id,$jobberID);
 					$priceObj = new ProductPrice($this->db, $price[0]);
-					
-					//TODO: CALC right price for product unittype 
+
 					$newOrder->order_price = $price[0]['price'];
 					
 					// Discount if isset for separate product, else for whole facility 
@@ -686,34 +926,56 @@ echo $query;
 					$newOrder->order_facility_id = $mix->facility_id;
 					$newOrder->order_name = 'Order for product "'.$productUsageData->product_nr.'"';
 					$newOrder->order_discount = $discount;
-					$newOrder->order_unittype = $priceObj->unittype;
+					$newOrder->order_unittype = $productUsageData->in_stock_unit_type;
 					$newOrder->order_total = $amount2Type['amount'] * $newOrder->order_price - ( ($amount2Type['amount'] * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $productUsageData->amount;
+
+					if($jobberID){
+						$newOrder->order_jobber_id = $jobberID['jobber_id'];
+					}else{
+						$newOrder->order_jobber_id = 0;
+					}
 					
 				    $newOrder->save();
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($priceObj->supman_id);
+					$supplierUsersEmais = $this->getJobberUsersEmails($jobberID);
+
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
-			
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);					
+						
+					$facilityManager = new Facility($this->db);
+					$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);				
+				
 					if ($ifEmail){
-						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ";
+						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ".$facilityDetails['title'];
 						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
 						$isNewOrder = true;
 						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+						if ($supplierUsersEmais){
+							foreach($supplierUsersEmais as $userEmail){
+								$this->sendEmailToSupplier($userEmail['email'],$text,$isNewOrder );
+							}
+						}						
 					}
 						$supplierManager = new Supplier($this->db);
-						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);						
-						$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
-						$text['msg'] .= "\r\n" ." Supplier: ".$supDetails['supplier_desc']; 
-						$text['msg'] .= "\r\n" ." Contact: ".$supDetails['contact']; 
-						$text['msg'] .= "\r\n" ." Address: ".$supDetails['address']; 
-						$text['msg'] .= "\r\n" ." Phone: ".$supDetails['phone']; 
-						$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";					
-						$this->sendEmailToManager($userDetails['email'],$text);
-								
+						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
+
+						$userDetails = $this->getManagerList($facilityDetails['company_id']);	
+						
+						if ($userDetails){
+							$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
+							$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
+							$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
+							$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
+							$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
+							$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";
+							foreach($userDetails as $user){
+								$email = $this->getManagerEmail($user['user_id']);
+								$this->sendEmailToManager($email,$text);
+							}
+						}
+						
 				}else{
 					// remind for needing product and completed order
 					
@@ -724,8 +986,9 @@ echo $query;
 		
 	}
 
-	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null) {
+	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null, $IsConvertOrderAmountToStockUnittype = false) {
 		// UNITTYPE CONVERTER
+
 		$unittype = new Unittype($this->db);
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($inventory->product_id);
@@ -746,14 +1009,18 @@ echo $query;
 
 		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
-		
+	
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-
+	
 		if ($price){
 			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
-			$typeName = $unittype->getUnittypeDetails($price->unittype);			
+			$typeName = $unittype->getUnittypeDetails($price->unittype);
+			if ($IsConvertOrderAmountToStockUnittype){
+				$unittypeDetails = $unittype->getUnittypeDetails($price->unittype);
+				$typeName = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
+			}
 			$quantitiVolumeSum = $unitTypeConverter->convertFromTo($inventory->amount,$unittypeDetails['description'], $typeName['description'], $productDetails['density'], $densityType);//	in volume ;
 		}
 
@@ -766,6 +1033,7 @@ echo $query;
 				$data['amount'] = number_format($quantitiVolumeSum, 2, '.', '');
 				$data['amountType'] = $typeName['name'];
 			}
+			
 			return  $data;
 		}else{
 			return false;
@@ -824,7 +1092,7 @@ echo $query;
 	}	
 
 	public function getSupplierEmail($supplierID){
-		$query = "SELECT u.email FROM user u , users2supplier us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
+		$query = "SELECT u.email FROM user u , users2jobber us WHERE us.supplier_id = {$supplierID} AND us.user_id = u.user_id ";
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -869,14 +1137,15 @@ echo $query;
 			$hash = $this->generateOrderHash($supplierEmail);
 			$userEmailb64 = base64_encode($userEmail);
 
-			$links = "\r\n" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[confirm]}'>CONFIRM</a>" . "\r\n" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&to={$userEmailb64}&hash={$hash[cancel]}'>CANCEL</a>";
+			$links = "<br>" . "For confirm this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&hash={$hash[confirm]}'>CONFIRM</a>" . "<br>" . "For cancel this order click here: <a href='http://www.vocwebmanager.com/vwm/?action=processororder&category=inventory&hash={$hash[cancel]}'>CANCEL</a>";
 			$text['msg'] .= $links;
 			$theme = "*** New Order on www.vocwebmanager.com ***";
 		}
 		//	E-mail notification about new order
-		$email = new EMail();
+		$email = new EMail(true);
 
-		$to = array($supplierEmail);
+		//$to = html_entity_decode($supplierEmail);
+		$to = $supplierEmail;
 		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
 		$theme = $text['title'];
@@ -906,18 +1175,17 @@ fclose ($fp);
 
 		//	E-mail notification about new order
 
-		$email = new EMail();
+		$email = new EMail(true);
 
-		$to = array(
-			$userEmail
-		);
+		//$to = html_entity_decode($userEmail);
+		$to = $userEmail;
 
-		//$from = "authentification@vocwebmanager.com";
 		$from = AUTH_SENDER . "@" . DOMAIN;
 		$theme = $text['title'];
 
 		$message =$text['msg'];
 		$email->sendMail($from, $to, $theme, $message);		
+		
 /*
 		$data = $from;
 		$data.= $theme;

@@ -294,10 +294,59 @@
 							</td>
 						</tr>
 					{/if}
+					
 						</table>
 							</td>
 						</tr>
-											</tr>
+
+<!-- STOCK VALUES --> 						
+							<tr>
+							<td class="border_users_l border_users_r" colspan="2" style="padding:5px 3px 0 3px">
+							
+							
+							
+							
+							<table width="100%" cellpadding="0" cellspacing="0" >
+							
+							<tr class="users_top_lightgray">
+							<td class="users_u_top_lightgray" height="25px" width="27%">Initial stock values</td>
+							<td class="users_u_top_r_lightgray" >&nbsp;</td></tr>
+							
+							<tr bgcolor="#e3e3e3">
+							<td  class="border_users_l border_users_b" height="20" width="27%">
+								In stock :
+							</td>
+							<td class="border_users_l border_users_r border_users_b">
+							<div align="left">&nbsp;{$product.product_instock}{if $stock.name}, {$stock.name}{/if}</div>
+							
+							</td>
+							</tr>
+							
+							<tr bgcolor="#e3e3e3">
+							<td  class="border_users_l border_users_b" height="20" width="27%">
+								Limit :
+							</td>
+							<td class="border_users_l border_users_r border_users_b">
+							<div align="left">&nbsp;{$product.product_limit}{if $stock.name}, {$stock.name}{/if}</div>
+							
+							</td>
+							</tr>
+							
+							<tr bgcolor="#e3e3e3">
+							<td  class="border_users_l border_users_b" height="20" width="27%">
+								Amount :
+							</td>
+							<td class="border_users_l border_users_r border_users_b">
+							<div align="left">&nbsp;{$product.product_amount}{if $stock.name}, {$stock.name}{/if}</div>
+							
+							</td>
+							</tr>							
+
+
+					
+						</table>
+							</td>
+						</tr>						
 						
 						
 						

@@ -24,7 +24,7 @@
 			<td  class="users_u_top_r_violet">
 				
 		            <div style='width:100%;  color:white;'>						
-		                Clients  {if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
+		                Clients 		
 					</div>					
 				
 			</td>			

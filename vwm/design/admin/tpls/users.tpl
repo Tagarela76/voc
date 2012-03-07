@@ -26,11 +26,13 @@
 	  {if $request.bookmark eq "department"} class="users_top_violet" {/if}
 	  {if $request.bookmark eq "admin"} class="users_top_blue"  {/if} 
 	  {if $request.bookmark eq "sales"} class="users_top_yellowgreen"  {/if} 
+	  {if $request.bookmark eq "supplier"} class="users_top"  {/if}
 		   height="27" bgcolor="#ecb57f">
 		   
 		   
 				<td width="1%" 
 	  {if $request.bookmark eq "company"}class="users_u_top"  {/if}
+	  {if $request.bookmark eq "supplier"}class="users_u_top"  {/if}
 	  {if $request.bookmark eq "facility"} class="users_u_top_green"  {/if}
 	  {if $request.bookmark eq "department"} class="users_u_top_violet"  {/if}
 	  {if $request.bookmark eq "admin"} class="users_u_top_blue"   {/if} 
@@ -90,6 +92,7 @@
 {if $request.bookmark != "admin" and $request.bookmark != "sales"}
 				<td 
 	  {if $request.bookmark eq "company"} class="users_u_top_r"  {/if}
+	  {if $request.bookmark eq "supplier"} class="users_u_top_r"  {/if}
 	  {if $request.bookmark eq "facility"} class="users_u_top_r_green"  {/if}
 	  {if $request.bookmark eq "department"} class="users_u_top_r_violet" {/if}
 	  

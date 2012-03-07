@@ -34,24 +34,41 @@ try {
 			
 			$user = new User($db, $xnyo, $access, $auth);
 				
-			if ((!($user->isLoggedIn()) || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 5) && $_POST["action"] != 'auth') {
+			if ((!($user->isLoggedIn()) || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 5 || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 3) && $_POST["action"] != 'auth') {
 				header ('Location: '.$xnyo->logout_redirect_url.'?error=auth');
 			}
 			switch ($_POST["action"]) {
+				
 				case 'auth':
 					$xnyo->filter_post_var('accessname', 'text');
 					$xnyo->filter_post_var('password', 'text');														
 					
-					$accessLevel=$user->getUserAccessLevelIDByAccessname($_POST["accessname"]);				
-					if ($user->auth($_POST["accessname"], $_POST["password"]) && $accessLevel==5) {							
+					$accessLevel=$user->getUserAccessLevelIDByAccessname($_POST["accessname"]);	
+					
+					if ($user->auth($_POST["accessname"], $_POST["password"]) && ($accessLevel==5 || $accessLevel==3)) {							
 						if ($access->check('required')) {
 							//	authorized
 							session_start();								
 							$_SESSION['user_id'] = $user->getUserIDbyAccessname($_POST["accessname"]);
 							$_SESSION['accessname'] = $_POST['accessname'];
-							$_SESSION['username'] = $user->getUsernamebyAccessname($_POST["accessname"]);																					
-							
-							header("Location: supplier.php?action=browseCategory&category=sales&bookmark=clients");							
+							$_SESSION['username'] = $user->getUsernamebyAccessname($_POST["accessname"]);
+							$accessLevelName = $user->getUserAccessLevel($_SESSION['user_id']);
+							if ($accessLevel==5){
+								$inventoryManager = new InventoryManager($db);
+								$jobberID = $inventoryManager->getSaleUserJobberID($_SESSION['user_id']);
+								$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberID['jobber_id']);
+								
+							}
+							$smarty->assign("accessName", $accessLevelName);
+							switch ($accessLevelName) {
+								case "SuperuserLevel":																	
+									header("Location: supplier.php?action=browseCategory&category=root");	
+								break;
+								default:
+									header("Location: supplier.php?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobberID['jobber_id']}&supplierID={$supplierIDS[0]['supplier_id']}");		
+								break;
+							}
+												
 						} else {
 							//	not authorized
 							header ('Location: '.$xnyo->logout_redirect_url.'?error=auth');
@@ -69,8 +86,9 @@ try {
 		
 		$smarty->assign("action", $_GET["action"]);
 		$user=new User($db, $xnyo, $access, $auth);
-		
-		if (!($user->isLoggedIn()) || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 5) {		
+
+		if (!($user->isLoggedIn()) || ($user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 5 && $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 3)) {		
+			
 			header ('Location: '.$xnyo->logout_redirect_url.'?error=timeout');
 		}
 		

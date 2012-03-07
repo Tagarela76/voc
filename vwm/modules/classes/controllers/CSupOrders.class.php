@@ -23,11 +23,12 @@ class CSupOrders extends Controller {
 		extract($vars);
 
 		$request = $this->getFromRequest();
-		if (!$request.supplierID){
+		if (!$request['supplierID']){
 			$supplierID = $supplierIDS[0]['supplier_id'];
 		}else{
 			$supplierID = $request['supplierID'];
-		}		
+		}	
+		$jobberID = $request['jobberID'];
 		// SOrt
 		$sortStr = $this->sortList('orders',5);
 
@@ -37,24 +38,36 @@ class CSupOrders extends Controller {
 
 		$products = $productManager->getProductListByMFG($supplierID);
 
-		foreach($products as $product){
-			$order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
+		// Pagination	
+		$count = $inventoryManager->getCountSupplierOrders($products,$jobberID);	
+		$pagination = new Pagination($count);
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+		$this->smarty->assign('pagination', $pagination);
+	
+		$order = $inventoryManager->getSupplierOrders(null, $products,$jobberID, $pagination, $sortStr);
 
+		/* 		foreach($products as $product){
+		  $order = $inventoryManager->getSupplierOrders(null,$product['product_id'],null,$sortStr);
+
+		 */
+			$type = new Unittype($this->db);
+		
 			if ($order){
 				foreach ($order as $o){
 					$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
-					$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
+					//$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
 					$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
-					$o['unittype'] = $SupData[0]['in_stock_unit_type'];
-					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."";
-					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."";
+					//$o['unittype'] = $SupData[0]['in_stock_unit_type'];
+					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 					$o['client'] = $facilityDetails['title'];
-					
+					$typeName = $type->getUnittypeDetails($o['order_unittype']);
+					$o['type'] = $typeName['name'];					
 					$orderList[] = $o;
 				}				
 
 			}
-		}
+
 		$this->smarty->assign('orderList', $orderList);
 
 //set js scripts
@@ -64,7 +77,7 @@ class CSupOrders extends Controller {
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign('tpl', 'tpls/bookmarkOrders.tpl');
-		$this->smarty->assign('pagination', $pagination);
+
                
 	}
 	
@@ -73,12 +86,15 @@ class CSupOrders extends Controller {
 		$inventoryManager = new InventoryManager($this->db);
 		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
-		
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$request = $this->getFromRequest();
+		$orderDetails = $inventoryManager->getSupplierOrderDetails($orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
+		$type = new Unittype($this->db);
+		$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+		$orderDetails[0]['type'] = $typeName['name'];
 
-
-		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "");
+		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 		$this->smarty->assign('order', $orderDetails[0]);
 		$this->smarty->assign('tpl', 'tpls/orderDetail.tpl');
 		$this->smarty->assign("parent", $this->parent_category);
@@ -91,29 +107,28 @@ class CSupOrders extends Controller {
 		$request = $this->getFromRequest();
 		$orderID = $request['id'];
 		
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$orderDetails = $inventoryManager->getSupplierOrderDetails( $orderID);
 		$orderDetails[0]['order_created_date'] = date('m/d/Y', $orderDetails[0]['order_created_date']);
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$facilityID = $orderDetails[0]['order_facility_id'];
 			$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
-			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id'] . "");
-			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders");
+			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			$this->smarty->assign("itemType", 'order');
 			$this->smarty->assign('order', $orderDetails[0]);
 			$this->smarty->assign("request", $this->getFromRequest());
 		} else {
 			throw new Exception('deny');
 		}		
-		
 
 		$form = $_POST;
 		if (count($form) > 0) {
 				$form['status'] = OrderInventory::COMPLETED;
 				$form['order_completed_date'] = time();
 				//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'],$request['jobberID']);
 				$ProductInventory = new ProductInventory($this->db);
-				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+				$order = $inventoryManager->getSupplierOrderDetails($form['order_id']);
 
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -124,50 +139,54 @@ class CSupOrders extends Controller {
 				$category = "facility";
 			
 				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+
 				$product = $productDetails[0];
-								$result = $inventoryManager->unitTypeConverter($product);
-								if ($result){
-									$product->usage = $result['usage'];
-									$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
-									$product->in_stock = $addToStock;
-									$result1 = $product->save();
-									
-								}else{
-									$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID,$request['id']);
+				
+				$result = $inventoryManager->unitTypeConverter($product);
 
-									// For orders with status: Canceled or Completed denied edit function
-									if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED){
-										$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+				if ($result) {
+					$product->usage = $result['usage'];
+					$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
+					$product->in_stock = $addToStock;
+					$result1 = $product->save();
+				} else {
+					$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
-										$this->smarty->assign('status',$statuslist);
+				// For orders with status: Canceled or Completed denied edit function
+				if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
+					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
-										$this->smarty->assign('order',$orderDetails[0]);	
-										$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');					
-									}else{
-										throw new Exception('deny');
-									}
-									$result1 = false;
-									$this->smarty->assign('check','false');	
-									
-									//	E-mail notification about density not found
-									$email = new EMail();
-									$to = array('denis.nt@kttsoft.com');
-									$from = AUTH_SENDER . "@" . DOMAIN;//$from = "authentification@vocwebmanager.com";
-									$theme = $orderDetails[0]['order_name'].'. Problem with status changing to "completed"';
-									$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is ".$orderDetails[0]['order_id'];
-									$email->sendMail($from, $to, $theme, $message);		
-			
-									
-									$this->smarty->assign('tpl','inventory/design/inventoryOrdersEdit.tpl');
-								}	
+					$this->smarty->assign('status', $statuslist);
+
+					$this->smarty->assign('order', $orderDetails[0]);
+					$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
+				} else {
+					throw new Exception('deny');
+				}
+
+					$result1 = false;
+					$this->smarty->assign('check', 'false');
+
+					//	E-mail notification about density not found
+					$email = new EMail();
+					$to = array('denis.nt@kttsoft.com');
+					$from = AUTH_SENDER . "@" . DOMAIN; //$from = "authentification@vocwebmanager.com";
+					$theme = $orderDetails[0]['order_name'] . '. Problem with status changing to "completed"';
+					$message = "Can't convert product usage to stock unit type, because the density do not specify! Order id is " . $orderDetails[0]['order_id'];
+					$email->sendMail($from, $to, $theme, $message);
 
 
-		if ($result1) {		
-			$result2 = $inventoryManager->updateSupplierOrder($form);	
-		}
+					$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
+			}
+
+
+			if ($result1) {		
+				$result2 = $inventoryManager->updateSupplierOrder($form);	
+			}
 		if ($result2 == 'true') {
 
-		$clientEmail = $inventoryManager->getClientEmail($facilityID);
+		//$clientEmail = $inventoryManager->getClientEmail($facilityID);
+		
 		switch ($form['status']){
 			case OrderInventory::IN_PROGRESS:
 				$status = 'IN PROGRESSED';
@@ -182,45 +201,60 @@ class CSupOrders extends Controller {
 				$status = 'CANCELED';
 			break;	
 		}
-				foreach($clientEmail as $email){
-					// EMAIL NOTIFICATION FOR CLIENT 
-					
-					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-					
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
-
-					if ($ifEmail){
-						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility";
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
-					}
+		
+						$facilityManager = new Facility($this->db);
+						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+						
+					if ($userDetails){
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($userDetails['email'] , $text);
-									
-					
-									
-				}
+						foreach($userDetails as $user){
+							$email = $inventoryManager->getManagerEmail($user['user_id']);
+							$inventoryManager->sendEmailToManager($email,$text);
+						}						
+
+					}
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
+
+						
+						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
+						
+						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
+						
+						if ($supplierUsersEmais){
+							foreach($supplierUsersEmais as $supplierEmail){
+								$inventoryManager->sendEmailToSupplier($supplierEmail['email'],$text );
+								
+							}
+						}						
+									
+			
+				
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}		
 		}
 		$this->smarty->display("tpls:index.tpl");
 	}	
 	
 	private function actionEdit() {
-		
+
 		$inventoryManager = new InventoryManager($this->db);
 		$request = $this->getFromRequest();
 		
 		$facilityID = $this->getFromRequest('facilityID');
 		$orderID = $this->getFromRequest('id');
-		$orderDetails = $inventoryManager->getSupplierOrderDetails($facilityID, $orderID);
+		$orderDetails = $inventoryManager->getSupplierOrderDetails($orderID);
 
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 			$this->smarty->assign('status', $statuslist);
+			$type = new Unittype($this->db);
+			$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
+			$orderDetails[0]['type'] = $typeName['name'];			
 			$this->smarty->assign('order', $orderDetails[0]);
 			
 			//$this->user->xnyo->user['user_id']
@@ -241,9 +275,9 @@ class CSupOrders extends Controller {
 			if ($form['status'] == OrderInventory::COMPLETED) {
 				$form['order_completed_date'] = time();
 				//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id']);
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'],$request['jobberID']);
 				$ProductInventory = new ProductInventory($this->db);
-				$order = $inventoryManager->getSupplierOrderDetails($request['facilityID'], $form['order_id']);
+				$order = $inventoryManager->getSupplierOrderDetails( $form['order_id']);
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
@@ -265,9 +299,9 @@ class CSupOrders extends Controller {
 
 
 
-		if ($result == 'true') {
+		if ($result == true) {
 
-		$clientEmail = $inventoryManager->getClientEmail($facilityID);
+
 		switch ($form['status']){
 			case OrderInventory::IN_PROGRESS:
 				$status = 'IN PROGRESSED';
@@ -282,28 +316,37 @@ class CSupOrders extends Controller {
 				$status = 'CANCELED';
 			break;	
 		}
-				foreach($clientEmail as $email){
-					// EMAIL NOTIFICATION FOR CLIENT 
-					
-					$ifEmail = $inventoryManager->checkSupplierEmail($email['email']);
-					
-					$user = new User($this->db);
-					$userDetails = $user->getUserDetails($_SESSION['user_id']);	
-
-					if ($ifEmail){
-						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility";
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($email['email'] , $text);
-					}
+// EMAIL NOTIFICATION FOR CLIENT 		
+						$facilityManager = new Facility($this->db);
+						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
+						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+						
+					if ($userDetails){
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToManager($userDetails['email'] , $text);
-									
+						foreach($userDetails as $user){
+							$email = $inventoryManager->getManagerEmail($user['user_id']);
+							$inventoryManager->sendEmailToManager($email,$text);
+						}						
+
+					}		
+
+						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
+						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
+						
+						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
+						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
+						if ($supplierUsersEmais){
+							foreach($supplierUsersEmais as $userEmail){
+								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text );
+							}
+						}					
 					
 									
-				}
+
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders");
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}
 		}	
 $this->smarty->display("tpls:index.tpl");		

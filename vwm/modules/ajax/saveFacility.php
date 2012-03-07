@@ -16,6 +16,9 @@
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
+	
+	$xnyo->filter_vars = false;
+	
 	$xnyo->start();
 	
 	$db->select_db(DB_NAME);
@@ -33,6 +36,7 @@
 	switch ($action) {
 		//case 'updateItem':
 		case 'edit':
+			
 			$xnyo->filter_post_var("id", "text");			
 			$xnyo->filter_post_var("epa", "text");
 			$xnyo->filter_post_var("voc_limit", "text");
@@ -48,11 +52,12 @@
 			$xnyo->filter_post_var("email", "text");
 			$xnyo->filter_post_var("contact", "text");
 			$xnyo->filter_post_var("title", "text");						
-			
+			//$xnyo->filter_post_var("jobber[]", "text");	
 			// protecting from xss
 			foreach ($_POST as $key=>$value)
-			{								
-				$_POST[$key]=Reform::HtmlEncode($value);
+			{	if ($key!='jobber'){				
+					$_POST[$key]=Reform::HtmlEncode($value);
+				}
 			}
 			
 			$regData = array (
@@ -70,7 +75,7 @@
 				"fax"			=>	$_POST["fax"],
 				"email"			=>	$_POST["email"],
 				"contact"		=>	$_POST["contact"],
-				"title"			=>	$_POST["title"],
+				"title"			=>	$_POST["title"],				
 				"creater_id"	=>	0
 			);
 			
@@ -100,9 +105,16 @@
 				//	setter injection
 				$facility->setTrashRecord(new Trash($db));															
 				$facility->setFacilityDetails($regData);
+				if ($_POST["jobber"]){
+					$jobber = $_POST["jobber"];
+					$jobberManager = new JobberManager($db);
+					$jobberManager->updateJobberFacility($regData['facility_id'], $jobber);
+
+				}				
 			}
+
 			
-			echo json_encode($validateStatus);			
+			echo json_encode($validateStatus);		
 			break;
 			
 			
@@ -140,9 +152,11 @@
 			// protecting from xss
 			foreach ($_POST as $key=>$value)
 			{								
-				$_POST[$key]=Reform::HtmlEncode($value);
+				if ($key!='jobber'){
+					$_POST[$key]=Reform::HtmlEncode($value);
+				}
 			}
-			
+	
 			$facilityData = array (
 				"voc_limit"		=>	$_POST["voc_limit"],
 				"voc_annual_limit"		=>	$_POST["voc_annual_limit"],
@@ -160,6 +174,7 @@
 				"email"			=>	$_POST["email"],
 				"contact"		=>	$_POST["contact"],
 				"title"			=>	$_POST["title"],
+				"jobber"			=>	$_POST["jobber"],
 				"creater_id"	=>	$_SESSION['user_id']
 			);
 			
@@ -175,7 +190,12 @@
 			if ($validStatus['summary'] == 'true') {
 				//	setter injection
 				$facility->setTrashRecord(new Trash($db));	
-				$facility->addNewFacility($facilityData);
+				$facilityID = $facility->addNewFacility($facilityData);
+				if ($_POST["jobber"]){
+					$jobberManager = new JobberManager($db);
+					$jobberManager->updateJobberFacility($facilityID, $_POST["jobber"]);
+
+				}
 			}
 			
 			echo json_encode($validStatus);					

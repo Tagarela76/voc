@@ -7,6 +7,7 @@
 {if $color eq "blue"}
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
+
 <div style="padding:7px;">
     <table class="users" width="100%" cellpadding="0" cellspacing="0" align="center">
         <tr class="users_top_yellowgreen">
@@ -32,7 +33,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->in_stock}
+                    &nbsp;{$product->in_stock}, {$typeName}
                 </div>
             </td>
         </tr>
@@ -42,7 +43,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}
+                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}, {$typeName}
                 </div>
             </td>
         </tr>
@@ -52,30 +53,21 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->limit}
+                    &nbsp;{$product->limit}, {$typeName}
                 </div>
             </td>
         </tr>	
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Amount : 
+                Amount to order: 
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->amount}
+                    &nbsp;{$product->amount}, {$typeName}
                 </div>
             </td>
         </tr>
-        <tr>
-            <td class="border_users_l border_users_b" height="20">
-                Unit type : 
-            </td>
-            <td class="border_users_l border_users_r border_users_b">
-                <div align="left">
-                    &nbsp;{*$product->in_stock_unit_type*}{$typeName}
-                </div>
-            </td>
-        </tr>		
+	
 				
 
         <tr>

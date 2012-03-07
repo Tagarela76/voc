@@ -13,7 +13,7 @@
 		<td>
 		<div style="float:left; width:80px">
 		
-		{if $request.category=="sales" && $request.bookmark == 'clients'}
+		{if ($request.category=="sales" && $request.bookmark == 'clients') || $request.category=="usersSupplier" || $request.category=="root" }
 			<div class="add_button button_alpha">
 				<input type="submit" name="action" value="addItem">
 			</div>
@@ -63,22 +63,26 @@
 		
 	{/if}		
 			<div id='hiddens'>	
-			{if $request.category eq 'tables'}				
-				<input type="hidden" name="category" value="{$request.bookmark}">
-			{elseif $request.category eq 'issue'}
-				<input type="hidden" name="category" value="{$request.category}">
-			{elseif $request.category == 'sales' and $request.bookmark == 'clients'}
+
+			{if ($request.category == 'sales' and $request.bookmark == 'clients') }
 				<input type="hidden" name="category" value="clients">
 				<input type="hidden" name="bookmark" value="clients">
-				<input type="hidden" name="supplierID" value="{$supplierID}">
+				<input type="hidden" name="supplierID" value="{$request.supplierID}">
+				<input type="hidden" name="jobberID" value="{$request.jobberID}">
 				<!--  <input type="hidden" name="category" value="{$request.category}"> -->
 				{if $smarty.request.subBookmark}
 					<input type="hidden" name="subBookmark" value="{$smarty.request.subBookmark}">
 				{/if}
-				
+			{elseif $request.category eq 'root'}
+				<input type="hidden" name="category" value="sales">
+			{elseif $request.category == 'usersSupplier'}
+				<input type="hidden" name="supplierID" value="{$request.supplierID}">
+				<input type="hidden" name="jobberID" value="{$request.jobberID}">
+				<input type="hidden" name="category" value="{$request.category}">
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
-				<input type="hidden" name="bookmark" value="{$request.bookmark}">
+				{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}
+				{if $supplierID}<input type="hidden" name="supplierID" value="{$supplierID}">{/if}
 			{/if}
 				{if $itemsCount}
 					<input type="hidden" name="itemsCount" value="{$itemsCount}">			

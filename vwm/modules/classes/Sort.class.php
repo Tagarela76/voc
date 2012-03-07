@@ -238,6 +238,39 @@ class Sort {
     			default:$subQuery=" product_id ASC";
     			break;  
     		}
+    		break;	
+		
+    		case 'clients':
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" c.company_id DESC";
+    			break;
+    			case 2:$subQuery.=" c.company_id ASC";
+    			break;
+    			case 3:$subQuery.=" di.discount ASC";
+    			break;
+    			case 4:$subQuery.=" di.discount DESC";
+    			break;
+
+    			break;  
+    		}
+    		break;		
+		
+    		case 'productsPrice':
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" p.product_id DESC";
+    			break;
+    			case 2:$subQuery.=" p.product_id ASC";
+    			break;
+    			case 3:$subQuery.=" price ASC";
+    			break;
+    			case 4:$subQuery.=" price DESC";
+    			break;
+   			
+    			default:$subQuery="";
+    			break;  
+    		}
     		break;		
     		
     		case 'chemicalInventory':

@@ -36,6 +36,7 @@ class CFacility extends Controller
 			//	setter injection
 			$facility->setTrashRecord(new Trash($this->db));
 			$facility->deleteFacility($ID);
+			
 		}
 		$overCategoryType="facility";
 
@@ -109,7 +110,12 @@ class CFacility extends Controller
 			$state = $state->getStateDetails($facilityDetails['state']);
 			$facilityDetails['state'] = $state['name'];
 		}*/
-
+		$jobberManager = new JobberManager($this->db);
+		$jobberList = $jobberManager->getFacilityJobberList($this->getFromRequest("id"));
+		foreach ($jobberList as $jobber){
+			$jobberDetails[] = $jobberManager->getJobberDetails($jobber['jobber_id']);
+		}
+		$this->smarty->assign("jobberDetails", $jobberDetails);
 		$this->smarty->assign("facility", $facilityDetails);
 		$this->smarty->assign('backUrl','?action=browseCategory&category=facility&id='.$this->getFromRequest("id").'&bookmark=department');
 		$this->smarty->assign('tpl', 'tpls/viewFacility.tpl');
@@ -182,7 +188,10 @@ class CFacility extends Controller
 		if (!$this->user->checkAccess('company', $this->getFromRequest('companyID'))) {
 			throw new Exception('deny');
 		}
-
+		$jobberManager = new JobberManager($this->db);
+		$jobberList = $jobberManager->getJobberList();
+		$this->smarty->assign("jobberList", $jobberList);
+		
 		$registration = new Registration($this->db);
 		$countries = $registration->getCountryList();
 		$country = new Country($this->db);
@@ -220,7 +229,10 @@ class CFacility extends Controller
 		$jsSources = array(
 			'modules/js/reg_country_state.js',
 			'modules/js/saveItem.js',
-			'modules/js/PopupWindow.js'
+			'modules/js/PopupWindow.js',
+			'modules/js/addJobberPopups.js',
+			'modules/js/checkBoxes.js'
+		
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 
@@ -241,6 +253,12 @@ class CFacility extends Controller
 		if (!$this->user->checkAccess($this->category, $this->getFromRequest('id'))) {
 			throw new Exception('deny');
 		}
+		$jobberManager = new JobberManager($this->db);
+		$jobberList = $jobberManager->getJobberList();
+		$this->smarty->assign("jobberList", $jobberList);
+		$facilityJobber = $jobberManager->getFacilityJobberList($this->getFromRequest("id"));
+		$this->smarty->assign("facilityJobber", $facilityJobber);
+		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'), true);
 		$this->smarty->assign('data', $facilityDetails);
@@ -279,7 +297,9 @@ class CFacility extends Controller
 		$jsSources = array(
 			'modules/js/reg_country_state.js',
 			'modules/js/saveItem.js',
-			'modules/js/PopupWindow.js'
+			'modules/js/PopupWindow.js',
+			'modules/js/addJobberPopups.js',
+			'modules/js/checkBoxes.js'			
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 

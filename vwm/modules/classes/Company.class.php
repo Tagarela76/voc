@@ -63,8 +63,8 @@ class Company {
         
         $trialPeriod = new DateTime();
         $trialPeriod->add( new DateInterval("P".intval($configs['trial_period'])."D") );
-		
-		$query="INSERT INTO ".TB_COMPANY." (name, address, city, zip, county, state, country, phone, fax, email, contact, title, gcg_id, creater_id, trial_end_date, voc_unittype_id) VALUES (";
+
+		$query="INSERT INTO ".TB_COMPANY." (name, address, city, zip, county, state, country, phone, fax, email, contact, title, gcg_id, creater_id, creation_date, voc_unittype_id) VALUES (";
 		
 		$query.="'".$companyData["name"]."', ";
 		$query.="'".$companyData["address"]."', ";
@@ -85,7 +85,7 @@ class Company {
 		
 		$query.=')';
         
-        
+	     
 						
 		$this->db->query($query);
 		

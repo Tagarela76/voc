@@ -39,27 +39,27 @@ class User {
 		$facility_id = $userData["facility_id"] == null	? "NULL" : $userData["facility_id"];
 		$department_id = $userData["department_id"] == null ? "NULL": $userData["department_id"];
 		$creater_id = $userData["creater_id"] == null ? "NULL" : $userData["creater_id"];		
-		$supplier_id = $userData["supplier_id"] == null	? "NULL" : $userData["supplier_id"];
+		$jobber_id = $userData["jobber_id"] == null	? "NULL" : $userData["jobber_id"];
 		
 		$query="INSERT INTO ".TB_USER." (accessname, password, username, phone, mobile, email, accesslevel_id, company_id, facility_id, department_id, grace, creater_id) VALUES (";
-		$query.="'".$userData["accessname"]."', ";
+		$query.="'".mysql_escape_string($userData["accessname"])."', ";
 		$query.="'".md5($userData["password"])."', ";
-		$query.="'".$userData["username"]."', ";
-		$query.="'".$userData["phone"]."', ";
-		$query.="'".$userData["mobile"]."', ";
-		$query.="'".$userData["email"]."', ";
+		$query.="'".mysql_escape_string($userData["username"])."', ";
+		$query.="'".mysql_escape_string($userData["phone"])."', ";
+		$query.="'".mysql_escape_string($userData["mobile"])."', ";
+		$query.="'".mysql_escape_string($userData["email"])."', ";
 		$query.=$accesslevel_id.", ";
 		$query.=$company_id.", ";
 		$query.=$facility_id.", ";	
 		$query.=$department_id.", ";
-		$query.="'".$userData["grace"]."', ";
+		$query.="'".mysql_escape_string($userData["grace"])."', ";
 		$query.=$creater_id;		
 		$query.=')';
 		
 		$this->db->query($query);
 		$insertedUserID = $this->db->getLastInsertedID();
 		
-		$sql = "INSERT INTO users2supplier (id , user_id, supplier_id) VALUES (NULL , {$insertedUserID} , {$supplier_id})";
+		$sql = "INSERT INTO users2jobber (id , user_id, jobber_id) VALUES (NULL , {$insertedUserID} , {$jobber_id})";
 		$this->db->query($sql);
 		/**
 		 * add new User in Bridge
@@ -160,7 +160,17 @@ class User {
 		
 		
 		$userDetails['startPoint']=$this->getUserStartPoint($userDetails['user_id']);
-		
+		if (!$userDetails['startPoint']){
+
+					$sp=$this->getSupplierStartPoint($userDetails['user_id']);
+					if ($sp){
+						$supList = '';
+						foreach($sp as $sup){
+							$supList .= $sup['supplier'].". ";
+						}
+						$userDetails['startPoint']=$supList;
+					}			
+		}
 		if (!$vanilla) {
 			switch ($userDetails['accesslevel_id']) {
 				case 0:
@@ -248,7 +258,10 @@ class User {
 			$query.="WHERE user_id=".	$userData["user_id"];
 		}		
 		$this->db->query($query);
-		
+			$query="UPDATE users2supplier SET ";
+			$query.="supplier_id=".		$userData['supplier_id']."";			
+			$query.="WHERE user_id=".	$userData["user_id"];
+		$this->db->query($query);	
 //		// set user data to Bridge XML
 //		$userData4Brdige = $userData;
 //		$userID = (int)$userData4Brdige["user_id"];
@@ -288,6 +301,9 @@ class User {
 			case 4:
 				$aroGroupName = 'sales';
 				break;
+			case 5:
+				$aroGroupName = 'supplier';
+				break;			
 			default:
 				throw new Exception('Incorrect access level');
 		}
@@ -358,9 +374,23 @@ class User {
 				);
 				$users[]=$user;
 			}
-			for ($i=0; $i < count($users); $i++) {
-				$sp=$this->getUserStartPoint($users[$i]['user_id']);
-				$users[$i]['startPoint']=$sp;
+			if ($itemID == 'supplier'){
+				for ($i=0; $i < count($users); $i++) {
+					$sp=$this->getSupplierStartPoint($users[$i]['user_id']);
+					if ($sp){
+						$supList = '';
+						foreach($sp as $sup){
+							$supList .= $sup['supplier'].". ";
+						}
+						$users[$i]['startPoint']=$supList;
+					}
+					
+				}				
+			}else{
+				for ($i=0; $i < count($users); $i++) {
+					$sp=$this->getUserStartPoint($users[$i]['user_id']);
+					$users[$i]['startPoint']=$sp;
+				}
 			}
 		}
 		
@@ -572,14 +602,15 @@ class User {
 		if ($_POST['password'] != $_POST['confirm_password']) {
 			$isValid=false;
 			$check['password']='different';
-		} elseif (strlen(trim($_POST['password'])) == 0) {
+		} 
+		/*elseif (strlen(trim($_POST['password'])) == 0) {
 			$isValid=false;
 			$check['password']='failed';
 		} elseif (strlen(trim($_POST['confirm_password'])) == 0) {
 			$isValid=false;
 			$check['confirm_password']='failed';						
 		}
-				
+			*/	
 		return $isValid;
 	}
 	
@@ -646,6 +677,7 @@ class User {
 	 	
 	 	foreach($ms->getModulesMap() as $key => $value) {
 	 		if ($key == $level) {
+				
 	 			$acoValue = $level;
 	 			$module = true;
 	 		}
@@ -722,6 +754,19 @@ class User {
 		}
 		return $path;
 	}
+	
+	public function getSupplierStartPoint($userID) {
+		//$this->db->select_db(DB_NAME);
+		$query="SELECT s.supplier FROM users2supplier us, supplier s WHERE us.supplier_id = s.original_id AND s.supplier_id = s.original_id AND us.user_id=".$userID;
+		$this->db->query($query);
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$data=$this->db->fetch_all_array();
+
+		return $data;
+	}	
 	
 	public function deleteUser ($id) {
 		

@@ -65,9 +65,11 @@
                             &nbsp;
                         </td>
                     </tr>
+					
                 </table>
- 
+
     <div align="center" class="padd7">
+		 {if $check && $check == 'false'}<span style="color: red; font-size: 14px;"> Error! Can't convert product usage to stock unit type, because the density  do not specify! Call John! </span>{/if}
         <div align="right" style="width:690px ;padding:0 50px" >
 				<input type="button" value="No" class="button" onclick="location.href='{$cancelUrl}'">
 				<input type="submit" name="confirm" value="Yes" class="button">				

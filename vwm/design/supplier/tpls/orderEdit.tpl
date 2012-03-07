@@ -21,7 +21,7 @@
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' action='?action={$request.action}&category=orders&id={$request.id}&facilityID={$request.facilityID}'>
+	<form method='POST' action='?action={$request.action}&category=orders&id={$request.id}&facilityID={$request.facilityID}&jobberID={$request.jobberID}&supplierID={$request.supplierID}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
@@ -62,7 +62,7 @@
                 </td>
                 <td class="border_users_r border_users_b">
 
-					{$order.order_amount}
+					{$order.order_amount} {$order.type}
 				
                 </td>
             </tr>
@@ -79,9 +79,8 @@
         <div align="right" class="margin7">
  <span style="color: red; font-size: 14px;">{if $request.action eq "addItem"}Be careful! Will be sent a letter with order's changes to the client!{else}
 	 Be careful! Will be sent a e-mail with order's changes to the client! {/if}</span>
-				<input type='button' class="button" value='Cancel' onclick="location.href='supplier.php?action=browseCategory&category=sales&bookmark=orders'">
-			
-      	
+				<input type='button' class="button" value='Cancel' onclick="location.href='supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request.jobberID}&supplierID={$request.supplierID}'">
+
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
 			<input type='hidden' name="order_id" value='{$order.order_id}'>

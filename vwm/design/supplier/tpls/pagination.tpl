@@ -1,32 +1,3 @@
-{*if $pageCount > 1}
-<div class="br_10">
-</div>
-<table width="98%" align="center" >
-<tr>
-	<td align="center" class="pagination">	
-		{if $currentPage != 1 && $currentPage}
-			<a href="{$currentURL}&page={$currentPage-1}{if $sort}&sort={$sort}{/if}" class="NextPrevious">Previous</a>					
-		{/if}
-					
-		{section name=i loop=$pageCount}
-		{if $smarty.section.i.index+1 >= $first && $smarty.section.i.index+1 <= $last}
-			{if $currentPage eq $smarty.section.i.index+1}
-				<b style="color:#4C505B;background:#E3E3E3;">{$smarty.section.i.index+1}</b>
-			{else}
-				<a href="{$currentURL}&page={$smarty.section.i.index+1}{if $sort}&sort={$sort}{/if}">{$smarty.section.i.index+1}</a>
-			{/if}
-		{/if}			
-		{/section}		
-		
-		{if $currentPage != $pageCount && $pageCount != 0}			
-			<a href="{$currentURL}&page={$currentPage+1}{if $sort}&sort={$sort}{/if}" class="NextPrevious">Next</a>
-		{/if}		
-	</td>	
-</tr>
-</table>
-<div class="br_10">
-</div>
-{/if*}
 
 {*WORKING*}
 {if $pagination && $pagination->getPageCount() > 1}

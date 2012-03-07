@@ -35,7 +35,13 @@ class Product extends ProductProperties {
 			return false;
 	}
 
-
+	public function getCountSupplierProducts($supplierID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM product p, supplier s WHERE p.supplier_id = s.supplier_id AND s.original_id = {$supplierID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}
 
 	public function getProductListByMFG($supplierID, $companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		$products = $this->selectProductsByCompany($companyID, $supplierID, $pagination,$filter,$sort);
@@ -55,14 +61,14 @@ class Product extends ProductProperties {
 			return false;
 	}
 	
-	public function getProductPrice($productID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductPrice($productID, $jobberID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
 		$query =	"SELECT pp.* " .
 					"FROM price4product pp  ".
 					"WHERE pp.product_id = " . (int) $productID . " ";
 
-		if ($priceID){
-			$query .= " AND pp.price_id = " . (int) $priceID . "";
+		if ($jobberID){
+			$query .= " AND pp.jobber_id = " . (int) $jobberID . "";
 		}
 
 
@@ -82,14 +88,14 @@ class Product extends ProductProperties {
 		return $productPrice;
 	}
 	
-	public function getProductPriceBySupplier($supplierID, $priceID = null, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductPriceBySupplier($supplierID, $priceID = null, $jobberID, Pagination $pagination = null, Sort $sortStr = null) {
 
 		$query =	"SELECT p.product_id, p.product_nr, pp.* " .
 				// " . TB_FACILITY . " f , " . TB_COMPANY . " c ,
 					"FROM " . TB_SUPPLIER . " s , price4product pp  , ". TB_PRODUCT . " p ".
 					//"LEFT JOIN product2inventory pi ON pi.product_id = p.product_id ".
 					"WHERE p.supplier_id = s.supplier_id " .
-					"AND s.original_id = " . (int) $supplierID . " AND pp.product_id = p.product_id ";
+					"AND s.original_id = " . (int) $supplierID . " AND pp.product_id = p.product_id AND pp.jobber_id = {$jobberID} ";
 					//"AND f.facility_id = pi.facility_id ".
 					//"AND f.company_id = c.company_id ";
 		if ($priceID){
@@ -98,8 +104,16 @@ class Product extends ProductProperties {
 		if ($productID){
 			$query .= " AND p.product_id = " . (int) $productID . "";
 		}		
-			$query .= " GROUP BY p.product_id ORDER BY  p.product_id ASC";
-
+			$query .= " GROUP BY p.product_id ";
+	
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY p.product_id ASC ";
+		}		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
 		$this->db->query($query);
 //echo $query;
 		if ($this->db->num_rows() == 0) {
@@ -196,7 +210,11 @@ class Product extends ProductProperties {
 			'boiling_range_from'		=>	$data->boiling_range_from,
 			'boiling_range_to'			=>	$data->boiling_range_to,
 			'percent_volatile_weight'	=>	$data->percent_volatile_weight,
-			'percent_volatile_volume'	=>	$data->percent_volatile_volume
+			'percent_volatile_volume'	=>	$data->percent_volatile_volume,
+			
+			'product_instock'	=>	$data->product_instock,
+			'product_limit'	=>	$data->product_limit,
+			'product_amount'	=>	$data->product_amount
 		);
 		$hazardous = new Hazardous($this->db);
 		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
@@ -277,7 +295,7 @@ class Product extends ProductProperties {
 
 		$query="INSERT INTO ".TB_PRODUCT." (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 				"specific_gravity, specific_gravity_unit_id, specialty_coating, aerosol, boiling_range_from, boiling_range_to, " .
-				"supplier_id, percent_volatile_weight, percent_volatile_volume) VALUES (";
+				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype) VALUES (";
 
 		$query.="'".$productData["product_nr"]."', ";
 		$query.="'".$productData["name"]."', ";
@@ -294,7 +312,13 @@ class Product extends ProductProperties {
 		$query.="'".$productData["boiling_range_to"]."', ";
 		$query.="'".$productData["supplier_id"]."', ";
 		$query.="'".$productData["percent_volatile_weight"]."', ";
-		$query.="'".$productData["percent_volatile_volume"]."' ";
+		$query.="'".$productData["percent_volatile_volume"]."', ";
+		
+		$query.="'".$productData["product_instock"]."', ";
+		$query.="'".$productData["product_limit"]."', ";
+		$query.="'".$productData["product_amount"]."', ";
+		$query.="'".$productData["product_stocktype"]."', ";
+		
 
 		$query.=')';
 
@@ -410,7 +434,12 @@ class Product extends ProductProperties {
 		$query .= "boiling_range_to = '".$productData["boiling_range_to"]."', ";
 		$query .= "supplier_id = '".$productData["supplier_id"]."', ";
 		$query .= "percent_volatile_weight = '".$productData["percent_volatile_weight"]."', ";
-		$query .= "percent_volatile_volume = '".$productData["percent_volatile_volume"]."' ";
+		$query .= "percent_volatile_volume = '".$productData["percent_volatile_volume"]."', ";
+		
+		$query .= "product_instock = '".$productData["product_instock"]."', ";
+		$query .= "product_limit = '".$productData["product_limit"]."', ";
+		$query .= "product_amount = '".$productData["product_amount"]."', ";
+		$query .= "product_stocktype = '".$productData["product_stocktype"]."' ";
 
 		$query .= " WHERE product_id = ".$productData['product_id'];
 

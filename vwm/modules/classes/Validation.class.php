@@ -76,6 +76,10 @@ class Validation {
 			case 'company':
 				$query="SELECT * FROM ".TB_COMPANY." WHERE name='".$itemName."'";
 				break;
+			
+			case 'jobber':
+				$query="SELECT * FROM jobber WHERE name='".$itemName."'";
+				break;			
 				
 			case 'facility':
 				if ($parrentID != 'none') {
@@ -872,7 +876,7 @@ class Validation {
 	
 	function validateRegData($data) {
 		$result['summary']='true';
-		
+
 		if (isset($data['email'])) {
 			if ($this->check_email($data['email'])) {
 				$result['email']='success';
@@ -881,6 +885,22 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
+		
+/*
+			if (isset($data['supplier'])) {
+				$result['supplier']='success';
+			} else {
+				$result['supplier']='failed';
+				$result['summary']='false';
+			}
+			
+			if (isset($data['jobber'])) {
+				$result['jobber']='success';
+			} else {
+				$result['jobber']='failed';
+				$result['summary']='false';
+			}			
+*/		
 		
 		if (isset($data['id'])) {
 			if ($this->check_id($data['id'])) {

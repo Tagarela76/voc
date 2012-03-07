@@ -281,7 +281,12 @@ class CAProduct extends Controller {
 		$densityDetailsTrue['numerator'] = $unittypeData['name']; 
 		$unittypeData = $cUnitType->getUnittypeDetails($densityDetailsTrue['denominatorID']);
 		$densityDetailsTrue['denominator'] = $unittypeData['name']; 
-		
+
+		// STOCK TYPE
+		$inventoryManager = new InventoryManager($this->db);	
+		$initialInstock = $inventoryManager->getInitialInStockValues($this->getFromRequest('id'));	
+		$stockTypeDetails = $cUnitType->getUnittypeDetails($initialInstock['product_stocktype']);
+		//
 		$cProductTypes = new ProductTypes($this->db);
 		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
 		
@@ -293,6 +298,7 @@ class CAProduct extends Controller {
 		$this->smarty->assign('productTypes', $productType);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
+		$this->smarty->assign("stock", $stockTypeDetails);
 		$this->smarty->assign('msdsLink', $msdsLink);
 		$this->smarty->assign('techSheetLink', $techSheetLink);
 		$this->smarty->assign('tpl', 'tpls/viewProduct.tpl');
@@ -331,7 +337,12 @@ class CAProduct extends Controller {
 				"boiling_range_to"	=>	$this->getFromPost("boiling_range_to"),
 				"percent_volatile_weight"=>	$this->getFromPost("percent_volatile_weight"),
 				"percent_volatile_volume"	=>	$this->getFromPost("percent_volatile_volume"),
-				"creator_id"		=>	18
+				"creator_id"		=>	18,
+				"product_instock"	=>	$this->getFromPost("stock"),
+				"product_limit"		=>	$this->getFromPost("limit"),
+				"product_amount"	=>	$this->getFromPost("amount"),
+				"product_stocktype"	=>	$this->getFromPost("selectUnittype")
+				
 			);
 			
 			//	process hazardous (chemical) classes
@@ -437,7 +448,7 @@ class CAProduct extends Controller {
 			
 			$supplier=new Supplier($this->db);
 			$this->smarty->assign("supplier", $supplier->getSupplierList());
-			
+
 			//	hazardous (chemical) class list (popup)
 			$hazardous = new Hazardous($this->db);
 			$chemicalClassesList = $hazardous->getChemicalClassesList();
@@ -453,6 +464,30 @@ class CAProduct extends Controller {
 			$cDensity = new Density($this->db);
 			$cUnitType = new Unittype($this->db);
 			$densityDetailsTrue = $cDensity->getAllDensity($cUnitType);
+			
+// UNITTYPE{
+			$inventoryManager = new InventoryManager($this->db);	
+			$initialInstock = $inventoryManager->getInitialInStockValues($id);
+
+			$result = $cUnitType->getAllClassesOfUnitTypes();
+			foreach($result as $res){
+				$typeEx[] = $res['name'];
+			}
+		
+			if ( $initialInstock['product_stocktype'] != '' && $initialInstock['product_stocktype'] != '0'){
+
+				$unitTypeClass = $cUnitType->getUnittypeClass($initialInstock['product_stocktype']);
+			}else{
+				$unitTypeClass = $cUnitType->getUnittypeClass(1);
+			}
+			$unittypeList = $cUnitType->getUnittypeListDefault($unitTypeClass);
+			
+			$this->smarty->assign('stockType', $initialInstock['product_stocktype']);
+			$this->smarty->assign('unitTypeClass', $unitTypeClass);
+			$this->smarty->assign('typeEx', $typeEx);		
+			$this->smarty->assign('unittype', $unittypeList);
+
+// UNITYPE END
 			
 			$this->smarty->assign('densityDetails', $densityDetailsTrue);
 			$this->smarty->assign('densityDefault', $productData['densityUnitID']);								
@@ -629,6 +664,7 @@ class CAProduct extends Controller {
 			$this->smarty->assign("compsAdded", $components);									
 		}
 		$data = $productData;
+
 		$jsSources = array(
 			'modules/js/PopupWindow.js', 
 			'modules/js/checkBoxes.js',
@@ -637,7 +673,8 @@ class CAProduct extends Controller {
 			"modules/js/getInventoryShortInfo.js",
 			"modules/js/addProductQuantity.js",
 			"modules/js/hazardousPopup.js",
-			"modules/js/industryTypesPopup.js"
+			"modules/js/industryTypesPopup.js",
+			"modules/js/addUsage.js"
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl','tpls/addProductClass.tpl');
@@ -677,7 +714,11 @@ class CAProduct extends Controller {
 				"boiling_range_to"	=>	$this->getFromPost("boiling_range_to"),
 				"percent_volatile_weight"=>	$this->getFromPost("percent_volatile_weight"),
 				"percent_volatile_volume"	=>	$this->getFromPost("percent_volatile_volume"),
-				"creator_id"			=>	18 //???
+				"creator_id"			=>	18, // ????
+				"product_instock"	=>	$this->getFromPost("stock"),
+				"product_limit"		=>	$this->getFromPost("limit"),
+				"product_amount"	=>	$this->getFromPost("amount"),
+				"product_stocktype"	=>	$this->getFromPost("selectUnittype")			
 			);
 			
 			//	process hazardous (chemical) classes
@@ -906,7 +947,30 @@ class CAProduct extends Controller {
 		$cDensity = new Density($this->db);
 		$cUnitType = new Unittype($this->db);
 		$densityDetailsTrue = $cDensity->getAllDensity($cUnitType);
+
+// UNITTYPE{
+			$inventoryManager = new InventoryManager($this->db);	
+			$initialInstock = $inventoryManager->getInitialInStockValues($id);
+
+			$result = $cUnitType->getAllClassesOfUnitTypes();
+			foreach($result as $res){
+				$typeEx[] = $res['name'];
+			}
 		
+			if ( $initialInstock['product_stocktype'] != '' && $initialInstock['product_stocktype'] != '0'){
+
+				$unitTypeClass = $cUnitType->getUnittypeClass($initialInstock['product_stocktype']);
+			}else{
+				$unitTypeClass = $cUnitType->getUnittypeClass(1);
+			}
+			$unittypeList = $cUnitType->getUnittypeListDefault($unitTypeClass);
+			
+			$this->smarty->assign('stockType', $initialInstock['product_stocktype']);
+			$this->smarty->assign('unitTypeClass', $unitTypeClass);
+			$this->smarty->assign('typeEx', $typeEx);		
+			$this->smarty->assign('unittype', $unittypeList);
+
+// UNITYPE END		
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign('densityDefault', $productData['density_unit_id']);
 		
@@ -920,7 +984,8 @@ class CAProduct extends Controller {
 			"modules/js/getInventoryShortInfo.js",
 			"modules/js/addProductQuantity.js",
 			"modules/js/hazardousPopup.js",
-			"modules/js/industryTypesPopup.js"
+			"modules/js/industryTypesPopup.js",
+			"modules/js/addUsage.js"
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl', 'tpls/addProductClass.tpl');

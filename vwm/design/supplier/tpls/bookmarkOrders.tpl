@@ -11,7 +11,9 @@
 	{if $color eq "green2" && $itemsCount == 0}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 	{/if}
-
+{*PAGINATION*}
+		{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
 <div class="padd7">
 	<table class="users"cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_green" height="27px">
@@ -128,7 +130,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.order_amount}
+                    {$order.order_amount} {$order.type}
                 </div>
             </a>
         </td>
@@ -157,7 +159,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$order.order_price}
+                    $ {$order.order_price}
                 </div>
             </a>
         </td>
@@ -217,3 +219,6 @@
     </tr>
 </table></div>
 </form>
+{*PAGINATION*}
+		{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
