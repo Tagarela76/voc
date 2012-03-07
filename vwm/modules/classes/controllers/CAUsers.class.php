@@ -230,12 +230,12 @@ class CAUsers extends Controller {
 			
 			$bookmark = 'supplier';
 			if ($bookmark == 'supplier') {
-				$suppl = new BookmarksManager($this->db);
-				$supplierList = $suppl->getOriginSupplier();
-				$supList = $this->user->getSupplierStartPoint($data['user_id']);
-				$data['supplier_id'] = $supList[0]['supplier'];
-				$this->smarty->assign("supplier",$supplierList);
-			}	
+				$jobberManager = new JobberManager($this->db);
+				$supplierList = $jobberManager->getJobberList();
+
+				$this->smarty->assign("jobbers",$supplierList);
+			}				
+				
 			$bookmark = 'admin';
 			if ($data['accesslevel_id']!=3) {
 				$company=new Company($this->db);

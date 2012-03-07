@@ -32,6 +32,7 @@ class CSupRoot extends Controller
 			}
 			$jobberList = $arr;
 		}
+		
 		$urlRoot = "?action=browseCategory&category=root";
 		$this->smarty->assign('urlRoot', $urlRoot);		
 		
