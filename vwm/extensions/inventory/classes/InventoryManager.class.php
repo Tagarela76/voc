@@ -405,7 +405,7 @@ echo $query;
 		$query .=	" FROM mix m , mixgroup mg , department d , company c , product p , supplier s,facility f ";
 					
 		$query .=	" LEFT JOIN discounts2inventory di ON di.facility_id = f.facility_id AND di.supplier_id = {$supplierID} ".
-					" AND di.product_id IS NULL ";
+					" AND di.product_id IS NULL AND di.jobber_id = {$jobberID} ";
 		if ($facilityID != null){
 			$query .= " AND di.facility_id = {$facilityID} ";
 		}		
@@ -415,7 +415,7 @@ echo $query;
 					" AND m.department_id = d.department_id ".
 					" AND d.facility_id = f.facility_id ".
 					" AND s.supplier_id = p.supplier_id ".
-					" AND di.jobber_id = {$jobberID} ".
+					
 					" AND s.original_id = {$supplierID} ";
 		if ($facilityID != null){
 			$query .= " AND f.facility_id = {$facilityID} ";
