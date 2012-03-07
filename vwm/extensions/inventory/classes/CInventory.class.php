@@ -872,7 +872,7 @@ class CInventory extends Controller
 				
 				$supplierPrductIdList = $inventoryManager->getInventoryProductIdByFacility($facilityID, $pagination);
 
-
+				
 			
 				// kostyl' for product usage after completed oreder
 				foreach ($supplierPrductIdList as $id){
