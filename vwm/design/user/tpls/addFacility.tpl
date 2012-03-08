@@ -330,14 +330,18 @@
 
 
     </div>
+Note: Different jobbers can't supply the same products!
+					
 </div>
 {*END OF POPUP*}		
 {*DATA TO SAVE FROM POPUPS*}
 <div style="display:none;">
 	<div id="jobber_data">
-
+	
 	</div>
-
+	{literal}		
+	<script>addJobberData();</script>
+	{/literal}
 </div>
 {*/END OF DATA*}		
 		<table cellpadding="5" cellspacing="0" align="center" width="95%">

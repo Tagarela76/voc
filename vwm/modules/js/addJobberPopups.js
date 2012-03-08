@@ -6,6 +6,7 @@
 				$(this).attr('temp','true')
 		});
 		$("#Jobberlist").dialog('open');
+		RemoveJobbersAtTheBegining();
 	}
 	
 	function showSupplier()
@@ -43,7 +44,8 @@
 			else
 				$(this).attr('checked',false);						
 			num++;			
-		});		
+		});	
+		
 		$("#Jobberlist").dialog('close');
 	}
 	
@@ -108,6 +110,7 @@
 	});	
 
 function checkJobbers(jobberID){
+
 	$.ajax({
       url: "modules/ajax/jobbers4facility.php",      		
       type: "POST",
@@ -117,22 +120,23 @@ function checkJobbers(jobberID){
       success: 	function (response) 
      			{   
       				jsonResponse=eval("("+response+")");
-					answer(jsonResponse);										
+					answerResult(jsonResponse);										
       			}        		   			   	
 	});
 }
-
-function answer(jsonResponse) {
-arr = isArray(jsonResponse);
+function RemoveJobbersAtTheBegining(){
 		$('input[id^=jobber]').each(function(el)
-		{
+		{	$(this).css('display','inline-block');
 			if($(this).attr('checked')==true)
-				$(this).attr('temp','true')
-		});$('input[id^=jobber]').each(function(el)
-		{
-			if($(this).attr('checked')==true)
-				$(this).attr('temp','true')
-		});
+				
+				checkJobbers($(this).attr('value'));
+		
+				
+		});	
+}
+
+function answerResult(jsonResponse) {
+arr = isArray(jsonResponse);
 
 	if (jsonResponse != 'false') {	//	It's more than 1 jobber with the same supplier		
 		if ( isArray(jsonResponse) ){
@@ -145,6 +149,7 @@ arr = isArray(jsonResponse);
 							$(this).show("slow");
 						}else{
 							$(this).hide("slow");
+							$(this).attr('checked',false);
 						}
 						
 					}
