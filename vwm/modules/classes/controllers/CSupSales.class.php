@@ -19,7 +19,11 @@ class CSupSales extends Controller
 	private function actionBrowseCategory(){
 
 		$request = $this->getFromRequest();
-
+		
+		if (!$this->user->checkAccess('jobber', $request['jobberID'])) {
+			throw new Exception('deny');
+		}
+		
 		$bookmark = $this->getFromRequest('bookmark');
 		$urlRoot = "?action=browseCategory&category=root";
 		$this->smarty->assign('urlRoot', $urlRoot);	
@@ -314,13 +318,14 @@ class CSupSales extends Controller
 				$jobber->setTrashRecord(new Trash($this->db));
 
 				$jobberID = $jobber->save();
+			
 				$result = $jobberManager->updateJobberSuppliers($jobberID,$jobberData['supplier']);
 
 				//	redirect
-				if ($result)
+				if ($result){
 				header("Location: ?action=browseCategory&category=root");
 				die();
-
+				}
 			}else {
 				//	Errors on validation of adding for a new company
 				/* old school style */

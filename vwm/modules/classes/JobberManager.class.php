@@ -57,6 +57,31 @@ class JobberManager {
 		return $list;
 	}	
 	
+	public function getJobbersSupplierList($jobberID) {
+
+		$query = "SELECT * FROM supplier2jobber WHERE jobber_id = {$jobberID}";
+		$this->db->query($query);
+		//echo 	$query;
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}	
+		$list = $this->db->fetch_all_array();
+
+		return $list;
+	}	
+	
+	public function getMoreJobbersWithSameSupplierID($supplierID,$jobberID) {
+
+		$query = "SELECT jobber_id FROM supplier2jobber WHERE supplier_id = {$supplierID} AND jobber_id != {$jobberID}";
+		$this->db->query($query);
+		//echo 	$query;
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}	
+		$list = $this->db->fetch_all_array();
+
+		return $list;
+	}	
 	public function getFacilityJobberList($facilityID) {
 
 		$query = "SELECT * FROM facility2jobber WHERE facility_id = {$facilityID}";

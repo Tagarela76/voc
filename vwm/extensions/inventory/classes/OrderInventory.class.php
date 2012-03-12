@@ -92,7 +92,7 @@ class OrderInventory {
                                                
 
                 }	
-
+		//echo $query;
 		$this->db->query($query);
 			
 		if(mysql_error() == '') {

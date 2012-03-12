@@ -793,15 +793,17 @@ class CInventory extends Controller
 								break;
 						}
 						// EMAIL NOTIFICATION
+						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
-						$supplierDetails = $inventoryManager->getSupplierEmail($supplierID[0]['original_id']);
+						$supplierDetails = $inventoryManager->getSupplierEmail($jobberID);
 						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
 
 						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						
 			
-						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+						
 						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($jobberID);
 						if ($ifEmail) {
 							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
