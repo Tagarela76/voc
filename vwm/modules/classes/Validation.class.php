@@ -2109,6 +2109,24 @@ class Validation {
 					return true;
 				} else return false;
 		} else return false;
+	}			
+	
+	
+	public function validateAccessoryUsage($form, TypeChain $dateChain) {
+		$result["summary"] = true;				
+		
+		if (!$dateChain->getTimestamp()) {
+			$result["summary"] = false;		
+			$result["date"] = "Wrong date format";
+		}			
+		
+		//	process usage
+		if (!$this->check_quantity($form['usage'])) {
+			$result["summary"] = false;		
+			$result["usage"] = "Usage should be countable";
+		}
+		
+		return $result;			
 	}
 	
 }

@@ -943,6 +943,22 @@ class CInventory extends Controller
 					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
 				}
 				break;
+				
+			
+			case 'gom': 
+				//	GOM == Goods of Manufacturing == Accessories!
+				//	Remember this
+				
+				$accessories = new Accessory($this->db);
+				$accessoriesList = $accessories->getAllAccessory($facilityDetails['company_id']);
+				var_dump($accessoriesList);
+				
+				$this->smarty->assign('accessoriesList',$accessoriesList);
+				$this->smarty->assign('tpl','inventory/design/inventoryGOM.tpl');	
+				break;
+			
+			
+			
 			case 'orders':
 				// SOrt
 				$sortStr = $this->sortList('orders',5);

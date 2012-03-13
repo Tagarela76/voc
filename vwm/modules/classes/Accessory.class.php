@@ -195,7 +195,28 @@ class Accessory implements iAccessory {
 //		}		
 	}
 	
-	//	This comment was added at branch "test"
+	public function getAccessoryUsages($accessoryID) {
+		$sql = "SELECT * FROM `accessory_usage` WHERE accessory_id = ".mysql_escape_string($accessoryID)." ORDER BY date DESC";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		$usages = array();
+		$rows = $this->db->fetch_all();
+		foreach ($rows as $row) {
+			$accessoryUsage = new AccessoryUsage($this->db);
+			$accessoryUsage->id = $row->id;
+			$accessoryUsage->accessory_id = $row->accessory_id;
+			$accessoryUsage->date = DateTime::createFromFormat('U', $row->date);
+			$accessoryUsage->usage = $row->usage;
+			
+			$usages[] = $accessoryUsage;
+		}
+		
+		return $usages;
+	}
+	
 }
 
 ?>

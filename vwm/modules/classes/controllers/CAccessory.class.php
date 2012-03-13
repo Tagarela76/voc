@@ -76,14 +76,30 @@ class CAccessory extends Controller
 							
 		$accessory = new Accessory($this->db);
 		$accessory->setAccessoryID($this->getFromRequest("id"));
-		$accessoryDetails = $accessory->getAccessoryDetails();						
+		$accessoryDetails = $accessory->getAccessoryDetails();
+		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
+		
 		$this->smarty->assign("accessory", $accessoryDetails);
+		$this->smarty->assign("accessoryUsages", $accessoryUsages);
 							
 		$this->setNavigationUpNew('department', $this->getFromRequest("departmentID"));
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"),array('bookmark'=>'accessory'));
 		$this->setPermissionsNew('viewData');
+		
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));
+		
+		$jsSources = array(
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
 							
+		$this->smarty->assign('dataChain', new TypeChain(null,'date',$this->db, $companyID,'company'));
 		$this->smarty->assign('editUrl','?action=edit&category=accessory&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID"));
+		$this->smarty->assign('addUsageUrl','?action=addUsage&category=accessory&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID"));
 		$this->smarty->assign('deleteUrl','?action=deleteItem&category=accessory&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID"));	
 		$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=accessory');
 		$this->smarty->assign('tpl','tpls/viewAccessory.tpl');
@@ -344,6 +360,46 @@ class CAccessory extends Controller
 			//	set tpl
 			$this->smarty->assign('tpl', 'tpls/accessoryList.tpl');
 		}
+	}
+	
+	
+	private function actionAddUsage() {
+		$ajaxResponse = new AJAXResponse();
+		$form = $this->getFromPost('AccessoryUsage');
+		if ($form) {
+									
+			$company = new Company($this->db);
+			$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));			
+			
+			$dateChain = new TypeChain($form['date'],'date',$this->db, $companyID,'company');			
+			
+			$validation = new Validation($this->db);		
+			$validationRes = $validation->validateAccessoryUsage($form, $dateChain);
+			if ($validationRes['summary']) {				
+				$accessoryUsage = new AccessoryUsage($this->db);
+				$accessoryUsage->accessory_id = $this->getFromRequest('id');						
+				$accessoryUsage->date = DateTime::createFromFormat('U', $dateChain->getTimestamp());
+				$accessoryUsage->usage = (int)$form['usage'];
+				$accessoryUsage->save();
+				
+				$ajaxResponse->setSuccess(true);
+				$ajaxResponse->setMessage('Changes saved successfully');
+				$ajaxResponse->data = array(
+					'id'	=> $accessoryUsage->id,
+					'date'	=> $dateChain->formatOutput(),
+					'usage'	=> $accessoryUsage->usage									
+				);
+			} else {
+				$ajaxResponse->setSuccess(false);
+				$ajaxResponse->setMessage('There are validation errors');
+				$ajaxResponse->validationRes = $validationRes;
+			}															
+		} else {
+			$ajaxResponse->setSuccess(false);
+			$ajaxResponse->setMessage('Please fill out the form');
+		}
+		
+		$ajaxResponse->response();
 	}
 }
 ?>
