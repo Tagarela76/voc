@@ -1333,13 +1333,5 @@ fclose ($fp);
 		$unittypeList = $unittype->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
 		return $unittypeList;
 	}	
-	
-	
-	/**
-	 * To simply get list of GOM use Accessory class 
-	 * (GOM == Goods of Manufacturing == Accessories)
-	 */
-	public function getGOMListWithUsage($companyID) {
-		
-	}
+			
 }

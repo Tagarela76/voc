@@ -37,38 +37,33 @@
         </td>              
     </tr>
 
-{if $Products|@count > 0}  
+{if $GOMInventoryList|@count > 0}  
     {*BEGIN LIST*}  
-    {foreach from=$Products item=Product} 
+    {foreach from=$GOMInventoryList item=Accessory} 
     <tr class="hov_company" height="10px">
 <!--        <td class="border_users_b  border_users_l border_users_r">
             <input type="checkbox" value="{*$Product->getID()*}" name="id[]">
         </td> -->
         <td class="border_users_r border_users_l border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$Accessory->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_id}
+                    {$Accessory->get_accessory_id()}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$Product->url}" class="id_company1">
+            <a href="{$Accessory->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Product->product_nr}
+                    {$Accessory->get_accessory_name()}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
-            <a href="{$Product->url}" class="id_company1">
-                <div style="width:100%;">
-					<div style="float:right;padding: 2px 0px 0px 5px; width: 70px;">
-						{foreach from=$typeName item=type key=key}
-							{if $Product->product_id == $key}{if $type}, {$type}{/if}{/if}
-						{/foreach}	                    
-					</div>	
-					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Product->usage
-							vocLimit=$Product->in_stock
-							pxCount =$Product->pxCount }
+            <a href="{$Accessory->url}" class="id_company1">
+                <div style="width:100%;">					
+					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Accessory->usage
+							vocLimit=$Accessory->in_stock
+							pxCount =$Accessory->pxCount }
 							
                 </div>
             </a>

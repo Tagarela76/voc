@@ -9,7 +9,7 @@ class InventoryNew {
 	protected $id;
 	protected $facility_id;
 	protected $name;
-	protected $in_stock;
+	protected $in_stock = 0;
 	protected $amount;
 	protected $limit;
 	public $pxCount;

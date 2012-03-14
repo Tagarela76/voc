@@ -51,7 +51,12 @@ class Accessory implements iAccessory {
     public function getAllAccessory($companyID,$sort=' ORDER BY name ') {
     	$companyID=mysql_real_escape_string($companyID);
     	
-    	$query = "SELECT id, name FROM ".TB_ACCESSORY." WHERE company_id=".(int)$companyID."  $sort";
+		//	TODO: correct join with orders
+    	$query = "SELECT a.id, a.name,io.order_completed_date, io.order_status  
+			FROM ".TB_ACCESSORY." a			
+			LEFT JOIN inventory_order io ON a.id = io.order_product_id
+			WHERE a.company_id=".(int)$companyID." 
+			GROUP BY a.id $sort";
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 

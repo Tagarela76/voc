@@ -951,9 +951,38 @@ class CInventory extends Controller
 				
 				$accessories = new Accessory($this->db);
 				$accessoriesList = $accessories->getAllAccessory($facilityDetails['company_id']);
-				var_dump($accessoriesList);
+				$GOMInventoryList = array();
 				
-				$this->smarty->assign('accessoriesList',$accessoriesList);
+				foreach ($accessoriesList as $accessoryDetails) {
+					$GOMInventory = new GOMInventory($this->db);
+					$GOMInventory->accessory_id = $accessoryDetails['id'];
+					$GOMInventory->accessory_name = $accessoryDetails['name'];
+					
+					//	set start date
+					if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
+						$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+					}
+					
+					//	set usage
+					$GOMInventory->calculateUsage();
+					
+					//	set gauge data
+					$pxCount = round(200 * $GOMInventory->usage / $GOMInventory->in_stock);
+					if ($pxCount > 200) {
+							$pxCount = 200;
+					}				
+					$GOMInventory->pxCount = $pxCount;
+					if ($GOMInventory->usage == null){
+						$GOMInventory->set_sum(0);
+					}
+						
+					$GOMInventory->url = "?action=viewDetails&category=inventory&id=".$GOMInventory->id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
+						
+										
+					$GOMInventoryList[] = $GOMInventory;										
+				}
+															
+				$this->smarty->assign('GOMInventoryList',$GOMInventoryList);
 				$this->smarty->assign('tpl','inventory/design/inventoryGOM.tpl');	
 				break;
 			
