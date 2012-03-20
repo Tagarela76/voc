@@ -10,8 +10,8 @@ class InventoryNew {
 	protected $facility_id;
 	protected $name;
 	protected $in_stock = 0;
-	protected $amount;
-	protected $limit;
+	protected $amount = 0;
+	protected $limit = 0;
 	public $pxCount;
 	public $errors;
 	public $url;

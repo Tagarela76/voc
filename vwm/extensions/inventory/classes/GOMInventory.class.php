@@ -12,7 +12,11 @@ class GOMInventory extends InventoryNew {
 	
 	
 	public function save() {
-		
+		if($this->id) {
+			return $this->_update();
+		} else {
+			return $this->_insert();
+		}
 	}
 	
 	public function set_accessory_id($value) {
@@ -42,6 +46,27 @@ class GOMInventory extends InventoryNew {
 	}
 	
 	
+	public function loadByAccessoryID() {
+		$sql = "SELECT * FROM product2inventory WHERE accessory_id = ".mysql_escape_string($this->accessory_id);
+		$this->db->query($sql);
+		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		//	get only the first row
+		$row = $this->db->fetch(0);
+		
+		$this->id = $row->inventory_id;
+		$this->accessory_id = $row->accessory_id;
+		$this->facility_id = $row->facility_id;
+		$this->in_stock = $row->in_stock;
+		$this->limit = $row->inventory_limit;
+		$this->amount = $row->amount;
+		
+		return true;
+	}
+	
 	public function calculateUsage() {
 		$sql = "SELECT sum(`usage`) totalUsage
 			FROM accessory_usage 
@@ -53,6 +78,28 @@ class GOMInventory extends InventoryNew {
 		$result = $this->db->fetch(0);
 		$this->usage = ($result->totalUsage === null) ? 0 : $result->totalUsage;
 		return $this->usage;
+	}
+	
+	private function _insert() {
+		$sql = "INSERT INTO `product2inventory` (`accessory_id`, `facility_id`, `in_stock`, `inventory_limit`, `amount`) VALUES (" .
+				mysql_escape_string($this->accessory_id).", ".  
+				mysql_escape_string($this->facility_id).", ".  
+				mysql_escape_string($this->in_stock).", ".  
+				mysql_escape_string($this->limit).", ".  
+				mysql_escape_string($this->amount).")";		
+		$this->db->exec($sql);	
+		return true;
+	}
+	
+	private function _update() {		
+		$sql = "UPDATE `product2inventory` " .
+				"SET `in_stock` = ".mysql_escape_string($this->in_stock).", " .
+				"`inventory_limit` = ".mysql_escape_string($this->limit).", " .
+				"`amount` = ".mysql_escape_string($this->amount)." " .
+				"WHERE inventory_id = ".mysql_escape_string($this->id);
+		$this->db->exec($sql);		
+		
+		return true;
 	}
 }
 

@@ -152,6 +152,7 @@ class CInventory extends Controller
 
 				$orderList = $arr;
 				$this->smarty->assign('orderList',$orderList);	
+				$this->smarty->assign('inventoryType','product');	
 				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 			//
 /*		if (!is_null($this->getFromRequest('facilityID')))
@@ -209,6 +210,37 @@ class CInventory extends Controller
 		
  */				
 				
+				break;
+				
+				
+			case 'gom':
+				$accessoryID = $this->getFromRequest('id');
+				$accessory = new Accessory($this->db);
+				$accessory->setAccessoryID($accessoryID);
+				$accessoryDetails = $accessory->getAccessoryDetails();
+				
+				$GOMInventory = new GOMInventory($this->db);
+				$GOMInventory->accessory_id = $accessoryDetails['id'];
+				$GOMInventory->accessory_name = $accessoryDetails['name'];
+				$GOMInventory->loadByAccessoryID();
+				
+				//	set start date
+				if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
+					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+				}
+					
+				//	set usage
+				$GOMInventory->calculateUsage();
+									
+				if ($GOMInventory->usage == null){
+					$GOMInventory->set_sum(0);
+				}
+				
+				$this->smarty->assign("product",$GOMInventory);
+				$this->smarty->assign("parentCategory",$category);
+				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$GOMInventory->accessory_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
+				$this->smarty->assign('inventoryType','gom');	
+				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
 				break;
 			case 'orders':
 				$orderDetails = $inventoryManager->getSupplierOrderDetails($this->getFromRequest('id'));
@@ -468,160 +500,214 @@ class CInventory extends Controller
 		switch ($tab){
 			case 'products':
 
-			//ORDERS FOR THIS PRODUCT
+				//ORDERS FOR THIS PRODUCT
 
 				$error = false;
-				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);		
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $productID);
 
-				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
-				}else{
+				} else {
 					$dateBegin = $ProductInventory->period_start_date;
 				}
 
 				$productarr = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $facilityID, $productID);
-				
-				if (!$productarr[0]->id){
+
+				if (!$productarr[0]->id) {
 					throw new Exception('404');
-				}				
+				}
 				$product = $productarr[0];
-				
-				if ($product->usage != 0){
+
+				if ($product->usage != 0) {
 					$result = $inventoryManager->unitTypeConverter($product);
-					if ($result){
+					if ($result) {
 						$product->set_sum($result['usage']);
-						$this->smarty->assign('typeName',$result['unittype']);
-					}else{
+						$this->smarty->assign('typeName', $result['unittype']);
+					} else {
 						//throw new Exception('Can\'t convert to this type!');
-						$error[] = 'Can\'t convert to this type! Product : '.$product->product_nr;
+						$error[] = 'Can\'t convert to this type! Product : ' . $product->product_nr;
 					}
-				}				
-				if ($error){
-					$this->smarty->assign('error',$error);
+				}
+				if ($error) {
+					$this->smarty->assign('error', $error);
 					//$error[] = 'Can\'t convert to this type! Product : '.$value->product_nr; 
 				}
-				
-				$this->smarty->assign("product",$product);
+
+				$this->smarty->assign("product", $product);
 
 // UNITTYPE{
 
-		$type = new Unittype($this->db);		
+				$type = new Unittype($this->db);
 
-		$res = $inventoryManager->getDefaultTypesAndUnitTypes($companyID);
-		$typeEx = $res['typeEx'];
-		$companyEx = $res['companyEx'];
-		$unitTypeEx = $res['unitTypeEx'];	
+				$res = $inventoryManager->getDefaultTypesAndUnitTypes($companyID);
+				$typeEx = $res['typeEx'];
+				$companyEx = $res['companyEx'];
+				$unitTypeEx = $res['unitTypeEx'];
 
-		
-	//	$unittypeList = $inventoryManager->getUnitTypeList($companyID);
-		
-		if ( $product->in_stock_unit_type != '' && $product->in_stock_unit_type != '0'){
-			
-			$unitTypeClass = $type->getUnittypeClass($product->in_stock_unit_type);
-		}else{
-			$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		}
-		$unittypeList = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
-	
-			//$unitType = $type->getDefaultUnitTypelist($companyID);
-			//$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
-		$this->smarty->assign('unitTypeClass', $unitTypeClass);
-		$this->smarty->assign('unitTypeEx', $unitTypeEx);
-		$this->smarty->assign('typeEx', $typeEx);		
-		$this->smarty->assign('companyEx', $companyEx);
-		$this->smarty->assign('unittype', $unittypeList);
-		//$this->smarty->assign('unittype', $unittypeListDefault);
 
-		$jsSources = array (
-			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+				//	$unittypeList = $inventoryManager->getUnitTypeList($companyID);
 
-			'modules/js/addUsage.js');
-	    $this->smarty->assign('jsSources',$jsSources);	
+				if ($product->in_stock_unit_type != '' && $product->in_stock_unit_type != '0') {
+
+					$unitTypeClass = $type->getUnittypeClass($product->in_stock_unit_type);
+				} else {
+					$unitTypeClass = $type->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+				}
+				$unittypeList = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
+
+				//$unitType = $type->getDefaultUnitTypelist($companyID);
+				//$unittypeListDefault = $type->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);	
+				$this->smarty->assign('unitTypeClass', $unitTypeClass);
+				$this->smarty->assign('unitTypeEx', $unitTypeEx);
+				$this->smarty->assign('typeEx', $typeEx);
+				$this->smarty->assign('companyEx', $companyEx);
+				$this->smarty->assign('unittype', $unittypeList);
+				//$this->smarty->assign('unittype', $unittypeListDefault);
+
+				$jsSources = array(
+					'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+					'modules/js/addUsage.js');
+				$this->smarty->assign('jsSources', $jsSources);
 // }UNITTYPE
-		
-									$form = $_POST;
 
-									if (count($form) > 0) {
-						
-										//protected from xss
-										$form["in_stock"]=Reform::HtmlEncode($form["in_stock"]);
-										$form["limit"]=Reform::HtmlEncode($form["limit"]);
-										$form['amount'] = Reform::HtmlEncode($form['amount']);
+				$form = $_POST;
 
-										$ProductInventory->set_amount($form['amount']);
-										$ProductInventory->set_in_stock($form['in_stock']);
-										$ProductInventory->set_inventory_limit($form['limit']);
-										$ProductInventory->set_product_id($form['product_id']);
-										$ProductInventory->set_in_stock_unit_type($form['selectUnittype']);
-										$ProductInventory->set_inventory_id($form['inventory_id']);
-										$ProductInventory->set_facility_id($facilityID);
-												
-										// CONVERT IN STOCK VALUE
-										$inStock = $inventoryManager->unitTypeConverterForStock($ProductInventory,$product);
+				if (count($form) > 0) {
 
-										if ($inStock){
-											$ProductInventory->set_in_stock($inStock['in_stock']);
-											$result = $ProductInventory->save();
-											if ($result == 'true'){
-												header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=".$this->getFromRequest('tab'));
-											}else{
-												echo $result;
-											}
-										}else{
-											$error[] = 'Can\'t convert to this type! Product : '.$product->product_nr;
-											$this->smarty->assign('error',$error);
-										}
-									}
-		/*
-									//	IF ERRORS OR NO POST REQUEST
-										$facility = new Facility($this->db);
-										$facilityDetails = $facility->getFacilityDetails($facilityID);
-										$companyID = $facilityDetails['company_id'];
+					//protected from xss
+					$form["in_stock"] = Reform::HtmlEncode($form["in_stock"]);
+					$form["limit"] = Reform::HtmlEncode($form["limit"]);
+					$form['amount'] = Reform::HtmlEncode($form['amount']);
 
-										$this->setNavigationUpNew('department', $this->getFromRequest($backCategory.'ID'));
-										$this->setPermissionsNew('viewData');
-									$ms = new ModuleSystem($this->db);
-									$moduleMap = $ms->getModulesMap();
-									foreach($moduleMap as $key=>$module) {
-										$showModules[$key] = $this->user->checkAccess($key, $companyID);
-									}
-									$this->smarty->assign('show',$showModules);
+					$ProductInventory->set_amount($form['amount']);
+					$ProductInventory->set_in_stock($form['in_stock']);
+					$ProductInventory->set_inventory_limit($form['limit']);
+					$ProductInventory->set_product_id($form['product_id']);
+					$ProductInventory->set_in_stock_unit_type($form['selectUnittype']);
+					$ProductInventory->set_inventory_id($form['inventory_id']);
+					$ProductInventory->set_facility_id($facilityID);
 
-									if(!$showModules['inventory']) {
-										throw new Exception('deny');
-									}
+					// CONVERT IN STOCK VALUE
+					$inStock = $inventoryManager->unitTypeConverterForStock($ProductInventory, $product);
 
-									//	ok, we have access to inventory..
-									$mIventory = new $moduleMap['inventory'];
+					if ($inStock) {
+						$ProductInventory->set_in_stock($inStock['in_stock']);
+						$result = $ProductInventory->save();
+						if ($result == 'true') {
+							header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=" . $this->getFromRequest('tab'));
+						} else {
+							echo $result;
+						}
+					} else {
+						$error[] = 'Can\'t convert to this type! Product : ' . $product->product_nr;
+						$this->smarty->assign('error', $error);
+					}
+				}
+				/*
+				  //	IF ERRORS OR NO POST REQUEST
+				  $facility = new Facility($this->db);
+				  $facilityDetails = $facility->getFacilityDetails($facilityID);
+				  $companyID = $facilityDetails['company_id'];
 
-									$params = array(
-											'db' => $this->db,
-											'request' => $this->getFromRequest(),
-											'form' => $form,
-											'facilityID' => $facilityID,
-											'smarty' => $this->smarty
-									);
-									$result = $mIventory->prepareEdit($params);
+				  $this->setNavigationUpNew('department', $this->getFromRequest($backCategory.'ID'));
+				  $this->setPermissionsNew('viewData');
+				  $ms = new ModuleSystem($this->db);
+				  $moduleMap = $ms->getModulesMap();
+				  foreach($moduleMap as $key=>$module) {
+				  $showModules[$key] = $this->user->checkAccess($key, $companyID);
+				  }
+				  $this->smarty->assign('show',$showModules);
 
-									foreach ($result as $key=>$value) {
-										$this->smarty->assign($key,$value);
-									}
+				  if(!$showModules['inventory']) {
+				  throw new Exception('deny');
+				  }
 
-									$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
+				  //	ok, we have access to inventory..
+				  $mIventory = new $moduleMap['inventory'];
 
-									//	set js scripts
-									$jsSources = array(
-										'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-										'modules/js/inventory.js'
-									);
-									$this->smarty->assign('jsSources', $jsSources);
-									$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
-									$this->smarty->assign('cssSources', $cssSources);
-		*/
+				  $params = array(
+				  'db' => $this->db,
+				  'request' => $this->getFromRequest(),
+				  'form' => $form,
+				  'facilityID' => $facilityID,
+				  'smarty' => $this->smarty
+				  );
+				  $result = $mIventory->prepareEdit($params);
 
+				  foreach ($result as $key=>$value) {
+				  $this->smarty->assign($key,$value);
+				  }
+
+				  $this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
+
+				  //	set js scripts
+				  $jsSources = array(
+				  'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+				  'modules/js/inventory.js'
+				  );
+				  $this->smarty->assign('jsSources', $jsSources);
+				  $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+				  $this->smarty->assign('cssSources', $cssSources);
+				 */
+				$this->smarty->assign('inventoryType','product');	
 				$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
 				break;
+				
+			case 'gom':				
+				$accessoryID = $this->getFromRequest('id');								
+				$accessory = new Accessory($this->db);
+				$accessory->setAccessoryID($accessoryID);
+				$accessoryDetails = $accessory->getAccessoryDetails();
+				if(!$accessoryDetails) {
+					throw new Exception('404');
+				}
+				
+				$GOMInventory = new GOMInventory($this->db);
+				$GOMInventory->accessory_id = $accessoryDetails['id'];
+				$GOMInventory->accessory_name = $accessoryDetails['name'];
+				$GOMInventory->facility_id = $facilityID;
+				$GOMInventory->loadByAccessoryID();
+				
+				$form = $_POST;
+				if (count($form) > 0) {
+					//protected from xss
+					$GOMInventory->in_stock = Reform::HtmlEncode($form["in_stock"]);
+					$GOMInventory->set_inventory_limit(Reform::HtmlEncode($form["limit"]));
+					$GOMInventory->amount = Reform::HtmlEncode($form['amount']);					
+					$result = $GOMInventory->save();
+					if ($result) {
+						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=" . $this->getFromRequest('tab'));
+					} else {
+						echo $result;						
+					}
+					die();
+				}												
+				
+				//	set start date
+				if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
+					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+				}
+					
+				//	set usage
+				$GOMInventory->calculateUsage();
+									
+				if ($GOMInventory->usage == null){
+					$GOMInventory->set_sum(0);
+				}
+				
+				$this->smarty->assign("product", $GOMInventory);
+				
+				$jsSources = array(
+					'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+					'modules/js/addUsage.js');
+				$this->smarty->assign('jsSources', $jsSources);
+				
+				$this->smarty->assign('inventoryType','gom');	
+				$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
+				break;
+				
+				
 			case 'discounts':
 				
 				
@@ -893,9 +979,12 @@ class CInventory extends Controller
 					
 				
 				}
-
+				
 				foreach ($dataArr as $arr) {
-					$data[] = $arr[0];
+					if (count($arr[0]) > 0) {
+						$data[] = $arr[0];	
+					}
+					
 				}
 
 				//$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
@@ -904,7 +993,7 @@ class CInventory extends Controller
 					foreach ($data as $value) {
 						
 						$value->url = "?action=viewDetails&category=inventory&id=".$value->product_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
-						if ($value->usage == null){
+						if ($value->usage == null){							
 							$value->set_sum(0);
 						}
 					// UNITTYPE	
@@ -926,8 +1015,8 @@ class CInventory extends Controller
 					}
 					$this->smarty->assign('typeName',$typeNameArr);
 					//	ini indicator (gauge)	
-
-					$pxCount = round(200 * $value->usage / $value->in_stock);
+					
+					$pxCount = ($value->in_stock != 0) ? round(200 * $value->usage / $value->in_stock) : 0; 
 					if ($pxCount > 200) {
 							$pxCount = 200;
 					}				
@@ -957,6 +1046,7 @@ class CInventory extends Controller
 					$GOMInventory = new GOMInventory($this->db);
 					$GOMInventory->accessory_id = $accessoryDetails['id'];
 					$GOMInventory->accessory_name = $accessoryDetails['name'];
+					$GOMInventory->loadByAccessoryID();
 					
 					//	set start date
 					if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
@@ -967,7 +1057,7 @@ class CInventory extends Controller
 					$GOMInventory->calculateUsage();
 					
 					//	set gauge data
-					$pxCount = round(200 * $GOMInventory->usage / $GOMInventory->in_stock);
+					$pxCount = ($GOMInventory->in_stock != 0) ? round(200 * $GOMInventory->usage / $GOMInventory->in_stock) : 0;
 					if ($pxCount > 200) {
 							$pxCount = 200;
 					}				
@@ -976,7 +1066,7 @@ class CInventory extends Controller
 						$GOMInventory->set_sum(0);
 					}
 						
-					$GOMInventory->url = "?action=viewDetails&category=inventory&id=".$GOMInventory->id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
+					$GOMInventory->url = "?action=viewDetails&category=inventory&id=".$GOMInventory->accessory_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
 						
 										
 					$GOMInventoryList[] = $GOMInventory;										
