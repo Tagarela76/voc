@@ -25,31 +25,31 @@
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
-                    <span>{if $request.action eq "addItem"}Adding for a new inventory{else}Editing inventory product{/if}</span>
+                    <span>
+						{if $request.action eq "addItem"}							
+							Adding for a new inventory
+						{else}
+							Editing inventory {if $inventoryType == 'product'}product{else}accessory{/if}
+						{/if}
+					</span>
                 </td>
                 <td class="users_u_top_r">
                 </td>
             </tr>
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
-                    Product Name :
+                    {if $inventoryType == 'product'}Product Name{else}Accessory Name{/if} 
                 </td>
                 <td class="border_users_r border_users_b">
-
-					{$product->product_nr}
-				
+					{if $inventoryType == 'product'}{$product->product_nr}{else}{$product->accessory_name}{/if}				
                 </td>
             </tr>
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
                     Usage :
                 </td>
-                <td class="border_users_r border_users_b">
-
-                    
+                <td class="border_users_r border_users_b">                    
                    {if $product->usage}{$product->usage}{else}0{/if}
-
-
                 </td>
             </tr>
             <tr>
@@ -134,6 +134,7 @@
 
                 </td>
             </tr>	
+			{if $inventoryType == 'product'}
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
                     Unit Type :
@@ -173,7 +174,7 @@
 
                 </td>
             </tr>				
-			
+			{/if}
             <tr>
                 <td class="users_u_bottom">
                 </td>
@@ -195,7 +196,11 @@
       	
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>
-			<input type='hidden' name="product_id" value='{$product->product_id}'>
+			{if $inventoryType=='product'}
+				<input type='hidden' name="product_id" value='{$product->product_id}'>
+			{else}
+				<input type='hidden' name="accessory_id" value='{$product->accessory_id}'>
+			{/if}
 			<input type='hidden' name="inventory_id" value='{$product->id}'>
 			<input type='hidden' name="edit" value='editing'>
         </div>									

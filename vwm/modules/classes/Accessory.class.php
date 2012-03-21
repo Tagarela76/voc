@@ -51,7 +51,12 @@ class Accessory implements iAccessory {
     public function getAllAccessory($companyID,$sort=' ORDER BY name ') {
     	$companyID=mysql_real_escape_string($companyID);
     	
-    	$query = "SELECT id, name FROM ".TB_ACCESSORY." WHERE company_id=".(int)$companyID."  $sort";
+		//	TODO: correct join with orders
+    	$query = "SELECT a.id, a.name,io.order_completed_date, io.order_status  
+			FROM ".TB_ACCESSORY." a			
+			LEFT JOIN inventory_order io ON a.id = io.order_product_id
+			WHERE a.company_id=".(int)$companyID." 
+			GROUP BY a.id $sort";
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 
@@ -195,7 +200,28 @@ class Accessory implements iAccessory {
 //		}		
 	}
 	
-	//	This comment was added at branch "test"
+	public function getAccessoryUsages($accessoryID) {
+		$sql = "SELECT * FROM `accessory_usage` WHERE accessory_id = ".mysql_escape_string($accessoryID)." ORDER BY date DESC";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		$usages = array();
+		$rows = $this->db->fetch_all();
+		foreach ($rows as $row) {
+			$accessoryUsage = new AccessoryUsage($this->db);
+			$accessoryUsage->id = $row->id;
+			$accessoryUsage->accessory_id = $row->accessory_id;
+			$accessoryUsage->date = DateTime::createFromFormat('U', $row->date);
+			$accessoryUsage->usage = $row->usage;
+			
+			$usages[] = $accessoryUsage;
+		}
+		
+		return $usages;
+	}
+	
 }
 
 ?>

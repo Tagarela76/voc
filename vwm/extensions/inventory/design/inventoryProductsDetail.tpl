@@ -19,11 +19,11 @@
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Product Name :
+                {if $inventoryType == 'product'}Product Name{else}Accessory Name{/if} :
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->product_nr}
+                    &nbsp;{if $inventoryType == 'product'}{$product->product_nr}{else}{$product->accessory_name}{/if}
                 </div>
             </td>
         </tr>
@@ -33,7 +33,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->in_stock}, {$typeName}
+                    &nbsp;{$product->in_stock}{if $inventoryType == 'product'}, {$typeName}{/if}
                 </div>
             </td>
         </tr>
@@ -43,7 +43,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}, {$typeName}
+                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}{if $inventoryType == 'product'}, {$typeName}{/if}
                 </div>
             </td>
         </tr>
@@ -53,7 +53,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->limit}, {$typeName}
+                    &nbsp;{$product->limit}{if $inventoryType == 'product'}, {$typeName}{/if}
                 </div>
             </td>
         </tr>	
@@ -63,7 +63,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->amount}, {$typeName}
+                    &nbsp;{$product->amount}{if $inventoryType == 'product'}, {$typeName}{/if}
                 </div>
             </td>
         </tr>
