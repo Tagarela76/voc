@@ -985,7 +985,28 @@ echo $query;
 		}
 		
 	}
+	
+	
+	
+	public function runInventoryOrderingSystem4GOM(AccessoryUsage $usage) {
+		
+		$gomInventory = new GOMInventory($this->db);
+		$gomInventory->accessory_id = $usage->accessory_id;
+		if (!$gomInventory->loadByAccessoryID()) {
+			//	no inventory yet
+			return false;
+		}
+		$gomInventory->calculateUsage();
+				
+		if ($gomInventory->in_stock - ($gomInventory->usage + $usage->usage) <= $gomInventory->limit){
+			//TODO: order here!
+		} 
+		
+		return true;
+	}
 
+	
+	
 	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null, $IsConvertOrderAmountToStockUnittype = false) {
 		// UNITTYPE CONVERTER
 

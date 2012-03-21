@@ -167,7 +167,7 @@ class CAccessory extends Controller
 			{
 				//	setter injection
 				$accessory->setTrashRecord(new Trash($this->db));
-									
+											
 				// Adding for a new accessory			
 				$accessory->setAccessoryName($accessoryDetails['name']);
 				$accessory->insertAccessory($companyID);
@@ -380,6 +380,11 @@ class CAccessory extends Controller
 				$accessoryUsage->accessory_id = $this->getFromRequest('id');						
 				$accessoryUsage->date = DateTime::createFromFormat('U', $dateChain->getTimestamp());
 				$accessoryUsage->usage = (int)$form['usage'];
+				
+				
+				$inventoryManager = new InventoryManager($this->db);
+				$inventoryManager->runInventoryOrderingSystem4GOM($accessoryUsage);
+						
 				$accessoryUsage->save();
 				
 				$ajaxResponse->setSuccess(true);
