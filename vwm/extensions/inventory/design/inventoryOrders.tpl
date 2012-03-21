@@ -151,11 +151,7 @@
 
     </tr>
     {/foreach} 
-    <tr>
-        <td colspan="{if $request.tab != 'products'}9{else}8{/if}" class="border_users_l border_users_r">
-            &nbsp;
-        </td>
-    </tr>
+
     {*END LIST*}
 {else}
     {*BEGIN	EMPTY LIST*}

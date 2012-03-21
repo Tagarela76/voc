@@ -123,6 +123,12 @@ class CAUsers extends Controller {
 			{
 				$data['password']="";
 				$data['confirm_password']="";
+				if ($data['accesslevel_id']==5) {
+					$jobberManager = new JobberManager($this->db);
+					$supplierList = $jobberManager->getJobberList();
+
+					$this->smarty->assign("jobbers",$supplierList);
+				}				
 				if ($data['accesslevel_id']!=3) {
 					$company=new Company($this->db);
 					$companyList=$company->getCompanyList();

@@ -105,11 +105,7 @@
 
     </tr>
     {/foreach} 
-    <tr>
-        <td colspan="{*if !$accessory}7{else}4{/if*}4" class="border_users_l border_users_r">
-            &nbsp;
-        </td>
-    </tr>
+
     {*END LIST*}
 {else}
     {*BEGIN	EMPTY LIST*}

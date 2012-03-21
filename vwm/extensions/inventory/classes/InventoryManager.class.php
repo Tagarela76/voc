@@ -940,24 +940,26 @@ echo $query;
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($jobberID['jobber_id']);
-					$supplierUsersEmais = $this->getJobberUsersEmails($jobberID);
+					$jobberUsersEmais = $this->getJobberUsersEmails($jobberID);
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
 						
 					$facilityManager = new Facility($this->db);
 					$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);				
-				
+
+					$text['msg'] = "New order ". $newOrder->order_name ." from Facility ".$facilityDetails['title'];
+					$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
+					$isNewOrder = true;
+						
 					if ($ifEmail){
-						$text['msg'] = "New order ". $newOrder->order_name ." from Facility ".$facilityDetails['title'];
-						$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
-						$isNewOrder = true;
 						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
-						if ($supplierUsersEmais){
-							foreach($supplierUsersEmais as $userEmail){
-								$this->sendEmailToSupplier($userEmail['email'],$text,$isNewOrder );
-							}
-						}						
 					}
+					if ($jobberUsersEmais){
+						foreach($jobberUsersEmais as $userEmail){
+							$this->sendEmailToSupplier($userEmail['email'],$text,$isNewOrder );
+						}
+					}
+					
 						$supplierManager = new Supplier($this->db);
 						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
 

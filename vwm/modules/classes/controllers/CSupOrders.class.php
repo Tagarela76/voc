@@ -206,21 +206,26 @@ class CSupOrders extends Controller {
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
 						
-					if ($userDetails){
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						foreach($userDetails as $user){
-							$email = $inventoryManager->getManagerEmail($user['user_id']);
-							$inventoryManager->sendEmailToManager($email,$text);
-						}						
-
-					}
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";						
+						if ($userDetails){
+							foreach($userDetails as $user){
+								$email = $inventoryManager->getManagerEmail($user['user_id']);
+								$inventoryManager->sendEmailToManager($email,$text);
+							}						
+						}
 				
 
 						
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
+						//$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
+						
+						$supplierDetails = $inventoryManager->getSupplierEmail($request['jobberID']);
+						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
+						if ($ifEmail){
+							$inventoryManager->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+						}
 						
 						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
 						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
@@ -321,21 +326,27 @@ class CSupOrders extends Controller {
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
 						
-					if ($userDetails){
 						$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
-						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						foreach($userDetails as $user){
-							$email = $inventoryManager->getManagerEmail($user['user_id']);
-							$inventoryManager->sendEmailToManager($email,$text);
-						}						
-
-					}		
+						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";						
+						if ($userDetails){
+							foreach($userDetails as $user){
+								$email = $inventoryManager->getManagerEmail($user['user_id']);
+								$inventoryManager->sendEmailToManager($email,$text);
+							}						
+						}		
 
 						$text['msg'] = "You {$status} the order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility: ".$facilityDetails['title'];
 						$text['title'] = "Status of ".$orderDetails[0]['order_name']." id: {$orderDetails[0]['order_id']} was changed";
-						$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
 						
-						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
+						//$inventoryManager->sendEmailToSupplier($facilityDetails['email'] , $text);
+						
+						$supplierDetails = $inventoryManager->getSupplierEmail($request['jobberID']);
+						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
+						if ($ifEmail){
+							$inventoryManager->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+						}
+						
+						//$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id'],$request['jobberID']);
 						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($request['jobberID']);
 						if ($supplierUsersEmais){
 							foreach($supplierUsersEmais as $userEmail){

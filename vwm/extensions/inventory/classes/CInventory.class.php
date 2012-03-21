@@ -795,27 +795,25 @@ class CInventory extends Controller
 						// EMAIL NOTIFICATION
 						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
 						
-						$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
+						//$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
 						$supplierDetails = $inventoryManager->getSupplierEmail($jobberID);
 						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
 
 						$facilityManager = new Facility($this->db);
 						$facilityDetails = $facilityManager->getFacilityDetails($orderDetails[0]['order_facility_id']);
 						
-			
-						
 						$supplierUsersEmais = $inventoryManager->getJobberUsersEmails($jobberID);
+						$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
+						$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";						
 						if ($ifEmail) {
-							$text['msg'] = "The order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} from Facility \"{$facilityDetails['title']}\" is {$status}";
-							$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";
 							$inventoryManager->sendEmailToSupplier($supplierDetails['email'], $text);
-							if ($supplierUsersEmais){
-								foreach($supplierUsersEmais as $userEmail){
-									$inventoryManager->sendEmailToSupplier($userEmail['email'],$text);
-								}
-							}							
 						}
-							$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
+						if ($supplierUsersEmais){
+							foreach($supplierUsersEmais as $userEmail){
+								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text);
+							}
+						}
+						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
 							if ($userDetails){
 								$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
 								$text['title'] = "Status of " . $orderDetails[0]['order_name'] . " id: {$orderDetails[0]['order_id']} was changed";

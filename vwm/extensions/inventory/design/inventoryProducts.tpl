@@ -103,11 +103,7 @@
 
     </tr>
     {/foreach} 
-    <tr>
-        <td colspan="3" class="border_users_l border_users_r">
-            &nbsp;
-        </td>
-    </tr>
+
     {*END LIST*}
 {else}
     {*BEGIN	EMPTY LIST*}
