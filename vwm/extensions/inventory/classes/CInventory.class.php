@@ -1035,15 +1035,20 @@ class CInventory extends Controller
 			case 'gom': 
 				//	GOM == Goods of Manufacturing == Accessories!
 				//	Remember this
+				$jobberIdList = $inventoryManager->getJobberListForFacility($facilityDetails['facility_id']);
+				
+				$sortStr=$this->sortList('accessory',3);
 				
 				$accessories = new Accessory($this->db);
-				$accessoriesList = $accessories->getAllAccessory($facilityDetails['company_id']);
+				$accessoriesList = $accessories->getAllAccessory($jobberIdList,$sortStr);
+
 				$GOMInventoryList = array();
-				
+
 				foreach ($accessoriesList as $accessoryDetails) {
 					$GOMInventory = new GOMInventory($this->db);
 					$GOMInventory->accessory_id = $accessoryDetails['id'];
 					$GOMInventory->accessory_name = $accessoryDetails['name'];
+					$GOMInventory->jobber_name = $accessoryDetails['jname'];
 					$GOMInventory->loadByAccessoryID();
 					
 					//	set start date
@@ -1069,7 +1074,7 @@ class CInventory extends Controller
 										
 					$GOMInventoryList[] = $GOMInventory;										
 				}
-															
+											
 				$this->smarty->assign('GOMInventoryList',$GOMInventoryList);
 				$this->smarty->assign('tpl','inventory/design/inventoryGOM.tpl');	
 				break;

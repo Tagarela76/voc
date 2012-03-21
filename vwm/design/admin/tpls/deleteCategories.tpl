@@ -159,7 +159,7 @@ function CheckCB(Element){
 {*<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category=tables&bookmark={$request.category}'"/>*}
 <input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.category == 'pfpLibrary'}{$request.bookmark}{else}{$request.category}{/if}{if $request.bookmark}&bookmark={if $request.category == 'pfpLibrary'}{$request.category}{else}{$request.bookmark}{/if}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}{if $request.page}&page={$request.page}{/if}{if $request.productCategory }&productCategory={$request.productCategory}{/if}'"/>
 {else}
-<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{$request.category}{/if}&bookmark={$request.bookmark}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}'">
+<input type="button" value="No" class="button" onclick="location.href='admin.php?action=browseCategory&category={if $request.bookmark=="contacts"}salescontacts{else}{$request.category}{/if}{if $request.bookmark}&bookmark={$request.bookmark}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}'">
 {/if}
 <input type="submit" name="confirm" value="Yes" class="button" style="margin:0 7px">
 {*<input type="submit" name="confirm" value="No">*}

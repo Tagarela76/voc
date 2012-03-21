@@ -40,23 +40,51 @@ class Accessory implements iAccessory {
     	return $this->accessoryName;
     }
     
-    public function queryTotalCount($companyID) 
+    public function queryTotalCount($companyID = null) 
     {
-		$query = "SELECT COUNT(*) cnt FROM ".TB_ACCESSORY." WHERE company_id=".(int)$companyID;
+		$query = "SELECT COUNT(*) cnt FROM ".TB_ACCESSORY;
+		if ($companyID){
+			$query .= " WHERE company_id=".(int)$companyID;
+		}		
+		
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
 	}
     
-    public function getAllAccessory($companyID,$sort=' ORDER BY name ') {
-    	$companyID=mysql_real_escape_string($companyID);
-    	
+    public function getAllAccessory($jobberID = null,$sort=' ORDER BY a.name ', $pagination = null) {
+    	//$jobberID=mysql_real_escape_string($jobberID);
+
+		$tabble = '';
+		$sqlSelect ='';
+		if ($jobberID){
+			$sqlSelect = " j.name as jname ,  ";
+			$tabble = " accessory2jobber aj, jobber j,";
+			
+			if (is_array($jobberID)){
+				$expression = "(".$jobberID[0]['jobber_id'];
+				foreach($jobberID as $id){
+					$expression .= ",".$id['jobber_id'];
+				}
+				$expression .= ")";
+				
+				$sql = " aj.jobber_id IN {$expression} ";
+			}else{
+				$sql = " aj.jobber_id = {$jobberID} ";
+			}
+			
+			$queryWithJobber = " WHERE {$sql} AND a.id = aj.accessory_id AND j.jobber_id = aj.jobber_id ";
+		}
 		//	TODO: correct join with orders
-    	$query = "SELECT a.id, a.name,io.order_completed_date, io.order_status  
-			FROM ".TB_ACCESSORY." a			
-			LEFT JOIN inventory_order io ON a.id = io.order_product_id
-			WHERE a.company_id=".(int)$companyID." 
-			GROUP BY a.id $sort";
+    	$query = "SELECT a.id, a.name, {$sqlSelect} io.order_completed_date, io.order_status FROM  
+			{$tabble} ".TB_ACCESSORY." a		
+			LEFT JOIN inventory_order io ON a.id = io.order_product_id ";
+			$query .= $queryWithJobber;
+			$query .= " GROUP BY a.id $sort";
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}	
+//echo $query;
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 
@@ -96,10 +124,14 @@ class Accessory implements iAccessory {
     
     //----
     
-    public function searchAccessory($accessory, $companyID, $pagination = null) {
+    public function searchAccessory($accessory, $companyID = null, $pagination = null) {
     	$companyID=mysql_escape_string($companyID);		
-		$query = "SELECT * FROM ".TB_ACCESSORY." WHERE company_id = ".$companyID." AND (";		
-		
+		$query = "SELECT * FROM ".TB_ACCESSORY;
+		if ($companyID){
+			$query .= " WHERE company_id = ".$companyID." AND (";		
+		}else{
+			$query .= " WHERE (";
+		}
 		if (!is_array($accessory)) {
 			$accessory = array($accessory);
 		}

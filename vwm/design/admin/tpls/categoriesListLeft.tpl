@@ -22,6 +22,17 @@
 					</ul>
 				</div>
 			</div>
+				
+			<!-- NEW GOM TAB -->
+			<div align="left" width="100%"  class="{if $parent == 'accessory'}left_m_active{else}left_m{/if}">
+				<div align="left" width="100%">
+					<ul class="link">
+						<li>
+							<a href="admin.php?action=browseCategory&category=accessory&subBookmark=custom&letterpage=1a" class="id_company">GOM LIBRARY</a>
+						</li>
+					</ul>
+				</div>
+			</div>				
 			<!-- NEW PFPLBRARY TAB -->
 				
 			<div align="left" width="100%"  class="{if $parent == 'pfps'}left_m_active{else}left_m{/if}">

@@ -18,7 +18,11 @@ class GOMInventory extends InventoryNew {
 			return $this->_insert();
 		}
 	}
-	
+/*
+	public function __get($name) {
+		parent::__get($name);
+	}
+*/	
 	public function set_accessory_id($value) {
 		try {
 			$this->accessory_id = $value;

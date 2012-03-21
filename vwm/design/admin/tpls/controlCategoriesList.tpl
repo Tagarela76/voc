@@ -40,6 +40,10 @@
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
 				</div>
+			{elseif $request.category=="accessory"}
+				<div class="add_button button_alpha">
+					<input type="submit" name="action" value="addItem"  >
+				</div>				
 			{elseif $request.category=="pfps"}
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
@@ -108,8 +112,31 @@
 		{else}
 		<input type="button" class="button" name="subaction" value="Unassign product(s)" onclick="submitFunc('browseCategory','Unassign product(s)')" >{/if}
 		{/if}
+
+	{elseif $request.category eq 'accessory'}	
+<!-- ACCESSORY -->		
+		</td>
+									
+	</tr>
+	<tr>
 		
+		<td>
+		<select name="jobberID">
+			<option value="All jobbers" {if $currentJobber == 0} selected {/if}>All jobbers {if $currentJobber == 0}(selected){/if}</option>
+			{section name=i loop=$jobbers}
+				<option value="{$jobbers[i]->jobber_id}" {if $jobbers[i]->jobber_id == $currentJobber} selected {/if}>{$jobbers[i]->name} {if $jobbers[i]->jobber_id == $currentJobber}(selected){/if}</option>
+			{/section}
+		</select>
+
+		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
+		<br>
+		{if $itemsCount > 0}
 		
+		<input type="button" class="button" name="subaction" value="Assign to jobber" onclick="submitFunc('browseCategory','Assign to jobber')">
+
+		<input type="button" class="button" name="subaction" value="Unassign GOM(s)" onclick="submitFunc('browseCategory','Unassign GOM(s)')" >
+		{/if}
+<!-- ACCESSORY -->			
 	{/if}		
 			<div id='hiddens'>	
 			{if $request.category eq 'tables'}				
@@ -137,12 +164,12 @@
 				<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
 				<input type="hidden" name="page" value="{$request.page}">
 				<input type="hidden" name="letterpage" value="{$request.letterpage}">
-				<input type="hidden" name="page" value="{$request.page}">
+				
 				<input type="hidden" name="productCategory" value="{$request.productCategory}">				
 				
 			{else}
 				<input type="hidden" name="category" value="{$request.category}">
-				<input type="hidden" name="bookmark" value="{$request.bookmark}">
+				{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}
 			{/if}
 			{if $request.category neq "salesdocs"}
 				<input type="hidden" name="itemsCount" value="{$itemsCount}">			

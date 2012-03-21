@@ -666,12 +666,24 @@ class Product extends ProductProperties {
 			$this->insertProduct2CompanyLink($productID, $companyID);
 		}
 	}
+	
+	public function assignGOM2Jobber($gomID, $jobberID) {
+		if (!$this->checkIsGOM2JobberLink($gomID, $jobberID)) {
+			$this->insertGOM2JobberLink($gomID, $jobberID);
+		}
+	}	
 
 	public function unassignProductFromCompany($productID = false, $companyID = false) {
 		if ($this->checkIsProduct2CompanyLink($productID, $companyID)) {
 			$this->deleteProduct2CompanyLink($productID, $companyID);
 		}
 	}
+
+	public function unassignGOMFromJobber($gomID = false, $jobberID = false) {
+		if ($this->checkIsGOM2JobberLink($gomID, $jobberID)) {
+			$this->deleteGOM2JobberLink($gomID, $jobberID);
+		}
+	}	
 
 	//	getting product list in format: SUPPLIER		PRODUCT_NR		PRODUCT_NAME
 	public function getFormatedProductList($companyID, $products = false) {	//	arr $products = do not show these products
@@ -915,6 +927,25 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 		return ($this->db->num_rows()) ? true : false;
 	}
+	
+	private function checkIsGOM2JobberLink($gomID = false, $jobberID = false) {
+
+		$gomID=mysql_escape_string($gomID);
+		$jobberID=mysql_escape_string($jobberID);
+
+		//analyze different input situations
+		if (!$gomID && $jobberID) {
+			$query = "SELECT id FROM accessory2jobber WHERE jobber_id = ".$jobberID;
+		} elseif (!$jobberID && $gomID) {
+			$query = "SELECT id FROM accessory2jobber WHERE accessory_id = ".$gomID;
+		} elseif (!$jobberID && !$gomID) {
+			$query = "SELECT id FROM accessory2jobber";
+		} else {
+			$query = "SELECT id FROM accessory2jobber WHERE accessory_id = ".$gomID." AND jobber_id = ".$jobberID;
+		}
+		$this->db->query($query);
+		return ($this->db->num_rows()) ? true : false;
+	}	
 
 	private function insertProduct2CompanyLink($productID, $companyID) {
 
@@ -924,6 +955,15 @@ class Product extends ProductProperties {
 		$query = "INSERT INTO product2company (product_id, company_id) VALUES (".$productID.", ".$companyID.")";
 		$this->db->query($query);
 	}
+
+	private function insertGOM2JobberLink($gomID, $jobberID) {
+
+		settype($jobberID,"integer");
+		settype($gomID,"integer");
+
+		$query = "INSERT INTO accessory2jobber (accessory_id, jobber_id) VALUES (".$gomID.", ".$jobberID.")";
+		$this->db->query($query);
+	}	
 
 	private function deleteProduct2CompanyLink($productID, $companyID) {
 		settype($companyID,"integer");
@@ -941,6 +981,23 @@ class Product extends ProductProperties {
 		}
 		$this->db->query($query);
 	}
+	
+	private function deleteGOM2JobberLink($gomID, $jobberID) {
+		settype($gomID,"integer");
+		settype($jobberID,"integer");
+
+		//analyze different input situations
+		if (!$gomID && $jobberID) {
+			$query = "DELETE FROM accessory2jobber WHERE jobber_id = ".$jobberID;
+		} elseif (!$jobberID && $gomID) {
+			$query = "DELETE FROM accessory2jobber WHERE accessory_id = ".$gomID;
+		} elseif (!$jobberID && !$gomID) {
+			$query = "DELETE FROM accessory2jobber";
+		} else {
+			$query = "DELETE FROM accessory2jobber WHERE accessory_id = ".$gomID." AND jobber_id = ".$jobberID;
+		}
+		$this->db->query($query);
+	}	
 
 
 	public function getProductCount($companyID, $supplierID)

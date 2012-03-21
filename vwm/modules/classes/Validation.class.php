@@ -218,9 +218,16 @@ class Validation {
 				}
 				break;
 			case "accessory":
-				$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID;
-				if ($itemID!="") {
-					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID." AND id!=".(int)$itemID;
+				if ($parrentID != 'none') {
+					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID;
+					if ($itemID!="") {
+						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID." AND id!=".(int)$itemID;
+					}					
+				}else{
+					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."'";
+					if ($itemID!="") {
+						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND id!=".(int)$itemID;
+					}					
 				}
 				break;
 				

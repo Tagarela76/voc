@@ -298,7 +298,8 @@ class CAccessory extends Controller
 		
 		$sortStr=$this->sortList('accessory',3);
 		$accessory = new Accessory($this->db);
-									
+		$inventoryManager = new InventoryManager($this->db);
+		$jobberIdList = $inventoryManager->getJobberListForFacility($facilityDetails['facility_id']);							
 		// search
 		if (!is_null($this->getFromRequest('q'))) 
 		{
@@ -308,7 +309,7 @@ class CAccessory extends Controller
 		} 
 		else 
 		{
-			$accessoryList = $accessory->getAllAccessory($facilityDetails['company_id'],$sortStr);
+			$accessoryList = $accessory->getAllAccessory($jobberIdList,$sortStr);
 		}
 		if (!is_null($this->getFromRequest('export'))) {
 			//	EXPORT THIS PAGE
@@ -345,7 +346,7 @@ class CAccessory extends Controller
 		else 
 		{			
 			$itemsCount = $accessory->queryTotalCount($facilityDetails['company_id']);			
-			for ($i=0; $i<$itemsCount; $i++) 
+			for ($i=0; $i<count($accessoryList); $i++) 
 			{
 				$url="?action=viewDetails&category=accessory&id=".$accessoryList[$i]['id']."&departmentID=".$this->getFromRequest('id');
 				$accessoryList[$i]['url']=$url;

@@ -94,7 +94,7 @@ class InventoryNew {
 			/**
 			 * Disallow add new properties dynamicly (cause of its change type of object to stdObject, i dont want that)
 			 */
-			//$this->$name = $value;
+			$this->$name = $value;
 		}
 		/**
 		 * property exists and private or protected, do not touch. Keep OOP

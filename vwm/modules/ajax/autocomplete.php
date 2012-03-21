@@ -77,6 +77,19 @@
 				echo json_encode($response);
 			}
 			break;
+			
+		case "accessoryAll":
+			
+			$productObj = new Product($db);
+			$productList = $productObj->productAutocomplete($_GET['query']);
+			if ($productList) {
+				foreach ($productList as $product) {
+					$suggestions[] = $product['productNR'];
+				}
+				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+				echo json_encode($response);
+			}
+			break;			
                         
 		case "logbook":
 			$logbookObj = new Logbook($db, $request['facilityID']);

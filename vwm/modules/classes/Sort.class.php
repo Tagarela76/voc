@@ -147,6 +147,10 @@ class Sort {
     			break;
     			case 4:$subQuery.=" name DESC";
     			break;
+    			case 7:$subQuery.=" jname ASC";
+    			break;
+    			case 8:$subQuery.=" jname DESC";
+    			break;			
     			default:$subQuery="";
     			break;  
     		}

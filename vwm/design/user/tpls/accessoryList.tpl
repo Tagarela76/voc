@@ -33,16 +33,26 @@
 				</div>					
 			</a>   
         </td>
-        <td >
-        	<div class="users_header_green_r">
+        <td class="">
+    
 	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
 	            	<div>						
 	                	Accessory Name 	
 						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
 					</div>					
 				</a> 
-			</div>
+
         </td>
+        <td >
+        	<div class="users_header_green_r">
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
+	            	<div>						
+	                	Jobber Name 	
+						{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
+					</div>					
+				</a> 
+			</div>
+        </td>		
     </tr>
 
     {*BEGIN LIST*}  
@@ -59,13 +69,20 @@
                 </div>
             </a>
         </td>
-        <td class="border_users_b border_users_r">
+        <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
                     {$childCategoryItems[i].name}
                 </div>
             </a>
         </td>
+        <td class="border_users_b border_users_r">
+            <a href="{$childCategoryItems[i].url}" class="id_accessory1">
+                <div>
+                    {$childCategoryItems[i].jname}
+                </div>
+            </a>
+        </td>		
     </tr>
     {/section}
    
@@ -77,7 +94,7 @@
 	        <td class="border_users_l">
 	            &nbsp;
 	        </td>
-	        <td  class="" align="right">
+			<td  class="" align="right" colspan="2">
 	            No accessories
 	        </td>
 	        <td class="border_users_r">
@@ -96,7 +113,7 @@
         <td height="25" class="users_u_bottom">
             &nbsp;
         </td>
-        <td class="border_users">
+        <td class="border_users" colspan="2">
         </td>
         <td class="users_u_bottom_r">
         </td>

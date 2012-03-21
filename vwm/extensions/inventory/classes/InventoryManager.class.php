@@ -824,6 +824,18 @@ echo $query;
 		return $arr;
 	}
 	
+	public function getJobberListForFacility($facilityID) {
+	
+		$query = "SELECT fj.jobber_id FROM  facility2jobber fj WHERE fj.facility_id = {$facilityID}";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_all_array();
+
+		return $arr;
+	}	
+	
 	public function getJobberIDForInventory($facilityID, $productID) {
 	
 		$query =	"SELECT sj.jobber_id FROM facility2jobber fj, supplier2jobber sj, product p, supplier s ";
