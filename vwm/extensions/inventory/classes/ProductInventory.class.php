@@ -30,7 +30,8 @@ class ProductInventory extends InventoryNew {
                 else {                        
    
                             $query = "INSERT INTO product2inventory VALUES (NULL,'"
-												.($this->product_id)."','" 
+												.($this->product_id)."', NULL,'" 
+												
 												.($this->facility_id)."','" 
                                                 .($this->in_stock)."','" 
 												.($this->limit)."','"

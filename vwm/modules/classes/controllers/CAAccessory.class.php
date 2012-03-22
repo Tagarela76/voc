@@ -94,7 +94,11 @@ class CAAccessory extends Controller {
 		$accessory->setAccessoryID($this->getFromRequest("id"));
 		$accessoryDetails = $accessory->getAccessoryDetails();
 		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
-		
+
+		$jobberManager = new JobberManager($this->db);
+		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
+		$accessoryDetails['jobber_name'] = $jobberDetails['name'];
+	
 		$this->smarty->assign("accessory", $accessoryDetails);
 		$this->smarty->assign("accessoryUsages", $accessoryUsages);
 							
@@ -123,15 +127,19 @@ class CAAccessory extends Controller {
 		$request=$this->getFromRequest();
 		$accessory = new Accessory($this->db);
 
-		
+		$jobberManager = new JobberManager($this->db);
+		$supplierList = $jobberManager->getJobberList();
+		$this->smarty->assign("jobbers",$supplierList);		
 						
 		$form = $this->getFromPost();
 							
 		if (count($form) > 0) 
 		{	
+			$jobberID = $form['jobber_id'];
 			$accessoryDetails = array(
 										'id'			=> $this->getFromPost('accessory_id'),
-										'name'			=> $this->getFromPost('accessory_desc')
+										'name'			=> $this->getFromPost('accessory_desc'),
+										'jobber_id'			=> $this->getFromPost('jobber_id')
 									 );
 							
 			$validation = new Validation($this->db);					
@@ -145,7 +153,7 @@ class CAAccessory extends Controller {
 			}
 								
 			// check for duplicate names					
-			if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("accessory", $accessoryDetails['name'], null, $accessoryDetails['id'])) 
+			if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("accessory", $accessoryDetails['name'], $jobberID, $accessoryDetails['id'])) 
 			{
 				$validStatus['summary'] = 'false';
 				$validStatus['name'] = 'alreadyExist';
@@ -159,8 +167,8 @@ class CAAccessory extends Controller {
 				// Editing accessory			
 				$accessory->setAccessoryID($accessoryDetails['id']);
 				$accessory->setAccessoryName($accessoryDetails['name']);
-				$accessory->updateAccessory();
-								
+				$accessory->updateAccessory($jobberID);
+						
 				// redirect
 				header("Location: ?action=viewDetails&category=accessory&id=".$accessoryDetails['id']."&notify=39");
 				die();
@@ -177,7 +185,7 @@ class CAAccessory extends Controller {
 				$notifyc = new Notify(null, $this->db);					
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);
-								
+							
 				$this->smarty->assign('validStatus', $validStatus);
 			}
 		} 
@@ -203,11 +211,15 @@ class CAAccessory extends Controller {
 		{				
 			$post[$key]=Reform::HtmlEncode($value);										
 		}		
-							
+		
+		$jobberManager = new JobberManager($this->db);
+		$supplierList = $jobberManager->getJobberList();
+		$this->smarty->assign("jobbers",$supplierList);
+		
 		if (count($post) > 0) 
 		{							
-			$companyID = 0; // KOSTYL' while not deleted company_id in TB_accessory
-							
+			$jobberID = $post['jobber_id'];
+				
 			$accessoryDetails = array(
 										'id'	=> $this->getFromPost('accessory_id'),
 										'name'	=> $this->getFromPost('accessory_desc')
@@ -215,7 +227,8 @@ class CAAccessory extends Controller {
 
 								
 			$accessory = new Accessory($this->db);
-			$validation = new Validation($this->db);					
+			$validation = new Validation($this->db);		
+					
 			$validStatus = array (
 									'summary'		=> 'true',
 									'name'	=> 'failed'
@@ -226,7 +239,7 @@ class CAAccessory extends Controller {
 			}
 							
 			// check for duplicate names					
-			if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("accessory", $accessoryDetails['name'])) 
+			if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("accessory", $accessoryDetails['name'],$jobberID)) 
 			{
 				$validStatus['summary'] = 'false';
 				$validStatus['name'] = 'alreadyExist';
@@ -239,7 +252,7 @@ class CAAccessory extends Controller {
 											
 				// Adding for a new accessory			
 				$accessory->setAccessoryName($accessoryDetails['name']);
-				$accessory->insertAccessory($companyID);
+				$accessory->insertAccessory($jobberID);
 								
 				// redirect
 				header("Location: ?action=browseCategory&category=accessory&notify=38");
@@ -262,6 +275,9 @@ class CAAccessory extends Controller {
 				$this->smarty->assign('data', $accessoryDetails);
 			}
 		}
+
+		
+		
 		$this->smarty->assign('request',$request);					
 		$this->smarty->assign('sendFormAction', '?action=addItem&category='.$request['category'].'&departmentID='.$request['departmentID']);
 		$this->smarty->assign('tpl','tpls/addAccessory.tpl');

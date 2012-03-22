@@ -42,9 +42,7 @@ class InventoryManager {
 					"AND m.mix_id = mg.mix_id " .
 					"AND m.creation_time BETWEEN ".$beginDate->getTimestamp()." AND ".$endDate->getTimestamp()." ";
 
-		if ($productID){
-			$query .= "AND p.product_id = {$productID} ";
-		}
+
 		if ($productID != null){
 			if (is_array($productID)){
 				$expression = "(".$productID[0]['product_id'];
@@ -363,9 +361,9 @@ echo $query;
 		
 		$query .=	" AND f.facility_id = {$facilityID} AND f.company_id = c.company_id ";
 */
-		$query = "SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
-		FROM  company c, supplier s, facility f, product p
-		LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id AND di.jobber_id = {$jobberID} ";
+		$query = "	SELECT di . discount_id, di.discount , p.product_nr, p.product_id , c.company_id, c.name, f.name AS fname, f.facility_id, s.original_id as supplier_id
+					FROM  company c, supplier s, facility f, product p
+					LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.supplier_id = {$supplierID} AND di.product_id = p.product_id AND di.jobber_id = {$jobberID} ";
 
 
 
@@ -656,6 +654,7 @@ echo $query;
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
+		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -775,7 +774,29 @@ echo $query;
 			return true;
 		}				
 	}
-	
+
+	/**
+	 * Check for active orders by accessory
+	 * @param int $accessory_id
+	 * @param int $facility_id
+	 * @return boolean false if no active orders, true if this accessory has order with any not completed status
+	 */
+	public function isThereActiveOrders4GOM	($accessory_id, $facility_id){
+				
+        $query = "SELECT * 
+					FROM inventory_order 
+					WHERE order_product_id = {$accessory_id} 
+					AND order_facility_id = {$facility_id}
+					AND order_status NOT IN (".OrderInventory::COMPLETED.", ".OrderInventory::CANCELED.")";
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return true;
+		}				
+	}	
+
 	public function getSaleUserJobberID($userID) {
 	
 		$query = "SELECT jobber_id FROM users2jobber WHERE user_id = {$userID}";
@@ -853,6 +874,20 @@ echo $query;
 		$arr = $this->db->fetch_array(0);
 
 		return $arr;
+	}
+	
+	public function getJobberID4GOM($accessoryID) {
+	
+		$query =	"SELECT a.jobber_id FROM accessory a ";
+		$query .=	" WHERE a.id = {$accessoryID} ";
+		//echo $query;
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}		
+		$arr = $this->db->fetch_array(0);
+
+		return $arr;
 	}	
 	
 	
@@ -891,7 +926,7 @@ echo $query;
 			}
 			
 			$productUsageData = new ProductInventory($this->db, $inventory);
-			
+	
 			// CONVERT PRODUCT UsAGE VAL TO IN STOCK UNITTYPE
 			$inStock2Type = $this->unitTypeConverter($productUsageData);
 			if 	($inStock2Type){
@@ -1006,14 +1041,97 @@ echo $query;
 		
 		$gomInventory = new GOMInventory($this->db);
 		$gomInventory->accessory_id = $usage->accessory_id;
+		$gomInventory->facility_id = $usage->facility_id;	
 		if (!$gomInventory->loadByAccessoryID()) {
 			//	no inventory yet
 			return false;
 		}
 		$gomInventory->calculateUsage();
-				
+		
 		if ($gomInventory->in_stock - ($gomInventory->usage + $usage->usage) <= $gomInventory->limit){
 			//TODO: order here!
+			$isThereActiveOrders4GOM = $this->isThereActiveOrders4GOM($gomInventory->accessory_id, $gomInventory->facility_id);
+
+				if (!$isThereActiveOrders4GOM){
+					//Create new Order
+					$newOrder = new OrderInventory($this->db);
+							
+					
+					// GET JOBBER
+					$jobberID = $this->getJobberID4GOM($gomInventory->accessory_id);
+					
+					// PRICE FOR PRODUCT
+					$priceManager = new Product($this->db);
+					$price = $priceManager->getProductPrice($gomInventory->accessory_id,$jobberID['jobber_id']);
+					$priceObj = new ProductPrice($this->db, $price[0]);
+
+					$newOrder->order_price = $price[0]['price'];
+					
+					//TODO: Discount
+					$discount = 0;
+
+
+					
+					$newOrder->order_product_id = $gomInventory->accessory_id;
+					$newOrder->order_facility_id = $gomInventory->facility_id;
+					$newOrder->order_name = 'Order for accessory "'.$gomInventory->accessory_name.'"';
+					$newOrder->order_discount = $discount;
+					$newOrder->order_unittype = $gomInventory->in_stock_unit_type;
+					$newOrder->order_total = $gomInventory->amount * $newOrder->order_price - ( ($gomInventory->amount * $newOrder->order_price)*$newOrder->order_discount/100 );
+					$newOrder->order_amount = $gomInventory->amount;
+
+					if($jobberID){
+						$newOrder->order_jobber_id = $jobberID['jobber_id'];
+					}else{
+						$newOrder->order_jobber_id = 0;
+					}
+					
+					$newOrder->save();
+
+					// EMAIL NOTIFICATION
+					$supplierDetails = $this->getSupplierEmail($jobberID['jobber_id']);
+					$jobberUsersEmais = $this->getJobberUsersEmails($jobberID);
+
+					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
+						
+					$facilityManager = new Facility($this->db);
+					$facilityDetails = $facilityManager->getFacilityDetails($newOrder->order_facility_id);				
+
+					$text['msg'] = "New order ". $newOrder->order_name ." from Facility ".$facilityDetails['title'];
+					$text['title'] = "New order ". $newOrder->order_name ." from Facility ";
+					$isNewOrder = true;
+						
+					if ($ifEmail){
+						$this->sendEmailToSupplier($supplierDetails['email'],$text,$isNewOrder );
+					}
+					if ($jobberUsersEmais){
+						foreach($jobberUsersEmais as $userEmail){
+							$this->sendEmailToSupplier($userEmail['email'],$text,$isNewOrder );
+						}
+					}
+					
+						$supplierManager = new Supplier($this->db);
+						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
+
+						$userDetails = $this->getManagerList($facilityDetails['company_id']);	
+						
+						if ($userDetails){
+							$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
+							$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
+							$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
+							$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
+							$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
+							$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";
+							foreach($userDetails as $user){
+								$email = $this->getManagerEmail($user['user_id']);
+								$this->sendEmailToManager($email,$text);
+							}
+						}
+						
+				}else{
+					// remind for needing product and completed order
+					
+				}			
 		} 
 		
 		return true;

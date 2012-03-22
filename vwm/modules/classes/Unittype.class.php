@@ -164,6 +164,13 @@ class Unittype {
 					"AND t.type_desc = 'Weight' " .
 					"ORDER BY ut.unittype_id";	
 				break;
+			case 'AllOther':
+				$query="SELECT * FROM ".TB_UNITTYPE." ut, ".TB_TYPE." t " .
+					"WHERE ut.type_id = t.type_id " .
+					"AND ut.system = 'metric' " .
+					"AND t.type_desc = 'Other' " .
+					"ORDER BY ut.unittype_id";	
+				break;			
 		}
 				
 		$this->db->query($query);
@@ -470,6 +477,9 @@ class Unittype {
 				case 'Energy':
 					return 'energy';
 					break;
+				case 'Other':
+					return 'other';
+					break;				
 			}
 		}
 	}
@@ -565,6 +575,9 @@ class Unittype {
 			case 'energy':
 				return array('Energy');
 				break;
+			case 'other':
+				return array('Other');
+				break;			
 		}
 		return false;
 	} 

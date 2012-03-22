@@ -2,7 +2,7 @@
 	{assign var='accessory' value=true}
 {/if}
 <div class="padd7">
-	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
+	<table class="users" height="" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_blue" height="27px">
 		{if $request.tab != 'products'}
         <td class="users_top_blue users_u_top_blue" width="60">

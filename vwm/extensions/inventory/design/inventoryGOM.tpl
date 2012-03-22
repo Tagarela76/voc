@@ -5,7 +5,7 @@
 {*PAGINATION*}
 		{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}	
-	<table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
+	<table class="users" height="" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_violet" height="27px">
 <!--        <td class="users_top_violet users_u_top_violet" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
@@ -75,7 +75,12 @@
         </td>		
         <td class="border_users_r border_users_b">
             <a href="{$Accessory->url}" class="id_company1">
-                <div style="width:100%;">					
+                <div style="width:100%;">	
+					<div style="float:right;padding: 2px 0px 0px 5px; width: 70px;">
+						{foreach from=$typeName item=type key=key}
+							{if $Accessory->accessory_id == $key}{if $type}, {$type}{/if}{/if}
+						{/foreach}	                    
+					</div>						
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$Accessory->usage
 							vocLimit=$Accessory->in_stock
 							pxCount =$Accessory->pxCount }
@@ -86,11 +91,7 @@
 
     </tr>
     {/foreach} 
-    <tr>
-        <td colspan="4" class="border_users_l border_users_r">
-            &nbsp;
-        </td>
-    </tr>
+
     {*END LIST*}
 {else}
     {*BEGIN	EMPTY LIST*}

@@ -33,7 +33,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->in_stock}{if $inventoryType == 'product'}, {$typeName}{/if}
+                    &nbsp;{$product->in_stock}, {$typeName}
                 </div>
             </td>
         </tr>
@@ -43,7 +43,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}{if $inventoryType == 'product'}, {$typeName}{/if}
+                    &nbsp;{if $product->usage}{$product->usage}{else}0{/if}, {$typeName}
                 </div>
             </td>
         </tr>
@@ -53,7 +53,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->limit}{if $inventoryType == 'product'}, {$typeName}{/if}
+                    &nbsp;{$product->limit}, {$typeName}
                 </div>
             </td>
         </tr>	
@@ -63,7 +63,7 @@
             </td>
             <td class="border_users_l border_users_r border_users_b">
                 <div align="left">
-                    &nbsp;{$product->amount}{if $inventoryType == 'product'}, {$typeName}{/if}
+                    &nbsp;{$product->amount}, {$typeName}
                 </div>
             </td>
         </tr>

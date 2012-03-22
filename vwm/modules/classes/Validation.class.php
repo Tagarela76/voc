@@ -219,9 +219,9 @@ class Validation {
 				break;
 			case "accessory":
 				if ($parrentID != 'none') {
-					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID;
+					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND jobber_id=".(int)$parrentID;
 					if ($itemID!="") {
-						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND company_id=".(int)$parrentID." AND id!=".(int)$itemID;
+						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND jobber_id=".(int)$parrentID." AND id!=".(int)$itemID;
 					}					
 				}else{
 					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."'";

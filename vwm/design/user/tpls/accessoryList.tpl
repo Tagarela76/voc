@@ -94,7 +94,7 @@
 	        <td class="border_users_l">
 	            &nbsp;
 	        </td>
-			<td  class="" align="right" colspan="2">
+			<td  class="" align="center" colspan="2">
 	            No accessories
 	        </td>
 	        <td class="border_users_r">

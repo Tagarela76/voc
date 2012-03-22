@@ -134,7 +134,7 @@
 
                 </td>
             </tr>	
-			{if $inventoryType == 'product'}
+			{*if $inventoryType == 'product'*}
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
                     Unit Type :
@@ -145,11 +145,12 @@
                         <!--input type='text' name='in_stock_unit_type' value='{$product->in_stock_unit_type}'-->
 									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(document.getElementById('selectUnittypeClass'), {$companyID}, {$companyEx})" >									 										
 										{section name=j loop=$typeEx}
-										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
-										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
-										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+											{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+											{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
+											{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+											{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+											{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
+											{if 'AllOther' eq $typeEx[j]}<option value='AllOther' {if 'AllOther' eq $unitTypeClass}selected="selected"{/if}>All Other</option>{/if}
 										{/section}
 							
 									</select>&nbsp; 
@@ -174,7 +175,8 @@
 
                 </td>
             </tr>				
-			{/if}
+			{*/if*}
+			
             <tr>
                 <td class="users_u_bottom">
                 </td>

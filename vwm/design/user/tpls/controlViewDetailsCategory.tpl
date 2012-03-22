@@ -11,12 +11,12 @@
 									$request.category=="facility" 	&& $permissions.facility.edit || 
 									$request.category=="department" && $permissions.department.edit || 
 									$request.category=="equipment" 	&& $permissions.equipment.edit || 
-									$request.category=="accessory" 	&& $permissions.data.edit ||
+									
 									$request.category=="inventory"							  || 
 									$request.category=="mix" 		&& $permissions.data.edit || 
 									$request.category=="logbook" || 
 									($request.category=="wastestorage" && $data->active!=0)}	
-																
+									{*$request.category=="accessory" 	&& $permissions.data.edit ||*}							
 									{if $editUrl}
 										{if $order.order_status != 3 && $order.order_status != 4}
 											<input type="button" class="button" value="Edit" onclick="location.href='{$editUrl}'">
@@ -29,11 +29,11 @@
 									$request.category=="facility" 	&& $permissions.facility.delete || 
 									$request.category=="department" && $permissions.department.delete || 
 									$request.category=="equipment" 	&& $permissions.equipment.delete || 
-									$request.category=="accessory" 	&& $permissions.data.delete ||
+									
 									 
 									$request.category=="mix" 		&& $permissions.data.delete
 								}
-								
+								{*$request.category=="accessory" 	&& $permissions.data.delete ||*}
 									{if $deleteUrl}
 									<input type="button" class="button" value="Delete" onclick="location.href='{$deleteUrl}'">
 									{elseif $request.tab!="orders" }									

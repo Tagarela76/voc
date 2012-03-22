@@ -10,8 +10,8 @@ interface iAccessory {
 	public function setTrashRecord(iTrash $trashRecord);
 	
 	public function searchAccessory($accessory, $companyID);
-	public function insertAccessory($companyID);
-	public function updateAccessory();
+	public function insertAccessory($jobberID);
+	public function updateAccessory($jobberID);
 	public function deleteAccessory();
 	public function save2trash($CRUD, $accessoryID);
 }
@@ -59,7 +59,7 @@ class Accessory implements iAccessory {
 		$sqlSelect ='';
 		if ($jobberID){
 			$sqlSelect = " j.name as jname ,  ";
-			$tabble = " accessory2jobber aj, jobber j,";
+			$tabble = " jobber j,";
 			
 			if (is_array($jobberID)){
 				$expression = "(".$jobberID[0]['jobber_id'];
@@ -68,13 +68,15 @@ class Accessory implements iAccessory {
 				}
 				$expression .= ")";
 				
-				$sql = " aj.jobber_id IN {$expression} ";
+				$sql = " a.jobber_id IN {$expression} ";
 			}else{
-				$sql = " aj.jobber_id = {$jobberID} ";
+				$sql = " a.jobber_id = {$jobberID} ";
 			}
 			
-			$queryWithJobber = " WHERE {$sql} AND a.id = aj.accessory_id AND j.jobber_id = aj.jobber_id ";
+			$queryWithJobber = " WHERE {$sql} AND j.jobber_id = a.jobber_id ";
+
 		}
+		
 		//	TODO: correct join with orders
     	$query = "SELECT a.id, a.name, {$sqlSelect} io.order_completed_date, io.order_status FROM  
 			{$tabble} ".TB_ACCESSORY." a		
@@ -156,10 +158,10 @@ class Accessory implements iAccessory {
 		return (isset($searched)) ? $searched : null;	
     }
     
-    public function insertAccessory($companyID) {
-    	$companyID=mysql_real_escape_string($companyID);
-    	$query = "INSERT INTO ".TB_ACCESSORY." (name, company_id)" .
-    			 "VALUES ('".$this->accessoryName."', ".(int)$companyID.")";
+    public function insertAccessory($jobberID) {
+    	$jobberID=mysql_real_escape_string($jobberID);
+    	$query = "INSERT INTO ".TB_ACCESSORY." (name, jobber_id)" .
+    			 "VALUES ('".$this->accessoryName."', ".(int)$jobberID.")";
     	$this->db->query($query);
     	
     	$query = "SELECT * FROM ".TB_ACCESSORY." a WHERE a.name='".$this->accessoryName."'";
@@ -171,13 +173,14 @@ class Accessory implements iAccessory {
 		$this->save2trash('C', $row['id']);
     }
     
-    public function updateAccessory() {
+    public function updateAccessory($jobberID) {
     	//	save to trash_bin
 		$this->save2trash('U', $this->accessoryID);
     	
     	$query = "UPDATE ".TB_ACCESSORY." " .
-    			 "SET name='".$this->accessoryName."' " .
+    			 "SET name='".$this->accessoryName."', jobber_id='".$jobberID."' " .
     			 "WHERE id=".(int)$this->accessoryID;
+	
     	$this->db->query($query);
     }
     

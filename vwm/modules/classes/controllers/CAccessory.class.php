@@ -78,6 +78,10 @@ class CAccessory extends Controller
 		$accessory->setAccessoryID($this->getFromRequest("id"));
 		$accessoryDetails = $accessory->getAccessoryDetails();
 		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
+
+		$jobberManager = new JobberManager($this->db);
+		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
+		$accessoryDetails['jobber_name'] = $jobberDetails['name'];
 		
 		$this->smarty->assign("accessory", $accessoryDetails);
 		$this->smarty->assign("accessoryUsages", $accessoryUsages);
@@ -365,10 +369,11 @@ class CAccessory extends Controller
 	
 	
 	private function actionAddUsage() {
+		ini_set('html_errors', 'off');
 		$ajaxResponse = new AJAXResponse();
 		$form = $this->getFromPost('AccessoryUsage');
 		if ($form) {
-									
+							
 			$company = new Company($this->db);
 			$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));			
 			
@@ -381,7 +386,12 @@ class CAccessory extends Controller
 				$accessoryUsage->accessory_id = $this->getFromRequest('id');						
 				$accessoryUsage->date = DateTime::createFromFormat('U', $dateChain->getTimestamp());
 				$accessoryUsage->usage = (int)$form['usage'];
+				$accessoryUsage->department_id = (int)$this->getFromRequest("departmentID");
 				
+				$department = new Department($this->db);
+				$departmentDetails = $department->getDepartmentDetails($accessoryUsage->department_id);
+
+				$accessoryUsage->facility_id = $departmentDetails['facility_id'];
 				
 				$inventoryManager = new InventoryManager($this->db);
 				$inventoryManager->runInventoryOrderingSystem4GOM($accessoryUsage);

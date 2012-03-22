@@ -154,62 +154,7 @@ class CInventory extends Controller
 				$this->smarty->assign('orderList',$orderList);	
 				$this->smarty->assign('inventoryType','product');	
 				$this->smarty->assign('tpl','inventory/design/inventoryProductsDetail.tpl');
-			//
-/*		if (!is_null($this->getFromRequest('facilityID')))
-		{
-			$facility = new Facility($this->db);
-			$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
-			$companyID = $facilityDetails['company_id'];
-			$backCategory = 'facility';
-			$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
-			//$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark'=>'inventory', 'tab'=>''));
-			$this->setPermissionsNew('viewData');
-			$this->smarty->assign('backUrl','?action=browseCategory&category=facility&id='.$this->getFromRequest('facilityID').'&bookmark=inventory&tab=material');
-		} elseif (!is_null($this->getFromRequest('departmentID')))
-		{
-			$department = new Department($this->db);
-			$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentID'));
-			$facility = new Facility($this->db);
-			$facilityDetails = $facility->getFacilityDetails($departmentDetails['facility_id']);
-			$companyID = $facilityDetails['company_id'];
-			$backCategory = 'department';
-			$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
-			//$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'),array('bookmark'=>'inventory', 'tab'=>''));
-			$this->setPermissionsNew('viewData');
-			$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=inventory&tab=material');
-		}
-		if (!$this->user->checkAccess('inventory', $companyID)) {
-			throw new Exception('deny');
-		}
-		$ms = new ModuleSystem($this->db);
-		$moduleMap = $ms->getModulesMap();
-		foreach($moduleMap as $key=>$module)
-		{
-			$showModules[$key] = $this->user->checkAccess($key, $companyID);
-		}
-		$this->smarty->assign('show',$showModules);
 
-		if (!$this->user->checkAccess('inventory', $companyID)) {
-			throw new Exception('deny');
-		}
-
-		$mInventory = new $moduleMap['inventory'];
-		$params = array(
-			'db' => $this->db,
-			'user' => $this->user,
-			'request' => $this->getFromRequest()
-		);
-		$result = $mInventory->prepareView($params);
-		foreach($result as $key => $value)
-		{
-			$this->smarty->assign($key,$value);
-		}
-
-		$this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'),array('bookmark'=>'inventory','tab'=>$result['inventory']->getType()));
-		$this->smarty->assign('backUrl','?action=browseCategory&category='.$backCategory.'&id='.$this->getFromRequest($backCategory.'ID').'&bookmark=inventory&tab='.$result['inventory']->getType());
-		
- */				
-				
 				break;
 				
 				
@@ -222,7 +167,10 @@ class CInventory extends Controller
 				$GOMInventory = new GOMInventory($this->db);
 				$GOMInventory->accessory_id = $accessoryDetails['id'];
 				$GOMInventory->accessory_name = $accessoryDetails['name'];
+				$GOMInventory->facility_id = $this->getFromRequest('facilityID');
+				
 				$GOMInventory->loadByAccessoryID();
+
 				
 				//	set start date
 				if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
@@ -235,7 +183,28 @@ class CInventory extends Controller
 				if ($GOMInventory->usage == null){
 					$GOMInventory->set_sum(0);
 				}
+				$type = new Unittype($this->db);		
 				
+				//ORDERS FOR THIS ACCESSORY
+				$orderList = $inventoryManager->getSupplierOrders($GOMInventory->facility_id, $GOMInventory->accessory_id,null);				
+				foreach ($orderList as $order){
+				
+					//var_dump($order,$SupData);
+					$order['order_created_date'] = date('m/d/Y',$order['order_created_date']);
+					//$order['discount'] = $SupData[0]['discount'];
+					$order['url'] = "?action=viewDetails&category=inventory&id=".$order['order_id']."&facilityID=".$facilityID."&tab=orders";
+					$typeName = $type->getUnittypeDetails($order['order_unittype']);	
+					$order['type'] = $typeName['name'];		
+					$arr[] = $order;
+				}
+
+				$orderList = $arr;
+				$this->smarty->assign('orderList',$orderList);
+				
+				// UNITTYPE
+				$typeName = $type->getUnittypeDetails($GOMInventory->in_stock_unit_type);
+				$this->smarty->assign('typeName',$typeName['name']);
+					
 				$this->smarty->assign("product",$GOMInventory);
 				$this->smarty->assign("parentCategory",$category);
 				$this->smarty->assign("editUrl","?action=edit&category=inventory&id=".$GOMInventory->accessory_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab'));
@@ -663,10 +632,20 @@ class CInventory extends Controller
 					throw new Exception('404');
 				}
 				
+				//	Get UnitType list
+				$unitType = new Unittype($this->db);
+				$unitTypelist = $unitType->getUnittypeListDefault('AllOther');
+				$typeEx[] = "AllOther";
+				$this->smarty->assign('unittype', $unitTypelist);
+				$this->smarty->assign('typeEx', $typeEx);
+				$this->smarty->assign('unitTypeClass', 'AllOther');
+		
 				$GOMInventory = new GOMInventory($this->db);
 				$GOMInventory->accessory_id = $accessoryDetails['id'];
 				$GOMInventory->accessory_name = $accessoryDetails['name'];
 				$GOMInventory->facility_id = $facilityID;
+				
+				
 				$GOMInventory->loadByAccessoryID();
 				
 				$form = $_POST;
@@ -674,7 +653,9 @@ class CInventory extends Controller
 					//protected from xss
 					$GOMInventory->in_stock = Reform::HtmlEncode($form["in_stock"]);
 					$GOMInventory->set_inventory_limit(Reform::HtmlEncode($form["limit"]));
-					$GOMInventory->amount = Reform::HtmlEncode($form['amount']);					
+					$GOMInventory->amount = Reform::HtmlEncode($form['amount']);	
+					$GOMInventory->in_stock_unit_type = Reform::HtmlEncode($form['selectUnittype']);	
+					
 					$result = $GOMInventory->save();
 					if ($result) {
 						header("Location: ?action=browseCategory&category=facility&id={$form['facilityID']}&bookmark=inventory&tab=" . $this->getFromRequest('tab'));
@@ -960,7 +941,7 @@ class CInventory extends Controller
 
 				
 			
-				// kostyl' for product usage after completed oreder
+				// kostyl' for product usage after completed order
 				foreach ($supplierPrductIdList as $id){
 					
 				//ORDERS FOR THIS PODUCT
@@ -977,7 +958,7 @@ class CInventory extends Controller
 					
 				
 				}
-				
+			
 				foreach ($dataArr as $arr) {
 					if (count($arr[0]) > 0) {
 						$data[] = $arr[0];	
@@ -985,7 +966,7 @@ class CInventory extends Controller
 					
 				}
 
-				//$data = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
+				//$new = $inventoryManager->getProductUsageGetAll($ProductInventory->period_start_date, $ProductInventory->period_end_date, $category, $facilityID);	
 
 				$error = false;
 					foreach ($data as $value) {
@@ -1036,45 +1017,52 @@ class CInventory extends Controller
 				//	GOM == Goods of Manufacturing == Accessories!
 				//	Remember this
 				$jobberIdList = $inventoryManager->getJobberListForFacility($facilityDetails['facility_id']);
-				
-				$sortStr=$this->sortList('accessory',3);
-				
-				$accessories = new Accessory($this->db);
-				$accessoriesList = $accessories->getAllAccessory($jobberIdList,$sortStr);
+				if ($jobberIdList){
+					$sortStr=$this->sortList('accessory',3);
 
-				$GOMInventoryList = array();
+					$accessories = new Accessory($this->db);
+					$accessoriesList = $accessories->getAllAccessory($jobberIdList,$sortStr);
 
-				foreach ($accessoriesList as $accessoryDetails) {
-					$GOMInventory = new GOMInventory($this->db);
-					$GOMInventory->accessory_id = $accessoryDetails['id'];
-					$GOMInventory->accessory_name = $accessoryDetails['name'];
-					$GOMInventory->jobber_name = $accessoryDetails['jname'];
-					$GOMInventory->loadByAccessoryID();
-					
-					//	set start date
-					if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
-						$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+					$GOMInventoryList = array();
+
+					foreach ($accessoriesList as $accessoryDetails) {
+						$GOMInventory = new GOMInventory($this->db);
+						$GOMInventory->accessory_id = $accessoryDetails['id'];
+						$GOMInventory->accessory_name = $accessoryDetails['name'];
+						$GOMInventory->jobber_name = $accessoryDetails['jname'];
+						$GOMInventory->facility_id = $facilityDetails['facility_id'];
+						$GOMInventory->loadByAccessoryID();
+
+						//	set start date
+						if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
+							$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+						}
+
+						//	set usage
+						$GOMInventory->calculateUsage();
+
+						// UNITTYPE	
+						$type = new Unittype($this->db);
+						$typeName = $type->getUnittypeDetails($GOMInventory->in_stock_unit_type);
+						$typeNameArr[$GOMInventory->accessory_id] = $typeName['name'];
+						$this->smarty->assign('typeName',$typeNameArr);
+
+						//	set gauge data
+						$pxCount = ($GOMInventory->in_stock != 0) ? round(200 * $GOMInventory->usage / $GOMInventory->in_stock) : 0;
+						if ($pxCount > 200) {
+								$pxCount = 200;
+						}				
+						$GOMInventory->pxCount = $pxCount;
+						if ($GOMInventory->usage == null){
+							$GOMInventory->set_sum(0);
+						}
+
+						$GOMInventory->url = "?action=viewDetails&category=inventory&id=".$GOMInventory->accessory_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
+
+
+						$GOMInventoryList[] = $GOMInventory;										
 					}
-					
-					//	set usage
-					$GOMInventory->calculateUsage();
-					
-					//	set gauge data
-					$pxCount = ($GOMInventory->in_stock != 0) ? round(200 * $GOMInventory->usage / $GOMInventory->in_stock) : 0;
-					if ($pxCount > 200) {
-							$pxCount = 200;
-					}				
-					$GOMInventory->pxCount = $pxCount;
-					if ($GOMInventory->usage == null){
-						$GOMInventory->set_sum(0);
-					}
-						
-					$GOMInventory->url = "?action=viewDetails&category=inventory&id=".$GOMInventory->accessory_id."&".$category."ID=".$facilityID."&tab=".$this->getFromRequest('tab')."";		
-						
-										
-					$GOMInventoryList[] = $GOMInventory;										
-				}
-											
+				}							
 				$this->smarty->assign('GOMInventoryList',$GOMInventoryList);
 				$this->smarty->assign('tpl','inventory/design/inventoryGOM.tpl');	
 				break;

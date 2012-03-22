@@ -11,6 +11,8 @@ class AccessoryUsage {
 	
 	public $id;
 	public $accessory_id;
+	public $department_id;
+			
 	/**	 
 	 * @var DateTime
 	 */
@@ -60,7 +62,7 @@ class AccessoryUsage {
 			/**
 			 * Disallow add new properties dynamicly (cause of its change type of object to stdObject, i dont want that)
 			 */
-			//$this->$name = $value;
+			$this->$name = $value;
 		}
 		/**
 		 * property exists and private or protected, do not touch. Keep OOP
@@ -84,8 +86,9 @@ class AccessoryUsage {
 	
 	
 	private function insert() {
-		$sql = "INSERT INTO `accessory_usage` (`accessory_id`, `date`, `usage`) VALUES (" .
+		$sql = "INSERT INTO `accessory_usage` (`accessory_id`, `department_id`, `date`, `usage`) VALUES (" .
 			mysql_escape_string($this->accessory_id).", " .
+			mysql_escape_string($this->department_id).", " .	
 			$this->date->getTimestamp().", " .
 			mysql_escape_string($this->usage).")";			
 		$this->db->exec($sql);

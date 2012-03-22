@@ -37,6 +37,16 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Jobber Name :
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left">
+                    &nbsp;{$accessory.jobber_name}
+                </div>
+            </td>
+        </tr>		
 		<tr class="users_u_top_size users_top_lightgray">
 			<td colspan="2">Add Usage</td>
 		</tr>		

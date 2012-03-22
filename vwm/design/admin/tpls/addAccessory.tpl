@@ -44,6 +44,25 @@
 				</td>
 			</tr>
 			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Jobber:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >
+						<select id="selectJobber" name="jobber_id" >
+							{if isset($jobbers)}
+								{foreach item=jobber from=$jobbers}
+									<option value="{$jobber->jobber_id}" {if $jobber->jobber_id == $data.jobber_id} selected='selected' {/if} >{$jobber->name}</option>
+								{/foreach}
+							{/if}
+	
+						</select>
+					</div>							
+			
+				</td>
+			</tr>			
+		
+			<tr>
               	 <td height="20" class="users_u_bottom">
                  </td>
                  <td height="20" class="users_u_bottom_r">
