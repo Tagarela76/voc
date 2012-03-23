@@ -86,6 +86,7 @@ class AccessoryUsage {
 	
 	
 	private function insert() {
+		
 		$sql = "INSERT INTO `accessory_usage` (`accessory_id`, `department_id`, `date`, `usage`) VALUES (" .
 			mysql_escape_string($this->accessory_id).", " .
 			mysql_escape_string($this->department_id).", " .	

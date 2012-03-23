@@ -131,6 +131,9 @@ class InventoryNew {
 		return $this->limit;
 	}
 
+	public function get_period_start_date() {
+		return $this->period_start_date;
+	}	
 	public function set_sum($value) {
 		try {
 			$this->usage = $value;
@@ -185,6 +188,10 @@ class InventoryNew {
 
 		$this->limit = $value;
 	}
+	public function set_period_start_date($value) {
+
+		$this->period_start_date = $value;
+	}	
 
 }
 

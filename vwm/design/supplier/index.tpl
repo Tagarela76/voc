@@ -50,15 +50,15 @@
 													$request.bookmark == 'agency'||
 													$request.bookmark == 'product'||
 													$request.category == 'sales' ||
-
+													$request.bookmark == 'gom'||
 													$request.category == 'users'}
 											{include file="tpls:tpls/sort.tpl"}
 											{/if}
 												{*/SORT*}
 
-                                                                                        {*if $request.category == 'salescontacts'}
-                                                                                          {include file="tpls:tpls/subBookmarks.tpl"}
-                                                                                        {/if*}
+                                                {if ($request.bookmark == 'orders' and $request.category == 'sales') || $request.category == 'clients' }
+													{include file="tpls:tpls/subBookmarks.tpl"}
+                                                {/if}
 												{if $request.action == 'browseCategory'}
 													<table width='100%'>
 														<tr>
@@ -71,7 +71,7 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-                                                                                                                        $request.category == 'salescontacts'}
+															$request.category == 'salescontacts'}
 																{include file="tpls:tpls/filter.tpl"}
 															{/if}
 															{*/FILTER*}
@@ -122,7 +122,7 @@
 									{/if}
 
 										{if !$doNotShowControls}
-											{if $request.action == 'browseCategory' && $request.bookmark != 'orders' && $request.bookmark != 'products' && $request.category != 'profile'}
+											{if $request.action == 'browseCategory' && $request.bookmark != 'orders' && $request.bookmark != 'products'  && $request.bookmark != 'gom' && $request.category != 'profile'}
 												{include file="tpls:tpls/controlCategoriesList.tpl"}
 											{elseif $request.action == 'viewDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}

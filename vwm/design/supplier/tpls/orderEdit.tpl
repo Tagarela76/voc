@@ -79,7 +79,7 @@
         <div align="right" class="margin7">
  <span style="color: red; font-size: 14px;">{if $request.action eq "addItem"}Be careful! Will be sent a letter with order's changes to the client!{else}
 	 Be careful! Will be sent a e-mail with order's changes to the client! {/if}</span>
-				<input type='button' class="button" value='Cancel' onclick="location.href='supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request.jobberID}&supplierID={$request.supplierID}'">
+				<input type='button' class="button" value='Cancel' onclick="location.href='supplier.php?action=browseCategory&category=sales&bookmark=orders&tab={$request.tab}&jobberID={$request.jobberID}&supplierID={$request.supplierID}'">
 
             <input type='submit' class="button" value='Save'>
 			<input type='hidden' name="facilityID" value='{$request.facilityID}'>

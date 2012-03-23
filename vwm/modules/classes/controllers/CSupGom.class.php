@@ -1,10 +1,10 @@
 <?php
 
-class CSupProducts extends Controller {
+class CSupGom extends Controller {
 	
-	function CSupProducts($smarty,$xnyo,$db,$user,$action) {
+	function CSupGom($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
-		$this->category='products';
+		$this->category='gom';
 		$this->parent_category='sales';		
 	}
 	
@@ -16,10 +16,10 @@ class CSupProducts extends Controller {
 	}
 
 	protected function actionBrowseCategory() {
-		$this->bookmarkProducts();
+		$this->bookmarkGom();
 	}
 	
-	protected function bookmarkProducts($vars) {
+	protected function bookmarkGom($vars) {
 		extract($vars);
 
 		$request = $this->getFromRequest();
@@ -28,38 +28,44 @@ class CSupProducts extends Controller {
 		}else{
 			$supplierID = $request['supplierID'];
 		}
+		
+		$supplierID = 0; //KOSTYL" supplier not needed
 		$jobberID = $request['jobberID'];
-		$productManager = new Product($this->db);
+		
+		
+		$gomManager = new Accessory($this->db);
 
 		// SOrt
-		$sortStr = $this->sortList('productsPrice',2);		
+		$sortStr = $this->sortList('gomPrice',2);		
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID,null,$jobberID);
+		$goms = $gomManager->getGomPriceList($jobberID);
 
-		if (!$products){
-			$products = $productManager->getProductListByMFG($supplierID);
-			foreach ($products as $product){
+		if (!$goms){
+			$goms = $gomManager->getGomList($jobberID);
+			foreach ($goms as $product){
 				$priceProduct = new ProductPrice($this->db, $product);
 				$priceProduct->supman_id = $supplierID;
 				$priceProduct->jobber_id = $jobberID;
+				$priceProduct->unittype = GOMInventory::PIECES_UNIT_TYPE_ID;
 				$priceProduct->save();
 			}
 			
 		}
+		
 		// Pagination	
-		$count = $productManager->getCountSupplierProducts($supplierID);
+		$count = $gomManager->getCountGoms($jobberID);
 		$pagination = new Pagination($count);
-		$pagination->url = "?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=gom&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID, null,$jobberID, $pagination, $sortStr);
+		$goms = $gomManager->getGomPriceList($jobberID,null, $pagination, $sortStr);
 	
-		foreach ($products as $product){
-			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
+		foreach ($goms as $product){
+			$comapnyArray = $gomManager->getCompanyListWhichGOMUse($product['product_id']);
 			$price4prduct = new ProductPrice($this->db, $product);
 			$price4prduct->jobber_id = $jobberID;
 			$price4prduct->supman_id = $supplierID;
-			$price4prduct->url = "supplier.php?action=edit&category=products&id=".$price4prduct->price_id."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}&bookmark={$request['bookmark']}";
+			$price4prduct->url = "supplier.php?action=edit&category=gom&id=".$price4prduct->price_id."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}&bookmark={$request['bookmark']}";
 			//$price4prduct->save();
 			$productsArr[] = $price4prduct;
 			if ($comapnyArray){
@@ -73,7 +79,7 @@ class CSupProducts extends Controller {
 		$this->smarty->assign('jsSources', $jsSources);
 
 		$this->smarty->assign("comapnyList", $comapnyList);
-		$this->smarty->assign('tpl', 'tpls/bookmarkProducts.tpl');
+		$this->smarty->assign('tpl', 'tpls/bookmarkGom.tpl');
 
                
 	}
@@ -92,18 +98,13 @@ class CSupProducts extends Controller {
 	private function actionEdit() {
 		$request = $this->getFromRequest();
 		$priceID = $request['id'];
-		$supplierID = $request['supplierID'];
-		
-		$productManager = new Product($this->db);
+		$jobberID = $request['jobberID'];
 
-		$product = $productManager->getProductPriceBySupplier($supplierID,$priceID,$request['jobberID']);	
+		$gomManager = new Accessory($this->db);
+
+		$product = $gomManager->getGomPriceList($jobberID,$priceID, $pagination, $sortStr);
+
 		if (!$product) throw new Exception('404');
-
-
-// UNITTYPE{
-
-		$type = new Unittype($this->db);
-		//$unittypeDetails = $type->getUnittypeDetails($product[0]['unittype']);
 
 			$form = $_POST;
 
@@ -113,23 +114,18 @@ class CSupProducts extends Controller {
 				$price4prduct->price = $form['price'];
 				$price4prduct->unittype = $form['selectUnittype'];
 				$result = $price4prduct->save();
+				
 				if ($result == 'true') {
-					header("Location: ?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+					header("Location: ?action=browseCategory&category=sales&bookmark=gom&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 				}
 			}
-
-		$res = $type->getAllClassesOfUnitTypes();
-		foreach ($res as $tEx){
-			$typeEx[] = $tEx['name'];
-		}
-		$unitTypeClass = $type->getUnittypeClass($product[0]['unittype']);
-		$unittypeList = $type->getUnittypeListDefault($unitTypeClass);
-	
-		$this->smarty->assign('unitTypeClass', $unitTypeClass);
-		$this->smarty->assign('typeEx', $typeEx);		
-		$this->smarty->assign('unittype', $unittypeList);
-// }UNITTYPE
-			
+		//	Get UnitType list
+		$unitType = new Unittype($this->db);
+		$unitTypelist = $unitType->getUnittypeListDefault('AllOther');
+		$typeEx[] = "AllOther";
+		$this->smarty->assign('unittype', $unitTypelist);
+		$this->smarty->assign('typeEx', $typeEx);
+		$this->smarty->assign('unitTypeClass', 'AllOther');
 			
 
 		$jsSources = array (

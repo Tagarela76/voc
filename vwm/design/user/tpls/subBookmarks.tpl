@@ -7,6 +7,7 @@
 {*/INVENTORY MODULE*}
 
 
+
 {*WASTE STREAM MODULE*}
 	{if $show.waste_streams}
 		{if $permissions.data.view}
@@ -44,4 +45,3 @@
 	{include file="tpls:tpls/subBookmarkMix.tpl"}
 {/if}
 {*MIX*}
-                

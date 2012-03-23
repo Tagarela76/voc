@@ -275,6 +275,27 @@ class Sort {
     			default:$subQuery="";
     			break;  
     		}
+    		break;	
+		
+    		case 'gomPrice':
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" a.name DESC";
+    			break;
+    			case 2:$subQuery.=" a.name ASC";
+    			break;
+    			case 3:$subQuery.=" price ASC";
+    			break;
+    			case 4:$subQuery.=" price DESC";
+    			break;
+    			case 6:$subQuery.=" a.id ASC";
+    			break;
+    			case 5:$subQuery.=" a.id DESC";
+    			break;			
+   			
+    			default:$subQuery="";
+    			break;  
+    		}
     		break;		
     		
     		case 'chemicalInventory':

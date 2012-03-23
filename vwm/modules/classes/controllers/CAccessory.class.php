@@ -377,20 +377,25 @@ class CAccessory extends Controller
 			$company = new Company($this->db);
 			$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));			
 			
-			$dateChain = new TypeChain($form['date'],'date',$this->db, $companyID,'company');			
-			
+			$dateChain = new TypeChain($form['date'],'date',$this->db, $companyID,'company');	
+
+			$hour = date('H') ;
+			$minute = date("i");
+			$second = date('s');
+			$goodDate = new DateTime($form['date']);
+			$goodDate->setTime($hour, $minute, $second);
+	
 			$validation = new Validation($this->db);		
 			$validationRes = $validation->validateAccessoryUsage($form, $dateChain);
 			if ($validationRes['summary']) {				
 				$accessoryUsage = new AccessoryUsage($this->db);
 				$accessoryUsage->accessory_id = $this->getFromRequest('id');						
-				$accessoryUsage->date = DateTime::createFromFormat('U', $dateChain->getTimestamp());
+				$accessoryUsage->date = DateTime::createFromFormat('U', $goodDate->getTimestamp());
 				$accessoryUsage->usage = (int)$form['usage'];
 				$accessoryUsage->department_id = (int)$this->getFromRequest("departmentID");
 				
 				$department = new Department($this->db);
 				$departmentDetails = $department->getDepartmentDetails($accessoryUsage->department_id);
-
 				$accessoryUsage->facility_id = $departmentDetails['facility_id'];
 				
 				$inventoryManager = new InventoryManager($this->db);

@@ -99,7 +99,9 @@ class Accessory implements iAccessory {
     
     public function getAccessoryDetails() {
     	
-    	$query = "SELECT * FROM ".TB_ACCESSORY." a WHERE a.id=".(int)$this->accessoryID;
+    	$query = "	SELECT a.*, io.order_completed_date, io.order_status FROM ".TB_ACCESSORY." a 
+					LEFT JOIN inventory_order io ON a.id = io.order_product_id 			
+					WHERE a.id=".(int)$this->accessoryID;
     	$this->db->query($query);
     	 
     	$accessory = $this->db->fetch_array(0);
@@ -256,7 +258,92 @@ class Accessory implements iAccessory {
 		
 		return $usages;
 	}
-	
-}
 
+	public function getCountGoms($jobberID) {
+	
+		$query = "SELECT COUNT(*) cnt FROM accessory a WHERE a.jobber_id = {$jobberID}";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}
+	public function getGomPriceList($jobberID, $priceID = null, Pagination $pagination = null, Sort $sortStr = null) {
+
+		$query =	"SELECT a.id, a.name as product_nr, pp.* " .
+					"FROM price4product pp  , ". TB_ACCESSORY . " a ".
+					"WHERE a.jobber_id = {$jobberID} AND pp.product_id = a.id ";
+		if ($priceID){
+			$query .= " AND pp.price_id = " . (int) $priceID . "";
+		}
+	
+			$query .= " GROUP BY a.id ";
+	
+		if ($sortStr){
+			$query .= $sortStr;
+		}else{
+			$query .= " ORDER BY a.id ASC ";
+		}		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+		$this->db->query($query);
+//echo $query;
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$arr = $this->db->fetch_all_array();
+		$productPrice = array();
+			foreach($arr as $b) {
+
+					$productPrice[] = $b;
+            
+			}		
+
+		return $productPrice;
+	}
+	
+	public function getGomList($jobberID) {
+		settype($jobberID,"integer");
+
+		$query = "SELECT * " .
+				 "FROM ".TB_ACCESSORY." a " .
+				 "WHERE a.jobber_id = ".(int)$jobberID. " ORDER BY  a.id ASC"; 
+	
+		$this->db->query($query);
+		$numRows = $this->db->num_rows();
+		if ($numRows) {
+			for ($i=0; $i < $numRows; $i++) {
+				$productData = $this->db->fetch($i);
+				$product = array (
+					'product_id'				=>	$productData->id,
+					'name'						=>	$productData->name,
+				);
+				$products[] = $product;
+			}
+
+			return $products;
+		} else {
+
+			return false;
+		}	
+	
+	}
+
+	public function getCompanyListWhichGOMUse($accessoryID) {
+
+		$query =	"SELECT a.id, c.name " .
+					"FROM accessory a, company c, facility f,product2inventory pi ".
+					"WHERE f.facility_id = pi.facility_id AND f.company_id = c.company_id AND pi.accessory_id = a.id " .
+					"AND a.id = " . (int) $accessoryID . " ";
+
+			$query .= " ORDER BY c.name ASC";
+//echo $query;
+		$this->db->query($query);
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$companyList = $this->db->fetch_all_array();
+		return $companyList;
+	}		
+}
 ?>

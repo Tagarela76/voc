@@ -91,19 +91,13 @@ class Product extends ProductProperties {
 	public function getProductPriceBySupplier($supplierID, $priceID = null, $jobberID, Pagination $pagination = null, Sort $sortStr = null) {
 
 		$query =	"SELECT p.product_id, p.product_nr, pp.* " .
-				// " . TB_FACILITY . " f , " . TB_COMPANY . " c ,
 					"FROM " . TB_SUPPLIER . " s , price4product pp  , ". TB_PRODUCT . " p ".
-					//"LEFT JOIN product2inventory pi ON pi.product_id = p.product_id ".
 					"WHERE p.supplier_id = s.supplier_id " .
 					"AND s.original_id = " . (int) $supplierID . " AND pp.product_id = p.product_id AND pp.jobber_id = {$jobberID} ";
-					//"AND f.facility_id = pi.facility_id ".
-					//"AND f.company_id = c.company_id ";
 		if ($priceID){
 			$query .= " AND pp.price_id = " . (int) $priceID . "";
 		}
-		if ($productID){
-			$query .= " AND p.product_id = " . (int) $productID . "";
-		}		
+	
 			$query .= " GROUP BY p.product_id ";
 	
 		if ($sortStr){

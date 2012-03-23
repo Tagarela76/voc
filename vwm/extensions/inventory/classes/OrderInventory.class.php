@@ -22,7 +22,7 @@ class OrderInventory {
 
 	public $errors;
 
-
+	private $order_4accessory; // if created order for accessory then  = 'yes' else NULL
 	/**
 	 * @var DateTime The day when order was created
 	 */
@@ -88,11 +88,12 @@ class OrderInventory {
 												.mysql_escape_string($this->order_unittype)."','"
 												.mysql_escape_string($this->order_price). "','"
 												.mysql_escape_string($this->order_discount). "','"
-												.mysql_escape_string($this->order_total). "',NULL)";
+												.mysql_escape_string($this->order_total). "',NULL, '"
+												.mysql_escape_string($this->order_4accessory)."')";
                                                
 
                 }	
-		//echo $query;
+
 		$this->db->query($query);
 			
 		if(mysql_error() == '') {
@@ -198,7 +199,9 @@ class OrderInventory {
 		return $this->order_id;
 	}	
 	
-	
+	public function get_order_4accessory(){
+		return $this->order_4accessory;
+	}	
 
 	public function set_order_id($value) {
 		try {
@@ -302,5 +305,11 @@ class OrderInventory {
 			$this->order_unittype = $value;
 
 	}	
+	public function set_order_4accessory($value) {
+
+			$this->order_4accessory = $value;
+
+	}		
+	
 }
 ?>

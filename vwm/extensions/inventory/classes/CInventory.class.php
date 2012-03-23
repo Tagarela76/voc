@@ -172,14 +172,16 @@ class CInventory extends Controller
 				$GOMInventory->loadByAccessoryID();
 
 				
-				//	set start date
-				if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
-					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+				//set start date
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $GOMInventory->accessory_id);		
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				}
-					
+	
 				//	set usage
 				$GOMInventory->calculateUsage();
-									
+								
 				if ($GOMInventory->usage == null){
 					$GOMInventory->set_sum(0);
 				}
@@ -573,52 +575,6 @@ class CInventory extends Controller
 						$this->smarty->assign('error', $error);
 					}
 				}
-				/*
-				  //	IF ERRORS OR NO POST REQUEST
-				  $facility = new Facility($this->db);
-				  $facilityDetails = $facility->getFacilityDetails($facilityID);
-				  $companyID = $facilityDetails['company_id'];
-
-				  $this->setNavigationUpNew('department', $this->getFromRequest($backCategory.'ID'));
-				  $this->setPermissionsNew('viewData');
-				  $ms = new ModuleSystem($this->db);
-				  $moduleMap = $ms->getModulesMap();
-				  foreach($moduleMap as $key=>$module) {
-				  $showModules[$key] = $this->user->checkAccess($key, $companyID);
-				  }
-				  $this->smarty->assign('show',$showModules);
-
-				  if(!$showModules['inventory']) {
-				  throw new Exception('deny');
-				  }
-
-				  //	ok, we have access to inventory..
-				  $mIventory = new $moduleMap['inventory'];
-
-				  $params = array(
-				  'db' => $this->db,
-				  'request' => $this->getFromRequest(),
-				  'form' => $form,
-				  'facilityID' => $facilityID,
-				  'smarty' => $this->smarty
-				  );
-				  $result = $mIventory->prepareEdit($params);
-
-				  foreach ($result as $key=>$value) {
-				  $this->smarty->assign($key,$value);
-				  }
-
-				  $this->setListCategoriesLeftNew($backCategory, $this->getFromRequest($backCategory.'ID'), array('bookmark'=>'inventory','tab'=>$result['tab']));
-
-				  //	set js scripts
-				  $jsSources = array(
-				  'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-				  'modules/js/inventory.js'
-				  );
-				  $this->smarty->assign('jsSources', $jsSources);
-				  $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
-				  $this->smarty->assign('cssSources', $cssSources);
-				 */
 				$this->smarty->assign('inventoryType','product');	
 				$this->smarty->assign('tpl', "inventory/design/inventoryProductsEdit.tpl");
 				break;
@@ -665,10 +621,13 @@ class CInventory extends Controller
 					die();
 				}												
 				
-				//	set start date
-				if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
-					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+				//set start date
+				$orderList = $inventoryManager->getSupplierOrders($facilityID, $GOMInventory->accessory_id);		
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+					$GOMInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				}
+
 					
 				//	set usage
 				$GOMInventory->calculateUsage();
@@ -775,6 +734,7 @@ class CInventory extends Controller
 					}
 					$form = $_POST;
 					if (count($form) > 0) {
+						
 						//protected from xss
 						$form["facilityID"]=Reform::HtmlEncode($form["facilityID"]);
 						$form['order_id'] = Reform::HtmlEncode($form['order_id']);
@@ -798,10 +758,29 @@ class CInventory extends Controller
 									$dateBegin = $ProductInventory->period_start_date;
 								}
 
-								$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
-								$product = $productDetails[0];
+						
+								if ($orderObj->order_4accessory && $orderObj->order_4accessory == 'yes'){
+										$gomInventory = new GOMInventory($this->db);
+										$gomInventory->accessory_id = $orderObj->order_product_id;
+										$gomInventory->facility_id = $orderObj->order_facility_id;	
+										if (!$gomInventory->loadByAccessoryID()) {
+											//	no inventory yet
+											return false;
+										}
+										//	set start date
+										if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+											$gomInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+										}										
+										$result['usage'] = $gomInventory->calculateUsage();
+										$result['amount'] =  $orderObj->order_amount;
+										$product = $gomInventory;
+								}else{
+									$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $request['facilityID'], $orderDetails[0]['order_product_id']);
+									$product = $productDetails[0];
 
-								$result = $inventoryManager->unitTypeConverter($product,$orderObj,true);
+									$result = $inventoryManager->unitTypeConverter($product,$orderObj,true);									
+								}
+
 								
 
 								if ($result){
@@ -944,7 +923,7 @@ class CInventory extends Controller
 				// kostyl' for product usage after completed order
 				foreach ($supplierPrductIdList as $id){
 					
-				//ORDERS FOR THIS PODUCT
+					//ORDERS FOR THIS PODUCT
 					$orderList = $inventoryManager->getSupplierOrders($facilityID, $id);		
 
 					if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
@@ -1034,9 +1013,19 @@ class CInventory extends Controller
 						$GOMInventory->loadByAccessoryID();
 
 						//	set start date
-						if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
-							$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+						$orderList = $inventoryManager->getSupplierOrders($facilityID, $GOMInventory->accessory_id);		
+
+						if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+
+							$GOMInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 						}
+/*						
+						if ($accessoryDetails['order_completed_date'] != null && $accessoryDetails['order_status'] == OrderInventory::COMPLETED){
+							
+							$GOMInventory->period_start_date = DateTime::createFromFormat('U', $accessoryDetails['order_completed_date']);
+					
+						}
+ */
 
 						//	set usage
 						$GOMInventory->calculateUsage();

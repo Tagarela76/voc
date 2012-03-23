@@ -98,7 +98,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$supplier.url}" class="id_company1">
                 <div style="width:100%;">
-                    {$supplier.discount}
+                    {$supplier.discount} %
                 </div>
             </a>
         </td>

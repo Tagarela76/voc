@@ -97,7 +97,7 @@ class GOMInventory extends InventoryNew {
 				AND ".  mysql_escape_string($this->period_end_date->getTimestamp())."
 				AND department_id IN ( SELECT department_id FROM department WHERE facility_id = ".mysql_escape_string($this->facility_id)." )
 				AND accessory_id = ".mysql_escape_string($this->accessory_id);
-		//echo $sql;
+//echo $sql;
 		$this->db->query($sql);
 		
 		$result = $this->db->fetch(0);

@@ -29,19 +29,20 @@ class CSupOrders extends Controller {
 			$supplierID = $request['supplierID'];
 		}	
 		$jobberID = $request['jobberID'];
-		// SOrt
-		$sortStr = $this->sortList('orders',5);
-
 		$inventoryManager = new InventoryManager($this->db);
 		$productManager = new Product($this->db);
 		$facilityManager = new Facility($this->db);
+		
+	if ($request['tab'] == 'products'){	
+		// SOrt
+		$sortStr = $this->sortList('orders',5);
 
 		$products = $productManager->getProductListByMFG($supplierID);
 
 		// Pagination	
 		$count = $inventoryManager->getCountSupplierOrders($products,$jobberID);	
 		$pagination = new Pagination($count);
-		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 	
 		$order = $inventoryManager->getSupplierOrders(null, $products,$jobberID, $pagination, $sortStr);
@@ -58,8 +59,8 @@ class CSupOrders extends Controller {
 					//$SupData = $inventoryManager->getProductsSupplierList($o['order_facility_id'], $o['order_product_id']);
 					$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
 					//$o['unittype'] = $SupData[0]['in_stock_unit_type'];
-					$o['url'] = "supplier.php?action=viewDetails&category=orders&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
-					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&id=".$o['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+					$o['url'] = "supplier.php?action=viewDetails&category=orders&tab={$request['tab']}&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+					$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&tab={$request['tab']}&id=".$o['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 					$o['client'] = $facilityDetails['title'];
 					$typeName = $type->getUnittypeDetails($o['order_unittype']);
 					$o['type'] = $typeName['name'];					
@@ -67,7 +68,37 @@ class CSupOrders extends Controller {
 				}				
 
 			}
+	}elseif($request['tab'] == 'gom'){
+		$gomManager = new Accessory($this->db);
+		
+		$goms = $gomManager->getAllAccessory($jobberID);
+		foreach($goms as $gom){
+			$products[]['product_id'] = $gom['id'];
+		}
+		
+		
+		// Pagination	
+		$count = $gomManager->getCountGoms($jobberID);
+		$pagination = new Pagination($count);
+		$pagination->url = "?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+		$this->smarty->assign('pagination', $pagination);
+	
+		$order = $inventoryManager->getSupplierOrders(null, $products,$jobberID, $pagination, $sortStr);
+		$type = new Unittype($this->db);
+		if ($order){
+			foreach ($order as $o){
+				$facilityDetails = $facilityManager->getFacilityDetails($o['order_facility_id']);
+				$o['order_created_date'] = date('m/d/Y',$o['order_created_date']);
+				$o['url'] = "supplier.php?action=viewDetails&category=orders&tab={$request['tab']}&id=".$o['order_id']."&facilityID=".$o['order_facility_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+				$o['completeUrl'] = "supplier.php?action=completeOrder&category=orders&tab={$request['tab']}&id=".$o['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+				$o['client'] = $facilityDetails['title'];
+				$typeName = $type->getUnittypeDetails($o['order_unittype']);
+				$o['type'] = $typeName['name'];					
+				$orderList[] = $o;
+				}				
 
+			}		
+	}
 		$this->smarty->assign('orderList', $orderList);
 
 //set js scripts
@@ -93,8 +124,8 @@ class CSupOrders extends Controller {
 		$typeName = $type->getUnittypeDetails($orderDetails[0]['order_unittype']);
 		$orderDetails[0]['type'] = $typeName['name'];
 
-		$this->smarty->assign("editUrl", "?action=edit&category=inventory&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
-		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+		//$this->smarty->assign("editUrl", "?action=edit&category=inventory&tab=".$request['tab']."&id=" . $orderDetails[0]['order_id'] . "&facilityID=" . $facilityID . "&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 		$this->smarty->assign('order', $orderDetails[0]);
 		$this->smarty->assign('tpl', 'tpls/orderDetail.tpl');
 		$this->smarty->assign("parent", $this->parent_category);
@@ -112,8 +143,8 @@ class CSupOrders extends Controller {
 		if ($orderDetails && $orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
 			$facilityID = $orderDetails[0]['order_facility_id'];
 			$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
-			$this->smarty->assign("action", "?action=completeOrder&category=orders&id=" . $orderDetails[0]['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
-			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+			$this->smarty->assign("action", "?action=completeOrder&category=orders&tab={$request['tab']}&id=" . $orderDetails[0]['order_id']."&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			$this->smarty->assign("itemType", 'order');
 			$this->smarty->assign('order', $orderDetails[0]);
 			$this->smarty->assign("request", $this->getFromRequest());
@@ -130,6 +161,11 @@ class CSupOrders extends Controller {
 				$ProductInventory = new ProductInventory($this->db);
 				$order = $inventoryManager->getSupplierOrderDetails($form['order_id']);
 
+
+				// FOR CONVERT ORDER AMOUNT TO STOCK UNITTPE
+				$orderObj = new OrderInventory($this->db, $order[0]);
+				$orderObj->unittype = $orderObj->order_unittype;
+				
 				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				} else {
@@ -137,13 +173,27 @@ class CSupOrders extends Controller {
 				}
 				//
 				$category = "facility";
-			
-				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
-
-				$product = $productDetails[0];
-				
-				$result = $inventoryManager->unitTypeConverter($product);
-
+				if ($orderObj->order_4accessory && $orderObj->order_4accessory == 'yes') {
+					$gomInventory = new GOMInventory($this->db);
+					$gomInventory->accessory_id = $orderObj->order_product_id;
+					$gomInventory->facility_id = $orderObj->order_facility_id;
+					if (!$gomInventory->loadByAccessoryID()) {
+						//	no inventory yet
+						return false;
+					}
+					//	set start date
+					if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
+						$gomInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+					}
+					$result['usage'] = $gomInventory->calculateUsage();
+					$result['amount'] = $orderObj->order_amount;
+					$product = $gomInventory;
+					$product->usage = $res['usage'];
+				} else {			
+					$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
+					$product = $productDetails[0];
+					$result = $inventoryManager->unitTypeConverter($product);
+				}
 				if ($result) {
 					$product->usage = $result['usage'];
 					$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
@@ -152,17 +202,17 @@ class CSupOrders extends Controller {
 				} else {
 					$orderDetails = $inventoryManager->getSupplierOrderDetails($request['id']);
 
-				// For orders with status: Canceled or Completed denied edit function
-				if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
-					$statuslist = $inventoryManager->getSupplierOrdersStatusList();
+					// For orders with status: Canceled or Completed denied edit function
+					if ($orderDetails[0]['order_status'] != OrderInventory::COMPLETED && $orderDetails[0]['order_status'] != OrderInventory::CANCELED) {
+						$statuslist = $inventoryManager->getSupplierOrdersStatusList();
 
-					$this->smarty->assign('status', $statuslist);
+						$this->smarty->assign('status', $statuslist);
 
-					$this->smarty->assign('order', $orderDetails[0]);
-					$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
-				} else {
-					throw new Exception('deny');
-				}
+						$this->smarty->assign('order', $orderDetails[0]);
+						$this->smarty->assign('tpl', 'tpls/orderComplete.tpl');
+					} else {
+						throw new Exception('deny');
+					}
 
 					$result1 = false;
 					$this->smarty->assign('check', 'false');
@@ -239,7 +289,7 @@ class CSupOrders extends Controller {
 									
 			
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}		
 		}
 		$this->smarty->display("tpls:index.tpl");
@@ -279,21 +329,46 @@ class CSupOrders extends Controller {
 
 			if ($form['status'] == OrderInventory::COMPLETED) {
 				$form['order_completed_date'] = time();
-				//ORDERS FOR THIS PODUCT
-				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'],$request['jobberID']);
+				//ORDERS FOR THIS PRODUCT
+				$orderList = $inventoryManager->getSupplierOrders($request['facilityID'], $orderDetails[0]['order_product_id'], $request['jobberID']);
 				$ProductInventory = new ProductInventory($this->db);
-				$order = $inventoryManager->getSupplierOrderDetails( $form['order_id']);
-				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
+				$order = $inventoryManager->getSupplierOrderDetails($form['order_id']);
 
+				// FOR CONVERT ORDER AMOUNT TO STOCK UNITTPE
+				$orderObj = new OrderInventory($this->db, $order[0]);
+				$orderObj->unittype = $orderObj->order_unittype;
+				
+				//set begin date
+				if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
 					$dateBegin = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
 				} else {
 					$dateBegin = $ProductInventory->period_start_date;
 				}
 				//
 				$category = "facility";
-				
-				$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
-				$product = $productDetails[0];
+
+
+				if ($orderObj->order_4accessory && $orderObj->order_4accessory == 'yes') {
+					$gomInventory = new GOMInventory($this->db);
+					$gomInventory->accessory_id = $orderObj->order_product_id;
+					$gomInventory->facility_id = $orderObj->order_facility_id;
+					if (!$gomInventory->loadByAccessoryID()) {
+						//	no inventory yet
+						return false;
+					}
+					//	set start date
+					if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED) {
+						$gomInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+					}
+					$res['usage'] = $gomInventory->calculateUsage();
+					$res['amount'] = $orderObj->order_amount;
+					$product = $gomInventory;
+					$product->usage = $res['usage'];
+				} else {
+					$productDetails = $inventoryManager->getProductUsageGetAll($dateBegin, $ProductInventory->period_end_date, $category, $form["facilityID"], $orderDetails[0]['order_product_id']);
+					$product = $productDetails[0];					
+				}
+
 
 				$addToStock = $product->in_stock - $product->usage + $order[0]['order_amount'];
 				$product->in_stock = $addToStock;
@@ -357,54 +432,11 @@ class CSupOrders extends Controller {
 									
 
 				
-				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
+				header("Location: supplier.php?action=browseCategory&category=sales&bookmark=orders&tab={$request['tab']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}");
 			}
 		}	
-$this->smarty->display("tpls:index.tpl");		
-/*		
-		$id = $this->getFromRequest('id');
-		$contactsManager = new SalesContactsManager($this->db);
-		$contact = $contactsManager->getSalesContact($id,$this->user->xnyo->user['user_id']);
-		$country = new Country($this->db);
-		$registration = new Registration($this->db);
-		$usaID = $country->getCountryIDByName('USA');
-		$this->smarty->assign($usaID);
-	
-		if ($this->getFromPost('save') == 'Save') {
-			
-			$contact = $this->createContactByForm($_POST);
-			$contact->id = $id;
-                        
-			if(!empty($contact->errors)) {
-				
-				$this->smarty->assign("error_message","Errors on the form");
-			} else {
-				
-				$result = $contactsManager->saveContact($contact);
-				if($result == true) {
-					header("Location: sales.php?action=browseCategory&category=salescontacts&bookmark=contacts&page=".$this->getFromRequest('page')."&subBookmark=".$this->getFromRequest('subBookmark')."");
-				} else {
-					$this->smarty->assign("error_message",$contact->getErrorMessage());
-				}
-			}
-		}
-		$this->smarty->assign("data",$contact);
-                $countries =  $registration->getCountryList();
-		$state = new State($this->db);
-		$stateList = $state->getStateList($usaID);		
-		$this->smarty->assign("creater_id",$this->user->xnyo->user['user_id']);
-		$this->smarty->assign("request",$this->getFromRequest());
-		$this->smarty->assign("states", $stateList);	
-		$this->smarty->assign("usaID", $usaID);
-		$this->smarty->assign("countries", $countries);
-		$jsSources = array();											
-		array_push($jsSources, 'modules/js/addContact.js');	
-		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign('tpl', 'tpls/addContact.tpl');
-		$this->smarty->display("tpls:index.tpl");
- * 
- */
-	}
+	$this->smarty->display("tpls:index.tpl");		
+}
 /*	
 	private function actionAddItem() {		
 		

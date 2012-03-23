@@ -28,7 +28,7 @@ $(document).ready(function() {
     {else $parentCategory == 'department'}
 	<form method='POST' action='?action={$request.action}&category=inventory&id={$request.id}&departmentID={$request.departmentID}&tab={$inventory->getType()}'>
 	{/if*}
-	<form method='POST' id='formP' action='?action={$request.action}&category=products&id={$request.id}{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'>
+	<form method='POST' id='formP' action='?action={$request.action}&category={$request.bookmark}&id={$request.id}{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'>
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
@@ -49,7 +49,7 @@ $(document).ready(function() {
             </tr>				
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
-                    Price per gal:
+                    Price :
                 </td>
                 <td class="border_users_r border_users_b">
 
@@ -58,9 +58,9 @@ $(document).ready(function() {
 							<script type="text/javascript">
 								$("#price").numeric();
 								function check_price(){
-									var amount = $("#price").val();
+									var price = $("#price").val();
 									var form = $("#formP");
-									if(amount == "" && amount == 0 && amount == "0.00") {
+									if(price == "") {
 
 										$("#error_price .error_text").text("Type price!");
 										$("#error_price").css('display','inline');
@@ -69,11 +69,12 @@ $(document).ready(function() {
 										return false;
 									}else{
 										form.submit();
+
 									}
 								}		
 							</script>	
 						{/literal}
-                    <div class="error_price" id="error_price" style="display: none;">
+                  <BR/>  <div class="error_price" id="error_price" style="display: none;">
                         <span id="" class="error_text">Error!</span>
                     </div>						
                 </td>
@@ -93,7 +94,8 @@ $(document).ready(function() {
 										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
 										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
 										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
+										{if 'AllOther' eq $typeEx[j]}<option value='AllOther' {if 'AllOther' eq $unitTypeClass}selected="selected"{/if}>All Other</option>{/if}
 										{/section}
 							
 									</select>&nbsp; 
@@ -119,7 +121,7 @@ $(document).ready(function() {
         </table>
 					
         <div align="right" class="margin7">
-			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=sales&bookmark=products{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'">
+			<input type='button' class="button" value='Cancel' onclick="location.href='?action=browseCategory&category=sales&bookmark={$request.bookmark}{if $request.jobberID}&jobberID={$request.jobberID}{/if}{if $request.supplierID}&supplierID={$request.supplierID}{/if}'">
 			
       	
             <input type='button' class="button" value='Save' onclick='check_price();'>

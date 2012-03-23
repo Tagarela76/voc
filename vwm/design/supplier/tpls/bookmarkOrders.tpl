@@ -17,12 +17,12 @@
 <div class="padd7">
 	<table class="users"cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_green" height="27px">
-		{if $request.tab != 'products'}
+
         <td class="users_top_green users_u_top_green" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
-		{/if}
-        <td class="{if $request.tab != 'products'}users_top_green{else}users_top_green users_u_top_green{/if}">
+
+        <td class="users_top_green">
            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	ID Number 		
@@ -115,12 +115,12 @@
     {*BEGIN LIST*}  
     {foreach from=$orderList item=order} 
     <tr class="hov_company" height="10px">
-		{if $request.tab != 'products'}
+	
         <td class="border_users_b  border_users_l border_users_r">
             <input type="checkbox" value="{$order.order_id}" name="id[]">
         </td>
-		{/if}
-        <td class="{if $request.tab != 'products'}border_users_r border_users_b{else}border_users_b  border_users_l border_users_r{/if}">
+
+        <td class="border_users_r border_users_b">
             <a href="{$order.url}" class="id_company1">
                 <div style="width:100%;">
                     {$order.order_id}

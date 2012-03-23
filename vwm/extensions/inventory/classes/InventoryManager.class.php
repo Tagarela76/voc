@@ -218,7 +218,7 @@ echo $query;
 			//, Pagination $pagination = null
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}			
-		//echo $query;
+//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -982,7 +982,7 @@ echo $query;
 					}else{
 						$newOrder->order_jobber_id = 0;
 					}
-					
+					$newOrder->order_4accessory = NULL;
 					$newOrder->save();
 
 					// EMAIL NOTIFICATION
@@ -1046,8 +1046,14 @@ echo $query;
 			//	no inventory yet
 			return false;
 		}
+		//set start date
+		$inventoryManager = new InventoryManager($this->db);
+		$orderList = $inventoryManager->getSupplierOrders($gomInventory->facility_id, $gomInventory->accessory_id);		
+			if ($orderList[0]['order_completed_date'] != null && $orderList[0]['order_status'] == OrderInventory::COMPLETED){
+				$gomInventory->period_start_date = DateTime::createFromFormat('U', $orderList[0]['order_completed_date']);
+			}		
 		$gomInventory->calculateUsage();
-		
+	
 		if ($gomInventory->in_stock - ($gomInventory->usage + $usage->usage) <= $gomInventory->limit){
 			//TODO: order here!
 			$isThereActiveOrders4GOM = $this->isThereActiveOrders4GOM($gomInventory->accessory_id, $gomInventory->facility_id);
@@ -1085,6 +1091,7 @@ echo $query;
 					}else{
 						$newOrder->order_jobber_id = 0;
 					}
+					$newOrder->order_4accessory = 'yes';
 					
 					$newOrder->save();
 

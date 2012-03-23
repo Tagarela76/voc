@@ -1,14 +1,4 @@
-				{*if $request.category == "department" && $request.bookmark == "inventory"}
 
-                <div>
-    				{if $request.tab == Inventory::PAINT_MATERIAL}
-						<a href="?action=browseCategory&category=department&id={$request.id}&bookmark=inventory&tab=material" {if $request.tab eq 'material'}class="active_link" {/if}>Products</a>
-    					<a href="?action=browseCategory&category=department&id={$request.id}&bookmark=inventory&tab=accessory" {if $request.tab eq 'accessory'}class="active_link" {/if}>Orders</a>
-					{elseif $request.tab == Inventory::PAINT_ACCESSORY}
-						<a href="?action=browseCategory&category=department&id={$request.id}&bookmark=inventory&tab=material" {if $request.tab eq 'material'}class="active_link" {/if}>{$smarty.const.LABEL_PAINT_PRODUCT_BOOKMARK_DEP}</a>
-    					<a href="?action=browseCategory&category=department&id={$request.id}&bookmark=inventory&tab=accessory" {if $request.tab eq 'accessory'}class="active_link" {/if}>{$smarty.const.LABEL_PAINT_ACCESSORY_BOOKMARK_DEP}</a>
-					{/if}						
-    			</div>{*}
 				{if $request.category == "facility" && $request.bookmark == "inventory"}
 				<div>
 

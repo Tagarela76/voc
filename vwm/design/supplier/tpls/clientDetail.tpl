@@ -44,6 +44,12 @@
             <td height="15" class="users_u_bottom_r">
             </td>
         </tr>
+		
     </table>
 </div>
 {include file="tpls:tpls/productDiscount.tpl"}
+<div style="padding:7px;">
+
+
+{include file="tpls:tpls/gomDiscount.tpl"}
+</div>
