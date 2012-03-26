@@ -133,7 +133,7 @@ class InventoryManager {
 			if ($sortStr){
 				$query .=   " {$sortStr} ";
 			}
-
+//echo $query;
 			$this->db->query($query);
 
 			$arr = $this->db->fetch_all_array();
@@ -441,6 +441,8 @@ echo $query;
 		}
 		return $SupData;
 	}
+
+
 	
 	public function getCountSupplierDiscounts($supplierID,$jobberID) {
 	
@@ -848,6 +850,7 @@ echo $query;
 	public function getJobberListForFacility($facilityID) {
 	
 		$query = "SELECT fj.jobber_id FROM  facility2jobber fj WHERE fj.facility_id = {$facilityID}";
+		//echo $query;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -1073,16 +1076,19 @@ echo $query;
 
 					$newOrder->order_price = $price[0]['price'];
 					
-					//TODO: Discount
+					// Discount if isset for separate product, else for whole facility 
 					$discount = 0;
-
-
+					$gomManager = new Accessory($this->db);
+					$result = $gomManager->getDiscount4Accessory($gomInventory->facility_id, $jobberID['jobber_id'], $gomInventory->accessory_id);
+					if ($result){
+						$discount = $result[0]['discount'];
+					}
 					
 					$newOrder->order_product_id = $gomInventory->accessory_id;
 					$newOrder->order_facility_id = $gomInventory->facility_id;
 					$newOrder->order_name = 'Order for accessory "'.$gomInventory->accessory_name.'"';
 					$newOrder->order_discount = $discount;
-					$newOrder->order_unittype = $gomInventory->in_stock_unit_type;
+					$newOrder->order_unittype = $priceObj->unittype; // Order type = price type, because We can't convert these types!!
 					$newOrder->order_total = $gomInventory->amount * $newOrder->order_price - ( ($gomInventory->amount * $newOrder->order_price)*$newOrder->order_discount/100 );
 					$newOrder->order_amount = $gomInventory->amount;
 
@@ -1097,7 +1103,7 @@ echo $query;
 
 					// EMAIL NOTIFICATION
 					$supplierDetails = $this->getSupplierEmail($jobberID['jobber_id']);
-					$jobberUsersEmais = $this->getJobberUsersEmails($jobberID);
+					$jobberUsersEmais = $this->getJobberUsersEmails($jobberID['jobber_id']);
 
 					$ifEmail = $this->checkSupplierEmail($supplierDetails['email']);
 						
@@ -1117,18 +1123,18 @@ echo $query;
 						}
 					}
 					
-						$supplierManager = new Supplier($this->db);
-						$supDetails = $supplierManager->getSupplierDetails($priceObj->supman_id);	
+						$JobberManager = new JobberManager($this->db);
+						$jobberDetails = $JobberManager->getJobberDetails($jobberID['jobber_id']);	
 
 						$userDetails = $this->getManagerList($facilityDetails['company_id']);	
 						
 						if ($userDetails){
-							$text['msg'] = "New order ". $newOrder->order_name ." to Supplier ";
-							$text['msg'] .= "<br>" ." Supplier: ".$supDetails['supplier_desc']; 
-							$text['msg'] .= "<br>" ." Contact: ".$supDetails['contact']; 
-							$text['msg'] .= "<br>" ." Address: ".$supDetails['address']; 
-							$text['msg'] .= "<br>" ." Phone: ".$supDetails['phone']; 
-							$text['title'] = "New order ". $newOrder->order_name ." to Supplier ";
+							$text['msg'] = "New order ". $newOrder->order_name ." to Jobber ";
+							$text['msg'] .= "<br>" ." Jobber: ".$jobberDetails['name']; 
+							$text['msg'] .= "<br>" ." Contact: ".$jobberDetails['contact']; 
+							$text['msg'] .= "<br>" ." Address: ".$jobberDetails['address']; 
+							$text['msg'] .= "<br>" ." Phone: ".$jobberDetails['phone']; 
+							$text['title'] = "New order ". $newOrder->order_name ." to Jobber ";
 							foreach($userDetails as $user){
 								$email = $this->getManagerEmail($user['user_id']);
 								$this->sendEmailToManager($email,$text);
@@ -1417,13 +1423,13 @@ fclose ($fp);
 	 */
 	public function getOrderDetailsByHash($hash){		
 		
-		$query = "SELECT ioh.*, io.* , pi.amount 
-				FROM inventory_order_hash ioh , inventory_order io , product2inventory pi 
+		$query = "SELECT ioh.*, io.*
+				FROM inventory_order_hash ioh , inventory_order io 
 				WHERE ioh.hash= '".mysql_escape_string($hash)."' 
 				AND ioh.order_id = io.order_id 
-				AND io.order_product_id = pi.product_id 
+				
 				AND io.order_status != ".OrderInventory::COMPLETED;
-		
+		//AND io.order_product_id = pi.product_id 
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return false;

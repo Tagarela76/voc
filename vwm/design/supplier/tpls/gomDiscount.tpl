@@ -32,26 +32,26 @@
 		</thead>
 		
 		<tbody>
-{if $clients > 0}						 
+{if $gom > 0}						 
 
 		
 {*BEGIN LIST*}				
-{section name=i loop=$clients}	
+{section name=i loop=$gom}	
 	<tr class="hov_company">
 			
 			<td class="border_users_b border_users_l" >
-				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].product_id}</div ></a>
+				<a href="{$gom[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$gom[i].id}</div ></a>
 			</td>
 			
 			
             <td class="border_users_b border_users_l" >
-				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].product_nr}</div ></a>
+				<a href="{$gom[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$gom[i].name}</div ></a>
 			</td>
             <td class="border_users_b border_users_l" >
-				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].name} > {$clients[i].fname}</div ></a>
+				<a href="{$gom[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$gom[i].cname} > {$gom[i].fname}</div ></a>
 			</td>			
 			<td class="border_users_b border_users_l border_users_r" >
-				<a href="{$clients[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{$clients[i].discount} %</div ></a>
+				<a href="{$gom[i].url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">{if $gom[i].discount}{$gom[i].discount}{else}0{/if} %</div ></a>
 			</td>	
 		
 	</tr>
@@ -63,7 +63,7 @@
 
 {*BEGIN	EMPTY LIST*}
 		<tr class="">
-		    <td  class="border_users_l border_users_r" style='text-align:center; vertical-align:middle;' colspan="4" >There are no products used by the client</td>
+		    <td  class="border_users_l border_users_r" style='text-align:center; vertical-align:middle;' colspan="4" >No accessories yet</td>
 		</tr>
 {*END	EMPTY LIST*}
 

@@ -41,6 +41,7 @@ class CSContacts extends Controller {
 		$subNumber = $manager->getBookmarkStats($sub,$this->user->xnyo->user['user_id']);
 
 		$filterStr = $this->filterList('contacts');
+		
 		$manager = new SalesContactsManager($this->db);
 		$creater_id = $this->user->xnyo->user['user_id'];
 		// search (not empty q)

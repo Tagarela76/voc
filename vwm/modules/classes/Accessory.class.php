@@ -40,11 +40,20 @@ class Accessory implements iAccessory {
     	return $this->accessoryName;
     }
     
-    public function queryTotalCount($companyID = null) 
+    public function queryTotalCount($jobberID = null) 
     {
 		$query = "SELECT COUNT(*) cnt FROM ".TB_ACCESSORY;
-		if ($companyID){
-			$query .= " WHERE company_id=".(int)$companyID;
+		
+		if (is_array($jobberID)){
+			$expression = "(".$jobberID[0]['jobber_id'];
+			foreach($jobberID as $id){
+				$expression .= ",".$id['jobber_id'];
+			}
+			$expression .= ")";
+			
+			$sql = " a.jobber_id IN {$expression} ";
+		}else{
+			$sql = " a.jobber_id = {$jobberID} ";
 		}		
 		
 		$this->db->query($query);
@@ -127,7 +136,57 @@ class Accessory implements iAccessory {
 	}
     
     //----
-    
+	public function accessoryAutocomplete($occurrence, $jobberID = 0) {
+
+		$occurrence=mysql_escape_string($occurrence);
+		settype($jobberID,"integer");
+
+		if ($jobberID === 0){
+			$query = "SELECT name, LOCATE('".$occurrence."', name) occurrence " .
+				"FROM ".TB_ACCESSORY." a WHERE LOCATE('".$occurrence."', name)>0 LIMIT ".AUTOCOMPLETE_LIMIT;
+		} else {
+			
+			$query = "SELECT name, LOCATE('".$occurrence."', name) occurrence " .
+				"FROM ".TB_ACCESSORY." a WHERE ";
+			if (is_array($jobberID)){
+				$expression = "(".$jobberID[0]['jobber_id'];
+				foreach($jobberID as $id){
+					$expression .= ",".$id['jobber_id'];
+				}
+				$expression .= ")";
+				
+				$query .=	" a.jobber_id IN  {$expression} ";
+			}else{
+				$query .=	" a.jobber_id = {$jobberID} ";
+			}			
+				" AND LOCATE('".$occurrence."', name)>0 LIMIT ".AUTOCOMPLETE_LIMIT;
+		}
+
+		$this->db->query($query);
+//echo $query;
+		if ($this->db->num_rows() > 0) {
+			$productsData = $this->db->fetch_all();
+			for ($i = 0; $i < count($productsData); $i++) {
+				if ($productsData[$i]->occurrence) {
+					$product = array (
+						"productNR"		=>	$productsData[$i]->name,
+						"occurrence"	=>	$productsData[$i]->occurrence
+					);
+					$results[] = $product;
+
+				} elseif ($productsData[$i]->occurrence2) {
+					$product = array (
+						"productNR"		=>	$productsData[$i]->name,
+						"occurrence"	=>	$productsData[$i]->occurrence2
+					);
+					$results[] = $product;
+				}
+			}
+			return (isset($results)) ? $results : false;
+		} else
+			return false;
+	}
+	
     public function searchAccessory($accessory, $companyID = null, $pagination = null) {
     	$companyID=mysql_escape_string($companyID);		
 		$query = "SELECT * FROM ".TB_ACCESSORY;
@@ -237,8 +296,12 @@ class Accessory implements iAccessory {
 //		}		
 	}
 	
-	public function getAccessoryUsages($accessoryID) {
-		$sql = "SELECT * FROM `accessory_usage` WHERE accessory_id = ".mysql_escape_string($accessoryID)." ORDER BY date DESC";
+	public function getAccessoryUsages($accessoryID, $departmentID = null) {
+		$sql = "SELECT * FROM `accessory_usage` WHERE accessory_id = ".mysql_escape_string($accessoryID)." ";
+		if ($departmentID){
+			$sql .= " AND department_id = " . (int) $departmentID . " ";
+			$sql .= " ORDER BY date DESC ";
+		}
 		$this->db->query($sql);
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -345,5 +408,102 @@ class Accessory implements iAccessory {
 		$companyList = $this->db->fetch_all_array();
 		return $companyList;
 	}		
+	
+	public function getGomSeparateDiscount($facilityID, $jobberID, $accessoryID = null ) {
+		
+		$query = "	SELECT di . discount_id, di.discount , c.company_id, c.name AS cname, f.name AS fname, f.facility_id, a.*
+					FROM  company c, facility f, accessory a
+					LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.product_id = a.id AND di.jobber_id = {$jobberID} ";
+
+
+
+		$query .=	" WHERE f.facility_id = {$facilityID} ".
+					" AND f.company_id = c.company_id AND a.jobber_id = {$jobberID} ";
+		if ($accessoryID){
+			$query .=	" AND a.id = {$accessoryID} ";
+		}					
+		$query .=	" GROUP BY a.id ";
+
+//echo $query;
+
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}			
+		$arr = $this->db->fetch_all_array();
+		
+		
+		$GomData = array();
+			foreach($arr as $b) {
+
+					$GomData[] = $b;
+            
+			}
+	
+		return $GomData;
+	}
+	
+	public function getDiscount4Accessory($facilityID, $jobberID, $accessoryID = null ) {
+
+		$query = "	SELECT di . discount_id, di.discount , a.id as product_id, c.company_id, c.name, f.name AS fname, f.facility_id, a.name as product_nr
+					FROM  company c, facility f, accessory a
+					LEFT JOIN discounts2inventory di ON di.facility_id = {$facilityID} AND di.product_id = a.id AND di.jobber_id = {$jobberID} ";
+
+
+
+		$query .=	" WHERE f.facility_id = {$facilityID} ".
+					" AND f.company_id = c.company_id AND a.jobber_id = {$jobberID}";
+		if ($accessoryID){
+			$query .=	" AND a.id = {$accessoryID} ";
+		}					
+
+
+//echo $query;
+
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}			
+		$arr = $this->db->fetch_all_array();
+		
+		
+		$SupData = array();
+			foreach($arr as $b) {
+
+					$SupData[] = $b;
+            
+			}
+	
+		return $SupData;
+	}	
+	
+	public function getAccessoryDiscountList4Facility($facilityID, $jobberID, $accessoryID = null ) {
+	
+
+			$tables = " ".TB_ACCESSORY." a,  product2inventory pi "; //m.department_id = d.department_id AND 
+
+			$query	=    "SELECT a.name AS product_nr , di.discount, di.discount_id, pi.accessory_id , pi.in_stock_unit_type";
+
+			$query .=	" FROM {$tables} " .
+						" LEFT JOIN discounts2inventory di ".
+						" ON di.product_id = pi.accessory_id AND di.facility_id = {$facilityID} ";
+						if ($jobberID){
+							$query .= " AND di.jobber_id = {$jobberID} ";
+						}		
+			$query .=	" WHERE pi.facility_id = {$facilityID} AND a.id = pi.accessory_id " ;
+					
+			if ($accessoryID){
+				$query .=   " AND a.id  = {$accessoryID} ";
+			}
+
+//echo $query;
+			$this->db->query($query);
+
+			$arr = $this->db->fetch_all_array();	
+	
+		return $arr;
+	}	
+
+	
 }
 ?>

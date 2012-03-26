@@ -260,9 +260,20 @@ if (substr($web, 0, 4) != 'http'){
 		$this->db->query($query);
 		$subNumber = $this->db->fetch(0)->id;
                 
-                $query = "SELECT c.id, c.company, LOCATE('".$occurrence."', c.company) occurrenceCmp, c.contact, LOCATE('".$occurrence."', c.contact) occurrenceCnt FROM ".TB_CONTACTS.
-			 " c, contacts2type ct  WHERE ct.type_id = '".$subNumber."' AND ct.contact_id = c.id  
-                          AND (LOCATE('".$occurrence."', c.company)>0 OR  LOCATE('".$occurrence."', c.contact)>0) 
+                $query = "SELECT c.id, c.company, LOCATE('".$occurrence."', c.company) occurrenceCmp, 
+										c.contact, LOCATE('".$occurrence."', c.contact) occurrenceCnt, 
+										c.zip_code, LOCATE('".$occurrence."', c.zip_code) occurrenceZip, 
+										c.jobber, LOCATE('".$occurrence."', c.jobber) occurrenceJob,
+										c.paint_supplier, LOCATE('".$occurrence."', c.paint_supplier) occurrencePsp, 
+										c.paint_system, LOCATE('".$occurrence."', c.paint_system) occurrencePst	
+						 FROM ".TB_CONTACTS. " c, contacts2type ct  
+						 WHERE ct.type_id = '".$subNumber."' AND ct.contact_id = c.id  
+                         AND	(LOCATE('".$occurrence."', c.company)>0 
+								OR  LOCATE('".$occurrence."', c.contact)>0 
+								OR  LOCATE('".$occurrence."', c.zip_code)>0 
+								OR  LOCATE('".$occurrence."', c.jobber)>0
+								OR  LOCATE('".$occurrence."', c.paint_supplier)>0 
+								OR  LOCATE('".$occurrence."', c.paint_system)>0) 
                           LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
                 //var_dump($query);
@@ -272,12 +283,28 @@ if (substr($web, 0, 4) != 'http'){
 			foreach ($contacts as $contact) {
 				if($contact->occurrenceCmp) {
 					$results[] = $contact->company;
-                                        $results = array_unique($results);
+					$results = array_unique($results);
 				}
-                                if($contact->occurrenceCnt) {
+                if($contact->occurrenceCnt) {
 					$results[] = $contact->contact;
-                                        $results = array_unique($results);
+                    $results = array_unique($results);
 				}
+                if($contact->occurrenceZip) {
+					$results[] = $contact->contact;
+                    $results = array_unique($results);
+				}	
+                if($contact->occurrenceJob) {
+					$results[] = $contact->contact;
+                    $results = array_unique($results);
+				}	
+                if($contact->occurrencePsp) {
+					$results[] = $contact->contact;
+                    $results = array_unique($results);
+				}	
+                if($contact->occurrencePst) {
+					$results[] = $contact->contact;
+                    $results = array_unique($results);
+				}				
 			}
 			return (isset($results)) ? $results : false;								
 		} else 

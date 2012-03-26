@@ -30,9 +30,12 @@ class CAAccessory extends Controller {
 		$jobberID = $this->getFromRequest('jobberID');	
 		$jobberID = (is_null($jobberID) || $jobberID == 'All jobbers')?0:$jobberID;
 		
+		// autocomplete
+		$accessory->accessoryAutocomplete($_GET['query']);
 		// search
 		if (!is_null($this->getFromRequest('q'))) 
 		{
+
 			$accessoryToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										
 			$accessoryList = $accessory->searchAccessory($accessoryToFind,$jobberID,$pagination);																						
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
@@ -93,14 +96,14 @@ class CAAccessory extends Controller {
 		$accessory = new Accessory($this->db);
 		$accessory->setAccessoryID($this->getFromRequest("id"));
 		$accessoryDetails = $accessory->getAccessoryDetails();
-		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
+		//$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
 
 		$jobberManager = new JobberManager($this->db);
 		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
 		$accessoryDetails['jobber_name'] = $jobberDetails['name'];
 	
 		$this->smarty->assign("accessory", $accessoryDetails);
-		$this->smarty->assign("accessoryUsages", $accessoryUsages);
+		//$this->smarty->assign("accessoryUsages", $accessoryUsages);
 							
 		$this->setNavigationUpNew('department', $this->getFromRequest("departmentID"));
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"),array('bookmark'=>'accessory'));

@@ -929,13 +929,13 @@ class Product extends ProductProperties {
 
 		//analyze different input situations
 		if (!$gomID && $jobberID) {
-			$query = "SELECT id FROM accessory2jobber WHERE jobber_id = ".$jobberID;
+			$query = "SELECT id FROM accessory WHERE jobber_id = ".$jobberID;
 		} elseif (!$jobberID && $gomID) {
-			$query = "SELECT id FROM accessory2jobber WHERE accessory_id = ".$gomID;
+			$query = "SELECT id FROM accessory WHERE id = ".$gomID;
 		} elseif (!$jobberID && !$gomID) {
-			$query = "SELECT id FROM accessory2jobber";
+			$query = "SELECT id FROM accessory";
 		} else {
-			$query = "SELECT id FROM accessory2jobber WHERE accessory_id = ".$gomID." AND jobber_id = ".$jobberID;
+			$query = "SELECT id FROM accessory WHERE id = ".$gomID." AND jobber_id = ".$jobberID;
 		}
 		$this->db->query($query);
 		return ($this->db->num_rows()) ? true : false;

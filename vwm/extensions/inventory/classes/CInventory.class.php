@@ -840,7 +840,7 @@ class CInventory extends Controller
 						}
 						// EMAIL NOTIFICATION
 						$jobberID = $inventoryManager->getJobberIDForInventory($orderDetails[0]['order_facility_id'], $orderDetails[0]['order_product_id']);
-						
+				
 						//$supplierID = $inventoryManager->getProductsSupplierList($orderDetails[0]['order_facility_id'],$orderDetails[0]['order_product_id']);
 						$supplierDetails = $inventoryManager->getSupplierEmail($jobberID);
 						$ifEmail = $inventoryManager->checkSupplierEmail($supplierDetails['email']);
@@ -859,6 +859,7 @@ class CInventory extends Controller
 								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text);
 							}
 						}
+var_dump($orderObj,$jobberID,$supplierDetails,$supplierUsersEmais);	die();							
 						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
 							if ($userDetails){
 								$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";
@@ -1105,9 +1106,7 @@ class CInventory extends Controller
 						}
 						$supplierlist[] = $supplier;
 						
-					}				
-
-				
+					}	
 				
 				$this->smarty->assign('supplierlist',$supplierlist);	
 				$this->smarty->assign('tpl','inventory/design/inventoryDiscounts.tpl');	

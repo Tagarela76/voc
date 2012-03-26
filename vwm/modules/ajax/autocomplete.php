@@ -80,8 +80,8 @@
 			
 		case "accessoryAll":
 			
-			$productObj = new Product($db);
-			$productList = $productObj->productAutocomplete($_GET['query']);
+			$productObj = new Accessory($db);
+			$productList = $productObj->accessoryAutocomplete($_GET['query']);
 			if ($productList) {
 				foreach ($productList as $product) {
 					$suggestions[] = $product['productNR'];

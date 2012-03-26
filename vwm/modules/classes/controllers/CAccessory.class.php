@@ -77,7 +77,7 @@ class CAccessory extends Controller
 		$accessory = new Accessory($this->db);
 		$accessory->setAccessoryID($this->getFromRequest("id"));
 		$accessoryDetails = $accessory->getAccessoryDetails();
-		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"));
+		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"),$this->getFromRequest("departmentID"));
 
 		$jobberManager = new JobberManager($this->db);
 		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
@@ -303,18 +303,24 @@ class CAccessory extends Controller
 		$sortStr=$this->sortList('accessory',3);
 		$accessory = new Accessory($this->db);
 		$inventoryManager = new InventoryManager($this->db);
-		$jobberIdList = $inventoryManager->getJobberListForFacility($facilityDetails['facility_id']);							
+		$jobberIdList = $inventoryManager->getJobberListForFacility($facilityDetails['facility_id']);	
+		if ($jobberIdList){
+		// autocomplete
+		$accessory->accessoryAutocomplete($_GET['query'],$jobberIdList);
+		
 		// search
 		if (!is_null($this->getFromRequest('q'))) 
 		{
 			$accessoryToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										
-			$accessoryList = $accessory->searchAccessory($accessoryToFind, $facilityDetails['company_id']);																						
+			$accessoryList = $accessory->searchAccessory($accessoryToFind);																						
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} 
 		else 
 		{
 			$accessoryList = $accessory->getAllAccessory($jobberIdList,$sortStr);
 		}
+		
+	}	
 		if (!is_null($this->getFromRequest('export'))) {
 			//	EXPORT THIS PAGE
 			$exporter = new Exporter(Exporter::PDF);
@@ -349,12 +355,15 @@ class CAccessory extends Controller
 		} 
 		else 
 		{			
-			$itemsCount = $accessory->queryTotalCount($facilityDetails['company_id']);			
-			for ($i=0; $i<count($accessoryList); $i++) 
-			{
-				$url="?action=viewDetails&category=accessory&id=".$accessoryList[$i]['id']."&departmentID=".$this->getFromRequest('id');
-				$accessoryList[$i]['url']=$url;
+			//$itemsCount = $accessory->queryTotalCount($jobberIdList);	
+			if ($accessoryList){
+				for ($i=0; $i<count($accessoryList); $i++) 
+				{
+					$url="?action=viewDetails&category=accessory&id=".$accessoryList[$i]['id']."&departmentID=".$this->getFromRequest('id');
+					$accessoryList[$i]['url']=$url;
+				}
 			}
+
 			$this->smarty->assign("childCategoryItems", $accessoryList);
 			//	set js scripts
 			$jsSources = array(
@@ -365,7 +374,8 @@ class CAccessory extends Controller
 			//	set tpl
 			$this->smarty->assign('tpl', 'tpls/accessoryList.tpl');
 		}
-	}
+		
+}
 	
 	
 	private function actionAddUsage() {

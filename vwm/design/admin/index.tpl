@@ -125,7 +125,7 @@
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
 															
-															{elseif $request.category == "accessory1"}
+															{elseif $request.category == "accessory"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>

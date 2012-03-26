@@ -82,16 +82,25 @@ class CSupClients extends Controller {
 	
 
 	private function actionViewDetails() {
-		
 
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
-
-		$inventoryManager = new InventoryManager($this->db);
-		
-		
-		
+		$jobberID = $request['jobberID'];
 		$facilityID = $this->getFromRequest('facilityID');
+		
+		$inventoryManager = new InventoryManager($this->db);
+		$gomManager = new Accessory($this->db);
+
+		$goms = $gomManager->getGomSeparateDiscount($facilityID,$jobberID);
+		if ($goms){
+			foreach ($goms as $prdct){
+				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['id']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
+				$prdct['discount'] = ($prdct['discount']) ? $prdct['discount'] : 0;
+				$gdiscount[] = $prdct;
+				
+			}
+		}		
+
 		
 		$result = $inventoryManager->getSupplierWholeDiscount($supplierID,$facilityID,$request['jobberID']);
 		if ($result){
@@ -101,7 +110,7 @@ class CSupClients extends Controller {
 		}	
 	
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID,$supplierID,null,$request['jobberID']);	
-
+		
 		if ($result){
 			foreach ($result as $prdct){
 				$prdct['url'] = "?action=editPDiscount&category=clients&facilityID={$facilityID}&productID={$prdct['product_id']}&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
@@ -117,6 +126,8 @@ class CSupClients extends Controller {
 		$this->smarty->assign("request",$request);
 		$this->smarty->assign('client', $client[0]);
 		$this->smarty->assign('clients', $pdiscount);
+		
+		$this->smarty->assign('gom', $gdiscount);
 		$this->smarty->assign('tpl', 'tpls/clientDetail.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -165,6 +176,7 @@ class CSupClients extends Controller {
 	private function actionEditPDiscount() {
 		
 		$inventoryManager = new InventoryManager($this->db);
+		$gomManager = new Accessory($this->db);
 		$request = $this->getFromRequest();
 		$supplierID = $request['supplierID'];
 		$productID = $request['productID'];
@@ -173,6 +185,10 @@ class CSupClients extends Controller {
 		$result = $inventoryManager->getSupplierSeparateDiscount($facilityID, $supplierID, $productID,$request['jobberID']);
 		if ($result){
 			$discount = $result;
+		}elseif($result2 = $gomManager->getDiscount4Accessory($facilityID, $request['jobberID'], $productID)){
+			$discount = $result2;
+			$discount[0]['supplier_id'] = 0; // KOSTYL' for update TB_discounts2inventory, supplier don't need there!
+			
 		}else{
 			throw new Exception('404');
 		}		
@@ -186,7 +202,7 @@ class CSupClients extends Controller {
 					$form['jobberID'] = $request['jobberID'];
 					$result = $inventoryManager->updateSupplierDiscounts($form);			
 					if ($result == 'true'){
-						header("Location: ?action=viewDetails&category=clients&facilityID={$discount[0]['facility_id']}&supplierID={$discount[0]['supplier_id']}&jobberID={$request['jobberID']}");
+						header("Location: ?action=viewDetails&category=clients&facilityID={$discount[0]['facility_id']}&supplierID={$supplierID}&jobberID={$request['jobberID']}");
 					}else{
 						header("Location: ?action=addItem&category=clients&error=exist");
 					}

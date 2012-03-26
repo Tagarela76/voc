@@ -73,7 +73,7 @@
 								</td>
 								<td class="border_users_l border_users_r border_users_b">
 									<div align="left">
-										&nbsp;{$inventory->amount}
+										&nbsp;{$order->order_amount}
 									</div>
 								</td>
 							</tr>
@@ -106,7 +106,7 @@
 									</td>
 									<td class="border_users_l border_users_r border_users_b">
 										<div align="left">
-											&nbsp;{$inventory->discount} %
+											&nbsp;{$order->order_discount} %
 										</div>
 									</td>
 								</tr>								

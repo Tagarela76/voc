@@ -107,7 +107,7 @@
 													<td align='right'>
 														<br>																																	
 													{*SEARCH*}																																	
-														{if $request.tab != 'pfp' and ($request.bookmark == 'mix' || $request.bookmark == 'product' || $request.bookmark == 'logbook' || $request.bookmark == 'accessory')}
+														{if $request.tab != 'pfp' and ($request.bookmark == 'mix' || $request.bookmark == 'product' || $request.bookmark == 'logbook' )}
                                                                                                                         
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 																{literal}
@@ -132,6 +132,24 @@
 																	</script>
 																{/literal}
 															{include file="tpls:tpls/search.tpl"}
+															
+															{elseif $request.bookmark == "accessory"}
+															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+															{literal}
+																<script>
+																	var options, a;
+																	jQuery(function(){
+																		options = { serviceUrl:'modules/ajax/autocomplete.php',
+																					minChars:2,
+																					delimiter: /(,|;)\s*/,
+																					params: {category: '{/literal}{$request.bookmark}All{literal}'},
+																					deferRequestBy:300
+																		};
+																		a = $('#search').autocomplete(options);
+																	});
+																</script>
+															{/literal}
+															{include file="tpls:tpls/search.tpl"}															
 														{/if}					
 													{*/SEARCH*}
 													</td>
