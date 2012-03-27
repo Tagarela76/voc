@@ -61,16 +61,17 @@ class CSContacts extends Controller {
 		/*/SORT*/		
 		
 		if ($this->getFromRequest('q') != '') {
+			$byArrField = array('zip_code','paint_supplier','paint_system','jobber');
 			
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
-			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber,$creater_id);
+			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber,$creater_id,$byArrField);
 			
 			$pagination = new Pagination($searchedContactsCount);
 			$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=salescontacts&bookmark=contacts";
 			if ($sub != 'contacts') {
 				$pagination->url .= "&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 			}
-			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr);
+			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr,$byArrField);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);
 			$totalCount = $manager->getTotalCount(strtolower($sub),$creater_id);

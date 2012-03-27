@@ -85,14 +85,57 @@ class CSupGom extends Controller {
 	}
 	
 
-	private function actionViewDetails() {
+	private function actionNewUnittype() {
+		$ajaxResponse = new AJAXResponse();
+		$form = $this->getFromPost();
+		$request = $this->getFromRequest();
+		$priceID = $request['id'];
+		$jobberID = $request['jobberID'];	
 
-		//$this->user->xnyo->user['user_id']
+		$unittypeManager = new Unittype($this->db);
+
+		if ($form) {
+		$unitTypelist = $unittypeManager->getUnittypeListDefault('AllOther');
+		$result = true;
+		foreach($unitTypelist as $unittype){
+			if ($form['unittype'] == $unittype['unittype_desc']){
+				$result = false;
+			}
+		}
+			if ($result) {				
+				
+				$unittypeName = substr($form['unittype'], 0, 3);
+				$unittypeName .= '.';
+				$unittypeDesc = $form['unittype'];		
+				$unittypeManager->insertOtherUnitType($unittypeName, $unittypeDesc);
+				//var_dump($form['unittype']);die();
+				$ajaxResponse->setSuccess(true);
+				$ajaxResponse->setMessage('Changes saved successfully');
+
+			} else {
+				$ajaxResponse->setSuccess(false);
+				$ajaxResponse->setMessage('This unit type already exist!');
+				$validationRes["summary"] = false;		
+				$validationRes["unittype"] = "This unit type already exist!";				
+				$ajaxResponse->validationRes = $validationRes;
+			}															
+		} else {
+			$ajaxResponse->setSuccess(false);
+			$ajaxResponse->setMessage('Wrong unit type name!');
+			$validationRes["summary"] = false;		
+			$validationRes["unittype"] = "Wrong unit type name!";		
+			$ajaxResponse->validationRes = $validationRes;
+		}
+		
+		$ajaxResponse->response();		
+		//header("Location: ?action=edit&category=gom&id={$priceID}&jobberID={$jobberID}&supplierID={$request['supplierID']}&bookmark=gom");
+		
+		/*$this->user->xnyo->user['user_id']
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
-		$this->smarty->display("tpls:index.tpl");
+		$this->smarty->display("tpls:index.tpl");*/
 	}
 	
 	private function actionEdit() {
@@ -122,6 +165,7 @@ class CSupGom extends Controller {
 		//	Get UnitType list
 		$unitType = new Unittype($this->db);
 		$unitTypelist = $unitType->getUnittypeListDefault('AllOther');
+
 		$typeEx[] = "AllOther";
 		$this->smarty->assign('unittype', $unitTypelist);
 		$this->smarty->assign('typeEx', $typeEx);
@@ -134,7 +178,7 @@ class CSupGom extends Controller {
 			'modules/js/addUsage.js');
 	    $this->smarty->assign('jsSources',$jsSources);	
 		$this->smarty->assign("product", $product[0]);
-		//$this->smarty->assign("unittype", $unittypeDetails);
+		$this->smarty->assign("addUsageUrl", "?action=newUnittype&category=gom&id={$priceID}&jobberID={$jobberID}&supplierID={$request['supplierID']}&bookmark=gom");
 		$this->smarty->assign("request", $request);
 		$this->smarty->assign('tpl', 'tpls/priceEdit.tpl');
 		$this->smarty->display("tpls:index.tpl");

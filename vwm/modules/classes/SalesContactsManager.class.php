@@ -290,19 +290,19 @@ if (substr($web, 0, 4) != 'http'){
                     $results = array_unique($results);
 				}
                 if($contact->occurrenceZip) {
-					$results[] = $contact->contact;
+					$results[] = $contact->zip_code;
                     $results = array_unique($results);
 				}	
                 if($contact->occurrenceJob) {
-					$results[] = $contact->contact;
+					$results[] = $contact->jobber;
                     $results = array_unique($results);
 				}	
                 if($contact->occurrencePsp) {
-					$results[] = $contact->contact;
+					$results[] = $contact->paint_supplier;
                     $results = array_unique($results);
 				}	
                 if($contact->occurrencePst) {
-					$results[] = $contact->contact;
+					$results[] = $contact->paint_system;
                     $results = array_unique($results);
 				}				
 			}
@@ -316,7 +316,7 @@ if (substr($web, 0, 4) != 'http'){
 	 * @param  $contacts - value of field to search, array or string
 	 * @param string $byField - field name
 	 */	
-	public function countSearchedContacts($contacts, $byField1, $byField2, $subNumber,$creater_id = null ) {
+	public function countSearchedContacts($contacts, $byField1, $byField2, $subNumber,$creater_id = null, $byArrField = null) {
             
                 
                 $sub = mysql_escape_string($sub);
@@ -333,16 +333,35 @@ if (substr($web, 0, 4) != 'http'){
 		$query .= $sql.") OR (";
                 
 		
-                $sqlParts = array();
+        $sqlParts = array();
 		foreach ($contacts as $contact) {
 			$contact=mysql_escape_string($contact);
 			$sqlParts[] = $byField2." LIKE '%".$contact."%'";		
 		}
 		$sql = implode(' OR ', $sqlParts);
+		if (is_array($byArrField)){
+			$query .= $sql.") OR (";
+			$sqlParts = array();
+			foreach ($contacts as $contact) {
+
+				foreach ($byArrField as $byField) {
+					$contact=mysql_escape_string($contact);
+					$sqlParts[] = $byField." LIKE '%".$contact."%' ";		
+				}
+				
+				$sql = implode(') OR (', $sqlParts);
+			//	$query .= $sql.") ";
+					
+			}
+			
+		}
+	
+		
 		$query .= $sql."))";
-				if(isset($creater_id)) {
+
+		if(isset($creater_id)) {
 					$query .= " AND c.creater_id = $creater_id";
-				}                
+		}                
                 
      
                 $this->db->query($query);
@@ -381,7 +400,7 @@ if (substr($web, 0, 4) != 'http'){
 	* @param string $byField - field name
         * @param string $subNumber - number of subBookmark
 	*/
-	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null, $sortStr = null) {
+	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null, $sortStr = null, $byArrField = null) {
         
 		$query = "SELECT  c.* FROM ".TB_CONTACTS." c , contacts2type ct  WHERE ct.type_id = ".$subNumber." AND ct.contact_id = c.id AND ((";
 		if (!is_array($contacts)) {
@@ -396,14 +415,32 @@ if (substr($web, 0, 4) != 'http'){
 		$query .= $sql.") OR (";
                 
 		
-                $sqlParts = array();
+        $sqlParts = array();
 		foreach ($contacts as $contact) {
 			$contact=mysql_escape_string($contact);
 			$sqlParts[] = $byField2." LIKE '%".$contact."%'";		
 		}
-                
-		$sql = implode(' OR ', $sqlParts);
-		$query .= $sql."))";		
+        $sql = implode(' OR ', $sqlParts);
+				
+		if (is_array($byArrField)){
+			$query .= $sql.") OR (";
+			$sqlParts = array();
+			foreach ($contacts as $contact) {
+
+				foreach ($byArrField as $byField) {
+					$contact=mysql_escape_string($contact);
+					$sqlParts[] = $byField." LIKE '%".$contact."%' ";		
+				}
+				
+				$sql = implode(') OR (', $sqlParts);
+			//	$query .= $sql.") ";
+					
+			}
+			
+		}
+		
+		$query .= $sql."))";
+		
 		if (isset($sortStr)) {
 			$query .=  $sortStr;
 		}		
@@ -411,8 +448,6 @@ if (substr($web, 0, 4) != 'http'){
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}	
-		
-		
 
 		$this->db->query($query);	
 		if ($this->db->num_rows() > 0) {	

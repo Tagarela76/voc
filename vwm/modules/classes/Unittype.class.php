@@ -581,5 +581,13 @@ class Unittype {
 		}
 		return false;
 	} 
+	
+	public function insertOtherUnitType($unittypeName,$unittypeDesc) {
+		//$this->db->select_db(DB_NAME);
+		$query = "INSERT INTO ".TB_UNITTYPE." (`unittype_id`, `name`, `unittype_desc`, `formula`, `type_id`, `system`, `unit_class_id`) " .
+				 "VALUES (NULL, '".mysql_escape_string($unittypeName)."', '".mysql_escape_string($unittypeDesc)."', NULL, 7, 'metric', 6)";
+		$this->db->query($query);		
+		//echo $query;
+	} 	
 }
 ?>

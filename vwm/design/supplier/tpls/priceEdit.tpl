@@ -32,7 +32,7 @@ $(document).ready(function() {
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
                 <td class="users_u_top" width="30%">
-                    <span>{if $request.action eq "addItem"}Adding for a new client{else}Editing client{/if}</span>
+                    <span>{if $request.action eq "addItem"}Adding for a new accessory{else}Editing accessory{/if}</span>
                 </td>
                 <td class="users_u_top_r">
                 </td>
@@ -54,26 +54,7 @@ $(document).ready(function() {
                 <td class="border_users_r border_users_b">
 
 					<input type='text' name="price" id="price" value='{$product.price}'> $
-						{literal}
-							<script type="text/javascript">
-								$("#price").numeric();
-								function check_price(){
-									var price = $("#price").val();
-									var form = $("#formP");
-									if(price == "") {
 
-										$("#error_price .error_text").text("Type price!");
-										$("#error_price").css('display','inline');
-										$("#price").focus();
-										$("#price").select();
-										return false;
-									}else{
-										form.submit();
-
-									}
-								}		
-							</script>	
-						{/literal}
                   <BR/>  <div class="error_price" id="error_price" style="display: none;">
                         <span id="" class="error_text">Error!</span>
                     </div>						
@@ -105,11 +86,24 @@ $(document).ready(function() {
 											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $product.unittype}selected="selected"{/if}>{$unittype[i].description}</option>										
 										{/section}
 
-									</select>							
+									</select>	
+
                     </div>
                 </td>
             </tr>	
-
+            <tr>
+                <td class="border_users_r border_users_l border_users_b" height="20">
+                    New Unit Type :
+                </td>
+                <td class="border_users_r border_users_b">
+	
+                    <div align="left">
+ 
+						<input type='text' name="newUnittype" id="newUnittype" value=''> <input type='button' class="button" value='addUnittype' onclick='add_unittype();'>
+						<span id="unittypeError" class="error_text"></span>
+                    </div>
+                </td>
+            </tr>
 		
 			
             <tr>
@@ -129,6 +123,48 @@ $(document).ready(function() {
 			<input type="hidden" name="price_id" id="price_id"  value="{$product.price_id}"/>
                   
         </div>	
-			 
+{literal}
+<script type="text/javascript">
+	
+$("#price").numeric();
+function check_price(){
+	var price = $("#price").val();
+	var form = $("#formP");
+	if(price == "") {
+		$("#error_price .error_text").text("Type price!");
+		$("#error_price").css('display','inline');
+		$("#price").focus();
+		$("#price").select();
+		return false;
+	}else{
+		form.submit();
+	}
+}	
+									
+function add_unittype(){
+	var unittype = $('#newUnittype').val();
+	if (unittype){
+		jQuery.ajax({
+			'async':false, 
+			'type':'POST',
+			'dataType':'json',
+			'success':function(r) {
+				$("#unittypeError").css('display', 'none');
+				if (r.success) {
+								
+				}else{
+					$("#unittypeError").text(r.validation.unittype);
+					$("#unittypeError").css('display', 'inline');						
+				}	
+									
+			},
+			'url':'{/literal}{$addUsageUrl}{literal}',
+			'cache':false,
+			'data':"unittype=" + unittype
+		});		
+	}	
+}
+</script>	
+{/literal}			 
     </form>
 </div>

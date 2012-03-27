@@ -48,14 +48,17 @@ class CAContacts extends Controller {
 	
 		// search (not empty q)
 		if ($this->getFromRequest('q') != '') {
+			$byArrField = array('zip_code','paint_supplier','paint_system','jobber');
+			
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
-			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber);
+			$searchedContactsCount = $manager->countSearchedContacts($contactsToFind, 'company', 'contact', $subNumber,null,$byArrField);
 			$pagination = new Pagination($searchedContactsCount);
 			$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=salescontacts&bookmark=contacts";
 			if ($sub != 'contacts') {
 				$pagination->url .= "&subBookmark=" . urlencode($sub);
 			}
-			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr);
+			
+			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr,$byArrField);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);
 			$totalCount = $manager->getTotalCount(strtolower($sub));
