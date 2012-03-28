@@ -86,6 +86,10 @@
                     $sqlSystem = "'metric'";
                     $sqlTypedesc = "('Weight')";
                     break;
+                case 'AllOther':
+                    $sqlSystem = "'metric'";
+                    $sqlTypedesc = "('Other')";
+                    break;				
             }
             $queryData = "SELECT ut.unittype_id, ut.name FROM ".TB_UNITTYPE." ut, ".TB_TYPE." t " .
 			  "WHERE ut.type_id = t.type_id " .
@@ -100,7 +104,7 @@
         }else{
             $query = setsql_2($sysType, $companyID);
         }
-        
+      
 	$db->query($query);
 	if($db->num_rows() == 0)
 	{

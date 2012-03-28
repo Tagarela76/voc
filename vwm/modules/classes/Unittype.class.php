@@ -586,7 +586,13 @@ class Unittype {
 		//$this->db->select_db(DB_NAME);
 		$query = "INSERT INTO ".TB_UNITTYPE." (`unittype_id`, `name`, `unittype_desc`, `formula`, `type_id`, `system`, `unit_class_id`) " .
 				 "VALUES (NULL, '".mysql_escape_string($unittypeName)."', '".mysql_escape_string($unittypeDesc)."', NULL, 7, 'metric', 6)";
-		$this->db->query($query);		
+		$this->db->query($query);	
+		$id = $this->db->getLastInsertedID();
+		if(mysql_error() == '') {
+			return $id;
+		} else {
+			throw new Exception(mysql_error());
+		}		
 		//echo $query;
 	} 	
 }

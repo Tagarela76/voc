@@ -104,13 +104,18 @@ class CSupGom extends Controller {
 		}
 			if ($result) {				
 				
-				$unittypeName = substr($form['unittype'], 0, 3);
-				$unittypeName .= '.';
+				//$unittypeName = substr($form['unittype'], 0, 3);
+				//$unittypeName .= '.';
+				
 				$unittypeDesc = $form['unittype'];		
-				$unittypeManager->insertOtherUnitType($unittypeName, $unittypeDesc);
+				$unittypeID = $unittypeManager->insertOtherUnitType($unittypeDesc, $unittypeDesc);
 				//var_dump($form['unittype']);die();
 				$ajaxResponse->setSuccess(true);
 				$ajaxResponse->setMessage('Changes saved successfully');
+				$ajaxResponse->data = array(
+					'id'	=> $unittypeID,
+					'name'	=> $form['unittype']									
+				);				
 
 			} else {
 				$ajaxResponse->setSuccess(false);

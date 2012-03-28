@@ -129,8 +129,7 @@ class CSupProducts extends Controller {
 		$this->smarty->assign('typeEx', $typeEx);		
 		$this->smarty->assign('unittype', $unittypeList);
 // }UNITTYPE
-			
-			
+
 
 		$jsSources = array (
 			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',

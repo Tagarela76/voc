@@ -19,6 +19,7 @@
 									
 $(document).ready(function() {
 	$('#company').attr('value', $('#company_id > option:selected').attr('title'));
+	
 });
 </script>
 {/literal}
@@ -71,12 +72,15 @@ $(document).ready(function() {
 
 									<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(document.getElementById('selectUnittypeClass'))" >									 										
 										{section name=j loop=$typeEx}
-										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
-										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
-										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
-										{if 'AllOther' eq $typeEx[j]}<option value='AllOther' {if 'AllOther' eq $unitTypeClass}selected="selected"{/if}>All Other</option>{/if}
+											{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+											{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
+											{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+											{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+											{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
+											
+											{if $request.bookmark == 'gom'}	
+												{if 'AllOther' eq $typeEx[j]}<option value='AllOther' {if 'AllOther' eq $unitTypeClass}selected="selected"{/if}>All Other</option>{/if}
+											{/if}
 										{/section}
 							
 									</select>&nbsp; 
@@ -91,6 +95,7 @@ $(document).ready(function() {
                     </div>
                 </td>
             </tr>	
+{if $request.bookmark == 'gom'}			
             <tr>
                 <td class="border_users_r border_users_l border_users_b" height="20">
                     New Unit Type :
@@ -99,12 +104,12 @@ $(document).ready(function() {
 	
                     <div align="left">
  
-						<input type='text' name="newUnittype" id="newUnittype" value=''> <input type='button' class="button" value='addUnittype' onclick='add_unittype();'>
+						<input type='text' name="newUnittype" id="newUnittype" value=''> <input type='button' class="button" value='Add new unit type' onclick='add_unittype();'>
 						<span id="unittypeError" class="error_text"></span>
                     </div>
                 </td>
             </tr>
-		
+{/if}		
 			
             <tr>
                 <td class="users_u_bottom">
@@ -127,6 +132,7 @@ $(document).ready(function() {
 <script type="text/javascript">
 	
 $("#price").numeric();
+getUnittypes(document.getElementById('selectUnittypeClass'));	
 function check_price(){
 	var price = $("#price").val();
 	var form = $("#formP");
@@ -143,6 +149,7 @@ function check_price(){
 									
 function add_unittype(){
 	var unittype = $('#newUnittype').val();
+	$("#unittypeError").css('display', 'none');	
 	if (unittype){
 		jQuery.ajax({
 			'async':false, 
@@ -151,8 +158,13 @@ function add_unittype(){
 			'success':function(r) {
 				$("#unittypeError").css('display', 'none');
 				if (r.success) {
-								
+					$('#selectUnittype').append("<option value="+r.data.id+" selected='selected'>"+r.data.name+"</option>");			
+					$('#newUnittype').attr('value','');
+					$("#unittypeError").text("Unit type successfully added!");
+					$("#unittypeError").css('color', 'green');	
+					$("#unittypeError").css('display', 'inline');						
 				}else{
+					$("#unittypeError").css('color', 'red');	
 					$("#unittypeError").text(r.validation.unittype);
 					$("#unittypeError").css('display', 'inline');						
 				}	
@@ -162,7 +174,11 @@ function add_unittype(){
 			'cache':false,
 			'data':"unittype=" + unittype
 		});		
-	}	
+	}else{	
+		$("#unittypeError").css('color', 'red');	
+		$("#unittypeError").text("Type name!");
+		$("#unittypeError").css('display', 'inline');		
+	}		
 }
 </script>	
 {/literal}			 
