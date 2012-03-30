@@ -1693,7 +1693,8 @@ class Mix extends MixProperties {
 		
 		if ($this->db->num_rows() > 0) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
-				$data = $this->db->fetch($i);				
+				$data = $this->db->fetch($i);	
+				
 				$usage = array (
 					'mix_id'		=>	$data->mix_id,
 					'description'	=>	$data->description,

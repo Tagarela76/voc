@@ -8,13 +8,13 @@
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=accessory">{if $request.bookmark != "accessory"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
-                                    {$smarty.const.LABEL_ACCESSORY_BOOKMARK}&nbsp;
+                                    Accessory
                                 </div>
                             </div>
                             {else}
                             <div class="activeBookmark_green">
                                 <div class="activeBookmark_green_right">
-                                    {$smarty.const.LABEL_ACCESSORY_BOOKMARK}&nbsp;
+                                    {*$smarty.const.LABEL_ACCESSORY_BOOKMARK*} Accessory&nbsp;
                                 </div>
                             </div>
                             {/if}

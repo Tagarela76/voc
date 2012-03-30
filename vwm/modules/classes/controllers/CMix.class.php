@@ -62,6 +62,8 @@ class CMix extends Controller
 	{
 		$usage = new Mix($this->db);
 		
+	
+		
 		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
@@ -426,6 +428,8 @@ class CMix extends Controller
 		if($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {
+		$gacl_api = new gacl_api();	
+			
 		$departmentID = $vars['departmentDetails']['department_id'];
 		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
 		$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
@@ -487,7 +491,12 @@ class CMix extends Controller
 			}
 
 			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);
-                        // TODO: what is this?
+			
+			$tmp = $gacl_api->get_object_groups(91,"ARO");
+			$tmp1 = $gacl_api->get_group_data(125,"ARO");
+			//var_dump($tmp,$tmp1);
+			
+            // TODO: what is this?
 			$usageIDArray = array();
 			foreach($usageList as $u) {
 				$usageIDArray[] = $u['mix_id'];

@@ -859,7 +859,7 @@ class CInventory extends Controller
 								$inventoryManager->sendEmailToSupplier($userEmail['email'],$text);
 							}
 						}
-var_dump($orderObj,$jobberID,$supplierDetails,$supplierUsersEmais);	die();							
+							
 						$userDetails = $inventoryManager->getManagerList($facilityDetails['company_id']);
 							if ($userDetails){
 								$text['msg'] = "Your order {$orderDetails[0]['order_name']} id: {$orderDetails[0]['order_id']} to supplier is {$status}";

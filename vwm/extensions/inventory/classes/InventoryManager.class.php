@@ -476,9 +476,9 @@ echo $query;
 								
 		if ($form['discount_id'] == null){
 			if ($form['product_id'] != ''){
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",". $form['product_id'] .",". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". mysql_real_escape_string($form['companyID']) .",". mysql_real_escape_string($form['facilityID']) .",".$form['jobberID'].",". mysql_real_escape_string($form['supplier_id']) .",". mysql_real_escape_string($form['product_id']) .",". mysql_real_escape_string($form['discount']) .") ";
 			}else{
-				$query = "INSERT INTO discounts2inventory VALUES (NULL,". $form['companyID'] .",". $form['facilityID'] .",".$form['jobberID'].",". $form['supplier_id'] .",NULL,". mysql_real_escape_string($form['discount']) .") ";
+				$query = "INSERT INTO discounts2inventory VALUES (NULL,". mysql_real_escape_string($form['companyID']) .",". mysql_real_escape_string($form['facilityID']) .",".$form['jobberID'].",". mysql_real_escape_string($form['supplier_id']) .",NULL,". mysql_real_escape_string($form['discount']) .") ";
 			}
 			
 		}else{
@@ -518,7 +518,7 @@ echo $query;
 
 										
 		if ($form['email_id'] == null){
-			$query = "INSERT INTO email2inventory VALUES (NULL,". $form['facilityID'] .",'". $form['email_all'] ."','". $form['email_manager'] ."') ";
+			$query = "INSERT INTO email2inventory VALUES (NULL,". mysql_real_escape_string($form['facilityID']) .",'". mysql_real_escape_string($form['email_all']) ."','". mysql_real_escape_string($form['email_manager']) ."') ";
 				
 
 		}else{
@@ -540,7 +540,7 @@ echo $query;
 	
 	public function updateJobberEmails( $form ) {
 
-		$query = "INSERT INTO email2jobber VALUES (NULL,". $form['jobber_id'] .",'". mysql_escape_string($form['email']) ."') ";
+		$query = "INSERT INTO email2jobber VALUES (NULL,". mysql_real_escape_string($form['jobber_id']) .",'". mysql_escape_string($form['email']) ."') ";
 		$this->db->query($query);
 
 		if(mysql_error() == '') {

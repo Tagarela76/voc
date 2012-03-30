@@ -387,12 +387,12 @@ class Inventory implements iInventory {
 			//	storage location NULL or 'value'			
 			$sqlStorageLocation = ($material->getStorageLocation() === "") ? "NULL" : "'".$material->getStorageLocation()."'";						
 			$query = "INSERT INTO ".TB_MATERIAL2INVENTORY." (product_id, inventory_id, os_use, cs_use, storage_location, total_qty) VALUES (" .
-					"".$material->getProductID().", " .
-					"".$this->getID().", " .
-					"".$material->getOS_use().", " .
-					"".$material->getCS_use().", " .
-					"".$sqlStorageLocation.", " .
-					"".$material->getTotalQty().")";
+					"".mysql_real_escape_string($material->getProductID()).", " .
+					"".mysql_real_escape_string($this->getID()).", " .
+					"".mysql_real_escape_string($material->getOS_use()).", " .
+					"".mysql_real_escape_string($material->getCS_use()).", " .
+					"".mysql_real_escape_string($sqlStorageLocation).", " .
+					"".mysql_real_escape_string($material->getTotalQty()).")";
 			$this->db->query($query);
 //			$material->setID(mysql_insert_id());
 		$this->db->query("SELECT LAST_INSERT_ID() id");
@@ -402,9 +402,9 @@ class Inventory implements iInventory {
 			if (is_array($material->getUseLocation())) {
 				foreach ($material->getUseLocation() as $department) {
 					$query = "INSERT INTO ".TB_USE_LOCATION2MATERIAL." (department_id, material2inventory_id, total_qty) VALUES (" .
-							"".$department['departmentID'].", " .
-							"".$material->getID()."," .
-							"".$department['totalQty']." )";
+							"".mysql_real_escape_string($department['departmentID']).", " .
+							"".mysql_real_escape_string($material->getID())."," .
+							"".mysql_real_escape_string($department['totalQty'])." )";
 					$this->db->query($query);
 				}	
 			}			
@@ -415,10 +415,10 @@ class Inventory implements iInventory {
 	
 	private function _insert() {
 		$query = "INSERT INTO ".TB_INVENTORY." (name, description, type, facility_id) VALUES (" .
-				"'".$this->getName()."', " .
-				"'".$this->getDescription()."', " .
-				"'".$this->getType()."', " .
-				"".$this->getFacilityID().")";
+				"'".mysql_real_escape_string($this->getName())."', " .
+				"'".mysql_real_escape_string($this->getDescription())."', " .
+				"'".mysql_real_escape_string($this->getType())."', " .
+				"".mysql_real_escape_string($this->getFacilityID()).")";
 		$this->db->query($query);
 //		$this->setID(mysql_insert_id());
 		$this->db->query("SELECT LAST_INSERT_ID() id");
@@ -431,8 +431,8 @@ class Inventory implements iInventory {
 	
 	private function _update() {
 		$query = "UPDATE ".TB_INVENTORY." SET " .
-					"name = '".$this->getName()."', " .
-					"description = '".$this->getDescription()."' " .
+					"name = '".mysql_real_escape_string($this->getName())."', " .
+					"description = '".mysql_real_escape_string($this->getDescription())."' " .
 				"WHERE id = ".$this->getID()."";				
 		$this->db->query($query);		
 	}
@@ -453,12 +453,12 @@ class Inventory implements iInventory {
 			$sqlUnitCount = ($accessory->getUnitCount() === "") ? "NULL" : "'".$accessory->getUnitCount()."'";			
 											
 			$query = "INSERT INTO ".TB_ACCESSORY2INVENTORY." (accessory_id, inventory_id, unit_amount, unit_count, unit_qty, total_qty) VALUES (" .
-					"".$accessory->getAccessoryID().", " .
-					"".$this->getID().", " .
-					"".$accessory->getUnitAmount().", " .
-					"".$sqlUnitCount.", " .
-					"".$accessory->getUnitQuantity().", " .
-					"".$accessory->getTotalQuantity().")";			
+					"".mysql_real_escape_string($accessory->getAccessoryID()).", " .
+					"".mysql_real_escape_string($this->getID()).", " .
+					"".mysql_real_escape_string($accessory->getUnitAmount()).", " .
+					"".mysql_real_escape_string($sqlUnitCount).", " .
+					"".mysql_real_escape_string($accessory->getUnitQuantity()).", " .
+					"".mysql_real_escape_string($accessory->getTotalQuantity()).")";			
 			$this->db->query($query);
 //			$accessory->setID(mysql_insert_id());
 			$this->db->query("SELECT LAST_INSERT_ID() id");
