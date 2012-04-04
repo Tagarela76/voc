@@ -27,6 +27,7 @@ class CAContacts extends Controller {
 		$manager = new BookmarksManager($this->db);
 		$subNumber = $manager->getBookmarkStats($sub);
 		
+		// to edit filter need to edit TB_FILTER 
 		$filterStr = $this->filterList('contacts');
 		$manager = new SalesContactsManager($this->db);
 

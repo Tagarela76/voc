@@ -40,6 +40,7 @@ class CSContacts extends Controller {
 		$manager = new BookmarksManager($this->db);
 		$subNumber = $manager->getBookmarkStats($sub,$this->user->xnyo->user['user_id']);
 
+		// to edit filter need to edit TB_FILTER 
 		$filterStr = $this->filterList('contacts');
 		
 		$manager = new SalesContactsManager($this->db);
