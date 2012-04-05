@@ -293,11 +293,11 @@ class XML2PDF extends PDF_MC_Table
 			
 			case "TABLE":
 				$this->header();
-				$this->widths = array(90, 90, 45, 45);
+				$this->widths = array(45, 45,45, 45,45, 30, 30);
 				$this->SetWidths($this->widths);
-				$this->aligns = array('C','C', 'C','C');
+				$this->aligns = array('C','C', 'C','C','C', 'C','C');
 				$this->SetAligns($this->aligns); 
-				$this->SetFillColor(200,200, 200,200);
+				$this->SetFillColor(200,200, 200,200,200, 200,200);
 				break;	
 				
 			case "MONTH":	
@@ -305,13 +305,19 @@ class XML2PDF extends PDF_MC_Table
 				$name = $attribs["NAME"];
 			//	$dateObj = DateTime::createFromFormat('Y', $dateBegin);
 				$this->Ln(5);
-				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3],7,$name ,0,0,'L');
+				$this->SetFont('Arial','B',10);
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4]+$this->widths[5]+$this->widths[6],7,$name ,0,0,'L');
 				$this->Ln();
-				$this->Cell($this->widths[0],7,"Mix Description",1,0,'C');
-				$this->Cell($this->widths[1],7,"Products",1,0,'C');
-				$this->Cell($this->widths[2],7,"Mix Price",1,0,'C');
-				$this->Cell($this->widths[3],7,"Waste Price",1,0,'C');
+				$this->Cell($this->widths[0],7,"Work Order Number",1,0,'C');
+				
+				$this->Cell($this->widths[1],7,"Product ID number",1,0,'C');
+				$this->Cell($this->widths[2],7,"Product Description",1,0,'C');
+				$this->Cell($this->widths[3],7,"Equipment Description",1,0,'C');
+				$this->Cell($this->widths[4],7,"Equipment Permit Number",1,0,'C');
+
+				
+				$this->Cell($this->widths[5],7,"Mix Price",1,0,'C');
+				$this->Cell($this->widths[6],7,"Waste Price",1,0,'C');
 				//$this->Cell($this->widths[2],7,"Total VOC ",1,0,'C');
 				$this->Ln();
 				$this->SetFont('Arial','',12);
@@ -336,29 +342,51 @@ class XML2PDF extends PDF_MC_Table
 				$this->Cell($this->widths[0],7,"none",1,0,'C');
 				$this->Cell($this->widths[1],7,"none",1,0,'C');	
 				$this->Cell($this->widths[2],7,"none",1,0,'C');
-				$this->Cell($this->widths[3],7,"none",1,0,'C');					
+				$this->Cell($this->widths[3],7,"none",1,0,'C');	
+				$this->Cell($this->widths[4],7,"none",1,0,'C');	
+				$this->Cell($this->widths[5],7,"none",1,0,'C');
+				$this->Cell($this->widths[6],7,"none",1,0,'C');					
 				$this->Ln();		
 			} else {	
 
 					$this->SetFont('Arial','',12);
 					$this->rows[0] = $attribs["MIXNAME"];
 					$this->rows[1] = $attribs["PRODUCTNAME0"];
+					$this->rows[2] = $attribs["PRODUCTDESC0"];
+					$this->rows[3] = ($attribs["EQUIPMENTDESC0"]) ? $attribs["EQUIPMENTDESC0"] : 'none';		
+					$this->rows[4] = ($attribs["EQUIPMENTPERMIT0"]) ? $attribs["EQUIPMENTPERMIT0"] : 'none';		
 					
 					$p = 1;
 					while ($attribs["PRODUCTNAME".$p]){
 						$this->rows[1] .= ", ".$attribs["PRODUCTNAME".$p];
 						$p++;
 					}
+					$p = 1;
+					while ($attribs["PRODUCTDESC".$p]){
+						$this->rows[2] .= ", ".$attribs["PRODUCTDESC".$p];
+						$p++;
+					}
+					$p = 1;
+					while ($attribs["EQUIPMENTDESC".$p]){
+						$this->rows[3] .= ", ".$attribs["EQUIPMENTDESC".$p];
+						$p++;
+					}
+					$p = 1;
+					while ($attribs["EQUIPMENTPERMIT".$p]){
+						$this->rows[4] .= ", ".$attribs["EQUIPMENTPERMIT".$p];
+						$p++;
+					}					
+					
 					if ($attribs["MIXPRICE"] != 0){
-						$this->rows[2] = "$".$attribs["MIXPRICE"];
+						$this->rows[5] = "$ ".$attribs["MIXPRICE"];
 					}else{
-						$this->rows[2] = "$ 0.00";
+						$this->rows[5] = "$ 0.00";
 					}
 					
 					if ($attribs["WASTEPRICE"] == 0 ){
-						$this->rows[3] = "$ 0.00";
+						$this->rows[6] = "$ 0.00";
 					}else{
-						$this->rows[3] = "$".$attribs["WASTEPRICE"];
+						$this->rows[6] = "$ ".$attribs["WASTEPRICE"];
 					}
 				
 
@@ -394,35 +422,35 @@ class XML2PDF extends PDF_MC_Table
 				break;
 			case "TOTALMIX":
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[0]+$this->widths[1],7,"TOTAL ",1,0,'L',true);
-				$this->Cell($this->widths[2],7,"$".$this->header['TOTALMIX'],1,0,'C',true);
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4],7,"TOTAL ",1,0,'L',true);
+				$this->Cell($this->widths[5],7,"$ ".$this->header['TOTALMIX'],1,0,'C',true);
 				$this->SetFont('Arial','',12);
 				break;	
 			case "TOTALWASTE":
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[3],7,"$".$this->header['TOTALWASTE'],1,0,'C',true);
+				$this->Cell($this->widths[6],7,"$ ".$this->header['TOTALWASTE'],1,0,'C',true);
 				$this->Ln();
 				$this->SetFont('Arial','',12);
 				break;			
 			case "FULLTOTALMIX":
 				$this->Ln(2);
 				$this->SetFont('Arial','B',15);
-				$this->Cell($this->widths[0]+$this->widths[1],7,"Total for Period:  ",1,0,'L');
-				$this->Cell($this->widths[2],7,"$".$this->header['FULLTOTALMIX'],1,0,'C');	
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4],7,"Total for Period:  ",1,0,'L');
+				$this->Cell($this->widths[5],7,"$ ".$this->header['FULLTOTALMIX'],1,0,'C');	
 				$this->SetFont('Arial','',12);
 				break;	
 			case "FULLTOTALWASTE":
 
 				$this->SetFont('Arial','B',15);
 
-				$this->Cell($this->widths[3],7,"$".$this->header['FULLTOTALWASTE'],1,0,'C');	
+				$this->Cell($this->widths[6],7,"$ ".$this->header['FULLTOTALWASTE'],1,0,'C');	
 				$this->Ln();
 				$this->SetFont('Arial','',12);
 				break;			
 			case "INFO":
 				if ($attribs["MIXNAME"]!='none') {										
 					$this->Row($this->rows);
-					for ($i=0; $i<=2; $i++){
+					for ($i=0; $i<=6; $i++){
 						$this->rows[$i] = " ";
 					}	
 				}	
@@ -498,7 +526,8 @@ class XML2PDF extends PDF_MC_Table
 			
 			case 'FULLTOTALWASTE':
 				$this->header['FULLTOTALWASTE'] = ($data) ? $data : '0.00';							
-				break;				
+				break;		
+			
 
 			case 'PERIOD':
 				$this->header['PERIOD'] = $data;							
@@ -522,52 +551,52 @@ class XML2PDF extends PDF_MC_Table
     	    	
     	if (isset($this->header['TITLE'])) {
     		$this->SetFont('Arial','B',18);
-			$this->Cell(190,10,$this->header['TITLE'],0,0,'C');
+			$this->Cell(290,10,$this->header['TITLE'],0,0,'C');
 			$this->Ln();
     	    
     	    $this->SetFont('Arial','B',15);
-    	    $this->Cell(180,10,$this->header['PERIOD'],0,0,'C');
+    	    $this->Cell(290,10,$this->header['PERIOD'],0,0,'C');
     	    $this->Ln(10);	   
     	    $this->SetFont('Arial','B',10); 
     	    
     	    if ($this->header['CATEGORY']!="Department") {
-    	    	$this->Cell(40,10,$this->header['CATEGORY']." Name:",0,0,'R');
+    	    	$this->Cell(100,10,$this->header['CATEGORY']." Name:",0,0,'R');
     	    	$this->SetFont('Arial','',10);
     	    	$this->Cell(70,10,$this->header['NAME']);  
     	    	
     	    	$this->SetFont('Arial','B',10);     	    
     	    	$this->Cell(20,10,"Report by:",0,0,'R');			
-				$this->Line(140,36,180,36);
+				$this->Line(200,36,250,36);
 				$this->Ln(5); 	    	
     	    } else {
-     	    	$this->Cell(40,10,"Facility Name:",0,0,'R');
+     	    	$this->Cell(100,10,"Facility Name:",0,0,'R');
     	    	$this->SetFont('Arial','',10);
     	    	$this->Cell(70,10,$this->header['NAME']);
 
     	    	$this->SetFont('Arial','B',10);     	    
     	    	$this->Cell(20,10,"Report by:",0,0,'R');			
-				$this->Line(140,36,180,36);
+				$this->Line(200,36,250,36);
 				$this->Ln(5);
     	    	    	    	
     	    	$this->SetFont('Arial','B',10); 
-    	    	$this->Cell(40,10,$this->header['CATEGORY']." Name:",0,0,'R');
+    	    	$this->Cell(100,10,$this->header['CATEGORY']." Name:",0,0,'R');
     	    	$this->SetFont('Arial','',10);
     	    	$this->Cell(70,10,$this->header['DEPARTMENTNAME']); 
 
     	    	$this->SetFont('Arial','B',10); 
     	    	$this->Cell(20,10,"Signature:",0,0,'R');
-				$this->Line(140,41,180,41);
+				$this->Line(200,41,250,41);
     	    	$this->Ln(5);      	    	   	    	
     	    }
 			
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"Address:",0,0,'R');
+    	    $this->Cell(100,10,"Address:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['ADDRESS']);
     	    if ($this->header['CATEGORY']!="Department") {
     	    	$this->SetFont('Arial','B',10); 
     	    	$this->Cell(20,10,"Signature:",0,0,'R');
-				$this->Line(140,41,180,41);
+				$this->Line(200,41,250,41);
     	    	$this->Ln(5);  
     	    } else {
     	    	$this->SetFont('Arial','B',10); 
@@ -576,7 +605,7 @@ class XML2PDF extends PDF_MC_Table
     	    }
     	    
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"City, State, Zip:",0,0,'R');
+    	    $this->Cell(100,10,"City, State, Zip:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['CITYSTATEZIP']);
     	    
@@ -587,31 +616,31 @@ class XML2PDF extends PDF_MC_Table
     	    $this->Ln(5);    
     	     	    
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"County:",0,0,'R');
+    	    $this->Cell(100,10,"County:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['COUNTY']);
     	    $this->Ln(5);
 
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"Phone:",0,0,'R');
+    	    $this->Cell(100,10,"Phone:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['PHONE']);
     	    $this->Ln(5); 
 
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"Fax:",0,0,'R');
+    	    $this->Cell(100,10,"Fax:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['FAX']);
     	    $this->Ln(5);
     	    
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"Facility ID:",0,0,'R');
+    	    $this->Cell(100,10,"Facility ID:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['FACILITYID']);
     	    $this->Ln(5);
     	    
     	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(40,10,"Notes:",0,0,'R');
+    	    $this->Cell(100,10,"Notes:",0,0,'R');
     	    $this->SetFont('Arial','',10);
     	    $this->Cell(70,10,$this->header['NOTES']);    	        	     
     	    $this->Ln();

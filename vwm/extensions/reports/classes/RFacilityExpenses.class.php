@@ -348,7 +348,8 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 			$results = array();
 
 				$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
-				$tmpQuery .= " AND io.order_completed_date >= ".$dateBeginObj->getTimestamp()." ORDER BY m.creation_time";
+				//AND io.order_completed_date >= ".$dateBeginObj->getTimestamp()."  NEED???????
+				$tmpQuery .= " ORDER BY m.creation_time";
 
 				$this->db->query($tmpQuery);
 

@@ -48,8 +48,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
 */				
-				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*
-						FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+						FROM mixgroup mg, department d, inventory_order io, product p, mix m
+						LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
 						WHERE d.facility_id in (".$facilityString.")
 						AND d.department_id = m.department_id
 						AND mg.mix_id = m.mix_id
@@ -75,8 +76,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
 */				
-				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*
-				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+				FROM mixgroup mg, department d, inventory_order io, product p, mix m
+				LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
 				WHERE d.facility_id = ".$this->categoryID."
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id
@@ -107,10 +109,11 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					"AND re.mix_id = m.mix_id ".
 					"AND m.rule_id = r.rule_id ";
 */				
-				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*
-						FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+						FROM mixgroup mg, department d, inventory_order io, product p, mix m
+						LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
 						WHERE d.department_id = ".$this->categoryID."
-							
+						
 						AND d.department_id = m.department_id
 						AND mg.mix_id = m.mix_id
 						AND mg.product_id = io.order_product_id
@@ -123,7 +126,6 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 
 		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd);
 		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
-
 
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
 	
@@ -283,7 +285,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 							$ruleTag->appendChild(
 								$doc->createTextNode( html_entity_decode ($vocByRule['mixName'][$i]))
 							);
-
+							
 
 
 							for ($j=0;$j<count($vocByRule['productName'][$i]);$j++){
@@ -296,6 +298,36 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 								$infoTag->appendChild( $vocTag );
 
 							}
+							for ($j=0;$j<count($vocByRule['productDesc'][$i]);$j++){
+
+								$infoTag->appendChild( $ruleTag );
+								$vocTag = $doc->createAttribute( "productDesc".$j );
+								$vocTag->appendChild(
+									$doc->createTextNode($vocByRule['productDesc'][$i][$j])
+								);
+								$infoTag->appendChild( $vocTag );
+
+							}	
+							for ($j=0;$j<count($vocByRule['equipmentDesc'][$i]);$j++){
+
+								$infoTag->appendChild( $ruleTag );
+								$vocTag = $doc->createAttribute( "equipmentDesc".$j );
+								$vocTag->appendChild(
+									$doc->createTextNode($vocByRule['equipmentDesc'][$i][$j])
+								);
+								$infoTag->appendChild( $vocTag );
+
+							}
+							for ($j=0;$j<count($vocByRule['equipmentPermit'][$i]);$j++){
+
+								$infoTag->appendChild( $ruleTag );
+								$vocTag = $doc->createAttribute( "equipmentPermit".$j );
+								$vocTag->appendChild(
+									$doc->createTextNode($vocByRule['equipmentPermit'][$i][$j])
+								);
+								$infoTag->appendChild( $vocTag );
+
+							}							
 
 
 
@@ -351,6 +383,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		$emptyData [0] = array (
 						'mixName' => 'none',
 						'productName' => 'none',
+						'productDesc' => 'none',
+						'equipmentDesc' => 'none',
+						'equipmentPermit' => 'none',
 						'quanLbs' => 'none',
 						'mixPrice' => 'none',
 						'wastePrice' => 'none'
@@ -363,6 +398,8 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		 * $endYear, $endMonth - values of year and month of the end date for query
 		 */
 		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $dateBegin);
+		$dateBeginObj->setTime(0, 0, 0);
+		
 		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $dateEnd);				
 
 		$tmpYear = $dateBeginObj->format('Y');			
@@ -401,7 +438,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 
 			
 				$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
-				$tmpQuery .= " AND io.order_completed_date >= ".$dateBeginObj->getTimestamp()." ORDER BY m.creation_time";
+				////AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." NEED????????
+				$tmpQuery .= " AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." ORDER BY m.creation_time"; 
+	
 
 				$this->db->query($tmpQuery);
 
@@ -423,14 +462,19 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 							
 							$mixName[$count+1] = $data->description;
 							$productName[$count+1][] = $data->product_nr;
+							$productDesc[$count+1][] = $data->name;
+							
+							$equipmentDesc[$count+1][] = $data->equip_desc;
+							$equipmentPermit[$count+1][] = $data->permit;
 							$quanLbs[$count+1][] = $data->quantity_lbs;
 							
 							$unittype2price = $inventoryManager->unitTypeConverter($data);
 							if ($unittype2price){
 								$mixPrice[$count+1] = $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
 								$waste = $mixPrice[$count+1] * $data->waste_percent / 100;
-								$recycle = ( $mixPrice[$count+1] - $waste ) * $data->recycle_percent / 100;
-								$wastePrice[$count+1] = $waste + $recycle;
+								//$recycle = ( $mixPrice[$count+1] - $waste ) * $data->recycle_percent / 100;
+								//$wastePrice[$count+1] = $waste + $recycle;
+								$wastePrice[$count+1] = $waste;
 							
 							}else{
 								//TODO can't convert
@@ -440,6 +484,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						}elseif (!in_array($data->product_nr, $tmpName)){
 
 							$productName[$count][] = $data->product_nr;
+							$productDesc[$count][] = $data->name;
+							$equipmentDesc[$count][] = $data->equip_desc;
+							$equipmentPermit[$count][] = $data->permit;							
 							$quanLbs[$count][] = $data->quantity_lbs;
 							
 							$tmpName[] = $data->product_nr;
@@ -447,11 +494,12 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 							if ($unittype2price){
 								$mixPrice[$count] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
 								$waste = $mixPrice[$count] * $data->waste_percent / 100;
-								$recycle = ( $mixPrice[$count] - $waste ) * $data->recycle_percent / 100;
+								//$recycle = ( $mixPrice[$count] - $waste ) * $data->recycle_percent / 100;
 								$waste = number_format($waste, 2, '.', '');
-								$recycle = number_format($recycle, 2, '.', '');								
+								//$recycle = number_format($recycle, 2, '.', '');								
 								
-								$wastePrice[$count] = $waste + $recycle;	
+								//$wastePrice[$count] = $waste + $recycle;	
+								$wastePrice[$count] = $waste;
 								
 							
 							}else{
@@ -463,6 +511,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					$res = array(
 						'mixName' => $mixName,
 						'productName' => $productName,
+						'productDesc' => $productDesc,
+						'equipmentDesc' => $equipmentDesc,
+						'equipmentPermit' => $equipmentPermit,
 						'quanLbs' => $quanLbs,
 						'mixPrice' => $mixPrice,
 						'wastePrice' => $wastePrice
@@ -510,7 +561,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			'totalWaste' => $fullTotalWaste,
 			'data' => $resultByMonth
 		); 
-
+//var_dump($totalResults[data][0][data][0]);die();
 return $totalResults;			
 	}
 
