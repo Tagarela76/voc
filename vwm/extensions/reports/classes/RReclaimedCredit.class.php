@@ -36,18 +36,30 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 					$facilityString .= $value['id']. ","; 
 				}		
 				$facilityString = substr($facilityString,0,-1);
-				//$companyDetails['facility_id'] = $facilityString;
+				$companyDetails['facility_id'] = $facilityString;
 				$orgInfo = array(
 					'details' => $companyDetails,
 					'category' => "Company",
 					'notes' => ""
 					
 				); 				
-				$query = "SELECT m.mix_id, m.creation_time, re.value,re.unittype_id,re.method ".
+/*				$query = "SELECT m.mix_id, m.creation_time, re.value,re.unittype_id,re.method ".
 					"FROM mix m, department d, recycle re ".
 					"WHERE d.facility_id in (".$facilityString.") ".
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
+*/				
+				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+						FROM mixgroup mg, department d, inventory_order io, product p, mix m
+						LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
+						WHERE d.facility_id in (".$facilityString.")
+						AND d.department_id = m.department_id
+						AND mg.mix_id = m.mix_id
+						AND mg.product_id = io.order_product_id
+						AND p.product_id = io.order_product_id
+						AND io.order_facility_id in (".$facilityString.")
+						AND io.order_status = 3
+						AND io.order_completed_date <= m.creation_time";				
 				break;
 			case "facility":
 				$facility = new Facility($this->db);    				
@@ -59,11 +71,24 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 				
-				$query="SELECT m.mix_id, m.creation_time, re.value,re.unittype_id,re.method ".
+/*				$query="SELECT m.mix_id, m.creation_time, re.value,re.unittype_id,re.method ".
 					"FROM mix m, department d, recycle re ".
 					"WHERE d.facility_id = ".$this->categoryID." ".
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
+ 
+ */
+				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+				FROM mixgroup mg, department d, inventory_order io, product p, mix m
+				LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
+				WHERE d.facility_id = ".$this->categoryID."
+				AND d.department_id = m.department_id
+				AND mg.mix_id = m.mix_id
+				AND mg.product_id = io.order_product_id
+				AND p.product_id = io.order_product_id
+				AND io.order_facility_id = ".$this->categoryID."
+				AND io.order_status = 3
+				AND io.order_completed_date <= m.creation_time";				
 				break;
 			case "department":
 				$department = new Department($this->db);
