@@ -119,9 +119,10 @@ class bulkUploader {
 									
 			$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '".$product['MFG']."'");
 			$r=$this->db->fetch(0);
+			$this->db->query("UPDATE supplier SET original_id = {$r->supplier_id} WHERE supplier_id = {$r->supplier_id}");
 		}
 		$supplier_id = $r->supplier_id;		
-
+		
 		//coating_id
 		$this->db->query("SELECT coat_id FROM coat WHERE coat_desc = '".$product['coating']."'");
 		$r=$this->db->fetch(0);
@@ -239,6 +240,7 @@ class bulkUploader {
 					
 			$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '".$product['MFG']."'");
 			$r=$this->db->fetch(0);
+			$this->db->query("UPDATE supplier SET original_id = {$r->supplier_id} WHERE supplier_id = {$r->supplier_id}");
 		}
 		$supplier_id = $r->supplier_id;
 

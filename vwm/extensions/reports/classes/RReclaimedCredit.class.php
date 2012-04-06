@@ -451,6 +451,14 @@ class RReclaimedCredit extends ReportCreator implements iReportCreator {
 				$result = array();
 				$mixName = array();
 				$voc = array();
+				$mixName = array();
+				$createDate= array();
+				$productName = array();
+				$productDesc = array();
+				$equipmentDesc = array();
+				$equipmentPermit = array();
+				$quanLbs = array();					
+
 				if ($this->db->num_rows()) {
 					$num = $this->db->num_rows();
 					for ($j=0; $j<$num; $j++) {

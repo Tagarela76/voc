@@ -113,7 +113,7 @@
 							if ($userDetails['accesslevel_id'] != 3) {						
 								$voc2vps = new VOC2VPS($db);
 								$customerDetails = $voc2vps->getCustomerDetails($userDetails['company_id'],true);	
-																																	
+																																
 								if ( VERSION!='standalone' 																&& 
 									 ($customerDetails['status'] == "off" || $customerDetails['status'] == "notReg") 	&& 
 									 (strtotime($customerDetails['trial_end_date']) <= strtotime(date('Y-m-d'))) ) 		{
@@ -160,7 +160,7 @@
 								
 								$email->sendMail($from, $to, $theme, $message);
 							}
-						
+
 							switch ($accessLevel) {
 								case "SuperuserLevel":																	
 																		
@@ -213,7 +213,7 @@
 									
 								case "DepartmentLevel":
 									//echo "DepartmentUser<br>";
-									
+															
 									$department_id=$user->getUserDetails($_SESSION['user_id'], true);
 									$department_id=$department_id['department_id'];
 									//header("Location: ?action=browseCategory&categoryID=usage&departmentID=".$department_id);

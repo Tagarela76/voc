@@ -123,7 +123,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						AND io.order_completed_date <= m.creation_time";				
 				break;
 		}
-
+ 
 		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd);
 		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 
@@ -440,12 +440,18 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 				$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
 				////AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." NEED????????
 				$tmpQuery .= " AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." ORDER BY m.creation_time"; 
-	
+
 
 				$this->db->query($tmpQuery);
 
 				$res = array();
 				$mixName = array();
+				$productName = array();
+				$productDesc = array();
+				$productDesc = array();
+				$equipmentDesc = array();
+				$equipmentPermit = array();
+				$quanLbs = array();
 				if ($this->db->num_rows()) {
 					$num = $this->db->num_rows();
 					for ($j=0; $j<$num; $j++) {
@@ -561,7 +567,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			'totalWaste' => $fullTotalWaste,
 			'data' => $resultByMonth
 		); 
-//var_dump($totalResults[data][0][data][0]);die();
+//var_dump($totalResults[data][1][data][0]);die();
 return $totalResults;			
 	}
 

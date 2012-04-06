@@ -1109,8 +1109,8 @@ class Product extends ProductProperties {
 
 	private function selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		settype($companyID,"integer");
-		
-		if (empty($companyID)) {
+			
+		if (empty($companyID) && $companyID == 0) {
 			if ($supplierID == 0) {
 				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
 					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
@@ -1123,9 +1123,10 @@ class Product extends ProductProperties {
 					"FROM ".TB_PRODUCT." p " .
 					"WHERE p.supplier_id = ".(int)$supplierID;*/
 				$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s " .
+					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
 					"WHERE p.supplier_id = s.supplier_id " .
-					"AND s.original_id =".(int)$supplierID. " ORDER BY  p.product_id ASC"; 
+					"AND s.original_id =".(int)$supplierID. " " .
+					"AND coat.coat_id = p.coating_id ORDER BY  p.product_id ASC"; 
 				
 			}
 		} else {
@@ -1147,11 +1148,12 @@ class Product extends ProductProperties {
 					"AND p2c.company_id = ".$companyID;
 			*/
 				$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_SUPPLIER." s " .
+					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
 					"WHERE p.product_id = p2c.product_id " .
 					"AND p.supplier_id = s.supplier_id " .
-					"AND p2c.company_id = ".$companyID."".
-					"AND s.original_id =".(int)$supplierID. " ORDER BY  p.product_id ASC";
+					"AND p2c.company_id = ".$companyID." ".
+					"AND s.original_id =".(int)$supplierID. " ".
+					"AND coat.coat_id = p.coating_id ORDER BY  p.product_id ASC";
 			}
 		}
 
@@ -1160,6 +1162,7 @@ class Product extends ProductProperties {
 		}
 
 		$this->db->query($query);
+	
 		$numRows = $this->db->num_rows();
 		if ($numRows) {
 			for ($i=0; $i < $numRows; $i++) {

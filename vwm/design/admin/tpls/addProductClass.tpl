@@ -344,7 +344,7 @@
 				
 				<select name="selectSupplier" id="selectSupplier">
 					{section name=i loop=$supplier}
-						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier_desc} </option>
+						<option value='{$supplier[i].supplier_id}' {if $supplier[i].supplier_id eq $data.supplier_id}selected="selected"{/if}> {$supplier[i].supplier} </option>
 					{/section}
 				</select>
 				
