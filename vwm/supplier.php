@@ -27,7 +27,12 @@ if (MAINTENANCE) {
 try {
 	//	Load localization file
 	$sl = new SL(REGION, $db);
-			
+// USER LOGGING	
+if (isset($_SESSION['user_id'])){		
+	$loggingManager = new UserLoggingManager($db);
+	$loggingManager->MakeLog($_GET, $_POST, $_SESSION['user_id']);
+}
+//			
 	if (!isset($_GET["action"])) {
 		
 		if (isset($_POST["action"])) {

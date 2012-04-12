@@ -287,7 +287,6 @@ class CLogbook extends Controller
 		$result = $mLogbook->prepareBrowse($params);
 
 
-
 		foreach($result as $key => $data)
 		{
 			$this->smarty->assign($key,$data);

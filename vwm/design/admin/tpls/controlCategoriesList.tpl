@@ -53,6 +53,7 @@
 					<input type="submit" name="action" value="addItem"  >
 				</div>
 			{/if}
+			
 		</div>
 		{else}
 			<input type="button" class="button" value="Add" onclick="location.href='admin.php?action=addItem&category=salesdocs'">
@@ -61,7 +62,7 @@
 		{if $request.category eq 'salesdocs' and $itemsCount gt 0}
 			<input type="button" class="button" name="action" value="Edit" onclick="location.href='admin.php?action=edit&category=salesdocs'">
 		{/if}
-		{if $itemsCount > 0}
+		{if $itemsCount > 0 && $request.category neq 'logging'}
 			{if $request.category neq 'salesdocs'}
 				<div style="float:left; width:80px">
 				<div class="delete_button button_alpha">
@@ -137,7 +138,54 @@
 		<input type="button" class="button" name="subaction" value="Unassign GOM(s)" onclick="submitFunc('browseCategory','Unassign GOM(s)')" >
 		{/if}
 <!-- ACCESSORY -->			
+	{elseif $request.category eq 'logging'}	
+<!-- LOGGING -->		
+		</td>
+									
+	</tr>
+	<tr>
+		
+		<td>
+		<div style="float:left;">	
+			<select name="user_id" id="userID">
+			<option value="All users" {if $currentUser == 0} selected {/if}>All users {if $currentUser == 0}(selected){/if}</option>
+			{section name=i loop=$userList}
+				<option value="{$userList[i].user_id}" {if $userList[i].user_id == $currentUser} selected {/if}>{$userList[i].accessname} {if $userList[i].user_id == $currentUser}(selected){/if}</option>
+			{/section}
+		</select><br>
+		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
+&nbsp;&nbsp;&nbsp;&nbsp;
+		</div>
+		
+		<div style="float:left;padding-left: 5px;">	
+		<select name="company_id" id="selectCompany">
+			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
+			{section name=i loop=$companyList}
+				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
+			{/section}
+		</select>
+		<select id="selectFacility" name="facility_id" style="display: none;">
+			{if isset($facility)}
+				{section name=i loop=$facility}
+					<option value="{$facility[i].id}" {if $facility[i].id == $reg_field.facility_id} selected='selected' {/if} >{$facility[i].name}</option>
+				{/section}
+			{/if}
+	
+		</select>
+		<select id="selectDepartment" name="department_id" style="display: none;">
+			{if isset($department)}
+				{section name=i loop=$department}
+					<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name}</option>
+				{/section}
+			{/if}
+		</select>	
+		<br>
+		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
+		<br>
+</div>
+<!-- LOGGING -->			
 	{/if}		
+	
 			<div id='hiddens'>	
 			{if $request.category eq 'tables'}				
 				<input type="hidden" name="category" value="{$request.bookmark}">

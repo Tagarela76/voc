@@ -89,6 +89,19 @@
 				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
 				echo json_encode($response);
 			}
+			break;	
+			
+		case "loggingAll":
+			
+			$loggingManager = new UserLoggingManager($db);
+			$userList = $loggingManager->loggingAutocomplete($_GET['query']);
+			if ($userList) {
+				foreach ($userList as $user) {
+					$suggestions[] = $user['username'];
+				}
+				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+				echo json_encode($response);
+			}
 			break;			
                         
 		case "logbook":

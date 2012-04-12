@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<dataset>
- 
-  <!-- DEFINED BP REQUEST TABLE -->
-  <vps_defined_bp_request id="1" customer_id="116" bplimit="1" months_count="6" type="gyant" MSDS_limit="101" memory_limit="404" description="Work on saturdays!" date="2009-11-14" status="unprocessed"/>
-  <vps_defined_bp_request id="2" customer_id="105" bplimit="3" months_count="6" type="gyant" MSDS_limit="500" memory_limit="5000" description="' or die();" date="2009-11-16" status="unprocessed"/>
- 
-</dataset>

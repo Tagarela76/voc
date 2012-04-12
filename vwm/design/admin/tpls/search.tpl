@@ -10,10 +10,10 @@
 					<td>
 						<input type="hidden" name="action" value="browseCategory">
 						<input type="hidden" name="category" value="{$request.category}">
-						<input type="hidden" name="bookmark" value="{$request.bookmark}">
-						<input type="hidden" name="subBookmark" value="{$request.subBookmark}">
-						<input type="hidden" name="letterpage" value="{$request.letterpage}"></input>
-                                                {if ($request.category eq "salescontacts")&($request.subBookmark != "")}
+						{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}
+						{if $request.subBookmark}<input type="hidden" name="subBookmark" value="{$request.subBookmark}">{/if}
+						{if $request.letterpage}<input type="hidden" name="letterpage" value="{$request.letterpage}"></input>
+                                                {if ($request.category eq "salescontacts")&($request.subBookmark != "")}{/if}
                                                 <input type="hidden" name="subBookmark" value="{$request.subBookmark}">   
                                                 {/if}
 					</td>

@@ -28,7 +28,7 @@
 				<div align="left" width="100%">
 					<ul class="link">
 						<li>
-							<a href="admin.php?action=browseCategory&category=accessory&subBookmark=custom&letterpage=1a" class="id_company">GOM LIBRARY</a>
+							<a href="admin.php?action=browseCategory&category=accessory&subBookmark=custom" class="id_company">GOM LIBRARY</a>
 						</li>
 					</ul>
 				</div>
@@ -94,6 +94,16 @@
 						</ul>
 					</div>
 				</div>
+
+				<div align="left" width="100%"  class="{if $parent == 'logging'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+						<li>
+							<a href="admin.php?action=browseCategory&category=logging" class="id_company">User Logging</a>
+						</li>
+						</ul>
+					</div>
+				</div>					
 				
 				<div align="left" width="100%"  class="{if $parent == 'modulars'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">

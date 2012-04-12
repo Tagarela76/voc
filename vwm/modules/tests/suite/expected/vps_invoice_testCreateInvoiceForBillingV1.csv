@@ -1,3 +1,0 @@
-"invoice_id";"customer_id";"one_time_charge";"amount";"discount";"total";"paid";"due";"balance";"generation_date";"suspension_date";"period_start_date";"period_end_date";"billing_info";"limit_info";"custom_info";"module_id";"status";"suspension_disable"
-"1";"2";"0.00";"100.00";"0.00";"100.00";"100.00";"0.00";"0.00";"2010-05-05";"2010-05-06";"2010-05-06";"2011-01-04";"Sources: 1, Months: 6, Type: self";__NULL__;__NULL__;__NULL__;"paid";"1"
-"2";"2";"0.00";"0.00";"0.00";"736.00";"0.00";"736.00";"0.00";"2010-12-18";"2011-01-05";"2011-01-05";"2011-07-05";__NULL__;__NULL__;__NULL__;__NULL__;"due";"1"

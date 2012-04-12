@@ -80,7 +80,12 @@
 	{
 		//	Load localization file
 		$sl = new SL(REGION, $db);
-	
+// USER LOGGING	
+if (isset($_SESSION['user_id'])){		
+	$loggingManager = new UserLoggingManager($db);
+	$loggingManager->MakeLog($_GET, $_POST, $_SESSION['user_id']);
+}
+//
 		if (!isset($_GET["action"])) {
 			if (isset($_POST["action"])) {			
 				$smarty->assign("action", $_POST["action"]);			
@@ -141,7 +146,8 @@
 							//save time of user login for email notifications
 							$emailNotifications = new EmailNotifications($db);
 							$emailNotifications->saveTime('login',$_SESSION['user_id']);							
-							
+
+
 							//	E-mail notification about successful logining
 							if (ENVIRONMENT == "server") {
 								$email = new EMail();

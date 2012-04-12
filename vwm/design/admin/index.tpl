@@ -63,6 +63,7 @@
 													$request.category == 'product'||
 													$request.category == 'accessory'||
 													$request.category == 'salescontacts' ||
+													$request.category == 'logging' ||
 													$request.category == 'users'}
 													{include file="tpls:tpls/sort.tpl"}
 												{/if}
@@ -85,11 +86,13 @@
 															{include file="tpls:tpls/filter.tpl"}
 														{/if}
 													{*/FILTER*}
+													
+													
 													</td>
 													<td align='right'>
 														<br>
 														{*SEARCH*}
-																{if $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
+															{if $request.bookmark == "industryType" || $request.bookmark == "industrySubType"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
 																<script>
@@ -161,6 +164,24 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
+															
+															{elseif $request.category == "logging"}
+															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+															{literal}
+																<script>
+																	var options, a;
+																	jQuery(function(){
+																		options = { serviceUrl:'modules/ajax/autocomplete.php',
+																					minChars:2,
+																					delimiter: /(,|;)\s*/,
+																					params: {category: '{/literal}{$request.category}All{literal}'},
+																					deferRequestBy:300
+																		};
+																		a = $('#search').autocomplete(options);																			
+																	});
+																</script>
+															{/literal}
+															{include file="tpls:tpls/search.tpl"}															
 															
 															
 															{/if}

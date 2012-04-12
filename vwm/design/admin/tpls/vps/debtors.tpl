@@ -47,13 +47,13 @@
 		<td>Active</td>
 	</tr>
 		{section name=i loop=$customers}
-    	<tr class="hov_company_discounts" onClick="location.href='admin.php?action=vps&vpsAction=viewDetails&itemID=customer&customerID={$customers[i].id}';">
-	        <td>{$customers[i].id}</td>
-        	<td>{$customers[i].name}</td>
-        	<td>{$customers[i].phone}</td>
+    	<tr class="hov_company_discounts" onClick="location.href='admin.php?action=vps&vpsAction=viewDetails&itemID=customer&customerID={$customers[i]->id}';">
+	        <td>{$customers[i]->id}</td>
+        	<td>{$customers[i]->name}</td>
+        	<td>{$customers[i]->phone}</td>
         	<td>{$billingPlans[i].bplimit} sources {$billingPlans[i].months_count} months {$billingPlans[i].type}</td>
-        	<td>{$customers[i].currencySign} {$customers[i].balance}</td>
-        	<td>{if $customers[i].status == "on"}yes{elseif $customers[i].status == "off"}no{/if}</td>        	 
+        	<td>{$customers[i]->currencySign} {$customers[i]->balance}</td>
+        	<td>{if $customers[i]->status == "on"}yes{elseif $customers[i]->status == "off"}no{/if}</td>        	 
     	</tr>
     	{/section}
 	{else}
