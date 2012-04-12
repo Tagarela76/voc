@@ -45,15 +45,50 @@
 			<td  class="">Mailing address</td>
 			<td  class="">City</td>
 			<td>State</td>
-			<td>Zip Code</td>
-			<td>Country</td>
+			<td>
+				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
+		            <div style='width:100%;  color:white;'>					
+						Zip Code {if $sort==5 || $sort==6}<img src="{if $sort==5}images/asc2.gif{/if}{if $sort==6}images/desc2.gif{/if}" alt=""/>{/if}
+					</div>
+				</a>				
+				
+			</td>
+			<td>
+				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
+		            <div style='width:100%;  color:white;'>					
+						Country {if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}
+					</div>
+				</a>				
+				
+			</td>
 			<td  class="">Account Number</td>
 		
 			
 			
-			<td>Paint Supplier</td>
-			<td >Paint System</td>	
-			<td class="users_u_top_r_blue">Jobber</td>
+			<td>
+				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
+		            <div style='width:100%;  color:white;'>					
+						Paint Supplier {if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}
+					</div>
+				</a>				
+				
+			</td>
+			<td >
+				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==11}12{else}11{/if}"); $("#sortForm").submit();'>
+		            <div style='width:100%;  color:white;'>					
+						Paint System {if $sort==11 || $sort==12}<img src="{if $sort==11}images/asc2.gif{/if}{if $sort==12}images/desc2.gif{/if}" alt=""/>{/if}
+					</div>
+				</a>				
+				
+			</td>	
+			<td class="users_u_top_r_blue">
+				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==13}14{else}13{/if}"); $("#sortForm").submit();'>
+		            <div style='width:100%;  color:white;'>					
+						Jobber {if $sort==13 || $sort==14}<img src="{if $sort==13}images/asc2.gif{/if}{if $sort==14}images/desc2.gif{/if}" alt=""/>{/if}
+					</div>
+				</a>				
+				
+			</td>
 		</tr>
 		</thead>
 		

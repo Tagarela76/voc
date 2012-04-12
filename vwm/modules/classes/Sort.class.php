@@ -47,6 +47,27 @@ class Sort {
     			break;
     			case 4:$subQuery.=" c.contact DESC";
     			break;
+    			case 5:$subQuery.=" c.zip_code ASC";
+    			break;
+    			case 6:$subQuery.=" c.zip_code DESC";
+    			break;
+    			case 7:$subQuery.=" c.country_id ASC";
+    			break;
+    			case 8:$subQuery.=" c.country_id DESC";
+					
+    			case 9:$subQuery.=" c.paint_supplier ASC";
+    			break;
+    			case 10:$subQuery.=" c.paint_supplier DESC";
+    			break;
+    			case 11:$subQuery.=" c.paint_system ASC";
+    			break;
+    			case 12:$subQuery.=" c.paint_system DESC";
+    			break;
+    			case 13:$subQuery.=" c.jobber ASC";
+    			break;
+    			case 14:$subQuery.=" c.jobber DESC";
+    			break;
+		
     			default:$subQuery="";
     			break;  
     		}
