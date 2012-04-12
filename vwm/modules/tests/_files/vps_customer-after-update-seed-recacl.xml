@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	
+<!-- VPS_CUSTOMER TABLE-->
+	<vps_customer
+		customer_id="105"
+		billing_id="2"
+		status="on"
+		discount="0.00"
+		balance="0.00"
+	/>	
+	<vps_customer
+		customer_id="111"
+		billing_id="1"		
+		status="on"
+		discount="0.00"
+		balance="0.00"
+	/>	
+	<vps_customer
+		customer_id="115"
+		billing_id="2"		
+		status="on"
+		discount="0.00"
+		balance="0.00"
+	/>
+	<vps_customer
+		customer_id="116"
+		billing_id="2"				
+		status="on"
+		discount="0.00"
+		balance="0.00"
+	/>
+	
+<!-- CUSTOMER_LIMIT TABLE -->
+	<vps_customer_limit
+		id="5"
+		customer_id="116"
+		limit_price_id="3"
+		max_value="60"				
+	/>
+	<vps_customer_limit
+		id="6"
+		customer_id="116"
+		limit_price_id="4"
+		max_value="310"				
+	/>		
+	<vps_customer_limit
+		id="7"
+		customer_id="105"
+		limit_price_id="3"
+		max_value="60"				
+	/>
+	<vps_customer_limit
+		id="8"
+		customer_id="105"
+		limit_price_id="4"
+		max_value="310"				
+	/>	
+	<vps_customer_limit
+		id="9"
+		customer_id="115"
+		limit_price_id="3"
+		max_value="85"				
+	/>
+	<vps_customer_limit
+		id="10"
+		customer_id="115"
+		limit_price_id="4"
+		max_value="360"				
+	/>	
+	
+</dataset>

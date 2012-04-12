@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+  <!-- CUSTOMER_LIMIT TABLE -->
+  <vps_customer_limit id="1" customer_id="105" limit_price_id="1" max_value="50"/>
+  <vps_customer_limit id="2" customer_id="105" limit_price_id="2" max_value="325"/>
+  <vps_customer_limit id="3" customer_id="115" limit_price_id="1" max_value="75"/>
+  <vps_customer_limit id="4" customer_id="115" limit_price_id="2" max_value="350"/>
+  <vps_customer_limit id="5" customer_id="116" limit_price_id="3" max_value="60"/>
+  <vps_customer_limit id="6" customer_id="116" limit_price_id="4" max_value="310"/>
+
+</dataset>

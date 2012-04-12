@@ -105,7 +105,7 @@
 																				minChars:2,
 																				delimiter: /(,|;)\s*/,
 																				params: {subBookmark:'{/literal}{$request.subBookmark}{literal}',
-																																									category:'{/literal}{$request.category}{literal}'},
+																				category:'{/literal}{$request.category}{literal}'},
 																				deferRequestBy:300
 																	};
 																	a = $('#search').autocomplete(options);
