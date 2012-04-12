@@ -2,23 +2,25 @@
 include ("versioncheck.inc.php");
 require "cal_config.inc.php";
 ?>
+<!--
 <html>
 <head>
   <title>Calendar</title>
+-->
 <!-- javascript pop-up -->
-        <script language="JavaScript">
+     <script language="JavaScript">
             <!--
             function MM_openBrWindow(theURL,winName,features) { //v2.0
               window.open(theURL,winName,features);
 	    }
 	    //-->
 	</script>
-<script src="js/jquery-1.3.min.js" type="text/javascript"> </script>
-<script src="js/coda.js" type="text/javascript"> </script>
-<link rel="stylesheet" href="css/master.css" type="text/css" media="screen" charset="utf-8" />	
+
+<link rel="stylesheet" href="<?$_SERVER['DOCUMENT_ROOT']?>/voc_src/vwm/extensions/calendar/css/master.css" type="text/css" media="screen" charset="utf-8" />	
+<!--
 </head>
 <body bgcolor=<?echo$bgcolor?>>
-
+-->
 <?
 # some settings of vars
 if (!isset($_GET['op']))

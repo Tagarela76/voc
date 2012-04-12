@@ -1,27 +1,30 @@
+
 * {
 	/* old-style reset here :) */
-	/*border: 0px;*/
-	padding: 0px;
+	/*border: 0px;
+	padding: 0px;*/
 }
+/*
 body {
 	font-family: Helvetica, "Lucida Grande", "Lucida Sans Unicode", sans-serif;
 	background: white;
 	text-align: center;
-/*	background: url(../img/body.png) repeat-x;*/
+
 }
 body h1 {
 	padding-top: 20px;
 	font-size: 26px;
 	color: #335;
 }
-table {
+*/
+table .calendar{
 	border-collapse: separate;
 	border: 1px solid #9DABCE;
 	border-width: 0px 0px 1px 1px;
 	margin: 10px auto;
 	font-size: 20px;
 }
-td, th {
+.calendar td, th {
 	width: 81px;
 	height: 81px;
 	text-align: center;
@@ -29,15 +32,15 @@ td, th {
 	background: url(../img/cells.png);
 	color: #444;
 	position: relative;
-	
+	padding: 0px;
 	
 }
-th {
+.calendar th {
 	height: 30px;
 	font-weight: bold;
 	font-size: 14px;
 }
-td:hover, th:hover {
+.calendar td:hover, th:hover {
 	background-position: 0px -81px;
 	color: #222;
 }

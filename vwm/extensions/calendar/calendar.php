@@ -584,7 +584,7 @@ $nr = date("t",mktime(12,0,0,$month,1,$year));
         echo "&nbsp;&nbsp;&nbsp;<a href=calendar.php?op=cal&month=".$nm."&year=".$ny.">".$maand[$nm]." - ".$ny." => </a>";
 
 
-echo "<table cellspacing=0 >";
+echo "<table cellspacing=0 class='calendar'>";
 
     echo "<tr>";
         // make the days of week, consisting of seven <td>'s (=days)
@@ -593,6 +593,7 @@ echo "<table cellspacing=0 >";
             echo ">".$week[$i]."</th>";
         }
     echo "</tr>";
+	echo "<tr>";
         // begin the days
         for ($i=1;$i<$firstday;$i++){
 			echo "<td  ";
@@ -609,7 +610,6 @@ echo "<table cellspacing=0 >";
             echo "<td  ";
 			if($i == $d && $month == $m && $year == $y){
 				echo "class='today'";
-				
 			}elseif ( mysql_num_rows($result)) { // higlight today's day
                 echo "class='date_has_event'";
             }
@@ -624,6 +624,7 @@ echo "<table cellspacing=0 >";
             }*/
 			
             echo " valign=top><b>".$i."</b>";
+
 			if(mysql_num_rows($result)){
 				echo "<div class=events><ul>";
 			}
@@ -661,6 +662,7 @@ echo "<table cellspacing=0 >";
             }
         }
     echo "</tr>";
+	
     echo "<tr>";
         // make the days of week, consisting of seven <td>'s (=days)
         for ($i=1;$i<=7;$i++){
@@ -752,6 +754,6 @@ switch ($op){
     }
 }
 
-include ('cal_footer.inc.php');
+//include ('cal_footer.inc.php');
 ?>
 

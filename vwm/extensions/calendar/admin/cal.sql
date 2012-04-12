@@ -16,7 +16,7 @@ CREATE TABLE calendar_cat (
 
 INSERT INTO calendar_cat VALUES (1,'general');
 
-CREATE TABLE events (
+CREATE TABLE calendar_events (
   id int(11) NOT NULL auto_increment,
   title varchar(255) NOT NULL default '',
   description text NOT NULL,
