@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>	
+	
+	<!-- vps_schedule_company_plan TABLE -->
+	<vps_schedule_customer_plan id="1" customer_id="105" billing_id="2" type="bpEnd"/>
+	<!-- SCHEDULE_LIMIT TABLE -->
+    <vps_schedule_limit id="1" customer_id="105" limit_price_id="3" type="bpEnd"/>
+    <vps_schedule_limit id="2" customer_id="105" limit_price_id="4" type="bpEnd"/>
+</dataset>

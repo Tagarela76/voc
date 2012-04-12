@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <!-- VPS_CUSTOMER TABLE-->
+  <vps_customer customer_id="105" billing_id="1" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="111" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="115" billing_id="1" status="on" discount="0.00" balance="0.00"/>
+  <vps_customer customer_id="116" billing_id="2" status="on" discount="0.00" balance="-251.00"/>
+  <!-- BILLING TABLE -->
+  <vps_billing billing_id="1" name="unitTest" description="Vasya lubit cotlety!" one_time_charge="7.00" bplimit="1" months_count="1" price="9.99" type="self" defined="0"/>
+  <vps_billing billing_id="2" name="unitTestSecond" description="Testing Rocks" one_time_charge="30.00" bplimit="2" months_count="6" price="99.99" type="self" defined="0"/>
+  <vps_billing billing_id="3" name="unitTestDefined" description="Kofe teper' ono" one_time_charge="45.00" bplimit="1" months_count="6" price="200" type="gyant" defined="1"/>
+  <vps_billing billing_id="4" name="" description="" one_time_charge="50.00" bplimit="1" months_count="6" price="201.00" type="gyant" defined="1"/>
+  <!-- LIMIT PRICE TABLE -->
+  <vps_limit_price limit_price_id="1" limit_id="1" bplimit="1" default_limit="50" increase_cost="67.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="2" limit_id="2" bplimit="1" default_limit="300" increase_cost="67.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="3" limit_id="1" bplimit="2" default_limit="60" increase_cost="70.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="4" limit_id="2" bplimit="2" default_limit="310" increase_cost="70.00" type="self" defined="0"/>
+  <vps_limit_price limit_price_id="5" limit_id="1" bplimit="1" default_limit="100" increase_cost="100.00" type="gyant" defined="1"/>
+  <vps_limit_price limit_price_id="6" limit_id="2" bplimit="1" default_limit="400" increase_cost="400.00" type="gyant" defined="1"/>
+  <vps_limit_price limit_price_id="7" limit_id="1" bplimit="1" default_limit="101" increase_cost="101.00" type="gyant" defined="1"/>
+  <vps_limit_price limit_price_id="8" limit_id="2" bplimit="1" default_limit="404" increase_cost="404.00" type="gyant" defined="1"/>
+  
+  <!-- SCHEDULE_CUSTOMER_PLAN TABLE -->
+  <vps_schedule_customer_plan id="1" customer_id="105" billing_id="2" type="bpEnd"/>
+  <vps_schedule_customer_plan id="2" customer_id="115" billing_id="2" type="asap"/>
+  <vps_schedule_customer_plan id="3" customer_id="116" billing_id="4" type="bpEnd"/>
+  <!-- SCHEDULE_LIMIT TABLE -->
+  <vps_schedule_limit id="1" customer_id="105" limit_price_id="3" type="bpEnd"/>
+  <vps_schedule_limit id="2" customer_id="105" limit_price_id="4" type="bpEnd"/>
+  <vps_schedule_limit id="3" customer_id="115" limit_price_id="3" type="asap"/>
+  <vps_schedule_limit id="4" customer_id="115" limit_price_id="4" type="asap"/>
+  <vps_schedule_limit id="5" customer_id="116" limit_price_id="7" type="bpEnd"/>
+  <vps_schedule_limit id="6" customer_id="116" limit_price_id="8" type="bpEnd"/>
+  
+  <!-- DEFINED BP REQUEST TABLE -->
+  <vps_defined_bp_request id="1" customer_id="116" bplimit="1" months_count="6" type="gyant" MSDS_limit="101" memory_limit="404" description="Work on saturdays!" date="2009-11-14" status="processed"/>
+  
+</dataset>

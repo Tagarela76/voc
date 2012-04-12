@@ -50,6 +50,15 @@
 						</li>
 						</ul>
 					</div>
+				</div>
+				<div align="left" width="100%"  class="{if $parent == 'calendar'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+						<li>
+							<a href="sales.php?action=browseCategory&category=calendar" class="id_company">Calendar</a>
+						</li>
+						</ul>
+					</div>
 				</div>					
 			</td>
 		</tr>

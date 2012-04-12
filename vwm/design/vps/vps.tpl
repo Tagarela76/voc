@@ -71,7 +71,7 @@
 							{include file="tpls:tpls/contactAdmin.tpl"}
 	{/if}
 {elseif $category eq "myInfo"}	
-	                       	{include file="tpls:tpls/userInfo.tpl"}	                       
+	                       	{include file="tpls:tpls/userInfo.tpl"}	        {*delete*}               
 {/if}
 
 

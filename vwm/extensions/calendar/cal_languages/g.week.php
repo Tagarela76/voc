@@ -1,0 +1,9 @@
+<?
+$week[1]="Sonntag";
+$week[2]="Montag";
+$week[3]="Dienstag";
+$week[4]="Mittwoch";
+$week[5]="Donnerstag";
+$week[6]="Freitag";
+$week[7]="Samstag";
+?>

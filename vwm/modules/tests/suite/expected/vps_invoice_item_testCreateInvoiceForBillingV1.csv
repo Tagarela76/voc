@@ -1,0 +1,3 @@
+"id";"invoice_id";"one_time_charge";"amount";"billing_info";"limit_info";"custom_info";"module_id"
+"1";"1";"0";"100";"Sources: 1, Months: 6, Type: self";__NULL__;__NULL__;__NULL__
+"2";"2";"160";"576";"Sources: 1, Months: 6, Type: self";__NULL__;__NULL__;__NULL__

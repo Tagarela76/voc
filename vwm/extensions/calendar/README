@@ -1,0 +1,45 @@
+--------------
+WHAT IS THIS ?
+--------------
+- It's an extensive calendar-script written in PHP and uses MySQL to store data.
+- You can surf by day, week, month and by category you make ...
+- The languages included are english, dutch, french, german, arabic, spanish,italian and korean.
+- Further on there a lot of configurable vars in the config.inc.php file ... (colors, disable/enable ...)
+- You can also give multiple days for one event ONLY in the admin-section, 
+	! also, these events are automatically approved, so be carefull !
+  
+  to give in multiple events, do this:
+    
+     dd-mm-yyyy;dd-mm-yyyy' if day is one, type 01, same for month! without end-';'
+
+  This may seem a bit bumpy and difficult or whatelse, but I'm not using select-boxes or something else, 
+  because not every event takes place every day in a period like take a week or so. (eg. a course of IT every monday-night)
+
+- also, there are some little language-words that need to be translated, because there are some little changes to the script
+  if you look at the language-file, look at the bottom, it's indicated where the 'not-yet-all-translated-words' start.
+  In some languages, one or two words aren't translated yet, so look out for them ..
+- when you login into the admin-section, default login is 'god', default password is 'admin', be sure to delete
+  this in the user-management en to create new user(s)
+
+-------------
+INSTALLATION
+-------------
+* unzip or untar the file
+* Import the cal.sql in your mysqldatabase
+  console : mysql -u username -p
+	    create databasename; (if necessary)
+	    use databasename;
+	    source cal.sql;
+	    quit;
+  phpadmin : surf to the database and import the text file.	    
+
+Open config.inc.php and change the variables.
+* when you call the script, the index.php redirects to calendar.php (in the root-dir as well in the admin)
+  so you can put the calendar in your 'root'-directory if you want this .. 
+* Be carefull if you want to include your own header ..  you need the vars that are in cal_header.inc.php now !
+
+-----------------------------------------
+Any problems or bugs or something else ?
+-----------------------------------------
+mail to sweaty@urgent.rug.ac.be
+http://realize.be/swentel

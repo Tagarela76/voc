@@ -12,12 +12,12 @@
 
 			<td class="border_users_l border_users_b" >InvNum</td>
 			<td class="border_users_l border_users_b" >Items Included</td>
-			<td class="border_users_r border_users_b">Setup Charge</td>
-			<td class="border_users_r border_users_b">Amount</td>
+<!--		<td class="border_users_r border_users_b">Setup Charge</td>
+			<td class="border_users_r border_users_b">Amount</td>  -->
 			<td class="border_users_r border_users_b">Discount</td>
 			<td class="border_users_r border_users_b">Total</td>					
-			<td class="border_users_r border_users_b">Total Paid</td>
-			<td class="border_users_r border_users_b">Total Due</td>
+<!--		<td class="border_users_r border_users_b">Total Paid</td>
+			<td class="border_users_r border_users_b">Total Due</td> -->
 			<td class="border_users_r border_users_b">Date Created</td>
 			<td class="border_users_r border_users_b">Suspension Date</td>
 			{*<td class="border_users_r border_users_b">Billing Period Date Start</td>
@@ -43,44 +43,44 @@
 			
 			<tr height="20" class="hov_company_vps">
 				<td class="border_users_l border_users_b border_users_r" >
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$invoiceList[i].invoiceID}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$invoiceList[i].invoice_id}</div></a>
 				</td>
 				<td class="border_users_l border_users_b border_users_r" >
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;<b>{$invoiceList[i].items_included}</b></div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;<b>{$invoiceList[i].items}</b></div></a>
+				</td>
+<!--				<td class="border_users_r border_users_b">
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].oneTimeCharge}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].oneTimeCharge}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].amount}</div></a>
+				</td>-->
+				<td class="border_users_r border_users_b">
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].discount}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].amount}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].total}</div></a>
+				</td>
+<!--				<td class="border_users_r border_users_b">
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].paid}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].discount}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].due}</div></a>
+				</td>  -->
+				<td class="border_users_r border_users_b">
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left" >&nbsp;{$invoiceList[i].generation_date}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].total}</div></a>
-				</td>
-				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].paid}</div></a>
-				</td>
-				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$currencies.$currencyID.sign} {$invoiceList[i].due}</div></a>
-				</td>
-				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left" >&nbsp;{$invoiceList[i].generationDate}</div></a>
-				</td>
-				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left" >&nbsp;<b>{$invoiceList[i].suspensionDate}</b></div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left" >&nbsp;<b>{$invoiceList[i].suspension_date}</b></div></a>
 				</td>
 				{*<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$invoiceList[i].periodStartDate}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$invoiceList[i].periodStartDate}</div></a>
 				</td>
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left">&nbsp;{$invoiceList[i].periodEndDate}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left">&nbsp;{$invoiceList[i].periodEndDate}</div></a>
 				</td>*}
 				{if $currentBookmark eq "All"}	
 				<td class="border_users_r border_users_b">
-				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoiceID}"><div align="left" >&nbsp;{$invoiceList[i].status}</div></a>
+				<a href="vps.php?action=viewDetails&category=invoices&invoiceID={$invoiceList[i].invoice_id}"><div align="left" >&nbsp;{$invoiceList[i].status}</div></a>
 				</td>
 				{/if}
 				{if $invoiceList[i].paypal}								
@@ -112,7 +112,7 @@
 				{if $currentBookmark eq "Due"}
 				<td  class="border_users_r border_users_b" style="text-align:center;">
 					{if isset($invoiceList[i].enablePayButton) && $invoiceList[i].enablePayButton neq "disabled"} 
-					<input type="button" class="button" value="Pay!" onclick="window.location = 'vps.php?action=payInvoice&category=invoices&invoiceID={$invoiceList[i].invoiceID}'" 
+					<input type="button" class="button" value="Pay!" onclick="window.location = 'vps.php?action=payInvoice&category=invoices&invoiceID={$invoiceList[i].invoice_id}'" 
 							/>
 					{else}
 					&nbsp;

@@ -11,3 +11,6 @@
 /vwm/template_c/supplier/*
 /vwm/tmp/*
 
+!/vwm/db_backup/
+!/vwm/tmp/
+!/vwm/cache/

@@ -31,10 +31,10 @@
 			//	LOCAL AREA
 			case 'local':
 				define ('DB_HOST', 'localhost');
-				define ('DB_NAME', 'voc_inventory');
+				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'fghbjhysq');
+				define ('DB_PASS', 'rootpass');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
@@ -387,5 +387,5 @@
 	//	REGUPDATES
 	define ('XML_FILE_REVIEWED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml');
 	define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml');
-	
+	define ('MYSQL_DATE_FORMAT', 'Y-m-d');
 ?>

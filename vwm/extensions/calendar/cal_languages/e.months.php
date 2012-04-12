@@ -1,0 +1,14 @@
+<?
+$maand[1]="January";
+$maand[2]="February";
+$maand[3]="March";
+$maand[4]="April";
+$maand[5]="May";
+$maand[6]="June";
+$maand[7]="July";
+$maand[8]="August";
+$maand[9]="September";
+$maand[10]="October";
+$maand[11]="November";
+$maand[12]="December";
+?>
