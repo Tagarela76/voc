@@ -163,7 +163,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Product Waste Price Log") 
+			$doc->createTextNode("Facility Coating Usage Cost Report") 
 		);
 		$page->appendChild( $title );
 		

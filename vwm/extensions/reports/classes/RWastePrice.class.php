@@ -179,7 +179,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Product Waste Price Log") 
+			$doc->createTextNode("Product Waste Costing Report") 
 		);
 		$page->appendChild( $title );
 		
