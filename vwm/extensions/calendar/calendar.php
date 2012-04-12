@@ -1,7 +1,9 @@
 <?
 include ('cal_header.inc.php');
+
 # today's date
 if ($viewtodaydate == 1){
+
   $weekday = date ("w", mktime(12,0,0,$m,$d,$y));
   $weekday++;
   echo $week[$weekday]." ".$d." ".strtolower($maand[$m])." ".$y;
@@ -544,7 +546,7 @@ else{
 function cal($month,$year,$monthborder,$calcells,$calcellp,$tablewidth,$trtopcolor,$calfontback,$calfontasked,$calfontnext,$sundaytopclr,$weekdaytopclr,$sundayemptyclr,$weekdayemptyclr,$todayclr,$sundayclr,$weekdayclr){
 global $maand,$week,$language,$m,$d,$y,$tdwidth,$tdtopheight,$tddayheight,$tdheight,$viewcalok,$searchmonthok,$popupevent,$popupeventwidth,$popupeventheight;
 
-if ($viewcalok == 1){
+if (1){
 
 // previous month
 $pm = $month;

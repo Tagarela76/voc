@@ -93,6 +93,7 @@ if ($op == "week"){ echo "<b>"; }
 echo " :: <a href=calendar.php?op=week>".translate("week")."</a>";
 if ($op == "week"){ echo "</b>"; }
 }
+
 if ($viewcalok == 1){
 if ($op == "cal"){ echo "<b>"; }
 echo " :: <a href=calendar.php?op=cal&month=$m&year=$y>".translate("cal")."</a>";

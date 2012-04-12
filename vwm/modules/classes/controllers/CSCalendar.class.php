@@ -34,11 +34,16 @@ class CSCalendar extends Controller {
 			$sub = $this->getFromRequest("bookmark");
 		}	
  */	 
-	
-	
+/*	
+
+ * 
+ */
 		//	set js scripts
-		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js', 'extensions/calendar/js/coda.js');
 		$this->smarty->assign('jsSources', $jsSources);
+		$cssSource = array('extensions/calendar/css/master.css');
+		$this->smarty->assign('cssSource', $cssSource);
+		$this->smarty->assign('doNotShowControls', true);
 
 		$this->smarty->assign('tpl', 'tpls/calendar.tpl');
 		$this->smarty->display("tpls:index.tpl");

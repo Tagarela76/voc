@@ -70,7 +70,7 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-                                                                                                                        $request.category == 'salescontacts'}
+                                                            $request.category == 'salescontacts'}
 																{include file="tpls:tpls/filter.tpl"}
 															{/if}
 															{*/FILTER*}

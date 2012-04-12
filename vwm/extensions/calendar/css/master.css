@@ -7,7 +7,7 @@ body {
 	font-family: Helvetica, "Lucida Grande", "Lucida Sans Unicode", sans-serif;
 	background: white;
 	text-align: center;
-	background: url(../img/body.png) repeat-x;
+/*	background: url(../img/body.png) repeat-x;*/
 }
 body h1 {
 	padding-top: 20px;
@@ -29,6 +29,8 @@ td, th {
 	background: url(../img/cells.png);
 	color: #444;
 	position: relative;
+	
+	
 }
 th {
 	height: 30px;
@@ -58,6 +60,7 @@ td.today:hover {
 }
 .events {
 	position: relative;
+
 }
 .events ul {
 	text-align: left;
