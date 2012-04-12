@@ -54,7 +54,7 @@ class Sort {
     			case 7:$subQuery.=" c.country_id ASC";
     			break;
     			case 8:$subQuery.=" c.country_id DESC";
-					
+				break;	
     			case 9:$subQuery.=" c.paint_supplier ASC";
     			break;
     			case 10:$subQuery.=" c.paint_supplier DESC";
