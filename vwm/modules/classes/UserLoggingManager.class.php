@@ -56,7 +56,7 @@ class UserLoggingManager {
 			//var_dump($_SERVER['REQUEST_URI']); //Link to page if need
 			$userLogging = new UserLogging($this->db, $data);
 			
-			//$userLogging->save();
+			$userLogging->save();
 			
 		}else{
 			// SOME ERROR?
