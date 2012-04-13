@@ -4,6 +4,7 @@
             <!--
             function MM_openBrWindow(theURL,winName,features) { //v2.0
               window.open(theURL,winName,features);
+
 	    }
 	    //-->
 	</script>
@@ -48,16 +49,16 @@
 		{assign var=a value=0}
 			{section loop=$nr name=i start=1}
 				<td {if $smarty.section.i.index == $day } class='today' {elseif $events[i]}class='date_has_event'{/if} onclick="addEvent({$smarty.section.i.index},{$month},{$year}); return false;" valign=top><b>{$smarty.section.i.index}</b>
-	<!-- onclick="MM_openBrWindow('extensions/calendar/calendar.php?op=eventform&day={$smarty.section.i.index}&month={$month}&year={$year}','Calendar','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=400,height=400')"  -->
+	<!-- /*onmousemove="disabledTD(this);" onmouseout="enabledTD(this);"*/  onclick="MM_openBrWindow('extensions/calendar/calendar.php?op=eventform&day={$smarty.section.i.index}&month={$month}&year={$year}','Calendar','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=400,height=400')"  -->
 					
 					{if $events[i]}
-						<div class=events><ul>
+						<div class=events><ul onmouseover="this.onmouseover = null; disabledTD(this);" onmouseout="enabledTD(this);" on>
 	
 
 					{foreach from=$events[i] item=event}
 						<li>
 							<span class='title'>
-								<a onclick="MM_openBrWindow('extensions/calendar/cal_popup.php?op=view&id={$event.id}','Calendar','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width={$popupeventwidth},height={$popupeventheight}')">{$event.title|stripslashes}</a>
+								<a onclick="MM_openBrWindow('extensions/calendar/cal_popup.php?op=view&id={$event.id}','Calendar','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no');">{$event.title|stripslashes}</a>
 
 							</span>
 							<span class="desc">{$event.description|stripslashes}</span>
@@ -101,7 +102,11 @@
 							Event Title : 	
                             </td>
                             <td colspan=""  style="padding:0px;border-bottom:0px;">
-								<input type="text" name="title" id="title" />
+								<input type="text" name="title" id="title" style="float:left;"/>
+								<div style="margin:2px 0px 0px 5px;float:left; display: none; " align="left"id="title_error_div">
+											<img src='design/user/img/alert1.gif' height=16  style="float:left;" />
+											<font id="title_error" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;"></font>
+								</div>								
                             </td>							
                         </tr>
 						
@@ -119,7 +124,11 @@
 							Email : 	
                             </td>
                             <td colspan=""  style="padding:0px;border-bottom:0px;">
-								<input type="text" name="email" id="email" />
+								<input type="text" name="email" id="email" style="float:left;"/>
+								<div style="margin:2px 0px 0px 5px;float:left; display: none; " align="left"id="email_error_div">
+											<img src='design/user/img/alert1.gif' height=16  style="float:left;" />
+											<font id="email_error" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;"></font>
+								</div>									
                             </td>							
                         </tr>	
                         <tr>

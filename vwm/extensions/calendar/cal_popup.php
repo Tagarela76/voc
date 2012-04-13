@@ -11,9 +11,11 @@ $id = $_GET['id'];
 
 <?
 
-$query = "select id,title,cat_name,description,day,month,year,approved,url,email from events left join calendar_cat on events.cat=calendar_cat.cat_id where id='$id'";
+$query = "select id,title,cat_name,description,day,month,year,approved,url,email from calendar_events left join calendar_cat on calendar_events.cat=calendar_cat.cat_id where id='$id'";
 $result = mysql_query($query);
-$row = mysql_fetch_object($result);
+$row = mysql_fetch_array($result);
+
+var_dump($query,$row,$result);die();
 echo "<h3>".stripslashes($row->title)."</h3>\n";
 echo "<li>".translate("bdate")." : ".$row->day ." ".$maand[$row->month]." ".$row->year."\n";
 echo "<li>".translate("cat")." : ".$row->cat_name."\n";

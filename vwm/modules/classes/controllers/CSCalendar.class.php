@@ -38,7 +38,7 @@ class CSCalendar extends Controller {
 		}
 
 		$categoryList = $calendarManager->getCategory();
-		var_dump($categoryList);
+
 		//	set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js','modules/js/addEventPopups.js', 'extensions/calendar/js/coda.js');
 		$this->smarty->assign('jsSources', $jsSources);
