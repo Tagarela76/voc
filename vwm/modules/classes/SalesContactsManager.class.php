@@ -327,7 +327,8 @@ if (substr($web, 0, 4) != 'http'){
                 
                 $sub = mysql_escape_string($sub);
 	//	$query = "SELECT  * FROM ".TB_CONTACTS."  WHERE type = ".$subNumber." AND (";
-		$query = "SELECT  count(c.id) contactCount FROM ".TB_CONTACTS." c, country co WHERE ((";		
+		$query = "SELECT  count(c.id) contactCount FROM ".TB_CONTACTS." c
+			left join country co ON co.country_id = c.country_id WHERE ((";		
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -363,9 +364,7 @@ if (substr($web, 0, 4) != 'http'){
 		}
 	
 		
-		$query .= $sql." )
-				OR (
-						(co.name LIKE  '%".$contact."%') AND (co.country_id = c.country_id)))";
+		$query .= $sql." ))";
 
 		if(isset($creater_id)) {
 					$query .= " AND c.creater_id = $creater_id";

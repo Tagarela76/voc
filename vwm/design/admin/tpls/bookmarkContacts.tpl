@@ -68,7 +68,7 @@
 			<td>
 				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
 		            <div style='width:100%;  color:white;'>					
-						Paint Supplier {if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}
+						Product Manufacturer {if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}
 					</div>
 				</a>				
 				
