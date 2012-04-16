@@ -580,6 +580,11 @@ class Sort {
     			case 7:$subQuery.=" ul.date ASC";
     			break;
     			case 8:$subQuery.=" ul.date DESC";
+    			break; 	
+			
+    			case 9:$subQuery.=" ul.user_id ASC";
+    			break;
+    			case 10:$subQuery.=" ul.user_id DESC";
     			break; 			
     			default:$subQuery="";
     			break;  

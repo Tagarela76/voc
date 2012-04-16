@@ -1,5 +1,5 @@
 <?php
-class UserLoggingManager {
+class NoxEmissionManager{
         
         private $db;
     
@@ -7,61 +7,57 @@ class UserLoggingManager {
                 $this->db=$db;
         }
 
-	public function getCountLogs($userID = null, $companyID = null, $facilityID = null, $departmentID = null) {
-		$table = " user_logging ul ";
-		if ($userID && $userID != 'All users'){
-			$sql = " ul.user_id = {$userID} AND ";
-		}
-		if ($companyID && $companyID != 'All companies'){
-			$table .= " , user u ";
-			$sql .= " u.user_id = ul.user_id AND u.company_id = {$companyID} AND ";
-		}else{
-			//$sql .= " u.company_id IS NULL AND ";
-		}
-		if ($facilityID && $facilityID != 'All facilities'){
-			$sql .= " u.facility_id = {$facilityID} AND ";
-		}else{
-			//$sql .= " u.facility_id IS NULL AND ";
-		}
-		if ($departmentID && $departmentID != 'All departments'){
-			$sql .= " u.department_id = {$departmentID} AND ";
-		}else{
-			//$sql .= " u.department_id IS NULL AND ";
-		}		
-		$sql .= " 1 ";
-		$query = "SELECT COUNT(ul.log_id) cnt FROM {$table} WHERE {$sql}";
-		//echo $query;
+	public function getCountNoxByDepartment($departmentID) {
+
+		$query = "SELECT COUNT(*) cnt FROM nox WHERE department_id = {$departmentID} ";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['cnt'];
+	}
+	
+	public function getCountBurnerByDepartment($departmentID) {
+
+		$query = "SELECT COUNT(*) cnt FROM burner WHERE department_id = {$departmentID} ";
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
 	}	
 	
-	public function MakeLog($get, $post, $user_id) {
-		if ($user_id){
-			$arr['get'] = $get;
-			$arr['post'] = $post;
-			$arr['link'] = $_SERVER['REQUEST_URI'];
-			$data['action_type'] = 'GET';
-			if($get['action'] == 'logout'){
-				$data['action_type'] = 'LOGOUT';
-			}
-			$data['user_id'] = $user_id;
-			$data['action'] = json_encode($arr);
-
-			if ($post){
-				$data['action_type'] = 'POST';
-			}if($post['action'] == 'auth'){
-				$data['action_type'] = 'AUTH';
-			}
-			//var_dump($_SERVER['REQUEST_URI']); //Link to page if need
-			$userLogging = new UserLogging($this->db, $data);
-			
-			$userLogging->save();
-			
-		}else{
-			// SOME ERROR?
+	public function getNoxListByDepartment($departmentID,$sortStr = null, $pagination = null) {
+		$query = "SELECT * FROM nox WHERE department_id = {$departmentID} ";
+		if (isset($sortStr)){
+			$query .= $sortStr;
 		}
+		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+    	$this->db->query($query);
+    	
+    	if ($this->db->num_rows()) 
+    	{   $data = $this->db->fetch_all_array();		
+    		return $data[0];
+    	}
+    	else return false;		
 	}
+	
+	public function getBurnerListByDepartment($departmentID,$sortStr = null, $pagination = null) {
+		$query = "SELECT * FROM burner WHERE department_id = {$departmentID} ";
+		if (isset($sortStr)){
+			$query .= $sortStr;
+		}
+		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+    	$this->db->query($query);
+    	
+    	if ($this->db->num_rows()) 
+    	{   $data = $this->db->fetch_all_array();		
+    		return $data[0];
+    	}
+    	else return false;		
+	}	
 	
     public function getAllLogs($userID = null,$companyID = null,$facilityID = null,$departmentID = null,$sort=' ORDER BY ul.date DESC ', $pagination = null) {
     	$sqlSelect ='';
@@ -118,14 +114,10 @@ class UserLoggingManager {
     }
 	
     public function getLogDataReadable($logList) {
-		$users = new User($this->db);
 		for ($i=0; $i<count($logList); $i++) 
 			{
 				$url="?action=viewDetails&category=logging&id=".$logList[$i]['log_id'];
 				$logList[$i]['url']=$url;
-				$userDetail = $users->getUserDetails($logList[$i]['user_id']);
-				$logList[$i]['username']=$userDetail['username'];
-				
 				$action = json_decode($logList[$i]['action']);
 					
 				if ($logList[$i]['action_type'] == "AUTH"){

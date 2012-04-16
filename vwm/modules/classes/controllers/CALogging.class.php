@@ -33,6 +33,7 @@ class CALogging extends Controller {
 		$companyID = $request['company_id'];
 		$facilityID = $request['facility_id'];
 		$departmentID = $request['department_id'];
+		
 
 		$loggingManager = new UserLoggingManager($this->db);
 		$itemsCount = $loggingManager->getCountLogs($userID, $companyID, $facilityID, $departmentID);	

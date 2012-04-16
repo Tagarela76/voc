@@ -27,7 +27,7 @@
                                             {if ($request.bookmark=="equipment" && $permissions.equipment.add) ||
                                             	($request.bookmark=="user" && $permissions.user.add) ||
                                             	
-                                            	($request.bookmark=="inventory" && $permissions.data.add) ||
+                                            	($request.bookmark=="nox" && $permissions.data.add) ||
                                             	($request.bookmark=="mix" && $permissions.data.add) ||
                                             	$permissions.addItem && $request.bookmark != "reduction" && $request.bookmark != "solventplan" &&
                                             	$request.bookmark != "regupdate" && $request.bookmark != "emissionGraphs"
@@ -64,7 +64,7 @@
                                             	{if ($request.bookmark=="equipment" && $permissions.equipment.delete) ||
                                             		($request.bookmark=="user" && $permissions.user.delete) ||
                                             		
-                                            		($request.bookmark=="inventory" && $permissions.data.delete) ||
+                                            		($request.bookmark=="nox" && $permissions.data.delete) ||
                                             		($request.bookmark=="mix" && $permissions.data.delete) ||
                                             		($request.bookmark=="logbook" && $permissions.data.delete) ||
                                                             $permissions.deleteItem && $request.bookmark != "product"}
@@ -155,7 +155,7 @@
 											{if $request.category != 'root'}
 												<input type="hidden" name="{$request.category}ID" value="{$request.id}">
 											{/if}
-											{if $request.bookmark == 'inventory'}
+											{if $request.bookmark == 'nox'}
 												<input type="hidden" name="tab" value="{$request.tab}">
 											{/if}
 										{else}

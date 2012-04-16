@@ -45,3 +45,9 @@
 	{include file="tpls:tpls/subBookmarkMix.tpl"}
 {/if}
 {*MIX*}
+
+{*NOX*}
+{if $request.bookmark == 'nox' and $request.category == 'department'}
+	{include file="tpls:tpls/subBookmarkNox.tpl"}
+{/if}
+{*NOX*}

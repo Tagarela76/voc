@@ -3,6 +3,25 @@
         <td align="right">
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
+					
+                    {*if $permissions.data.view}
+                    <td>
+                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=nox&tab=nox">{if $request.bookmark != "nox"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    Nox Emissions
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark_violet">
+                                <div class="activeBookmark_violet_right">
+                                   NOx Emissions&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+                    {/if*}					
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=accessory">{if $request.bookmark != "accessory"}
@@ -21,6 +40,7 @@
                         </a>
                     </td>
                     {/if}
+						
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=product">{if $request.bookmark != "product"}
@@ -103,6 +123,7 @@
    			 </tr>
               <tr>
                 	<td colspan="2"
+{if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if}
 {if $request.bookmark  eq "accessory"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "equipment"}  class="bookmark_bg" {/if}
 {if $request.bookmark  eq "inventory"}  class="bookmark_bg_violet" {/if}

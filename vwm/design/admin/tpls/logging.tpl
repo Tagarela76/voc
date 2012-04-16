@@ -37,6 +37,16 @@
 					</a>					
         			
         		</td>
+				
+				<td>
+					<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
+						<div style='width:100%;  color:white;'>
+							User Name
+							{if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}
+						</div>
+					</a>					
+        			
+        		</td>				
 				<td>
 					<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
 						<div style='width:100%;  color:white;'>
@@ -73,7 +83,12 @@
 						{$logList[i].user_id}
 					</div>
 				</a>					
-        			
+				<td>
+				<a href="{$logList[i].url}" class="id_accessory1">
+					<div>
+						{$logList[i].username}
+					</div>
+				</a>        			
         		</td>
 				<td>
 				<a href="{$logList[i].url}" class="">
