@@ -11,7 +11,7 @@
 		{foreach from=$jsSources item=jsSource}
 			<script type="text/javascript" src="{$jsSource}"></script>
 		{/foreach}
-
+		<link rel="stylesheet" href="extensions/calendar/css/master.css" type="text/css" media="screen" charset="utf-8" />
 		{foreach from=$cssSources item=cssSource}
 			<link href="{$cssSource}" rel="stylesheet" type="text/css"/>
 		{/foreach}
@@ -70,7 +70,7 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-                                                                                                                        $request.category == 'salescontacts'}
+                                                            $request.category == 'salescontacts'}
 																{include file="tpls:tpls/filter.tpl"}
 															{/if}
 															{*/FILTER*}

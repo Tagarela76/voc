@@ -67,7 +67,7 @@ class Sort {
     			break;
     			case 14:$subQuery.=" c.jobber DESC";
     			break;
-		
+ 
     			default:$subQuery="";
     			break;  
     		}

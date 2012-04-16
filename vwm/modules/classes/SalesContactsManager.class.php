@@ -265,16 +265,20 @@ if (substr($web, 0, 4) != 'http'){
 										c.zip_code, LOCATE('".$occurrence."', c.zip_code) occurrenceZip, 
 										c.jobber, LOCATE('".$occurrence."', c.jobber) occurrenceJob,
 										c.paint_supplier, LOCATE('".$occurrence."', c.paint_supplier) occurrencePsp, 
+
 										c.paint_system, LOCATE('".$occurrence."', c.paint_system) occurrencePst,
 										co.name, LOCATE('".$occurrence."', co.name) occurrenceCountry	
 						 FROM ".TB_CONTACTS. " c, contacts2type ct, country co 
+
 						 WHERE ct.type_id = '".$subNumber."' AND ct.contact_id = c.id  
                          AND	(LOCATE('".$occurrence."', c.company)>0 
 								OR  LOCATE('".$occurrence."', c.contact)>0 
 								OR  LOCATE('".$occurrence."', c.zip_code)>0 
 								OR  LOCATE('".$occurrence."', c.jobber)>0
+
 								OR  LOCATE('".$occurrence."', c.paint_supplier)>0
 								OR  LOCATE('".$occurrence."', co.name)>0
+
 								OR  LOCATE('".$occurrence."', c.paint_system)>0) 
                           LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
@@ -306,10 +310,12 @@ if (substr($web, 0, 4) != 'http'){
                 if($contact->occurrencePst) {
 					$results[] = $contact->paint_system;
                     $results = array_unique($results);
+
 				}	
                 if($contact->occurrenceCountry) {
 					$results[] = $contact->name;
                     $results = array_unique($results);
+
 				}				
 			}
 			return (isset($results)) ? $results : false;								
@@ -327,8 +333,10 @@ if (substr($web, 0, 4) != 'http'){
                 
                 $sub = mysql_escape_string($sub);
 	//	$query = "SELECT  * FROM ".TB_CONTACTS."  WHERE type = ".$subNumber." AND (";
+
 		$query = "SELECT  count(c.id) contactCount FROM ".TB_CONTACTS." c
 			left join country co ON co.country_id = c.country_id WHERE ((";		
+
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -364,13 +372,14 @@ if (substr($web, 0, 4) != 'http'){
 		}
 	
 		
+
 		$query .= $sql." ))";
+
 
 		if(isset($creater_id)) {
 					$query .= " AND c.creater_id = $creater_id";
 		}                
-
-                $this->db->query($query);
+        $this->db->query($query);
 		if ($this->db->num_rows() > 0) {			
 			return $this->db->fetch(0)->contactCount;
 		} else 
@@ -408,7 +417,9 @@ if (substr($web, 0, 4) != 'http'){
 	*/
 	public function searchContacts($contacts, $byField1, $byField2, $subNumber, Pagination $pagination = null, $sortStr = null, $byArrField = null) {
         
+
 		$query = "SELECT  c.* FROM ".TB_CONTACTS." c , contacts2type ct, country co  WHERE ct.type_id = ".$subNumber." AND ct.contact_id = c.id AND ((";
+
 		if (!is_array($contacts)) {
 			$contacts = array($contacts);
 		}
@@ -445,14 +456,18 @@ if (substr($web, 0, 4) != 'http'){
 			
 		}
 		
+
 		$query .= $sql." )
 				OR (
 						(co.name LIKE  '%".$contact."%') AND (co.country_id = c.country_id)))";
+
 		
 		if (isset($sortStr)) {
 			$query .=  $sortStr;
 		}		
+
         $query .=" GROUP BY c.id ";    
+
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}	

@@ -5,7 +5,7 @@
 	{/if}
 {**}
 {if $action}
-    <form action="{$action}" method="POST">		
+    <form action="vps.php?category=myInfo&action={$action}" method="POST">		
 {else}
     <form action="vps.php?category=myInfo&action=editCategory" method="POST">		
 {/if}
@@ -177,8 +177,10 @@
                 <input type="submit" value="Save" class="button">
             </div>
         </div>
-		<!--<input type="hidden" name="action" value="{$action}">
-		<input type="hidden" name="category" value="{$category}"> -->
+		<!--
+  <input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="category" value="{$category}"> 
+		-->
 		
 		{if $userData.showAddUser} {* adding new user when he is registered at VOC*}
 			<input type="hidden" name="step" value="first">			

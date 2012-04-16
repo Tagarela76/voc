@@ -387,5 +387,5 @@
 	//	REGUPDATES
 	define ('XML_FILE_REVIEWED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml');
 	define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml');
-	
+	define ('MYSQL_DATE_FORMAT', 'Y-m-d');
 ?>

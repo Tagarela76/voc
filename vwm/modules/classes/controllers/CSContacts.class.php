@@ -62,6 +62,7 @@ class CSContacts extends Controller {
 		/*/SORT*/		
 		
 		if ($this->getFromRequest('q') != '') {
+
 			$byArrFieldQ = array('zip_code','paint_supplier','paint_system','jobber','co.name');
 			
 			$contactsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
@@ -72,7 +73,9 @@ class CSContacts extends Controller {
 			if ($sub != 'contacts') {
 				$pagination->url .= "&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
 			}
+
 			$byArrField = array('zip_code','paint_supplier','paint_system','jobber');
+
 			$contactsList = $manager->searchContacts($contactsToFind, 'company', 'contact', $subNumber, $pagination,$sortStr,$byArrField);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			$this->smarty->assign('pagination', $pagination);

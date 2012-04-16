@@ -22,7 +22,7 @@
 			Date:
 		</td>
 		<td>
-			{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails.generationDate)}
+			{$VOCApp_instance->printDatetimeByTimestampInCurrentDateformat($invoiceDetails->generation_date)}
 		</td>						
 	</tr>
 	<tr>
@@ -64,7 +64,7 @@ END DEPRECATED
 <table width="95%" align="center" cellpadding="0" cellspacing="0" class="invoiceDetals">
 	<tr>
 		<td colspan="2">
-			<div align="right" {if $invoiceDetails.status eq "DUE"} class="invoiceDetals_due" {else} class="invoiceDetals_paid"{/if}><span>{$invoiceDetails.status}</span></div> {* PAID=green DUE=red*}
+			<div align="right" {if $invoiceDetails.status eq "1"} class="invoiceDetals_due" {else} class="invoiceDetals_paid"{/if}><span>{$invoiceDetails.status}</span></div> {* PAID=green DUE=red*}
 		</td>
 	</tr>
 	<tr>
@@ -82,7 +82,7 @@ END DEPRECATED
 						Date:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.generationDate)}
+						{$invoiceDetails.generation_date}
 					</td>
 				</tr>
 				<tr>	
@@ -90,7 +90,7 @@ END DEPRECATED
 						Invoice ID:
 					</td>
 					<td>
-						{$invoiceDetails.invoiceID}
+						{$invoiceDetails.invoice_id}
 					</td>
 				</tr>
 				<tr>	
@@ -98,7 +98,7 @@ END DEPRECATED
 						Billing Period Date Start:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.periodStartDate)}
+						{$invoiceDetails.period_start_date}
 					</td>
 					<td>
 				</tr>
@@ -107,7 +107,7 @@ END DEPRECATED
 						Billing Period Date Finish:
 					</td>
 					<td>
-						{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.periodEndDate)}
+						{$invoiceDetails.period_start_date}
 					</td>
 					
 				</tr>
@@ -116,7 +116,7 @@ END DEPRECATED
 						Suspension date:	
 					</td>
 					<td>
-						<b>{$VOCApp_instance->printDatetimeByMySqlDateInCurrentDateformat($invoiceDetails.suspensionDate)}</b>
+						<b>{$invoiceDetails.suspension_date}</b>
 					</td>
 				</tr>
 			</table>
@@ -158,21 +158,21 @@ END DEPRECATED
 {* invoice body *}
 <table width="95%" align="center" cellpadding="0" cellspacing="0"  class="invoiceDetals">
 	<tr class="invoiceDetals_table">
-		<td>#</td>
-		<td>Setup Charge</td>
-		<td>Amount</td>
-		<td>Info</td>
-		<td>Total</td>
+		<td> # </td>
+		<td> Setup Charge </td>
+		<td> Amount </td>
+		<td> Info </td>
+		<td> Total </td>
 	</tr>
 	{foreach from=$invoiceDetails.invoice_items  item=invoiceItem}
 	<tr>
-		<td>{$invoiceItem.invoiceItemID}</td>
+		<td>{$invoiceItem.id}</td>
 		
-		<td>{$currentCurrency.sign} {$invoiceItem.oneTimeCharge}</td>
+		<td>{$currentCurrency.sign} {$invoiceItem.one_time_charge}</td>
 		<td>{$currentCurrency.sign} {$invoiceItem.amount}</td>
 		<td>
-			{if $invoiceItem.billingInfo != NULL}
-				<b>Billing Plan</b> - {$invoiceItem.billingInfo}
+			{if $invoiceItem.invoice_item_type != NULL}
+				<b>Billing Plan</b> - {$invoiceItem.invoice_item_type}
 			{elseif $invoiceItem.limitInfo != NULL}
 				<b>Limit</b> - {$invoiceItem.limitInfo}
 			{elseif $invoiceItem.customInfo != NULL}
@@ -231,13 +231,13 @@ END DEPRECATED
 			{/if}						 
 		</td>		
 		<td>
-			{$invoiceDetails.periodStartDate}
+			{$invoiceDetails.period_start_date}
 		</td>	
 		<td>
-			{$invoiceDetails.periodEndDate}
+			{$invoiceDetails.period_end_date}
 		</td>
 		<td>
-			<b>{$invoiceDetails.suspensionDate}</b>
+			<b>{$invoiceDetails.suspension_date}</b>
 		</td>
 		<td>
 			${$invoiceDetails.oneTimeCharge}
@@ -264,11 +264,11 @@ END DEPRECATED
 	</tr>
 	<tr>
 		<td>Discount:</td>
-		<td>{$currentCurrency.sign} {$invoiceDetails.discountSum}</td>
+		<td>{$currentCurrency.sign} {$invoiceDetails.discount}</td>
 	</tr>
 	<tr>
 		<td>TOTAL:</td>
-		<td><b>{$currentCurrency.sign} {$invoiceDetails.totalSum}</b></td>
+		<td><b>{$currentCurrency.sign} {$invoiceDetails.total}</b></td>
 	</tr>
 </table>
 
@@ -277,7 +277,7 @@ END DEPRECATED
 <table width="95%" align="center" cellpadding="0" cellspacing="0"  class="invoiceDetals">
 	<tr class="invoiceDetals_table">
 		<td colspan="7">
-			<b>Register History for Invoice ID {$invoiceDetails.invoiceID}</b>
+			<b>Register History for Invoice ID {$invoiceDetails.invoice_id}</b>
 		</td>
 	</tr>
 	<tr class="invoiceDetals_table_head">

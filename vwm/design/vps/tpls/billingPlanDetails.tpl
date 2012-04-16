@@ -30,8 +30,8 @@
 				{$pleaseWait}
 			</td>
 		</tr>
-	</table>
-{else}
+	</table>{$trial}
+{else}{if $trial == 'false'}
 			<table border="0" align="center" width="440px" class="dashboard" cellspacing="0" cellpadding="3" >					
 				<tr>
 					<td colspan="2"  class="dashboard">
@@ -89,7 +89,7 @@
 						{/if}
 					</td>
 					<td class="pcenter">
-						<b>{$totalCurrency.sign} {$totalInvoice}</b>
+						<b>{$totalCurrency.sign} {*$totalInvoice*}{$billingPlan.total}</b>
 					</td>
 				</tr>									
 			</table>
@@ -255,11 +255,11 @@ Also you have:
 			<div><b>Congratilations!</b> You have a discount <b>-{$discountPercent}%</b></div>
 			{/if}
 			
-						
+{/if}				
 			{if $futureBillingPlan}
 			<table border="0" align="center" width="440px" class="dashboard" cellspacing="0">
 				<tr>
-					<td colspan="2" height="40">
+					<td colspan="2" height="40" align="center">
 						&nbsp;
 					</td>
 				</tr>
@@ -270,7 +270,7 @@ Also you have:
 				</tr>
 				<tr>
 					<td colspan="2">
-						&nbsp;
+						
 					</td>
 				</tr>
 				<tr>
@@ -342,6 +342,6 @@ Also you have:
 </div>
 	</form>
 {/if}		
-		{**}	
+
 	
 	

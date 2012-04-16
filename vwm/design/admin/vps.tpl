@@ -7,8 +7,8 @@
 		
 	</head>
 	<body>
-	
 
+		
 								
 								<table width="100%" height="100%"  cellspacing="0" cellpadding="0" >			  						  <tr>											
 											{include file="tpls:logo.tpl"}											
@@ -40,7 +40,9 @@
 	{include file="tpls:tpls/vps/DBPRequests.tpl"}
 {elseif $bookmarkType == "areYouSureInvoice"}
 	{include file="tpls:tpls/vps/areYouSureInvoice.tpl"}
-{else}
+{elseif $bookmarkType == "selectBillingPlan"}
+	{include file="tpls:tpls/vps/selectBillingPlan.tpl"}
+{else}	
 	{include file="tpls:tpls/vps/bookmarksVPS.tpl"}
 {/if}
 {*/NOTABS*}
@@ -58,7 +60,7 @@
 {*/TABS*}
 <br>
 <br>
-											
+								
 										</td>
 										
 									</tr>
