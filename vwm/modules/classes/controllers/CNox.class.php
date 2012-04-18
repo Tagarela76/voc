@@ -122,10 +122,22 @@ class CNox extends Controller
 		}
 							
 		//set permissions							
-		$this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark'=>'accessory'));
+		$this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark'=>'nox'));
 		$this->setNavigationUpNew('department', $request['departmentID']);
 		$this->setPermissionsNew('viewData');
-							
+		if($request['tab'] == 'nox'){
+				$noxManager = new NoxEmissionManager($this->db);
+				$burnerList = $noxManager->getBurnerListByDepartment($request['departmentID']);
+				$this->smarty->assign("burners", $burnerList);		
+
+				$company = new Company($this->db);
+				$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));
+
+
+				$this->smarty->assign('dataChain', new TypeChain(null,'date',$this->db, $companyID,'company'));
+				
+		}		
+		
 		// protecting from xss
 		$post=$this->getFromPost();
 		
@@ -140,39 +152,69 @@ class CNox extends Controller
 			switch($post['tab']){
 				case ('burner'):
 					$burnerDetails = array(
-											'id'	=> $this->getFromPost('burner_id'),
+											'burner_id'	=> $this->getFromPost('burner_id'),
+											'department_id'	=> $this->getFromPost('department_id'),
 											'model'	=> $this->getFromPost('model'),
 											'serial'	=> $this->getFromPost('serial'),
-											'manufacturer_id'	=> $this->getFromPost('model'),		
+											'manufacturer_id'	=> $this->getFromPost('manufacturer_id'),	
+											'input'	=> $this->getFromPost('input'),
+											'output'	=> $this->getFromPost('output'),
 											'btu'	=> $this->getFromPost('btu')
 											);
 
 					$validation = new Validation($this->db);					
 					$validStatus = array (
-											'summary'		=> 'true',
-											'model'	=> 'failed'
+											'summary' => 'true',
+											'model'	=> 'failed',
+											'serial'	=> 'failed',
+											'manufacturer_id'	=> 'failed',
+											'input'	=> 'failed',
+											'output'	=> 'failed',
+											'btu'	=> 'failed'
 										);
 					if (!$validation->check_name($burnerDetails['model'])) 
-					{
-						$validStatus['summary'] = 'false';
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['model'] = 'accept';
 					}
+					if (!$validation->check_name($burnerDetails['serial'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['serial'] = 'accept';
+					}
+					if (!$validation->check_name($burnerDetails['manufacturer_id'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['manufacturer_id'] = 'accept';
+					}
+					if (!$validation->check_name($burnerDetails['input'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['input'] = 'accept';
+					}
+					if (!$validation->check_name($burnerDetails['output'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['output'] = 'accept';
+					}
+					if (!$validation->check_name($burnerDetails['btu'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['btu'] = 'accept';
+					}					
 
 
 					if ($validStatus['summary'] == 'true')
 					{
-
-
+						$noxBurner = new NoxBurner($this->db,$burnerDetails);
+						$noxBurner->save();
 						// redirect
-						header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=nox&tab={$post['tab']}&notify=38");
+						header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=nox&tab={$request['tab']}&notify=41");
 						die();
 
 					} 
 					else 
 					{
-						//	Errors on validation of adding for a new accessory
-						/* old school style */
-						//$notify = new Notify($this->smarty);
-						//$notify->formErrors();
 
 						/*	the modern style */
 						$notifyc = new Notify(null, $this->db);					
@@ -185,15 +227,103 @@ class CNox extends Controller
 				break;	
 				
 				case ('nox'):
+					$noxDetails = array(
+											'nox_id'	=> $this->getFromPost('nox_id'),
+											'department_id'	=> $this->getFromPost('department_id'),
+											'description'	=> $this->getFromPost('description'),
+											'gas_unit_used'	=> $this->getFromPost('gas_unit_used'),
+											'start_time'	=> $this->getFromPost('start_time'),	
+											'end_time'	=> $this->getFromPost('end_time'),
+											'burner_id'	=> $this->getFromPost('burner_id'),
+											'note'	=> $this->getFromPost('note')
+											);
+
+					$validation = new Validation($this->db);					
+					$validStatus = array (
+											'summary' => 'true',
+											'description'	=> 'failed',
+											'gas_unit_used'	=> 'failed',
+											'start_time'	=> 'failed',
+											'end_time'	=> 'failed',
+											'burner_id'	=> 'failed'
+										);
+
+					if (!$validation->check_name($noxDetails['description'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						// check for duplicate names					
+						if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("nox", $noxDetails['description'], $departmentID)) 
+						{
+							$validStatus['summary'] = 'false';
+							$validStatus['description'] = 'alreadyExist';
+						}else{
+							$validStatus['description'] = 'accept';
+						}
+					}
+	
 					
+					if (!$validation->check_name($noxDetails['gas_unit_used'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['gas_unit_used'] = 'accept';
+					}
+					if (!$validation->check_name($noxDetails['start_time'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['start_time'] = 'accept';
+					}
+					if (!$validation->check_name($noxDetails['end_time'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['end_time'] = 'accept';
+					}
+					if (!$validation->check_name($noxDetails['burner_id'])) 
+					{$validStatus['summary'] = 'false';
+					}else{
+						$validStatus['burner_id'] = 'accept';
+					}
+					
+					if ($validStatus['summary'] == 'true')
+					{
+						$startTime = new DateTime($noxDetails['start_time']);
+						$endTime = new DateTime($noxDetails['end_time']);
+						
+						$noxDetails['start_time'] = $startTime->getTimestamp();
+						$noxDetails['end_time'] = $endTime->getTimestamp();
+						$nox = new NoxEmission($this->db,$noxDetails);
+						$nox->save();
+						// redirect
+						header("Location: ?action=browseCategory&category=department&id=".$departmentID."&bookmark=nox&tab={$request['tab']}&notify=45");
+						die();
+
+					} 
+					else 
+					{
+
+						/*	the modern style */
+						$notifyc = new Notify(null, $this->db);					
+						$notify = $notifyc->getPopUpNotifyMessage(401);
+						$this->smarty->assign("notify", $notify);
+
+						$this->smarty->assign('validStatus', $validStatus);
+						$this->smarty->assign('data', $noxDetails);
+					}					
 				break;				
 				
 			}
 
 		}
-		var_dump($request);
+		$jsSources = array(
+					'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+					'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+					'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js'
+				);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);		
 		$this->smarty->assign('request',$request);					
-		$this->smarty->assign('sendFormAction', '?action=addItem&category='.$request['category'].'&departmentID='.$request['departmentID']);
+		$this->smarty->assign('sendFormAction', '?action=addItem&category='.$request['category'].'&departmentID='.$request['departmentID'].'&tab='.$request['tab']);
 		$this->smarty->assign('tpl','tpls/addBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -262,10 +392,6 @@ class CNox extends Controller
 			} 
 			else 
 			{
-				//	Errors on validation of editing accessory
-				/* old school style */
-				//$notify = new Notify($this->smarty);
-				//$notify->formErrors();
 				
 				/*	the modern style */
 				$notifyc = new Notify(null, $this->db);					
@@ -302,7 +428,7 @@ class CNox extends Controller
 			$this->bookmarkDburner($vars);
 		} else {
 		$departmentID = $departmentDetails['department_id'];
-		$sortStr=$this->sortList('nox',1);
+		$sortStr=$this->sortList('nox',3);
 		
 		$noxManager = new NoxEmissionManager($this->db);
 
@@ -358,16 +484,29 @@ class CNox extends Controller
 		} 
 		else 
 		{			
-			//$itemsCount = $accessory->queryTotalCount($jobberIdList);	
+
 			if ($noxList){
+				$company = new Company($this->db);
+				$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));
+
+
+				$dataChain = new TypeChain(null,'date',$this->db, $companyID,'company');				
 				for ($i=0; $i<count($noxList); $i++) 
 				{
-					$url="?action=viewDetails&category=nox&id=".$noxList[$i]['nox_id']."&departmentID=".$this->getFromRequest('id');
+					$url="?action=viewDetails&category=nox&id=".$noxList[$i]['nox_id']."&departmentID=".$this->getFromRequest('id')."&tab=".$this->getFromRequest('tab');
 					$noxList[$i]['url']=$url;
+					$burnerDetails = $noxManager->getBurnerDetail($noxList[$i]['burner_id']);
+					$noxList[$i]['burner']= $burnerDetails;
+					
+					$noxList[$i]['start_time'] = date("m/d/Y g:i:s", $noxList[$i]['start_time']);					
+					$noxList[$i]['end_time'] = date("m/d/Y g:i:s", $noxList[$i]['end_time']);					
+
+					
 				}
 			}
 
 			$this->smarty->assign("childCategoryItems", $noxList);
+
 			//	set js scripts
 			$jsSources = array(
 								'modules/js/checkBoxes.js',										
@@ -388,8 +527,8 @@ class CNox extends Controller
 	{			
 		extract($vars);
 		$departmentID = $departmentDetails['department_id'];
-		$sortStr=$this->sortList('nox',1);
-		var_dump($departmentID);
+		$sortStr=$this->sortList('burner',1);
+
 		$noxManager = new NoxEmissionManager($this->db);
 
 		// autocomplete
@@ -406,7 +545,7 @@ class CNox extends Controller
 		} 
 		else 
 		{
-			$noxList = $noxManager->getNoxListByDepartment($departmentID, $sortStr, $pagination);
+			$burnerList = $noxManager->getBurnerListByDepartment($departmentID, $sortStr, $pagination);
 		}
 		
 
@@ -416,7 +555,7 @@ class CNox extends Controller
 			$exporter->company = $companyDetails['name'];
 			$exporter->facility = $facilityDetails['name'];
 			$exporter->department = $departmentDetails['name'];
-			$exporter->title = "NOx Emissions of department ".$departmentDetails['name'];
+			$exporter->title = "Burners of department ".$departmentDetails['name'];
 			if ($this->getFromRequest('searchAction')=='search') 
 			{
 				$exporter->search_term = $this->getFromRequest('q');
@@ -433,27 +572,27 @@ class CNox extends Controller
 							);
 			$header = array(
 							'id' => 'ID Number',
-							'description' => 'Nox Emission Description',																		
+							'description' => 'Burner Model',																		
 							);
 			$exporter->setColumnsWidth($widths);
 			$exporter->setThead($header);
-			$exporter->setTbody($noxList);
+			$exporter->setTbody($burnerList);
 			$exporter->export();
 			die();
 													
 		} 
 		else 
 		{			
-			//$itemsCount = $accessory->queryTotalCount($jobberIdList);	
-			if ($noxList){
-				for ($i=0; $i<count($noxList); $i++) 
+
+			if ($burnerList){
+				for ($i=0; $i<count($burnerList); $i++) 
 				{
-					$url="?action=viewDetails&category=accessory&id=".$noxList[$i]['id']."&departmentID=".$this->getFromRequest('id');
-					$noxList[$i]['url']=$url;
+					$url="?action=viewDetails&category=nox&id=".$burnerList[$i]['burner_id']."&departmentID=".$this->getFromRequest('id')."&tab=".$this->getFromRequest('tab');
+					$burnerList[$i]['url']=$url;
 				}
 			}
 
-			$this->smarty->assign("childCategoryItems", $noxList);
+			$this->smarty->assign("childCategoryItems", $burnerList);
 			//	set js scripts
 			$jsSources = array(
 								'modules/js/checkBoxes.js',										
@@ -461,64 +600,10 @@ class CNox extends Controller
 							  );
 			$this->smarty->assign('jsSources', $jsSources);
 			//	set tpl
-			$this->smarty->assign('tpl', 'tpls/noxList.tpl');
+			$this->smarty->assign('tpl', 'tpls/burnerList.tpl');
 		}
 
-}
-
-	private function actionAddUsage() {
-		ini_set('html_errors', 'off');
-		$ajaxResponse = new AJAXResponse();
-		$form = $this->getFromPost('AccessoryUsage');
-		if ($form) {
-							
-			$company = new Company($this->db);
-			$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));			
-			
-			$dateChain = new TypeChain($form['date'],'date',$this->db, $companyID,'company');	
-
-			$hour = date('H') ;
-			$minute = date("i");
-			$second = date('s');
-			$goodDate = new DateTime($form['date']);
-			$goodDate->setTime($hour, $minute, $second);
-	
-			$validation = new Validation($this->db);		
-			$validationRes = $validation->validateAccessoryUsage($form, $dateChain);
-			if ($validationRes['summary']) {				
-				$accessoryUsage = new AccessoryUsage($this->db);
-				$accessoryUsage->accessory_id = $this->getFromRequest('id');						
-				$accessoryUsage->date = DateTime::createFromFormat('U', $goodDate->getTimestamp());
-				$accessoryUsage->usage = (int)$form['usage'];
-				$accessoryUsage->department_id = (int)$this->getFromRequest("departmentID");
-				
-				$department = new Department($this->db);
-				$departmentDetails = $department->getDepartmentDetails($accessoryUsage->department_id);
-				$accessoryUsage->facility_id = $departmentDetails['facility_id'];
-				
-				$inventoryManager = new InventoryManager($this->db);
-				$inventoryManager->runInventoryOrderingSystem4GOM($accessoryUsage);
-						
-				$accessoryUsage->save();
-				
-				$ajaxResponse->setSuccess(true);
-				$ajaxResponse->setMessage('Changes saved successfully');
-				$ajaxResponse->data = array(
-					'id'	=> $accessoryUsage->id,
-					'date'	=> $dateChain->formatOutput(),
-					'usage'	=> $accessoryUsage->usage									
-				);
-			} else {
-				$ajaxResponse->setSuccess(false);
-				$ajaxResponse->setMessage('There are validation errors');
-				$ajaxResponse->validationRes = $validationRes;
-			}															
-		} else {
-			$ajaxResponse->setSuccess(false);
-			$ajaxResponse->setMessage('Please fill out the form');
-		}
-		
-		$ajaxResponse->response();
 	}
+
 }
 ?>

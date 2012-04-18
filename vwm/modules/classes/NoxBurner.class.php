@@ -13,7 +13,10 @@ class NoxBurner {
 	private $model;
 	private $btu;
 	private $department_id;
-
+	private $input;
+	private $output;	
+//	private $equipment_id;	
+	
 	public function __construct(db $db, Array $array = null) {
 		$this->db = $db;
 		if(isset($array)) {
@@ -39,16 +42,21 @@ class NoxBurner {
 								department_id = '".mysql_escape_string($this->department_id)."',
 								model = '".mysql_escape_string($this->model)."',
 								serial = '".mysql_escape_string($this->serial)."',
+								input = '".mysql_escape_string($this->input)."',
+								output = '".mysql_escape_string($this->output)."',
+						
 								btu = '".mysql_escape_string($this->btu)."'
 								WHERE burner_id = {$this->burner_id}";
                 }
                 else {                        
    
                        $query = "INSERT INTO burner VALUES (NULL,'"
-												.mysql_escape_string($this->manufacturer_id)."','"
 												.mysql_escape_string($this->department_id)."','"
+												.mysql_escape_string($this->manufacturer_id)."','"
 												.mysql_escape_string($this->model)."','" 
-												.mysql_escape_string($this->serial)."','" 
+												.mysql_escape_string($this->serial)."','"
+												.mysql_escape_string($this->input)."','"
+												.mysql_escape_string($this->output)."','" 
 												.mysql_escape_string($this->btu)."')";
                                                
 
@@ -129,8 +137,17 @@ class NoxBurner {
 	public function get_btu(){
 		return $this->btu;
 	}
-
-
+	public function get_input(){
+		return $this->input;
+	}	
+    public function get_output(){
+		return $this->output;
+	}
+/*	
+    public function get_equipment_id(){
+		return $this->equipment_id;
+	}	
+*/
 	public function set_burner_id($value) {
 		try {
 			$this->burner_id = $value;
@@ -179,5 +196,32 @@ class NoxBurner {
 			throw new Exception("btu type id cannot be empty!" . $e->getMessage());
 		}
 	}
+	public function set_input	($value) {
+		try {
+			$this->input	 = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Input type id cannot be empty!" . $e->getMessage());
+		}
+	}	
+
+	public function set_output($value) {
+		try {
+			$this->output = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Output id cannot be empty!" . $e->getMessage());
+		}
+	}
+/*	
+	public function set_equipment_id($value) {
+		try {
+			$this->equipment_id = $value;
+	
+		} catch(Exception $e) {
+			throw new Exception("Equipment id cannot be empty!" . $e->getMessage());
+		}
+	}
+ */	
 }
 ?>

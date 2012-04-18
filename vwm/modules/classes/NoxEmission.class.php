@@ -11,9 +11,7 @@ class NoxEmission {
 	private $department_id;
 	private $description;
 
-	private $input;
-	
-	private $output;
+
 	private $gas_unit_used;
 	/**
 	 * @var INT The time when burner began to work
@@ -48,8 +46,11 @@ class NoxEmission {
                 if ($this->nox_id != NULL){
                         $query = "UPDATE nox SET 
 								description = '".mysql_escape_string($this->description)."',
-								input = '".mysql_escape_string($this->input)."',
-								output = '".mysql_escape_string($this->output)."',
+								department_id = '".mysql_escape_string($this->department_id)."',
+								start_time = '".mysql_escape_string($this->start_time)."',
+								end_time = '".mysql_escape_string($this->end_time)."',
+								burner_id = '".mysql_escape_string($this->burner_id)."',
+								note = '".mysql_escape_string($this->note)."',									
 								gas_unit_used = '".mysql_escape_string($this->gas_unit_used)."'
 								WHERE nox_id = {$this->nox_id}";
                 }
@@ -58,8 +59,6 @@ class NoxEmission {
                        $query = "INSERT INTO nox VALUES (NULL,'"
 												.mysql_escape_string($this->department_id)."','"
 												.mysql_escape_string($this->description)."','" 
-												.mysql_escape_string($this->input)."','" 
-												.mysql_escape_string($this->output)."','"
 												.mysql_escape_string($this->gas_unit_used)."','" 
 												.mysql_escape_string($this->start_time)."','" 
 												.mysql_escape_string($this->end_time)."','"
@@ -136,12 +135,7 @@ class NoxEmission {
 		return $this->description;
 	}	
 	
-	public function get_input(){
-		return $this->input;
-	}	
-    public function get_output(){
-		return $this->output;
-	}
+
 	public function get_gas_unit_used(){
 		return $this->gas_unit_used;
 	}
@@ -186,23 +180,7 @@ class NoxEmission {
 			throw new Exception("Description id cannot be empty!" . $e->getMessage());
 		}
 	}	
-	public function set_input	($value) {
-		try {
-			$this->input	 = $value;
 	
-		} catch(Exception $e) {
-			throw new Exception("Input type id cannot be empty!" . $e->getMessage());
-		}
-	}	
-
-	public function set_output($value) {
-		try {
-			$this->output = $value;
-	
-		} catch(Exception $e) {
-			throw new Exception("Output id cannot be empty!" . $e->getMessage());
-		}
-	}	
 
 	public function set_gas_unit_used($value) {
 		try {

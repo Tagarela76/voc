@@ -26,7 +26,7 @@
 
                                             {if ($request.bookmark=="equipment" && $permissions.equipment.add) ||
                                             	($request.bookmark=="user" && $permissions.user.add) ||
-                                            	
+                                            	($request.bookmark=="inventory" && $permissions.data.add) ||
                                             	($request.bookmark=="nox" && $permissions.data.add) ||
                                             	($request.bookmark=="mix" && $permissions.data.add) ||
                                             	$permissions.addItem && $request.bookmark != "reduction" && $request.bookmark != "solventplan" &&
@@ -63,7 +63,7 @@
 											{if $childCategoryItems|@count > 0 || $request.bookmark == 'logbook' }
                                             	{if ($request.bookmark=="equipment" && $permissions.equipment.delete) ||
                                             		($request.bookmark=="user" && $permissions.user.delete) ||
-                                            		
+                                            		($request.bookmark=="inventory" && $permissions.data.delete) ||
                                             		($request.bookmark=="nox" && $permissions.data.delete) ||
                                             		($request.bookmark=="mix" && $permissions.data.delete) ||
                                             		($request.bookmark=="logbook" && $permissions.data.delete) ||
@@ -155,7 +155,7 @@
 											{if $request.category != 'root'}
 												<input type="hidden" name="{$request.category}ID" value="{$request.id}">
 											{/if}
-											{if $request.bookmark == 'nox'}
+											{if $request.bookmark == 'nox' || $request.bookmark == 'inventory' }
 												<input type="hidden" name="tab" value="{$request.tab}">
 											{/if}
 										{else}

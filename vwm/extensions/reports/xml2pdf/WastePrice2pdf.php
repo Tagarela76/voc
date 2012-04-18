@@ -326,7 +326,13 @@ class XML2PDF extends PDF_MC_Table
 				$this->curMonth = $name;
 				$this->b = true;
 				break;
-				
+			case "DEPARTMENT":
+				$this->Ln(1);
+				$name = $attribs["NAME"];
+				$this->SetFont('Arial','B',10);
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4]+$this->widths[5]+$this->widths[6],7,$name ,0,0,'L');				
+				$this->Ln(5);
+				break;
 			case "INFO":
 				
 			if ( $attribs["MIXNAME"] == 'none' ) {
@@ -392,6 +398,11 @@ class XML2PDF extends PDF_MC_Table
 
 			}
 				break;
+			case "TOTALMIXDEP":
+				break;	
+
+			case "TOTALWASTEDEP":
+				break;					
 				
 			case "TOTALMIX":
 				break;	
@@ -420,9 +431,22 @@ class XML2PDF extends PDF_MC_Table
 				break;																	
 			case "YEAR":				
 				break;
+			
+			case "TOTALMIXDEP":
+				$this->SetFont('Arial','I',12);
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4],7,"TOTAL BY DEPARTMENT",1,0,'L',true);
+				$this->Cell($this->widths[5],7,"$ ".$this->header['TOTALMIXDEP'],1,0,'C',true);
+				$this->SetFont('Arial','',12);
+				break;	
+			case "TOTALWASTEDEP":
+				$this->SetFont('Arial','I',12);
+				$this->Cell($this->widths[6],7,"$ ".$this->header['TOTALWASTEDEP'],1,0,'C',true);
+				$this->Ln();
+				$this->SetFont('Arial','',12);
+				break;			
 			case "TOTALMIX":
 				$this->SetFont('Arial','I',12);
-				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4],7,"TOTAL ",1,0,'L',true);
+				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+$this->widths[3]+$this->widths[4],7,"TOTAL BY MONTH",1,0,'L',true);
 				$this->Cell($this->widths[5],7,"$ ".$this->header['TOTALMIX'],1,0,'C',true);
 				$this->SetFont('Arial','',12);
 				break;	
@@ -518,6 +542,14 @@ class XML2PDF extends PDF_MC_Table
 			
 			case 'TOTALWASTE':
 				$this->header['TOTALWASTE'] = ($data) ? $data : '0.00';							
+				break;
+			
+			case 'TOTALMIXDEP':
+				$this->header['TOTALMIXDEP'] = ($data) ? $data : '0.00';							
+				break;	
+			
+			case 'TOTALWASTEDEP':
+				$this->header['TOTALWASTEDEP'] = ($data) ? $data : '0.00';							
 				break;			
 			
 			case 'FULLTOTALMIX':

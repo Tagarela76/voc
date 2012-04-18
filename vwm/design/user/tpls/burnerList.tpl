@@ -37,7 +37,7 @@
     
 	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
 	            	<div>						
-	                	Description
+	                	Burner Model 	
 						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
 					</div>					
 				</a> 
@@ -45,50 +45,50 @@
         </td>
         <td class="">
     
-	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
 	            	<div>						
-	                	Burner
-						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
+	                	Serial Number 	
+						{if $sort==5 || $sort==6}<img src="{if $sort==5}images/asc2.gif{/if}{if $sort==6}images/desc2.gif{/if}" alt=""/>{/if}				
+					</div>					
+				</a> 
+
+        </td>
+        <td class="">
+    
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
+	            	<div>						
+	                	Manufacturer 	
+						{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
+					</div>					
+				</a> 
+
+        </td>
+        <td class="">
+    
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==9}10{else}9{/if}"); $("#sortForm").submit();'>
+	            	<div>						
+	                	Input	
+						{if $sort==9 || $sort==10}<img src="{if $sort==9}images/asc2.gif{/if}{if $sort==10}images/desc2.gif{/if}" alt=""/>{/if}				
 					</div>					
 				</a> 
 
         </td>	
         <td class="">
     
-	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==11}12{else}11{/if}"); $("#sortForm").submit();'>
 	            	<div>						
-	                	Gas Unit Used
-						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
-					</div>					
-				</a> 
-
-        </td>	
-        <td class="">
-    
-	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
-	            	<div>						
-	                	Start Time
-						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
-					</div>					
-				</a> 
-
-        </td>	
-        <td class="">
-    
-	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
-	            	<div>						
-	                	End Time
-						{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}				
+	                	Output	
+						{if $sort==11 || $sort==12}<img src="{if $sort==11}images/asc2.gif{/if}{if $sort==12}images/desc2.gif{/if}" alt=""/>{/if}				
 					</div>					
 				</a> 
 
         </td>		
         <td >
         	<div class="users_header_violet_r">
-	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
+	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==13}14{else}13{/if}"); $("#sortForm").submit();'>
 	            	<div>						
-	                	 Note	
-						{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
+	                	BTUS 	
+						{if $sort==13 || $sort==14}<img src="{if $sort==13}images/asc2.gif{/if}{if $sort==14}images/desc2.gif{/if}" alt=""/>{/if}				
 					</div>					
 				</a> 
 			</div>
@@ -100,54 +100,54 @@
     {section name=i loop=$childCategoryItems}
     <tr class="hov_accessory" height="10px">
         <td class="border_users_b border_users_r border_users_l">
-            <input type="checkbox" value="{$childCategoryItems[i].nox_id}" name="id[]">
+            <input type="checkbox" value="{$childCategoryItems[i].burner_id}" name="id[]">
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].nox_id}
+                    {$childCategoryItems[i].burner_id}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].description}
+                    {$childCategoryItems[i].model}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].burner.model} > {$childCategoryItems[i].burner.serial}
+                    {$childCategoryItems[i].serial}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].gas_unit_used}
+                    {$childCategoryItems[i].manufacturer_id}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].start_time}
+                    {$childCategoryItems[i].input}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].end_time}
+                    {$childCategoryItems[i].output}
                 </div>
             </a>
         </td>		
         <td class="border_users_b border_users_r">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].note}
+                    {$childCategoryItems[i].btu}
                 </div>
             </a>
         </td>		
@@ -163,7 +163,7 @@
 	            &nbsp;
 	        </td>
 			<td  class="" align="center" colspan="6">
-	            No NOx Emissions
+	            No Burners
 	        </td>
 	        <td class="border_users_r">
 	            &nbsp;

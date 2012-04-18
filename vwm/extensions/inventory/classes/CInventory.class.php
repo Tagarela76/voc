@@ -362,7 +362,8 @@ class CInventory extends Controller
 			$this->smarty->assign($key,$value);
 		}
 		
- */		
+ */			$request=$this->getFromRequest();
+			$this->smarty->assign('request',$request);		
 			$error = $this->getFromRequest('error');
 			$facilityID = $this->getFromRequest('facilityID');
 			$this->setListCategoriesLeftNew('facility', $facilityID,  array('bookmark'=>'inventory','tab'=>$this->getFromRequest('tab')));	

@@ -61,7 +61,7 @@
                         <input type='text' name='discount' id='discount' value='{$supplier.discount}'> %
                     </div>
 <script type="text/javascript">
-								$("#discount").numeric();
+	$("#discount").numeric();
 </script>
                 </td>
             </tr>				

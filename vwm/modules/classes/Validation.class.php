@@ -230,6 +230,16 @@ class Validation {
 					}					
 				}
 				break;
+			case "nox":
+				$sql = '';
+				if($parrentID!='none'){
+					$sql = " AND department_id = {$parrentID} ";  
+				}
+				$query = "SELECT * FROM `nox` WHERE description='".$itemName."'"." ".$sql;
+				if ($itemID!="") {
+					$query = "SELECT * FROM `nox` WHERE description='".$itemName."' and nox_id!=".$itemID." ". $sql;
+				}
+				break;				
 				
 				
 		}

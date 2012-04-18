@@ -30,7 +30,8 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 
 				
 				$facility = new Facility($this->db);
-				$facilityList = $facility->getFacilityListByCompany($this->categoryID);						
+				$facilityList = $facility->getFacilityListByCompany($this->categoryID);			
+				$facilityIDS = $facilityList;
 				foreach ($facilityList as $value) {
 					$facilityString .= $value['id']. ","; 
 				}		
@@ -48,7 +49,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
 */				
-				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+				$query="SELECT m.mix_id,m.description,m.department_id, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
 						FROM mixgroup mg, department d, inventory_order io, product p, mix m
 						LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
 						WHERE d.facility_id in (".$facilityString.")
@@ -63,7 +64,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			case "facility":
 				$facility = new Facility($this->db);    				
 				$facilityDetails = $facility->getFacilityDetails($this->categoryID);
-
+				$facilityIDS[] = $this->categoryID;
 				$orgInfo = array(
 					'details' => $facilityDetails,
 					'category' => "Facility",
@@ -76,7 +77,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					"AND d.department_id = m.department_id ".
 					"AND re.mix_id = m.mix_id ";
 */				
-				$query="SELECT m.mix_id,m.description, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
+				$query="SELECT m.mix_id,m.description,m.department_id,d.name as department_name, mg.product_id, p.product_nr, p.name, mg.quantity_lbs, m.creation_time, m.waste_percent, m.recycle_percent, io.*, e.equip_desc, e.permit
 				FROM mixgroup mg, department d, inventory_order io, product p, mix m
 				LEFT JOIN equipment e ON m.equipment_id = e.equipment_id	
 				WHERE d.facility_id = ".$this->categoryID."
@@ -92,6 +93,8 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			case "department":
 				$department = new Department($this->db);
 				$departmentDetails = $department -> getDepartmentDetails($this->categoryID);
+				
+				$facilityIDS = array();
 				
 				$facility = new Facility($this->db);
 				$facilityDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
@@ -123,8 +126,8 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						AND io.order_completed_date <= m.creation_time";				
 				break;
 		}
- 
-		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd);
+
+		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd, $facilityIDS);
 		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 
 		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
@@ -272,14 +275,25 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 				$doc->createTextNode((string)$vocByMonth['month'])
 			);
 			$monthTag->appendChild( $monthNameTag );
-			
+			//by department
+			foreach ($vocByMonth['data'] as $vocByDep) {
+				$depTag = $doc->createElement( "department" );
+				$monthTag->appendChild( $depTag );
+				
+				$depNameTag = $doc->createAttribute( "name" );
+				$depNameTag->appendChild(
+					$doc->createTextNode((string)$vocByDep['department'])
+				);
+				$depTag->appendChild( $depNameTag );				
+
 			//by rule or exempt rule
-			foreach ($vocByMonth['data'] as $vocByRule) {
+			foreach ($vocByDep['data'] as $vocByRule) {
+				
 				if ($vocByRule['mixName'] != 'none'){
 					for ($i=1;$i<=count($vocByRule['mixName']);$i++){
 
 						$infoTag = $doc->createElement( "info" );
-						$monthTag->appendChild( $infoTag );
+						$depTag->appendChild( $infoTag );
 
 							$ruleTag = $doc->createAttribute( "mixName" );
 							$ruleTag->appendChild(
@@ -349,7 +363,20 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 					}
 				}
 			}
+			//by department
+			$totalTag = $doc->createElement( "totalMixDep" );
+			$totalTag->appendChild(
+				$doc->createTextNode($vocByDep['totalMix'])
+			);
+			$depTag->appendChild( $totalTag );
 			
+			$totalTag = $doc->createElement( "totalWasteDep" );
+			$totalTag->appendChild(
+				$doc->createTextNode($vocByDep['totalWaste'])
+			);
+			$depTag->appendChild( $totalTag );			
+			
+		}	
 			$totalTag = $doc->createElement( "totalMix" );
 			$totalTag->appendChild(
 				$doc->createTextNode($vocByMonth['totalMix'])
@@ -378,7 +405,7 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 		
 	}	
 	
-		private function group($query, $dateBegin, $dateEnd) {
+		private function group($query, $dateBegin, $dateEnd,$facilityIDS) {
 			
 		$emptyData [0] = array (
 						'mixName' => 'none',
@@ -390,7 +417,18 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						'mixPrice' => 'none',
 						'wastePrice' => 'none'
 		);
-	
+
+		if(count($facilityIDS)){
+			$department = new Department($this->db);
+			foreach($facilityIDS as $facility_id){
+				$departmentArr = $department->getDepartmentListByFacility($facility_id);
+				if ($departmentArr){
+					foreach($departmentArr as $dep){
+						$departmentIDS [] = $dep;
+					}
+				}
+			}
+		}	
 
 		/*
 		 * $tmpYear, $tmpMonth, $tmpDay - values of year, month and day of current time period for temporary query
@@ -434,14 +472,18 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 				//$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
 				$tmpDateEndObj = new DateTime(date('Y-m-d',mktime(0, 0, 0, $tmpMonth, $tmpDay, $tmpYear)));
 			}
+
 			$results = array();
+			$totalMixDep=0;
+			$totalWasteDep=0;			
+				foreach($departmentIDS as $dep){
 
-			
+				
 				$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
+				$tmpQuery .= " AND d.department_id = {$dep['id']} ";
 				////AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." NEED????????
-				$tmpQuery .= " AND io.order_completed_date <= ".$dateBeginObj->getTimestamp()." ORDER BY m.creation_time"; 
-
-
+				$tmpQuery .= " group by mix_id order by io.order_completed_date DESC "; 
+//echo $tmpQuery;
 				$this->db->query($tmpQuery);
 
 				$res = array();
@@ -452,8 +494,14 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 				$equipmentDesc = array();
 				$equipmentPermit = array();
 				$quanLbs = array();
+
+				$resBYdep = array();
+				
+			//	$mixPrice=0;
+			//	$wastePrice=0;
 				if ($this->db->num_rows()) {
 					$num = $this->db->num_rows();
+					
 					for ($j=0; $j<$num; $j++) {
 						$this->db->query($tmpQuery);
 						
@@ -463,6 +511,9 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						$data->in_stock_unit_type = $data->order_unittype;
 
 						$count=(count($mixName))? count($mixName) : 0;
+						$depcount=(count($resBYdep))? count($resBYdep) : 0;
+						
+						
 						if ($mixName[$count] != $data->description){
 							$tmpName = array();
 							
@@ -524,36 +575,66 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 						'mixPrice' => $mixPrice,
 						'wastePrice' => $wastePrice
 					);
-					$results[] = $res;
+					$resBYdep['department'] = $dep['name'];
+					$resBYdep['data'][] = $res;
+					
+					for($i=1;$i<=count($mixPrice);$i++){
+						$totalMix += $mixPrice[$i];
+						$totalWaste += $wastePrice[$i];	
+
+					}	
+					
+					$totalMix = number_format($totalMix, 2, '.', '');
+					$totalWaste = number_format($totalWaste, 2, '.', '');
+			
+					$resBYdep['totalMix'] = $totalMix;
+					$resBYdep['totalWaste'] = $totalWaste;					
+					
+					//$results[] = $res;
+					$results[] = $resBYdep;
 					$WasARule = true;
 					
 				}
 
 
 			if ($WasARule == false) {
-				$results [] = $emptyData[0];
+				$resBYdep['data'][] =	$emptyData[0];
+				$resBYdep['department'] = $dep['name'];
+				$resBYdep['totalMix'] = 0;
+				$resBYdep['totalWaste'] = 0;					
+				//$results [] = $emptyData[0];
+				$results [] = $resBYdep;
 			}
+			$totalMixDep+= $totalMix;
+			$totalWasteDep+= $totalWaste;			
+			
+			$totalMix= 0;
+			$totalWaste= 0;
+			
+			
+		} //end foreach		
+/*		
 			for($i=1;$i<=count($mixPrice);$i++){
 				$totalMix += $mixPrice[$i];
 				$totalWaste += $wastePrice[$i];	
 
 			}
+*/			
 			
-			
-			$totalMix = number_format($totalMix, 2, '.', '');
-			$totalWaste = number_format($totalWaste, 2, '.', '');
+			$totalMixDep = number_format($totalMixDep, 2, '.', '');
+			$totalWasteDep = number_format($totalWasteDep, 2, '.', '');
 			
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
-				'totalMix' => $totalMix,
-				'totalWaste' => $totalWaste,
+				'totalMix' => $totalMixDep,
+				'totalWaste' => $totalWasteDep,
 				'data' => $results
 			);
-			$fullTotalMix += $totalMix;
-			$fullTotalWaste += $totalWaste;
-			$totalMix = 0;
-			$totalWaste = 0;
+			$fullTotalMix += $totalMixDep;
+			$fullTotalWaste += $totalWasteDep;
+//			$totalMix = 0;
+//			$totalWaste = 0;
 //
 			$dateBeginObj = $tmpDateEndObj;
 			if ($dateBeginObj == DateTime::createFromFormat($this->dateFormat, $dateEnd)) {
@@ -567,7 +648,13 @@ class RWastePrice extends ReportCreator implements iReportCreator {
 			'totalWaste' => $fullTotalWaste,
 			'data' => $resultByMonth
 		); 
-//var_dump($totalResults[data][1][data][0]);die();
+
+/*var_dump($totalResults[data][0]);
+echo '---------------';
+var_dump($totalResults[data][0][data][0]);
+echo '---------------';
+var_dump($totalResults);die();
+*/
 return $totalResults;			
 	}
 

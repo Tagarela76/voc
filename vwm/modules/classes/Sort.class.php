@@ -366,6 +366,80 @@ class Sort {
     			break;  
     		}
     		break;
+		
+    		case 'burner':    		
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" burner_id ASC";
+    			break;
+    			case 2:$subQuery.=" burner_id DESC";
+    			break;
+    			case 3:$subQuery.=" model ASC";
+    			break;
+    			case 4:$subQuery.=" model DESC";
+    			break;
+    			case 5:$subQuery.=" serial ASC";
+    			break;
+    			case 6:$subQuery.=" serial DESC";
+    			break;
+    			case 7:$subQuery.=" manufacturer ASC";
+    			break;
+    			case 8:$subQuery.=" manufacturer DESC";
+				break;	
+    			case 9:$subQuery.=" input ASC";
+    			break;
+    			case 10:$subQuery.=" input DESC";
+    			break;
+    			case 11:$subQuery.=" output ASC";
+    			break;
+    			case 12:$subQuery.=" output DESC";
+    			break;
+    			case 13:$subQuery.=" btu ASC";
+    			break;
+    			case 14:$subQuery.=" btu DESC";
+    			break;
+ 
+    			default:$subQuery="";
+    			break;  
+    		}
+    		break;	
+		
+   		case 'nox':    		
+    		switch($numSort)
+    		{
+    			case 1:$subQuery.=" nox_id ASC";
+    			break;
+    			case 2:$subQuery.=" nox_id DESC";
+    			break;
+    			case 3:$subQuery.=" description ASC";
+    			break;
+    			case 4:$subQuery.=" description DESC";
+    			break;
+    			case 5:$subQuery.=" serial ASC";
+    			break;
+    			case 6:$subQuery.=" serial DESC";
+    			break;
+    			case 7:$subQuery.=" manufacturer ASC";
+    			break;
+    			case 8:$subQuery.=" manufacturer DESC";
+				break;	
+    			case 9:$subQuery.=" input ASC";
+    			break;
+    			case 10:$subQuery.=" input DESC";
+    			break;
+    			case 11:$subQuery.=" output ASC";
+    			break;
+    			case 12:$subQuery.=" output DESC";
+    			break;
+    			case 13:$subQuery.=" btu ASC";
+    			break;
+    			case 14:$subQuery.=" btu DESC";
+    			break;
+ 
+    			default:$subQuery="";
+    			break;  
+    		}
+    		break;			
     		
     		//----------------------------------------------------------------------------------//
     		//									ADMIN											//

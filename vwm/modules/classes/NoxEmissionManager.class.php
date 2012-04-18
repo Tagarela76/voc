@@ -33,13 +33,14 @@ class NoxEmissionManager{
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
     	$this->db->query($query);
-    	
+
     	if ($this->db->num_rows()) 
     	{   $data = $this->db->fetch_all_array();		
-    		return $data[0];
+    		return $data;
     	}
     	else return false;		
 	}
+
 	
 	public function getBurnerListByDepartment($departmentID,$sortStr = null, $pagination = null) {
 		$query = "SELECT * FROM burner WHERE department_id = {$departmentID} ";
@@ -50,56 +51,20 @@ class NoxEmissionManager{
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
+		
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 
     	{   $data = $this->db->fetch_all_array();		
-    		return $data[0];
+    		return $data;
     	}
     	else return false;		
 	}	
 	
-    public function getAllLogs($userID = null,$companyID = null,$facilityID = null,$departmentID = null,$sort=' ORDER BY ul.date DESC ', $pagination = null) {
-    	$sqlSelect ='';
-		$tables = '';
-		if ($userID && $userID != 'All users'){
-			$sqlSelect .= " ul.user_id = {$userID} AND ";
-		}
-		if ($companyID && $companyID != 'All companies'){
-			$tables .= " , user u ";
-			$sqlSelect .= " u.user_id = ul.user_id AND u.company_id = {$companyID} AND ";
-		}
-		if ($facilityID && $facilityID != 'All facilities'){
-			$sqlSelect .= " u.facility_id = {$facilityID} AND ";
-		}
-		if ($departmentID && $departmentID != 'All departments'){
-			$sqlSelect .= " u.department_id = {$departmentID} AND ";
-		}		
-		
-		$sqlSelect .= " 1 ";
-    	$query = "SELECT ul.* FROM user_logging ul {$tables} WHERE {$sqlSelect} ";
-		if (!$sort){
-			$sort=' ORDER BY ul.date DESC ';
-		}
-		$query .= $sort;
-		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}	
 
-		//echo $query;
-    	$this->db->query($query);
-    	
-    	if ($this->db->num_rows()) 
-    	{    		
-    		return $this->db->fetch_all_array();
-    	}
-    	else
-    		return false;
-    }	
-	
-    public function getLogDetail($logID) {
+    public function getBurnerDetail($burnerID) {
 
-    	$query = "SELECT ul.* FROM user_logging ul WHERE log_id = {$logID} ";
+    	$query = "SELECT * FROM burner WHERE burner_id = {$burnerID} ";
 
 		//echo $query;
     	$this->db->query($query);
