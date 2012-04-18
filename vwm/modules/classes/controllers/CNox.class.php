@@ -65,29 +65,21 @@ class CNox extends Controller
 		$this->smarty->assign('departmentID', $this->getFromRequest('departmentID'));
 		$this->smarty->assign('itemID', $this->getFromRequest('departmentID'));
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
-	}	
-	
+	}
+
+
+
 	private function actionViewDetails()
 	{
 		//	Access control
 		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {						
 			throw new Exception('deny');
 		}					
-							
-		$accessory = new Accessory($this->db);
-		$accessory->setAccessoryID($this->getFromRequest("id"));
-		$accessoryDetails = $accessory->getAccessoryDetails();
-		$accessoryUsages = $accessory->getAccessoryUsages($this->getFromRequest("id"),$this->getFromRequest("departmentID"));
 
-		$jobberManager = new JobberManager($this->db);
-		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
-		$accessoryDetails['jobber_name'] = $jobberDetails['name'];
-		
-		$this->smarty->assign("accessory", $accessoryDetails);
-		$this->smarty->assign("accessoryUsages", $accessoryUsages);
+
 							
 		$this->setNavigationUpNew('department', $this->getFromRequest("departmentID"));
-		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"),array('bookmark'=>'accessory'));
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"),array('bookmark'=>'nox'));
 		$this->setPermissionsNew('viewData');
 		
 		$company = new Company($this->db);

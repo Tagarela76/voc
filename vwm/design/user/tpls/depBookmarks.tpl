@@ -4,7 +4,7 @@
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
 					
-                    {*if $permissions.data.view}
+                    {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=nox&tab=nox">{if $request.bookmark != "nox"}
                             <div class="deactiveBookmark">
@@ -21,7 +21,7 @@
                             {/if}
                         </a>
                     </td>
-                    {/if*}					
+                    {/if}					
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=accessory">{if $request.bookmark != "accessory"}

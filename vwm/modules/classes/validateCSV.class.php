@@ -1,15 +1,80 @@
 <?php
 class validateCSV {
+	private $db;
 	
 	public $productsError;
 	public $productsCorrect;
 	public $errorComments;
 	
-	function validateCSV() {
+	function validateCSV($db) {
+		$this->db=$db; 
+		
 		$this->productsError = array();
 		$this->productsCorrect = array();
 		$this->errorComments = "";
 	}
+	
+	// PFP UPLOAD
+	public function validatePFP($input) {
+		$CSVPath = $input['inputFile'];
+		//last row
+		$file = fopen($CSVPath, "a");
+		
+		fwrite($file,";;;;;;;;;;;;;;;;;;;;;;;;\n");
+		fclose($file);
+		
+		$file = fopen($CSVPath, "r");
+				
+		$headerKey = $this->tableHeader($file); //identification columns by their header
+
+		$row = 3;
+		$lastNotEmptyRow = 4;
+		$inProduct = false;
+		$error = "";
+		$this->errorComments = "--------------------------------\n";
+		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of ". $input['realFileName'] . "...\n";
+		
+		while ($dat = fgetcsv($file, 1000, ";")){
+			
+			$data = Array();
+			foreach ($dat as $val){
+				$data[] = mysql_real_escape_string($val);
+			}
+			$data = $this->trimAll($data);
+			$currRowComments = $this->pfpDataCheck($data,$row);
+				if ($currRowComments != "") {
+					//$error = TRUE;
+					$error .= $currRowComments;
+				}
+			$this->errorComments .= $currRowComments;			
+			
+			$count=(count($arr))? count($arr) : 0;
+			if(!empty($data[1])){
+				$arr[$count][] = $data;
+			}else{
+				$arr[$count+1][] = $data;
+			}
+			
+			$row++;
+		}
+		fclose($file);
+		return $arr;
+	}
+	
+	private function pfpDataCheck($data,$row){
+		$comments = "";
+		if ($data[4]){
+			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $data[4] . "'");
+			$r=$this->db->fetch(0);				
+			//product check exist
+			if (empty($r)) {			
+				$comments .= "Product with ID value " . $data[4] . " doesn't exist. Row " . $row . ".\n";
+			}else{
+				$this->productsCorrect[] = $data[4];
+			}
+		}				
+		return $comments;
+	}	
 	
 	public function validate($input) {
 		$CSVPath = $input['inputFile'];
@@ -35,8 +100,9 @@ class validateCSV {
 			foreach ($dat as $val){
 				$data[] = mysql_real_escape_string($val);
 			}
+
+			$data = $this->trimAll($data);
 			
-			$data = $this->trimAll($data);			
 			$data_tmp[0] = $data[$headerKey['productID']];
 			$data_tmp[1] = $data[$headerKey['mfg']];
 			$data_tmp[2] = $data[$headerKey['productName']];
@@ -337,7 +403,7 @@ class validateCSV {
 			$row++;
 		}		
 		fclose($file);
-						
+
 	}
 	
 	private function toCelsius($data){
