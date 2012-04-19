@@ -68,11 +68,19 @@ class validateCSV {
 			$r=$this->db->fetch(0);				
 			//product check exist
 			if (empty($r)) {			
-				$comments .= "Product with ID value " . $data[4] . " doesn't exist. Row " . $row . ".\n";
+				$comments .= "Product with ID : " . $data[4] . " doesn't exist. Row " . $row . ".\n";
+				$this->productsError[]['errorComments'] = "Product with ID value " . $data[4] . " doesn't exist. Row " . $row . ".\n";
 			}else{
-				$this->productsCorrect[] = $data[4];
+				if ($data[7] < 1){
+					$comments .= "Product with ID : " . $data[4] . " has ratio less than 1. Row " . $row . ".\n";
+					$this->productsError[]['errorComments'] = "Product with ID value " . $data[4] . " has ratio less than 1. Row " . $row . ".\n";					
+				}else{
+					//TODO: isset of PFP description
+					$this->productsCorrect[] = $data[4];
+				}
+				
 			}
-		}				
+		}
 		return $comments;
 	}	
 	

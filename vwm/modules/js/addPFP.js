@@ -236,10 +236,10 @@ function clearSelectedProducts() {
 	
 	
 	productCount = $("#productCount").val();
-	
-	
+
 	for ( keyVar in rowsToRemove ) {
 		num = rowsToRemove[keyVar];
+
 		$("#product_row_" + num).remove();
 		
 		
@@ -258,7 +258,7 @@ function clearSelectedProducts() {
 		$(target_id).find("input[type='checkbox']").val(need);
 		$(target_id).attr('id',need_id);
 	}
-	
+	if(productCount == -1) productCount = 0;
 	$("#productCount").val(productCount);
 }
 

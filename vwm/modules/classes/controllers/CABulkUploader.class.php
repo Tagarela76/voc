@@ -44,12 +44,15 @@ class CABulkUploader extends Controller {
 			"companyID"	=> $this->getFromPost('companyID')
 		);
 		// for PFP
-		if ($this->getFromPost('pfp') == 'Startpfp'){
+		if ($this->getFromPost('pfp') == 'Startpfp' && $input['size']<1024000){
+			$this->smarty->assign("isPFP",'Startpfp');
+			
 			$input['inputFile'] = $_FILES['inputFile']['tmp_name'];
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);								
 				$validation = new validateCSV($this->db);
 				$result = $validation->validatePFP($input); // array from csv
 				
+
 				if($result){
 					for($j=0;$j< count($result);$j++){
 						
@@ -83,24 +86,22 @@ class CABulkUploader extends Controller {
 			fclose($handle);
 			//var_dump($result[1]);die();
 			$bu = new bulkUploader4PFP($this->db,$input,$result);
-		
+
+			$errorCnt = count($validation->productsError);
+			$correctCnt = count($validation->productsCorrect);					
+			$total =  $errorCnt + $correctCnt;										
+			$percent = round($errorCnt*100/($correctCnt+$errorCnt),2);			
 			//
 			$errorLog = $validation->errorComments;
-		
+			$errorLog .= "	Percent of errors is ".$percent."%. Threshold is ".$input['threshold']."%.\n";
 
 			$validationLogFile = fopen(DIR_PATH_LOGS."validation.log","a");
 			fwrite($validationLogFile,$errorLog);			
 			fclose($validationLogFile);
 	
-			
-			$errorCnt = count($validation->productsError);
-			$correctCnt = count($validation->productsCorrect);					
-			$total =  $errorCnt + $correctCnt;										
-			$percent = round($errorCnt*100/($correctCnt+$errorCnt),2);
-				
 			$title = new Titles($this->smarty);
 			$title->titleBulkUploadResults();
-			
+
 			$this->smarty->assign("categoryID","tab_".$this->getFromPost('categoryID'));
 			$this->smarty->assign("productsError",$validation->productsError);
 			$this->smarty->assign("errorCnt",$errorCnt);
@@ -160,7 +161,8 @@ class CABulkUploader extends Controller {
 		}
 	}
 	}
-	
+
+	// GET RATIO FOR PRODUCTS IN PFP
 	private function rate($ar) {
 		if (count($ar) > 1) {
 			$first = array_shift($ar);

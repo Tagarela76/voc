@@ -37,6 +37,9 @@ class bulkUploader4PFP {
     	$this->insertedCnt = 0;
 		$this->updatedCnt = 0;
 
+		$actionLog = "--------------------------------\n";
+		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of ". $input['realFileName'] . "...\n";
+		
 		//creating_backup
     	$sqlFile = "db_backup/".DB_NAME."_".date('Y_m_d_H_i_s').".sql";
     	$creatBackup = "mysqldump -h ".DB_HOST." -u ".DB_USER." --password=".DB_PASS." ".DB_NAME." > ".$sqlFile;		
@@ -54,18 +57,41 @@ class bulkUploader4PFP {
 					//$this->insertedCnt++;						
 					$actionLog .= " Product " . $products[$i][4] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist			
-						$productIDS[] = $r->product_id;		
-						$productRATIOS[] = $products[$i][7];
+						
+						if ($products[$i][7] >= 1){
+							$productIDS[] = $r->product_id;	
+							$productRATIOS[] = $products[$i][7];
+						}else{
+							$actionLog .= " Product " . $products[$i][4] . " has ratio less than 1 \n";
+						}
 				}
-				
+		
 				if (count($products) - 1 == count($productIDS)){ // all products exists
-					
-					$actionLog .= $this->insertData($productIDS,$productRATIOS,$this->companyID);
-					$this->insertedCnt++;
+					$description =  $products[$i][0]." ".$products[$i][1];
+					if ($description != ''){
+						$this->db->query("SELECT description FROM preformulated_products WHERE description = '" . $description . "'");
+						$r=$this->db->fetch(0);				
+						if (empty($r)) {					
+							$actionLog .= $this->insertData($productIDS,$productRATIOS,$this->companyID,$description);
+							$this->insertedCnt++;
+						}elseif (isset($r->description)) { //pfp exist	
+							if (!empty($input['update'])) {
+								$actionLog .= "	PFP ".$r->description." already exists. Update items: YES.\n";
+								$actionLog .= $this->updateData($productIDS,$productRATIOS,$this->companyID, $r->description);			
+								$this->updatedCnt++;
+							} else {
+								$actionLog .= "	PFP ".$r->description." already exists. Update items: NO.\n";
+							}							
+
+						}
+					}else{
+						$actionLog .= " PFP with products " . $products[$i][4] . " hasn't description. \n";
+					}
 				}
-			}
+			}//end for
 		}//end foreach
 		
+		$actionLog .= "--------------------------------\n";
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of ". $input['realFileName'] . " is successfuly finished.\n";
 		$actionLog .= "	Number of inserted pfps is " . $this->insertedCnt."\n";
 		$actionLog .= "	Number of updated pfps is " . $this->updatedCnt."\n";
@@ -73,14 +99,16 @@ class bulkUploader4PFP {
 		fwrite($actionLogFile,$actionLog);
 		fclose($actionLogFile);		
 		
+		$this->actions = str_replace("\n","<br>",$actionLog);
+		$this->actions = str_replace("	","&nbsp;&nbsp;",$this->actions);		
     }
     
     //--------------private functions-------------------------------------
     
-    private function insertData($productIDS,$productRATIOS,$companyID){
-		
-		$description = microtime();
-		//supplier
+    private function insertData($productIDS,$productRATIOS,$companyID,$description){
+		if (!isset($description)){
+			$description = microtime();
+		}
 		$actionLog .= "	Adding pfp ".$description."\n";
 		
 		$sql = "INSERT INTO preformulated_products  (description,company_id,creater_id) VALUES ('".$description."',{$companyID},NULL)";
@@ -106,297 +134,36 @@ class bulkUploader4PFP {
 	}
 	
 		
-	private function updateData($productID, $product) {
+	private function updateData($productIDS,$productRATIOS,$companyID, $description) {
+
+		$this->db->query("SELECT id FROM preformulated_products WHERE description = '".$description."'");
+		$r=$this->db->fetch(0);		
+		$pfp_id = $r->id;	
+
+		$actionLog .= "	Updating pfp ".$description."\n";
+		if ($companyID != 0){
+			$sql = "UPDATE preformulated_products SET company_id= ".$companyID." WHERE id=".$pfp_id."";
+			$this->db->query($sql);		
+
+			$sql = "INSERT INTO pfp2company (pfp_id ,company_id) VALUES (".$pfp_id.", ".$companyID.")";
+			$this->db->query($sql);			
+		}		
 		
-		//supplier
-		$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '" . $product['MFG'] . "'");
-		$r=$this->db->fetch(0);
-		if (empty($r->supplier_id)) {
-			$actionLog .= "		Adding supplier ".$product['MFG']."\n";
-			$this->db->query("INSERT INTO supplier (supplier) VALUES ('".$product['MFG']."')");			
-					
-			$this->db->query("SELECT supplier_id FROM supplier WHERE supplier = '".$product['MFG']."'");
-			$r=$this->db->fetch(0);
-			$this->db->query("UPDATE supplier SET original_id = {$r->supplier_id} WHERE supplier_id = {$r->supplier_id}");
-		}
-		$supplier_id = $r->supplier_id;
+		$actionLog .= "Deleting old prducts from PFP ".$description."\n";		
+		$this->db->query("DELETE FROM pfp2product WHERE preformulated_products_id={$pfp_id}");		
 
-		//coating_id
-		$this->db->query("SELECT coat_id FROM coat WHERE coat_desc = '".$product['coating']."'");
-		$r=$this->db->fetch(0);
-		if (empty($r->coat_id)) {
-			$actionLog .= "		Adding coating ".$product['coating']."\n";
-			$this->db->query("INSERT INTO coat (coat_desc) VALUES ('".$product['coating']."')");			
-				
-			$this->db->query("SELECT coat_id FROM coat WHERE coat_desc = '".$product['coating']."'");
-			$r=$this->db->fetch(0);
-		}
-		$coating_id = $r->coat_id;
+		$primary = 1;
+		for($i=0;$i<count($productIDS);$i++){
+			$actionLog .= "	Updating product in TB_ pfp2product ".$productIDS[$i]."\n";
+			$sql = "INSERT INTO pfp2product (ratio,product_id,preformulated_products_id,isPrimary) VALUES ('".$productRATIOS[$i]."','".$productIDS[$i]."',{$pfp_id},{$primary})";
+			$this->db->query($sql);
 
-		//hazrdous class	
-		$chemicalClasses = $this->processChemicalClass($product);						
-
-		$tmpArray = array("vocwx","voclx","density","gavity","boiling_range_from","boiling_range_to");
-		foreach ($tmpArray as $key) {
-			if ($product[$key] == "") {
-				$product[$key] = "NULL";
-			} else {
-				$product[$key] = str_replace(",", ".", $product[$key]);
-			}
-		}
-
-		$tmpArray = array("specialtyCoating","aerosol");
-		foreach ($tmpArray as $key) {
-			if (empty($product[$key])) {
-				$product[$key] = "no";
-			}
-		}
-
-		$actionLog .= "		Updating product ".$product['productID']."\n";
-		$queryUpd = "UPDATE product " .
-				"SET name='".$product['productName']."', " .
-					"voclx=".$product['voclx'].", " .
-					"vocwx=".$product['vocwx'].", " .
-					"density=".$product['density'].", " .
-					"density_unit_id=1, ".				// The default density is measured in lbs/gal
-					"coating_id=".$coating_id.", " .
-					"specific_gravity=".$product['gavity'].", " .					
-					"boiling_range_from=".$product['boilingRangeFrom'].", " .
-					"boiling_range_to=".$product['boilingRangeTo'].", " .
-					"flash_point=".$product['flashPoint'].", " .
-					"supplier_id=".$supplier_id.", " .
-					"percent_volatile_weight = ".$product['percentVolatileWeight'].", " .
-					"percent_volatile_volume = ".$product['percentVolatileVolume'].", " .
-					"closed='".$product['closed']."' ".
-				"WHERE product_id = ".$productID;
-		$this->db->query($queryUpd);
+			$primary = 0;						
 		
-		//	set product to company link
-		if (!empty($this->companyID)) {
-			$this->productObj->assignProduct2Company($productID, $this->companyID);	
-		}
-		
-		//	waste class processing
-		if (!empty($product['waste'])) {
-			$wasteClasses = explode(',',$product['waste']);
-			foreach ($wasteClasses as $wasteClass) {
-				$wasteClass = trim($wasteClass);
-				$querySel = "SELECT id FROM waste_class WHERE name = '".$wasteClass."'";
-				$this->db->query($querySel);					
-				if ($this->db->num_rows() == 0) {
-					$query = "INSERT INTO waste_class (name) VALUES ('".$wasteClass."')";
-					$this->db->exec($query);
-					
-					$this->db->query($querySel);
-					$wasteClassID = $this->db->fetch(0)->id;								
-				} else {
-					$wasteClassID = $this->db->fetch(0)->id;
-				}
-				
-				$this->productObj->assignProduct2WasteClass($productID, $wasteClassID);						
-			}				
-		}
-		
-		//updating industy type and subtype
-		$this->productObj->unassignProductFromType($productID);
-		foreach ($product['industryType'] as $industryType){
-			$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
-		}
-		
-		//	set product to chemical class link
-		$this->hazardousObj->setProduct2ChemicalClasses($productID, $chemicalClasses);		
-
-		//component part
-		//delete old data
-		$actionLog .= "			Deleting old components from product ".$product['productID']."\n";		
-		$this->db->query("DELETE FROM components_group WHERE product_id = " . $productID);		
-
-		//add new components
-		for ($i=0;$i<count($product['component']);$i++){
-			$actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);	//	$product['productID'] - name
-		}	
-		return $actionLog;	
+		}		
+		return $actionLog;		
+	
 	}
 	
-	
-	private function addComponentToProduct($component,$productID,$product) {
-		//component
-		$query = "SELECT component_id " .
-			"FROM component " .
-			"WHERE cas = '" .$component['caseNumber'] . "' " .
-			"AND description = '" . $component['description'] . "'";
-		$this->db->query($query);
-		$r=$this->db->fetch(0);
-			
-		if (empty($r->component_id)){//adding component
-			$actionLog .= "				Adding component '".$component['caseNumber']."','".$component['description'] ."'\n";
-			$this->db->query("INSERT INTO component (einecs_elincs, substance_symbol, cas, description) VALUES (" .
-					"'".$component['einecsElincs']."', " .
-					"'".$component['substanceSymbol']."', " .
-					"'".$component['caseNumber']."', " .
-					"'".$component['description']."')");			
-
-			$query = "SELECT component_id " .
-				"FROM component " .
-				"WHERE cas = '" .$component['caseNumber'] . "' " .
-				"AND description = '" . $component['description'] . "'";
-			$this->db->query($query);
-			$r=$this->db->fetch(0);
-			
-			//	substance rules
-			if ( !empty($component['substanceR'])) {
-				$substanceRs = $this->processSubstanceR($component['substanceR']);
-				foreach ($substanceRs as $substanceR) {
-					$query = "INSERT INTO component2rule (component_id, rule_id) VALUES (".$r->component_id.", ".$substanceR.")";
-					$this->db->exec($query);
-				}			
-			}			
-		}
-		$componentID = $r->component_id;				
-
-		//substrate
-		if ( !empty($component['substrate']) ){
-			$this->db->query("SELECT substrate_id FROM substrate WHERE substrate_desc = '".$component['substrate']."'");
-			$r=$this->db->fetch(0);
-			if (empty($r->substrate_id)) {
-				$actionLog .= "				Adding substrate '" . $component['substrate']."'\n";	
-				$this->db->query("INSERT INTO substrate (substrate_desc) VALUES ('".$component['substrate']."')");				
-	
-				$this->db->query("SELECT substrate_id FROM substrate WHERE substrate_desc = '".$component['substrate']."'");
-				$r=$this->db->fetch(0); 
-			}
-			$substrateID = $r->substrate_id;
-		} else {
-			$substrateID = "NULL";
-		}
-
-		//rule
-		if ( !empty($component['rule']) ){
-			$this->db->query("SELECT rule_id FROM rule WHERE ".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()]." = '".$component['rule']."'");
-			$r=$this->db->fetch(0);
-			if ( empty($r->rule_id) ) {
-				$r->rule_id = "NULL";
-			}
-			$ruleID = $r->rule_id;
-		} else {
-			$ruleID = "NULL";
-		}
-
-		$tmpArray = array("mmhg","temp","weightFrom","weightTo");
-		foreach ($tmpArray as $key) {
-			if ($component[$key] == "") {
-				$component[$key] = "NULL";
-			} else {
-				$component[$key] = str_replace(",", ".", $component[$key]);
-			}
-		}
-		$component['weightFrom'] = str_replace("%", "", $component['weightFrom']);
-		$component['weightTo'] = str_replace("%", "", $component['weightTo']);
-		$component['temp'] = trim($component['temp']);
-		
-		if ($component['vocpm'] == "") {
-			$component['vocpm'] = "VOC";
-		}			
-
-		//component group insertion
-		
-		$query="INSERT INTO components_group (component_id, product_id, substrate_id, rule_id, mm_hg, temp, weight_from, weight_to, type) ".
-			"VALUES (" . $componentID . ", " .
-				$productID . ", " .
-				$substrateID . ", " .
-				$ruleID . ", " .
-				$component['mmhg'] . ", " .
-				$component['temp'] . ", " .
-				$component['weightFrom'] . ", " .
-				$component['weightTo'] . ", '" .
-				$component['vocpm'] . "')";
-		$this->db->query($query);
-
-		if (mysql_errno()==0) {
-			//$productID = mysql_insert_id();
-			$actionLog .= "			Adding component " .$component['caseNumber'] . " to product " .$product."\n";			
-		} else { 
-			//$productID = 0;
-			$actionLog .= "			Error while adding component " . $component['caseNumber'] . " to product " . $product . "\n";
-		}
-
-		return $actionLog;
-	}
-	
-	
-	
-	
-	/*
-	 * return array
-  0 => 
-    array
-      'id' => string '1' (length=1)
-      'rules' => 
-        array
-          0 => string '61' (length=2)
-          1 => string '58' (length=2)
-          2 => string '135' (length=3)
-          3 => string '140' (length=3)
-          4 => string '115' (length=3)
-          5 => string '128' (length=3)
-	 */
-	private function processChemicalClass($product) {
-		
-//		//$this->db->select_db(DB_NAME);
-		$hazardousClasses = array();
-		
-		$tmpArray 	= array("hazardousIRR","hazardousOHH","hazardousSENS","hazardousOXY");
-		$realNames 	= array("IRR","OHH","SENS","OXY-1");
-		foreach ($tmpArray as $index=>$key) {
-			if (!empty($product[$key])) {			
-				$querySel = "SELECT id FROM chemical_class WHERE name = '".$realNames[$index]."'";
-				$this->db->query($querySel);
-				$data = $this->db->fetch(0);
-				if (!empty($data->id)) {
-					$hazardousClasses[] = $data->id;			
-				}			
-			}
-		}			
-		
-		$chemicalClass = strtoupper($product['hazardousClass']);
-		$querySel = "SELECT id FROM chemical_class WHERE name = '".$chemicalClass."'";
-		$this->db->query($querySel);
-		$data = $this->db->fetch(0);		
-		if (empty($data->id)) {
-			$actionLog .= "	Adding Hazardous class = '".$chemicalClass."'\n";
-			$queryIns = "INSERT INTO chemical_class (name) VALUES ('".$chemicalClass."')";
-			$this->db->query($queryIns);			
-
-			$this->db->query($querySel);
-			$data = $this->db->fetch(0);
-		}
-		$hazardousClasses[] = $data->id;
-				
-		return $hazardousClasses; 
-	}
-	
-	
-	
-	
-	private function processSubstanceR($substanceR) {
-		$rules = explode(',',$substanceR);
-		foreach ($rules as $rule) {
-			$rule = trim(strtoupper($rule));
-			$querySel = "SELECT rule_id FROM rule WHERE ".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()]." = '".$rule."'";
-			$this->db->query($querySel);
-			$dataRule = $this->db->fetch(0);
-			if (empty($dataRule->rule_id)) {
-				$actionLog .= "	Adding Rule = '".$rule."'\n";
-				$queryIns = "INSERT INTO ".TB_RULE." (".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()].") VALUES ('".$rule."')";
-				$this->db->query($queryIns);			
-				
-				$this->db->query($querySel);
-				$dataRule = $this->db->fetch(0);
-			}
-			$rulesID[] = $dataRule->rule_id;
-		}					
-		return $rulesID;				
-	}
-			
 }
 ?>

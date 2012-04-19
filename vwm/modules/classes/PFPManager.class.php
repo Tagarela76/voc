@@ -40,10 +40,11 @@ class PFPManager
 		$query = "SELECT c.company_id, c.name FROM ".TB_COMPANY." c, ".TB_PFP2COMPANY." p2c WHERE c.company_id=p2c.company_id AND p2c.pfp_id=".$pfpID;
 		$this->db->query($query);
 		$rows = $this->db->fetch_all();
+
 		foreach ($rows as $row){
 			$list[$row->company_id] = $row->name;
 		}
-		
+
 		return $list;
 	}
 

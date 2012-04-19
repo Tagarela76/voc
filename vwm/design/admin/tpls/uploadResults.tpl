@@ -29,11 +29,18 @@
 <br>
 <div style="background:#D3DAE2;padding:7px;display:table;width:100%" align="center">
 <div style="display:table;">
-<div align="left" style="padding-left:10px;">{if $insertedCnt>0 or $updatedCnt>0}
-{$actions}
+<div align="left" style="padding-left:10px;">
+{if $insertedCnt>0 or $updatedCnt>0}
+	{$actions}
 {else}
-Number of inserted products: {$insertedCnt} <br>
-Number of updated products: {$updatedCnt}<br>
+	{if $isPFP and $isPFP == 'Startpfp'}
+	Number of inserted PFPs: {$insertedCnt} <br>
+	Number of updated PFPs: {$updatedCnt}<br>
+
+	{else}	
+	Number of inserted products: {$insertedCnt} <br>
+	Number of updated products: {$updatedCnt}<br>
+{/if}
 {/if}
 </div>
 <br>

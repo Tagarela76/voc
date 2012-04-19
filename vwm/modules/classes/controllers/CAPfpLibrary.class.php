@@ -189,6 +189,8 @@ class CAPfpLibrary extends Controller {
 	
 	private function actionEdit() {
 		$manager = new PFPManager($this->db);
+		$pmanager = new Product($this->db);
+		$type = new ProductTypes($this->db);
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
@@ -202,8 +204,36 @@ class CAPfpLibrary extends Controller {
 			$productsIDArray[] = $p->product_id;
 		}
 
+		$sub = $this->getFromRequest("subBookmark");
+		if($sub == 'custom'){
+			
+			$pfpproduct = $pmanager->getProductList();
+		}else{
+			$pfpproduct = $manager->getPFPProductsbySopplier($sub);
+		}
+		
+		/* SORT PRODUCT BY TYPES*/
+		if ($this->getFromRequest('productCategory')!=0){
+			$SubTypes = $type->getSubTypesByTypeID($this->getFromRequest('productCategory'));
+			$ProductsByType = $type->getProductsByType($this->getFromRequest('productCategory'));
+			if(isset($SubTypes)){ 	
+				for($i = 0; $i < count($SubTypes); $i++){
+					$ProductsByType = array_merge($ProductsByType, $type->getProductsByType($SubTypes[$i]['id']));
+				}		
+			}
+
+			for($j=0; $j< count($ProductsByType); $j++) {
+				for($i=0; $i< count($pfpproduct); $i++) {
+					if ($pfpproduct[$i]['product_id'] == $ProductsByType[$j]['product_id']){
+						$productspfp[]=$pfpproduct[$i];
+					}
+				}
+			}
+			$pfpproduct=$productspfp;
+		}
+		
 		//$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);
-		$this->smarty->assign('products', $productsListGrouped);
+		$this->smarty->assign('products', $pfpproduct);
 		
 		$this->smarty->assign('companyList', $companyList);
 		$this->smarty->assign('companyListPFP', $companyListPFP);
