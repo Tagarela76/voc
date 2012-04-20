@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.19, created on 2012-02-15 11:20:57
+<?php /* Smarty version 2.6.19, created on 2012-04-20 17:10:40
          compiled from /home/developer/Workspace/voc_src/vwm/design/supplier/tpls/productDiscount.tpl */ ?>
 <div class="padd7" align="center">
 	<table  class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">

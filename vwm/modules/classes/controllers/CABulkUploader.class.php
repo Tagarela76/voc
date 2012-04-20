@@ -51,17 +51,24 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);								
 				$validation = new validateCSV($this->db);
 				$result = $validation->validatePFP($input); // array from csv
-				
 
 				if($result){
 					for($j=0;$j< count($result);$j++){
-						
+									
+
 						$quan = array();
 						for ($i=1;$i<count($result[$j]);$i++){
+							$firstNum = $result[$j][1][7];
 							
-							if ($result[$j][$i][7] == null && $result[$j][$i][9] != null){ // no ratio but product quantity exist
-								
-								$quan[] = $result[$j][$i][9];
+							if ($result[$j][$i][7] != null ){ // no ratio but product quantity exist
+				
+								$reverse = strrev( $result[$j][$i][7] );
+								if ($reverse[0] == "%"){
+									$number = substr($result[$j][$i][7], 0, -1);
+									$number = $firstNum * $number / 100; 
+									$result[$j][$i][7] = $number;
+								}
+								$quan[] = $result[$j][$i][7];
 							}
 						}
 						if ($quan){						
@@ -75,7 +82,7 @@ class CABulkUploader extends Controller {
 					
 				}
 				
-				
+
 			$filename = date('d-m-Y_H:i:s').'_pfp.csv';
 			$handle = fopen(DIR_PATH_LOGS.$filename, 'x');
 			foreach ($result as $csv_array) {
@@ -164,12 +171,13 @@ class CABulkUploader extends Controller {
 
 	// GET RATIO FOR PRODUCTS IN PFP
 	private function rate($ar) {
+
 		if (count($ar) > 1) {
 			$first = array_shift($ar);
 
-			$result[0] = 100;
+			$result[0] = $first*100;
 			foreach($ar as $num){
-				$tmp = ($num / $first)*100;
+				$tmp = ($num )*100;
 				
 				$result[] = round($tmp);
 			}
@@ -177,7 +185,7 @@ class CABulkUploader extends Controller {
 			foreach($result as $res){
 				$goodArr[] = $res / $nod;
 			}			
-			
+
 			return $goodArr;
 		}
 	}	

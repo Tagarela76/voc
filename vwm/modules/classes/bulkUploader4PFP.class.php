@@ -48,6 +48,7 @@ class bulkUploader4PFP {
 		foreach ($pfpArray as $products){
 		$productIDS = array();
 		$productRATIOS = array();
+		$description = '/ ';
 			for($i=1;$i<count($products);$i++) {
 
 				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][4] . "'");
@@ -61,13 +62,15 @@ class bulkUploader4PFP {
 						if ($products[$i][7] >= 1){
 							$productIDS[] = $r->product_id;	
 							$productRATIOS[] = $products[$i][7];
+							
+							$description .=  $products[$i][4]." / ";
 						}else{
 							$actionLog .= " Product " . $products[$i][4] . " has ratio less than 1 \n";
 						}
 				}
 		
 				if (count($products) - 1 == count($productIDS)){ // all products exists
-					$description =  $products[$i][0]." ".$products[$i][1];
+
 					if ($description != ''){
 						$this->db->query("SELECT description FROM preformulated_products WHERE description = '" . $description . "'");
 						$r=$this->db->fetch(0);				
@@ -87,7 +90,9 @@ class bulkUploader4PFP {
 					}else{
 						$actionLog .= " PFP with products " . $products[$i][4] . " hasn't description. \n";
 					}
+					$description = '/ ';
 				}
+				
 			}//end for
 		}//end foreach
 		

@@ -58,6 +58,7 @@ class validateCSV {
 			$row++;
 		}
 		fclose($file);
+							
 		return $arr;
 	}
 	
