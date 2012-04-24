@@ -40,7 +40,7 @@ class validateCSV {
 			foreach ($dat as $val){
 				$data[] = mysql_real_escape_string($val);
 			}
-			$data = $this->trimAll($data);
+			$data = $this->trimAll($data);			
 			$currRowComments = $this->pfpDataCheck($data,$row);
 				if ($currRowComments != "") {
 					//$error = TRUE;
@@ -48,8 +48,8 @@ class validateCSV {
 				}
 			$this->errorComments .= $currRowComments;			
 			
-			$count=(count($arr))? count($arr) : 0;
-			if(!empty($data[1])){
+			$count=(count($arr))? count($arr) : 0;			
+			if(!empty($data[4])){
 				$arr[$count][] = $data;
 			}else{
 				$arr[$count+1][] = $data;
@@ -71,15 +71,9 @@ class validateCSV {
 			if (empty($r)) {			
 				$comments .= "Product with ID : " . $data[4] . " doesn't exist. Row " . $row . ".\n";
 				$this->productsError[]['errorComments'] = "Product with ID value " . $data[4] . " doesn't exist. Row " . $row . ".\n";
-			}else{
-				if ($data[7] < 1){
-					$comments .= "Product with ID : " . $data[4] . " has ratio less than 1. Row " . $row . ".\n";
-					$this->productsError[]['errorComments'] = "Product with ID value " . $data[4] . " has ratio less than 1. Row " . $row . ".\n";					
-				}else{
+			}else{				
 					//TODO: isset of PFP description
-					$this->productsCorrect[] = $data[4];
-				}
-				
+					$this->productsCorrect[] = $data[4];								
 			}
 		}
 		return $comments;
@@ -685,7 +679,7 @@ class validateCSV {
 		$possibleDensity = array('DENSITY','DENSITY LBS/GAL','DENSITY, LBS/GAL','DENSITY LBS/GAL US','US DENSITY LBS/GAL');
 		$possibleVOCPM = array('VOC/PM','VOCPM','VOC PM', 'VOC\\PM');
 		$possibleIndustryType = array('INDUSTRY TYPE', 'INDUSTRY TYPES');
-		$possibleIndustrySubType = array('INDUSTRY SUB-CATEGORY', 'INDUSTRY SUB-CATEGORIES');
+		$possibleIndustrySubType = array('INDUSTRY SUB-CATEGORY', 'INDUSTRY SUB-CATEGORIES', 'INDUSTRY SUB- CATEGORIES');
 		$possibleFlashPoint = array('FLASH POINT', 'FLASH-POINT');
 		$possiblePaintOrChemical = array('PAINT COATING CHEMICAL PRODUCTS');
 		$possibleEinecsElinks = array('IENECS','ELINCS','IENECS/ELINCS','IENECS / ELINCS', 'IENECS/ ELINCS','IENECS /ELINCS',

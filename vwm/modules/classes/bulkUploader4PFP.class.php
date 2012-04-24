@@ -20,8 +20,8 @@ class bulkUploader4PFP {
 	public $actions;
 	
     function bulkUploader4PFP ($db,$input, $pfpArray) {
-    	
-    	$this->db=$db;    	    	
+
+		$this->db=$db;    	    	
     	    	        
     	$this->productObj = new Product($db);
     	$this->hazardousObj = new Hazardous($db);
