@@ -51,3 +51,9 @@
 	{include file="tpls:tpls/subBookmarkNox.tpl"}
 {/if}
 {*NOX*}
+
+{*PFP*}
+{if $request.bookmark == 'pfpLibrary' and $request.category == 'department'}
+	{include file="tpls:tpls/subBookmarkPfpLibrary.tpl"}
+{/if}
+{*PFP*}
