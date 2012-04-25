@@ -16,51 +16,11 @@ class CNox extends Controller {
 	}
 
 	private function actionConfirmDelete() {
-		$accessory = new Accessory($this->db); // viewDetails.tpl
-
-		foreach ($this->itemID as $ID) {
-			//	setter injection
-			$accessory->setTrashRecord(new Trash($this->db));
-
-			// Delete Accessory
-			$accessory->setAccessoryID($ID);
-			$accessory->deleteAccessory();
-		}
-
-		if ($this->successDeleteInventories)
-			header("Location: ?action=browseCategory&category=department&id=" . $this->getFromPost('departmentID') . "&bookmark=accessory&notify=40");
+		
 	}
 
 	private function actionDeleteItem() {
-		$req_id = $this->getFromRequest('id');
-		if (!is_array($req_id))
-			$req_id = array($req_id);
-
-		$accessory = new Accessory($this->db);
-		if (!is_null($this->getFromRequest('id'))) {
-			foreach ($req_id as $accessoryID) {
-				$accessory->setAccessoryID($accessoryID);
-				$accessoryDetails = $accessory->getAccessoryDetails();
-
-				$delete["id"] = $accessoryDetails["id"];
-				$delete["name"] = $accessoryDetails["name"];
-				$itemForDelete[] = $delete;
-			}
-		}
-		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=department&id=" . $this->getFromRequest('departmentID') . "&bookmark=accessory");
-
-		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {
-			throw new Exception('deny');
-		}
-
-		//set permissions							
-		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'), array('bookmark' => 'accessory'));
-		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
-		$this->setPermissionsNew('viewData');
-
-		$this->smarty->assign('departmentID', $this->getFromRequest('departmentID'));
-		$this->smarty->assign('itemID', $this->getFromRequest('departmentID'));
-		$this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
+		
 	}
 
 	private function actionViewDetails() {
