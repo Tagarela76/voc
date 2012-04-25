@@ -93,6 +93,9 @@ class TitlesNew {
 							case 'mix':
 								$this->title .= ": Mixes of department " .$departmentDetails['name'];
 								break;
+							case 'nox':
+								$this->title .= ": NOx emissions of department " .$departmentDetails['name'];
+								break;
 						}
 						break;
 				}

@@ -83,12 +83,19 @@
 				</a> 
 
         </td>		
-        <td >
-        	<div class="users_header_violet_r">
+        <td >        	
 	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
 	            	<div>						
 	                	 Note	
 						{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
+					</div>					
+				</a> 			
+        </td>		
+		<td >
+        	<div class="users_header_violet_r">
+	            <a style='color:white;'>
+	            	<div>						
+	                	 NOx						
 					</div>					
 				</a> 
 			</div>
@@ -151,6 +158,13 @@
                 </div>
             </a>
         </td>		
+		<td class="border_users_b border_users_r">
+            <a href="{$childCategoryItems[i].url}" class="id_accessory1">
+                <div>
+                    {$childCategoryItems[i].nox}
+                </div>
+            </a>
+        </td>		
     </tr>
     {/section}
    
@@ -162,7 +176,7 @@
 	        <td class="border_users_l">
 	            &nbsp;
 	        </td>
-			<td  class="" align="center" colspan="6">
+			<td  class="" align="center" colspan="7">
 	            No NOx Emissions
 	        </td>
 	        <td class="border_users_r">
@@ -172,7 +186,7 @@
 	    {*END	EMPTY LIST*}
 	{elseif $smarty.section.i.total <=7}
 		<tr height='{math equation="x - (y * 27)" x=200 y=$smarty.section.i.total}'>
-		<td class="border_users_l border_users_b border_users_r" colspan='8'>
+		<td class="border_users_l border_users_b border_users_r" colspan='9'>
 				&nbsp;
 			</td>						
 		</tr>
@@ -181,7 +195,7 @@
         <td height="25" class="users_u_bottom">
             &nbsp;
         </td>
-        <td class="border_users" colspan="6">
+        <td class="border_users" colspan="7">
         </td>
         <td class="users_u_bottom_r">
         </td>

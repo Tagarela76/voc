@@ -2146,5 +2146,87 @@ class Validation {
 		return $result;			
 	}
 	
+	
+	public function validateNoxBurner(NoxBurner $burner) {
+		$result = array(
+			'summary' => true
+		);		
+								
+		if (!$this->check_name($burner->model)) {
+			$result['summary'] = 'false';
+			$result['model'] = 'failed';
+		}
+		
+		if (!$this->check_name($burner->serial)) {
+			$result['summary'] = 'false';
+			$result['serial'] = 'failed';
+		}
+			
+		if (!$this->check_id($burner->manufacturer_id)) {			
+			$result['summary'] = 'false';
+			$result['manufacturer_id'] = 'failed';
+		}
+		
+		if (!$this->check_quantity($burner->input)) {			
+			$result['summary'] = 'false';
+			$result['input'] = 'failed';
+		}
+		
+		if (!$this->check_quantity($burner->output)) {			
+			$result['summary'] = 'false';
+			$result['output'] = 'failed';
+		}
+		
+		if (!$this->check_quantity($burner->btu)) {			
+			$result['summary'] = 'false';
+			$result['btu'] = 'failed';
+		}							
+		
+		return $result;			
+	}
+	
+	
+	
+	public function validateNoxEmission(NoxEmission $noxEmission) {
+		$result = array(
+			'summary' => true
+		);		
+								
+		if (!$this->check_name($noxEmission->description)) {
+			$result['summary'] = 'false';
+			$result['description'] = 'failed';
+		} else {
+			// check for duplicate names			
+			if (!$noxEmission->nox_id 
+					&& $result['summary'] == 'true' 
+					&& !$this->isUniqueName("nox", $noxEmission->description, $noxEmission->department_id)) {
+				$result['summary'] = 'false';
+				$result['description'] = 'alreadyExist';
+			}
+		}
+		
+		if (!$this->check_quantity($noxEmission->gas_unit_used)) {
+			$result['summary'] = 'false';
+			$result['gas_unit_used'] = 'failed';
+		}
+			
+		if (!$this->check_expire_date($noxEmission->start_time)) {			
+			$result['summary'] = 'false';
+			$result['start_time'] = 'failed';
+		}
+		
+		if (!$this->check_expire_date($noxEmission->end_time)) {			
+			$result['summary'] = 'false';
+			$result['end_time'] = 'failed';
+		}
+		
+		if (!$this->check_id($noxEmission->burner_id)) {			
+			$result['summary'] = 'false';
+			$result['burner_id'] = 'failed';
+		}
+				
+		return $result;			
+	}
+	
 }
 ?>

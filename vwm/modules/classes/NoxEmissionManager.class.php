@@ -1,9 +1,15 @@
 <?php
 class NoxEmissionManager{
         
-        private $db;
+	/**
+	 *
+	 * @var db
+	 */
+    private $db;
+	
+	private $burnerDetails = array();
     
-	function __construct($db) {
+	function __construct(db $db) {
                 $this->db=$db;
         }
 
@@ -63,19 +69,22 @@ class NoxEmissionManager{
 	
 
     public function getBurnerDetail($burnerID) {
-
+		
+		if($this->burnerDetails[$burnerID]) {
+			//	we already calculated this
+			return $this->burnerDetails[$burnerID];
+		}
     	$query = "SELECT * FROM burner WHERE burner_id = {$burnerID} ";
-
-		//echo $query;
+		
     	$this->db->query($query);
     	
-    	if ($this->db->num_rows()) 
-    	{   $data = $this->db->fetch_all_array();		
-    		return $data[0];
-			
-    	}
-    	else
+    	if ($this->db->num_rows()) {
+			$data = $this->db->fetch_array(0);		
+			$this->burnerDetails[$data['burner_id']] = $data;
+    		return $data;			
+    	} else {
     		return false;
+		}
     }
 	
     public function getLogDataReadable($logList) {
@@ -168,5 +177,38 @@ class NoxEmissionManager{
 		return (isset($searched)) ? $searched : null;	
     }	
 	
+	
+	public function getNoxEmissionDetails($noxEmissionID) {
+		$sql = "SELECT * FROM `nox` WHERE nox_id = ".mysql_escape_string($noxEmissionID);
+		$this->db->query($sql);
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		return $this->db->fetch_array(0);
+	}
+	
+	
+	public function calculateNox(NoxEmission $noxEmission) {		
+		$burnerDetails = $this->getBurnerDetail($noxEmission->burner_id);		
+		/*
+		 * BURNER INPUT / BURNER OUTPUT = BEF (BURNER EFFICIENCY FACTOR)		 
+		 */
+		if (!$burnerDetails || $burnerDetails['output'] == 0 || $burnerDetails['btu'] == 0) {			
+			return false;
+		}
+		$bef = $burnerDetails['input']/$burnerDetails['output'];
+		
+		/*
+		 * BURNER EFFICIENCY FACTOR / (BTUS / KW'S PER HOUR RATING) = UEF (UNIT EFFICIENCY FACTOR)
+		 */
+		$uef = $bef /  $burnerDetails['btu'];
+		
+		/*
+		 * UNIT EFFICIENCY FACTOR * GAS THERMAL UNITS USED = Nox (TOTAL Nox EMISSION)
+		 */		
+		return $uef * $noxEmission->gas_unit_used;
+	}	
 	
 }

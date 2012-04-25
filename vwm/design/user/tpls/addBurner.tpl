@@ -191,7 +191,7 @@
 					<div align="left" style="float: left;">	
 						<select name="burner_id" id="burner_id">
 							{section  loop=$burners name=i}
-								<option value="{$burners[i].burner_id}"> {$burners[i].model}&nbsp;>&nbsp;{$burners[i].serial} </option>
+								<option value="{$burners[i].burner_id}" {if $burners[i].burner_id == $data.burner_id}selected{/if}> {$burners[i].model}&nbsp;>&nbsp;{$burners[i].serial} </option>
 							{/section}	
 						</select>	
 					</div>												

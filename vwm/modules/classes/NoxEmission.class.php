@@ -6,76 +6,75 @@ class NoxEmission {
 	 * @var db - xnyo database object
 	 */
 	private $db;
-
 	private $nox_id;
 	private $department_id;
 	private $description;
-
-
 	private $gas_unit_used;
+
 	/**
 	 * @var INT The time when burner began to work
-	 */		
+	 */
 	private $start_time;
+
 	/**
 	 * @var INT The time when burner stoppped working
-	 */		
-	private $end_time;	
+	 */
+	private $end_time;
 	private $burner_id;
-	private $note;	
+	private $note;
+	private $nox = 0;
 
 	public function __construct(db $db, Array $array = null) {
 		$this->db = $db;
-		if(isset($array)) {
+		if (isset($array)) {
 			$this->initByArray($array);
-		}		
+		}
 	}
-	
-	private function initByArray($array) {                        
-		foreach($array as $key => $value) {
+
+	private function initByArray($array) {
+		foreach ($array as $key => $value) {
 			try {
 				$this->__set($key, $value);
-			}catch(Exception $e) {
+			} catch (Exception $e) {
 				$this->errors[] = $e->getMessage();
 			}
 		}
 	}
-	
+
 	public function save() {
 
-                if ($this->nox_id != NULL){
-                        $query = "UPDATE nox SET 
-								description = '".mysql_escape_string($this->description)."',
-								department_id = '".mysql_escape_string($this->department_id)."',
-								start_time = '".mysql_escape_string($this->start_time)."',
-								end_time = '".mysql_escape_string($this->end_time)."',
-								burner_id = '".mysql_escape_string($this->burner_id)."',
-								note = '".mysql_escape_string($this->note)."',									
-								gas_unit_used = '".mysql_escape_string($this->gas_unit_used)."'
+		if ($this->nox_id != NULL) {
+			$query = "UPDATE nox SET 
+								description = '" . mysql_escape_string($this->description) . "',
+								department_id = " . mysql_escape_string($this->department_id) . ",
+								start_time = " . mysql_escape_string($this->start_time) . ",
+								end_time = " . mysql_escape_string($this->end_time) . ",
+								burner_id = " . mysql_escape_string($this->burner_id) . ",
+								note = '" . mysql_escape_string($this->note) . "',									
+								gas_unit_used = " . mysql_escape_string($this->gas_unit_used) . ",
+								nox = " . mysql_escape_string($this->nox) . "
 								WHERE nox_id = {$this->nox_id}";
-                }
-                else {                        
-   
-                       $query = "INSERT INTO nox VALUES (NULL,'"
-												.mysql_escape_string($this->department_id)."','"
-												.mysql_escape_string($this->description)."','" 
-												.mysql_escape_string($this->gas_unit_used)."','" 
-												.mysql_escape_string($this->start_time)."','" 
-												.mysql_escape_string($this->end_time)."','"
-												.mysql_escape_string($this->burner_id)."','" 
-												.mysql_escape_string($this->note)."')";
-                                               
+		} else {
 
-                }	
+			$query = "INSERT INTO nox (department_id, description, gas_unit_used, start_time, end_time, burner_id, note, nox) VALUES ("
+					. mysql_escape_string($this->department_id) . ",'"
+					. mysql_escape_string($this->description) . "',"
+					. mysql_escape_string($this->gas_unit_used) . ","
+					. mysql_escape_string($this->start_time) . ", "
+					. mysql_escape_string($this->end_time) . ", "
+					. mysql_escape_string($this->burner_id) . ",'"
+					. mysql_escape_string($this->note) . "',"
+					. mysql_escape_string($this->nox) . ")";
+		}
 
 		$this->db->query($query);
-			
-		if(mysql_error() == '') {
+
+		if (mysql_error() == '') {
 			return true;
 		} else {
 			throw new Exception(mysql_error());
 		}
-	}	
+	}
 
 	/**
 	 * 
@@ -123,103 +122,106 @@ class NoxEmission {
 		}
 	}
 
-	public function get_nox_id(){
+	public function get_nox_id() {
 		return $this->nox_id;
 	}
-	
-	public function get_department_id(){
+
+	public function get_department_id() {
 		return $this->department_id;
-	}	
+	}
 
-	public function get_description(){
+	public function get_description() {
 		return $this->description;
-	}	
-	
+	}
 
-	public function get_gas_unit_used(){
+	public function get_gas_unit_used() {
 		return $this->gas_unit_used;
 	}
-	
-	public function get_start_time(){
-		return $this->start_time;
-	}	
 
-	public function get_end_time(){
+	public function get_start_time() {
+		return $this->start_time;
+	}
+
+	public function get_end_time() {
 		return $this->end_time;
-	}	
-	
-	public function get_burner_id(){
+	}
+
+	public function get_burner_id() {
 		return $this->burner_id;
-	}	
-    public function get_note(){
+	}
+
+	public function get_note() {
 		return $this->note;
-	}	
+	}
+
+	public function get_nox() {
+		return $this->nox;
+	}
 
 	public function set_nox_id($value) {
 		try {
 			$this->nox_id = $value;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("Nox Id cannot be empty!" . $e->getMessage());
 		}
 	}
-	
+
 	public function set_department_id($value) {
 		try {
 			$this->department_id = $value;
-	
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("Department id cannot be empty!" . $e->getMessage());
 		}
 	}
-	
+
 	public function set_description($value) {
 		try {
 			$this->description = $value;
-	
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("Description id cannot be empty!" . $e->getMessage());
 		}
-	}	
-	
+	}
 
 	public function set_gas_unit_used($value) {
 		try {
 			$this->gas_unit_used = $value;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("Gas unit used cannot be empty!" . $e->getMessage());
 		}
 	}
-	
+
 	public function set_start_time($value) {
 		try {
 			$this->start_time = $value;
-	
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("Start time id cannot be empty!" . $e->getMessage());
 		}
 	}
-	
+
 	public function set_end_time($value) {
 		try {
 			$this->end_time = $value;
-	
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			throw new Exception("End time id cannot be empty!" . $e->getMessage());
 		}
-	}	
-	public function set_burner_id	($value) {
+	}
+
+	public function set_burner_id($value) {
 		try {
-			$this->burner_id	 = $value;
-	
-		} catch(Exception $e) {
+			$this->burner_id = $value;
+		} catch (Exception $e) {
 			throw new Exception("Burner id type id cannot be empty!" . $e->getMessage());
 		}
-	}	
+	}
 
 	public function set_note($value) {
-			$this->note = $value;
-	}	
-		
-	
+		$this->note = $value;
+	}
+
+	public function set_nox($nox) {
+		$this->nox = $nox;
+	}
+
 }
+
 ?>
