@@ -278,16 +278,16 @@ class CNox extends Controller {
 	 * bookmarkDNox($vars)     
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDNox($vars) {
+	protected function bookmarkDNox($vars) {		
 		if (!isset($_GET['tab'])) {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=nox");
 		}
-		extract($vars);
-
+		extract($vars);			
+		
 		if ($tab == "burner") {
 			$this->bookmarkDburner($vars);
 		} else {
-			$departmentID = $departmentDetails['department_id'];
+			$noxList = false;
 			$sortStr = $this->sortList('nox', 3);
 
 			$noxManager = new NoxEmissionManager($this->db);
@@ -302,7 +302,21 @@ class CNox extends Controller {
 				  $this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 				 */
 			} else {
-				$noxList = $noxManager->getNoxListByDepartment($departmentID, $sortStr, $pagination);
+				switch ($this->getFromRequest('category')) {
+					case 'facility':
+						$noxList = $noxManager->getNoxListByFacility(
+								$facilityDetails['facility_id'], 
+								$sortStr);
+						break;
+					case 'department':						
+						$noxList = $noxManager->getNoxListByDepartment(
+								$departmentDetails['department_id'], 
+								$sortStr);
+						break;
+					default:
+						throw new Exception('404');
+						break;
+				}				
 			}
 
 

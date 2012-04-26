@@ -4,6 +4,25 @@
         <td align="right">
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
+					
+				{if $permissions.data.view}
+                    <td>
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=nox&tab=nox">{if $request.bookmark != "nox"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    Nox Emissions
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark_violet">
+                                <div class="activeBookmark_violet_right">
+                                   NOx Emissions&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+                {/if}		
 
                 {*REGULATION UPDATES*}
 
@@ -144,7 +163,8 @@
 {if $request.bookmark  eq "solventplan"}  class="bookmark_bg_ultraviolet" {/if}
 {if $request.bookmark  eq "wastestorage"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} 
-{if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if} >
+{if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if}
+{if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if} >
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>
