@@ -3,7 +3,24 @@
         <td align="right">
             <table cellspacing="0" cellpadding="0"height="100%" class="bookmarks">
                 <tr>
-					
+					{if $permissions.data.view}
+                    <td>
+                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=pfpLibrary&tab=all">{if $request.bookmark != "pfpLibrary"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    PFP Library
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark_orange">
+                                <div class="activeBookmark_orange_right">
+                                   PFP Library&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+                    {/if}
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=nox&tab=nox">{if $request.bookmark != "nox"}
@@ -21,7 +38,7 @@
                             {/if}
                         </a>
                     </td>
-                    {/if}					
+                    {/if}																					
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=accessory">{if $request.bookmark != "accessory"}
@@ -123,6 +140,7 @@
    			 </tr>
               <tr>
                 	<td colspan="2"
+{if $request.bookmark  eq "pfpLibrary"}  class="bookmark_bg_orange" {/if}
 {if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if}
 {if $request.bookmark  eq "accessory"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "equipment"}  class="bookmark_bg" {/if}
