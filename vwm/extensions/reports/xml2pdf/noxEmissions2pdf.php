@@ -279,7 +279,8 @@ class XML2PDF extends PDF_MC_Table {
 				$this->Ln();
 				break;
 			case "EMISSION":
-			case "TOTALFORDEPARTMENT":				
+			case "TOTALFORDEPARTMENT":	
+			case "TOTALSUPER":
 				//	reset				
 				$this->rows = array();				
 				break;										
@@ -292,62 +293,9 @@ class XML2PDF extends PDF_MC_Table {
 		$tag = $this->parser->structure[$path]["Tag"];
 		$this->DebugPrint("End: $tag\n");
 
-		switch ($tag) {
-			case "DATE":
+		switch ($tag) {						
+			case "TOTALSUPER":
 				$this->Ln(5);
-				break;
-			case "YEAR":
-				break;
-
-			case "TOTALMIXDEP":
-				$this->SetFont('Arial', 'I', 12);
-				$this->Cell($this->widths[0] + $this->widths[1] + $this->widths[2] + $this->widths[3] + $this->widths[4], 7, "TOTAL BY DEPARTMENT", 1, 0, 'L', true);
-				$this->Cell($this->widths[5], 7, "$ " . $this->header['TOTALMIXDEP'], 1, 0, 'C', true);
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "TOTALWASTEDEP":
-				$this->SetFont('Arial', 'I', 12);
-				$this->Cell($this->widths[6], 7, "$ " . $this->header['TOTALWASTEDEP'], 1, 0, 'C', true);
-				$this->Ln();
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "TOTALMIX":
-				$this->SetFont('Arial', 'I', 12);
-				$this->Cell($this->widths[0] + $this->widths[1] + $this->widths[2] + $this->widths[3] + $this->widths[4], 7, "TOTAL BY MONTH", 1, 0, 'L', true);
-				$this->Cell($this->widths[5], 7, "$ " . $this->header['TOTALMIX'], 1, 0, 'C', true);
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "TOTALWASTE":
-				$this->SetFont('Arial', 'I', 12);
-				$this->Cell($this->widths[6], 7, "$ " . $this->header['TOTALWASTE'], 1, 0, 'C', true);
-				$this->Ln();
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "FULLTOTALMIX":
-				$this->Ln(2);
-				$this->SetFont('Arial', 'B', 15);
-				$this->Cell($this->widths[0] + $this->widths[1] + $this->widths[2] + $this->widths[3] + $this->widths[4], 7, "Total for Period:  ", 1, 0, 'L');
-				$this->Cell($this->widths[5], 7, "$ " . $this->header['FULLTOTALMIX'], 1, 0, 'C');
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "FULLTOTALWASTE":
-
-				$this->SetFont('Arial', 'B', 15);
-
-				$this->Cell($this->widths[6], 7, "$ " . $this->header['FULLTOTALWASTE'], 1, 0, 'C');
-				$this->Ln();
-				$this->SetFont('Arial', '', 12);
-				break;
-			case "INFO":
-				if ($attribs["MIXNAME"] != 'none') {
-					$this->Row($this->rows);
-					for ($i = 0; $i <= 6; $i++) {
-						$this->rows[$i] = " ";
-					}
-				}
-							
-				break;
-				
 			case "EMISSION":
 			case "TOTALFORDEPARTMENT":				
 				$this->SetFont('Arial', '', 10);
@@ -357,6 +305,8 @@ class XML2PDF extends PDF_MC_Table {
 					$this->Cell($this->widths[$i], 7, $this->rows[$i], 1, 0, 'L', false);	
 				}
 				$this->Ln();
+				
+				$this->rows = array();
 				break;										
 		}
 	}
@@ -451,6 +401,8 @@ class XML2PDF extends PDF_MC_Table {
 				$this->rows[1] = $data;
 				break;
 			case 'GASUNITUSED':
+			case 'TOTALGASUNITUSEDDEP':
+			case 'TOTALGASUNITUSEDSUPER':
 				$this->rows[2] = $data;
 				break;
 			case 'STARTTIME':
@@ -463,16 +415,10 @@ class XML2PDF extends PDF_MC_Table {
 				$this->rows[5] = $data;
 				break;*/
 			case 'NOX':
-				$this->rows[5] = $data;
-				break;
-			
-			case 'TOTALGASUNITUSED':
-				$this->rows[2] = $data;
-				break;
-			
 			case 'TOTALNOXDEP':
+			case 'TOTALNOXSUPER':
 				$this->rows[5] = $data;
-				break;
+				break;									
 		}
 	}
 

@@ -11,6 +11,12 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 	 * @var Department
 	 */
 	private $department;
+	
+	/**
+	 *
+	 * @var Facility
+	 */
+	private $facility;
 
 	function __construct(db $db, ReportRequest $reportRequest) {		
 		$this->db = $db;
@@ -21,6 +27,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		$this->dateFormat = $reportRequest->getDateFormat();
 		
 		$this->department = new Department($this->db);
+		$this->facility = new Facility($this->db);
 	}
 	
 	
@@ -34,68 +41,50 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		switch ($this->categoryType) {
 		
 			case "company":
-				/*$facility = new Facility($this->db);
-				$facilityList = $facility->getFacilityListByCompany($this->categoryID);						
+				$company = new Company($this->db);						
+				$companyDetails = $company->getCompanyDetails($this->categoryID);
+								
+				$facilityList = $this->facility->getFacilityListByCompany($this->categoryID);				
 				foreach ($facilityList as $value) {
 					$facilityString .= $value['id']. ","; 
 				}		
 				$facilityString = substr($facilityString,0,-1);
 				
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
-					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .
-					"AND m.department_id = d.department_id " .
-					"AND m.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND d.facility_id IN  (" . $facilityString . ") " .
-					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
-					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";
-
-				//getting company name
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($this->categoryID);
-				$orgDetails['company'] = $companyDetails;
+				$orgInfo = array(
+					'details' => $companyDetails,
+					'category' => "Company",
+					'notes' => ""					
+				); 			
 				
-				$in = $this->group($query,$this->categoryType,$this->categoryID);
-				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);		*/	
+				$query ="SELECT * " .
+					"FROM nox, department d " .
+					"WHERE nox.department_id = d.department_id " .					
+					"AND d.facility_id IN (" . $facilityString . ") " .
+					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
+					" ";		
 				break;
 				
-			case "facility":
-				/*$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
-					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .
-					"AND m.department_id = d.department_id " .
-					"AND m.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
+			case "facility":				
+				$facilityDetails = $this->facility->getFacilityDetails($this->categoryID);				;
+				$orgInfo = array(
+					'details' => $facilityDetails,
+					'category' => "Facility",
+					'notes' => ""
+				); 
+				$query ="SELECT * " .
+					"FROM nox, department d " .
+					"WHERE nox.department_id = d.department_id " .
 					"AND d.facility_id = " . $this->categoryID . " " .
-					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
-					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";										
-
-				//getting company name
-				$facility = new Facility($this->db);    				
-				$facilityDetails = $facility->getFacilityDetails($this->categoryID);
-				
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);						
-				$orgDetails['company'] = $companyDetails;
-				$orgDetails['facility'] = $facilityDetails;	
-				
-				$in = $this->group($query,$this->categoryType,$this->categoryID);
-
-				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);	*/															
+					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
+					" ";		
+																
 				break;
 				
 			case "department":
 				
-				$departmentDetails = $this->department->getDepartmentDetails($this->categoryID);
-				
-				$facility = new Facility($this->db);
-				$facilityDetails = $facility->getFacilityDetails($departmentDetails['facility_id']);
-				
-				$facilityIDs[$departmentDetails['facility_id']] = false;
-				
+				$departmentDetails = $this->department->getDepartmentDetails($this->categoryID);								
+				$facilityDetails = $this->facility->getFacilityDetails($departmentDetails['facility_id']);
+						
 				$orgInfo = array(
 					'details' => $facilityDetails,
 					'category' => "Department",
@@ -106,14 +95,11 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 					"FROM nox " .
 					"WHERE nox.department_id = " . $this->categoryID . " " .
 					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
-					" ";											
-				$noxEmissions = $this->group($query);
-				
-								
-									
-				$this->createXML($noxEmissions, $orgInfo, $datePeriod, $fileName);					
+					" ";															
 				break;
 		}
+		$noxEmissions = $this->group($query);																					
+		$this->createXML($noxEmissions, $orgInfo, $datePeriod, $fileName);					
 	}
 	
 	
@@ -278,6 +264,10 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		$tableTag = $doc->createElement( "table" );		
 		$page->appendChild( $tableTag );		
 
+		$totalSuper = array(
+			'gasUnitUsed'	=> 0,
+			'nox'			=> 0
+		);
 		//by department
 		foreach ($noxEmissions as $depID => $noxEmissionsByDepartment) {
 			$totalByDepartment = array(
@@ -345,23 +335,42 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 				$totalByDepartment['nox'] += (float)$noxEmission['nox'];
 			}
 			
-			//	TOTALS
+			//	DEPARTMENT TOTALS
 			$totalDepTag = $doc->createElement('totalForDepartment');
 			
-			$totalGasUnitUsedDepTag = $doc->createElement('totalGasUnitUsed');
+			$totalGasUnitUsedDepTag = $doc->createElement('totalGasUnitUsedDep');
 			$totalGasUnitUsedDepTag->appendChild(
 					$doc->createTextNode($totalByDepartment['gasUnitUsed'])
 					);
 			$totalDepTag->appendChild($totalGasUnitUsedDepTag);
+			$totalSuper['gasUnitUsed'] += $totalByDepartment['gasUnitUsed'];
 			
 			$totalNoxDepTag = $doc->createElement('totalNoxDep');
 			$totalNoxDepTag->appendChild(
 					$doc->createTextNode($totalByDepartment['nox'])
 					);
 			$totalDepTag->appendChild($totalNoxDepTag);
+			$totalSuper['nox'] += $totalByDepartment['nox'];
 			
 			$depTag->appendChild($totalDepTag);
-		}			
+		}
+		
+		/* SUPER TOTALS */
+		$totalSuperTag = $doc->createElement('totalSuper');
+		
+		$totalGasUnitUsedSuperTag = $doc->createElement('totalGasUnitUsedSuper');
+		$totalGasUnitUsedSuperTag->appendChild(
+				$doc->createTextNode($totalSuper['gasUnitUsed'])
+				);
+		$totalSuperTag->appendChild($totalGasUnitUsedSuperTag);		
+			
+		$totalNoxSuperTag = $doc->createElement('totalNoxSuper');
+		$totalNoxSuperTag->appendChild(
+				$doc->createTextNode($totalSuper['nox'])
+				);
+		$totalSuperTag->appendChild($totalNoxSuperTag);
+		
+		$tableTag->appendChild($totalSuperTag);
 
 		$doc->save($fileName);		
 	}	
