@@ -126,7 +126,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].manufacturer_id}
+                    {$childCategoryItems[i].manufacturer}
                 </div>
             </a>
         </td>

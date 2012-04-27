@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->manufacturer_id}
+                    &nbsp;{$manufacturer.name}
                 </div>
             </td>
         </tr>

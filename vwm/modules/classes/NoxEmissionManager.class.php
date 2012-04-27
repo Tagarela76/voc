@@ -240,5 +240,29 @@ class NoxEmissionManager {
 		 */
 		return $uef * $noxEmission->gas_unit_used;
 	}
+	
+	
+	public function getBurnerManufacturerList() {
+		$sql = "SELECT * FROM burner_manufacturer";
+		$this->db->query($sql);
+		
+		if($this->db->num_rows() > 0) {
+			return $this->db->fetch_all_array();			
+		} else {
+			return false;
+		}
+	}
+	
+	
+	public function getBurnerManfucaturer($id) {
+		$sql = "SELECT * FROM burner_manufacturer WHERE id = ".  mysql_escape_string($id);
+		$this->db->query($sql);
+		
+		if($this->db->num_rows() > 0) {
+			return $this->db->fetch_array(0);			
+		} else {
+			return false;
+		}
+	}
 
 }

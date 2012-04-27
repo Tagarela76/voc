@@ -69,17 +69,12 @@
 					Manufacturer
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" style="float: left;">	<input type='text' name='manufacturer_id' value='{$data.manufacturer_id}'></div>												
-							{if $validStatus.summary eq 'false'}
-							{if $validStatus.manufacturer_id eq 'failed'}
-			     				{*ERROR*}					
-                        		<div class="error_img"style="float: left;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}
-						    {elseif $validStatus.manufacturer_id eq 'alreadyExist'}
-								<div class="error_img"><span class="error_text">Entered manufacturer_id is already in use!</span></div>
-							{/if}
-						    {/if}
-																	
+					<div align="left" style="float: left;">	
+						<select name='manufacturer_id'>
+							{section loop=$burnerManufacturers name=i}
+								<option value="{$burnerManufacturers[i].id}" {if $burnerManufacturers[i].id == $data.manufacturer_id}selected{/if}> {$burnerManufacturers[i].name}</option>
+							{/section}
+						</select>																						
 				</td>
 			</tr>
 

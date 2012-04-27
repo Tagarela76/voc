@@ -67,6 +67,9 @@ class CNox extends Controller {
 
 
 			$this->smarty->assign('dataChain', new TypeChain(null, 'date', $this->db, $companyID, 'company'));
+		} elseif ($request['tab'] == 'burner') {
+			$burnerManufacturerList = $noxManager->getBurnerManufacturerList();
+			$this->smarty->assign('burnerManufacturers',$burnerManufacturerList);
 		}
 
 		// protecting from xss
@@ -433,7 +436,9 @@ class CNox extends Controller {
 			if ($burnerList) {
 				for ($i = 0; $i < count($burnerList); $i++) {
 					$url = "?action=viewDetails&category=nox&id=" . $burnerList[$i]['burner_id'] . "&departmentID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
+					$burnerManufacturer = $noxManager->getBurnerManfucaturer($burnerList[$i]['manufacturer_id']);					
 					$burnerList[$i]['url'] = $url;
+					$burnerList[$i]['manufacturer'] = $burnerManufacturer['name'];
 				}
 			}
 
@@ -458,6 +463,9 @@ class CNox extends Controller {
 		}
 		$burner = new NoxBurner($this->db, $burnerDetails);
 		$this->smarty->assign('burner', $burner);
+		
+		$manufacturer = $manager->getBurnerManfucaturer($burner->manufacturer_id);
+		$this->smarty->assign('manufacturer', $manufacturer);
 
 		$this->smarty->assign('editUrl', '?action=edit&category=nox&id=' . $this->getFromRequest("id") . '&departmentID=' . $this->getFromRequest("departmentID") . "&tab=burner");
 		$this->smarty->assign('tpl', 'tpls/viewNoxBurner.tpl');
@@ -516,6 +524,9 @@ class CNox extends Controller {
 			}
 		}
 
+		$burnerManufacturerList = $manager->getBurnerManufacturerList();
+		$this->smarty->assign('burnerManufacturers', $burnerManufacturerList);		
+		
 		$this->smarty->assign('data', $burnerDetails);
 		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);	
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
