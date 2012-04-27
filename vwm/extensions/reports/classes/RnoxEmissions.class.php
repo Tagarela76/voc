@@ -6,6 +6,11 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 	private $dateEnd;
 	
 	private $dateFormat;
+	
+	/**	 
+	 * @var Department
+	 */
+	private $department;
 
 	function __construct(db $db, ReportRequest $reportRequest) {		
 		$this->db = $db;
@@ -14,6 +19,8 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		$this->dateBegin = $reportRequest->getDateBegin();
 		$this->dateEnd = $reportRequest->getDateEnd(); 	 	
 		$this->dateFormat = $reportRequest->getDateFormat();
+		
+		$this->department = new Department($this->db);
 	}
 	
 	
@@ -21,6 +28,8 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 	public function buildXML($fileName) {	
 		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $this->dateBegin);
 		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $this->dateEnd);    	
+		
+		$datePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 		
 		switch ($this->categoryType) {
 		
@@ -79,336 +88,75 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 				break;
 				
 			case "department":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
-					"FROM product p, mixgroup mg, mix m, rule r, supplier s " .
-					"WHERE p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .								
-					"AND m.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND m.department_id = " . $this->categoryID . " " .
-					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
-					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";											
-				$this->db->query($query);						
-die($query);
-				if ($this->db->num_rows()) {
-					for ($i=0; $i<$this->db->num_rows(); $i++) {
-						$data=$this->db->fetch($i);																								
-						$result = array (
-							'supplier'		=>	$data->supplier,
-							'product_id'	=>	$data->product_id,
-							'product_nr'	=>	$data->product_nr,
-							'product_name'	=>	$data->product_name,
-							'rule_nr'		=>	$data->rule_nr,
-							'qtyRule'		=>	$data->qtyRule,
-							'used'			=>	$data->used,							
-							'unitType'		=>	$data->unit_type,	
-							'quantity_lbs'	=>	$data->quantity_lbs
-						);
-						$results[] = $result;																						
-					}
-				}
-				//conversion
-				//$unittype = new Unittype($this->db);
-				//$unitTypeConverter = new UnitTypeConverter("us gallon");						
 				
-				$products[0]['supplier'] = $results[0]['supplier'];
-				$products[0]['product_id'] = $results[0]['product_id'];
-				$products[0]['product_nr'] = $results[0]['product_nr'];
-				$products[0]['product_name'] = $results[0]['product_name'];
-				//$products[0]['used'] = $results[0]['used'];
-				
-				//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
-				
-				//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-				//$results[0]['qtyRule'] = $qtyRule;
-				
-				//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-				//$products[0]['used'] = $used;
-				$products[0]['used'] = $results[0]['quantity_lbs'];
-				
-				//	TODO: add inventory support later 
-				$products[0]['notUsed'] = '--';
-				//end of conversion
-				
-				$k=0;											
-				for($i=1; $i < count($results); $i++) {
-					//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-					//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-					//$results[$i]['qtyRule'] = $qtyRule;							
-					if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
-						$k++;
-						$products[$k]['supplier'] = $results[$i]['supplier'];
-						$products[$k]['product_id'] = $results[$i]['product_id'];
-						$products[$k]['product_nr'] = $results[$i]['product_nr'];
-						$products[$k]['product_name'] = $results[$i]['product_name'];
-						
-						//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-						//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-						//$products[$k]['used'] = $used;					
-						$products[$k]['used'] = $results[$i]['quantity_lbs'];
-
-						//	TODO: add inventory support later 
-						$products[$k]['notUsed'] = '--';												
-					}
-				}
-				
-				$department = new Department($this->db);
-				$departmentDetails = $department -> getDepartmentDetails($this->categoryID);
+				$departmentDetails = $this->department->getDepartmentDetails($this->categoryID);
 				
 				$facility = new Facility($this->db);
-				$facilityDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
+				$facilityDetails = $facility->getFacilityDetails($departmentDetails['facility_id']);
 				
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);
+				$facilityIDs[$departmentDetails['facility_id']] = false;
 				
-				$orgDetails['company'] = $companyDetails;
-				$orgDetails['facility'] = $facilityDetails;
-				$orgDetails['department'] = $departmentDetails;
+				$orgInfo = array(
+					'details' => $facilityDetails,
+					'category' => "Department",
+					'name' => $departmentDetails['name'],
+					'notes' => ""
+				); 				
+				$query ="SELECT * " .
+					"FROM nox " .
+					"WHERE nox.department_id = " . $this->categoryID . " " .
+					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
+					" ";											
+				$noxEmissions = $this->group($query);
 				
-				//getting product quantities in inventory
-				//	TODO: add inventory suppport later
-			/*	foreach ($products as $value) {
-					$productString .= $value['product_id']. ","; 
-				}		
-				$productString = substr($productString,0,-1);												
-				
-				$query = "SELECT pg.product_id, sum( pg.quantity ) quantity " .
-					"FROM inventory i, productgroup pg " .
-					"WHERE i.inventory_id = pg.inventory_id " .
-					"AND i.facility_id = " . $departmentDetails['facility_id'] . " " .
-					"AND pg.product_id IN (" . $productString . ")" .
-					"GROUP BY pg.product_id";
-				$this->db->query($query);												
-				if ($this->db->num_rows()) {
-					for ($i=0; $i<$this->db->num_rows(); $i++) {
-						$data=$this->db->fetch($i);																								
-						$inventoryQty = array (									
-							'product_id'	=>	$data->product_id,
-							'quantity'	=>	$data->quantity																							
-						);
-						$inventoryQties[] = $inventoryQty;																						
-					}
-				}											
-				//group data
-				for ($i=0; $i<count($products); $i++) {						
-					$diff = 0;
-					foreach ($inventoryQties as $inventoryQty) {
-						if ($inventoryQty['product_id'] == $products[$i]['product_id']) {
-							$diff = $inventoryQty['quantity'] - $products[$i]['used'];
-						}	
-					}
-					if ($diff > 0) {
-						$products[$i]['notUsed'] = $diff;
-					} else {
-						$products[$i]['notUsed'] = 0;
-					}														
-				}*/
-		
-				$this -> createXML($products,$results,$orgDetails,$fileName);					
+								
+									
+				$this->createXML($noxEmissions, $orgInfo, $datePeriod, $fileName);					
 				break;
 		}
 	}
 	
 	
-	
-	public function buildXMLDeprecated($fileName) {
-		$rule = new Rule($this->db);
-		$rule_nr_byRegion = $rule->ruleNrMap[$rule->getRegion()];
-		switch ($this->categoryType) {
-		
-			case "company":
-				$facility = new Facility($this->db);
-				$facilityList = $facility->getFacilityListByCompany($this->categoryID);						
-				foreach ($facilityList as $value) {
-					$facilityString .= $value['id']. ","; 
-				}		
-				$facilityString = substr($facilityString,0,-1);
-				
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .
-					"AND m.department_id = d.department_id " .
-					"AND cg.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND d.facility_id IN  (" . $facilityString . ") " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";
-
-				//getting company name
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($this->categoryID);
-				$orgDetails['company'] = $companyDetails;
-				
-				$in = $this->group($query,$this->categoryType,$this->categoryID);
-				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);			
-				break;
-				
-			case "facility":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, department d, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .
-					"AND m.department_id = d.department_id " .
-					"AND cg.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND d.facility_id = " . $this->categoryID . " " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";										
-
-				//getting company name
-				$facility = new Facility($this->db);    				
-				$facilityDetails = $facility->getFacilityDetails($this->categoryID);
-				
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);						
-				$orgDetails['company'] = $companyDetails;
-				$orgDetails['facility'] = $facilityDetails;	
-				
-				$in = $this->group($query,$this->categoryType,$this->categoryID);
-				$this -> createXML($in['products'],$in['results'],$orgDetails,$fileName);																
-				break;
-				
-			case "department":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
-					"FROM product p, components_group cg, mixgroup mg, mix m, rule r, supplier s " .
-					"WHERE cg.product_id = p.product_id " .
-					"AND p.product_id = mg.product_id " .
-					"AND mg.mix_id = m.mix_id " .								
-					"AND cg.rule_id = r.rule_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND m.department_id = " . $this->categoryID . " " .
-					"GROUP BY p.product_nr, p.name, cg.rule_id, r.$rule_nr_byRegion";											
-				$this->db->query($query);						
-				
-				if ($this->db->num_rows()) {
-					for ($i=0; $i<$this->db->num_rows(); $i++) {
-						$data=$this->db->fetch($i);																								
-						$result = array (
-							'supplier'		=>	$data->supplier,
-							'product_id'	=>	$data->product_id,
-							'product_nr'	=>	$data->product_nr,
-							'product_name'	=>	$data->product_name,
-							'rule_nr'		=>	$data->rule_nr,
-							'qtyRule'		=>	$data->qtyRule,
-							'used'			=>	$data->used,							
-							'unitType'		=>	$data->unit_type	
-						);
-						$results[] = $result;																						
-					}
-				}
-				//conversion
-				$unittype = new Unittype($this->db);
-				$unitTypeConverter = new UnitTypeConverter("us gallon");						
-				
-				$products[0]['supplier'] = $results[0]['supplier'];
-				$products[0]['product_id'] = $results[0]['product_id'];
-				$products[0]['product_nr'] = $results[0]['product_nr'];
-				$products[0]['product_name'] = $results[0]['product_name'];				
-				//$products[0]['used'] = $results[0]['used'];
-				$products[0]['used'] = $results[0]['quantity_lbs'];
-				
-				//	TODO: add inventory support later 
-				$products[$i]['notUsed'] = 0;
-				
-				//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
-				
-				//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-				//$results[0]['qtyRule'] = $qtyRule;
-				
-				//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-				//$products[0]['used'] = $used;
-				//end of conversion
-				
-				$k=0;											
-				for($i=1; $i < count($results); $i++) {
-					//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-					//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-					//$results[$i]['qtyRule'] = $qtyRule;							
-					if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
-						$k++;
-						$products[$k]['supplier'] = $results[$i]['supplier'];
-						$products[$k]['product_id'] = $results[$i]['product_id'];
-						$products[$k]['product_nr'] = $results[$i]['product_nr'];
-						$products[$k]['product_name'] = $results[$i]['product_name'];
-						
-						//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-						//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-						//$products[$k]['used'] = $used;																	
-						$products[$k]['used'] = $results[$i]['quantity_lbs'];
-
-						//	TODO: add inventory support later 
-						$products[$i]['notUsed'] = 0;
-					}
-				}
-				
-				$department = new Department($this->db);
-				$departmentDetails = $department -> getDepartmentDetails($this->categoryID);
-				
-				$facility = new Facility($this->db);
-				$facilityDetails = $facility -> getFacilityDetails($departmentDetails['facility_id']);
-				
-				$company = new Company($this->db);
-				$companyDetails = $company -> getCompanyDetails($facilityDetails['company_id']);
-				
-				$orgDetails['company'] = $companyDetails;
-				$orgDetails['facility'] = $facilityDetails;
-				$orgDetails['department'] = $departmentDetails;
-				
-				//getting product quantities in inventory
-				//	TODO: add inventory suppport later
-		/*		foreach ($products as $value) {
-					$productString .= $value['product_id']. ","; 
-				}		
-				$productString = substr($productString,0,-1);												
-				
-				$query = "SELECT pg.product_id, sum( pg.quantity ) quantity " .
-					"FROM inventory i, productgroup pg " .
-					"WHERE i.inventory_id = pg.inventory_id " .
-					"AND i.facility_id = " . $departmentDetails['facility_id'] . " " .
-					"AND pg.product_id IN (" . $productString . ")" .
-					"GROUP BY pg.product_id";
-				$this->db->query($query);												
-				if ($this->db->num_rows()) {
-					for ($i=0; $i<$this->db->num_rows(); $i++) {
-						$data=$this->db->fetch($i);																								
-						$inventoryQty = array (									
-							'product_id'	=>	$data->product_id,
-							'quantity'	=>	$data->quantity																							
-						);
-						$inventoryQties[] = $inventoryQty;																						
-					}
-				}											
-				//group data
-				for ($i=0; $i<count($products); $i++) {						
-					$diff = 0;
-					foreach ($inventoryQties as $inventoryQty) {
-						if ($inventoryQty['product_id'] == $products[$i]['product_id']) {
-							$diff = $inventoryQty['quantity'] - $products[$i]['used'];
-						}	
-					}
-					if ($diff > 0) {
-						$products[$i]['notUsed'] = $diff;
-					} else {
-						$products[$i]['notUsed'] = 0;
-					}														
-				}*/
-				
-				$this -> createXML($products,$results,$orgDetails,$fileName);					
-				break;
+	private function group($query) {			
+		$this->db->query($query);						
+		if ($this->db->num_rows()) {
+			// do smth
 		}
+		
+		$body = new DOMElement('body');
+		$noxManager = new NoxEmissionManager($this->db);
+		$departments = array();
+		$departmentNames = array();
+		$burners = array();		
+		$noxEmissions = $this->db->fetch_all_array();
+		foreach ($noxEmissions as $key => $noxEmission) {
+			if(!$departmentNames[$noxEmission['department_id']]) {
+				$departmentDetails = $this->department->getDepartmentDetails($noxEmission['department_id']);
+				$departmentNames[$noxEmission['department_id']] = $departmentDetails['name'];
+			}
+			
+			if(!$burners[$noxEmission['burner_id']]) {
+				$burners[$noxEmission['burner_id']] = $noxManager->getBurnerDetail($noxEmission['burner_id']);
+			}
+			
+			$noxEmission['burnerDescription'] = $burners[$noxEmission['burner_id']] ['model']." >> ".$burners[$noxEmission['burner_id']] ['serial'];
+			$departments[ $departmentNames[$noxEmission['department_id']] ] [] = $noxEmission;			
+		}			
+		return $departments;
 	}
 	
-	public function createXML($products,$results,$orgDetails,$fileName) {
+		
+	
+	public function createXML($noxEmissions, $orgInfo, $datePeriod, $fileName) {
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;     							  							  							  						
-		
+
 		$page = $doc->createElement( "page" );		
 		$doc->appendChild( $page );
 		
 		$pageOrientation = $doc->createAttribute("orientation");
 		$pageOrientation->appendChild(
-			$doc->createTextNode("l")
+			$doc->createTextNode("1")
 		);
 		$page->appendChild($pageOrientation);
 		
@@ -416,7 +164,7 @@ die($query);
 		$pageTopMargin->appendChild(
 			$doc->createTextNode("10")
 		);
-		$page->appendChild($pageTopMargin);
+		$page->appendChild($pageTopMargin);         
 		
 		$pageLeftMargin = $doc->createAttribute("leftmargin");
 		$pageLeftMargin->appendChild(
@@ -445,240 +193,179 @@ die($query);
 		);
 		$meta->appendChild($metaValue);
 		
-		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Product Usage by Rule Summary")
+			$doc->createTextNode("NOx Emissions") 
 		);
 		$page->appendChild( $title );
 		
-		$company = $doc->createElement("company");  						
-		$page->appendChild( $company );
-		
-		$companyName = $doc->createElement( "companyName" );
-		$companyName->appendChild(
-			$doc->createTextNode( html_entity_decode ($orgDetails["company"]["name"]))
+		$subTitle = $doc->createElement( "subTitle" );
+		$subTitle->appendChild(
+			$doc->createTextNode(" including by month ")
 		);
-		$company -> appendChild( $companyName );
+		$page->appendChild( $subTitle );
 		
-		$companyAddress = $doc->createElement("companyAddress" );
-		$companyAddress->appendChild(
-			$doc->createTextNode( html_entity_decode ($orgDetails["company"]["address"].", ".$orgDetails["company"]["city"].", ".$orgDetails["company"]["zip"]))
+		$categoryTag = $doc->createElement( "category" );
+		$categoryTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['category']))
 		);
-		$company->appendChild( $companyAddress );
+		$page->appendChild($categoryTag);
 		
-		if (isset($orgDetails["facility"])) {
-			$facility = $doc->createElement("facility");  						
-			$page->appendChild( $facility );
-			
-			$facilityName = $doc->createElement( "facilityName" );
-			$facilityName->appendChild(
-				$doc->createTextNode( html_entity_decode ($orgDetails["facility"]["name"]))
+		$nameTag = $doc->createElement( "name" );
+		$nameTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['details']['name']))
+		);
+		$page->appendChild( $nameTag );
+		if ($orgInfo['category'] == "Department") {
+			$nameDepartmentTag = $doc->createElement( "departmentName" );
+			$nameDepartmentTag->appendChild(
+				$doc->createTextNode( html_entity_decode ($orgInfo['name']))
 			);
-			$facility -> appendChild( $facilityName );
-			
-			$facilityAddress = $doc->createElement("facilityAddress" );
-			$facilityAddress->appendChild(
-				$doc->createTextNode( html_entity_decode ($orgDetails["facility"]["address"].", ".$orgDetails["facility"]["city"].", ".$orgDetails["facility"]["zip"]))
-			);
-			$facility->appendChild( $facilityAddress );
+			$page->appendChild( $nameDepartmentTag );
 		}
 		
-		if (isset($orgDetails["department"])) {
-			$department = $doc->createElement("department");  						
-			$page->appendChild( $department );
-			
-			$departmentName = $doc->createElement( "departmentName" );
-			$departmentName->appendChild(
-				$doc->createTextNode( html_entity_decode ($orgDetails["department"]["name"]))
-			);
-			$department -> appendChild( $departmentName );						
-		}
+		$adressTag = $doc->createElement( "address" );
+		$adressTag->appendChild( 
+			$doc->createTextNode( html_entity_decode ($orgInfo['details']['address']))
+		);
+		$page->appendChild( $adressTag );
 		
-		$productsTag = $doc->createElement( "products" );					
-		foreach ($products as $product) {
-			$productTag = $doc->createElement( "product" );		
-			
-			$supplierTag = $doc->createElement( "supplier" );
-			$supplierTag->appendChild(
-				$doc->createTextNode( html_entity_decode ($product['supplier']))
+		$cityStateZipTag = $doc->createElement( "cityStateZip" );
+		$cityStateZipTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['details']['city'].", ".$orgInfo['details']['state'].
+				", ".$orgInfo['details']['zip']))
+		);
+		$page->appendChild( $cityStateZipTag );
+		
+		$countyTag = $doc->createElement( "county" );
+		$countyTag->appendChild(
+			$doc->createTextNode($orgInfo['details']['county'])
+		);
+		$page->appendChild( $countyTag );
+		
+		$phoneTag = $doc->createElement( "phone" );
+		$phoneTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['details']['phone']))
+		);
+		$page->appendChild( $phoneTag );
+		
+		$faxTag = $doc->createElement( "fax" );
+		$faxTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['details']['fax']))
+		);
+		$page->appendChild( $faxTag );
+		
+		//if ($orgInfo['category'] != "Company") {
+			$facilityIdTag = $doc->createElement( "facilityID" );
+			$facilityIdTag->appendChild(
+				$doc->createTextNode( html_entity_decode ($orgInfo['details']['facility_id']))
 			);
-			$productTag->appendChild( $supplierTag );
-			
-			$productCodeTag = $doc->createElement( "productCode" );
-			$productCodeTag->appendChild(
-				$doc->createTextNode( html_entity_decode ($product['product_nr']))
-			);
-			$productTag->appendChild( $productCodeTag );
-			
-			$productNameTag = $doc->createElement( "productName" );
-			$productNameTag->appendChild(
-				$doc->createTextNode( html_entity_decode ($product['product_name']))
-			);
-			$productTag->appendChild( $productNameTag );
-			
-			$rulesTag = $doc->createElement( "rules" );
-			foreach ($results as $result) {
-				if($result['product_nr'] == $product['product_nr']) {
-					
-					$ruleTag = $doc->createElement( "rule" );
-					
-					$nameTag = $doc->createElement( "name" );
-					$nameTag->appendChild(
-						$doc->createTextNode( html_entity_decode ($result['rule_nr']))
-					);
-					$ruleTag->appendChild( $nameTag );
+			$page->appendChild($facilityIdTag);
+		//}
+		
+		$notesTag = $doc->createElement( "notes" );
+		$notesTag->appendChild(
+			$doc->createTextNode( html_entity_decode ($orgInfo['notes']))
+		);
+		$page->appendChild($notesTag);
+		
+		$timePeriodTag = $doc->createElement( "period" );
+		$timePeriodTag->appendChild(
+			$doc->createTextNode($datePeriod)
+		);
+		$page->appendChild($timePeriodTag);
+		
+		$tableTag = $doc->createElement( "table" );		
+		$page->appendChild( $tableTag );		
 
-					$rulesTag->appendChild( $ruleTag );
-				} 				
-			}			
-			$productTag->appendChild( $rulesTag );
-			
-			$usedTag = $doc->createElement( "used" );
-			$usedTag->appendChild(
-				$doc->createTextNode( html_entity_decode ($product['used']))
+		//by department
+		foreach ($noxEmissions as $depID => $noxEmissionsByDepartment) {
+			$totalByDepartment = array(
+				'gasUnitUsed'	=> 0,
+				'nox'			=> 0
 			);
-			$productTag->appendChild( $usedTag );
+						
+			$depTag = $doc->createElement( "department" );		
+			$tableTag->appendChild( $depTag );
 			
-			$notUsedTag = $doc->createElement( "notUsed" );
-			$notUsedTag->appendChild(
-				$doc->createTextNode( html_entity_decode ($product['notUsed']))
+			$depIDTag = $doc->createAttribute( "id" );
+			$depIDTag->appendChild(
+				$doc->createTextNode((string)$depID)
 			);
-			$productTag->appendChild( $notUsedTag );
+			$depTag->appendChild( $depIDTag );
 			
-			$productsTag ->appendChild( $productTag );
+			foreach ($noxEmissions[$depID] as $key => $noxEmission) {
+				$emissionTag = $doc->createElement('emission');
+				$depTag->appendChild($emissionTag);
+				
+				$descriptionTag = $doc->createElement('description');
+				$descriptionTag->appendChild(
+						$doc->createTextNode(html_entity_decode($noxEmission['description']))
+						);
+				$emissionTag->appendChild($descriptionTag);
+				
+				$burnerTag = $doc->createElement('burner');
+				$burnerTag->appendChild(
+						$doc->createTextNode(html_entity_decode($noxEmission['burnerDescription']))
+						);
+				$emissionTag->appendChild($burnerTag);						
+				
+				$gasUnitUsedTag = $doc->createElement('gasUnitUsed');
+				$gasUnitUsedTag->appendChild(
+						$doc->createTextNode(html_entity_decode($noxEmission['gas_unit_used']))
+						);
+				$emissionTag->appendChild($gasUnitUsedTag);
+				$totalByDepartment['gasUnitUsed'] += (float)$noxEmission['gas_unit_used'];
+				
+				$startTime = date(DEFAULT_DATE_FORMAT.' H:i:s', $noxEmission['start_time']);
+				$startTimeTag = $doc->createElement('startTime');
+				$startTimeTag->appendChild(
+						$doc->createTextNode($startTime)
+						);
+				$emissionTag->appendChild($startTimeTag);
+				
+				$endTime = date(DEFAULT_DATE_FORMAT.' H:i:s', $noxEmission['end_time']);
+				$endTimeTag = $doc->createElement('endTime');
+				$endTimeTag->appendChild(
+						$doc->createTextNode($endTime)
+						);
+				$emissionTag->appendChild($endTimeTag);
+				
+				$noteTag = $doc->createElement('note');
+				$noteTag->appendChild(
+						$doc->createTextNode(html_entity_decode($noxEmission['note']))
+						);
+				$emissionTag->appendChild($noteTag);
+				
+				$noxTag = $doc->createElement('nox');
+				$noxTag->appendChild(
+						$doc->createTextNode(html_entity_decode($noxEmission['nox']))
+						);
+				$emissionTag->appendChild($noxTag);
+				$totalByDepartment['nox'] += (float)$noxEmission['nox'];
+			}
 			
-		}
-		$page->appendChild( $productsTag );
-		$doc->save($fileName);			
-	}
+			//	TOTALS
+			$totalDepTag = $doc->createElement('totalForDepartment');
+			
+			$totalGasUnitUsedDepTag = $doc->createElement('totalGasUnitUsed');
+			$totalGasUnitUsedDepTag->appendChild(
+					$doc->createTextNode($totalByDepartment['gasUnitUsed'])
+					);
+			$totalDepTag->appendChild($totalGasUnitUsedDepTag);
+			
+			$totalNoxDepTag = $doc->createElement('totalNoxDep');
+			$totalNoxDepTag->appendChild(
+					$doc->createTextNode($totalByDepartment['nox'])
+					);
+			$totalDepTag->appendChild($totalNoxDepTag);
+			
+			$depTag->appendChild($totalDepTag);
+		}			
+
+		$doc->save($fileName);		
+	}	
 	
-	private function group($query,$categoryType,$categoryID) {
-		$this->db->query($query);															
-		
-		if ($this->db->num_rows()) {
-			for ($i=0; $i<$this->db->num_rows(); $i++) {
-				$data=$this->db->fetch($i);																								
-				$result = array (
-					'supplier'		=>	$data->supplier,
-					'product_id'	=>	$data->product_id,
-					'product_nr'	=>	$data->product_nr,
-					'product_name'	=>	$data->product_name,
-					'rule_nr'		=>	$data->rule_nr,
-					'qtyRule'		=>	$data->qtyRule,
-					'used'			=>	$data->used,							
-					'unitType'		=>	$data->unit_type,	
-					'quantity_lbs'	=>	$data->quantity_lbs
-				);
-				$results[] = $result;																						
-			}
-		}
-		//conversion
-		//$unittype = new Unittype($this->db);
-		//$unitTypeConverter = new UnitTypeConverter("us gallon");						
-		
-		$products[0]['supplier'] = $results[0]['supplier'];
-		$products[0]['product_id'] = $results[0]['product_id'];
-		$products[0]['product_nr'] = $results[0]['product_nr'];
-		$products[0]['product_name'] = $results[0]['product_name'];
-		//$products[0]['used'] = $results[0]['used'];
-		$products[0]['used'] = $results[0]['quantity_lbs'];
-				
-		//	TODO: add inventory support later 
-		$products[0]['notUsed'] = '--';
-		
-		//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
-		
-		//$qtyRule = $unitTypeConverter->convertToDefault($results[0]['qtyRule'], $unitypeDetails['description']);
-		//$results[0]['qtyRule'] = $qtyRule;
-		
-		//$used = $unitTypeConverter->convertToDefault($results[0]['used'], $unitypeDetails['description']);
-		//$products[0]['used'] = $used;
-		//end of conversion
-		
-		$k=0;											
-		for($i=1; $i < count($results); $i++) {
-			//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-			//$qtyRule = $unitTypeConverter->convertToDefault($results[$i]['qtyRule'], $unitypeDetails['description']);
-			//$results[$i]['qtyRule'] = $qtyRule;							
-			if ($results[$i]['product_nr'] != $products[$k]['product_nr']) {
-				$k++;
-				$products[$k]['supplier'] = $results[$i]['supplier'];
-				$products[$k]['product_id'] = $results[$i]['product_id'];
-				$products[$k]['product_nr'] = $results[$i]['product_nr'];
-				$products[$k]['product_name'] = $results[$i]['product_name'];
-				
-				//$unitypeDetails = $unittype->getUnittypeDetails($results[$i]['unitType']);
-				//$used = $unitTypeConverter->convertToDefault($results[$i]['used'], $unitypeDetails['description']);
-				//$products[$k]['used'] = $used;																	
-				$products[$k]['used'] = $results[$i]['quantity_lbs'];
-			}
-		}
-		
-		//getting product quantities in inventory
-		//TODO: LATER
-		/*foreach ($products as $value) {
-			$productString .= $value['product_id']. ","; 
-		}		
-		$productString = substr($productString,0,-1);
-		
-		switch ($categoryType) {					
-			case "company":
-				$facility = new Facility($this->db);
-				$facilityList = $facility->getFacilityListByCompany($categoryID);						
-				foreach ($facilityList as $value) {
-					$facilityString .= $value['id']. ","; 
-				}		
-				$facilityString = substr($facilityString,0,-1);
-				
-				$query = "SELECT pg.product_id, sum( pg.quantity ) quantity " .
-					"FROM inventory i, productgroup pg " .
-					"WHERE i.inventory_id = pg.inventory_id " .
-					"AND i.facility_id IN (" . $facilityString . ") " .
-					"AND pg.product_id IN (" . $productString . ")" .
-					"GROUP BY pg.product_id";
-				break;
-			case "facility":
-				$query = "SELECT pg.product_id, sum( pg.quantity ) quantity " .
-					"FROM inventory i, productgroup pg " .
-					"WHERE i.inventory_id = pg.inventory_id " .
-					"AND i.facility_id = " . $categoryID . " " .
-					"AND pg.product_id IN (" . $productString . ")" .
-					"GROUP BY pg.product_id";
-				break;
-		}
-		
-		$this->db->query($query);						
-		
-		if ($this->db->num_rows()) {
-			for ($i=0; $i<$this->db->num_rows(); $i++) {
-				$data=$this->db->fetch($i);																								
-				$inventoryQty = array (									
-					'product_id'	=>	$data->product_id,
-					'quantity'	=>	$data->quantity																							
-				);
-				$inventoryQties[] = $inventoryQty;																						
-			}
-		}											
-		//group data
-		for ($i=0; $i<count($products); $i++) {						
-			$diff = 0;
-			foreach ($inventoryQties as $inventoryQty) {
-				if ($inventoryQty['product_id'] == $products[$i]['product_id']) {
-					$diff = $inventoryQty['quantity'] - $products[$i]['used'];
-				}	
-			}
-			if ($diff > 0) {
-				$products[$i]['notUsed'] = $diff;
-			} else {
-				$products[$i]['notUsed'] = 0;
-			}							 
-		}*/
-		
-		$out['products'] = $products;
-		$out['results'] = $results;
-		
-		return $out;
-	}
+	
 }
 ?>
