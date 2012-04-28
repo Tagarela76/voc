@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->burner_id}
+                    &nbsp;{$burnerDetails.model} &gt; {$burnerDetails.serial}
                 </div>
             </td>
         </tr>

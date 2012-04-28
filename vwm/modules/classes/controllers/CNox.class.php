@@ -485,7 +485,10 @@ class CNox extends Controller {
 		$noxEmission->start_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
 		$noxEmission->end_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
 		
+		$burnerDetails = $manager->getBurnerDetail($noxEmission->burner_id);
+		
 		$this->smarty->assign('noxEmission', $noxEmission);
+		$this->smarty->assign('burnerDetails', $burnerDetails);
 		$this->smarty->assign('dateFormat', VOCApp::get_instance()->getDateFormat()."  g:i:s");
 		$this->smarty->assign('editUrl','?action=edit&category=nox&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID")."&tab=nox");
 		$this->smarty->assign('tpl', 'tpls/viewNoxEmission.tpl');
