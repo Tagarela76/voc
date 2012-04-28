@@ -466,7 +466,7 @@ class CNox extends Controller {
 		
 		$manufacturer = $manager->getBurnerManfucaturer($burner->manufacturer_id);
 		$this->smarty->assign('manufacturer', $manufacturer);
-
+		
 		$this->smarty->assign('editUrl', '?action=edit&category=nox&id=' . $this->getFromRequest("id") . '&departmentID=' . $this->getFromRequest("departmentID") . "&tab=burner");
 		$this->smarty->assign('tpl', 'tpls/viewNoxBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -481,10 +481,10 @@ class CNox extends Controller {
 			throw new Exception('404');
 		}
 
-		$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
+		$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);						
 		$noxEmission->start_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
 		$noxEmission->end_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
-						
+		
 		$this->smarty->assign('noxEmission', $noxEmission);
 		$this->smarty->assign('dateFormat', VOCApp::get_instance()->getDateFormat()."  g:i:s");
 		$this->smarty->assign('editUrl','?action=edit&category=nox&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID")."&tab=nox");

@@ -224,22 +224,21 @@ class NoxEmissionManager {
 		$burnerDetails = $this->getBurnerDetail($noxEmission->burner_id);
 		/*
 		 * BURNER INPUT / BURNER OUTPUT = BEF (BURNER EFFICIENCY FACTOR)		 
-		 * BEF should be less then 1
+		 * BEF should be less than 1
 		 */
 		if (!$burnerDetails || $burnerDetails['input'] == 0 || $burnerDetails['btu'] == 0) {
 			return false;
 		}
-		$bef = $burnerDetails['output'] / $burnerDetails['input'];
-
+		$bef = $burnerDetails['output'] / $burnerDetails['input'];		
 		/*
 		 * BURNER EFFICIENCY FACTOR / (BTUS / KW'S PER HOUR RATING) = UEF (UNIT EFFICIENCY FACTOR)
 		 */
-		$uef = $bef / $burnerDetails['btu'];
-
+		$uef = $bef*100 / $burnerDetails['btu'];		
 		/*
 		 * UNIT EFFICIENCY FACTOR * GAS THERMAL UNITS USED = Nox (TOTAL Nox EMISSION)
 		 */
-		return $uef * $noxEmission->gas_unit_used;
+		$nox = $uef * $noxEmission->gas_unit_used;		
+		return $nox;
 	}
 	
 	
