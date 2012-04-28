@@ -409,6 +409,10 @@ class Department extends DepartmentProperties {
 		return $this->currentUsage;
 	}
 
+	/**
+	 *
+	 * @return Facility 
+	 */
 	public function getFacility() {
 		$facility = new Facility($this->db);
 		$facility->initializeByID($this->facilityID);

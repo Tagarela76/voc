@@ -119,6 +119,15 @@ class Controller {
             $this->$functionName();
     }
 	
+	
+	public function runAction() {
+		$this->runCommon();
+		$functionName = 'action'.ucfirst($this->action);
+		if (method_exists($this,$functionName)) {
+			$this->$functionName();		
+		}		
+	}
+	
     protected function filterList($category, $dateFormat = false) {
         $this->filter = new Filter($this->db, $category);
         $this->smarty->assign('filterArray', $this->filter->getJsonFilterArray());

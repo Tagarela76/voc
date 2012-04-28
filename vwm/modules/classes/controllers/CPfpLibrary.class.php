@@ -32,4 +32,53 @@ class CPfpLibrary extends Controller {
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
 	}
+	
+	
+	protected function actionAssign() {
+		
+		$department = new Department($this->db);
+		$department->initializeByID($this->getFromRequest('departmentID'));				
+		
+		$facility = $department->getFacility();
+		$manager = new PFPManager($this->db);
+		$myPfpList = $manager->getList($facility->getCompanyID());
+		
+		//	group by ID to simplify comparison
+		$myPfpIDs = array();
+		foreach ($myPfpList as $key => $myPFP) {
+			$myPfpIDs[$myPFP->getId()] = $myPFP;
+		}
+		
+		$selectedIDs = $this->getFromRequest('id');
+		if($selectedIDs) {
+			foreach ($selectedIDs as $selectedID) {
+				if (isset($myPfpIDs[$selectedID])) {
+					//	this pfp is already assigned
+					//	do nothing
+				} else {
+					$manager->assignPFP2Company($selectedID, $facility->getCompanyID());
+				}
+			}
+		}
+		
+		header('Location: ?action=browseCategory&category=department&id='.$department->getDepartmentID().'&bookmark=pfpLibrary&tab=my');
+	}
+	
+	
+	protected function actionUnassign() {		
+		$department = new Department($this->db);
+		$department->initializeByID($this->getFromRequest('departmentID'));
+						
+		$facility = $department->getFacility();
+		
+		$manager = new PFPManager($this->db);
+		$selectedIDs = $this->getFromRequest('id');
+		if($selectedIDs) {
+			foreach ($selectedIDs as $selectedID) {				
+				$manager->unassignPFPFromCompany($selectedID, $facility->getCompanyID());				
+			}
+		}
+						
+		header('Location: ?action=browseCategory&category=department&id='.$department->getDepartmentID().'&bookmark=pfpLibrary&tab=my');
+	}
 }

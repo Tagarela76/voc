@@ -274,6 +274,7 @@ class PFPManager {
 		}
 	}
 
+	//TODO: is this error?
 	public function unassignPFPFromCompanies($pfpID) {
 		$query = "DELETE FROM " . TB_PFP2COMPANY . " WHERE pfp_id=" . $pfpID;
 		$this->db->query($query);
@@ -284,6 +285,14 @@ class PFPManager {
 		}
 
 		return $error;
+	}
+	
+	
+	public function unassignPFPFromCompany($pfpID, $companyID) {
+		$query = "DELETE FROM " . TB_PFP2COMPANY . " 
+				WHERE pfp_id = " . mysql_escape_string($pfpID) ." 
+				AND company_id = " . mysql_escape_string($companyID);
+		$this->db->exec($query);		
 	}
 
 	public function assignPFP2Company($pfpID, $companyID) {
