@@ -96,6 +96,9 @@ class TitlesNew {
 							case 'nox':
 								$this->title .= ": NOx emissions of department " .$departmentDetails['name'];
 								break;
+							case 'pfpLibrary':
+								$this->title .= ": Pre Formulated Products of department " .$departmentDetails['name'];
+								break;
 						}
 						break;
 				}

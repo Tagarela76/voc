@@ -16,22 +16,43 @@ class CNox extends Controller {
 	}
 
 	private function actionConfirmDelete() {
-		
+
 	}
 
 	private function actionDeleteItem() {
-		
+
 	}
 
 	private function actionViewDetails() {
+		$parentCategory = '';
+		$parentCategoryID = 0;
+
+		if($this->getFromRequest('facilityID')) {
+			//	request from facility
+			$parentCategory = 'facility';
+			$parentCategoryID = $this->getFromRequest('facilityID');
+		} elseif ($this->getFromRequest('departmentID')) {
+			//	request from department
+			$parentCategory = 'department';
+			$parentCategoryID = $this->getFromRequest('departmentID');
+		} else {
+			throw new Exception('404');
+		}
+
 		//	Access control
-		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {
+		if (!$this->user->checkAccess($parentCategory, $parentCategoryID)) {
 			throw new Exception('deny');
 		}
 
-		$this->setNavigationUpNew('department', $this->getFromRequest("departmentID"));
-		$this->setListCategoriesLeftNew('department', $this->getFromRequest("departmentID"), array('bookmark' => 'nox'));
+		$this->setNavigationUpNew($parentCategory, $parentCategoryID);
+		$this->setListCategoriesLeftNew($parentCategory, $parentCategoryID, array('bookmark' => 'nox'));
 		$this->setPermissionsNew('viewData');
+
+		$this->smarty->assign('editUrl',
+				'?action=edit&category='.$this->getFromRequest('tab')
+				.'&id='.$this->getFromRequest("id")
+				.'&'.urlencode($parentCategory).'ID='.urlencode($parentCategoryID)
+				."&tab=".  urlencode($this->getFromRequest('tab')));
 
 		if ($this->getFromRequest('tab')) {
 			$functionName = 'viewDetails' . ucfirst($this->getFromRequest('tab'));
@@ -52,13 +73,13 @@ class CNox extends Controller {
 			throw new Exception('deny');
 		}
 
-		//set permissions							
+		//set permissions
 		$this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark' => 'nox'));
 		$this->setNavigationUpNew('department', $request['departmentID']);
 		$this->setPermissionsNew('viewData');
-		
+
 		$noxManager = new NoxEmissionManager($this->db);
-		if ($request['tab'] == 'nox') {			
+		if ($request['tab'] == 'nox') {
 			$burnerList = $noxManager->getBurnerListByDepartment($request['departmentID']);
 			$this->smarty->assign("burners", $burnerList);
 
@@ -179,7 +200,7 @@ class CNox extends Controller {
 					if (!$validation->check_name($noxDetails['description'])) {
 						$validStatus['summary'] = 'false';
 					} else {
-						// check for duplicate names					
+						// check for duplicate names
 						if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("nox", $noxDetails['description'], $departmentID)) {
 							$validStatus['summary'] = 'false';
 							$validStatus['description'] = 'alreadyExist';
@@ -218,7 +239,7 @@ class CNox extends Controller {
 						$noxDetails['end_time'] = $endTime->getTimestamp();
 						$nox = new NoxEmission($this->db, $noxDetails);
 						$totalNox = $noxManager->calculateNox($nox);
-						
+
 						if ($totalNox) {
 							$nox->nox = $totalNox;
 						}
@@ -255,7 +276,7 @@ class CNox extends Controller {
 	}
 
 	private function actionEdit() {
-		$request = $this->getFromRequest();		
+		$request = $this->getFromRequest();
 
 		//	Access control
 		if (!$this->user->checkAccess('department', $request['departmentID'])) {
@@ -278,15 +299,15 @@ class CNox extends Controller {
 	}
 
 	/**
-	 * bookmarkDNox($vars)     
+	 * bookmarkDNox($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDNox($vars) {		
+	protected function bookmarkDNox($vars) {
 		if (!isset($_GET['tab'])) {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=nox");
 		}
-		extract($vars);			
-		
+		extract($vars);
+
 		if ($tab == "burner") {
 			$this->bookmarkDburner($vars);
 		} else {
@@ -308,18 +329,18 @@ class CNox extends Controller {
 				switch ($this->getFromRequest('category')) {
 					case 'facility':
 						$noxList = $noxManager->getNoxListByFacility(
-								$facilityDetails['facility_id'], 
+								$facilityDetails['facility_id'],
 								$sortStr);
 						break;
-					case 'department':						
+					case 'department':
 						$noxList = $noxManager->getNoxListByDepartment(
-								$departmentDetails['department_id'], 
+								$departmentDetails['department_id'],
 								$sortStr);
 						break;
 					default:
 						throw new Exception('404');
 						break;
-				}				
+				}
 			}
 
 
@@ -355,7 +376,7 @@ class CNox extends Controller {
 				if ($noxList) {
 
 					for ($i = 0; $i < count($noxList); $i++) {
-						$url = "?action=viewDetails&category=nox&id=" . $noxList[$i]['nox_id'] . "&departmentID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
+						$url = "?action=viewDetails&category=nox&id=" . $noxList[$i]['nox_id'] . "&".urlencode($this->getFromRequest('category'))."ID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
 						$noxList[$i]['url'] = $url;
 						$burnerDetails = $noxManager->getBurnerDetail($noxList[$i]['burner_id']);
 						$noxList[$i]['burner'] = $burnerDetails;
@@ -380,7 +401,7 @@ class CNox extends Controller {
 	}
 
 	/**
-	 * bookmarkDNox($vars)     
+	 * bookmarkDNox($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
 	protected function bookmarkDburner($vars) {
@@ -436,7 +457,7 @@ class CNox extends Controller {
 			if ($burnerList) {
 				for ($i = 0; $i < count($burnerList); $i++) {
 					$url = "?action=viewDetails&category=nox&id=" . $burnerList[$i]['burner_id'] . "&departmentID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
-					$burnerManufacturer = $noxManager->getBurnerManfucaturer($burnerList[$i]['manufacturer_id']);					
+					$burnerManufacturer = $noxManager->getBurnerManfucaturer($burnerList[$i]['manufacturer_id']);
 					$burnerList[$i]['url'] = $url;
 					$burnerList[$i]['manufacturer'] = $burnerManufacturer['name'];
 				}
@@ -463,11 +484,10 @@ class CNox extends Controller {
 		}
 		$burner = new NoxBurner($this->db, $burnerDetails);
 		$this->smarty->assign('burner', $burner);
-		
+
 		$manufacturer = $manager->getBurnerManfucaturer($burner->manufacturer_id);
 		$this->smarty->assign('manufacturer', $manufacturer);
 
-		$this->smarty->assign('editUrl', '?action=edit&category=nox&id=' . $this->getFromRequest("id") . '&departmentID=' . $this->getFromRequest("departmentID") . "&tab=burner");
 		$this->smarty->assign('tpl', 'tpls/viewNoxBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -484,10 +504,12 @@ class CNox extends Controller {
 		$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
 		$noxEmission->start_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
 		$noxEmission->end_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
-						
+
+		$burnerDetails = $manager->getBurnerDetail($noxEmission->burner_id);
+
 		$this->smarty->assign('noxEmission', $noxEmission);
+		$this->smarty->assign('burnerDetails', $burnerDetails);
 		$this->smarty->assign('dateFormat', VOCApp::get_instance()->getDateFormat()."  g:i:s");
-		$this->smarty->assign('editUrl','?action=edit&category=nox&id='.$this->getFromRequest("id").'&departmentID='.$this->getFromRequest("departmentID")."&tab=nox");
 		$this->smarty->assign('tpl', 'tpls/viewNoxEmission.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -525,24 +547,24 @@ class CNox extends Controller {
 		}
 
 		$burnerManufacturerList = $manager->getBurnerManufacturerList();
-		$this->smarty->assign('burnerManufacturers', $burnerManufacturerList);		
-		
+		$this->smarty->assign('burnerManufacturers', $burnerManufacturerList);
+
 		$this->smarty->assign('data', $burnerDetails);
-		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);	
+		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
-	
+
+
 	private function editNox() {
 		$request = $this->getFromRequest();
-		
+
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));
-		
+
 		$manager = new NoxEmissionManager($this->db);
-		$noxEmissionDetails = $manager->getNoxEmissionDetails($this->getFromRequest("id"));		
-				
+		$noxEmissionDetails = $manager->getNoxEmissionDetails($this->getFromRequest("id"));
+
 		if (!$noxEmissionDetails) {
 			throw new Exception('404');
 		}
@@ -552,21 +574,21 @@ class CNox extends Controller {
 		if (count($form) > 0) {
 			$noxEmissionDetails = $form;
 			$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
-			
+
 			$validation = new Validation($this->db);
 			$validStatus = $validation->validateNoxEmission($noxEmission);
 
 			if ($validStatus['summary'] == 'true') {
 				$startTime = new TypeChain($noxEmission->start_time, 'date', $this->db, $companyID, 'company');
 				$endTime = new TypeChain($noxEmission->end_time, 'date', $this->db, $companyID, 'company');
-				
+
 				$noxEmission->start_time = $startTime->getTimestamp();
-				$noxEmission->end_time = $endTime->getTimestamp();										
+				$noxEmission->end_time = $endTime->getTimestamp();
 				$totalNox = $manager->calculateNox($noxEmission);
 				if ($totalNox) {
 					$noxEmission->nox = $totalNox;
 				}
-								
+
 				$noxEmission->save();
 
 				// redirect
@@ -581,8 +603,8 @@ class CNox extends Controller {
 				$this->smarty->assign('validStatus', $validStatus);
 			}
 		}
-		
-		$burnerList = $manager->getBurnerListByDepartment($request['departmentID']);		
+
+		$burnerList = $manager->getBurnerListByDepartment($request['departmentID']);
 		$this->smarty->assign("burners", $burnerList);
 
 		$jsSources = array(
@@ -593,15 +615,15 @@ class CNox extends Controller {
 		$this->smarty->assign('jsSources', $jsSources);
 
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
-		$this->smarty->assign('cssSources', $cssSources);				
+		$this->smarty->assign('cssSources', $cssSources);
 
 		$this->smarty->assign('dataChain', new TypeChain(null, 'date', $this->db, $companyID, 'company'));
-		
+
 		$noxEmissionDetails['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['start_time']);
 		$noxEmissionDetails['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['end_time']);
-		
+
 		$this->smarty->assign('data', $noxEmissionDetails);
-		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);	
+		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}

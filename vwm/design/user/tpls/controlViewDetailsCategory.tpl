@@ -14,7 +14,7 @@
 									
 									$request.category=="inventory"							  || 
 									$request.category=="mix" 		&& $permissions.data.edit || 
-									$request.category=="nox" 		&& $permissions.data.edit || 
+									$request.category=="nox" 		&& $permissions.data.edit && $request.departmentID || 
 									$request.category=="logbook" || 
 									($request.category=="wastestorage" && $data->active!=0)}	
 									{*$request.category=="accessory" 	&& $permissions.data.edit ||*}							

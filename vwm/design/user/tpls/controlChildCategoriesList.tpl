@@ -98,6 +98,18 @@
 											</div>
 											{/if}
 									{/if}
+										
+									{if $request.bookmark == 'pfpLibrary'}
+										  <div class="button_float_left"> 
+												{if $request.tab == 'all'}
+                                                <input class="button" type="submit" value="Assign Selected PFP's"/>                                          
+												<input type="hidden" name="action" value="assign"/>
+												{else}
+												<input class="button" type="submit" value="Remove Selected PFP's From My List"/>                                          
+												<input type="hidden" name="action" value="unassign"/>
+												{/if}
+                                          </div>
+									{/if}
                                                                     </div>
                                     {if ($childCategory != "company" && $show.reports) || ($request.category == "company")}
                                             <div class="button_float_left">
