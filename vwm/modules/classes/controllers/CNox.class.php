@@ -16,11 +16,38 @@ class CNox extends Controller {
 	}
 
 	private function actionConfirmDelete() {
-
+		$NOx = new NoxEmissionManager($this->db);
+		foreach ($this->itemID as $id) {
+			$NOxDetails = $NOx->getNoxEmissionDetails($id);
+			$NOx->deleteNoxEmissionsByID($id);
+		}
+		
+		if ($this->successDeleteInventories)
+			header("Location: ?action=browseCategory&category=department&id=".$NOxDetails['department_id']."&bookmark=nox&tab=nox&notify=47");
 	}
 
 	private function actionDeleteItem() {
-
+		$req_id=$this->getFromRequest('id');
+		!is_array($req_id) ? $req_id = array($req_id) : "";
+		$NOx = new NoxEmissionManager($this->db);
+		if (!is_null($this->getFromRequest('id'))) {
+		foreach ($req_id as $nox_id) {
+				$NOxDetails = $NOx->getNoxEmissionDetails($nox_id);
+				$delete["id"] =	$NOxDetails["nox_id"];
+				$delete["description"] = $NOxDetails["description"];
+				$itemForDelete[] = $delete;
+			}
+		}
+		//var_dump($itemForDelete);die();
+		$this->smarty->assign("cancelUrl", "?action=browseCategory&category=department&id=".$this->getFromRequest('departmentID')."&bookmark=nox&tab=nox");
+		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {
+			throw new Exception('deny');
+		}
+		//set permissions
+		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
+		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
+		$this->setPermissionsNew('viewData');
+		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 	}
 
 	private function actionViewDetails() {

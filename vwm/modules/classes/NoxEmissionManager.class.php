@@ -208,6 +208,11 @@ class NoxEmissionManager {
 		}
 		return (isset($searched)) ? $searched : null;
 	}
+	
+	public function deleteNoxEmissionsByID($noxEmissionID) {
+		$query = "DELETE FROM nox WHERE nox_id = ".  mysql_escape_string($noxEmissionID);
+		$this->db->query($query);
+	}
 
 	public function getNoxEmissionDetails($noxEmissionID) {
 		$sql = "SELECT * FROM `nox` WHERE nox_id = " . mysql_escape_string($noxEmissionID);

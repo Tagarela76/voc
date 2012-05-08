@@ -15,6 +15,19 @@ class PFP
 		
 	}
 	
+	public function getProducts() {
+		$products = array();
+		if (isset($this->products)) {
+			foreach ($this->products as $item) {
+				$product['product_nr'] = $item->product_nr;
+				$product['name'] = $item->name;
+				$products[] = $product;
+			}
+		}
+		
+		return $products;
+	}
+
 	public function getProductsCount() {
 		return isset($this->products) ? count($this->products) : "0";
 	}

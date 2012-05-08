@@ -24,9 +24,9 @@
                             <div>ID Number</div>
                         </td>
                         <!-- Special Headers -->                                               
-                         {if $itemType eq "mix" }
+                         {if $itemType eq "mix" or $itemType eq "nox"}
                             <td><div class="users_header_red_r"><div>Description</div></div></td>
-                         {elseif $itemType eq "equipment"}
+						 {elseif $itemType eq "equipment"}
                          	<td><div class="users_header_red_r"><div>Equipment Name</div></div></td>
                          {elseif $itemType eq "inventory"}
                          	<td><div class="users_header_red_r"><div>Inventory Name</div></div></td>
@@ -70,7 +70,7 @@
                                 {/if}
                             </div>
                         </td>
-                        {if $itemType eq "mix"}
+                        {if $itemType eq "mix" or $itemType eq "nox"}
                         <td>
                             <div style="width:100%;">
                                 {$itemForDelete[i].description}
