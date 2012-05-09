@@ -92,6 +92,16 @@
                 <div style="width:100%;" align="left">
                     {$pfp->getDescription()} &nbsp;
                 </div>
+				<div>
+					<table style="font-size: 10; color: #8B7765;">
+						{foreach from=$pfp->getProducts() item=item}
+							<tr>
+								<td>{$item.product_nr}</td>
+								<td>{$item.name}</td>
+							</tr>
+						{/foreach}
+					</table>
+				</div>
             </a>
         </td>
         <td class="border_users_b border_users_r">

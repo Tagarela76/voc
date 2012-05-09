@@ -56,7 +56,7 @@
 				</div>					
 			</a> 
         </td>
-        <td class="" width="30%">
+        <td class="users_u_top_r" width="30%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
                 	Apply
