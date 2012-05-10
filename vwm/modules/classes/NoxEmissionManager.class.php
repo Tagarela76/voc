@@ -234,7 +234,13 @@ class NoxEmissionManager {
 		if (!$burnerDetails || $burnerDetails['input'] == 0 || $burnerDetails['btu'] == 0) {
 			return false;
 		}
+		
 		$bef = $burnerDetails['output'] / $burnerDetails['input'];		
+		
+		if (empty($noxEmission->gas_unit_used)) {
+			$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
+			return $nox;
+		}
 		/*
 		 * BURNER EFFICIENCY FACTOR / (BTUS / KW'S PER HOUR RATING) = UEF (UNIT EFFICIENCY FACTOR)
 		 */
