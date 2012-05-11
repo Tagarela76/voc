@@ -142,12 +142,12 @@ class CEquipment extends Controller
 		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest('departmentID'));
 		
 		// Check: can this company add more equipments?
-		$voc2vps = new VOC2VPS($this->db);
+/*		$voc2vps = new VOC2VPS($this->db);
 		$limits = $voc2vps->getCustomerLimits($companyID);
 		if ($limits['Source count']['current_value'] >= $limits['Source count']['max_value']) {
 			header ('Location: ?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=equipment&notify=35');
 			die();
-		}
+		}*/
 		
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
@@ -351,6 +351,8 @@ class CEquipment extends Controller
 				//disable add button
 				$vpsSaysNo = true;
 			}
+			//	temporary always say yes
+			$vpsSaysNo = false;
 			$this->smarty->assign('vpsSaysNo',$vpsSaysNo);
 			
 			//Set Notify
