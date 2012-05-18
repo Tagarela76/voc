@@ -51,21 +51,21 @@ class bulkUploader4PFP {
 		$description = '/ ';
 			for($i=1;$i<count($products);$i++) {
 
-				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][4] . "'");
+				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][2] . "'");
 				$r=$this->db->fetch(0);				
 				if (empty($r)) {					
 					//$actionLog .= $this->insertData($products[$i]);
 					//$this->insertedCnt++;						
-					$actionLog .= " Product " . $products[$i][4] . " doesn't exist \n";
+					$actionLog .= " Product " . $products[$i][2] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist			
 						
-						if ($products[$i][7] >= 1){
+						if ($products[$i][4] >= 1){
 							$productIDS[] = $r->product_id;	
-							$productRATIOS[] = $products[$i][7];
+							$productRATIOS[] = $products[$i][4];
 							
-							$description .=  $products[$i][4]." / ";
+							$description .=  $products[$i][2]." / ";
 						}else{
-							$actionLog .= " Product " . $products[$i][4] . " has ratio less than 1 \n";
+							$actionLog .= " Product " . $products[$i][2] . " has ratio less than 1 \n";
 						}
 				}
 		
@@ -88,7 +88,7 @@ class bulkUploader4PFP {
 
 						}
 					}else{
-						$actionLog .= " PFP with products " . $products[$i][4] . " hasn't description. \n";
+						$actionLog .= " PFP with products " . $products[$i][2] . " hasn't description. \n";
 					}
 					$description = '/ ';
 				}

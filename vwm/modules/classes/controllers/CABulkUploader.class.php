@@ -58,23 +58,23 @@ class CABulkUploader extends Controller {
 
 						$quan = array();
 						for ($i=1;$i<count($result[$j]);$i++){
-							$firstNum = $result[$j][1][7];
+							$firstNum = $result[$j][1][4];
 							
-							if ($result[$j][$i][7] != null ){ // no ratio but product quantity exist
+							if ($result[$j][$i][4] != null ){ // no ratio but product quantity exist
 				
-								$reverse = strrev( $result[$j][$i][7] );
+								$reverse = strrev( $result[$j][$i][4] );
 								if ($reverse[0] == "%"){
-									$number = substr($result[$j][$i][7], 0, -1);
+									$number = substr($result[$j][$i][4], 0, -1);
 									$number = $firstNum * $number / 100; 
-									$result[$j][$i][7] = $number;
+									$result[$j][$i][4] = $number;
 								}
-								$quan[] = $result[$j][$i][7];
+								$quan[] = $result[$j][$i][4];
 							}
 						}
 						if ($quan){						
 							$lcm = $this->rate($quan); //make ratio
 							for ($i=1;$i<count($result[$j]);$i++){
-								$result[$j][$i][7] = $lcm[$i-1];
+								$result[$j][$i][4] = $lcm[$i-1];
 								
 							}
 						}
@@ -82,7 +82,7 @@ class CABulkUploader extends Controller {
 					
 				}
 				
-
+				
 			$filename = date('d-m-Y_H:i:s').'_pfp.csv';
 			$handle = fopen(DIR_PATH_LOGS.$filename, 'x');
 			foreach ($result as $csv_array) {

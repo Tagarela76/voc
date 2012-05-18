@@ -49,7 +49,7 @@ class validateCSV {
 			$this->errorComments .= $currRowComments;			
 			
 			$count=(count($arr))? count($arr) : 0;			
-			if(!empty($data[4])){
+			if(!empty($data[2])){
 				$arr[$count][] = $data;
 			}else{
 				$arr[$count+1][] = $data;
@@ -64,16 +64,16 @@ class validateCSV {
 	
 	private function pfpDataCheck($data,$row){
 		$comments = "";
-		if ($data[4]){
-			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $data[4] . "'");
+		if ($data[2]){
+			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $data[2] . "'");
 			$r=$this->db->fetch(0);				
 			//product check exist
 			if (empty($r)) {			
-				$comments .= "Product with ID : " . $data[4] . " doesn't exist. Row " . $row . ".\n";
-				$this->productsError[]['errorComments'] = "Product with ID value " . $data[4] . " doesn't exist. Row " . $row . ".\n";
+				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
+				$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 			}else{				
 					//TODO: isset of PFP description
-					$this->productsCorrect[] = $data[4];								
+					$this->productsCorrect[] = $data[2];								
 			}
 		}
 		return $comments;
