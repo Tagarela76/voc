@@ -1,11 +1,14 @@
 <?php
-class validateCSV {
+class validateCSV {	
+	/**	 
+	 * @var db
+	 */		
 	private $db;
 	
 	public $productsError;
 	public $productsCorrect;
 	public $errorComments;
-	
+			
 	function validateCSV($db) {
 		$this->db=$db; 
 		
@@ -19,63 +22,73 @@ class validateCSV {
 		$CSVPath = $input['inputFile'];
 		//last row
 		$file = fopen($CSVPath, "a");
-		
-		fwrite($file,";;;;;;;;;;;;;;;;;;;;;;;;\n");
-		fclose($file);
-		
-		$file = fopen($CSVPath, "r");
-				
-		$headerKey = $this->tableHeader($file); //identification columns by their header
 
-		$row = 3;
-		$lastNotEmptyRow = 4;
-		$inProduct = false;
+		fwrite($file, ";;;;;;;;;;;;;;;;;;;;;;;;\n");
+		fclose($file);
+
+		$file = fopen($CSVPath, "r");
+
+		//	$headerKey = $this->tableHeader($file); //identification columns by their header
+		//$row = 3;
+		//	$lastNotEmptyRow = 4;
+		//	$inProduct = false;
 		$error = "";
 		$this->errorComments = "--------------------------------\n";
-		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of ". $input['realFileName'] . "...\n";
+		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
+
+		$currentRow = 0;
+		$headerEndsRow = 3;
+		//	here we'll store rows for single pfp
+		$currentPfp = array();
+		$isErrorInCurrentPfp = false;
+		while ($dat = fgetcsv($file, 1000, ";")) {
+			$currentRow++;
+			if ($currentRow < $headerEndsRow) {
+				//	skip first $headerEndsRow rows
+				continue;
+			}
+
+			$data = $this->trimAll($dat);
+			
+			//	pfp's are splitted by empty row
+			if ($this->isEmptyRow($data)) {
+				if (count($currentPfp) > 0) {
+					if($isErrorInCurrentPfp) {
+						$this->productsError[] = $currentPfp;
+					} else {
+						$this->productsCorrect[] = $currentPfp;	
+					}
 		
-		while ($dat = fgetcsv($file, 1000, ";")){
-			
-			$data = Array();
-			foreach ($dat as $val){
-				$data[] = mysql_real_escape_string($val);
-			}
-			$data = $this->trimAll($data);			
-			$currRowComments = $this->pfpDataCheck($data,$row);
-				if ($currRowComments != "") {
-					//$error = TRUE;
-					$error .= $currRowComments;
+					//	reset
+					$currentPfp = array();
+					$isErrorInCurrentPfp = false;										
 				}
-			$this->errorComments .= $currRowComments;			
-			
-			$count=(count($arr))? count($arr) : 0;			
-			if(!empty($data[2])){
-				$arr[$count][] = $data;
-			}else{
-				$arr[$count+1][] = $data;
-			}
-			
-			$row++;
-		}
-		fclose($file);
-							
-		return $arr;
+				
+				//	no sence to do the rest of code for this row
+				continue;
+			}		
+
+			$currRowComments = $this->pfpDataCheck($data, $currentRow);
+			if ($currRowComments != "") {
+				$this->errorComments .= $currRowComments;			
+				$isErrorInCurrentPfp = true;
+			} 
+			$currentPfp[] = $data;			
+		}		
+		fclose($file);	
 	}
 	
 	private function pfpDataCheck($data,$row){
 		$comments = "";
-		if ($data[2]){
-			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $data[2] . "'");
-			$r=$this->db->fetch(0);				
+		if ($data[2]) {
+			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
+			$r = $this->db->fetch(0);				
 			//product check exist
 			if (empty($r)) {			
 				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
-				$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
-			}else{				
-					//TODO: isset of PFP description
-					$this->productsCorrect[] = $data[2];								
+				//$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 			}
-		}
+		}		
 		return $comments;
 	}	
 	
@@ -1225,6 +1238,22 @@ class validateCSV {
 	private function productsKeys() {
 		return array(0,1,2,3,4,5,8,9,16,17,18,19,20,21,22,23,24,29,30,31);
 	} 
+	
+	
+	/**
+	 * Check array if it has at least one non empty string
+	 * @param array $row
+	 * @return boolean 
+	 */
+	private function isEmptyRow($row) {		
+		foreach ($row as $item) {
+			if ($item != "") {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 		 
 }
 
