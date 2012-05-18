@@ -24,6 +24,7 @@ class bulkUploader4PFP {
 
 	const PRODUCTNR_INDEX = 2;
 	const PRODUCTRATIO_INDEX = 4;
+	const PRODUCTUNITTYPE_INDEX = 5;
 
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
 		$pfpArray = $validate->productsCorrect;

@@ -52,45 +52,19 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv			
-
-			$ratioFieldIndex = 4;
+			
 			if ($validation->productsCorrect) {
-				for ($j = 0; $j < count($validation->productsCorrect); $j++) {					
-					//	save ratio of base product
-					$firstNum = $validation->productsCorrect[$j][0][$ratioFieldIndex];
-					$quan = array($firstNum);
-					
-					for ($i = 1; $i < count($validation->productsCorrect[$j]); $i++) {										
-						if ($validation->productsCorrect[$j][$i][$ratioFieldIndex] != null) { // no ratio but product quantity exist
-							$reverse = strrev($validation->productsCorrect[$j][$i][$ratioFieldIndex]);						
-							if ($reverse[0] == "%") {
-								$number = substr($validation->productsCorrect[$j][$i][$ratioFieldIndex], 0, -1);
-								$number = $firstNum * $number / 100;
-								$validation->productsCorrect[$j][$i][4] = $number;
-							}
-							$quan[] = $validation->productsCorrect[$j][$i][$ratioFieldIndex];
+				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
+					if (!$this->isVolumeRatio($validation->productsCorrect[$j][0])) {
+						foreach ($validation->productsCorrect[$j] as $key => $product) {
+							$validation->productsCorrect[$j][$key] = $this->convertOzRatioToVolume($product);	
 						}						
+						$validation->productsCorrect[$j] = $this->convertFromCumulativeQty($validation->productsCorrect[$j]);
 					}
+					$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);	
 					
-					if ($quan) {
-						$lcm = $this->rate($quan); //make ratio
-					
-						for ($i = 0; $i < count($validation->productsCorrect[$j]); $i++) {
-							$validation->productsCorrect[$j][$i][$ratioFieldIndex] = $lcm[$i];
-						}
-						
-					}					
 				}
 			}
-
-			/*$filename = date('d-m-Y_H:i:s') . '_pfp.csv';
-			$handle = fopen(DIR_PATH_LOGS . $filename, 'x');
-			foreach ($result as $csv_array) {
-				foreach ($csv_array as $item) {
-					fputcsv($handle, $item, ";");
-				}
-			}
-			fclose($handle);*/
 			
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
@@ -204,6 +178,88 @@ class CABulkUploader extends Controller {
 		return ($b === null) ?
 				(int) $a :
 				$this->gcd_array($array, $this->gcd($a, $b));
+	}
+	
+	
+	private function calcRatioVolume($products) {
+		$ratioFieldIndex = bulkUploader4PFP::PRODUCTRATIO_INDEX;
+
+		//	save ratio of base product
+		$firstNum = $products[0][$ratioFieldIndex];
+		$quan = array($firstNum);
+
+		for ($i = 1; $i < count($products); $i++) {
+			if ($products[$i][$ratioFieldIndex] != null) { // no ratio but product quantity exist
+				$reverse = strrev($products[$i][$ratioFieldIndex]);
+				if ($reverse[0] == "%") {
+					$number = substr($products[$i][$ratioFieldIndex], 0, -1);
+					$number = $firstNum * $number / 100;
+					$products[$i][4] = $number;
+				}
+				$quan[] = $products[$i][$ratioFieldIndex];
+			}
+		}
+
+		if ($quan) {
+			$lcm = $this->rate($quan); //make ratio
+
+			for ($i = 0; $i < count($products); $i++) {
+				$products[$i][$ratioFieldIndex] = $lcm[$i];
+			}
+		}
+
+		return $products;
+	}
+	
+	
+	private function isVolumeRatio($product) {
+		return (strtoupper($product[bulkUploader4PFP::PRODUCTUNITTYPE_INDEX]) == 'VOL') ? true : false;
+	}
+	
+	
+	private function convertOzRatioToVolume($product) {
+		
+		$unitTypeConverter = new UnitTypeConverter();
+		
+		$productObj = new Product($this->db);
+		$productID = $productObj->getProductIdByName($product[bulkUploader4PFP::PRODUCTNR_INDEX]);
+		if(!$productID) {
+			throw new Exception('This is no product in database'.$product[bulkUploader4PFP::PRODUCTNR_INDEX]);
+		}
+		$productObj->initializeByID($productID);
+		
+		$density = new Density($this->db, $productObj->getDensityUnitID());
+		if (!$density->getNumerator()) {
+			throw new Exception("Failed to load Density with id ".$productObj->getDensityUnitID());
+		}
+		$densityType = array(
+			'numerator'	=> $density->getNumerator(),
+			'denominator'	=> $density->getDenominator()
+		);
+		
+		$volumeQty = $unitTypeConverter->convertToDefault($product[bulkUploader4PFP::PRODUCTRATIO_INDEX], 'oz', 
+				$productObj->getDensity(), $densityType);
+		
+		$product[bulkUploader4PFP::PRODUCTRATIO_INDEX] = $volumeQty;
+		$product[bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL-CUMULATIVE';
+				
+		return $product;
+	}
+	
+	
+	private function convertFromCumulativeQty($products) {				
+		$productsCount = count($products);
+								
+		for($i = 0; $i < $productsCount; $i++ ) {									
+			if ($i > 0) {				
+				$cumulativeQty = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i-1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
+				$products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $cumulativeQty;
+			}
+			$products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+			
+		}
+						
+		return $products;
 	}
 
 }

@@ -551,8 +551,7 @@ class Product extends ProductProperties {
 			$this->vocwx = $productFields->vocwx;
 			$this->density = $productFields->density;
 			$this->densityUnitID = $productFields->density_unit_id;	//	density's unit type
-			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;
-			echo "<h2>initializeByID perccentVolatileWeight: {$this->perccentVolatileWeight}</h2>";
+			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;			
 			$this->perccentVolatileVolume = $productFields->percent_volatile_volume;	//	density's unit type
 			return true;
 		} else {
