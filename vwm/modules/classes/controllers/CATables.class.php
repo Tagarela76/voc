@@ -74,6 +74,44 @@ class CATables extends Controller {
 	}
 	
 	
+	private function actionAssignMsds() {
+				
+		$productID = $this->getFromRequest('productID');
+
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($productID);
+		
+		$msds = new MSDS($this->db);
+		if ($this->getFromPost()) {
+			
+			$selectedSheetID = $this->getFromPost('selectedSheet');														
+			$productID = $this->getFromPost('productID');
+			$msds->linkSheetToProduct($selectedSheetID, $productID);														
+							
+			$notify=new Notify($this->smarty);
+			$notify->successEdited("product", $productDetails['product_nr']);						
+			header("Location: admin.php?action=browseCategory&category=product&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&page=".urlencode($this->getFromPost('productPage')));
+			die();
+		}
+		
+		$this->smarty->assign('productDetails', $productDetails);		
+
+		$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
+		//$pagination->url = "?action=msdsUploader&step=edit&productID=655&itemID=" . urlencode($this->getFromRequest('itemID')) . "&id=" . urlencode($this->getFromRequest('id'));
+
+		$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
+		$this->smarty->assign('unlinkedMsdsSheets', $unlinkedMsdsSheets);
+
+//				$title = new Titles($smarty);
+//				$title->titleEditItem("MSDS Sheets");
+		
+		$this->smarty->assign('request', $this->getFromRequest());
+		$this->smarty->assign('pagination', $pagination);
+		$this->smarty->assign("tpl","tpls/assignMsds.tpl");
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	
 	private function actionUploadOneMsds() {
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));

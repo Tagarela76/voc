@@ -92,7 +92,9 @@
 				{if $category[i].msdsLink}
 					<a href="{$category[i].msdsLink}"><div style="width:100%;">view</div ></a>
 				{else}
-					<a href="?action=uploadOneMsds&category=tables&productID={$category[i].product_id}"><div style="width:100%;">upload</div></a>
+					<a href="?action=uploadOneMsds&category=tables&productID={$category[i].product_id}">upload</a>
+					|
+					<a href="?action=assignMsds&category=tables&productID={$category[i].product_id}&subBookmark={$request.subBookmark}&letterpage={$request.letterpage}&productPage={$request.page}">edit</a>					
 				{/if}
 			</td>
 		</tr>
