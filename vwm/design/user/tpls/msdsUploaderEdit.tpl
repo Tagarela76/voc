@@ -2,6 +2,11 @@
     Assign product <b>{$productDetails.product_nr}</b>
     to MSDS sheet:
 </div>
+	
+{*PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
+
 <form action="" method="get">
     <table class="users" cellspacing="0" cellpadding="0" align="center">
         <tr class="users_top_yellowgreen" height="27">
@@ -72,3 +77,7 @@
 		<input id="saveButton" type="submit" value="Save" class="button">
     </div>
 </form>
+		
+{*PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}

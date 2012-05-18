@@ -690,12 +690,17 @@ jgypsyn@gyantgroup.com
 				$productDetails = $product->getProductDetails($productID);
 				$this->smarty->assign('productDetails',$productDetails);						
 				$msds = new MSDS($this->db);
-				$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets();
+				
+				$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
+				$pagination->url = "?action=msdsUploader&step=edit&productID=655&itemID=".urlencode($this->getFromRequest('itemID'))."&id=".urlencode($this->getFromRequest('id'));
+
+				$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
 				$this->smarty->assign('unlinkedMsdsSheets',$unlinkedMsdsSheets);
 							
 //				$title = new Titles($smarty);
 //				$title->titleEditItem("MSDS Sheets");
-							
+				
+				$this->smarty->assign('pagination',$pagination);
 				$this->smarty->assign('step', 'edit');
 				$this->smarty->display('tpls:msdsUploader.tpl');
 				break;

@@ -471,13 +471,15 @@ class MSDS {
         return $msdsSheet;
     }
 
-    public function getUnlinkedMsdsSheets() {
-        //$this->db->select_db(DB_NAME);
+    public function getUnlinkedMsdsSheets(Pagination $pagination = null) {        
 
         $query = "SELECT * " .
                 "FROM msds_files " .
                 "WHERE product_id is NULL";
-
+		
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
         $this->db->query($query);
 
         if ($this->db->num_rows()) {
@@ -499,6 +501,21 @@ class MSDS {
         }
 
         return $msdsSheets;
+    }
+	
+	
+	public function getUnlinkedMsdsSheetsCount() {        
+        $query = "SELECT count(*) cnt " .
+                "FROM msds_files " .
+                "WHERE product_id is NULL";
+
+        $this->db->query($query);
+
+        if ($this->db->num_rows()) {
+            return $this->db->fetch(0)->cnt;
+        } else {
+			return 0;
+		}       
     }
 
     public function linkSheetToProduct($msdsSheetID, $productID) {
