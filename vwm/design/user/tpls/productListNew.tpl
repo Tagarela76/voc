@@ -194,13 +194,13 @@
             </div>
             {else}           
 				&nbsp;
-            <!--div>
-                    {*if $permissions.company.view}
+            <div>
+                    {if $permissions.company.view}
 						<a href='?action=msdsUploader&step=edit&productID={$childCategoryItems[i].product_id}&itemID={$request.category}&id={$request.id}'>edit</a>
                     {else}
                     	--
-                    {/if*}
-            </div-->                
+                    {/if}
+            </div>
             {/if}
         </td>
     </tr>

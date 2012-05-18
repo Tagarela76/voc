@@ -683,6 +683,7 @@ jgypsyn@gyantgroup.com
 				break;
 						
 			case "edit":
+				
 				$productID = $this->getFromRequest('productID');
 							
 				$product = new Product($this->db);
@@ -711,9 +712,8 @@ jgypsyn@gyantgroup.com
 							
 				$notify=new Notify($this->smarty);
 				$notify->successEdited("product", $productDetails['product_nr']);
-							
 				//showCategory("product", $_GET['id'], $db, $xnyo, $smarty, $user);
-				header("Location: ?action=browseCategory&category=department&id=".$this->getFromRequest('id')."&bookmark=product");
+				header("Location: ?action=browseCategory&category=".urlencode($this->getFromRequest('itemID'))."&id=".urlencode($this->getFromRequest('id'))."&bookmark=product");
 				break;
 		}											
 	}
