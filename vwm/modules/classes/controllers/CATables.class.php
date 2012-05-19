@@ -97,7 +97,7 @@ class CATables extends Controller {
 		$this->smarty->assign('productDetails', $productDetails);		
 
 		$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
-		//$pagination->url = "?action=msdsUploader&step=edit&productID=655&itemID=" . urlencode($this->getFromRequest('itemID')) . "&id=" . urlencode($this->getFromRequest('id'));
+		$pagination->url = "admin.php?action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
 
 		$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
 		$this->smarty->assign('unlinkedMsdsSheets', $unlinkedMsdsSheets);
