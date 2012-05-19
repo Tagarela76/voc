@@ -1390,7 +1390,7 @@ class Controller {
             return $this->request;
     }
 
-    protected function getFromPost($key) {
+    protected function getFromPost($key = null) {
         if (isset($key)) {
             if (isset($this->post[$key]))
                 return $this->post[$key];
