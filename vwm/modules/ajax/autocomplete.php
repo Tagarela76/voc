@@ -75,7 +75,7 @@
 				}
 				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
 				echo json_encode($response);
-			}
+			}			
 			break;
 			
 		case "accessoryAll":
@@ -132,6 +132,20 @@
                                         echo json_encode($response);
                                 }
                         break;
+		
+		case "assignMsds":						
+			$msds = new MSDS($db);
+			$msdsList = $msds->searchAutocomplete($_GET['query']);
+			if ($msdsList) {
+				foreach ($msdsList as $msdsFile) {
+					$suggestions[] = $msdsFile['name'];
+				}
+				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+				echo json_encode($response);
+			}			
+			break;
         }
+		
+		
 
 ?>

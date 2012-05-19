@@ -1,3 +1,9 @@
+{if $overrideAction}
+	{assign var="formAction" value=$overrideAction}
+{else}	
+	{assign var="formAction" value="browseCategory"}
+{/if}
+
 <div style="text-align:center;">
 	{*thank you, google*}
 	<form>	
@@ -8,7 +14,7 @@
 					<td><input type="submit" id="goSearch" class="button" value="Search{if $request.bookmark == "industryType" || 
 																							$request.bookmark == "industrySubType"}{else}&nbsp;{$request.bookmark}{/if}"></td>
 					<td>
-						<input type="hidden" name="action" value="browseCategory">
+						<input type="hidden" name="action" value="{$formAction}">
 						<input type="hidden" name="category" value="{$request.category}">
 						{if $request.bookmark}<input type="hidden" name="bookmark" value="{$request.bookmark}">{/if}
 						{if $request.subBookmark}<input type="hidden" name="subBookmark" value="{$request.subBookmark}">{/if}

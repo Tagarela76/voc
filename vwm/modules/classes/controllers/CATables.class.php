@@ -82,8 +82,9 @@ class CATables extends Controller {
 		$productDetails = $product->getProductDetails($productID);
 		
 		$msds = new MSDS($this->db);
-		if ($this->getFromPost()) {
-			
+		
+		//	form submitted
+		if ($this->getFromPost()) {			
 			$selectedSheetID = $this->getFromPost('selectedSheet');														
 			$productID = $this->getFromPost('productID');
 			$msds->linkSheetToProduct($selectedSheetID, $productID);														
@@ -95,15 +96,23 @@ class CATables extends Controller {
 		}
 		
 		$this->smarty->assign('productDetails', $productDetails);		
-
-		$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
-		$pagination->url = "admin.php?action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
-
-		$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
+		
+		if ($this->getFromRequest('q')) {
+			$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount($this->getFromRequest('q')));
+			$pagination->url = "admin.php?q=".  urlencode($this->getFromRequest('q'))."action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
+			$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination, $this->getFromRequest('q'));
+			
+			$this->smarty->assign('searchQuery',$this->getFromRequest('q'));
+		} else {
+			$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
+			$pagination->url = "admin.php?action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
+			$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
+		}
+		
 		$this->smarty->assign('unlinkedMsdsSheets', $unlinkedMsdsSheets);
 
-//				$title = new Titles($smarty);
-//				$title->titleEditItem("MSDS Sheets");
+		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
+		$this->smarty->assign('jsSources', $jsSources);
 		
 		$this->smarty->assign('request', $this->getFromRequest());
 		$this->smarty->assign('pagination', $pagination);
