@@ -1,5 +1,5 @@
 <div align="center" class="padd7">
-    Assign product <b>{$productDetails.product_nr}</b>
+    Assign product <b>{$productDetails.product_nr} {$productDetails.name}</b>
     to MSDS sheet:
 </div>
 
@@ -61,13 +61,13 @@
 						<input type="radio" value="{$unlinkedMsdsSheets[i].id}" name="selectedSheet" onClick="javascript:document.getElementById('saveButton').disabled = 0;">
 					</td>
 					<td class="border_users_l border_users_b">
-						{$unlinkedMsdsSheets[i].id} 
+						{$unlinkedMsdsSheets[i].id}
 					</td>
 					<td class="border_users_l border_users_b">
-						{$unlinkedMsdsSheets[i].name} 
+						{$unlinkedMsdsSheets[i].name}
 					</td>
 					<td class="border_users_l border_users_b">
-						{$unlinkedMsdsSheets[i].realName} 
+						{$unlinkedMsdsSheets[i].realName}
 					</td>
 					<td class="border_users_l border_users_r border_users_b">
 						<a href='{$unlinkedMsdsSheets[i].msdsLink}' target="_blank">VIEW</a>
@@ -86,7 +86,7 @@
         </tr>
     </table>
     <div class="floatright buttonpadd">
-        <input type="hidden" name="productID" value="{$productDetails.product_id}">				
+        <input type="hidden" name="productID" value="{$productDetails.product_id}">
 		<input type='hidden' name='subBookmark' value={$request.subBookmark}>
 		<input type='hidden' name='letterpage' value={$request.letterpage}>
 		<input type='hidden' name='productPage' value={$request.productPage}>
