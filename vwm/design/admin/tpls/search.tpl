@@ -22,6 +22,9 @@
                                                 {if ($request.category eq "salescontacts")&($request.subBookmark != "")}{/if}
                                                 <input type="hidden" name="subBookmark" value="{$request.subBookmark}">   
                                                 {/if}
+												
+						{if $request.productID}<input type="hidden" name="productID" value="{$request.productID}"></input>{/if}
+						{if $request.productPage}<input type="hidden" name="productPage" value="{$request.productPage}"></input>{/if}
 					</td>
 				</tr>
 			</tbody>									
