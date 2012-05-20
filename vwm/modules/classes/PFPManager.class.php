@@ -5,6 +5,10 @@
  */
 class PFPManager {
 
+	/**
+	 *
+	 * @var db
+	 */
 	private $db;
 
 	function PFPManager($db) {
@@ -24,14 +28,22 @@ class PFPManager {
 		return $c > 0 ? FALSE : TRUE;
 	}
 
-	public function countPFP($companyID = 0) {
+	public function countPFP($companyID = 0, $searchString = '') {
 
 		$companyID = mysql_escape_string($companyID);
-		if ($companyID == 0) {
-			$query = "SELECT count(id) as 'c' from " . TB_PFP . " ";
-		} else {
-			$query = "SELECT count(id) as 'c' from " . TB_PFP . " WHERE company_id = $companyID";
+
+		$query = "SELECT count(pfp.id) as c " .
+				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
+					"pfp.description LIKE ('%".$this->db->sqltext($searchString)."%') OR " .
+					"p.name LIKE ('%".$this->db->sqltext($searchString)."%') " .
+				")";
+
+		if ($companyID != 0) {
+			$query .= " AND company_id = $companyID";
 		}
+
+		$query .= " GROUP BY pfp.id";
 
 		$this->db->query($query);
 
@@ -80,40 +92,29 @@ class PFPManager {
 			$query .= " )";
 		}
 
-		$this->db->query($query);
+		return $this->_processGetPFPListQuery($query);
+	}
 
-		//Init PFPProducts for each PFP...
-		$pfpArray = $this->db->fetch_all_array();
-		$count = count($pfpArray);
-		//var_dump($pfpArray);
 
-		$pfps = array(); //Array of objects PFP
+	public function searchPFP($companyID = 0, Pagination $pagination, $searchString = "") {
+		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
+				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
+					"pfp.description LIKE ('%".$this->db->sqltext($searchString)."%') OR " .
+					"p.name LIKE ('%".$this->db->sqltext($searchString)."%') " .
+				")";
 
-		for ($i = 0; $i < $count; $i++) {
-
-			$PFPProductsArray = array();
-
-			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
-			//echo "<br/>$getProductsQuery";
-			$this->db->query($getProductsQuery);
-			$products = $this->db->fetch_all_array();
-			//var_dump($products);
-			foreach ($products as $p) {
-				$prodtmp = new PFPProduct($this->db);
-				$prodtmp->setRatio($p['ratio']);
-				$prodtmp->initializeByID($p['product_id']);
-				$prodtmp->setIsPrimary($p['isPrimary']);
-				$PFPProductsArray[] = $prodtmp;
-			}
-
-			//var_dump($PFPProductsArray);
-			$pfp = new PFP($PFPProductsArray);
-			$pfp->setID($pfpArray[$i]['id']);
-			$pfp->setDescription($pfpArray[$i]['description']);
-			$pfp->products = $PFPProductsArray;
-			$pfps[] = $pfp;
+		if ($companyID != 0) {
+			$query .= " AND company_id = $companyID";
 		}
-		return $pfps;
+
+		$query .= " GROUP BY pfp.id";
+
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+
+		return $this->_processGetPFPListQuery($query);
 	}
 
 	public function getPfpList($PfpIdArray = null) {
@@ -286,13 +287,13 @@ class PFPManager {
 
 		return $error;
 	}
-	
-	
+
+
 	public function unassignPFPFromCompany($pfpID, $companyID) {
-		$query = "DELETE FROM " . TB_PFP2COMPANY . " 
-				WHERE pfp_id = " . mysql_escape_string($pfpID) ." 
+		$query = "DELETE FROM " . TB_PFP2COMPANY . "
+				WHERE pfp_id = " . mysql_escape_string($pfpID) ."
 				AND company_id = " . mysql_escape_string($companyID);
-		$this->db->exec($query);		
+		$this->db->exec($query);
 	}
 
 	public function assignPFP2Company($pfpID, $companyID) {
@@ -404,7 +405,7 @@ class PFPManager {
 					if ($pfp->products[$i]->product_id == $pfpOld->products[$i]->product_id) {
 						if ($pfp->products[$i]->isPrimary() == $pfpOld->products[$i]->isPrimary()) {
 							if ($pfp->products[$i]->getRatio() == $pfpOld->products[$i]->getRatio()) {
-								
+
 							} else {
 								$result = TRUE;
 								break;
@@ -438,6 +439,81 @@ class PFPManager {
 		}
 
 		return $result;
+	}
+
+
+	public function searchAutocomplete($occurrence) {
+		$occurrence = mysql_escape_string($occurrence);
+
+		$query = "SELECT pfp.description, p.name, LOCATE('".$occurrence."', pfp.description) occurrence1, LOCATE('".$occurrence."', p.name) occurrence2  " .
+				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
+					"LOCATE('".$occurrence."', pfp.description)>0 OR " .
+					"LOCATE('".$occurrence."', p.name)>0 " .
+				")" .
+				"LIMIT ".AUTOCOMPLETE_LIMIT;
+		$this->db->query($query);
+
+		if ($this->db->num_rows() > 0) {
+			$pfps = $this->db->fetch_all_array();
+
+			foreach ($pfps as $pfp) {
+				if($pfp['occurrence1'] != 0) {
+					$result = array (
+						"pfp"		=>	$pfp['description'],
+						"occurrence"	=>	$pfp['occurrence1']
+					);
+					$results[] = $result;
+				} elseif ($pfp['occurrence2'] != 0) {
+					$result = array (
+						"pfp"		=>	$pfp['name'],
+						"occurrence"	=>	$pfp['occurrence2']
+					);
+					$results[] = $result;
+				}
+			}
+			return (isset($results)) ? $results : false;
+		} else
+			return false;
+	}
+
+
+	private function _processGetPFPListQuery($query) {
+		$this->db->query($query);
+
+		//Init PFPProducts for each PFP...
+		$pfpArray = $this->db->fetch_all_array();
+		$count = count($pfpArray);
+		//var_dump($pfpArray);
+
+		$pfps = array(); //Array of objects PFP
+
+		for ($i = 0; $i < $count; $i++) {
+
+			$PFPProductsArray = array();
+
+			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
+			//echo "<br/>$getProductsQuery";
+			$this->db->query($getProductsQuery);
+			$products = $this->db->fetch_all_array();
+			//var_dump($products);
+			foreach ($products as $p) {
+				$prodtmp = new PFPProduct($this->db);
+				$prodtmp->setRatio($p['ratio']);
+				$prodtmp->initializeByID($p['product_id']);
+				$prodtmp->setIsPrimary($p['isPrimary']);
+				$PFPProductsArray[] = $prodtmp;
+			}
+
+			//var_dump($PFPProductsArray);
+			$pfp = new PFP($PFPProductsArray);
+			$pfp->setID($pfpArray[$i]['id']);
+			$pfp->setDescription($pfpArray[$i]['description']);
+			$pfp->products = $PFPProductsArray;
+			$pfps[] = $pfp;
+		}
+
+		return $pfps;
 	}
 
 }
