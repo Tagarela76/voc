@@ -14,32 +14,49 @@ class CPfpLibrary extends Controller {
 
 		$manager = new PFPManager($this->db);
 
+		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
+
+		$url = "?".$_SERVER["QUERY_STRING"];
+		$url = preg_replace("/\&page=\d*/","", $url);
+
+		//	process search request
 		if ($this->getFromRequest('q')) {
-			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFP(0, $this->getFromRequest('q')) : $manager->countPFP($companyDetails['company_id'], $this->getFromRequest('q'));
+			$pfpCount = ($this->getFromRequest('tab') == 'all')
+					? $manager->countPFP(0, $this->getFromRequest('q'), $productCategory)
+					: $manager->countPFP($companyDetails['company_id'], $this->getFromRequest('q'), $productCategory);
 
 			$pagination = new Pagination((int) $pfpCount);
-			$pagination->url = "?action=browseCategory&category=department&id=" . $this->getFromRequest('id')
-					. "&bookmark=" . $this->getFromRequest('bookmark')
-					. "&tab=" . $this->getFromRequest('tab');
+			$pagination->url = $url;
 
 			$pfps = ($this->getFromRequest('tab') == 'all') ? $manager->searchPFP(0, $pagination,  $this->getFromRequest('q')) : $manager->searchPFP($companyDetails['company_id'], $pagination,  $this->getFromRequest('q'));
 
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+
+		// or get all
 		} else {
-			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFP() : $manager->countPFP($companyDetails['company_id']);
+			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFP(0, '', $productCategory) : $manager->countPFP($companyDetails['company_id'], '', $productCategory);
 
 			$pagination = new Pagination((int) $pfpCount);
-			$pagination->url = "?action=browseCategory&category=department&id=" . $this->getFromRequest('id')
-					. "&bookmark=" . $this->getFromRequest('bookmark')
-					. "&tab=" . $this->getFromRequest('tab');
+			$pagination->url = $url;
 
-			$pfps = ($this->getFromRequest('tab') == 'all') ? $manager->getList(null, $pagination) : $manager->getList($companyDetails['company_id'], $pagination);
+			$pfps = ($this->getFromRequest('tab') == 'all')
+					? $manager->getList(null, $pagination, null, $productCategory)
+					: $manager->getList($companyDetails['company_id'], $pagination, null, $productCategory);
 		}
 
+		//	get list of Industry Types
+		$productTypesObj = new ProductTypes($this->db);
+		$productTypeList = $productTypesObj->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productTypeList);
 
+		//	tell Smarty where to insert drop down list with industry types
+		$this->insertTplBlock('tpls/productTypesDropDown.tpl', self::INSERT_AFTER_SEARCH);
 
+		//	set js assets
 		$jsSources = array  ('modules/js/checkBoxes.js',
                                      'modules/js/autocomplete/jquery.autocomplete.js');
+
+		//	send to smarty
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('pagination', $pagination);
 		$this->smarty->assign('pfps', $pfps);

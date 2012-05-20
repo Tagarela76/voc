@@ -28,28 +28,32 @@ class PFPManager {
 		return $c > 0 ? FALSE : TRUE;
 	}
 
-	public function countPFP($companyID = 0, $searchString = '') {
+	public function countPFP($companyID = 0, $searchString = '', $industryType = 0) {
+		//	build mandatory sql
+		$query = "SELECT pfp.id as id " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
-		$companyID = mysql_escape_string($companyID);
-
-		$query = "SELECT count(pfp.id) as c " .
-				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
-					"pfp.description LIKE ('%".$this->db->sqltext($searchString)."%') OR " .
-					"p.name LIKE ('%".$this->db->sqltext($searchString)."%') " .
-				")";
+		if ($searchString != "") {
+			$query .= " AND (" .
+					"pfp.description LIKE ('%" . $this->db->sqltext($searchString) . "%') OR " .
+					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
+					")";
+		}
 
 		if ($companyID != 0) {
-			$query .= " AND company_id = $companyID";
+			$query .= " pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+		}
+
+		if ($industryType != 0) {
+			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
 		}
 
 		$query .= " GROUP BY pfp.id";
 
 		$this->db->query($query);
 
-		$row = $this->db->fetch_array(0);
-		$c = intval($row['c']);
-		return $c;
+		return $this->db->num_rows();
 	}
 
 	public function getCompaniesByPfpID($pfpID) {
@@ -64,22 +68,30 @@ class PFPManager {
 		return $list;
 	}
 
-	public function getList($companyID = null, Pagination $pagination = null, $idArray = null) {
+	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0) {
+		//	build mandatory sql
+		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
-		if ($companyID) {
+		if ($companyID != 0) {
+			$query .= " pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+		}
+
+		if ($industryType != 0) {
+			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+		}
+
+		/*if ($companyID) {
 			$companyID = mysql_escape_string($companyID);
 			$query = "SELECT pfp.id, pfp.description, pfp.company_id FROM " . TB_PFP . " pfp, " . TB_PFP2COMPANY . " pfp2c WHERE pfp.id=pfp2c.pfp_id AND pfp2c.company_id = $companyID ";
 		} else {
 			$query = "SELECT * FROM " . TB_PFP . " pfp WHERE 1 ";
-		}
-		if (isset($pagination)) {
-			$query .= "ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}
+		}*/
 
 		if (isset($idArray) and is_array($idArray) and count($idArray) > 0) {
-
 			$count = count($idArray);
-			$query .= " AND id IN ( ";
+			$query .= " AND pfp.id IN ( ";
 
 			for ($i = 0; $i < $count; $i++) {
 				$query .= $idArray[$i];
@@ -88,15 +100,18 @@ class PFPManager {
 				}
 			}
 
+			$query .= " ) ";
+		}
 
-			$query .= " )";
+		if (isset($pagination)) {
+			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
 
 		return $this->_processGetPFPListQuery($query);
 	}
 
 
-	public function searchPFP($companyID = 0, Pagination $pagination, $searchString = "") {
+	public function searchPFP($companyID = 0, Pagination $pagination = null, $searchString = "") {
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
 				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
@@ -514,6 +529,30 @@ class PFPManager {
 		}
 
 		return $pfps;
+	}
+
+	/**
+	 * Generate string to inculde into SQL from statement for count/list PFP's
+	 * @param int $companyID
+	 * @param int $industryType
+	 * @return string Example preformulated_products pfp, product p, pfp2product pfp2p, product2type p2t
+	 */
+	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0) {
+		$tables = array(
+			TB_PFP." pfp",
+			TB_PRODUCT." p",
+			TB_PFP2PRODUCT." pfp2p",
+		);
+
+		if ($companyID != 0) {
+			array_push($tables, TB_PFP2COMPANY." pfp2c");
+		}
+
+		if ($industryType != 0) {
+			array_push($tables, TB_PRODUCT2TYPE." p2t ");
+		}
+
+		return implode(', ', $tables);
 	}
 
 }
