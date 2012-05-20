@@ -152,6 +152,18 @@
 															{include file="tpls:tpls/search.tpl"}
 														{/if}
 													{*/SEARCH*}
+
+
+													{*INSERT_AFTER_SEARCH*}
+													{*Stupid Smarty does not support class constants*}
+													{*blocksToInsert.0 is equal to Controller::INSERT_AFTER_SEARCH*}
+													{if $blocksToInsert.0|@count > 0}
+														{foreach from=$blocksToInsert.0 item="blockPath"}
+															{include file="tpls:$blockPath"}
+														{/foreach}
+													{/if}
+													{*/INSERT_AFTER_SEARCH*}
+
 													</td>
 												</tr>
 											</table>

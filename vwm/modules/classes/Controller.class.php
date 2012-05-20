@@ -2,6 +2,9 @@
 
 class Controller {
 
+	/**
+	 * @var Smarty
+	 */
     protected $smarty;
     protected $xnyo;
     /**
@@ -17,6 +20,18 @@ class Controller {
     protected $parentCategory;
     protected $filter;
     private $typeInformer;
+
+
+	/**
+	 * List of blocks
+	 * @var array
+	 */
+	private $blocksToInsert = array(
+		self::INSERT_AFTER_SEARCH => array()
+	);
+
+
+	const INSERT_AFTER_SEARCH = 0;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;
@@ -50,17 +65,17 @@ class Controller {
 			case "sales":
 				$className = "CS" . ucfirst($controller);
 				break;
-			
+
 			case "supplier":
 				$className = "CSup" . ucfirst($controller);
-				break;			
+				break;
 			default:
 				$className = "C" . ucfirst($controller);
 				break;
 		}
 		/*
         if ($controllerType == 'vps') {
-            
+
         } else if ($controllerType == 'admin') {
             $className = "CA" . ucfirst($controller);
         } else {
@@ -89,7 +104,7 @@ class Controller {
     protected function runCommon($controllerType = 'main') {
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($this->getFromRequest());
-		
+
 		switch ($controllerType){
 			case "admin":
 				$functionName = 'action' . ucfirst($this->action) . 'ACommon';
@@ -102,7 +117,7 @@ class Controller {
 				break;
 			case "supplier":
 				$functionName = 'action' . ucfirst($this->action) . 'SupCommon';
-				break;			
+				break;
 			default :
 				$functionName = 'action' . ucfirst($this->action) . 'Common';
 		}
@@ -118,16 +133,16 @@ class Controller {
         if (method_exists($this, $functionName))
             $this->$functionName();
     }
-	
-	
+
+
 	public function runAction() {
 		$this->runCommon();
 		$functionName = 'action'.ucfirst($this->action);
 		if (method_exists($this,$functionName)) {
-			$this->$functionName();		
-		}		
+			$this->$functionName();
+		}
 	}
-	
+
     protected function filterList($category, $dateFormat = false) {
         $this->filter = new Filter($this->db, $category);
         $this->smarty->assign('filterArray', $this->filter->getJsonFilterArray());
@@ -269,7 +284,7 @@ class Controller {
 					$error = $userRequest->changePassword($userID, $oldPassword, $newPassword, $repeatNewPassword);
 					break;
 			}
-			
+
 			if ($this->getFromRequest('category') == 'company' && $error == ''){
 				header('Location: ?action=browseCategory&category='.$this->getFromRequest('category').'&id='.$this->getFromRequest('id'));
 			} elseif ($this->getFromRequest('category') == 'facility' && $error == ''){
@@ -292,7 +307,7 @@ class Controller {
 			$department = new Department($this->db);
 			$structureList = $department->getDepartmentListByFacility($request['id']);
 		}
-		
+
 		$this->smarty->assign('error', $error);
 		$this->smarty->assign('structureList', $structureList);
 		$this->smarty->assign('userList', $userList);
@@ -308,12 +323,12 @@ class Controller {
 
     public function actionCompanySetupRequest() {
 		$cemail = new EMail();
-		
+
 		$to = array ("denis.nt@kttsoft.com", "dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ");
 		//$to = "dmitry.ds@kttsoft.com";
-		
+
 		$from = "newsetuprequest@vocwebmanager.com";
-		
+
         $company = new Company($this->db);
         $facility = new Facility($this->db);
         $auth = $_SESSION['auth'];
@@ -429,7 +444,7 @@ class Controller {
                 throw new Exception('deny');
                 break;
         }
-		
+
 		$request = $this->getFromRequest();
         //titles new!!! {panding}
         $title = new TitlesNew($this->smarty, $this->db);
@@ -508,25 +523,25 @@ class Controller {
         $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
         $this->smarty->display("tpls:index.tpl");
     }
-	
+
 	public function actionShowTraining(){
 		$request = $this->getFromRequest();
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-		
+
 		switch ($request['category']){
-			case 'company': 
+			case 'company':
 				$trainingParts = array('login' => 'How to Login',
-									   'overview' => 'Overview', 
-									   'report' => 'Create Report', 
-									   'graph' => 'Company at a Glance Graphs', 
+									   'overview' => 'Overview',
+									   'report' => 'Create Report',
+									   'graph' => 'Company at a Glance Graphs',
 									   'payment' => 'Payment Process',
 									   'training' => 'See Entire Video',
 									   'npvideo' => 'New Product Video');
 				break;
 			case 'facility':
-				$trainingParts = array('login' => 'How to Login', 
+				$trainingParts = array('login' => 'How to Login',
 									   'overview' => 'Overview',
 									   'report' => 'Create Report',
 									   'graph' => 'Facility at a Glance Graphs',
@@ -538,8 +553,8 @@ class Controller {
 									   'training' => 'See Entire Video',
 									   'npvideo' => 'New Product Video');
 				break;
-			case 'department':	
-				$trainingParts = array('login' => 'How to Login', 
+			case 'department':
+				$trainingParts = array('login' => 'How to Login',
 									   'overview' => 'Overview',
 									   'pfpmix' => 'Pre Formaulated Mix',
 									   'singlemix' => 'Single Mix Input',
@@ -552,8 +567,8 @@ class Controller {
 									   'npvideo' => 'New Product Video');
 				break;
 		}
-		
-		$this->smarty->assign('trainingParts', $trainingParts);		
+
+		$this->smarty->assign('trainingParts', $trainingParts);
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
@@ -674,10 +689,10 @@ class Controller {
         $reportType = $request['reportType'];
 
         if (!$this->user->checkAccess('reports', $companyID)) {
-			
+
             throw new Exception('deny');
         }
-	
+
         //	OK, this company has access to this module, so let's setup..
 
         $ms = new ModuleSystem($this->db); //	TODO: show?
@@ -755,8 +770,8 @@ class Controller {
         $result = $mReport->getAvailableReportsList($this->db, $companyID);
         $this->smarty->assign('reports', $result);
 
-		
-	
+
+
         $this->smarty->assign('tpl', 'reports/design/createReport.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
@@ -918,12 +933,12 @@ class Controller {
         $this->smarty->assign('parent', $this->parent_category);
         $this->smarty->assign('request', $this->getFromRequest());
     }
-	
+
 	private function actionBrowseCategorySCommon() {
         $this->smarty->assign('parent', $this->parent_category);
         $this->smarty->assign('request', $this->getFromRequest());
     }
-	
+
     private function actionAddItemCommon() {
         $title = new TitlesNew($this->smarty, $this->db);
         $request = $_GET;
@@ -938,7 +953,7 @@ class Controller {
         $this->smarty->assign("request", $this->getFromRequest());
         $this->smarty->assign('parent', $this->parent_category);
     }
-	
+
 
     private function actionEditCommon() {
         $title = new TitlesNew($this->smarty, $this->db);
@@ -1025,7 +1040,7 @@ class Controller {
                 $inventoryManager = new InventoryManager($this->db);
                 $jobberDetails = $inventoryManager->getJobberDetails($id);
                 $jobberList = $inventoryManager->getJobberList();
-				
+
                 for ($i = 0; $i < count($jobberList); $i++) {
 					$supplierIDS = $inventoryManager->getSuppliersByJobberID($jobberList[$i]['jobber_id']);
                     $url = "?action=browseCategory&category=sales&bookmark=clients&jobberID={$jobberList[$i]['jobber_id']}&supplierID={$supplierIDS[0]['supplier_id']}";
@@ -1035,7 +1050,7 @@ class Controller {
                 }
                 $this->smarty->assign("upCategory", $jobberList);
                 $this->smarty->assign("upCategoryName", LABEL_LEFT_DEPARTMENTS_TITLE);
-                break;				
+                break;
         }
         $this->smarty->assign("leftCategoryID", $id);
     }
@@ -1056,7 +1071,7 @@ class Controller {
                 $this->smarty->assign('address', $companyDetails['address']);
                 $this->smarty->assign('contact', $companyDetails['contact']);
                 $this->smarty->assign('phone', $companyDetails['phone']);
-                break;			
+                break;
             case "company":
                 $this->smarty->assign('urlRoot', '?action=browseCategory&category=root');
 
@@ -1430,6 +1445,27 @@ class Controller {
                 break;
         }
     }
+
+
+	/**
+	 * Insert tpl block into parent template
+	 * @param string $path Example "tpls/productTypesDropDown.tpl"
+	 * @param string $whereToInsert Example Controller::INSERT_AFTER_SEARCH
+	 * @return boolean true on success, false on failure (no such $whereToInsert)
+	 */
+	public function insertTplBlock($path, $whereToInsert) {
+		if (array_key_exists($whereToInsert, $this->blocksToInsert)) {
+			array_push($this->blocksToInsert[$whereToInsert], $path);
+
+			$this->smarty->assign('blocksToInsert', $this->blocksToInsert);
+
+			return true;
+		} else {
+			//	no such $whereToInsert
+			return false;
+		}
+
+	}
 
 }
 
