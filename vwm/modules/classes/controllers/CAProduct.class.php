@@ -23,11 +23,6 @@ class CAProduct extends Controller {
 		$manager = new PFPManager($this->db);
 		$paginationabc = new Paginationabc(1300);
 
-		//	load product types for dropdown list
-		$productTypesObj = new ProductTypes($this->db);
-		$productTypeList = $productTypesObj->getTypesWithSubTypes();
-		$this->smarty->assign("productTypeList", $productTypeList);
-
 		$paginationabc->url = "?action=browseCategory&category=product";
 		$this->smarty->assign("abctabs",$abc);
 		$this->smarty->assign('paginationabc', $paginationabc);
@@ -74,7 +69,12 @@ class CAProduct extends Controller {
 		//	get company list
 		$company = new Company($this->db);
 		$companyList = $company->getCompanyList();
+
 		$this->smarty->assign('companyList',$companyList);
+
+		$productTypesObj = new ProductTypes($this->db);
+		$productTypeList = $productTypesObj->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productTypeList);
 
 		//	search??	!WITHOUT PAGINATION!
 		if (!is_null($this->getFromRequest('q'))) {

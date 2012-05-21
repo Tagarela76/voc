@@ -75,7 +75,7 @@ class PFPManager {
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
 		if ($companyID != 0) {
-			$query .= " pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
 		}
 
 		if ($industryType != 0) {
@@ -104,9 +104,9 @@ class PFPManager {
 		}
 
 		if (isset($pagination)) {
-			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+			$query .= " GROUP BY pfp.id ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-
+		
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -157,7 +157,7 @@ class PFPManager {
 		}
 	}
 
-	public function getListSpecial($companyID = null, Pagination $pagination = null, $idArray = null) {
+	public function getListSpecial($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0) {
 		if ($idArray != null) {
 			if ($companyID) {
 				$companyID = mysql_escape_string($companyID);
@@ -216,12 +216,11 @@ class PFPManager {
 					$PFPProductsArray[] = $prodtmp;
 				}
 
-				//var_dump($PFPProductsArray);
 				$pfp = new PFP($PFPProductsArray);
 				$pfp->setID($pfpArray[$i]['id']);
 				$pfp->setDescription($pfpArray[$i]['description']);
 				$pfp->products = $PFPProductsArray;
-				$pfps[] = $pfp;
+					$pfps[] = $pfp;
 			}
 			return $pfps;
 		} else {
@@ -312,14 +311,14 @@ class PFPManager {
 	}
 
 	public function assignPFP2Company($pfpID, $companyID) {
-		$query = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id, company_id) VALUES (" . $pfpID . ", " . $companyID . ")";
-		$this->db->query($query);
-		if (mysql_errno() == 0) {
-			$error = "";
-		} else {
-			$error = "Error!";
-		}
-
+			$query = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id, company_id) VALUES (" . $pfpID . ", " . $companyID . ")";
+			$this->db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		
 		return $error;
 	}
 
