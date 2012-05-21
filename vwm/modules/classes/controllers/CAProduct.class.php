@@ -76,6 +76,13 @@ class CAProduct extends Controller {
 		$productTypeList = $productTypesObj->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productTypeList);
 
+		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
+		//	THIS IS TEMPORARY ACTION. REFACTORING NEEDED
+		$product->productCategoryFilter = $productCategory;
+
+		$url = "?".$_SERVER["QUERY_STRING"];
+		$url = preg_replace("/\&page=\d*/","", $url);
+
 		//	search??	!WITHOUT PAGINATION!
 		if (!is_null($this->getFromRequest('q'))) {
 			$productsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
@@ -89,7 +96,7 @@ class CAProduct extends Controller {
 			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$supplierID);
 
 			$pagination = new Pagination($productCount);
-			$pagination->url = "?action=browseCategory&companyID=".$this->getFromRequest('companyID')."&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&subaction=Filter&category=product";
+			$pagination->url = $url;
 			$this->smarty->assign('pagination', $pagination);
 
 			if ($supplierID != 0) {

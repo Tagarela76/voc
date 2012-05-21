@@ -5,6 +5,13 @@ class Product extends ProductProperties {
 	protected $db;
 	private $productType;
 
+
+	/**
+	 * THIS IS TEMPORARY VAR
+	 * @var int
+	 */
+	public $productCategoryFilter = 0;
+
 	function Product($db) {
 		$this->db=$db;
 		$this->productType = new ProductTypes($db);
@@ -993,8 +1000,29 @@ class Product extends ProductProperties {
 	}
 
 
-	public function getProductCount($companyID, $supplierID)
-	{
+	public function getProductCount($companyID, $supplierID) {
+		$query = "SELECT count(*) AS cnt " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID)." " .
+				"WHERE p.supplier_id = s.supplier_id " .
+				"AND coat.coat_id = p.coating_id ";
+
+		if ($supplierID != 0) {
+			$query .= " AND s.original_id =".$this->db->sqltext($supplierID). " ";
+		}
+
+		if (!(empty($companyID) && $companyID == 0)) {
+			$query .= " AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
+		}
+
+		if ($this->productCategoryFilter != 0) {
+			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
+		}
+
+
+
+
+
+/*
 		settype($companyID,"integer");
 		if (empty($companyID)) {
 			if ($supplierID == 0) {
@@ -1003,10 +1031,6 @@ class Product extends ProductProperties {
 					"WHERE p.supplier_id = s.supplier_id " .
 					"AND coat.coat_id = p.coating_id ";
 			} else {
-				/*$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p " .
-					"WHERE p.supplier_id = ".(int)$supplierID;
-				*/
 					$query = "SELECT count(*) AS cnt
 								FROM product p, supplier s
 								WHERE p.supplier_id = s.supplier_id
@@ -1022,13 +1046,6 @@ class Product extends ProductProperties {
 					"AND coat.coat_id = p.coating_id " .
 					"AND c.company_id = ".$companyID." ";
 			} else {
-			/*	$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p, product2company p2c,supplier s " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p.supplier_id = ".(int)$supplierID." " .
-					"AND p2c.company_id = ".$companyID;
-
-			 */
 				$query = "SELECT count(*) AS cnt " .
 					"FROM ".TB_PRODUCT." p, product2company p2c,supplier s " .
 					"WHERE p.product_id = p2c.product_id " .
@@ -1036,7 +1053,7 @@ class Product extends ProductProperties {
 					"AND p2c.company_id = ".(int)$supplierID."".
 					"AND p2c.company_id = ".$companyID;
 			}
-		}
+		}*/
 
 		$this->db->query($query);
 
@@ -1109,6 +1126,29 @@ class Product extends ProductProperties {
 	private function selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		settype($companyID,"integer");
 
+		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID)." " .
+				"WHERE p.supplier_id = s.supplier_id " .
+				"AND coat.coat_id = p.coating_id ";
+
+		if ($supplierID != 0) {
+			$query .= " AND s.original_id =".$this->db->sqltext($supplierID). " ";
+		}
+
+		if (!(empty($companyID) && $companyID == 0)) {
+			$query .= " AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
+		}
+
+		if ($this->productCategoryFilter != 0) {
+			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
+		}
+
+		$query .= " AND {$filter} {$sort}";
+
+		if (isset($pagination)) {
+			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
+		}
+/*
 		if (empty($companyID) && $companyID == 0) {
 			if ($supplierID == 0) {
 				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
@@ -1118,9 +1158,6 @@ class Product extends ProductProperties {
 					"AND $filter ".
 					" $sort ";
 			} else {
-			/*	$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p " .
-					"WHERE p.supplier_id = ".(int)$supplierID;*/
 				$query = "SELECT * " .
 					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
 					"WHERE p.supplier_id = s.supplier_id " .
@@ -1140,12 +1177,6 @@ class Product extends ProductProperties {
 					"AND $filter ".
 					" $sort ";
 			} else {
-			/*	$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p, product2company p2c " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p.supplier_id = ".(int)$supplierID." " .
-					"AND p2c.company_id = ".$companyID;
-			*/
 				$query = "SELECT * " .
 					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
 					"WHERE p.product_id = p2c.product_id " .
@@ -1158,7 +1189,7 @@ class Product extends ProductProperties {
 
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}
+		}*/
 
 		$this->db->query($query);
 
@@ -1263,5 +1294,30 @@ class Product extends ProductProperties {
 			return false;
 		}
 	}
+
+
+	/**
+	 * Generate string to inculde into SQL from statement for count/list products
+	 * @param int $companyID
+	 * @return string Example preformulated_products pfp, product p, pfp2product pfp2p, product2type p2t
+	 */
+	private function _declareTablesForSearchAndListPFPs($companyID = 0) {
+		$tables = array(
+			TB_PRODUCT." p",
+			TB_SUPPLIER." s",
+			TB_COAT." coat",
+		);
+
+		if ($companyID != 0) {
+			array_push($tables, "product2company p2c");
+		}
+
+		if ($this->productCategoryFilter != 0) {
+			array_push($tables, TB_PRODUCT2TYPE." p2t");
+		}
+
+		return implode(', ', $tables);
+	}
+
 }
 ?>
