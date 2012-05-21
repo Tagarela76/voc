@@ -53,6 +53,10 @@
                                                                                         {if $request.category == 'salescontacts'}
                                                                                                 {include file="tpls:tpls/subBookmarks.tpl"}
                                                                                         {/if}
+																						
+											{if $request.category == 'product'}
+													{include file="tpls:tpls/productTypesDropDown.tpl"}
+											{/if}
 											{*SORT*}
 												{if $request.bookmark == 'coat'||
 													$request.bookmark == 'components'||

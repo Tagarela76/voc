@@ -104,6 +104,10 @@ class CAProduct extends Controller {
 		$companyList = $company->getCompanyList();
 		$this->smarty->assign('companyList',$companyList);												
 		
+		$productTypesObj = new ProductTypes($this->db);		 
+		$productTypeList = $productTypesObj->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productTypeList);
+		
 		//	search??	!WITHOUT PAGINATION!								
 		if (!is_null($this->getFromRequest('q'))) {
 			$productsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));										

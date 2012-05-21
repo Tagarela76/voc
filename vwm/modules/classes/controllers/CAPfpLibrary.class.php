@@ -153,10 +153,10 @@ class CAPfpLibrary extends Controller {
 			}
 			$listOFpfp = array_unique($temp);		
 		}else{
-		$listOFpfp = $manager->getPfpList($sub);	
+			$listOFpfp = $manager->getPfpList($sub);	
 		}
-
-		$pfps = $manager->getListSpecial(null,null,$listOFpfp);
+		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
+		$pfps = $manager->getList(null,null,$listOFpfp, $productCategory);
 		
 		/*
 		$pfplist = $manager->getPfpList($sub);
