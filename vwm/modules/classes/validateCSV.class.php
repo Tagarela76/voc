@@ -75,7 +75,7 @@ class validateCSV {
 			} 
 			$currentPfp[] = $data;			
 		}		
-		fclose($file);	
+		fclose($file);			
 	}
 	
 	private function pfpDataCheck($data,$row){
@@ -87,6 +87,16 @@ class validateCSV {
 			if (empty($r)) {			
 				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 				//$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
+			}
+			
+			if (!preg_match("/^\d+(\.\d)*(\%)*$/", $data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				//	this could be range percetnage
+				if (!bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {									
+					//	no, it's just a validation error
+					$comments .= "Product with ID : " . $data[2] . " has validation error at Ratio. Row " . $row . ".\n";					
+				}
+				
+				
 			}
 		}		
 		return $comments;

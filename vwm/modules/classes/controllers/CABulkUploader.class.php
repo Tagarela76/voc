@@ -65,7 +65,8 @@ class CABulkUploader extends Controller {
 					
 				}
 			}
-			
+			var_dump($validation->productsCorrect);
+			die();
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
 			$errorCnt = count($validation->productsError);
@@ -192,7 +193,16 @@ class CABulkUploader extends Controller {
 			if ($products[$i][$ratioFieldIndex] != null) { // no ratio but product quantity exist
 				$reverse = strrev($products[$i][$ratioFieldIndex]);
 				if ($reverse[0] == "%") {
-					$number = substr($products[$i][$ratioFieldIndex], 0, -1);
+					if(bulkUploader4PFP::isRangeRatio($products[$i][$ratioFieldIndex])) {
+						$ranges = bulkUploader4PFP::splitRangeRatio($products[$i][$ratioFieldIndex]);
+						$number = $ranges[1];
+						var_dump($number);
+					} else {
+						$number = substr($products[$i][$ratioFieldIndex], 0, -1);
+						$ranges = array($number, $number);
+					}
+															
+					//$number = substr($products[$i][$ratioFieldIndex], 0, -1);
 					$number = $firstNum * $number / 100;
 					$products[$i][4] = $number;
 				}
@@ -261,7 +271,7 @@ class CABulkUploader extends Controller {
 						
 		return $products;
 	}
-
+		
 }
 
 ?>

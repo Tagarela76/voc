@@ -10,7 +10,7 @@ class CATables extends Controller {
 
 	function runAction() {
 		$this->runCommon('admin');
-		$functionName='action'.ucfirst($this->action);	
+		$functionName='action'.ucfirst($this->action);
 		if (method_exists($this,$functionName))
 			$this->$functionName();
 	}
@@ -72,55 +72,55 @@ class CATables extends Controller {
 		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
-	
+
+
 	private function actionAssignMsds() {
-				
+
 		$productID = $this->getFromRequest('productID');
 
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($productID);
-		
+
 		$msds = new MSDS($this->db);
-		
+
 		//	form submitted
-		if ($this->getFromPost()) {			
-			$selectedSheetID = $this->getFromPost('selectedSheet');														
+		if ($this->getFromPost()) {
+			$selectedSheetID = $this->getFromPost('selectedSheet');
 			$productID = $this->getFromPost('productID');
-			$msds->linkSheetToProduct($selectedSheetID, $productID);														
-							
+			$msds->linkSheetToProduct($selectedSheetID, $productID);
+
 			$notify=new Notify($this->smarty);
-			$notify->successEdited("product", $productDetails['product_nr']);						
+			$notify->successEdited("product", $productDetails['product_nr']);
 			header("Location: admin.php?action=browseCategory&category=product&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&page=".urlencode($this->getFromPost('productPage')));
 			die();
 		}
-		
-		$this->smarty->assign('productDetails', $productDetails);		
-		
+
+		$this->smarty->assign('productDetails', $productDetails);
+
 		if ($this->getFromRequest('q')) {
 			$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount($this->getFromRequest('q')));
 			$pagination->url = "admin.php?q=".  urlencode($this->getFromRequest('q'))."action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
 			$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination, $this->getFromRequest('q'));
-			
+
 			$this->smarty->assign('searchQuery',$this->getFromRequest('q'));
 		} else {
 			$pagination = new Pagination($msds->getUnlinkedMsdsSheetsCount());
 			$pagination->url = "admin.php?action=assignMsds&category=tables&productID=".urlencode($productID)."&subBookmark=".urlencode($this->getFromPost('subBookmark'))."&letterpage=".urlencode($this->getFromPost('letterpage'))."&productPage=".urlencode($this->getFromPost('productPage'));
 			$unlinkedMsdsSheets = $msds->getUnlinkedMsdsSheets($pagination);
 		}
-		
+
 		$this->smarty->assign('unlinkedMsdsSheets', $unlinkedMsdsSheets);
 
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
-		
+
 		$this->smarty->assign('request', $this->getFromRequest());
 		$this->smarty->assign('pagination', $pagination);
 		$this->smarty->assign("tpl","tpls/assignMsds.tpl");
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
-	
+
+
 	private function actionUploadOneMsds() {
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
@@ -131,30 +131,30 @@ class CATables extends Controller {
 		//var_dump($_POST); die();
 		if ($_POST['fileType'][0] == 'msds'){
 		$success = true;
-		if (count($_FILES) > 0) {			
+		if (count($_FILES) > 0) {
 			$msds = new MSDS($this->db);
 			$msdsUploadResult = $msds->upload('basic');
 			if (isset($msdsUploadResult['filesWithError'][0])) {
 				$success = false;
 				$error = $msdsUploadResult['filesWithError'][0]['error'];
-			} else {				
+			} else {
 				if ($msdsUploadResult['msdsResult']) {
 					$msdsUploadResult['msdsResult'][0]['productID'] = $productDetails['product_id'];
 					$input = array(
 						'msds' => $msdsUploadResult['msdsResult']
-					);					
-					$msds->addSheets($input);					
+					);
+					$msds->addSheets($input);
 					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id']);
 				} else {
-					$success = false;	
+					$success = false;
 					$error = 'msdsResult is not set';
-				}				
+				}
 			}
-						
+
 		}
 		} elseif ($_POST['fileType'][0] == 'techsheet') {
 		$success = true;
-		if (count($_FILES) > 0) {			
+		if (count($_FILES) > 0) {
 			$techSheet = new TechSheet($this->db);
 			$techSheetUploadResult = $techSheet->upload('basic');
 			//var_dump($techSheetUploadResult);
@@ -166,58 +166,58 @@ class CATables extends Controller {
 					$techSheetUploadResult['techSheetResult'][0]['productID'] = $productDetails['product_id'];
 					$input = array(
 						'techSheets' => $techSheetUploadResult['techSheetResult']
-					);	
+					);
 					//var_dump($input);
-					$techSheet->addSheets($input);					
+					$techSheet->addSheets($input);
 					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id']);
 				} else {
-					$success = false;	
+					$success = false;
 					$error = 'techSheetResult is not set';
-				}				
+				}
 			}
-						
-		}	
+
+		}
 		}
 		if (!$success) {
-			$this->smarty->assign("error", $error);	
+			$this->smarty->assign("error", $error);
 		}
-		
+
 		$this->smarty->assign("productDetails",$productDetails);
 		$this->smarty->assign("tpl","tpls/uploadOneMsds.tpl");
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
-	
+
+
 	private function actionUnlinkMsds() {
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
 		if ($productDetails['product_id'] === null) {
 			throw new Exception('404');
 		}
-		
+
 		$msds = new MSDS($this->db);
 		$sheet = $msds->getSheetByProduct($this->getFromRequest('productID'));
 		if (!$sheet) {
 			throw new Exception('This product does not have MSDS');
 		}
-		
+
 		$msds->unlinkMsdsSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
 	}
-	
+
 	private function actionUnlinkTechSheet() {
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest('productID'));
 		if ($productDetails['product_id'] === null) {
 			throw new Exception('404');
 		}
-		
+
 		$techSheet = new TechSheet($this->db);
 		$sheet = $techSheet->getSheetByProduct($this->getFromRequest('productID'));
 		if (!$sheet) {
 			throw new Exception('This product does not have Tech Sheet');
 		}
-		
+
 		$techSheet->unlinkTechSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
 	}

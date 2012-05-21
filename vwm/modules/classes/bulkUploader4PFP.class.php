@@ -168,6 +168,17 @@ class bulkUploader4PFP {
 		}
 		return $actionLog;
 	}
+	
+	
+	public static function isRangeRatio($ratioField) {
+		return preg_match("/^\d+\-\d+\%$/", $ratioField);
+	}
+	
+	public static function splitRangeRatio($ratioField) {
+		$ratioField = str_replace(' ', '', $ratioField);
+		$ratioField = str_replace('%', '', $ratioField);
+		return split('-', $ratioField);
+	}
 
 }
 

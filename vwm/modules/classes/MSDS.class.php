@@ -174,11 +174,11 @@ class MSDS {
     }
 
     public function assign() {
-        
+
     }
 
     public function show() {
-        
+
     }
 
     private function recognize($msdsNames) {
@@ -284,7 +284,7 @@ class MSDS {
     public function validateAssignments($assignments) {
         /*
          * Assignment structure:
-         * 
+         *
          * - msdsName
          * - productID
          */
@@ -374,7 +374,7 @@ class MSDS {
         }
 
 
-		
+
         foreach ($sheets["msds"] as $msds) {
             if (empty($msds["productID"])) {
                 $msds["productID"] = "NULL";
@@ -471,23 +471,23 @@ class MSDS {
         return $msdsSheet;
     }
 
-    public function getUnlinkedMsdsSheets(Pagination $pagination = null, $searchString = '') {        
+    public function getUnlinkedMsdsSheets(Pagination $pagination = null, $searchString = '') {
 
         $query = "SELECT * " .
                 "FROM msds_files " .
                 "WHERE product_id is NULL";
-		
+
 		if ($searchString) {
 			$query .= " AND name LIKE ('%".$this->db->sqltext($searchString)."%') ";
 		}
-		
+
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
         $this->db->query($query);
-		
+
 		$msdsSheets = array();
-		
+
         if ($this->db->num_rows()) {
             for ($i = 0; $i < $this->db->num_rows(); $i++) {
                 $data = $this->db->fetch($i);
@@ -508,13 +508,13 @@ class MSDS {
 
         return $msdsSheets;
     }
-	
-	
-	public function getUnlinkedMsdsSheetsCount($searchString = '') {        
+
+
+	public function getUnlinkedMsdsSheetsCount($searchString = '') {
         $query = "SELECT count(*) cnt " .
                 "FROM msds_files " .
                 "WHERE product_id is NULL";
-		
+
 		if ($searchString) {
 			$query .= " AND name LIKE ('%".$this->db->sqltext($searchString)."%')";
 		}
@@ -525,7 +525,7 @@ class MSDS {
             return $this->db->fetch(0)->cnt;
         } else {
 			return 0;
-		}       
+		}
     }
 
     public function linkSheetToProduct($msdsSheetID, $productID) {
@@ -563,19 +563,19 @@ class MSDS {
 
         return ($error === "") ? false : $error;
     }
-	
-	
-	
+
+
+
 	public function searchAutocomplete($occurrence) {
-		$occurrence = mysql_escape_string($occurrence);		
-		
+		$occurrence = mysql_escape_string($occurrence);
+
 		$query = "SELECT name, LOCATE('".$occurrence."', name) occurrence " .
 				"FROM ".TB_MSDS_FILE." WHERE LOCATE('".$occurrence."', name)>0 " .
 				"AND product_id IS NULL " .
 				"LIMIT ".AUTOCOMPLETE_LIMIT;
 
 		$this->db->query($query);
-
+		
 		if ($this->db->num_rows() > 0) {
 			$msdsRows = $this->db->fetch_all_array();
 			return (isset($msdsRows)) ? $msdsRows : false;

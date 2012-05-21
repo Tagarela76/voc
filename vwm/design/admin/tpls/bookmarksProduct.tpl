@@ -3,24 +3,24 @@
 	<td align="left" class="bookmark_fon">
 <table cellspacing="0" cellpadding="0" height="100%" class="bookmarks_big" style="margin-left:20px;">
 	<tr>
-				
-				{*BEGIN LIST*}			
+
+				{*BEGIN LIST*}
 				{section name=i loop=$bookmarks}
 					<td >
 					     <a href="admin.php?action=browseCategory&category={$request.category}&subBookmark={$bookmarks[i].supplier_id}&letterpage={$request.letterpage}{if $request.productCategory }&productCategory={$request.productCategory}{/if}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
 								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
-									{else}                    
-										
+									{else}
+
 										<div class="deactiveBookmark"><div class="deactiveBookmark_right">
-										
+
 							{/if}
 							{$bookmarks[i].supplier|lower}
-							
+
 							</div>
 						</div></a>
 					</td>
-				{/section}	
+				{/section}
 				{*END LIST*}
 
 
@@ -28,11 +28,13 @@
 	<tr height="19">
 		<td></td>
 	</tr>
-</table>																															
+</table>
 </td>
 </tr>
 <input type="hidden" name="hiddenSelectedBookmark" id="selectedBookmark" value="{$selectedBookmark}"/>
 </table>
+
+{*include file="tpls:tpls/productTypesDropDown.tpl" category=$request.category bookmark=$request.bookmark*}
 
 {*PAGINATION*}
 		{include file="tpls:tpls/paginationabc.tpl"}
