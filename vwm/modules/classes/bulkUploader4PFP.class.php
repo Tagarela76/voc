@@ -2,7 +2,7 @@
 
 class bulkUploader4PFP {
 
-	/** 	 
+	/**
 	 * @var db
 	 */
 	private $db;
@@ -55,19 +55,31 @@ class bulkUploader4PFP {
 		foreach ($pfpArray as $products) {
 			$productIDS = array();
 			$productRATIOS = array();
+			$productRATIOSTo = array();
+			$productRATIOSFromOriginal = array();
+			$productRATIOSToOriginal = array();
 			$description = '/ ';
 
 			for ($i = 0; $i < count($products); $i++) {
-				
+
 				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'");
 				$r = $this->db->fetch(0);
 
 				if (empty($r)) {
 					$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " doesn't exist \n";
-				} elseif (isset($r->product_id)) { //product exist			
+				} elseif (isset($r->product_id)) { //product exist
 					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 1) {
 						$productIDS[] = $r->product_id;
 						$productRATIOS[] = $products[$i][self::PRODUCTRATIO_INDEX];
+						$productRATIOSTo[] = (isset($products[$i]['ratioRangeTo']))
+								? $products[$i]['ratioRangeTo']
+								: false;
+						$productRATIOSFromOriginal[] = (isset($products[$i]['ratioRangeFromOriginal']))
+								? $products[$i]['ratioRangeFromOriginal']
+								: false;
+						$productRATIOSToOriginal[] = (isset($products[$i]['ratioRangeToOriginal']))
+								? $products[$i]['ratioRangeToOriginal']
+								: false;
 
 						$description .= $products[$i][self::PRODUCTNR_INDEX] . " / ";
 					} else {
@@ -75,18 +87,18 @@ class bulkUploader4PFP {
 					}
 				}
 			}//end for
-			
-			if (count($products) == count($productIDS)) { // all products exists				
+
+			if (count($products) == count($productIDS)) { // all products exists
 				if ($description != '') {
 					$this->db->query("SELECT description FROM preformulated_products WHERE description = '" . $description . "'");
 					$r = $this->db->fetch(0);
 					if (empty($r)) {
-						$actionLog .= $this->insertData($productIDS, $productRATIOS, $this->companyID, $description);
+						$actionLog .= $this->insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $description);
 						$this->insertedCnt++;
-					} elseif (isset($r->description)) { //pfp exist	
+					} elseif (isset($r->description)) { //pfp exist
 						if (!empty($input['update'])) {
 							$actionLog .= "	PFP " . $r->description . " already exists. Update items: YES.\n";
-							$actionLog .= $this->updateData($productIDS, $productRATIOS, $this->companyID, $r->description);
+							$actionLog .= $this->updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $r->description);
 							$this->updatedCnt++;
 						} else {
 							$actionLog .= "	PFP " . $r->description . " already exists. Update items: NO.\n";
@@ -113,7 +125,7 @@ class bulkUploader4PFP {
 
 	//--------------private functions-------------------------------------
 
-	private function insertData($productIDS, $productRATIOS, $companyID, $description) {
+	private function insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
 		if (!isset($description)) {
 			$description = microtime();
 		}
@@ -132,7 +144,17 @@ class bulkUploader4PFP {
 		$primary = 1;
 		for ($i = 0; $i < count($productIDS); $i++) {
 			$actionLog .= "	Adding product to TB_ pfp2product " . $productIDS[$i] . "\n";
-			$sql = "INSERT INTO pfp2product (ratio,product_id,preformulated_products_id,isPrimary) VALUES ('" . $productRATIOS[$i] . "','" . $productIDS[$i] . "',{$pfp_id},{$primary})";
+
+			$ratio_to = ($productRATIOSTo[$i]) ? $productRATIOSTo[$i] : " NULL ";
+			$ratio_from_original = ($productRATIOSFromOriginal[$i]) ? $productRATIOSFromOriginal[$i] : " NULL ";
+			$ratio_to_original = ($productRATIOSToOriginal[$i]) ? $productRATIOSToOriginal[$i] : " NULL ";
+
+			$sql = "INSERT INTO pfp2product (ratio,	ratio_to, ratio_from_original, ratio_to_original, product_id, preformulated_products_id,isPrimary) VALUES " .
+					"(" . $productRATIOS[$i] . " " .
+					", " .$ratio_to.
+					", " .$ratio_from_original.
+					", " .$ratio_to_original.
+					", {$productIDS[$i]}, {$pfp_id}, {$primary})";
 			$this->db->query($sql);
 
 			$primary = 0;
@@ -161,19 +183,29 @@ class bulkUploader4PFP {
 		$primary = 1;
 		for ($i = 0; $i < count($productIDS); $i++) {
 			$actionLog .= "	Updating product in TB_ pfp2product " . $productIDS[$i] . "\n";
-			$sql = "INSERT INTO pfp2product (ratio,product_id,preformulated_products_id,isPrimary) VALUES ('" . $productRATIOS[$i] . "','" . $productIDS[$i] . "',{$pfp_id},{$primary})";
+
+			$ratio_to = ($productRATIOSTo[$i]) ? $productRATIOSTo[$i] : " NULL ";
+			$ratio_from_original = ($productRATIOSFromOriginal[$i]) ? $productRATIOSFromOriginal[$i] : " NULL ";
+			$ratio_to_original = ($productRATIOSToOriginal[$i]) ? $productRATIOSToOriginal[$i] : " NULL ";
+
+			$sql = "INSERT INTO pfp2product (ratio,	ratio_to, ratio_from_original, ratio_to_original, product_id, preformulated_products_id,isPrimary) VALUES " .
+					"(" . $productRATIOS[$i] . " " .
+					", " .$ratio_to.
+					", " .$ratio_from_original.
+					", " .$ratio_to_original.
+					", {$productIDS[$i]}, {$pfp_id}, {$primary})";
 			$this->db->query($sql);
 
 			$primary = 0;
 		}
 		return $actionLog;
 	}
-	
-	
+
+
 	public static function isRangeRatio($ratioField) {
 		return preg_match("/^\d+\-\d+\%$/", $ratioField);
 	}
-	
+
 	public static function splitRangeRatio($ratioField) {
 		$ratioField = str_replace(' ', '', $ratioField);
 		$ratioField = str_replace('%', '', $ratioField);
