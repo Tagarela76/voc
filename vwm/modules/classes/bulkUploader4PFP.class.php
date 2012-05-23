@@ -162,9 +162,12 @@ class bulkUploader4PFP {
 		return $actionLog;
 	}
 
-	private function updateData($productIDS, $productRATIOS, $companyID, $description) {
+	private function updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
 
 		$this->db->query("SELECT id FROM preformulated_products WHERE description = '" . $description . "'");
+		if ($this->db->num_rows() == 0) {
+			throw new Exception("Cannot update PFP ".$description);
+		}
 		$r = $this->db->fetch(0);
 		$pfp_id = $r->id;
 
