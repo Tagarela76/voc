@@ -102,9 +102,11 @@ class PFPManager {
 
 			$query .= " ) ";
 		}
-
+		
+		$query .= " GROUP BY pfp.id ";
+		
 		if (isset($pagination)) {
-			$query .= " GROUP BY pfp.id ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
 		
 		return $this->_processGetPFPListQuery($query);
@@ -511,7 +513,11 @@ class PFPManager {
 			$this->db->query($getProductsQuery);
 			$products = $this->db->fetch_all_array();
 			//var_dump($products);
+			$isRangePFP = false;
 			foreach ($products as $p) {
+				if (!is_null($p['ratio_to']) && !is_null($p['ratio_from_original']) && !is_null($p['ratio_to_original'])) {
+					$isRangePFP = true;
+				}
 				$prodtmp = new PFPProduct($this->db);
 				$prodtmp->setRatio($p['ratio']);
 				$prodtmp->initializeByID($p['product_id']);
@@ -524,6 +530,7 @@ class PFPManager {
 			$pfp->setID($pfpArray[$i]['id']);
 			$pfp->setDescription($pfpArray[$i]['description']);
 			$pfp->products = $PFPProductsArray;
+			$pfp->isRangePFP = $isRangePFP;
 			$pfps[] = $pfp;
 		}
 

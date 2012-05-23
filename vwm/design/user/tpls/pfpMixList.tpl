@@ -105,7 +105,7 @@
         <td class="border_users_b border_users_r">
             <a href="{$url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$pfp->getRatio()} &nbsp;
+                    {$pfp->getRatio()} &nbsp;{if $pfp->isRangePFP}(with range){/if}
                 </div>
             </a>
         </td>
