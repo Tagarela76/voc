@@ -206,6 +206,7 @@ class bulkUploader4PFP {
 
 
 	public static function isRangeRatio($ratioField) {
+		$ratioField = str_replace(' ', '', $ratioField);
 		return preg_match("/^\d+\-\d+\%$/", $ratioField);
 	}
 
