@@ -1143,7 +1143,7 @@ class Product extends ProductProperties {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
 
-		$query .= " AND {$filter} {$sort}";
+		$query .= " AND {$filter} GROUP BY p.product_id {$sort}";
 
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
