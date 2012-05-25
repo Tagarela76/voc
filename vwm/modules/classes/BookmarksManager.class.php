@@ -1,8 +1,8 @@
 <?php
 class BookmarksManager {
-        
+
         private $db;
-    
+
 	function __construct($db) {
                 $this->db=$db;
         }
@@ -15,28 +15,28 @@ class BookmarksManager {
 
 		$bookmark = new Bookmark($this->db, $bookmarksArr);
 		return $bookmark;
-	}        
-        
+	}
+
 	public function getBookmarkStats($name,$user_id = null) {
 		//$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . " WHERE name='" . $name . "'";
 		$query = "SELECT bt.* FROM " . TB_BOOKMARKS_TYPE . " bt LEFT JOIN " .users2bookmarks. " ub ON bt.id=ub.bookmark_id ";
 		$query .=" WHERE bt.name='" . $name . "'";
 		if ($user_id != null){
 			$query .=" AND ub.user_id = " .$user_id. "";
-		}	
+		}
 
 		$this->db->query($query);
 		if (! $this->db->num_rows() > 0){
-			throw new Exception('Permission denied');			
-		}	
-	
+			throw new Exception('Permission denied');
+		}
+
 		$subNumber = $this->db->fetch(0)->id;
-			
+
 		return $subNumber;
-	}   
-	
+	}
+
 	public function Users2bookmarks($name,$users_id, $bookmark_id = null) {
-		
+
 		if ($bookmark_id == null){
 					$query = "SELECT id from " . TB_BOOKMARKS_TYPE . " WHERE name = '".$name."'";
 					$this->db->query($query);
@@ -51,22 +51,22 @@ class BookmarksManager {
 									. $userid . ","
 									. $bookmark_id. ")";
 							$this->db->query($query);
-	
-					}		
+
+					}
 	}
-	
-	
-					
-						
-	
-        
+
+
+
+
+
+
         /**
          *  This method does ....
          * @param array $arrItemID ???
-         * @return Bookmark 
+         * @return Bookmark
          */
 	public function getBookmarksList($user_id = null) {
-            
+
         //$itemCount = $this->getCount();
 		//$query = "SELECT * FROM " . TB_BOOKMARKS_TYPE . "";
 		$query = "SELECT DISTINCT bt.* FROM " . TB_BOOKMARKS_TYPE . " bt LEFT JOIN " .users2bookmarks. " ub ON bt.id=ub.bookmark_id";
@@ -80,27 +80,27 @@ class BookmarksManager {
 		$bookmarks = array();
 		foreach($arr as $b) {
 			$bookmark = new Bookmark($this->db, $b);
-			$bookmarks[] = $bookmark;                        
+			$bookmarks[] = $bookmark;
 		}
-                       
+
 		return $bookmarks;
 	}
-	
+
 	/**** GET ORIGIN SUPPLIER***/
 	public function getOriginSupplier() {
 
         $itemCount = $this->getCountSupplier();
 		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE supplier_id=original_id ORDER BY supplier ASC";
-                
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$bookmarks = array();
 		foreach($arr as $b) {
 			//$bookmark = new Bookmark($this->db, $b);
-			$bookmarks[] = $b; 
-			
+			$bookmarks[] = $b;
+
 		}
-          // die(var_dump($arr,$bookmarks));            
+          // die(var_dump($arr,$bookmarks));
 		return $bookmarks;
 	}
 
@@ -108,39 +108,39 @@ class BookmarksManager {
 
         $itemCount = $this->getCountSupplier();
 		$query = "SELECT * FROM " . TB_SUPPLIER . " WHERE original_id='$origin' ORDER BY supplier ASC";
-                
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$bookmarks = array();
 		foreach($arr as $b) {
 			//$bookmark = new Bookmark($this->db, $b);
-			$bookmarks[] = $b; 
-			
+			$bookmarks[] = $b;
+
 		}
-          // die(var_dump($arr,$bookmarks));            
+          // die(var_dump($arr,$bookmarks));
 		return $bookmarks;
 	}
-	
+
 	public function getBookmarksListSupplier() {
 
         $itemCount = $this->getCountSupplier();
 		$query = "SELECT * FROM " . TB_SUPPLIER . " ORDER BY supplier ASC";
-                
+
 		$this->db->query($query);
 		$arr = $this->db->fetch_all_array();
 		$bookmarks = array();
 		foreach($arr as $b) {
 			//$bookmark = new Bookmark($this->db, $b);
-			$bookmarks[] = $b; 
-			
-		}
-          // die(var_dump($arr,$bookmarks));            
-		return $bookmarks;
-	}	
+			$bookmarks[] = $b;
 
-	
-	
-	
+		}
+          // die(var_dump($arr,$bookmarks));
+		return $bookmarks;
+	}
+
+
+
+
 	public function getCountSupplier() {
                 $query = "SELECT count(*) Num FROM " . TB_SUPPLIER . "";
                 $query = mysql_escape_string($query);
@@ -148,15 +148,15 @@ class BookmarksManager {
 		$countBookmarks = $this->db->fetch(0)->Num;
                 return $countBookmarks;
 	}
-        
+
 	public function deleteBookmarks(Bookmark $bookmarkList) {
-            
+
 		$itemsCount= count($bookmarkList);
                 foreach($bookmarkList as $bookmark) {
                         $bookmark->deleteBookmark($bookmark->id);
 		}
 	}
-        
+
 	public function getCount() {
                 $query = "SELECT count(*) Num FROM " . TB_BOOKMARKS_TYPE . "";
                 $query = mysql_escape_string($query);
@@ -164,16 +164,16 @@ class BookmarksManager {
 		$countBookmarks = $this->db->fetch(0)->Num;
                 return $countBookmarks;
 	}
-      
+
     public function updateType($bookmarksDeleted) {
             foreach($bookmarksDeleted as $b) {
-                $query = "UPDATE " . TB_CONTACTS . " SET 
+                $query = "UPDATE " . TB_CONTACTS . " SET
 					type = 1
 					WHERE type = {$b->id}";
                 $this->db->query($query);
             }
             return true;
 	}
-        
+
 }
 ?>

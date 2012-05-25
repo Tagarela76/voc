@@ -1,4 +1,4 @@
-{*shadow_table*} 
+{*shadow_table*}
 <table class="" cellspacing="0" cellpadding="0" align="center">
     <tr>
         <td valign="top" class="report_uploader_t_l">
@@ -18,9 +18,9 @@
             </center>
 			{if $error}<div style="color:red">{$error}</div>{/if}
 			Upload <b id="typeOfFile">MSDS</b> file to product {$productDetails.product_nr}
-            <form name="form" enctype="multipart/form-data" action="?action=uploadOneMsds&category=product&productID={$productDetails.product_id}&letterpage={$letterpage}&page={$page}" method="post">
+            <form name="form" enctype="multipart/form-data" action="{$formActionUrl}" method="post">
                 <input type="hidden" name="MAX_FILE_SIZE" value="52430000" />
-                <table>        
+                <table>
 					<tr>
 						<td>
 							<input type="radio" name="fileType[]" value="msds" checked onclick="$('#typeOfFile').html('MSDS');"/>&nbsp;MSDS File<br/>
@@ -29,14 +29,14 @@
 							<input type="radio" name="fileType[]" value="techsheet" onclick="$('#typeOfFile').html('TECH SHEET');"/>&nbsp;Tech Sheet File<br/>
 						</td>
 					</tr>
-                    <tr>                        
+                    <tr>
                         <td colspan="2">
                             <div>
                                 <input id="input" name="inputFile[]" type="file">
                             </div>
-                        </td>                        
+                        </td>
                     </tr>
-					<tr>                        
+					<tr>
                         <td colspan="2">
                             <input type="submit" class="button" value="Upload">
                         </td>
@@ -46,7 +46,7 @@
 				<input type='hidden' name='itemID' value='{$request.category}'>
 				<input type='hidden' name='id' value={$request.id}>*}
             </form>
-			{*/shadow_table*} 
+			{*/shadow_table*}
         </td>
         <td valign="top" class="report_uploader_r">
         </td>
