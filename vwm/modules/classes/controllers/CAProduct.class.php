@@ -399,8 +399,8 @@ class CAProduct extends Controller {
 			$substrate=new Substrate($this->db);
 			$this->smarty->assign("substrate", $substrate->getSubstrateList());
 
-			$supplier=new Supplier($this->db);
-			$this->smarty->assign("supplier", $supplier->getSupplierList());
+			$suppl=new BookmarksManager($this->db);
+			$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 			//	hazardous (chemical) class list (popup)
 			$hazardous = new Hazardous($this->db);
@@ -521,8 +521,8 @@ class CAProduct extends Controller {
 				$substrate=new Substrate($this->db);
 				$this->smarty->assign("substrate", $substrate->getSubstrateList());
 
-				$supplier=new Supplier($this->db);
-				$this->smarty->assign("supplier", $supplier->getSupplierList());
+				$suppl=new BookmarksManager($this->db);
+				$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 				//	get hazardous (chemical) class
 				$hazardous = new Hazardous($this->db);
@@ -596,8 +596,8 @@ class CAProduct extends Controller {
 			$coat=new Coat($this->db);
 			$this->smarty->assign("coat", $coat->getCoatList());
 
-			$supplier=new Supplier($this->db);
-			$this->smarty->assign("supplier", $supplier->getSupplierList());
+			$suppl=new BookmarksManager($this->db);
+			$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 			$substrate=new Substrate($this->db);
 			$this->smarty->assign("substrate", $substrate->getSubstrateList());
