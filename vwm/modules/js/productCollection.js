@@ -13,12 +13,13 @@ function CProductCollectionObj() {
 		this.products.push(product);
 	}
 
-	this.addPFPProduct = function(productID, quantity, selectUnittype, unittypeCLass, ratio, isPrimary) {
+	this.addPFPProduct = function(productID, quantity, selectUnittype, unittypeCLass, ratio, isPrimary, isRange) {
 
 
 		product = new CProductObj(productID, quantity, selectUnittype, unittypeCLass);
 		product.ratio = ratio;
 		product.isPrimary = isPrimary;
+		product.isRange = isRange;
 
 
 		this.products.push(product);

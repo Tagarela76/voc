@@ -7,6 +7,8 @@ class PFPProduct extends MixProduct
 {
 	
 	private $isPrimary;
+	private $isRange;
+	private $range_ratio;
 	private $ratio;
 	private $id;
 	
@@ -33,6 +35,12 @@ class PFPProduct extends MixProduct
 		$this->db->query($getProductsQuery);
 		$arr = $this->db->fetch_array(0);
 		
+		if (!empty($arr['ratio_to']) && !empty($arr['ratio_from_original']) && !empty($arr['ratio_to_original'])) {
+			$this->isRange = true;
+			$this->range_ratio = trim($arr['ratio_from_original']).'-'.trim($arr['ratio_to_original']);
+		} else {
+			$this->isRange = false;
+		}
 		
 		$this->ratio = $arr['ratio'];
 		$this->setIsPrimary($arr['isPrimary']);
@@ -42,6 +50,10 @@ class PFPProduct extends MixProduct
 	
 	public function getRatio() {
 		return $this->ratio;
+	}
+	
+	public function getRangeRatio() {
+		return $this->range_ratio;
 	}
 	
 	public function setRatio($value) {
@@ -56,9 +68,13 @@ class PFPProduct extends MixProduct
 		}
 		$this->isPrimary = $value;
 	}
-	
+		
 	public function isPrimary() {
 		return $this->isPrimary;
+	}
+	
+	public function isRange() {
+		return $this->isRange;
 	}
 	
 	public function toJson() {
@@ -70,6 +86,14 @@ class PFPProduct extends MixProduct
 		$tmp->id = $this->id;
 		$res = json_encode($tmp);
 		return $res;
+	}
+	
+	public function setIsRange($isRange) {
+		$this->isRange = $isRange;
+	}
+
+	public function setRangeRatio($range_ratio) {
+		$this->range_ratio = $range_ratio;
 	}
 }
 ?>

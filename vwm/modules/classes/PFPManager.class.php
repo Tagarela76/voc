@@ -388,6 +388,12 @@ class PFPManager {
 			$prodtmp->setRatio($p['ratio']);
 			$prodtmp->setIsPrimary($p['isPrimary']);
 			$prodtmp->setId($p['id']);
+			if (!empty($p['ratio_to']) && !empty($p['ratio_from_original']) && !empty($p['ratio_to_original'])) {
+				$prodtmp->setIsRange(true);
+				$prodtmp->setRangeRatio(trim($p['ratio_from_original']).'-'.trim($p['ratio_to_original']));
+			} else {
+				$prodtmp->setIsRange(false);
+			}
 			$prodtmp->initializeByID($p['product_id']);
 			$PFPProductsArray[] = $prodtmp;
 		}

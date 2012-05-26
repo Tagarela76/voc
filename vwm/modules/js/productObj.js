@@ -11,6 +11,7 @@ function CProductObj (_pID,_Q,_Unittype,_unittypeClass) {
 	
 	this.ratio;
 	this.isPrimary;
+	this.isRange;
 	
 	this.setUnittypeClass = function(uC) {
 		

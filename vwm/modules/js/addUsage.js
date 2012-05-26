@@ -622,9 +622,9 @@ function initRecycle() {
 			currentSelectedPFP_descr = pfp_description;
 
 			for(i=0; i<pfp_products.length; i++) {
-				addProduct(pfp_products[i].productID, 0, selectUnittype, selectUnittypeClass, true, pfp_products[i].isPrimary, pfp_products[i].ratio);
-				}
+				addProduct(pfp_products[i].productID, 0, selectUnittype, selectUnittypeClass, true, pfp_products[i].isPrimary, pfp_products[i].ratio, pfp_products[i].isRange);
 			}
+		}
 
 	}
 
@@ -639,7 +639,7 @@ function initRecycle() {
 		calculateVOC();
 	}
 
-	function addProduct(productID, quantity, unittypeId, unittypeClass,pfp, isPrimary, ratio) {
+	function addProduct(productID, quantity, unittypeId, unittypeClass,pfp, isPrimary, ratio, isRange) {
 
 
 		isPFP = typeof(pfp) != 'undefined' ? true : false;
@@ -647,7 +647,7 @@ function initRecycle() {
 
 		if(isPFP == true) {
 
-			products.addPFPProduct(productID, quantity, unittypeId, unittypeClass,ratio,isPrimary);
+			products.addPFPProduct(productID, quantity, unittypeId, unittypeClass,ratio,isPrimary,isRange);
 		} else {
 
 			products.addProduct(productID, quantity, unittypeId, unittypeClass);
@@ -748,7 +748,12 @@ function initRecycle() {
 					tdQuantity = $("<td>").attr({"class":"border_users_r border_users_b"});
 					tdQuantity.append(txQ);
 					if(isPFP == true) {
-						ratioSpan = $("<span>ratio: <b>"+ratio+"</b></span>");
+						if (isRange) {
+							isRangeCaption = " % from primary";
+						} else {
+							isRangeCaption = "";
+						}
+							ratioSpan = $("<span>ratio: <b>"+ratio+"</b>"+isRangeCaption+"</span>");
 						tdQuantity.append(ratioSpan);
 
 					}
@@ -883,8 +888,11 @@ function initRecycle() {
 
 		for(i=0; i<products.Count(); i++) {
 			if(products.products[i].productID != productID) {
-
-				pr_ratio = products.products[i].ratio;
+				if (products.products[i].isRange) {
+					pr_ratio = products.products[i].ratio*primaryProduct.ratio/100;
+				} else {
+					pr_ratio = products.products[i].ratio;
+				}
 				q_tmp = (pr_ratio / delitel) * quantity;
 				pr_id = products.products[i].productID;
 				q_tmp = q_tmp.toFixed(2);

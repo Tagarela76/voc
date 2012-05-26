@@ -596,7 +596,7 @@ function createSelectUnittypeClass(id) {
       		<tr id="{$pfp->getId()}" name="pfp_row">
       			<td>{$pfp->getDescription()}</td>
 	      		<td>{$pfp->getProductsCount()}</td>
-	      		<td>{$pfp->getRatio()}</td>
+	      		<td>{$pfp->getRatio()}{if $pfp->isRangePFP} (with range){/if}</td>
 	      		<td>Supplier</td>
       		</tr>
       		<tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
