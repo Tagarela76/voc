@@ -42,19 +42,19 @@
 												{elseif $request.category == 'pfps'}
 													{include file="tpls:tpls/bookmarksPfpLibrary.tpl"}
 												{elseif $request.category == 'product'}
-													{include file="tpls:tpls/bookmarksProduct.tpl"}	
+													{include file="tpls:tpls/bookmarksProduct.tpl"}
 												{elseif $request.category == 'salescontacts'}
 													{include file="tpls:tpls/bookmarkSales.tpl"}
 												{elseif $request.category == 'requests'}
-													{include file="tpls:tpls/bookmarksRequests.tpl"}	
+													{include file="tpls:tpls/bookmarksRequests.tpl"}
 												{/if}
 											{/if}
 
                                                                                         {if $request.category == 'salescontacts'}
                                                                                                 {include file="tpls:tpls/subBookmarks.tpl"}
                                                                                         {/if}
-																						
-											{if $request.category == 'product'}
+
+											{if $request.category == 'product' && $request.action == 'browseCategory'}
 													{include file="tpls:tpls/productTypesDropDown.tpl"}
 											{/if}
 											{*SORT*}
@@ -85,13 +85,13 @@
 															$request.bookmark == 'supplier'||
 															$request.bookmark == 'agency'||
 															$request.category == 'users' ||
-															
+
                                                             $request.category == 'salescontacts'}
 															{include file="tpls:tpls/filter.tpl"}
 														{/if}
 													{*/FILTER*}
-													
-													
+
+
 													</td>
 													<td align='right'>
 														<br>
@@ -113,7 +113,7 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
-															
+
 															{elseif $request.category == "product"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
@@ -131,7 +131,7 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
-															
+
 															{elseif $request.category == "accessory"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
@@ -149,7 +149,7 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
-															
+
 															{elseif $request.category == "salescontacts"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
@@ -168,7 +168,7 @@
 																</script>
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
-															
+
 															{elseif $request.category == "logging"}
 															<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
 															{literal}
@@ -181,13 +181,13 @@
 																					params: {category: '{/literal}{$request.category}All{literal}'},
 																					deferRequestBy:300
 																		};
-																		a = $('#search').autocomplete(options);																			
+																		a = $('#search').autocomplete(options);
 																	});
 																</script>
 															{/literal}
-															{include file="tpls:tpls/search.tpl"}															
-															
-															
+															{include file="tpls:tpls/search.tpl"}
+
+
 															{/if}
 														{*/SEARCH*}
 													</td>

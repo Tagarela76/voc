@@ -61,9 +61,9 @@ class CMix extends Controller
 	private function actionViewDetails()
 	{
 		$usage = new Mix($this->db);
-		
-	
-		
+
+
+
 		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
@@ -72,9 +72,9 @@ class CMix extends Controller
 			throw new Exception('deny');
 		}
 		$mixOptimized->getRule();
-		
 
-		
+
+
 		$this->smarty->assign("usage", $mixOptimized);
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
@@ -137,7 +137,7 @@ class CMix extends Controller
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 		//	Getting Product list
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
-	
+
 		$this->smarty->assign('products', $productsListGrouped);
                     $jsSources = array ('modules/js/flot/jquery.flot.js',
                                         'modules/js/addPFP.js',
@@ -245,11 +245,11 @@ class CMix extends Controller
 		foreach($pfp->products as $p) {
 			$productsIDArray[] = $p->product_id;
 		}
-		
+
 		if ($this->getFromRequest('reassignError')){
 			$this->smarty->assign('reassignError', 'error');
 		}
-		
+
 		$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);
 		$this->smarty->assign('products', $productsListGrouped);
 
@@ -428,8 +428,8 @@ class CMix extends Controller
 		if($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {
-		$gacl_api = new gacl_api();	
-			
+		$gacl_api = new gacl_api();
+
 		$departmentID = $vars['departmentDetails']['department_id'];
 		$chain = new TypeChain(null,'Date',$this->db,$departmentID,'department');
 		$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
@@ -491,11 +491,11 @@ class CMix extends Controller
 			}
 
 			$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination,$filterStr,$sortStr);
-			
+
 			$tmp = $gacl_api->get_object_groups(91,"ARO");
 			$tmp1 = $gacl_api->get_group_data(125,"ARO");
 			//var_dump($tmp,$tmp1);
-			
+
             // TODO: what is this?
 			$usageIDArray = array();
 			foreach($usageList as $u) {
@@ -609,13 +609,13 @@ class CMix extends Controller
 		$mix->department_id = $departmentID;
 		$mix->getEquipment();
 		$mix->getFacility();
-		
-	
+
+
 			if($debug) {
 			echo'<h1>MIX</h1>';
 			var_dump($mix);
 			}
-		/*	
+		/*
 			if (!is_array($form['wasteJson'])){
 				$warr = json_decode($form['wasteJson']);
 				$i=0;
@@ -637,13 +637,13 @@ class CMix extends Controller
 				}
 				var_dump('$wasteArray',$wasteArray);
 				$ttt = get_object_vars($tt[0]);
-				$ttt['value'] = $ttt['quantity'];	
+				$ttt['value'] = $ttt['quantity'];
 				$wastearray = $ttt;
 			}else{
 				$wastearray = $form['wasteJson'];
 			}*/
 
-		 
+
 			$w = $form['wasteJson'];
 			$r = $form['recycleJson'];
 			$mix->iniWaste(false);
@@ -655,10 +655,10 @@ class CMix extends Controller
 			if($debug) {
 				echo'<h1>calculateCurrentUsage</h1>';
 				var_dump('*******',$mix->waste,$mix->recycle);
-			}			
+			}
 			$mix->calculateCurrentUsage();
 
-		
+
 		if($debug) {
 			echo'<h1>MIX</h1>';
 
@@ -696,12 +696,12 @@ class CMix extends Controller
 	}
 
 	private function  actionEditItemAjax() {
-//$debug = true;		
+//$debug = true;
 		if($_REQUEST['debug']) {
 			$debug = true;
 		}
 
-		
+
 		if($debug) {
 			var_dump($_REQUEST);
 		}
@@ -769,10 +769,10 @@ class CMix extends Controller
 			);
 
 			$result = $mWasteStreams->prepare4mixAdd($params);
-			
+
 		if($debug) {
 			var_dump('$result',$result);
-		}			
+		}
 			foreach ($result as $key=>$value) {
 				$this->smarty->assign($key,$value);
 			}
@@ -848,7 +848,7 @@ class CMix extends Controller
 				var_dump($wastes, $recycle);
 			}
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug, $productsOldVal);
-	} 
+	}
 
 	private function actionAddItemAjax() {
 		$form = $_REQUEST;
@@ -875,7 +875,7 @@ class CMix extends Controller
 		$jmix->dateFormat = $mixDateFormat;
 		$wastes = json_decode($form['wasteJson']);
 		$recycle = json_decode($form['recycleJson']);
-		
+
 		//	Start processing waste
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
@@ -941,7 +941,7 @@ class CMix extends Controller
 			}
 		} else {
 			if($debug) {
-				
+
 				echo "<h1>NO MWS MODULE</h1>";
 			}
 		}
@@ -987,8 +987,8 @@ class CMix extends Controller
 		$mix->getFacility();
 		if($debug) {
 			var_dump('AddOrEditAjax',$params);
-			
-		}	
+
+		}
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	}
 
@@ -1015,23 +1015,23 @@ class CMix extends Controller
 				echo json_encode(array('waste_error' => $ws_error));
 				exit;
 			}
-			
+
 			$mix->waste = $wasteData;
 				if($debug) {
 					echo "<p>calculateWaste STREAM</p>";
 					var_dump($mWasteStreams,$mix->waste);
-				}			
-			
+				}
+
 
 		}else {
 			$w = $jwaste;
-			
+
 			$mix->iniWaste(false);
-			
+
 			$mix->waste['value'] = $w->value;
-			
+
 			$mix->waste['unitttypeID'] = $w->unittype;
-			
+
 			$u = new Unittype($this->db);
 			$unittypeDescr = $u->getUnittypeDetails($w->unittype);
 		}
@@ -1041,8 +1041,8 @@ class CMix extends Controller
 		$mix->recycle['unitttypeID'] = $r->unittype;
 		if($debug) {
 			var_dump('$mix->products',$mix->products);
-			
-		}		
+
+		}
 		$mixValidator = new MixValidatorOptimized();
 		//TODO: stopped here Denis April 4, 2011  -->
 		$mix->calculateCurrentUsage();
@@ -1067,15 +1067,15 @@ class CMix extends Controller
 		$mix->waste = $jwaste;
 		$mix->debug = $debug;
 		$mix->recycle = $jrecycle;
-		
+
 		$newMixID = $mix->save($isMWS,$optMix);
 		if($debug) {
 			echo "<h1>optMix:</h1>";
 			var_dump($mix,$newMixID);
-		}		
-		
-		
-		
+		}
+
+
+
 		if($debug) {
 			echo "<h1>mix #$newMixID saved!</h1>";
 		}
@@ -1098,12 +1098,12 @@ class CMix extends Controller
 			echo "<h1>DONE!</h1>";
 			var_dump($mix);
 		}
-/* INVENTORY CREATING ORDER */		
+/* INVENTORY CREATING ORDER */
 		$InventoryManager = new InventoryManager($this->db);
 		//$InventoryManager->inventoryInstockDegreece($productsOldVal, $mix);
 		$result = $InventoryManager->runInventoryOrderingSystem($mix);
 
-/* */		
+/* */
 		echo "DONE";
 		exit;
 	}
@@ -1239,15 +1239,15 @@ class CMix extends Controller
 
 		$this->addEdit($action, $departmentID);
 	}
-	
+
 	private function actionCreateLabel(){
 		$usage = new Mix($this->db);
 		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
 		$mixOptimized->getRule();
-		
-		$component = new Component($this->db);		
+
+		$component = new Component($this->db);
 		$hz = new Hazardous($this->db);
 		$totalMixComponents = array();
 		$totalChemicalClassification = array();
@@ -1255,14 +1255,14 @@ class CMix extends Controller
 		foreach ($mixOptimized->products as $product) {
 			$components = $component->getComponentDetailsByProduct($product->product_id);
 			$product->setComponents($components);
-			
+
 			//	collect chemicals into one array
 			foreach ($components as $oneComponent) {
 				if ($totalMixComponents[$oneComponent->component_id] === null) {
 					$totalMixComponents[$oneComponent->component_id] = $oneComponent;
-				}			
+				}
 			}
-			
+
 			//	chemical classification is stord in the same table with health hazard requirements
 			$chemicalClassification = $hz->getChemicalClassification($product->product_id);
 			foreach ($chemicalClassification as $chemicalClassificationItem) {
@@ -1271,30 +1271,30 @@ class CMix extends Controller
 				} else {
 					$totalHealthHazardous[$chemicalClassificationItem['id']] = $chemicalClassificationItem['name'];
 				}
-			}			
-		}		
+			}
+		}
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($mixOptimized->department_id);
 		$companyDetails = $company->getCompanyDetails($companyID);
 		$this->smarty->assign('companyDetails',$companyDetails);
-		
+
 		$unittype = new Unittype($this->db);
 		$this->smarty->assign('unittypeObj',$unittype);
-				
+
 		$this->smarty->assign("usage", $mixOptimized);
 		$this->smarty->assign("components", $totalMixComponents);
 		$this->smarty->assign("chemicalClassification", implode('/', $totalChemicalClassification));
 		$this->smarty->assign("healthHazardous", implode('/', $totalHealthHazardous));
-		$this->smarty->display("tpls/mixLabel.tpl");						
+		$this->smarty->display("tpls/mixLabel.tpl");
 		die();
-		
+
 		$this->smarty->assign("usage", $mixOptimized);
 
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails =$apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
 		$this->smarty->assign('apMethodDetails',$apMethodDetails);
 		$unittype = new Unittype($this->db);
-		
+
 		$k = 0;
 		for ($i = 0; $i < count($mixOptimized->products); $i++)
 		{
@@ -1329,8 +1329,8 @@ class CMix extends Controller
 		$this->smarty->assign('departmentAnnualLimitExceeded', $mixOptimizedValidatorResponce->getDepartmentAnnualLimitExceeded());
 		$this->smarty->assign('facilityAnnualLimitExceeded', $mixOptimizedValidatorResponce->getFacilityAnnualLimitExceeded());
 		$this->smarty->assign('expired', $mixOptimizedValidatorResponce->isExpired());
-		$this->smarty->assign('preExpired', $mixOptimizedValidatorResponce->isPreExpired());		
-		
+		$this->smarty->assign('preExpired', $mixOptimizedValidatorResponce->isPreExpired());
+
 		$this->smarty->display("tpls/mixLabel.tpl");
 	}
 
@@ -1412,7 +1412,7 @@ class CMix extends Controller
 				$storagesFailed = true;
 			}
 		}
-	
+
 		if(count($form) > 0) {
 
 			switch ($action) {
@@ -1730,8 +1730,8 @@ class CMix extends Controller
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
 		$data->recycle = $mix->recycle;
-		
-	
+
+
 		$this->smarty->assign('data',$data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 

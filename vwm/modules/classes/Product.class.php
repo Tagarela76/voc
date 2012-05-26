@@ -1011,49 +1011,12 @@ class Product extends ProductProperties {
 		}
 
 		if (!(empty($companyID) && $companyID == 0)) {
-			$query .= " AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
+			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
 		}
 
 		if ($this->productCategoryFilter != 0) {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
-
-
-
-
-
-/*
-		settype($companyID,"integer");
-		if (empty($companyID)) {
-			if ($supplierID == 0) {
-				$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
-					"WHERE p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id ";
-			} else {
-					$query = "SELECT count(*) AS cnt
-								FROM product p, supplier s
-								WHERE p.supplier_id = s.supplier_id
-								AND s.original_id = ".(int)$supplierID;
-			}
-		} else {
-			if ($supplierID == 0) {
-				$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_COMPANY." c, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p2c.company_id = c.company_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id " .
-					"AND c.company_id = ".$companyID." ";
-			} else {
-				$query = "SELECT count(*) AS cnt " .
-					"FROM ".TB_PRODUCT." p, product2company p2c,supplier s " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p.supplier_id = s.supplier_id" .
-					"AND p2c.company_id = ".(int)$supplierID."".
-					"AND p2c.company_id = ".$companyID;
-			}
-		}*/
 
 		$this->db->query($query);
 
@@ -1136,60 +1099,18 @@ class Product extends ProductProperties {
 		}
 
 		if (!(empty($companyID) && $companyID == 0)) {
-			$query .= " AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
+			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
 		}
 
 		if ($this->productCategoryFilter != 0) {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
 
-		$query .= " AND {$filter} GROUP BY p.product_id {$sort}";
+		$query .= " AND {$filter} {$sort}";
 
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-/*
-		if (empty($companyID) && $companyID == 0) {
-			if ($supplierID == 0) {
-				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
-					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
-					"WHERE p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id " .
-					"AND $filter ".
-					" $sort ";
-			} else {
-				$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
-					"WHERE p.supplier_id = s.supplier_id " .
-					"AND s.original_id =".(int)$supplierID. " " .
-					"AND coat.coat_id = p.coating_id ORDER BY  p.product_id ASC";
-
-			}
-		} else {
-			if ($supplierID == 0) {
-				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
-					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_COMPANY." c, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p2c.company_id = c.company_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id " .
-					"AND c.company_id = ".$companyID." " .
-					"AND $filter ".
-					" $sort ";
-			} else {
-				$query = "SELECT * " .
-					"FROM ".TB_PRODUCT." p, product2company p2c, ".TB_SUPPLIER." s , ".TB_COAT." coat " .
-					"WHERE p.product_id = p2c.product_id " .
-					"AND p.supplier_id = s.supplier_id " .
-					"AND p2c.company_id = ".$companyID." ".
-					"AND s.original_id =".(int)$supplierID. " ".
-					"AND coat.coat_id = p.coating_id ORDER BY  p.product_id ASC";
-			}
-		}
-
-		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}*/
 
 		$this->db->query($query);
 

@@ -246,6 +246,19 @@ class CAProduct extends Controller {
 		$msdsLink = $product->checkForAvailableMSDS($productDetails['product_id']);
 		$techSheetLink = $product->checkForAvailableTechSheet($productDetails['product_id']);
 
+		$additionalGetQuery = $this->generateAdditinalParamsGet();
+		$backUrl = "admin.php?action=browseCategory&category=product";
+		$backUrl .= $additionalGetQuery;
+		$this->smarty->assign('backUrl', $backUrl);
+
+		$unlinkMsdsUrl = "admin.php?action=unlinkMsds&category=product&productID=".$productDetails['product_id'];
+		$unlinkMsdsUrl .= $additionalGetQuery;
+		$this->smarty->assign('unlinkMsdsUrl', $unlinkMsdsUrl);
+
+		$uploadMsdsUrl = "?action=uploadOneMsds&category=product&productID=".$productDetails['product_id'];
+		$uploadMsdsUrl .= $additionalGetQuery;
+		$this->smarty->assign('uploadMsdsUrl', $uploadMsdsUrl);
+
 		$this->smarty->assign('page', $this->getFromRequest('page'));
 		$this->smarty->assign('letterpage', $this->getFromRequest('letterpage'));
 		$this->smarty->assign('productTypes', $productType);
@@ -399,8 +412,8 @@ class CAProduct extends Controller {
 			$substrate=new Substrate($this->db);
 			$this->smarty->assign("substrate", $substrate->getSubstrateList());
 
-			$supplier=new Supplier($this->db);
-			$this->smarty->assign("supplier", $supplier->getSupplierList());
+			$suppl=new BookmarksManager($this->db);
+			$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 			//	hazardous (chemical) class list (popup)
 			$hazardous = new Hazardous($this->db);
@@ -521,8 +534,8 @@ class CAProduct extends Controller {
 				$substrate=new Substrate($this->db);
 				$this->smarty->assign("substrate", $substrate->getSubstrateList());
 
-				$supplier=new Supplier($this->db);
-				$this->smarty->assign("supplier", $supplier->getSupplierList());
+				$suppl=new BookmarksManager($this->db);
+				$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 				//	get hazardous (chemical) class
 				$hazardous = new Hazardous($this->db);
@@ -596,8 +609,8 @@ class CAProduct extends Controller {
 			$coat=new Coat($this->db);
 			$this->smarty->assign("coat", $coat->getCoatList());
 
-			$supplier=new Supplier($this->db);
-			$this->smarty->assign("supplier", $supplier->getSupplierList());
+			$suppl=new BookmarksManager($this->db);
+			$this->smarty->assign("supplier", $suppl->getOriginSupplier());
 
 			$substrate=new Substrate($this->db);
 			$this->smarty->assign("substrate", $substrate->getSubstrateList());
@@ -983,10 +996,12 @@ class CAProduct extends Controller {
 		if ($productDetails['product_id'] === null) {
 			throw new Exception('404');
 		}
-		$this->smarty->assign('page', $this->getFromRequest('page'));
-		$this->smarty->assign('letterpage', $this->getFromRequest('letterpage'));
-		//var_dump($productDetails['product_id']);
-		//var_dump($_POST); die();
+
+		$additionalGetQuery = $this->generateAdditinalParamsGet();
+		$formActionUrl = "?action=uploadOneMsds&category=product&productID=".$productDetails['product_id'];
+		$formActionUrl .= $additionalGetQuery;
+		$this->smarty->assign('formActionUrl', $formActionUrl);
+
 		if ($_POST['fileType'][0] == 'msds'){
 		$success = true;
 		if (count($_FILES) > 0) {
@@ -1002,7 +1017,7 @@ class CAProduct extends Controller {
 						'msds' => $msdsUploadResult['msdsResult']
 					);
 					$msds->addSheets($input);
-					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].'&letterpage='.$this->getFromRequest('letterpage').'&page='.$this->getFromRequest('page'));
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].$additionalGetQuery);
 				} else {
 					$success = false;
 					$error = 'msdsResult is not set';
@@ -1027,7 +1042,7 @@ class CAProduct extends Controller {
 					);
 					//var_dump($input);
 					$techSheet->addSheets($input);
-					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].'&letterpage='.$this->getFromRequest('letterpage').'&page='.$this->getFromRequest('page'));
+					header('Location: ?action=viewDetails&category=product&id='.$productDetails['product_id'].$additionalGetQuery);
 				} else {
 					$success = false;
 					$error = 'techSheetResult is not set';
@@ -1060,7 +1075,7 @@ class CAProduct extends Controller {
 		}
 
 		$msds->unlinkMsdsSheet($sheet['id']);
-		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID').$this->generateAdditinalParamsGet());
 	}
 
 	private function actionUnlinkTechSheet() {
@@ -1078,6 +1093,18 @@ class CAProduct extends Controller {
 
 		$techSheet->unlinkTechSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+	}
+
+	private function generateAdditinalParamsGet() {
+		$getQuery = "";
+		$listOfAdditionalParams = array(
+			'companyID', 'subBookmark', 'page', 'letterpage', 'productCategory', 'subaction', 'sort'
+		);
+		foreach ($listOfAdditionalParams as $param) {
+			$getQuery .= "&".urlencode($param)."=".urlencode($this->getFromRequest($param));
+		}
+
+		return $getQuery;
 	}
 }
 ?>
