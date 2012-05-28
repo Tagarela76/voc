@@ -556,6 +556,10 @@ class Mix extends MixProperties {
 				$query = "DELETE FROM ".TB_USAGE." WHERE mix_id = ".$id;
 				$this->db->query($query);					
 			
+				//delete mix-content
+				$query_to_delete = "DELETE FROM ".TB_MIXGROUP." WHERE mix_id = ".$id;
+				$this->db->query($query_to_delete);
+				
 				//	add usage stats
 				$creationMonth = $date->format("m");//substr($usageData['creationTime'],0,2);
 				$creationYear = $date->format("Y");//substr($usageData['creationTime'],-4);

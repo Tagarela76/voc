@@ -35,7 +35,7 @@ class PFPProduct extends MixProduct
 		$this->db->query($getProductsQuery);
 		$arr = $this->db->fetch_array(0);
 		
-		if (!empty($arr['ratio_to']) && !empty($arr['ratio_from_original']) && !empty($arr['ratio_to_original'])) {
+		if (!empty($arr['ratio_from_original']) && !empty($arr['ratio_to_original'])) {
 			$this->isRange = true;
 			$this->range_ratio = trim($arr['ratio_from_original']).'-'.trim($arr['ratio_to_original']);
 		} else {

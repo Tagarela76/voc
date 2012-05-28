@@ -155,7 +155,7 @@ var pfp_descr = "";
 			</td>
 			
 			<td class="border_users_r border_users_b">
-				<input type='radio' name='pfp_primary' value='{$product->product_id}' {if $product->isPrimary()}checked="checked"{/if}>
+				<input type='radio' name='pfp_primary' value='{$product->product_id}' {if $product->isPrimary()}checked="checked"{/if}{if $product->isRange()} disabled="disabled"{/if}>
 			</td>
 			
 			<td class="border_users_r border_users_b">
@@ -171,7 +171,25 @@ var pfp_descr = "";
 			</td>
 			
 			<td class="border_users_r border_users_b">
-				<input type="text" name="product_{$count}_ratio" id="product_{$count}_ratio" value="{$product->getRatio()}" />
+				{if $product->isRange()}
+					{assign var="split_range" value="-"|explode:$product->getRangeRatio()}
+					{*From <input type="text" /> to <input type="text" /> %*}
+					From 
+					<select style="width: 50px;" name="product_{$count}_ratio_from">
+					{section name=foo loop=100 start=1 step=1}
+						<option {if $smarty.section.foo.index eq $split_range[0]} selected="selected"{/if}>{$smarty.section.foo.index}</option>
+					{/section}
+					</select>
+					 to 
+					<select style="width: 50px;" name="product_{$count}_ratio_to">
+					{section name=foo loop=100 start=1 step=1}
+						<option {if $smarty.section.foo.index eq $split_range[1]} selected="selected"{/if}>{$smarty.section.foo.index}</option>
+					{/section}
+					</select>
+					 %
+				{else}
+					<input type="text" name="product_{$count}_ratio" id="product_{$count}_ratio" value="{$product->getRatio()}" />
+				{/if}
 			</td>
 			
 			<input type='hidden' name="product_{$count}_id" id="product_{$count}_id" value="{$product->product_id}" />
