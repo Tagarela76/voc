@@ -111,6 +111,9 @@ class CATables extends Controller {
 
 		$this->smarty->assign('unlinkedMsdsSheets', $unlinkedMsdsSheets);
 
+		$deleteFromFSLink = "admin.php?action=deleteMSDSFromFs&category=tables".$this->generateAdditinalParamsGet();
+		$this->smarty->assign('deleteFromFSLink', $deleteFromFSLink);
+
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
 
@@ -220,6 +223,31 @@ class CATables extends Controller {
 
 		$techSheet->unlinkTechSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
+	}
+
+
+
+	private function actionDeleteMSDSFromFs() {
+		$msds = new MSDS($this->db);
+		$msds->unlinkMsdsSheet($this->getFromRequest('msdsID'));
+		if (!$msds->deleteMSDSFromFS($this->getFromRequest('msdsID'))) {
+			throw new Exception('Failed to delete MSDS with id '.$this->getFromRequest('msdsID'));
+		}
+
+		header('Location: ?action=assignMsds&category=tables'.$this->generateAdditinalParamsGet());
+	}
+
+
+	private function generateAdditinalParamsGet() {
+		$getQuery = "";
+		$listOfAdditionalParams = array(
+			'q', 'subBookmark', 'productID', 'page', 'letterpage', 'productPage',
+		);
+		foreach ($listOfAdditionalParams as $param) {
+			$getQuery .= "&".urlencode($param)."=".urlencode($this->getFromRequest($param));
+		}
+
+		return $getQuery;
 	}
 }
 ?>

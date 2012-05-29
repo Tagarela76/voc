@@ -575,12 +575,26 @@ class MSDS {
 				"LIMIT ".AUTOCOMPLETE_LIMIT;
 
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() > 0) {
 			$msdsRows = $this->db->fetch_all_array();
 			return (isset($msdsRows)) ? $msdsRows : false;
 		} else
 			return false;
+	}
+
+
+	public function deleteMSDSFromFS($msdsID, $removedFilesDir = "../msds_deleted/") {
+		if (!is_writable($removedFilesDir)) {
+			throw new Exception($removedFilesDir.' is not writable');
+		}
+		$details = $this->getSheetDetails($msdsID);
+		if(!$details) {
+			throw new Exception('404');
+		}
+
+		$isSuccess = rename($details['realName'], $removedFilesDir.$details['realName']);
+		return $isSuccess;
 	}
 
 }

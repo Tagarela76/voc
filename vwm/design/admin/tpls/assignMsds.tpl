@@ -71,6 +71,8 @@
 					</td>
 					<td class="border_users_l border_users_r border_users_b">
 						<a href='{$unlinkedMsdsSheets[i].msdsLink}' target="_blank">VIEW</a>
+						|
+						<a href='{$deleteFromFSLink}&msdsID={$unlinkedMsdsSheets[i].id}'>DELETE FROM FS</a>
 					</td>
 				</tr>
 			{/section}
