@@ -96,7 +96,7 @@ class Accessory implements iAccessory {
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}	
-		echo $query;
+		//echo $query;
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 
@@ -222,8 +222,8 @@ class Accessory implements iAccessory {
     
     public function insertAccessory($jobberID) {
     	$jobberID=mysql_real_escape_string($jobberID);
-    	$query = "INSERT INTO ".TB_ACCESSORY." (name, jobber_id)" .
-    			 "VALUES ('".$this->accessoryName."', ".(int)$jobberID.")";
+    	$query = "INSERT INTO ".TB_ACCESSORY." (name, jobber_id, vendor_id)" .
+    			 "VALUES ('".$this->accessoryName."', ".(int)$jobberID.", ".$this->vendor_id.")";
     	$this->db->query($query);
     	
     	$query = "SELECT * FROM ".TB_ACCESSORY." a WHERE a.name='".$this->accessoryName."'";
@@ -239,9 +239,9 @@ class Accessory implements iAccessory {
     	//	save to trash_bin
 		$this->save2trash('U', $this->accessoryID);
     	
-    	$query = "UPDATE ".TB_ACCESSORY." " .
-    			 "SET name='".$this->accessoryName."', jobber_id='".$jobberID."' " .
-    			 "WHERE id=".(int)$this->accessoryID;
+    	$query = " UPDATE ".TB_ACCESSORY." " .
+    			 " SET name='".$this->accessoryName."', jobber_id='".$jobberID."', vendor_id=".$this->vendor_id.
+    			 " WHERE id=".(int)$this->accessoryID;
 	
     	$this->db->query($query);
     }

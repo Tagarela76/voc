@@ -47,7 +47,18 @@
                     &nbsp;{$accessory.jobber_name}
                 </div>
             </td>
-        </tr>		
+        </tr>
+		
+		<tr>
+            <td class="border_users_l border_users_b" height="20">
+                Vendor Name :
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left">
+                    &nbsp;{$accessory.vendor_name}
+                </div>
+            </td>
+        </tr>
 
         <tr>
             <td height="20" class="users_u_bottom">

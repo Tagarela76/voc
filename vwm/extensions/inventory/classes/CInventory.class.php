@@ -1011,6 +1011,7 @@ class CInventory extends Controller
 						$GOMInventory->accessory_id = $accessoryDetails['id'];
 						$GOMInventory->accessory_name = $accessoryDetails['name'];
 						$GOMInventory->jobber_name = $accessoryDetails['jname'];
+						$GOMInventory->vendor_name = $accessoryDetails['vname'];
 						$GOMInventory->facility_id = $facilityDetails['facility_id'];
 						$GOMInventory->loadByAccessoryID();
 

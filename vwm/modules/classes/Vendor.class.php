@@ -34,5 +34,27 @@ class Vendor {
 	public function setVendor_code($vendor_code) {
 		$this->vendor_code = $vendor_code;
 	}
+	
+	public function getVendorList() {
+		$query = "SELECT * FROM vendor";
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			return array();
+		} else {
+			return $this->db->fetch_all_array();
+		}
+	}
+	
+	public function getVendorDetails($vendor_id) {
+		$query = "SELECT * FROM vendor WHERE vendor_id = ".mysql_real_escape_string($vendor_id);
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			return array();
+		} else {
+			return $this->db->fetch_array(0);
+		}
+	}
 }
 ?>

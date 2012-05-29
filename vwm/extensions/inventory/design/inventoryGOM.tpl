@@ -84,7 +84,7 @@
 		<td class="border_users_r border_users_b">
             <a href="{$Accessory->url}" class="id_company1">
                 <div style="width:100%;">
-                    {$Accessory->jobber_name}
+                    {if $Accessory->vendor_name}{$Accessory->vendor_name}{else}No Vendor{/if}
                 </div>
             </a>
         </td>
