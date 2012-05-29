@@ -60,7 +60,25 @@
 					</div>							
 			
 				</td>
-			</tr>			
+			</tr>
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					Vendor:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >
+						<select id="selectVendor" name="vendor_id" >
+							{if isset($vendors)}
+								{foreach from=$vendors item=vendor}
+									<option value="{$vendor.vendor_id}" {if $vendor.vendor_id == $data.vendor_id} selected='selected' {/if} >{$vendor.name}</option>
+								{/foreach}
+							{/if}
+	
+						</select>
+					</div>							
+			
+				</td>
+			</tr>
 		
 			<tr>
               	 <td height="20" class="users_u_bottom">

@@ -101,6 +101,10 @@ class CAAccessory extends Controller {
 		$jobberManager = new JobberManager($this->db);
 		$jobberDetails = $jobberManager->getJobberDetails($accessoryDetails['jobber_id']);
 		$accessoryDetails['jobber_name'] = $jobberDetails['name'];
+		
+		$vendor = new Vendor($this->db);
+		$vendorDetails = $vendor->getVendorDetails($accessoryDetails['vendor_id']);
+		$accessoryDetails['vendor_name'] = $vendorDetails['name'];
 	
 		$this->smarty->assign("accessory", $accessoryDetails);
 		//$this->smarty->assign("accessoryUsages", $accessoryUsages);
@@ -134,15 +138,20 @@ class CAAccessory extends Controller {
 		$supplierList = $jobberManager->getJobberList();
 		$this->smarty->assign("jobbers",$supplierList);		
 						
+		$vendor = new Vendor($this->db);
+		$vendor_list = $vendor->getVendorList();
+		$this->smarty->assign("vendors", $vendor_list);
+		
 		$form = $this->getFromPost();
 							
-		if (count($form) > 0) 
-		{	
+		if (count($form) > 0) {
 			$jobberID = $form['jobber_id'];
+			$vendor_id = $form['vendor_id'];
 			$accessoryDetails = array(
 										'id'			=> $this->getFromPost('accessory_id'),
 										'name'			=> $this->getFromPost('accessory_desc'),
-										'jobber_id'			=> $this->getFromPost('jobber_id')
+										'jobber_id'		=> $this->getFromPost('jobber_id'),
+										'vendor_id'		=> $this->getFromPost('vendor_id'),
 									 );
 							
 			$validation = new Validation($this->db);					
@@ -170,6 +179,7 @@ class CAAccessory extends Controller {
 				// Editing accessory			
 				$accessory->setAccessoryID($accessoryDetails['id']);
 				$accessory->setAccessoryName($accessoryDetails['name']);
+				$accessory->vendor_id = $accessoryDetails['vendor_id'];
 				$accessory->updateAccessory($jobberID);
 						
 				// redirect
@@ -219,10 +229,13 @@ class CAAccessory extends Controller {
 		$supplierList = $jobberManager->getJobberList();
 		$this->smarty->assign("jobbers",$supplierList);
 		
-		if (count($post) > 0) 
-		{							
+		$vendor = new Vendor($this->db);
+		$vendor_list = $vendor->getVendorList();
+		$this->smarty->assign("vendors", $vendor_list);
+		
+		if (count($post) > 0) {
 			$jobberID = $post['jobber_id'];
-				
+			$vendor_id = $post['vendor_id'];
 			$accessoryDetails = array(
 										'id'	=> $this->getFromPost('accessory_id'),
 										'name'	=> $this->getFromPost('accessory_desc')
@@ -255,6 +268,7 @@ class CAAccessory extends Controller {
 											
 				// Adding for a new accessory			
 				$accessory->setAccessoryName($accessoryDetails['name']);
+				$accessory->vendor_id = mysql_real_escape_string($vendor_id);
 				$accessory->insertAccessory($jobberID);
 								
 				// redirect
