@@ -34,7 +34,15 @@
 					{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 
-        </td>		
+        </td>
+		<td class="users_top_violet">
+             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
+            	<div style='width:100%;  color:white;'>						
+                	Jobber Name
+					{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
+				</div>					
+			</a> 
+        </td>
         <td class="users_u_top_r_violet">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
@@ -72,7 +80,14 @@
                     {$Accessory->jobber_name}
                 </div>
             </a>
-        </td>		
+        </td>
+		<td class="border_users_r border_users_b">
+            <a href="{$Accessory->url}" class="id_company1">
+                <div style="width:100%;">
+                    {$Accessory->jobber_name}
+                </div>
+            </a>
+        </td>
         <td class="border_users_r border_users_b">
             <a href="{$Accessory->url}" class="id_company1">
                 <div style="width:100%;">	
@@ -105,7 +120,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="2" height="15" class="border_users">
+        <td colspan="3" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
