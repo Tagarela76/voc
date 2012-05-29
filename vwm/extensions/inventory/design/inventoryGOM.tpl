@@ -38,7 +38,7 @@
 		<td class="users_top_violet">
              <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==7}8{else}7{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>						
-                	Jobber Name
+                	Vendor Name
 					{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}				
 				</div>					
 			</a> 

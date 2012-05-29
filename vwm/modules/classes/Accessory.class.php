@@ -67,7 +67,7 @@ class Accessory implements iAccessory {
 		$tabble = '';
 		$sqlSelect ='';
 		if ($jobberID){
-			$sqlSelect = " j.name as jname ,  ";
+			$sqlSelect = " j.name as jname ,  v.name as vname, ";
 			$tabble = " jobber j,";
 			
 			if (is_array($jobberID)){
@@ -90,12 +90,13 @@ class Accessory implements iAccessory {
     	$query = "SELECT a.id, a.name, {$sqlSelect} io.order_completed_date, io.order_status FROM  
 			{$tabble} ".TB_ACCESSORY." a		
 			LEFT JOIN inventory_order io ON a.id = io.order_product_id ";
+			$query .= " LEFT JOIN vendor v ON a.vendor_id = v.vendor_id ";
 			$query .= $queryWithJobber;
 			$query .= " GROUP BY a.id $sort";
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}	
-//echo $query;
+		echo $query;
     	$this->db->query($query);
     	
     	if ($this->db->num_rows()) 
