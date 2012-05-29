@@ -234,6 +234,8 @@ class CATables extends Controller {
 			throw new Exception('Failed to delete MSDS with id '.$this->getFromRequest('msdsID'));
 		}
 
+		$msds->deleteMSDS($this->getFromRequest('msdsID'));
+		
 		header('Location: ?action=assignMsds&category=tables'.$this->generateAdditinalParamsGet());
 	}
 

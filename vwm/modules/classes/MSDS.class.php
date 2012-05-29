@@ -8,17 +8,19 @@ class MSDS {
     private $db;
     public $totalNumberOfFiles = 5;
 
+
+	const UPLOAD_DIR = "../msds";
+
     function MSDS($db) {
         $this->db = $db;
     }
 
     public function upload($type, $companyID = null) {
         //	upload
-        $uploads_dir = "../msds";
         $allowedFormats = array('doc', 'pdf');
 
         //getting files and destruct them
-        $filesFromDir = $this->dirContence($allowedFormats, $uploads_dir);
+        $filesFromDir = $this->dirContence($allowedFormats, self::UPLOAD_DIR);
         for ($i = 0; $i < count($filesFromDir); $i++) {
             $_pos = strripos($filesFromDir[$i], "_");
             $alreadyUploadedSheet['index'][$i] = substr($filesFromDir[$i], $_pos + 1, strripos($filesFromDir[$i], ".") - $_pos - 1);
@@ -66,7 +68,7 @@ class MSDS {
                                 }
                             }
 
-                            move_uploaded_file($tmp_name, $uploads_dir . "/" . $currentFile['real_name']);
+                            move_uploaded_file($tmp_name, self::UPLOAD_DIR . "/" . $currentFile['real_name']);
 
                             $msdsName['real_name'] = $currentFile['real_name'];
                             $msdsName['name'] = $currentFile['name'];
@@ -132,7 +134,7 @@ class MSDS {
                             }
                         }
 
-                        $path = $uploads_dir . "/" . $currentFile['real_name'];
+                        $path = self::UPLOAD_DIR . "/" . $currentFile['real_name'];
                         move_uploaded_file($tmp_name, $path);
 
                         $msdsName['real_name'] = $currentFile['real_name'];
@@ -584,6 +586,12 @@ class MSDS {
 	}
 
 
+	public function deleteMSDS($msdsID) {
+		$sql = "DELETE FROM ".TB_MSDS_FILE." WHERE msds_file_id = ".$this->db->sqltext($msdsID);
+		$this->db->exec($sql);
+	}
+
+
 	public function deleteMSDSFromFS($msdsID, $removedFilesDir = "../msds_deleted/") {
 		if (!is_writable($removedFilesDir)) {
 			throw new Exception($removedFilesDir.' is not writable');
@@ -593,7 +601,7 @@ class MSDS {
 			throw new Exception('404');
 		}
 
-		$isSuccess = rename($details['realName'], $removedFilesDir.$details['realName']);
+		$isSuccess = rename(self::UPLOAD_DIR."/".$details['realName'], $removedFilesDir.$details['realName']);
 		return $isSuccess;
 	}
 
