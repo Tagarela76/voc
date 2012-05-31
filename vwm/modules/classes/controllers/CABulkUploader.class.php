@@ -102,6 +102,48 @@ class CABulkUploader extends Controller {
 			$this->smarty->assign('jsSources', $jsSources);
 			$this->smarty->assign('tpl', "tpls/uploadResults.tpl");
 			$this->smarty->display("tpls:index.tpl");
+		} else if ($this->getFromPost('gom') == 'StartGOM' && $input['size'] < 1024000) {
+			// for GOM library
+			$input['inputFile'] = $_FILES['inputFile']['tmp_name'];
+			$input['realFileName'] = basename($_FILES['inputFile']['name']);
+			$validation = new validateCSV($this->db);
+			$validation->validateGOM($input);
+			//var_dump($validation->productsCorrect);die();
+			$bu = new bulkUploader4GOM($this->db, $input, $validation);
+			
+			$errorCnt = count($validation->productsError);
+			$correctCnt = count($validation->productsCorrect);
+			$total = $errorCnt + $correctCnt;
+			$percent = round($errorCnt * 100 / ($correctCnt + $errorCnt), 2);
+			//
+			$errorLog = $validation->errorComments;
+			$errorLog .= "	Percent of errors is " . $percent . "%. Threshold is " . $input['threshold'] . "%.\n";
+
+			$validationLogFile = fopen(DIR_PATH_LOGS . "validation.log", "a");
+			fwrite($validationLogFile, $errorLog);
+			fclose($validationLogFile);
+
+			$title = new Titles($this->smarty);
+			$title->titleBulkUploadResults();
+
+			$this->smarty->assign("categoryID", "tab_" . $this->getFromPost('categoryID'));
+			$this->smarty->assign("productsError", $validation->productsError);
+			$this->smarty->assign("errorCnt", $errorCnt);
+			$this->smarty->assign("correctCnt", $correctCnt);
+			$this->smarty->assign("total", $total);
+			$this->smarty->assign("input", $input);
+			$this->smarty->assign("insertedCnt", $bu->insertedCnt);
+			$this->smarty->assign("updatedCnt", $bu->updatedCnt);
+			$this->smarty->assign("validationResult", $validation->validationResult);
+			$this->smarty->assign("actions", $bu->actions);
+			$this->smarty->assign("parent", $this->parent_category);
+
+			$jsSources = array("modules/js/checkBoxes.js",
+				"modules/js/reg_country_state.js");
+
+			$this->smarty->assign('jsSources', $jsSources);
+			$this->smarty->assign('tpl', "tpls/uploadResults.tpl");
+			$this->smarty->display("tpls:index.tpl");
 		} else {
 			//for PRODUCT
 			//we should check input file!

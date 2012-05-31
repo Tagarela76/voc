@@ -119,6 +119,17 @@ class Accessory implements iAccessory {
     	
     	return $accessory;
     }
+	
+	public function getAccessoryDetailsByCode($code) {
+    	$query = "	SELECT * FROM ".TB_ACCESSORY." WHERE code LIKE '".$code."'";
+    	$this->db->query($query);
+		$accessory = $this->db->fetch_array(0);
+		if (is_array($accessory) && !empty($accessory)) {
+			return $accessory;
+		} else {
+			return array();
+		}
+    }
     
     // SETTERS
     public function setAccessoryID($ID) {
@@ -222,8 +233,8 @@ class Accessory implements iAccessory {
     
     public function insertAccessory($jobberID) {
     	$jobberID=mysql_real_escape_string($jobberID);
-    	$query = "INSERT INTO ".TB_ACCESSORY." (name, jobber_id, vendor_id)" .
-    			 "VALUES ('".$this->accessoryName."', ".(int)$jobberID.", ".$this->vendor_id.")";
+    	$query = "INSERT INTO ".TB_ACCESSORY." (name, jobber_id, vendor_id, code)" .
+    			 "VALUES ('".$this->accessoryName."', ".(int)$jobberID.", ".$this->vendor_id.", '".$this->code."')";
     	$this->db->query($query);
     	
     	$query = "SELECT * FROM ".TB_ACCESSORY." a WHERE a.name='".$this->accessoryName."'";
@@ -240,7 +251,7 @@ class Accessory implements iAccessory {
 		$this->save2trash('U', $this->accessoryID);
     	
     	$query = " UPDATE ".TB_ACCESSORY." " .
-    			 " SET name='".$this->accessoryName."', jobber_id='".$jobberID."', vendor_id=".$this->vendor_id.
+    			 " SET name='".$this->accessoryName."', jobber_id='".$jobberID."', vendor_id=".$this->vendor_id.", code = '".$this->code."'".
     			 " WHERE id=".(int)$this->accessoryID;
 	
     	$this->db->query($query);

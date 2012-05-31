@@ -113,6 +113,18 @@ class Jobber {
 		return $companies;
 	}
 	
+	public function getJobberByName($jobber_name) {
+		$query_select = "SELECT jobber_id FROM jobber WHERE name LIKE '".mysql_real_escape_string($jobber_name)."'";
+		$this->db->query($query_select);
+		if ($this->db->num_rows() > 0) {
+			$result = $this->db->fetch_array(0);
+		} else {
+			$result = array('jobber_id' => 0);
+		}
+		
+		return intval($result['jobber_id']);
+	}
+
 	public function save() {
 		if ($this->jobber_id != NULL) {
 			$query = "UPDATE jobber SET 
