@@ -107,6 +107,69 @@ class validateCSV {
 		}
 		return $comments;
 	}
+	
+	public function validateGOM($input) {
+		$CSVPath = $input['inputFile'];
+		//last row
+		$file = fopen($CSVPath, "a");
+
+		fwrite($file, ";;;;;;;;;;;;;\n");
+		fclose($file);
+
+		$file = fopen($CSVPath, "r");
+
+		$headerKey = $this->tableHeader4GOM($file); //identification columns by their header
+				
+		$error = "";
+		$this->errorComments = "--------------------------------\n";
+		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
+
+		$current_row = 3;
+		$cJobber = new Jobber($this->db);
+		while ($dat = fgetcsv($file, 1000, ";")) {
+			$current_GOM_data = array();
+			$data = $this->trimAll($dat);
+			if (!$this->isEmptyGOMRow($data)) {
+				foreach ($data as $key => $value) {
+					if (isset($headerKey[$key])) {
+						$current_GOM_data[$headerKey[$key]] = $value;
+					}
+				}
+				
+				if (!empty($current_GOM_data['gom_code']) && !empty($current_GOM_data['description']) && ($cJobber->getJobberByName($current_GOM_data['jobber']) != 0)) {
+					if (empty($current_GOM_data['unit'])) {
+						$current_GOM_data['unit'] = 'EACH';
+					}
+					if (empty($current_GOM_data['quantity']) || !is_int(intval($current_GOM_data['quantity']))) {
+						$current_GOM_data['quantity'] = '1';
+					}
+					if (empty($current_GOM_data['unit_quantity']) || !is_int(intval($current_GOM_data['unit_quantity']))) {
+						$current_GOM_data['unit_quantity'] = '1';
+					}
+					if (empty($current_GOM_data['sales'])) {
+						$current_GOM_data['sales'] = '0';
+					}
+					$this->productsCorrect[] = $current_GOM_data;
+				} else {
+					$this->productsError[] = $current_GOM_data;
+				}
+			}
+			
+			$current_row++;
+		}
+		fclose($file);
+	}
+	
+	private function isEmptyGOMRow($row) {
+		$count = 0;
+		foreach ($row as $item) {
+			if ($item == "") {
+				$count++;
+			}
+		}
+		
+		return (count($row) == $count);
+	}
 
 	public function validate($input) {
 		$CSVPath = $input['inputFile'];
@@ -126,7 +189,7 @@ class validateCSV {
 		$error = "";
 		$this->errorComments = "--------------------------------\n";
 		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of ". $input['realFileName'] . "...\n";
-		while ($dat = fgetcsv($file, 1000, ";")){
+		while ($dat = fgetcsv($file, 1000, ";")) {
 
 			$data = Array();
 			foreach ($dat as $val){
@@ -1201,6 +1264,194 @@ class validateCSV {
 						break;
 					}
 				}
+			}
+		}
+
+		return $key;
+	}
+	
+	
+	private function tableHeader4GOM($file){
+		$headerRowData = array();
+		$data = fgetcsv($file, 1000, ";");
+		foreach ($data as $val){
+			$headerRowData[] = mysql_real_escape_string(trim($val));
+		}
+		$data = fgetcsv($file, 1000, ";");
+		for ($j=0;$j<count($data);$j++){
+			if (!empty($data[$j])) {
+				$headerRowData[$j] .= " ".mysql_real_escape_string(trim($data[$j]));
+			}
+		}
+		
+		//possible headers variations
+		$possibleLocation = array ('LOCATION:');
+		$possibleInv = array ('INV#');
+		$possibleCust = array ('CUST#');
+		$possibleJobberClient = array('JOBBER CLIENT', 'OPTIONAL JOBBER CLIENT');
+		$possibleJobber = array('JOBBER');
+		$possibleAssignToAll = array('ALL');
+		$possibleVendor = array('VENDOR', 'VENDER');
+		$possibleName = array('NAME');
+		$possibleGOMCode = array('PART#', 'PART No.');
+		$possibleDescription = array('DESCRIPTION');
+		$possibleCategory = array('CAT', 'CATEGORY');
+		$possibleSubCategory = array('SCAT', 'SUB-CATEGORY');
+		$possibleInvDate = array('INV DT');
+		$possibleUnit = array('UNIT TYPE', 'UNIT');
+		$possibleUnitQuantity = array('UNIT QTY');
+		$possibleQuantity = array('QTY', 'QUANTITY');
+		$possibleSales = array('SALES$', 'PRICING');
+		
+		$columnIndex = array();
+
+		$is_index2name = true;
+		
+		for ($i=0;$i<count($headerRowData);$i++) {
+			$columnIndex[$i] = false;
+			if (!isset($key['location'])) {
+				foreach ($possibleLocation as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'location' : $key['location'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['inv'])) {
+				foreach ($possibleInv as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'inv' : $key['inv'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['cust'])) {
+				foreach ($possibleCust as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'cust' : $key['cust'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['jobber_client'])) {
+				foreach ($possibleJobberClient as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'jobber_client' : $key['jobber_client'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['jobber'])) {
+				foreach ($possibleJobber as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'jobber' : $key['jobber'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['assign_to_all'])) {
+				foreach ($possibleAssignToAll as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'assign_to_all' : $key['assign_to_all'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['vendor'])) {
+				foreach ($possibleVendor as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'vendor' : $key['vendor'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['name'])) {
+				foreach ($possibleName as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'name' : $key['name'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['gom_code'])) {
+				foreach ($possibleGOMCode as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'gom_code' : $key['gom_code'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['description'])) {
+				foreach ($possibleDescription as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'description' : $key['description'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['category'])) {
+				foreach ($possibleCategory as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'category' : $key['category'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['sub_category'])) {
+				foreach ($possibleSubCategory as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'sub_category' : $key['sub_category'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['inv_date'])) {
+				foreach ($possibleInvDate as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'inv_date' : $key['inv_date'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['unit'])) {
+				foreach ($possibleUnit as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'unit' : $key['unit'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['unit_quantity'])) {
+				foreach ($possibleUnitQuantity as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'unit_quantity' : $key['unit_quantity'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['quantity'])) {
+				foreach ($possibleQuantity as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'quantity' : $key['quantity'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+			if (!isset($key['sales'])) {
+				foreach ($possibleSales as $header){
+					if (strtoupper(trim($headerRowData[$i])) == strtoupper(trim($header))) {
+						$is_index2name ? $key[$i] = 'sales' : $key['sales'] = $i;
+						$columnIndex[$i] = true;
+					}
+				}
+			}
+		}
+
+		$columnsArray = array ('location','inv','cust','jobber_client','jobber','assign_to_all','vendor','name','gom_code',
+								'description','category','sub_category','inv_date','unit','quantity','sales');
+		for ($i=0;$i<count($columnsArray);$i++) {
+			if (!isset($key[$columnsArray[$i]]) && !$columnIndex[$i]) {
+				//$key[$columnsArray[$i]] = $i;
 			}
 		}
 

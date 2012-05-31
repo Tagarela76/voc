@@ -594,6 +594,17 @@ class Unittype {
 			throw new Exception(mysql_error());
 		}		
 		//echo $query;
-	} 	
+	}
+	
+	public function getUnittypeByName($unittype) {
+		$query = "SELECT * FROM ".TB_UNITTYPE." WHERE name LIKE '".mysql_real_escape_string($unittype)."'";
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			return array();
+		} else {
+			return $this->db->fetch_array(0);
+		}
+	}
 }
 ?>

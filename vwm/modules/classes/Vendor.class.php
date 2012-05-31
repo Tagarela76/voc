@@ -56,5 +56,32 @@ class Vendor {
 			return $this->db->fetch_array(0);
 		}
 	}
+	
+	public function getVendorDetailsByCode($vendor_code) {
+		$query = "SELECT * FROM vendor WHERE code LIKE '".mysql_real_escape_string($vendor_code)."'";
+		$this->db->query($query);
+		
+		if ($this->db->num_rows() == 0) {
+			return array();
+		} else {
+			return $this->db->fetch_array(0);
+		}
+	}
+	
+	public function addVendor($vendor_code, $vendor_name) {
+		$query = "INSERT INTO vendor (name, code) VALUES ('".mysql_real_escape_string($vendor_name)."', '".mysql_real_escape_string($vendor_code)."')";
+		$this->db->query($query);
+		if (mysql_errno() == 0) {
+			$vendor_id = $this->db->getLastInsertedID();
+		} else {
+			$vendor_id = 0;
+		}
+		
+		return $vendor_id;
+	}
+		
+	public function deleteVendor($vendor_id) {
+		
+	}
 }
 ?>

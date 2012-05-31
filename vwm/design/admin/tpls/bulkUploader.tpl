@@ -44,7 +44,12 @@
 			</td>
 		</tr>		
 		<tr>
-			<td></td><td><input type="button" value="Start" onClick="Check()">  <input type="submit" value="Startpfp" name="pfp"></td>
+			<td></td>
+			<td>
+				<input type="button" value="Start" onClick="Check()"/>
+				<input type="submit" value="Startpfp" name="pfp"/>
+				<input type="submit" value="StartGOM" name="gom"/>
+			</td>
 		</tr>
 	</table>
 	{*<input type='hidden' name='action' value='bulkUpload'>
