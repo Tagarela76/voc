@@ -268,13 +268,13 @@ class CAUsers extends Controller {
 				
 				if ($data['accesslevel_id']!=0) {
 					$facility=new Facility($this->db);
-					$facilityList=$facility->getFacilityListByCompany($companyList[0]['id']);
+					$facilityList=$facility->getFacilityListByCompany($data['company_id']);
 					$this->smarty->assign("facility",$facilityList);
 					$bookmark = 'facility';
 					
 					if ($data['accesslevel_id']!=1) {
 						$department=new Department($this->db);
-						$departmentList=$department->getDepartmentListByFacility($facilityList[0]['id']);
+						$departmentList=$department->getDepartmentListByFacility($data['facility_id']);
 						$this->smarty->assign("department",$departmentList);
 						$bookmark = 'department';
 					}

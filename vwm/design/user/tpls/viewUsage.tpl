@@ -76,7 +76,7 @@
                     </tr>
                     <tr>
                         <td class="" height="20">
-                            Expire date:
+                            Permit expiration date:
                         </td>
                         <td>
                             <div align="left">

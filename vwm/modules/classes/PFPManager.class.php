@@ -67,6 +67,24 @@ class PFPManager {
 
 		return $list;
 	}
+	
+	public function getCountPFP($supplier_id = 0) {
+		$query = "SELECT count(*) AS cnt_pfp FROM ".
+					TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_SUPPLIER." s WHERE ".
+					" p.supplier_id = s.supplier_id AND p2p.isPrimary = 1 AND p2p.preformulated_products_id = pfp.id AND p2p.product_id = p.product_id ";
+		if ($supplier_id) {
+			$query .= " AND s.original_id = ".mysql_real_escape_string($supplier_id);
+		}
+		
+		$this->db->query($query);
+		
+		$numRows = $this->db->num_rows();
+		if ($numRows == 1) {
+			return $this->db->fetch(0)->cnt_pfp;
+		} else {
+			return false;
+		}
+	}
 
 	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0) {
 		//	build mandatory sql
@@ -364,7 +382,7 @@ class PFPManager {
 				$queryInsertPFPProducts .= " , ";
 			}
 		}
-
+		echo $queryInsertPFPProducts; die();
 		//echo "<br/>$queryInsertPFPProducts";
 		$this->db->query($queryInsertPFPProducts);
 		//exit;

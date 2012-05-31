@@ -44,37 +44,11 @@ $(function()
 			}				
 			break;
 	}
-if (disabledButton==true)
+	if (disabledButton==true)
 		$('#saveButton').attr('disabled',true);
 	
-if (logging){
-
-	$('#userID').change(function()
-	{
-		if ($('#userID option:selected').val() != 'All users'){
-			$('#selectCompany ').attr('value','All companies');
-			$('#selectCompany').trigger('change');
-			
-			$('#selectFacility').hide("slow");
-			$('#selectDepartment').hide("slow");
-		
-		}	
-	});	
-}
 	$('#selectCompany').change(function()
 	{
-		if (logging){
-			if ($('#selectCompany option:selected').val() != 'All companies'){
-				$('#userID ').attr('value','All users');
-				
-				$('#selectFacility').show("slow");
-				$('#selectDepartment').show("slow");
-			}else{
-				$('#selectFacility').hide("slow");
-				$('#selectDepartment').hide("slow");				
-			}	
-			
-		}		
 		switch (accessLevel)
 		{
 			case 'facility': 
@@ -112,11 +86,7 @@ function getFacilityList()
       		{             						
       			if(response!='false')
       			{      					
-		   			resp=eval("("+response+")");	
-					if (logging){
-						$('#selectFacility').append(
-						"<option value='All facilities'>All facilities</option>");	
-					}
+		   			resp=eval("("+response+")");														
 					for (key in resp)
 					{
 						$('#selectFacility').append(
@@ -154,11 +124,7 @@ function getDepartmentsList()
       		{         			          							
       			if(response!='false')
       			{      					
-		      		resp=eval("("+response+")");		
-					if (logging){
-						$('#selectDepartment').append(
-						"<option value='All departments'>All departments</option>");	
-					}					
+		      		resp=eval("("+response+")");														
 					for (key in resp)
 					{
 						$('#selectDepartment').append(

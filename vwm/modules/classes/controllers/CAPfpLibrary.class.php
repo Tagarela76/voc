@@ -138,9 +138,21 @@ class CAPfpLibrary extends Controller {
 		//$pfplist = $manager->getList();
 
 		$sub = $this->getFromRequest("subBookmark");
+		
+		$supplierID = $this->getFromRequest('subBookmark');
+		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;
+		
+		//$pfpsCount = $manager->getCountPFP($supplierID);
+		//var_dump($pfpsCount);
+		
+		//$url = "?".$_SERVER["QUERY_STRING"];
+		//$url = preg_replace("/\&page=\d*/","", $url);
+
+		//$pagination = new Pagination($pfpsCount);
+		//$pagination->url = $url;
+		//$this->smarty->assign('pagination', $pagination);
 
 	    if ($sub != 'custom'){
-
 		$allsub = $suppl->getAllSuppliersByOrigin($sub);
 			$i=0;
 			while($allsub[$i]){
