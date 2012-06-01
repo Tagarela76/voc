@@ -135,7 +135,7 @@ class PFPManager {
 		}
 		
 		$query .= " GROUP BY pfp.id ";
-		echo $query;
+		
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
