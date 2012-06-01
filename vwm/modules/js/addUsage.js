@@ -594,7 +594,7 @@ function initRecycle() {
 
 		// base product should be always on top
 		pfp_products = orderPfpProducts(pfp_products);
-		console.log(pfp_products);
+		//console.log(pfp_products);
 		if(currentSelectedPFP != null) {
 			yes = confirm("Pre-formulated-products is already loaded from \""+currentSelectedPFP_descr+"\". Do you want clear products list and load products from pre-formulated-products \"" + pfp_description+"\"?");
 			if(yes == true) {
