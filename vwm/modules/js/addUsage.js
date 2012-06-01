@@ -98,33 +98,33 @@ function initNoMWS() {
 		calculateVOC();
 	});
 
-	
 
-//RECYCLE	
+
+//RECYCLE
 	recycle.value = $("#recycleValue").val();
 	if($("#selectRecycleUnittype").attr('value')) {
 	recycle.unittype = $("#selectRecycleUnittype").attr('value');
-	}	
+	}
 	$("#recycleValue").change(function(){
 		recycle.unittype = $("#selectRecycleUnittype").attr('value');
 		recycle.value = $(this).val();
 		calculateVOC();
-	});	
-calculateVOC();	
+	});
+calculateVOC();
 }
 
 function initRecycle() {
 	recycle.value = $("#recycleValue").val();
 	if($("#selectRecycleUnittype").attr('value')) {
 	recycle.unittype = $("#selectRecycleUnittype").attr('value');
-	}	
+	}
 	$("#recycleValue").change(function(){
 		recycle.unittype = $("#selectRecycleUnittype").attr('value');
 		recycle.value = $(this).val();
 		validateRecycle();
 		calculateVOC();
-	});	
-//calculateVOC();	
+	});
+//calculateVOC();
 }
 
 	function IsNumeric(input)
@@ -200,7 +200,7 @@ function initRecycle() {
 		mixObj.setRule($("#rule option:selected").val());
 		mixObj.selectUnittypeClass = $("#selectUnittypeClass option:selected").val();
 		mixObj.setNotes($("#notes").val());
-	
+
 		return mixObj;
 	}
 
@@ -230,25 +230,20 @@ function initRecycle() {
 		}
 
 		if(!validateRecycle()){
-			
+
 			$("#recycleValidError").css("display","inline");
 			return;
 		} else {
 			$("#recycleValidError").css("display","none");
 		}
-		
+
 		mix = getMix();
-		/*
-		 * Эники беники ели вареники
-		 */
-		//alert(mix.toJson() + " CONTINUE");
-		//return;
 
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
 			recycle = $.toJSON(recycle);
 		} else {
-			
+
 			waste = $.toJSON(waste);
 			recycle = $.toJSON(recycle);
 		}
@@ -259,9 +254,6 @@ function initRecycle() {
 		} else {
 			urlData = {"action" : "editItemAjax", "category" : "mix", "departmentID": departmentID, "wasteJson" : waste, "recycleJson" : recycle, "products" : products.toJson() , "mix" : mix.toJson(), "id" : mixID};
 		}
-
-		//alert("Everything is ok!");
-		//return;
 
 		$.ajax({
 			url:'index.php',
@@ -600,6 +592,9 @@ function initRecycle() {
 		//alert(products.Count());
 		yes = true;
 
+		// base product should be always on top
+		pfp_products = orderPfpProducts(pfp_products);
+		console.log(pfp_products);
 		if(currentSelectedPFP != null) {
 			yes = confirm("Pre-formulated-products is already loaded from \""+currentSelectedPFP_descr+"\". Do you want clear products list and load products from pre-formulated-products \"" + pfp_description+"\"?");
 			if(yes == true) {
@@ -626,6 +621,24 @@ function initRecycle() {
 			}
 		}
 
+	}
+
+	/**
+	 * Base product should be always on top
+	 */
+	function orderPfpProducts(pfp_products) {
+		var orderedProducts = [];
+		var nonPrimaryIndex = 1;
+		for(product in orderedProducts) {
+			if(product.isPrimary) {
+				orderedProducts[0] = product;
+			} else {
+				orderedProducts[nonPrimaryIndex] = product;
+				nonPrimaryIndex++;
+			}
+		}
+
+		return orderedProducts;
 	}
 
 	function clearProductsList() {
@@ -902,7 +915,7 @@ function initRecycle() {
 			}
 		}
 	}
-	
+
 	function WasteStreams4CalcVoc(waste) {
 		if (waste !== '[]'){
 			var quantity = 0;
@@ -913,7 +926,7 @@ function initRecycle() {
 			str = object2String(obj2);
 			arr = string2Array(str);
 
-	
+
 
 			n = 0;
 			i = 0;
@@ -929,19 +942,19 @@ function initRecycle() {
 						alltype[i] = arr[n].pollutions[m].unittypeId;
 						m ++;i = i + m;
 					}
-					
+
 					//alert(arr[n].pollutions);
-				}else{					
+				}else{
 					if (arr[n].quantity){
 						quantity += parseFloat(arr[n].quantity);
 					}
 					typeIDarr.push(arr[n].unittypeId);
-					
+
 						allquan[i] = parseFloat(arr[n].quantity);
-						alltype[i] = arr[n].unittypeId;	
+						alltype[i] = arr[n].unittypeId;
 						i ++;
 				}
-				
+
 				n ++;
 
 			}
@@ -953,7 +966,7 @@ function initRecycle() {
 				if (alltype[i] == allvolume[j] ){
 					FlaginVolume ++;
 				}
-			} 
+			}
 		}
 
 		if (FlaginVolume != alltype.length && FlaginVolume != 0){
@@ -961,7 +974,7 @@ function initRecycle() {
 			return ;
 		}
 
-		
+
 		if (FlaginVolume == 0){
 			ut = 2;
 			convertWaste = WasteConverter(allquan,alltype,ut);
@@ -969,19 +982,19 @@ function initRecycle() {
 			ut = 1;
 			convertWaste = WasteConverter(allquan,alltype,ut);
 		}
-		
+
 		//console.log('result:'+convertWaste);
 		//console.log(allquan.length);
-		//console.log(alltype.length);	
+		//console.log(alltype.length);
 		var wasteJSON = {"value": convertWaste, "unittype": ut};
 		return wasteJSON;
-			
+
 		}else{
 			return;
 		}
 
 }
-	
+
 	function WasteConverter(allquan,alltype,ut) {
 		var convertWastes=0;
 
@@ -990,20 +1003,20 @@ function initRecycle() {
 				coeff = chooseVolumeCoefficient(parseFloat(alltype[i]));
 
 				convertWastes = convertWastes + allquan[i]*coeff;
-			}		
+			}
 		}else{
 			for (var i = 0; i < alltype.length; i++) {
 				coeff = chooseWeightCoefficient(parseFloat(alltype[i]));
 
 				convertWastes = convertWastes + allquan[i]*coeff;
-			}			
+			}
 		}
-		
+
 	return convertWastes;
 }
 
 	function chooseWeightCoefficient(tipid) {
-	
+
 		switch (tipid) {
 	/*	case 2:
 			coef = 1;
@@ -1058,12 +1071,12 @@ function initRecycle() {
 			return 1;
 
 		}
-		
+
 
 }
 
 	function chooseVolumeCoefficient(tipid) {
-	
+
 		switch (tipid) {
 	/*	case 1:
 			coef = 1;
@@ -1115,7 +1128,7 @@ function initRecycle() {
 		case 25:
 			coef = 0.02641721;
 			return coef;
-			break	
+			break
 		case 26:
 			coef = 2.641721;
 			return coef;
@@ -1141,34 +1154,34 @@ function initRecycle() {
 		case 32:
 			coef = 9.607619;
 			return coef;
-			break	
+			break
 
 		default:
 
 			return 1;
 
 		}
-		
+
 
 }
 
-	
+
 	function calculateVOC() {
 		mix = getMix();
-		
-		if(noMWS != true){	
+
+		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
 
 			//	waste streams to normal view for auoto calc voc
 			answer = WasteStreams4CalcVoc(waste);
-			
+
 			if (answer == '') {
 				return;
 			}else{
 				waste = answer;
 
 			}
-		}	
+		}
 
 
 		$.ajax({
@@ -1219,14 +1232,14 @@ function initRecycle() {
       		}
 		});
 	}
-	
+
 	function string2Array(string) {
 		eval("var result = " + string);
 		return result;
-	}	
+	}
 	function object2String(obj) {
 		var val, output = "";
-		if (obj) {    
+		if (obj) {
 			output += "{";
 			for (var i in obj) {
 				val = obj[i];
@@ -1248,8 +1261,8 @@ function initRecycle() {
 			output = output.substring(0, output.length-1) + "}";
 		}
 		return output;
-	}	
-	
+	}
+
 	function array2String(array) {
     var output = "";
     if (array) {
