@@ -629,11 +629,11 @@ function initRecycle() {
 	function orderPfpProducts(pfp_products) {
 		var orderedProducts = [];
 		var nonPrimaryIndex = 1;
-		for(product in orderedProducts) {
-			if(product.isPrimary) {
-				orderedProducts[0] = product;
+		for (var i=0; i<pfp_products.length; i++) {
+			if(pfp_products[i].isPrimary) {
+				orderedProducts[0] = pfp_products[i];
 			} else {
-				orderedProducts[nonPrimaryIndex] = product;
+				orderedProducts[nonPrimaryIndex] = pfp_products[i];
 				nonPrimaryIndex++;
 			}
 		}
