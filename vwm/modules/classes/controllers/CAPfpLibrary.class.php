@@ -142,33 +142,17 @@ class CAPfpLibrary extends Controller {
 		$supplierID = $this->getFromRequest('subBookmark');
 		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;
 		
-		//$pfpsCount = $manager->getCountPFP($supplierID);
-		//var_dump($pfpsCount);
+		$pfpsCount = $manager->countPFP(0, '', $this->getFromRequest('productCategory'), $supplierID);				
 		
-		//$url = "?".$_SERVER["QUERY_STRING"];
-		//$url = preg_replace("/\&page=\d*/","", $url);
+		$url = "?".$_SERVER["QUERY_STRING"];
+		$url = preg_replace("/\&page=\d*/","", $url);
 
-		//$pagination = new Pagination($pfpsCount);
-		//$pagination->url = $url;
-		//$this->smarty->assign('pagination', $pagination);
-
-	    if ($sub != 'custom'){
-		$allsub = $suppl->getAllSuppliersByOrigin($sub);
-			$i=0;
-			while($allsub[$i]){
-				$listOFpfp[$i] = $manager->getPfpList($allsub[$i]['supplier_id']);
-				$i++;
-			}
-			$temp = $listOFpfp[0];
-			for($i = 0; $i < count($listOFpfp)-1; $i++){
-				$temp = array_merge($temp, $listOFpfp[$i+1]);
-			}
-			$listOFpfp = array_unique($temp);
-		}else{
-			$listOFpfp = $manager->getPfpList($sub);
-		}
+		$pagination = new Pagination($pfpsCount);
+		$pagination->url = $url;
+		$this->smarty->assign('pagination', $pagination);
+	   
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
-		$pfps = $manager->getList(null,null,$listOFpfp, $productCategory);
+		$pfps = $manager->getList(null,$pagination,null, $productCategory, $supplierID);
 		
 		/*
 		$pfplist = $manager->getPfpList($sub);

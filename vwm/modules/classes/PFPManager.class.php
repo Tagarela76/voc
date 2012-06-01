@@ -28,10 +28,10 @@ class PFPManager {
 		return $c > 0 ? FALSE : TRUE;
 	}
 
-	public function countPFP($companyID = 0, $searchString = '', $industryType = 0) {
+	public function countPFP($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id as id " .
-				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
 		if ($searchString != "") {
@@ -47,6 +47,10 @@ class PFPManager {
 
 		if ($industryType != 0) {
 			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+		}
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
 
 		$query .= " GROUP BY pfp.id";
@@ -71,7 +75,10 @@ class PFPManager {
 	public function getCountPFP($supplier_id = 0) {
 		$query = "SELECT count(*) AS cnt_pfp FROM ".
 					TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_SUPPLIER." s WHERE ".
-					" p.supplier_id = s.supplier_id AND p2p.isPrimary = 1 AND p2p.preformulated_products_id = pfp.id AND p2p.product_id = p.product_id ";
+					" p.supplier_id = s.supplier_id " .
+					" AND p2p.isPrimary = 1 " .
+					" AND p2p.preformulated_products_id = pfp.id " .
+					" AND p2p.product_id = p.product_id ";
 		if ($supplier_id) {
 			$query .= " AND s.original_id = ".mysql_real_escape_string($supplier_id);
 		}
@@ -86,10 +93,10 @@ class PFPManager {
 		}
 	}
 
-	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0) {
+	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
-				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
 		if ($companyID != 0) {
@@ -97,7 +104,13 @@ class PFPManager {
 		}
 
 		if ($industryType != 0) {
-			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
+		}
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
 
 		/*if ($companyID) {
@@ -122,7 +135,7 @@ class PFPManager {
 		}
 		
 		$query .= " GROUP BY pfp.id ";
-		
+		echo $query;
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
@@ -580,7 +593,7 @@ class PFPManager {
 	 * @param int $industryType
 	 * @return string Example preformulated_products pfp, product p, pfp2product pfp2p, product2type p2t
 	 */
-	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0) {
+	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0, $supplierID = 0) {
 		$tables = array(
 			TB_PFP." pfp",
 			TB_PRODUCT." p",
@@ -593,6 +606,10 @@ class PFPManager {
 
 		if ($industryType != 0) {
 			array_push($tables, TB_PRODUCT2TYPE." p2t ");
+		}
+		
+		if ($supplierID != 0) {
+			array_push($tables, TB_SUPPLIER." s ");
 		}
 
 		return implode(', ', $tables);
