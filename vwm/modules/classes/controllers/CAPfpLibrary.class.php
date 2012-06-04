@@ -465,5 +465,88 @@ class CAPfpLibrary extends Controller {
 		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 		die();
 	}
+	
+	protected function actionAccessToCompany() {
+		if ($_POST['assign'] == "Assign") {
+			$industry_type = $_POST['industryType'];
+			$company_id = $_POST['company'];
+			$cPFPManager = new PFPManager($this->db);
+			// $query - get all PFPs where primary product belongs to $industry_type
+			$query = "SELECT pfp.id, pfp.description FROM ".TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_PRODUCT2TYPE." p2t".
+						" WHERE p2p.preformulated_products_id = pfp.id ".
+						" AND p2p.product_id = p.product_id ".
+						" AND p.product_id = p2t.product_id ".
+						" AND p2p.isPrimary = 1 ".
+						" AND (p2t.type_id IN ".
+							" (SELECT id FROM ".TB_INDUSTRY_TYPE.
+							" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.type_id = {$this->db->sqltext($industry_type)})";
+			$query .= " GROUP BY pfp.id";
+			$this->db->query($query);
+			$pfp_list = $this->db->fetch_all_array();
+			// $query_pfp2company - get all relations PFP2Company
+			$query_pfp2company = "SELECT * FROM ".TB_PFP2COMPANY." WHERE 1";
+			$this->db->query($query_pfp2company);
+			$pfp2company = $this->db->fetch_all_array();
+			//$result_log = "";
+			foreach ($pfp_list as $pfp_list_item) {
+				foreach ($company_id as $company_id_item) {
+					$already_assign = false;
+					foreach ($pfp2company as $pfp2company_item) {
+						if ((intval($pfp_list_item['id']) == intval($pfp2company_item['pfp_id'])) 
+								&& (intval($company_id_item) == intval($pfp2company_item['company_id']))) {
+							$already_assign = true;		// is $pfp_list_item assigned to $company_id_item
+						}
+					}
+					//if (!$already_assign) { // assign it if not assigned yet
+						$cPFPManager->availablePFP2Company(intval($pfp_list_item['id']), intval($company_id_item));
+						//$result_log .= "<b>Success!</b> ".$pfp_list_item['description']." assigned to company ".$company_id_item."<br/>";
+					//} else {
+						//$result_log .= "<b>Error!</b> ".$pfp_list_item['description']." is already assigned to company ".$company_id_item."<br/>";
+					//}
+				}
+				
+			}
+			//empty($result_log) ? $result_log = "PFP's were not assigned to companies.<br/>" : "";
+			//$this->smarty->assign("log", $result_log);
+			header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary");
+		} else if ($_POST['unassign'] == "Unassign") {
+			$industry_type = $_POST['industryType'];
+			$company_id = $_POST['company'];
+			$cPFPManager = new PFPManager($this->db);
+			// $query - get all PFPs where primary product belongs to $industry_type
+			$query = "SELECT pfp.id, pfp.description FROM ".TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_PRODUCT2TYPE." p2t".
+						" WHERE p2p.preformulated_products_id = pfp.id ".
+						" AND p2p.product_id = p.product_id ".
+						" AND p.product_id = p2t.product_id ".
+						" AND p2p.isPrimary = 1 ".
+						" AND (p2t.type_id IN ".
+							" (SELECT id FROM ".TB_INDUSTRY_TYPE.
+							" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.type_id = {$this->db->sqltext($industry_type)})";
+			$query .= " GROUP BY pfp.id";
+			$this->db->query($query);
+			$pfp_list = $this->db->fetch_all_array();
+			foreach ($pfp_list as $pfp_list_item) {
+				foreach ($company_id as $company_id_item) {
+					$cPFPManager->unavailablePFPFromCompany(intval($pfp_list_item['id']), intval($company_id_item));
+				}
+			}
+			header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary");
+		}
+		// get all industry types and sub-types
+		$cTypes = new ProductTypes(($this->db));
+		$type_list = $cTypes->getTypesWithSubTypes();
+		$this->smarty->assign("typesList", $type_list);
+
+		// get company list
+		$cCompany = new Company($this->db);
+		$company_list = $cCompany->getCompanyList();
+		$this->smarty->assign("companyList", $company_list);
+
+		$jsSources = array('modules/js/checkBoxes.js');
+
+		$this->smarty->assign('jsSources', $jsSources);
+		$this->smarty->assign('tpl', 'tpls/accessToCompany.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
 }
 ?>

@@ -73,6 +73,9 @@
 				<input type="button" class="button" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs&itemsCount={$itemsCount}'">
 			{/if}	
 		{/if}
+		{if $request.category eq "pfps"}
+			<input type="button" class="button" value="Give access to company" onclick="location.href='admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps'"/>
+		{/if}
 		
 		
 	{if $request.category eq "product"}
