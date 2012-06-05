@@ -28,22 +28,22 @@ class PFPManager {
 		return $c > 0 ? FALSE : TRUE;
 	}
 	
-	public function countPFPAll() {
-		$queryFilter = " AND pfp.id = pfp2c.pfp_id ";
-		$this->_countPFP($queryFilter);
+	public function countPFPAll($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
+		$queryFilter = "";
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
 	
-	public function countPFPAllowed() {
+	public function countPFPAllowed($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
-		$this->_countPFP($queryFilter);
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
 	
-	public function countPFPAssigned($companyID) {
+	public function countPFPAssigned($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
-		$this->_countPFP($queryFilter);
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
 		
-	private function _countPFP($queryFilter) {
+	private function _countPFP($queryFilter = '', $companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id as id " .
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
@@ -67,7 +67,7 @@ class PFPManager {
 		}
 
 		$query .= " GROUP BY pfp.id";
-
+		
 		$this->db->query($query);
 
 		return $this->db->num_rows();
@@ -140,22 +140,22 @@ class PFPManager {
 		}
 	}
 	
-	public function getListAll() {
-		$queryFilter = " AND pfp.id = pfp2c.pfp_id ";
-		$this->_countPFP($queryFilter);
+	public function getListAll($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+		$queryFilter = "";
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 	
-	public function getListAllowed() {
+	public function getListAllowed($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
-		$this->_countPFP($queryFilter);
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 	
-	public function getListAssigned($companyID) {
+	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
-		$this->_countPFP($queryFilter);
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 		
-	private function _getList($queryFilter) {
+	private function _getList($queryFilter = '', $companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
@@ -743,11 +743,8 @@ class PFPManager {
 			TB_PFP." pfp",
 			TB_PRODUCT." p",
 			TB_PFP2PRODUCT." pfp2p",
+			TB_PFP2COMPANY." pfp2c"
 		);
-
-		//if ($companyID != 0) {
-			array_push($tables, TB_PFP2COMPANY." pfp2c");
-		//}
 
 		if ($industryType != 0) {
 			array_push($tables, TB_PRODUCT2TYPE." p2t ");

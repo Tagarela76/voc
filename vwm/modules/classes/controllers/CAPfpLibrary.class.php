@@ -142,7 +142,7 @@ class CAPfpLibrary extends Controller {
 		$supplierID = $this->getFromRequest('subBookmark');
 		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;
 		
-		$pfpsCount = $manager->countPFP(0, '', $this->getFromRequest('productCategory'), $supplierID);				
+		$pfpsCount = $manager->countPFPAll(0, '', $this->getFromRequest('productCategory'), $supplierID);				
 		
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
@@ -152,7 +152,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign('pagination', $pagination);
 	   
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
-		$pfps = $manager->getList(null,$pagination,null, $productCategory, $supplierID);
+		$pfps = $manager->getListAll(null,$pagination,null, $productCategory, $supplierID);
 		
 		/*
 		$pfplist = $manager->getPfpList($sub);
