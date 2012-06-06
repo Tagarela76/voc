@@ -49,6 +49,8 @@ class CAProduct extends Controller {
 		$subaction = $this->getFromRequest('subaction');
 		$companyID = $this->getFromRequest('companyID');
 		$companyID = (is_null($companyID) || $companyID == 'All companies')?0:$companyID;
+		$facilityID = $this->getFromRequest('facilityID');
+		$facilityID = (is_null($facilityID) || $facilityID == 'All facilities')?0:$facilityID;
 
 		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
 			$count = $this->getFromRequest('itemsCount');
@@ -94,7 +96,7 @@ class CAProduct extends Controller {
 		} else {
 
 			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$supplierID);
-
+			
 			$pagination = new Pagination($productCount);
 			$pagination->url = $url;
 			$this->smarty->assign('pagination', $pagination);
@@ -107,7 +109,11 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentCompany',$companyID);
 			$this->smarty->assign('currentSupplier', $supplierID);
 		}
-
+		
+		if ($facilityID != 0) {
+			$productList = $product->filterProductsByFacility($companyID, $facilityID, $productList);
+		}
+		
 		$field = 'product_id';
 		$list = $productList;
 

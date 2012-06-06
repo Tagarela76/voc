@@ -2,6 +2,10 @@
 
 class Product extends ProductProperties {
 
+	/**
+	 *
+	 * @var db
+	 */
 	protected $db;
 	private $productType;
 
@@ -17,7 +21,30 @@ class Product extends ProductProperties {
 		$this->productType = new ProductTypes($db);
 	}
 
-
+	public function filterProductsByFacility($company_id, $facility_id, $products) {
+		$result = array(); // product list by facility
+		$products2facility = array();
+		$query = "SELECT * FROM product2company WHERE company_id = ".$company_id." AND (facility_id = ".$facility_id." OR facility_id IS NULL)";
+		$this->db->query($query);
+		if ($this->db->num_rows() == 0) {
+			$query = "SELECT * FROM product2company WHERE company_id = ".$company_id." AND facility_id IS NULL";
+			$this->db->query($query);
+			if ($this->db->num_rows() > 0) {
+				$products2facility = $this->db->fetch_column('product_id');
+			}
+		} else {
+			$products2facility = $this->db->fetch_column('product_id');
+		}
+		if (!empty($products2facility)) {
+			foreach ($products as $products_item) {
+				if (in_array($products_item['product_id'], $products2facility)) {
+					array_push($result, $products_item);
+				}
+			}
+		}
+		
+		return $result;
+	}
 
 	public function getProductList($companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		if (is_null($pagination)) {
@@ -28,7 +55,7 @@ class Product extends ProductProperties {
 		}
 
 		$products = $this->selectProductsByCompany($companyID, 0, $pagination,$filter, $sort);
-
+		
 		if ($products) {
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
 			if ($pagination) {
@@ -716,13 +743,22 @@ class Product extends ProductProperties {
 
 
 	//	get number of products for company or false
-	public function countProducts($companyID,$filter=' TRUE ') {
-
+	public function countProducts($company_id,$facility_id,$filter=' TRUE ') {
 		settype($companyID,"integer");
-
-		$query = "SELECT count(product_id) productCount FROM product2company WHERE company_id = $companyID AND $filter";
+		settype($facility_id,"integer");
+		$query = "SELECT count(DISTINCT product_id) productCount FROM product2company WHERE company_id = ".$company_id.
+					" AND ".$filter." AND (facility_id = ".$facility_id." OR facility_id IS NULL)";
 		$this->db->query($query);
-		return ($this->db->num_rows() > 0) ? $this->db->fetch(0)->productCount : false;
+		if ($this->db->fetch(0)->productCount == 0) {
+			$query = "SELECT count(DISTINCT product_id) productCount FROM product2company WHERE company_id = ".$company_id.
+						" AND ".$filter." AND facility_id IS NULL";
+			$this->db->query($query);
+			$productCount = $this->db->fetch(0)->productCount;
+		} else {
+			$productCount = $this->db->fetch(0)->productCount;
+		}
+		
+		return $productCount;
 	}
 
 
@@ -1000,7 +1036,7 @@ class Product extends ProductProperties {
 	}
 
 
-	public function getProductCount($companyID, $supplierID) {
+	public function getProductCount($companyID, $supplierID, $facilityID = null) {
 		$query = "SELECT count(*) AS cnt " .
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID)." " .
 				"WHERE p.supplier_id = s.supplier_id " .
@@ -1012,6 +1048,10 @@ class Product extends ProductProperties {
 
 		if (!(empty($companyID) && $companyID == 0)) {
 			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
+		}
+		
+		if (!is_null($facilityID) && is_integer($facilityID)) {
+			$query .= " AND (p2c.facility_id IS NULL OR p2c.facility_id = ".mysql_real_escape_string($facilityID).") ";
 		}
 
 		if ($this->productCategoryFilter != 0) {
@@ -1106,12 +1146,12 @@ class Product extends ProductProperties {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
 
-		$query .= " AND {$filter} {$sort}";
-
+		$query .= " AND {$filter} GROUP BY p.product_id {$sort}";
+		
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-
+		
 		$this->db->query($query);
 
 		$numRows = $this->db->num_rows();

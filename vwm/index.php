@@ -87,11 +87,12 @@ try {
 
 					//$db->select_db(DB_NAME);
 					if ($user->auth($_POST["accessname"], $_POST["password"])) {
-						$userDetails = $user->getUserDetails($user->getUserIDbyAccessname($_POST["accessname"]), true);
-						if ($userDetails['accesslevel_id'] != 3) {
+						$userDetails = $user->getUserDetails($user->getUserIDbyAccessname($_POST["accessname"]), true);						
+						//	disable vps check
+						/*if ($userDetails['accesslevel_id'] != 3) {
 							$voc2vps = new VOC2VPS($db);
 							$customerDetails = $voc2vps->getCustomerDetails($userDetails['company_id'], true);
-
+				
 							if (VERSION != 'standalone' &&
 									($customerDetails['status'] == "off" || $customerDetails['status'] == "notReg") &&
 									(strtotime($customerDetails['trial_end_date']) <= strtotime(date('Y-m-d')))) {
@@ -103,7 +104,7 @@ try {
 								header('Location: ' . $xnyo->logout_redirect_url . '?error=auth&url=' . $queryStrPost);
 								break;
 							}
-						}
+						}*/
 
 						session_start();
 

@@ -71,8 +71,19 @@ class CProduct extends Controller
      * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
      */       
 	protected function bookmarkDProduct($vars)
-	{			
+	{		
 		extract($vars);
+		/*
+		$current_category = $this->getFromRequest('category');
+		$current_category_id = $this->getFromRequest('id');
+		if ($current_category == 'department') {
+			$cDepartment = new Department($this->db);
+			$department_details = $cDepartment->getDepartmentDetails($current_category_id);
+			$facility_id = $department_details['facility_id'];
+		} else {
+			$facility_id = $current_category_id;
+		}
+		*/
 		$product = new Product($this->db);
 																		
 		$sortStr=$this->sortList('chemicalProduct',3);
@@ -90,12 +101,13 @@ class CProduct extends Controller
 			} 
 			else 
 			{																					
-				$pagination = new Pagination((int)$product->countProducts($facilityDetails['company_id'],$searchStr));												
+				$pagination = new Pagination((int)$product->countProducts($facilityDetails['company_id'],$facilityDetails['facility_id'],$searchStr));												
 				$pagination->url = "?action=browseCategory&category=".$this->getFromRequest('category')."&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark').
 				(!is_null($this->getFromRequest('q'))?"&q=".$this->getFromRequest('q')."&searchAction=search":"");			
 				$this->smarty->assign('pagination',$pagination);
 			}																											
-			$productList = $product->getProductList($companyDetails['company_id'], $pagination,$searchStr,false);																															
+			$productList = $product->getProductList($companyDetails['company_id'], $pagination,$searchStr,false);
+			$productList = $product->filterProductsByFacility($companyDetails['company_id'], $facilityDetails['facility_id'], $productList);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} 
 		else 
@@ -108,10 +120,9 @@ class CProduct extends Controller
 			{								
 				//$company_id = $this->getFromRequest('company_id');
 				$company_id = $companyDetails['company_id'];
+				$facility_id = $facilityDetails['facility_id'];
 				
-				
-				$productsCount = (int)$product->countProducts($company_id,$filterStr);
-                                
+				$productsCount = (int)$product->countProducts($company_id,$facility_id,$filterStr);
 				$pagination = new Pagination($productsCount);
 				
 				$pagination->url = "?action=browseCategory&category=".$this->getFromRequest('category')."&id=".$this->getFromRequest('id')."&bookmark=".$this->getFromRequest('bookmark').
@@ -122,8 +133,8 @@ class CProduct extends Controller
                                 
 				$this->smarty->assign('pagination',$pagination);
 			}																											
-			$productList = $product->getProductList($companyDetails['company_id'], $pagination,$filterStr,$sortStr,false);								
-																													
+			$productList = $product->getProductList($companyDetails['company_id'], $pagination,$filterStr,$sortStr,false);
+			$productList = $product->filterProductsByFacility($companyDetails['company_id'], $facilityDetails['facility_id'], $productList);
 		}																																	
 		$itemsCount = ($productList) ? count($productList) : 0;
 		

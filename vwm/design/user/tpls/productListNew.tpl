@@ -208,13 +208,13 @@
 	
 	{if $smarty.section.i.total ==0}
 		<tr align = 'center' height="173">						
-			<td class="border_users_l border_users_b border_users_r" colspan='11'>
+			<td class="border_users_l border_users_b border_users_r" colspan='12'>
 				No products in the company
 			</td>						
 		</tr>
 	{elseif $smarty.section.i.total <=7}
 		<tr height='{math equation="x - (y * 27)" x=200 y=$smarty.section.i.total}'>
-		<td class="border_users_l border_users_b border_users_r" colspan='11'>
+		<td class="border_users_l border_users_b border_users_r" colspan='12'>
 				&nbsp;
 			</td>						
 		</tr>
