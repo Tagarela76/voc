@@ -693,6 +693,12 @@ class Product extends ProductProperties {
 			$this->insertProduct2CompanyLink($productID, $companyID);
 		}
 	}
+	
+	public function assignProduct2Facility($productID, $companyID, $facilityID) {
+		if (!$this->checkIsProduct2FacilityLink($productID, $companyID, $facilityID)) {
+			$this->insertProduct2FacilityLink($productID, $companyID, $facilityID);
+		}
+	}
 
 	public function assignGOM2Jobber($gomID, $jobberID) {
 		if (!$this->checkIsGOM2JobberLink($gomID, $jobberID)) {
@@ -703,6 +709,12 @@ class Product extends ProductProperties {
 	public function unassignProductFromCompany($productID = false, $companyID = false) {
 		if ($this->checkIsProduct2CompanyLink($productID, $companyID)) {
 			$this->deleteProduct2CompanyLink($productID, $companyID);
+		}
+	}
+	
+	public function unassignProductFromFacility($productID = false, $companyID = false, $facilityID = false) {
+		if ($this->checkIsProduct2FacilityLink($productID, $companyID, $facilityID)) {
+			$this->deleteProduct2FacilityLink($productID, $companyID, $facilityID);
 		}
 	}
 
@@ -963,6 +975,20 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 		return ($this->db->num_rows()) ? true : false;
 	}
+	
+	private function checkIsProduct2FacilityLink($productID = false, $companyID = false, $facilityID = false) {
+
+		$productID=mysql_escape_string($productID);
+		$companyID=mysql_escape_string($companyID);
+		$facilityID=mysql_escape_string($facilityID);
+
+		$query = "SELECT id FROM product2company WHERE "." product_id = ".$productID.
+					" AND company_id = ".$companyID.
+					" AND facility_id = ".$facilityID;
+		$this->db->query($query);
+		
+		return ($this->db->num_rows()) ? true : false;
+	}
 
 	private function checkIsGOM2JobberLink($gomID = false, $jobberID = false) {
 
@@ -991,6 +1017,16 @@ class Product extends ProductProperties {
 		$query = "INSERT INTO product2company (product_id, company_id) VALUES (".$productID.", ".$companyID.")";
 		$this->db->query($query);
 	}
+	
+	private function insertProduct2FacilityLink($productID, $companyID, $facilityID) {
+
+		settype($companyID,"integer");
+		settype($productID,"integer");
+		settype($facilityID,"integer");
+
+		$query = "INSERT INTO product2company (product_id, company_id, facility_id) VALUES (".$productID.", ".$companyID.", ".$facilityID.")";
+		$this->db->query($query);
+	}
 
 	private function insertGOM2JobberLink($gomID, $jobberID) {
 
@@ -1015,6 +1051,15 @@ class Product extends ProductProperties {
 		} else {
 			$query = "DELETE FROM product2company WHERE product_id = ".$productID." AND company_id = ".$companyID;
 		}
+		$this->db->query($query);
+	}
+	
+	private function deleteProduct2FacilityLink($productID, $companyID, $facilityID) {
+		settype($companyID,"integer");
+		settype($productID,"integer");
+		settype($facilityID,"integer");
+
+		$query = "DELETE FROM product2company WHERE product_id = ".$productID." AND company_id = ".$companyID." AND facility_id = ".$facilityID;
 		$this->db->query($query);
 	}
 
@@ -1050,14 +1095,14 @@ class Product extends ProductProperties {
 			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
 		}
 		
-		if (!is_null($facilityID) && is_integer($facilityID)) {
+		if (!is_null($facilityID) && $facilityID != 0) {
 			$query .= " AND (p2c.facility_id IS NULL OR p2c.facility_id = ".mysql_real_escape_string($facilityID).") ";
 		}
 
 		if ($this->productCategoryFilter != 0) {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
-
+		
 		$this->db->query($query);
 
 		$numRows = $this->db->num_rows();

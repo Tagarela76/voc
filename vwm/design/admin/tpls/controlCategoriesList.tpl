@@ -1,3 +1,10 @@
+{foreach from=$facilityList item=item key=key}
+	<div style="display: none;" id="company_{$key}">
+	{foreach from=$item item=facility}
+		<input type="hidden" name="facility_{$facility.id}" value="{$facility.name}"/>
+	{/foreach}
+	</div>
+{/foreach}
 <form id="controlCategoriesList" method="get" action="">
 
 <div align="center" class="control_panel_padd">	
@@ -94,12 +101,14 @@
 	<tr>
 		
 		<td>
-		<select name="companyID">
+		<select name="companyID" onchange="getFacility(value);">
 			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
 			{section name=i loop=$companyList}
 				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
 			{/section}
 		</select>
+		<select name="facilityID" disabled="disabled"></select>
+		
 		{if $request.category != 'product'}	
 		<select name="supplierID">
 			<option value="All suppliers" {if $currentSupplier == 0} selected {/if}>All suppliers {if $currentSupplier == 0}(selected){/if}</option>
@@ -116,7 +125,14 @@
 		{else}
 		<input type="button" class="button" name="subaction" value="Unassign product(s)" onclick="submitFunc('browseCategory','Unassign product(s)')" >{/if}
 		{/if}
-
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		{if $itemsCount > 0}
+			{if $currentFacility == 0 and $currentCompany == 0}
+		<input type="button" id="assign2facility" class="button" style="display: none;" name="subaction" value="Assign to facility" onclick="submitFunc('browseCategory','Assign to facility')"/>
+			{else}
+		<input type="button" id="unassign2facility" class="button" style="display: none;" name="subaction" value="Unassign product(s) from facility" onclick="submitFunc('browseCategory','Unassign product(s) from facility')"/>
+			{/if}
+		{/if}
 	{elseif $request.category eq 'accessory'}	
 <!-- ACCESSORY -->		
 		</td>
@@ -231,11 +247,16 @@
 </table>
 </div></div></div></div></div></div></div>
 
+<input type="hidden" id="current_facility" value="{$currentFacility}"/>
  
 {literal}	
 	<script type='text/javascript'>
-		function submitFunc(action,subaction)
-		{				
+		$(document).ready(function() {
+			$("select[name='companyID']").change();
+			$("select[name='facilityID'] option[value='"+$("input#current_facility").val()+"']").attr("selected", "selected");
+		});
+			
+		function submitFunc(action,subaction) {				
 			$('#hiddens').append('<input type="hidden" name="subaction" value="'+subaction+'">');
 			$('#hiddens').append('<input type="hidden" name="action" value="'+action+'">');
 			{/literal}
@@ -249,6 +270,35 @@
 				{/literal}{/if}				
 			{literal}	
 			$('#controlCategoriesList').submit();
-		}	
+		}
+			
+		function getFacility(company) {
+			var content = "";
+			if (company == 'All companies') {
+				$("select[name='facilityID']").attr('disabled', 'disabled');
+				$("input#assign2facility").css("display","none");
+				$("input#unassign2facility").css("display","none");
+				$("select[name='facilityID']").find('option').remove();
+			} else {
+				$("select[name='facilityID']").removeAttr('disabled');
+				$("select[name='facilityID']").find('option').remove();
+				$("div#company_"+company+" input").each(
+					function() {
+						content += '<option value="'+$(this).attr('name').split('_').reverse()[0]+'">'+$(this).attr('value')+'</option>';
+					}
+				);
+				if (content != "") {
+					var content_0 = '<option value="All facilities">All facilities</option>';
+					content = content_0 + content;
+					$("select[name='facilityID']").append(content);
+					$("input#assign2facility").css("display","inline-block");
+					$("input#unassign2facility").css("display","inline-block");
+				} else {
+					$("select[name='facilityID']").attr('disabled', 'disabled');
+					$("input#assign2facility").css("display","none");
+					$("input#unassign2facility").css("display","none");
+				}
+			}
+		}
 	</script>
 {/literal}
