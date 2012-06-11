@@ -281,7 +281,7 @@
 
 				$this->saveRecycle($mixID, $this->recycle->value, $this->recycle->unittype);
 			}
-			
+
 			return $mixID;
 		}
 
@@ -414,10 +414,10 @@
 
 				$this->db->query($insertProductsQuery);
 			}
-			
+
 			$this->mix_id = $mixID;
 			//	save to trash_bin
-			$this->save2trash('C', $this->mix_id);			
+			$this->save2trash('C', $this->mix_id);
 			return $mixID;
 		}
 
@@ -434,7 +434,7 @@
 				$this->insertWaste($wasteData);
 			}
 		}
-		
+
 		private function saveRecycle($mixID, $value, $unittype) {
 			//	form & escape input data
 			$recycleData = $this->formAndEscapeRecycleData($mixID, $value, $unittype);
@@ -448,7 +448,7 @@
 				$this->insertRecycle($recycleData);
 			}
 		}
-		
+
 		private function updateRecycle($recycleData) {
 
 			//screening of quotation marks
@@ -465,7 +465,7 @@
 					"WHERE mix_id = ".$recycleData['mixID'];
 			$this->db->query($query);
 			//echo $query;
-		}		
+		}
 
 		private function updateWaste($wasteData) {
 
@@ -501,7 +501,7 @@
 						"'".$wasteData['value']."' )";
 			$this->db->query($query);
 		}
-		
+
 		private function insertRecycle($recycleData) {
 
 			//screening of quotation marks
@@ -517,7 +517,7 @@
 						"".$recycleData['unittypeID'].", " .
 						"'".$recycleData['value']."' )";
 			$this->db->query($query);
-		}		
+		}
 
 		private function formAndEscapeWasteData($mixID, $value, $unittype) {
 			$wasteData = array(
@@ -528,7 +528,7 @@
 			);
 			return $wasteData;
 		}
-		
+
 		private function formAndEscapeRecycleData($mixID, $value, $unittype = null) {
 			$recycleData = array(
 				'mixID'		=> $this->db->sqltext($mixID),
@@ -537,7 +537,7 @@
 				'value'		=> $this->db->sqltext($value)
 			);
 			return $recycleData;
-		}		
+		}
 
 		private function checkIfWasteExist($mixID) {
 
@@ -549,7 +549,7 @@
 			$this->db->query($query);
 			return ($this->db->num_rows()) ? true : false;
 		}
-		
+
 		private function checkIfRecycleExist($mixID) {
 
 			//$mixID=mysql_escape_string($mixID);
@@ -559,7 +559,7 @@
 			$query = "SELECT id FROM recycle WHERE mix_id = ".$mixID;
 			$this->db->query($query);
 			return ($this->db->num_rows()) ? true : false;
-		}		
+		}
 
 		private function getInsertWasteQuery($mixID) {
 
@@ -831,7 +831,7 @@
 			$this->products = array();
 
 			$mixID = mysql_escape_string($this->mix_id);
-	
+
 			/*$query = 'SELECT * FROM '.TB_MIXGROUP.' WHERE mix_id = '.$mixID.'';
 			$this->db->query($query);
 
@@ -905,12 +905,12 @@
 		}
 
 		public function iniRecycle($isMWS, $unittypeListDefault = false) {
-			
+
 			$unittype = new Unittype($this->db);
 			$unitTypeConverter = new UnitTypeConverter();
 
 			$recycleFromDB = $this->selectRecycle($isMWS);
-			
+
 			if (!$recycleFromDB) {
 				//	default values
 				if (!$unittypeListDefault){ //if unittypeList is empty than set default
@@ -944,14 +944,14 @@
 					$recycle['unitttypeID'] 	= $r->unittype_id;
 					$recycle['unittypeClass'] = ($r->method == 'percent') ? "%" : $unittype->getUnittypeClass($r->unittype_id);
 					$recycle['storage_id'] 	= $r->storage_id;
-					$recycle['unitTypeList'] = (is_null($r->unittype_id)) ? false : $unittype->getUnittypeListDefault($r->method);			
-					
+					$recycle['unitTypeList'] = (is_null($r->unittype_id)) ? false : $unittype->getUnittypeListDefault($r->method);
+
 					$this->recycle = $recycle;
 				}
-			}	
-	
+			}
+
 			return $this->recycle;
-	
+
 		}
 		/**
 		 * <h1>Init Waste</h1>
@@ -1283,7 +1283,7 @@
 				}
 			}
 
-			
+
 			/*var_dump($this->waste['unitttypeID'],
 														$this->waste['value'],
 														$unitTypeConverter,
@@ -1295,23 +1295,30 @@
 														$unitTypeConverter,
 														$quantitiWeightSum,
 														$quantitiVolumeSum);
-			
+
 			$recycleResult = $this->calculateRecyclePercent($this->recycle['unitttypeID'],
 														$this->recycle['value'],
 														$unitTypeConverter,
 														$quantitiWeightSum,
-														$quantitiVolumeSum);			
+														$quantitiVolumeSum);
 
 
 			$calculator = new Calculator();
 			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
+
+			/**
+			 * TODO: calculate voclx and vocwx
+			 */
+			//$this->voclx = $calculator->calculateVoclx();
+			//$this->vocwx = $calculator->calculateVocwx($vocwxArray, $quantityArray);
+			var_dump($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);die();
 			if($this->debug) {
 				echo "<h1>Waste Percent: {}</h1>";var_dump($wasteResult);
 				echo "<h1>recycle Percent: {}</h1>";var_dump($recycleResult);
-			echo "<h1>waste result: </h1>";
-			var_dump($wasteResult);
-			echo "<h1>recycle result: </h1>";
-			var_dump($recycleResult);
+				echo "<h1>waste result: </h1>";
+				var_dump($wasteResult);
+				echo "<h1>recycle result: </h1>";
+				var_dump($recycleResult);
 			}
 
 			$this->waste_percent = $wasteResult['wastePercent'];
@@ -1321,8 +1328,8 @@
 			$this->recyclePercent = $recycleResult['recyclePercent'];
 			$errors['isWastePercentAbove100'] = $wasteResult['isWastePercentAbove100'];
 			$errors['isRecyclePercentAbove100'] = $recycleResult['isRecyclePercentAbove100'];
-			
-			
+
+
 			return $errors;
 		}
 
@@ -1355,7 +1362,7 @@
 			} else
 				return false;
 		}
-		
+
 		private function selectRecycle($isMWS) {
 			if (!isset($this->mix_id)) return false;
 			$mixID = mysql_escape_string($this->mix_id);
@@ -1378,7 +1385,7 @@
 			} else
 				return false;
 		}
-	
+
 
 
 		private function calculateWaste($unittypeID, $value, $quantitySum = 0, $mixDensity = false) {
@@ -1404,7 +1411,7 @@
 
 
 		private function calculateWastePercent($unittypeID, $value, UnitTypeConverter $unitTypeConverter, $quantityWeightSum = 0, $quantityVolumeSum = 0) {
-	
+
 			if($this->debug) {
 				echo "<p>".__FUNCTION__."</p>";
 			}
@@ -1436,7 +1443,7 @@
 						echo "volume";
 						echo "value: $value, description: {$wasteUnitDetails["description"]}";
 						}
-		
+
 						$wasteVolume = $unitTypeConverter->convertFromTo($value, $wasteUnitDetails["description"], 'us gallon');
 						$result['wastePercent'] = $wasteVolume/$quantityVolumeSum*100;
 						break;
@@ -1466,9 +1473,9 @@
 			$result['wastePercent'] = round($result['wastePercent'],2);
 			return  $result;
 		}
-		
+
 		private function calculateRecyclePercent($unittypeID, $value, UnitTypeConverter $unitTypeConverter, $quantityWeightSum = 0, $quantityVolumeSum = 0) {
-			
+
 			if($this->debug) {
 				echo "<p>".__FUNCTION__."</p>";
 				echo $this->debug;
@@ -1483,7 +1490,7 @@
 			$uid = $this->recycle['unittypeID'] ? $this->recycle['unittypeID'] : $this->recycle['unitttypeID'];
 
 			$recycleUnitDetails = $unittype->getUnittypeDetails($uid);
-			
+
 
 
 			if (empty($uid)) {
@@ -1516,7 +1523,7 @@
 if($this->debug) {
 echo'<h1>calculateRecyclePercent</h1>';
 var_dump($unittypeID, $value,'UnitDetails',$recycleUnitDetails,'$quantityWeightSum',$quantityWeightSum ,'$quantityVolumeSum', $quantityVolumeSum,'$recycleVolume',$recycleVolume,'$recycleWeight',$recycleWeight);
-echo'<h1>$result</h1>';			
+echo'<h1>$result</h1>';
 var_dump(' $recycleVolume/$quantityVolumeSum*100', $recycleVolume/$quantityVolumeSum*100,' $recycleVolume/$quantityVolumeSum*100',$recycleWeight/$quantityWeightSum*100,$result);
 }
 			if ($result['recyclePercent']>100) {
@@ -1529,7 +1536,7 @@ var_dump(' $recycleVolume/$quantityVolumeSum*100', $recycleVolume/$quantityVolum
 			$result['recyclePercent'] = round($result['recyclePercent'],2);
 
 			return  $result;
-		}		
+		}
 
 		//	Tracking System
 		private function save2trash($CRUD, $id) {

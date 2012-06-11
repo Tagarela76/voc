@@ -239,7 +239,7 @@ class CMix extends Controller
 		$manager = new PFPManager($this->db);
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
-		
+
 		//	Getting Product list
 		$productsIDArray = array();
 		foreach($pfp->products as $p) {
@@ -271,13 +271,13 @@ class CMix extends Controller
 	private function actionConfirmEditPFP() {
 		$formGet = $this->getFromRequest();
 		$form = $this->getFromPost();
-		
+
 		$pfp_primary_product_id = $form['pfp_primary'];
 		$productCount = intval($form['productCount']);
 		$departmentID = intval($formGet['departmentID']);
 		$descr = $form['pfp_description'];
 		$products = array();
-		
+
 		for($j=0; $j<$productCount; $j++) {
 			if ($form["product_{$i}_id"] == $pfp_primary_product_id) {
 				$pfp_primary_ratio = $form["product_{$i}_ratio"];
@@ -294,7 +294,7 @@ class CMix extends Controller
 				$ratio_to = ceil($form["product_{$i}_ratio_to"]*$pfp_primary_ratio/100)+1;
 				$range_ratio = $form["product_{$i}_ratio_from"]."-".$form["product_{$i}_ratio_to"];
 			}
-			
+
 			$product = new PFPProduct($this->db);
 			$product->setRatio($ratio);
 			$product->ratio_to = isset($ratio_to) ? $ratio_to : null;
@@ -309,7 +309,7 @@ class CMix extends Controller
 
 			$products[] = $product;
 		}
-		
+
 		$manager = new PFPManager($this->db);
 		$pfpOld = $manager->getPFP($this->getFromRequest('id'));
 		$pfp = new PFP($products);
@@ -1226,8 +1226,8 @@ class CMix extends Controller
 
 
 
-		if(isset($_POST['save'])) {
-			$action = $_POST['save'] == "Add product to list" ? "addItem" : "saveMix";
+		if($this->getFromPost('save')) {
+			$action = $this->getFromPost('save') == "Add product to list" ? "addItem" : "saveMix";
 		} else {
 			$action = "addItem";
 		}
@@ -1557,7 +1557,6 @@ class CMix extends Controller
 		}
 
 		$count = count($products);
-		echo "<h1>count $count</h1>";
 
 		for($i=0; $i<$count; $i++) {
 			$products[$i]->initializeByID($products[$i]->product_id);
