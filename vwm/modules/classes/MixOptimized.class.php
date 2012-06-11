@@ -1206,13 +1206,17 @@
 				//echo "<p>quantitiWeightSum: $quantitiWeightSum, quantitiVolumeSum: $quantitiVolumeSum</p>";
 
 
-				//check, is vocwx or percentVolatileWeight
+				//check, is vocwx or percentVolatileWeight or  voclx
 				$isVocwx = true;
+				$isVoclx = true;
 				$isPercentVolatileWeight = true;
 				if (empty($product->vocwx) || $product->vocwx == '0.00') {
 					$isVocwx = false;
 				}
-
+				if (empty($product->voclx) || $product->voclx == '0.00') {
+					$isVoclx = false;
+				}
+				
 				$percentVolatileWeight = $product->getPercentVolatileWeight();
 				$percentVolatileVolume = $product->getPercentVolatileVolume();
 
@@ -1226,7 +1230,7 @@
 					}
 				}
 				//echo "<h1>isPercentVolatileWeight $isPercentVolatileWeight, isVocwx $isVocwx</h1>";
-				if ($isPercentVolatileWeight || $isVocwx) {
+				if ($isPercentVolatileWeight || $isVocwx ) {
 					//echo "<p>isPercentVolatileWeight || isVocwx</p>";
 					$errors['isVocwxOrPercentWarning'][$key] = false;
 					switch ($unittype->isWeightOrVolume($product->unittypeDetails['unittype_id'])) {
@@ -1243,11 +1247,12 @@
 							} else  {
 								if ($product->density) {
 									$galQty = $unitTypeConverter->convertFromTo($product->quantity, $product->unittypeDetails['description'], "us gallon", $product->density, $densityType);//	in volume
-									$vocwxAndVolume = array (
+									$vocwxAndVolumeAndvoclx = array (
 										'volume'	=> $galQty,
-										'vocwx'		=> $product->vocwx
+										'vocwx'		=> $product->vocwx,
+										'voclx'		=> $product->voclx
 									);
-									$ArrayVolume[] = $vocwxAndVolume;
+									$ArrayVolume[] = $vocwxAndVolumeAndvoclx;
 								} else {
 									$errors['isDensityToVolumeError'] = true;
 								}
@@ -1259,12 +1264,13 @@
 							if ($isVocwx) {
 								//echo "<p>isVocwx</p>";
 								$galQty = $unitTypeConverter->convertFromTo($product->quantity,  $product->unittypeDetails['description'], "us gallon");//	in volume
-								$vocwxAndVolume = array(
+								$vocwxAndVolumeAndvoclx = array(
 									'volume'=>$galQty,
-									'vocwx'=>$product->vocwx
+									'vocwx'=>$product->vocwx,
+									'voclx'=>$product->voclx
 								);
 								//echo "<p>vocwxAndVolume: $vocwxAndVolume</p>";
-								$ArrayVolume[] = $vocwxAndVolume;
+								$ArrayVolume[] = $vocwxAndVolumeAndvoclx;
 							} else  {
 								if ($product->density) {
 									//echo "<p>density</p>";
@@ -1302,16 +1308,15 @@
 														$quantitiWeightSum,
 														$quantitiVolumeSum);
 
-
 			$calculator = new Calculator();
 			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
 
 			/**
 			 * TODO: calculate voclx and vocwx
 			 */
-			//$this->voclx = $calculator->calculateVoclx();
-			//$this->vocwx = $calculator->calculateVocwx($vocwxArray, $quantityArray);
-			var_dump($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);die();
+			$this->voclx = $calculator->calculateVoclx($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
+			$this->vocwx = $calculator->calculateVocwx($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
+		
 			if($this->debug) {
 				echo "<h1>Waste Percent: {}</h1>";var_dump($wasteResult);
 				echo "<h1>recycle Percent: {}</h1>";var_dump($recycleResult);
