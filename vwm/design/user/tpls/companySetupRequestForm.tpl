@@ -88,11 +88,11 @@
 							<td>
 							State:
 							</td>
-							<td id="stateText" style="display: block;">
+							<td id="stateText" style="display: none;">
 								{*<div id="stateText" style="display: table-row;">*}
 									<input type="text" name="stateText" value="{$setupRequest->getState()}"/>
 							</td>
-							<td id="stateSelect" style="display: none;">
+							<td id="stateSelect" style="display: block;">
 								{*</div>
 								<div id="stateSelect" style="display: none;">*}
 									<select name="stateSelect">
@@ -118,7 +118,7 @@
 							<td>
 								<select name="country" onclick="clickCountry(value);">
 									{foreach from=$countryList item=country}
-										<option value="{$country.country_id}">{$country.name}</option>
+										<option value="{$country.country_id}" {if $country.country_id eq 215}selected="selected"{/if}>{$country.name}</option>
 									{/foreach}	
 								</select>	
 							</td>

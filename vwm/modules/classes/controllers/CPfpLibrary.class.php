@@ -22,26 +22,25 @@ class CPfpLibrary extends Controller {
 		//	process search request
 		if ($this->getFromRequest('q')) {
 			$pfpCount = ($this->getFromRequest('tab') == 'all')
-					? $manager->countPFP(0, $this->getFromRequest('q'), $productCategory)
-					: $manager->countPFP($companyDetails['company_id'], $this->getFromRequest('q'), $productCategory);
-
+					? $manager->countPFPAllowed(0, $this->getFromRequest('q'), $productCategory)
+					: $manager->countPFPAssigned($companyDetails['company_id'], $this->getFromRequest('q'), $productCategory);
+			
 			$pagination = new Pagination((int) $pfpCount);
 			$pagination->url = $url;
 
 			$pfps = ($this->getFromRequest('tab') == 'all') ? $manager->searchPFP(0, $pagination,  $this->getFromRequest('q')) : $manager->searchPFP($companyDetails['company_id'], $pagination,  $this->getFromRequest('q'));
-
+			
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 
 		// or get all
 		} else {
-			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFP(0, '', $productCategory) : $manager->countPFP($companyDetails['company_id'], '', $productCategory);
-
+			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed(0, '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
 			$pagination = new Pagination((int) $pfpCount);
 			$pagination->url = $url;
 
 			$pfps = ($this->getFromRequest('tab') == 'all')
-					? $manager->getList(null, $pagination, null, $productCategory)
-					: $manager->getList($companyDetails['company_id'], $pagination, null, $productCategory);
+					? $manager->getListAllowed(null, $pagination, null, $productCategory)
+					: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
 		}
 
 		//	get list of Industry Types

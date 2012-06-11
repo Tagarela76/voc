@@ -25,7 +25,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='' name='name' value='{$data.name}' maxlength="96">
+                        <input type="text" name="name" value="{$data.name}" maxlength="96">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.name eq 'failed'}
                     {*ERORR*}
@@ -48,7 +48,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='address' value='{$data.address}' maxlength="384">
+                        <input type='text' name='address' value="{$data.address}" maxlength="384">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.address eq 'failed'}
                     {*ERORR*}
@@ -67,7 +67,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='city' value='{$data.city}' maxlength="192">
+                        <input type='text' name='city' value="{$data.city}" maxlength="192">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.city eq 'failed'}
                     {*ERORR*}
@@ -86,7 +86,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='county' value='{$data.county}' maxlength="192">
+                        <input type='text' name='county' value="{$data.county}" maxlength="192">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.county eq 'failed'}
                     {*ERORR*}
@@ -127,7 +127,7 @@
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
                         <select name="country" id="selectCountry" onchange="getStateList(this)">
-                            {section name=i loop=$country}<option value='{$country[i].id}' {if $country[i].id  eq $data.country}selected="selected"{/if}> {$country[i].name}  </option>
+                            {section name=i loop=$country}<option value="{$country[i].id}" {if $country[i].id  eq $data.country}selected="selected"{/if}> {$country[i].name}  </option>
                             {/section}
                         </select>
                     </div>
@@ -166,7 +166,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='phone' value='{$data.phone}' maxlength="32">
+                        <input type='text' name='phone' value="{$data.phone}" maxlength="32">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.phone eq 'failed'}
                     {*ERORR*}
@@ -185,7 +185,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='fax' value='{$data.fax}' maxlength="32">
+                        <input type='text' name='fax' value="{$data.fax}" maxlength="32">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.fax eq 'failed'}
                     {*ERORR*}
@@ -204,7 +204,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='email' value='{$data.email}' maxlength="128">
+                        <input type='text' name='email' value="{$data.email}" maxlength="128">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.email eq 'failed'}
                     {*ERORR*}

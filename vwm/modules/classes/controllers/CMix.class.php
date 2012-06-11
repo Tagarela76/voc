@@ -1466,7 +1466,7 @@ class CMix extends Controller
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
 			'modules/js/mixObj.js?key=1234ajSDKFJSDKFJ&rev=11052011',
-			'modules/js/addUsage.js',
+			'modules/js/addUsage.js?rev=june01',
             'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 	    $this->smarty->assign('jsSources',$jsSources);
 
@@ -1676,7 +1676,7 @@ class CMix extends Controller
 
 		$department = new Department($this->db);
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
-
+		
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 
@@ -1700,7 +1700,7 @@ class CMix extends Controller
 		//	Getting Product list
 
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
-
+		
 		$this->smarty->assign('products', $productsListGrouped);
 
 		$product = new Product($this->db);
@@ -2162,11 +2162,19 @@ class CMix extends Controller
 	 */
 	private function getProductsListGrouped($companyID,$apelsin=null) {
 
-                // get product list
+		$department_id = $this->getFromRequest('departmentID');
+		if (is_null($department_id)) {
+			$cMix = new Mix($this->db);
+			$department_id = $cMix->getMixDepartment($this->getFromRequest('id'));
+		}
+		$cDepartment = new Department($this->db);
+		$department_details = $cDepartment->getDepartmentDetails($department_id);
+        // get product list
 		$product = new Product($this->db);
-		$productList = $product->getFormatedProductList($companyID);
+		$products = $product->getFormatedProductList($companyID);
+		$productList = $product->filterProductsByFacility($companyID, $department_details['facility_id'], $products);
 		//	NICE PRODUCT LIST
-
+		
 		if(isset($apelsin)) {
 			$isApelsin = true;
 		}

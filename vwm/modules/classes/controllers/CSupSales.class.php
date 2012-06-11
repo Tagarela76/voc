@@ -266,6 +266,7 @@ class CSupSales extends Controller
 		$jobberManager = new JobberManager($this->db);
 		$inventoryManager = new InventoryManager($this->db);
 		$jobberData = $inventoryManager->getJobberDetails($request['jobberID']);
+		
 		$jobberData['country'] = $jobberData['country'] ? $jobberData['country'] : $usaID;
 		
 		$jobberSupplier = $inventoryManager->getSuppliersByJobberID($request['jobberID']);

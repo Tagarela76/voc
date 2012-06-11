@@ -49,6 +49,8 @@ class CAProduct extends Controller {
 		$subaction = $this->getFromRequest('subaction');
 		$companyID = $this->getFromRequest('companyID');
 		$companyID = (is_null($companyID) || $companyID == 'All companies')?0:$companyID;
+		$facilityID = $this->getFromRequest('facilityID');
+		$facilityID = (is_null($facilityID) || $facilityID == 'All facilities')?0:$facilityID;
 
 		if (!is_null($subaction) && $companyID != 0 && $subaction != 'Filter') {
 			$count = $this->getFromRequest('itemsCount');
@@ -59,6 +61,10 @@ class CAProduct extends Controller {
 						$product->assignProduct2Company($productID, $companyID);
 					} elseif ($subaction == "Unassign product(s)") {
 						$product->unassignProductFromCompany($productID, $companyID);
+					} elseif ($subaction == "Assign to facility") {
+						$product->assignProduct2Facility($productID, $companyID, $facilityID);
+					} elseif ($subaction == "Unassign product(s) from facility") {
+						$product->unassignProductFromFacility($productID, $companyID, $facilityID);
 					}
 				}
 			}
@@ -71,6 +77,18 @@ class CAProduct extends Controller {
 		$companyList = $company->getCompanyList();
 
 		$this->smarty->assign('companyList',$companyList);
+		
+		// get facility list
+		$facility = new Facility($this->db);
+		foreach ($companyList as $item) {
+			$facility_details = $facility->getFacilityListByCompany($item['id']);
+			if (is_null($facility_details)) {
+				$facility_details = array();
+			}
+			$facilityList[$item['id']] = $facility_details;
+		}
+		
+		$this->smarty->assign('facilityList', $facilityList);
 
 		$productTypesObj = new ProductTypes($this->db);
 		$productTypeList = $productTypesObj->getTypesWithSubTypes();
@@ -89,12 +107,13 @@ class CAProduct extends Controller {
 			$productList = $product->searchProducts($productsToFind, $companyID);
 
 			$this->smarty->assign('currentCompany',0);
+			$this->smarty->assign('currentFacility',0);
 			$this->smarty->assign('currentSupplier', 0);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-
-			$productCount = $product->getProductCount($this->getFromRequest('companyID'),$supplierID);
-
+			
+			$productCount = $product->getProductCount($companyID,$supplierID, $facilityID);
+			
 			$pagination = new Pagination($productCount);
 			$pagination->url = $url;
 			$this->smarty->assign('pagination', $pagination);
@@ -105,9 +124,14 @@ class CAProduct extends Controller {
 				$productList = $product->getProductList($companyID, $pagination,' TRUE ',$sortStr);
 			}
 			$this->smarty->assign('currentCompany',$companyID);
+			$this->smarty->assign('currentFacility',$facilityID);
 			$this->smarty->assign('currentSupplier', $supplierID);
 		}
-
+		
+		if ($facilityID != 0) {
+			$productList = $product->filterProductsByFacility($companyID, $facilityID, $productList);
+		}
+		
 		$field = 'product_id';
 		$list = $productList;
 

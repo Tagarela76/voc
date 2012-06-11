@@ -594,7 +594,7 @@ function initRecycle() {
 
 		// base product should be always on top
 		pfp_products = orderPfpProducts(pfp_products);
-		console.log(pfp_products);
+		//console.log(pfp_products);
 		if(currentSelectedPFP != null) {
 			yes = confirm("Pre-formulated-products is already loaded from \""+currentSelectedPFP_descr+"\". Do you want clear products list and load products from pre-formulated-products \"" + pfp_description+"\"?");
 			if(yes == true) {
@@ -1201,31 +1201,31 @@ function initRecycle() {
 
 
       			if(resp.dailyLimitExcess == true) {
-      				$("#dailyLimitExceeded").html("<b>YES!</b>");
+      				$("#dailyLimitExceeded").html("<b style=\"color: red;\">YES!</b>");
       			} else {
       				$("#dailyLimitExceeded").html("no");
       			}
 
       			if(resp.departmentLimitExceeded == true) {
-      				$("#departmentLimitExceeded").html("<b>YES!</b>");
+      				$("#departmentLimitExceeded").html("<b style=\"color: red;\">YES!</b>");
       			} else {
       				$("#departmentLimitExceeded").html("no");
       			}
 
       			if(resp.facilityLimitExceeded == true) {
-      				$("#facilityLimitExceeded").html("<b>YES!</b>");
+      				$("#facilityLimitExceeded").html("<b style=\"color: red;\">YES!</b>");
       			} else {
       				$("#facilityLimitExceeded").html("no");
       			}
 
       			if(resp.facilityAnnualLimitExceeded == true) {
-      				$("#facilityAnnualLimitExceeded").html("<b>YES!</b>");
+      				$("#facilityAnnualLimitExceeded").html("<b style=\"color: red;\">YES!</b>");
       			} else {
       				$("#facilityAnnualLimitExceeded").html("no");
       			}
 
       			if(resp.departmentAnnualLimitExceeded == true) {
-      				$("#departmentAnnualLimitExceeded").html("<b>YES!</b>");
+      				$("#departmentAnnualLimitExceeded").html("<b style=\"color: red;\">YES!</b>");
       			} else {
       				$("#departmentAnnualLimitExceeded").html("no");
       			}

@@ -22,6 +22,7 @@
 {*PAGINATION*}
 		{include file="tpls:tpls/paginationabc.tpl"}
 {*/PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
 <table class="users" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top_blue" height="27px">
         <td class="users_u_top_blue" width="10%">
@@ -145,6 +146,7 @@
     </tr>
 </table>
 </div>
+{include file="tpls:tpls/pagination.tpl"}
 {*PAGINATION*}
 {include file="tpls:tpls/paginationabc.tpl"}
 {*/PAGINATION*}

@@ -27,11 +27,26 @@ class PFPManager {
 
 		return $c > 0 ? FALSE : TRUE;
 	}
-
-	public function countPFP($companyID = 0, $searchString = '', $industryType = 0) {
+	
+	public function countPFPAll($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
+		$queryFilter = "";
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
+	}
+	
+	public function countPFPAllowed($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
+		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
+	}
+	
+	public function countPFPAssigned($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
+		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
+		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
+	}
+		
+	private function _countPFP($queryFilter = '', $companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id as id " .
-				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
 		if ($searchString != "") {
@@ -40,13 +55,49 @@ class PFPManager {
 					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
 					")";
 		}
+		
+		$query .= $queryFilter;
 
+		if ($industryType != 0) {
+			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+		}
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
+		}
+
+		$query .= " GROUP BY pfp.id";
+		
+		$this->db->query($query);
+
+		return $this->db->num_rows();
+	}
+
+	public function countPFP($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
+		//	build mandatory sql
+		$query = "SELECT pfp.id as id " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
+
+		if ($searchString != "") {
+			$query .= " AND (" .
+					"pfp.description LIKE ('%" . $this->db->sqltext($searchString) . "%') OR " .
+					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
+					")";
+		}
+		
 		if ($companyID != 0) {
-			$query .= " pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+		} else {
+			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
 		}
 
 		if ($industryType != 0) {
 			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+		}
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
 
 		$query .= " GROUP BY pfp.id";
@@ -71,7 +122,10 @@ class PFPManager {
 	public function getCountPFP($supplier_id = 0) {
 		$query = "SELECT count(*) AS cnt_pfp FROM ".
 					TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_SUPPLIER." s WHERE ".
-					" p.supplier_id = s.supplier_id AND p2p.isPrimary = 1 AND p2p.preformulated_products_id = pfp.id AND p2p.product_id = p.product_id ";
+					" p.supplier_id = s.supplier_id " .
+					" AND p2p.isPrimary = 1 " .
+					" AND p2p.preformulated_products_id = pfp.id " .
+					" AND p2p.product_id = p.product_id ";
 		if ($supplier_id) {
 			$query .= " AND s.original_id = ".mysql_real_escape_string($supplier_id);
 		}
@@ -85,27 +139,84 @@ class PFPManager {
 			return false;
 		}
 	}
-
-	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0) {
+	
+	public function getListAll($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+		$queryFilter = "";
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
+	}
+	
+	public function getListAllowed($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
+	}
+	
+	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
+		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
+	}
+		
+	private function _getList($queryFilter = '', $companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
-				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType)." " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
+				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
+
+		$query .= $queryFilter;
+
+		if ($industryType != 0) {
+			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
+		}
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
+		}
+
+		if (isset($idArray) and is_array($idArray) and count($idArray) > 0) {
+			$count = count($idArray);
+			$query .= " AND pfp.id IN ( ";
+
+			for ($i = 0; $i < $count; $i++) {
+				$query .= $idArray[$i];
+				if ($i < $count - 1) {
+					$query .= ", ";
+				}
+			}
+
+			$query .= " ) ";
+		}
+		
+		$query .= " GROUP BY pfp.id ";
+		
+		if (isset($pagination)) {
+			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}
+		
+		return $this->_processGetPFPListQuery($query);
+	}
+
+	public function getList($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+		//	build mandatory sql
+		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
+				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
 		if ($companyID != 0) {
-			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
+			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
+		} else {
+			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
 		}
 
 		if ($industryType != 0) {
-			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
 		}
-
-		/*if ($companyID) {
-			$companyID = mysql_escape_string($companyID);
-			$query = "SELECT pfp.id, pfp.description, pfp.company_id FROM " . TB_PFP . " pfp, " . TB_PFP2COMPANY . " pfp2c WHERE pfp.id=pfp2c.pfp_id AND pfp2c.company_id = $companyID ";
-		} else {
-			$query = "SELECT * FROM " . TB_PFP . " pfp WHERE 1 ";
-		}*/
+		
+		if ($supplierID != 0 ){
+			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
+		}
 
 		if (isset($idArray) and is_array($idArray) and count($idArray) > 0) {
 			$count = count($idArray);
@@ -319,8 +430,9 @@ class PFPManager {
 
 	//TODO: is this error?
 	public function unassignPFPFromCompanies($pfpID) {
-		$query = "DELETE FROM " . TB_PFP2COMPANY . " WHERE pfp_id=" . $pfpID;
-		$this->db->query($query);
+		//$query = "DELETE FROM " . TB_PFP2COMPANY . " WHERE pfp_id=" . $pfpID;
+		$query_unassign = "UPDATE ".TB_PFP2COMPANY." SET is_assigned = 0 WHERE pfp_id = ".$pfpID;
+		$this->db->query($query_unassign);
 		if (mysql_errno() == 0) {
 			$error = "";
 		} else {
@@ -332,20 +444,66 @@ class PFPManager {
 
 
 	public function unassignPFPFromCompany($pfpID, $companyID) {
-		$query = "DELETE FROM " . TB_PFP2COMPANY . "
+		/*$query = "DELETE FROM " . TB_PFP2COMPANY . "
 				WHERE pfp_id = " . mysql_escape_string($pfpID) ."
 				AND company_id = " . mysql_escape_string($companyID);
-		$this->db->exec($query);
+		$this->db->exec($query);*/
+		$query_unassign = "UPDATE ".TB_PFP2COMPANY." SET is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$this->db->query($query_unassign);
+	}
+	
+	public function unavailablePFPFromCompany($pfpID, $companyID) {
+		$query_unavailable = "UPDATE ".TB_PFP2COMPANY." SET is_available = 0, is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$this->db->query($query_unavailable);
 	}
 
 	public function assignPFP2Company($pfpID, $companyID) {
-			$query = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id, company_id) VALUES (" . $pfpID . ", " . $companyID . ")";
+		$sql_select = "SELECT * FROM ".TB_PFP2COMPANY." WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$this->db->query($sql_select);
+		if ($this->db->num_rows() == 0) {
+			$query = "INSERT INTO ".TB_PFP2COMPANY." (pfp_id, company_id, is_available, is_assigned) ".
+						" VALUES (".$pfpID.", ".$companyID.", 0, 1)";
 			$this->db->query($query);
 			if (mysql_errno() == 0) {
 				$error = "";
 			} else {
 				$error = "Error!";
 			}
+		} else {
+			$query = "UPDATE ".TB_PFP2COMPANY." SET is_assigned = 1 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+			$this->db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		}
+		
+		return $error;
+	}
+	
+	public function availablePFP2Company($pfpID, $companyID) {
+		$sql_select = "SELECT * FROM ".TB_PFP2COMPANY." WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$this->db->query($sql_select);
+		if ($this->db->num_rows() == 0) {
+			$query = "INSERT INTO ".TB_PFP2COMPANY." (pfp_id, company_id, is_available, is_assigned) ".
+						" VALUES (".$pfpID.", ".$companyID.", 1, 0)";
+			$this->db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		} else {
+			$query = "UPDATE ".TB_PFP2COMPANY." SET is_available = 1 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+			$this->db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		}
+		
 		
 		return $error;
 	}
@@ -580,19 +738,20 @@ class PFPManager {
 	 * @param int $industryType
 	 * @return string Example preformulated_products pfp, product p, pfp2product pfp2p, product2type p2t
 	 */
-	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0) {
+	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0, $supplierID = 0) {
 		$tables = array(
 			TB_PFP." pfp",
 			TB_PRODUCT." p",
 			TB_PFP2PRODUCT." pfp2p",
+			TB_PFP2COMPANY." pfp2c"
 		);
-
-		if ($companyID != 0) {
-			array_push($tables, TB_PFP2COMPANY." pfp2c");
-		}
 
 		if ($industryType != 0) {
 			array_push($tables, TB_PRODUCT2TYPE." p2t ");
+		}
+		
+		if ($supplierID != 0) {
+			array_push($tables, TB_SUPPLIER." s ");
 		}
 
 		return implode(', ', $tables);
