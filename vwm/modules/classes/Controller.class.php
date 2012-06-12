@@ -27,11 +27,13 @@ class Controller {
 	 * @var array
 	 */
 	private $blocksToInsert = array(
-		self::INSERT_AFTER_SEARCH => array()
+		self::INSERT_AFTER_SEARCH => array(),
+		self::INSERT_AFTER_VOC_GAUGE => array(),
 	);
 
 
 	const INSERT_AFTER_SEARCH = 0;
+	const INSERT_AFTER_VOC_GAUGE = 1;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;

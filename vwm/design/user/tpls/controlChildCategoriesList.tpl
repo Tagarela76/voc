@@ -67,7 +67,7 @@
                                             		($request.bookmark=="mix" && $permissions.data.delete) ||
                                             		($request.bookmark=="logbook" && $permissions.data.delete) ||
                                                             $permissions.deleteItem && $request.bookmark != "product"}
-								{*($request.bookmark=="accessory" && $permissions.data.delete) ||*}															
+								{*($request.bookmark=="accessory" && $permissions.data.delete) ||*}
 								<div class="button_float_left">
 									<div class="button_alpha delete_button">
 										{if $smarty.request.tab != 'pfp'}
@@ -99,12 +99,12 @@
 						{/if}
 
 							{if $request.bookmark == 'pfpLibrary'}
-								<div class="button_float_left"> 
+								<div class="button_float_left">
 									{if $request.tab == 'all'}
-										<input class="button" type="submit" value="Assign Selected PFP's"/>                                          
+										<input class="button" type="submit" value="Assign Selected PFP's"/>
 										<input type="hidden" name="action" value="assign"/>
 									{else}
-										<input class="button" type="submit" value="Remove Selected PFP's From My List"/>                                          
+										<input class="button" type="submit" value="Remove Selected PFP's From My List"/>
 										<input type="hidden" name="action" value="unassign"/>
 									{/if}
 								</div>
@@ -148,7 +148,7 @@
 								<div class="button_float_left">
 									{*<div class="button_alpha new_product_button">*}
 									<input type='button' class='button' Value='New Product' onclick="location.href='?action=addNewProduct&category={$request.category}&id={$request.id}'">
-								</div>											
+								</div>
 							{/if}
 
 							{*/EXPORT PAGE*}
@@ -160,6 +160,16 @@
 									{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
 								</div>
 							{/if}
+
+							{*INSERT_AFTER_VOC_GAUGE*}
+							{*Stupid Smarty does not support class constants*}
+							{*blocksToInsert.1 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
+								{if $blocksToInsert.1|@count > 0}
+									{foreach from=$blocksToInsert.1 item="blockPath"}
+										{include file="tpls:$blockPath"}
+									{/foreach}
+								{/if}
+							{*/INSERT_AFTER_VOC_GAUGE*}
 
 							{if $request.bookmark != 'emissionGraphs'}
 								<input type="hidden" name="category" value="{$childCategory}">
