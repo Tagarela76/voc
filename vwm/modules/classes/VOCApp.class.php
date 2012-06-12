@@ -3,7 +3,6 @@
 /**
  * Description of VOCApp
  *
- * @author denis.nt@kttsoft.com
  */
 class VOCApp {
 
@@ -18,7 +17,7 @@ class VOCApp {
 	private $date_format_js;
 
 	private function __construct() {
-		
+
 	}
 
 	private function startup() {

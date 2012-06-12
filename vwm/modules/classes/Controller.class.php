@@ -294,7 +294,7 @@ class Controller {
 			}
 		}
         $request = $this->getFromRequest();
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
@@ -327,7 +327,6 @@ class Controller {
 		$cemail = new EMail();
 
 		$to = array ("denis.nt@kttsoft.com", "dmitry.vd@kttsoft.com", "jgypsyn@gyantgroup.com ");
-		//$to = "dmitry.ds@kttsoft.com";
 
 		$from = "newsetuprequest@vocwebmanager.com";
 
@@ -448,11 +447,11 @@ class Controller {
         }
 
 		$request = $this->getFromRequest();
-        //titles new!!! {panding}
+        
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
-		//var_dump($facilityDetails);
+
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
@@ -511,7 +510,7 @@ class Controller {
         }
 
         $request = $this->getFromRequest();
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
@@ -581,7 +580,7 @@ class Controller {
 
 	private function actionShowIssueReportCommon() {
         $request = $this->getFromRequest();
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
@@ -595,7 +594,7 @@ class Controller {
     }
 
     private function actionReportIssueCommon() {
-        //titles new!!! {panding}
+
         $request = $this->getFromRequest();
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
@@ -635,10 +634,7 @@ class Controller {
                 $this->smarty->assign("issueDescription", $issueDetails["description"]);
                 $this->smarty->assign("referer", $issueDetails["referer"]);
 
-                //	Prepare Notify system
-                /* old school style */
-                //$notify = new Notify($this->smarty);
-                //$notify->formErrors();
+
 
                 /* 	the modern style */
                 $notifyc = new Notify(null, $this->db);
@@ -669,7 +665,7 @@ class Controller {
         $request = $this->getFromRequest();
         $this->smarty->assign("request", $request);
         $this->noname();
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
 
@@ -783,7 +779,7 @@ class Controller {
 
         $cfd = $this->noname();
 
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($this->getFromRequest());
 
@@ -820,7 +816,7 @@ class Controller {
             $backUrl = "?action=viewDetails&category=" . $this->getFromRequest('category') . "&id=" . $this->getFromRequest('id');
         }
         $this->smarty->assign('backUrl', $backUrl);
-        //fullNavigation($_SESSION['overCategoryType'], $user, $db, $smarty, $xnyo);
+
         $this->smarty->display("tpls:settings.tpl");
     }
 
@@ -843,7 +839,7 @@ class Controller {
     }
 
     private function actionDeleteItemCommon() {
-        //titles new!!! {panding}
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($this->getFromRequest());
         $this->smarty->assign("request", $this->getFromRequest());

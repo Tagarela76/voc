@@ -5,7 +5,7 @@ class UserRequest {
      * @var db
      */
     private $db;
-    
+
     private $action;
     private $user_id;
 	private $username;
@@ -23,9 +23,9 @@ class UserRequest {
     private $date;
     private $creater_id;
     private $status;
-    
+
     const STATUS_NEW = 'new';
-    
+
     public function __construct(db $db) {
         $this->db = $db;
         $this->setDate(new DateTime());
@@ -36,57 +36,57 @@ class UserRequest {
     public function setAction($action){
         $this->action = $action;
     }
-	
+
 	public function setUserID($userID) {
         $this->user_id = $userID;
     }
-	
+
 	public function setUserName($username) {
         $this->username = $username;
     }
-	
+
 	public function setNewUserName($new_username) {
-        $this->new_username = $new_username; 
+        $this->new_username = $new_username;
     }
-    
+
 	public function setNewAccessName($new_accessname){
         $this->new_accessname = $new_accessname;
     }
-	
+
 	public function setEmail($email){
         $this->email = $email;
     }
-	
+
 	public function setPhone($phone){
         $this->phone = $phone;
     }
-	
+
 	public function setMobile($mobile){
         $this->mobile = $mobile;
     }
-	
+
 	public function setCategoryType($category_type) {
         $this->category_type = $category_type;
     }
-	
+
 	public function setCategoryID($category_id){
         $this->category_id = $category_id;
     }
-	
+
 	public function setDate(DateTime $date) {
         $this->date = $date;
     }
-	
+
     public function setCreaterID($usernameID) {
         $this->creater_id = $usernameID;
     }
-    
+
     public function setStatus($status) {
-        $this->status = $status;        
+        $this->status = $status;
     }
-    
+
 	public function setALL($action, $user_id, $username, $new_username, $new_accessname, $email, $phone, $mobile,
-						   $category_type, $category_id){ 
+						   $category_type, $category_id){
 		$this->action = $action;
 		$this->user_id = $user_id;
 		$this->username = $username;
@@ -102,53 +102,53 @@ class UserRequest {
 	public function getAction(){
         return $this->action;
     }
-	
+
 	public function getUserID(){
         return $this->user_id;
     }
-	
+
 	public function getUserName(){
         return $this->username;
     }
-	
+
 	public function getNewUserName(){
         return $this->new_username;
     }
-    
+
 	public function getNewAccessName(){
         return $this->new_accessname;
     }
-	
+
 	public function getEmail(){
         return $this->email;
     }
-	
+
 	public function getPhone(){
         return $this->phone;
     }
-	
+
 	public function getMobile(){
         return $this->mobile;
     }
-	
+
 	public function getCategoryType(){
         return $this->category_type;
     }
-	
+
 	public function getCategoryID(){
         return $this->category_id;
     }
-	
+
 	public function getDate(){
         return $this->date;
     }
-	
+
     public function getCreaterID(){
         return $this->creater_id;
     }
-    
+
     public function getStatus(){
-        return $this->status;        
+        return $this->status;
     }
 
     public function save() {
@@ -168,16 +168,16 @@ class UserRequest {
                 "".mysql_escape_string($this->creater_id).", ".
                 "'".mysql_escape_string($this->status)."')";
 		$this->db->query($query);
-		
+
 		if (mysql_errno() != 0){
 			$error = "Error!";
 		} else {
 			$error = "";
 		}
-		
+
 		return $error;
     }
-	
+
 	public function update($requestID){
 		$query = "UPDATE ".TB_USER_REQUEST." SET status='".mysql_escape_string($this->status)."' WHERE id=".$requestID;
 		$this->db->query($query);
@@ -186,10 +186,10 @@ class UserRequest {
 		} else {
 			$error = "";
 		}
-		
-		return $error;	
+
+		return $error;
 	}
-	
+
 	public function addNewUser($requestID, $addComments = ''){
 		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
 		$this->db->query($query);
@@ -219,13 +219,13 @@ class UserRequest {
 				$companyID = $this->db->fetch(0)->company_id;
 				break;
 		}
-		
+
 		if ($row->creater_id !== NULL){
 			$createrID = $row->creater_id;
 		} else {
 			$createrID = 'NULL';
 		}
-		
+
 		$userData = array (
 			"accessname" => $row->new_accessname,
 			"username" => $row->new_username,
@@ -240,25 +240,25 @@ class UserRequest {
 			"grace" => 14,
 			"creater_id" => $createrID
 		);
-		
+
 		$queryUnique = "SELECT accessname FROM ".TB_USER." WHERE 1";
 		$this->db->query($queryUnique);
 		$names = $this->db->fetch_all();
-		
+
 		foreach ($names as $item){
 			if ($item->accessname == $row->new_accessname){
 				$errorUnique = "This Accessname already exists!";
 				break;
 			}
 		}
-		
+
 		if ($errorUnique){
 			$error = "This Accessname already exists!";
 		} else {
-			
+
 			$cUser = new User($this->db);
 			$insertedUserID = $cUser->addUser($userData);
-			
+
 			if ($insertedUserID){
 				$error = '';
 				$newMail = new EMail();
@@ -271,20 +271,20 @@ class UserRequest {
 				$error = "Error!";
 			}
 		}
-		
+
 		return $error;
 	}
-	
+
 	public function deleteUser($requestID, $addComments = ''){
 		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
 		$this->db->query($query);
 		$userToDelete = $this->db->fetch(0)->user_id;
 		$userEmail = $this->db->fetch(0)->email;
 		$username = $this->db->fetch(0)->username;
-		
+
 		$cUser = new User($this->db);
 		$cUser->deleteUser($userToDelete);
-		
+
 		$query = "SELECT * FROM ".TB_USER." WHERE user_id=".$userToDelete;
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0){
@@ -296,10 +296,10 @@ class UserRequest {
 		} else {
 			$error = "Error!";
 		}
-		
+
 		return $error;
 	}
-	
+
 	public function changeUser($requestID, $addComments = ''){
 		$query = "SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID;
 		$this->db->query($query);
@@ -307,10 +307,10 @@ class UserRequest {
 		$newUsername = $this->db->fetch(0)->new_username;
 		$username = $this->db->fetch(0)->username;
 		$userEmail = $this->db->fetch(0)->email;
-		
+
 		$queryChange = "UPDATE ".TB_USER." SET username='".$newUsername."' WHERE user_id=".$userToChange;
 		$this->db->query($queryChange);
-		
+
 		if (mysql_errno() == 0){
 			$error = '';
 			$newMail = new EMail();
@@ -322,10 +322,10 @@ class UserRequest {
 		} else {
 			$error = "Error!";
 		}
-		
+
 		return $error;
 	}
-	
+
 	public function denyUserRequest($requestID, $addComments = ''){
 		$this->db->query("SELECT * FROM ".TB_USER_REQUEST." WHERE id=".$requestID);
 		$data = $this->db->fetch(0);
@@ -350,22 +350,22 @@ class UserRequest {
 		$newUserMail->sendMail('newuserrequest@vocwebmanager.com', array('denis.nt@kttsoft.com', 'jgypsyn@gyantgroup.com'), 'New User Request', $message);
 		//$newUserMail->sendMail('userrequest@vocwebmanager.com', 'dmitry.ds@kttsoft.com', 'New User Request', $message);
 	}
-	
+
 	public function changePassword($userID, $oldPass, $newPass, $reNewPass){
 		$query = "SELECT accessname, password, email FROM ".TB_USER." WHERE user_id=".$userID;
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0){
 			$result = $this->db->fetch(0);
 			if ($result->password == md5(trim($oldPass))){
-				if ((strlen(trim($newPass)) > 5) && (strlen(trim($reNewPass)) > 5) && 
-					(trim($newPass) == trim($reNewPass)) && 
+				if ((strlen(trim($newPass)) > 5) && (strlen(trim($reNewPass)) > 5) &&
+					(trim($newPass) == trim($reNewPass)) &&
 					(strlen(trim($newPass)) < 12) && (strlen(trim($reNewPass)) < 12)){
 					//save new password to DB in md5
 					$query = "UPDATE ".TB_USER." SET password = '".md5($newPass)."' WHERE user_id=".$userID;
 					$this->db->query($query);
 					if (mysql_errno() == 0){
 						$newUserMail = new EMail();
-						$message = "Accessname: ".$result->accessname."\n";	
+						$message = "Accessname: ".$result->accessname."\n";
 						$message .= "Password: ".$newPass;
 						$newUserMail->sendMail('userrequest@vocwebmanager.com', $result->email, 'User Request Password', $message);
 					}
@@ -380,7 +380,7 @@ class UserRequest {
 		}
 		return $error;
 	}
-	
+
 	public function lostPassword($userID){
 		$query = "SELECT accessname, password, email FROM ".TB_USER." WHERE user_id=".$userID;
 		$this->db->query($query);
@@ -406,7 +406,7 @@ class UserRequest {
 		}
 		return $error;
 	}
-	
+
 	private function generate_password($passLength){
 		$arr = array('a','b','c','d','e','f',
 					 'g','h','i','j','k','l',
@@ -421,14 +421,14 @@ class UserRequest {
 		// generate password
 		$pass = "";
 		for($i = 0; $i < $passLength; $i++){
-			// Вычисляем случайный индекс массива
+			
 			$index = rand(0, count($arr) - 1);
 			$pass .= $arr[$index];
 		}
-		
+
 		return $pass;
 	}
-   
+
 }
 
 ?>

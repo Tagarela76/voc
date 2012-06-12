@@ -25,30 +25,13 @@
 				$currentDateTimeStamp = strtotime("now");
 
 				$mixEq = $mix->getEquipment();
-				//echo "<h2>mix: </h2>";
-				//var_dump($mix);
-				//echo "<h2>mixEq: </h2>";
-				//var_dump($mixEq);
+
 				$equipmentExpireDate = $mixEq->expire;
 				$equipmentExpireDateTimeStamp = strtotime($equipmentExpireDate);
-				//echo "<h2>Expire Date: $equipmentExpireDate</h2>";
 
-				//echo "<h2>Test Date</h2>";
-				//$ss = "11/19/2011 9:00PM";
-				//$strTime = strtotime($ss);
-				//echo "<h2>strTime: $strTime</h2>";
-				//$strTime = strtotime("now");
-				//echo "<h2>strToTimeNow:$strTime </h2>";
-				//if($currentDate->isBiggerThan($ss)) {
-				//	echo "<h2>$ss is bigger</h2>";
-				//} else {
-				//	echo "<h2>$ss is not bigger</h2>";
-				//}
 				//	If Equipment has expire date - check MIX for overdue
 				if ($equipmentExpireDate != null) {
-					//if ($currentDate->isBiggerThan($equipmentExpireDate)) {
 					if ($currentDateTimeStamp > $equipmentExpireDateTimeStamp) {
-						//echo "<h2>$currentDateTimeStamp is bigger than $equipmentExpireDateTimeStamp</h2>";
 						return true;
 					} else {
 						return false;
@@ -100,27 +83,11 @@
 						return false;
 					}
 
-					//$mixCreationMonth = substr($mix->getCreationTime(),3,2);	//	be careful with this
-					//$mixCreationYear = substr($mix->getCreationTime(),-4);
-
-					//I was careful with that, and remade it =)
-					//echo $mix->getCreationTime();
-					//echo "<br/>DateFormat:" . $mix->dateFormat;
-
 					$date = DateTime::createFromFormat($mix->dateFormat, $mix->getCreationTime());
-
-					//echo "dates:";
-					//var_dump($date);
-
-					//var_dump($mix->dateFormat, $mix->getCreationTime());
 
 					$mixCreationMonth = date("m", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
 					$mixCreationYear = date("Y", $date->getTimestamp()); //strtotime($mix->getCreationTime()));
 
-
-					//var_dump($mixCreationMonth,$mixCreationYear);
-					//exit;
-					//$totalFacilityUsage = $mix->getFacility()->getCurrentUsageOptimized((int)$mixCreationMonth, (int)$mixCreationYear);
 					if ($this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth]) {
 						$totalFacilityUsage = $this->cachedFacilityUsage['monthly'][$mix->getDepartment()->getFacilityID()][$mixCreationYear][$mixCreationMonth];
 					} else {
@@ -156,18 +123,9 @@
 						return false;
 					}
 
-					//	veeeeeeeeery slow =(
-					//	$totalDepartmentUsage = $mix->getDepartment()->getCurrentUsage();
-
-					//	optimized
-					//	get mix creation month
-					//$mixDetails = $mix->getMixDetails($mix->getMixID());
-					//$mixCreationMonth = substr($mixDetails['creationTime'],0,2);
-					//$mixCreationYear = substr($mixDetails['creationTime'],-4);
 					$mixCreationMonth = substr($mix->getCreationTime(),0,2);
 					$mixCreationYear = substr($mix->getCreationTime(),-4);
 
-					//$totalDepartmentUsage = $mix->getDepartment()->getCurrentUsageOptimized((int)$mixCreationMonth, (int)$mixCreationYear);
 					$totalDepartmentUsage = $mix->getDepartment()->getAnnualUsage((int)$mixCreationYear, (int)$mixCreationMonth);
 
 					if (!$mix->isAlreadyExist()) {
@@ -219,12 +177,6 @@
 					if ($mix->getEquipment()->getDailyLimit() == 0) {
 						return false;
 					}
-					//	хрень - Ежедневный выброс, а тут считается за все времена
-					//$totalEquipmentUsage = $mix->getEquipment()->getCurrentUsage();
-
-					//	DAILY DAILY DAILY
-					//$mixDetails = $mix->getMixDetails($mix->getMixID());
-					//$dailyEquipmentUsage = $mix->getEquipment()->getDailyUsage($mixDetails['creationTime']);
 					$dailyEquipmentUsage = $mix->getEquipment()->getDailyUsage($mix->getCreationTime());
 
 					//	Why?
@@ -255,10 +207,7 @@
 					}
 
 					$mixCreationYear = substr($mix->getCreationTime(),-4);
-					//				if (false === ($annualUsage = $mix->getFacility()->getAnnualUsage($mixCreationYear)) ) {
-					//					//	facility usage for defined year is not calculated yet. So...
-					//					$annualUsage = $mix->getFacility()->calculateAnnualUsage($mixCreationYear);
-					//				}
+
 					if ($this->cachedFacilityUsage['annual'][$mix->getDepartment()->getFacilityID()][$mixCreationYear]) {
 						$annualUsage = $this->cachedFacilityUsage['annual'][$mix->getDepartment()->getFacilityID()][$mixCreationYear];
 					} else {
@@ -290,10 +239,7 @@
 					}
 
 					$mixCreationYear = substr($mix->getCreationTime(),-4);
-					//				if (false === ($annualUsage = $mix->getDepartment()->getAnnualUsage($mixCreationYear)) ) {
-					//					//	department usage for defined year is not calculated yet. So...
-					//					$annualUsage = $mix->getDepartment()->calculateAnnualUsage($mixCreationYear);
-					//				}
+
 					$annualUsage = $mix->getDepartment()->getAnnualUsage((int)$mixCreationYear);
 
 					if (!$mix->isAlreadyExist()) {
@@ -314,7 +260,7 @@
 
 
 		public function isValidMix($mix) {
-			//echo "<h1>".__FUNCTION__."</h1>";
+
 			$mixValidatorResponse = new MixValidatorResponse();
 
 			//	Assign default values
@@ -344,7 +290,6 @@
 				$mixValidatorResponse->setFacilityLimitExcess(false);
 			}
 
-			//TODO: stoped here - Denis April 6, 2011
 			//	Check if DEPARTMENT LIMIT is exceeded
 			if ($this->isDepartmentLimitExceeded($mix)) {
 				$mixValidatorResponse->setValidationStatus(false);

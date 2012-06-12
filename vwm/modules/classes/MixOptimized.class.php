@@ -1088,11 +1088,6 @@
 				$totalWasteValue = $this->waste['value'];
 			}
 
-			// TODO: !!! Как правильно посчитать, так или
-			//$this->waste_calculated = $this->calculateWaste($this->waste['unittypeID'], $totalWasteValue, $quantitySum);	//	waste in weight unit type same as VOC
-			// TODO: !!! или так:
-			//echo "<h1>Waste:</h1>";
-			//var_dump($this->waste);
 
 			if($isMWS) {
 
@@ -1106,10 +1101,6 @@
 				$this->waste_calculated += $this->calculateWaste($this->waste['unittypeID'], $w->value, $quantitySum);	//	waste in weight unit type same as VOC
 			}
 
-			//echo "<h1>WASTE:</h1>";
-			//var_dump($this->waste);
-
-			//echo "<h1>WASTE переделанное с pollutions:</h1>";
 			if($isMWS) {
 				$ws = new WasteStreams($this->db);
 				$wastesFromDB = $ws->getWasteStreamsFromMix($this->mix_id);
@@ -1139,7 +1130,7 @@
 
 
 		public function calculateCurrentUsage() {
-			//echo "<h3>calculateCurrentUsage</h3>";
+
 			if ($this->products === null) return false;
 
 			if(!isset($this->waste)) {
@@ -1216,7 +1207,7 @@
 				if (empty($product->voclx) || $product->voclx == '0.00') {
 					$isVoclx = false;
 				}
-				
+
 				$percentVolatileWeight = $product->getPercentVolatileWeight();
 				$percentVolatileVolume = $product->getPercentVolatileVolume();
 
@@ -1310,13 +1301,9 @@
 
 			$calculator = new Calculator();
 			$this->voc = $calculator->calculateVocNew ($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
-
-			/**
-			 * TODO: calculate voclx and vocwx
-			 */
 			$this->voclx = $calculator->calculateVoclx($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
 			$this->vocwx = $calculator->calculateVocwx($ArrayVolume,$ArrayWeight,$defaultType,$wasteResult,$recycleResult);
-		
+
 			if($this->debug) {
 				echo "<h1>Waste Percent: {}</h1>";var_dump($wasteResult);
 				echo "<h1>recycle Percent: {}</h1>";var_dump($recycleResult);
@@ -1426,7 +1413,6 @@
 						'isWastePercentAbove100' => false
 					);
 			$unittype = new Unittype($this->db);
-			// TODO: хрень с тремя буквами unitttypeID, когда MWS выключен - с тремя буквами, когда включен - с одной
 			$uid = $this->waste['unittypeID'] ? $this->waste['unittypeID'] : $this->waste['unitttypeID'];
 
 			$wasteUnitDetails = $unittype->getUnittypeDetails($uid);
@@ -1491,7 +1477,6 @@
 						'isRecyclePercentAbove100' => false
 					);
 			$unittype = new Unittype($this->db);
-			// TODO: хрень с тремя буквами unitttypeID, когда MWS выключен - с тремя буквами, когда включен - с одной
 			$uid = $this->recycle['unittypeID'] ? $this->recycle['unittypeID'] : $this->recycle['unitttypeID'];
 
 			$recycleUnitDetails = $unittype->getUnittypeDetails($uid);

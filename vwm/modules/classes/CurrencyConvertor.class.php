@@ -1,29 +1,25 @@
 <?php
-/**
- * 
- * @author developer Ilya
- *
- */
+
 class CurrencyConvertor
 {
 	private $currencies;
-	
+
 	function CurrencyConvertor()
 	{
-        
+
         $filename = date("d_m_Y")."_currency.xml";
         $tmpdir = "/tmp/";
         $fullfilenpath = getcwd().$tmpdir.$filename;
-        
+
         if(!is_file($fullfilenpath)) {
             $res = copy("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",$fullfilenpath);
             if($res) {
-            
+
             } else {
-               
+
             }
         }
-        
+
 		try
 		{
 			$xml = new SimpleXMLElement($fullfilenpath,0,true);
@@ -32,32 +28,21 @@ class CurrencyConvertor
 		{
 			throw $e;
 		}
-		
+
 		$time = $xml->Cube->Cube['time'];
-		//echo $time;
-		
-		//var_dump($xml->Cube->Cube->Cube);
-		
+
+
 		$this->currencies = array();
 		foreach($xml->Cube->Cube->Cube as $i)
 		{
-			//echo $i['currency'] . " - " . $i['rate'] . "<br/>"; 
-			
+
+
 			$this->currencies["{$i['currency']}"] = floatval($i['rate']);
 		}
-		
-		/*foreach($XMLContent as $line) {
-			
-	        if(preg_match("/currency='([[:alpha:]]+)'/",$line,$currencyCode)){
-	            if(preg_match("/rate='([[:graph:]]+)'/",$line,$rate)){
-	                
-	            	$this->currencies[$currencyCode[1]] = $rate[1];
-	            }
-	        }
-		}*/
+
 		$this->currencies["EUR"] = floatval(1.0);
 	}
-	
+
 	/**
 	 * Calculate sum of differents currencies and return result in return type of currency (USD for example)
 	 * @param $valuts array ('USD' => 100.0, 'EUR' => 123.0)
@@ -66,20 +51,20 @@ class CurrencyConvertor
 	 */
 	public function Sum($valuts,$returnType = "USD")
 	{
-        
+
 		if( empty($valuts))
 		{
 			throw new Exception("Valuts is empty!");
 		}
 		elseif(!is_array($valuts)){
-			
+
 			throw new Exception("valuts is not array!");
 		}
 		elseif(empty($this->currencies[$returnType])){
-			
+
 			throw new Exception("Return ISO type is empty or does not exists in currencies list!. ISO type: $returnType");
 		}
-		
+
 		/*Convert money to Euro*/
 		$eurosTotalSum = 0.0;
 		$keys = array_keys($valuts);
@@ -92,7 +77,7 @@ class CurrencyConvertor
 				$eurosTotalSum += $value / $factor;
 			}
 		}
-		
+
 		/*Convert euro total sum to return currency type (USD default)*/
 		$factor = $this->currencies[$returnType];
 		$totalSum = $eurosTotalSum * $factor;

@@ -424,15 +424,6 @@ class MSDS {
         if ($this->db->num_rows()) {
             $msdsSheet = $this->db->fetch_array(0);
 
-            /* $msdsSheet = array (
-              'id' 			=> $data->msds_file_id,
-              'name' 			=> $data->name,
-              'realName' 		=> $data->real_name,
-              'companyID'		=> $data->company_id,
-              'facilityID' 	=> $data->facility_id,
-              'departmentID' 	=> $data->department_id,
-              'productID'	=> $data->product_id
-              ); */
         }
 
         return $msdsSheet;
@@ -459,15 +450,7 @@ class MSDS {
         if ($this->db->num_rows()) {
             $msdsSheet = $this->db->fetch_array(0);
 
-            /* $msdsSheet = array (
-              'id' 			=> $data->msds_file_id,
-              'name' 			=> $data->name,
-              'realName' 		=> $data->real_name,
-              'companyID'		=> $data->company_id,
-              'facilityID' 	=> $data->facility_id,
-              'departmentID' 	=> $data->department_id,
-              'productID'	=> $data->product_id
-              ); */
+       
         }
 
         return $msdsSheet;

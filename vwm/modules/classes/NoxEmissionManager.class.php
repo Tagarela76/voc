@@ -22,8 +22,8 @@ class NoxEmissionManager {
 	}
 
 	public function getCountNoxByFacility($facilityID) {
-		$query = "SELECT COUNT(*) cnt 
-					FROM nox, department d 
+		$query = "SELECT COUNT(*) cnt
+					FROM nox, department d
 					WHERE d.department_id = nox.department_id
 					AND d.facility_id = " . mysql_escape_string($facilityID);
 		$this->db->query($query);
@@ -59,7 +59,7 @@ class NoxEmissionManager {
 	}
 
 	public function getNoxListByFacility($facilityID, $sortStr = null, $pagination = null) {
-		$query = "SELECT nox.* 
+		$query = "SELECT nox.*
 					FROM nox, department d
 					WHERE d.department_id = nox.department_id
 					AND d.facility_id = " . mysql_escape_string($facilityID);
@@ -200,7 +200,7 @@ class NoxEmissionManager {
 		if (isset($pagination)) {
 			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-		var_dump($query);
+		
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {
 
@@ -208,7 +208,7 @@ class NoxEmissionManager {
 		}
 		return (isset($searched)) ? $searched : null;
 	}
-	
+
 	public function deleteNoxEmissionsByID($noxEmissionID) {
 		$query = "DELETE FROM nox WHERE nox_id = ".  mysql_escape_string($noxEmissionID);
 		$this->db->query($query);
@@ -228,15 +228,15 @@ class NoxEmissionManager {
 	public function calculateNox(NoxEmission $noxEmission) {
 		$burnerDetails = $this->getBurnerDetail($noxEmission->burner_id);
 		/*
-		 * BURNER INPUT / BURNER OUTPUT = BEF (BURNER EFFICIENCY FACTOR)		 
+		 * BURNER INPUT / BURNER OUTPUT = BEF (BURNER EFFICIENCY FACTOR)
 		 * BEF should be less than 1
 		 */
 		if (!$burnerDetails || $burnerDetails['input'] == 0 || $burnerDetails['btu'] == 0) {
 			return false;
 		}
-		
-		$bef = $burnerDetails['output'] / $burnerDetails['input'];		
-		
+
+		$bef = $burnerDetails['output'] / $burnerDetails['input'];
+
 		if (empty($noxEmission->gas_unit_used)) {
 			$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
 			return $nox;
@@ -244,33 +244,33 @@ class NoxEmissionManager {
 		/*
 		 * BURNER EFFICIENCY FACTOR / (BTUS / KW'S PER HOUR RATING) = UEF (UNIT EFFICIENCY FACTOR)
 		 */
-		$uef = $bef*100 / $burnerDetails['btu'];		
+		$uef = $bef*100 / $burnerDetails['btu'];
 		/*
 		 * UNIT EFFICIENCY FACTOR * GAS THERMAL UNITS USED = Nox (TOTAL Nox EMISSION)
 		 */
-		$nox = $uef * $noxEmission->gas_unit_used;		
+		$nox = $uef * $noxEmission->gas_unit_used;
 		return $nox;
 	}
-	
-	
+
+
 	public function getBurnerManufacturerList() {
 		$sql = "SELECT * FROM burner_manufacturer";
 		$this->db->query($sql);
-		
+
 		if($this->db->num_rows() > 0) {
-			return $this->db->fetch_all_array();			
+			return $this->db->fetch_all_array();
 		} else {
 			return false;
 		}
 	}
-	
-	
+
+
 	public function getBurnerManfucaturer($id) {
 		$sql = "SELECT * FROM burner_manufacturer WHERE id = ".  mysql_escape_string($id);
 		$this->db->query($sql);
-		
+
 		if($this->db->num_rows() > 0) {
-			return $this->db->fetch_array(0);			
+			return $this->db->fetch_array(0);
 		} else {
 			return false;
 		}

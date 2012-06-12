@@ -179,18 +179,6 @@ class Facility extends FacilityProperties {
 		$query.="WHERE facility_id=".$facilityData["facility_id"];
 		$this->db->query($query);
 
-		//	DEPRECATED
-		//	VOC limit was changed. We should recalculte all mix limits
-		//	It can take some minutes. Please wait...
-//		ini_set("max_execution_time","180");
-//		if ($recalculteMixLimits) {
-//			$mixesData = $this->getMixList($facilityData["facility_id"]);
-//			$mix = new Mix($this->db);
-//			foreach($mixesData as $mixData) {
-//				$mix->calculateAndSaveMixLimits($mixData['mix_id']);
-//			}
-//		}
-
 	}
 
 	function getFacilityListByCompany($company_id) {
@@ -249,17 +237,6 @@ class Facility extends FacilityProperties {
 				$inventory->delete();
 			}
 		}
-//		$this->db->query("SELECT * FROM ".TB_INVENTORY." WHERE facility_id = " .$facility_id);
-//		$inventoryCount = $this->db->num_rows();
-//		$inventoriesToDelete = $this->db->fetch_all();
-//		if ($inventoryCount > 0) {
-//			$inventory = new Inventory($this->db);
-//			$inventory->setParentTrashRecord($this->trashRecord);
-//			for ($i=0; $i<$inventoryCount; $i++) {
-//				$inventory->setTrashRecord(new Trash($this->db));
-//				$inventory->deleteInventory($inventoriesToDelete[$i]->inventory_id);
-//			}
-//		}
 
 		$this->db->query("DELETE FROM ".TB_FACILITY." WHERE facility_id=".$facility_id);
 	}
@@ -387,7 +364,7 @@ class Facility extends FacilityProperties {
 
 
 
-	// getCurrentUsage method optimized version. Direct SQL query. 		//den 22 July 2009
+	// getCurrentUsage method optimized version. Direct SQL query.
 	public function getCurrentUsageOptimized($month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
 
 		$month=mysql_escape_string($month);
@@ -538,8 +515,8 @@ class Facility extends FacilityProperties {
 
 		return $result;
 	}
-	
-	
+
+
 	public function getProductUsageByDaysByFacilities(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 
         $categoryDependedSql = "";
@@ -547,14 +524,14 @@ class Facility extends FacilityProperties {
 
 			if ((!$_SESSION['PUF']) || ($_SESSION['PUF'] == 'all')) {
 				$tables .= ", ".TB_FACILITY." f ";
-				$categoryDependedSql = " m.department_id = d.department_id". 
-                                        " AND d.facility_id = f.facility_id". 
+				$categoryDependedSql = " m.department_id = d.department_id".
+                                        " AND d.facility_id = f.facility_id".
                                         " AND f.company_id = {$categoryID}  ";
 			} else {
-				$categoryDependedSql = " m.department_id = d.department_id ". 
+				$categoryDependedSql = " m.department_id = d.department_id ".
                                         " AND d.facility_id =".mysql_escape_string($_SESSION['PUF']);
-			}							
-		
+			}
+
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
@@ -563,9 +540,8 @@ class Facility extends FacilityProperties {
 					"AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'".
 				" GROUP BY mg.product_id, m.creation_time " .
 				" ORDER BY p.product_id ";
-                      
-		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
-                //echo $query;
+
+
 		$this->db->query($query);
 		$productUsageData = $this->db->fetch_all();
 		$result = array();
@@ -609,7 +585,7 @@ class Facility extends FacilityProperties {
 
 		return $result;
 	}
-	
+
 	//	check difference between $vocLimit and DB value
 	private function isVocLimitChanged($facilityID, $vocLimit, $annualVocLimit) {
 
@@ -622,21 +598,21 @@ class Facility extends FacilityProperties {
 
 		return ($this->db->num_rows() > 0) ? false : true;
 	}
-	
+
 	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID){
-		
+
 		$beginstamp = $beginDate->getTimestamp();
 		$endstamp = $endDate->getTimestamp();
-		
+
 		$categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
 		if ($category == "company") {
 			$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-			$categoryDependedSql = "eq.department_id = d.department_id 
-										AND d.facility_id = f.facility_id 
+			$categoryDependedSql = "eq.department_id = d.department_id
+										AND d.facility_id = f.facility_id
 										AND f.company_id = {$categoryID} ";
 		}
-		
+
 		$query = "SELECT sum(m.voc) as voc, f.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
@@ -644,7 +620,7 @@ class Facility extends FacilityProperties {
 					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY f.name, m.creation_time " .
 				" ORDER BY f.name ";
-		
+
 		$this->db->query($query);
 		$dailyEmissionsData = $this->db->fetch_all();
 		$result = array();
@@ -658,25 +634,25 @@ class Facility extends FacilityProperties {
 			$emptyData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
-		
+
 		$query = "SELECT f.name".
 				" FROM ".TB_FACILITY." f ".
 				" WHERE f.company_id = {$categoryID}";
-				
+
 		$this->db->query($query);
-		$facilityList = $this->db->fetch_all();	
-		
+		$facilityList = $this->db->fetch_all();
+
 		foreach($facilityList as $data) {
 			$result[$data->name] = $emptyData;
 		}
-		
+
 		foreach ($dailyEmissionsData as $data) {
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
 			$result[$data->name][$key][1] += $data->voc;
 		}
 
 		return $result;
-				
+
 	}
 
 	//	Tracking System
@@ -687,42 +663,6 @@ class Facility extends FacilityProperties {
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_FACILITY, $facilityID, $CRUD, $this->parentTrashRecord);
 
-		//	DEPRECATED July 16, 2010
-
-//		$facilityID=mysql_escape_string($facilityID);
-//
-//		if (isset($this->trashRecord)) {
-//			$query = "SELECT * FROM ".TB_FACILITY." WHERE facility_id = ".$facilityID;
-//			$this->db->query($query);
-//			$dataRows = $this->db->fetch_all();
-//
-//			foreach ($dataRows as $dataRow) {
-//				$parentID = (isset($this->parentTrashRecord)) ? $this->parentTrashRecord->getID() : null;
-//
-//				$facilityRecords = TrackingSystem::properties2array($dataRow);
-//				$this->trashRecord->setTable(TB_FACILITY);
-//				$this->trashRecord->setData(json_encode($facilityRecords[0]));
-//				$this->trashRecord->setUserID($_SESSION['user_id']);
-//				$this->trashRecord->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//				$this->trashRecord->setDate(time());	//	current time
-//				$this->trashRecord->setReferrer($parentID);
-//				$this->trashRecord->save();
-//			}
-//
-//			if ($CRUD != 'D') {
-//				//	load and save dependencies
-//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {
-//					foreach ($dependencies as $dependency) {
-//						$parentID = ($dependency->getParentObj() !== null) ? $dependency->getParentObj()->getID() : null;
-//						$dependency->setUserID($_SESSION['user_id']);
-//						$dependency->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//						$dependency->setDate(time());	//	current time
-//						$dependency->setReferrer($parentID);
-//						$dependency->save();
-//					}
-//				}
-//			}
-//		}
 	}
 }
 
