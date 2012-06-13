@@ -42,7 +42,7 @@ class Product extends ProductProperties {
 				}
 			}
 		}
-		
+
 		return $result;
 	}
 
@@ -55,7 +55,7 @@ class Product extends ProductProperties {
 		}
 
 		$products = $this->selectProductsByCompany($companyID, 0, $pagination,$filter, $sort);
-		
+
 		if ($products) {
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
 			if ($pagination) {
@@ -105,7 +105,7 @@ class Product extends ProductProperties {
 			$query .= " AND pp.jobber_id = " . (int) $jobberID . "";
 		}
 
-//echo $query;
+
 		$this->db->query($query);
 
 		if ($this->db->num_rows() == 0) {
@@ -143,7 +143,7 @@ class Product extends ProductProperties {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
 		$this->db->query($query);
-//echo $query;
+
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}
@@ -284,16 +284,7 @@ class Product extends ProductProperties {
 			$component['rule_id'] = $data[$i]->rule_id;
 			$component['substrate_id'] = $data[$i]->rule_id;
 
-			/* DEPRICATED - compounds do not have these properties*/
-//			$query_2 = "SELECT ".$rule->ruleNrMap[$rule->getRegion()]." FROM ".TB_RULE." WHERE rule_id = ".$data3->rule_id;
-//			$this->db->query($query_2);
-//			$data4 = $this->db->fetch(0);
-//			$component['rule'] = $data4->$rule->ruleNrMap[$rule->getRegion()];
-//
-//			$query_2 = "SELECT substrate_desc FROM ".TB_SUBSTRATE." WHERE substrate_id = ".$data3->substrate_id;
-//			$this->db->query($query_2);
-//			$data4 = $this->db->fetch(0);
-//			$component['substrate'] = $data4->substrate_desc;
+
 
 			$components[] = $component;
 		}
@@ -606,7 +597,6 @@ class Product extends ProductProperties {
 
 			$query="UPDATE ".TB_COAT." SET coat_desc='".$coat."' WHERE coat_id='".$id."'";
 
-			print_r($query." ");
 			$this->db->query($query);
 
 		}
@@ -693,7 +683,7 @@ class Product extends ProductProperties {
 			$this->insertProduct2CompanyLink($productID, $companyID);
 		}
 	}
-	
+
 	public function assignProduct2Facility($productID, $companyID, $facilityID) {
 		if (!$this->checkIsProduct2FacilityLink($productID, $companyID, $facilityID)) {
 			$this->insertProduct2FacilityLink($productID, $companyID, $facilityID);
@@ -711,7 +701,7 @@ class Product extends ProductProperties {
 			$this->deleteProduct2CompanyLink($productID, $companyID);
 		}
 	}
-	
+
 	public function unassignProductFromFacility($productID = false, $companyID = false, $facilityID = false) {
 		if ($this->checkIsProduct2FacilityLink($productID, $companyID, $facilityID)) {
 			$this->deleteProduct2FacilityLink($productID, $companyID, $facilityID);
@@ -769,7 +759,7 @@ class Product extends ProductProperties {
 		} else {
 			$productCount = $this->db->fetch(0)->productCount;
 		}
-		
+
 		return $productCount;
 	}
 
@@ -815,7 +805,7 @@ class Product extends ProductProperties {
 		} else
 			return false;
 	}
-//	autocomplete product search in admin.Not work yet
+
 	 public function productAutocompleteAdmin($occurrence, $sub) {
 		$occurrence = mysql_escape_string($occurrence);
                 $query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
@@ -975,7 +965,7 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 		return ($this->db->num_rows()) ? true : false;
 	}
-	
+
 	private function checkIsProduct2FacilityLink($productID = false, $companyID = false, $facilityID = false) {
 
 		$productID=mysql_escape_string($productID);
@@ -986,7 +976,7 @@ class Product extends ProductProperties {
 					" AND company_id = ".$companyID.
 					" AND facility_id = ".$facilityID;
 		$this->db->query($query);
-		
+
 		return ($this->db->num_rows()) ? true : false;
 	}
 
@@ -1017,7 +1007,7 @@ class Product extends ProductProperties {
 		$query = "INSERT INTO product2company (product_id, company_id) VALUES (".$productID.", ".$companyID.")";
 		$this->db->query($query);
 	}
-	
+
 	private function insertProduct2FacilityLink($productID, $companyID, $facilityID) {
 
 		settype($companyID,"integer");
@@ -1053,7 +1043,7 @@ class Product extends ProductProperties {
 		}
 		$this->db->query($query);
 	}
-	
+
 	private function deleteProduct2FacilityLink($productID, $companyID, $facilityID) {
 		settype($companyID,"integer");
 		settype($productID,"integer");
@@ -1094,7 +1084,7 @@ class Product extends ProductProperties {
 		if (!(empty($companyID) && $companyID == 0)) {
 			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = ".$this->db->sqltext($companyID)." ";
 		}
-		
+
 		if (!is_null($facilityID) && $facilityID != 0) {
 			$query .= " AND (p2c.facility_id IS NULL OR p2c.facility_id = ".mysql_real_escape_string($facilityID).") ";
 		}
@@ -1102,7 +1092,7 @@ class Product extends ProductProperties {
 		if ($this->productCategoryFilter != 0) {
 			$query .= " AND p2t.product_id = p.product_id AND p2t.type_id = ".$this->db->sqltext($this->productCategoryFilter)." ";
 		}
-		
+
 		$this->db->query($query);
 
 		$numRows = $this->db->num_rows();
@@ -1192,11 +1182,11 @@ class Product extends ProductProperties {
 		}
 
 		$query .= " AND {$filter} GROUP BY p.product_id {$sort}";
-		
+
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-		
+
 		$this->db->query($query);
 
 		$numRows = $this->db->num_rows();

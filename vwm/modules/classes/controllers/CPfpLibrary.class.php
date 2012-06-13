@@ -24,12 +24,12 @@ class CPfpLibrary extends Controller {
 			$pfpCount = ($this->getFromRequest('tab') == 'all')
 					? $manager->countPFPAllowed(0, $this->getFromRequest('q'), $productCategory)
 					: $manager->countPFPAssigned($companyDetails['company_id'], $this->getFromRequest('q'), $productCategory);
-			
+
 			$pagination = new Pagination((int) $pfpCount);
 			$pagination->url = $url;
 
 			$pfps = ($this->getFromRequest('tab') == 'all') ? $manager->searchPFP(0, $pagination,  $this->getFromRequest('q')) : $manager->searchPFP($companyDetails['company_id'], $pagination,  $this->getFromRequest('q'));
-			
+
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 
 		// or get all

@@ -27,22 +27,22 @@ class PFPManager {
 
 		return $c > 0 ? FALSE : TRUE;
 	}
-	
+
 	public function countPFPAll($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		$queryFilter = "";
 		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
-	
+
 	public function countPFPAllowed($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
 		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
-	
+
 	public function countPFPAssigned($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
 		return $this->_countPFP($queryFilter, $companyID, $searchString, $industryType, $supplierID);
 	}
-		
+
 	private function _countPFP($queryFilter = '', $companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id as id " .
@@ -55,19 +55,19 @@ class PFPManager {
 					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
 					")";
 		}
-		
+
 		$query .= $queryFilter;
 
 		if ($industryType != 0) {
 			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
 		}
-		
+
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
 
 		$query .= " GROUP BY pfp.id";
-		
+
 		$this->db->query($query);
 
 		return $this->db->num_rows();
@@ -85,7 +85,7 @@ class PFPManager {
 					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
 					")";
 		}
-		
+
 		if ($companyID != 0) {
 			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
 		} else {
@@ -95,7 +95,7 @@ class PFPManager {
 		if ($industryType != 0) {
 			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
 		}
-		
+
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
@@ -118,7 +118,7 @@ class PFPManager {
 
 		return $list;
 	}
-	
+
 	public function getCountPFP($supplier_id = 0) {
 		$query = "SELECT count(*) AS cnt_pfp FROM ".
 					TB_PFP." pfp, ".TB_PFP2PRODUCT." p2p, ".TB_PRODUCT." p, ".TB_SUPPLIER." s WHERE ".
@@ -129,9 +129,9 @@ class PFPManager {
 		if ($supplier_id) {
 			$query .= " AND s.original_id = ".mysql_real_escape_string($supplier_id);
 		}
-		
+
 		$this->db->query($query);
-		
+
 		$numRows = $this->db->num_rows();
 		if ($numRows == 1) {
 			return $this->db->fetch(0)->cnt_pfp;
@@ -139,22 +139,22 @@ class PFPManager {
 			return false;
 		}
 	}
-	
+
 	public function getListAll($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = "";
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
-	
+
 	public function getListAllowed($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
-	
+
 	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
-		
+
 	private function _getList($queryFilter = '', $companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		//	build mandatory sql
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
@@ -168,7 +168,7 @@ class PFPManager {
 			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
 					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
 		}
-		
+
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
@@ -186,13 +186,13 @@ class PFPManager {
 
 			$query .= " ) ";
 		}
-		
+
 		$query .= " GROUP BY pfp.id ";
-		
+
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-		
+
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -213,7 +213,7 @@ class PFPManager {
 			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
 					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
 		}
-		
+
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
 		}
@@ -231,13 +231,13 @@ class PFPManager {
 
 			$query .= " ) ";
 		}
-		
+
 		$query .= " GROUP BY pfp.id ";
-		
+
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.id LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-		
+
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -378,7 +378,7 @@ class PFPManager {
 				$queryAddPFPRelation2Company = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id ,company_id) VALUES (" . $pfpID . ", " . $companyID[$i]['id'] . ")";
 				$this->db->query($queryAddPFPRelation2Company);
 
-				$i++; //var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company);
+				$i++;
 			}
 		} else {
 			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('" . $product->getDescription() . "','" . $companyID . "')";
@@ -406,10 +406,9 @@ class PFPManager {
 				$queryInsertPFPProducts .= " , ";
 			}
 		}
-		
+
 		$this->db->query($queryInsertPFPProducts);
 
-		//var_dump($companyID[$i]['id'],'QUERY',$queryAddPFP,'QUERY2',$queryAddPFPRelation2Company,'QUERY3',$queryInsertPFPProducts);
 	}
 
 	public function remove(PFP $product) {
@@ -430,7 +429,7 @@ class PFPManager {
 
 	//TODO: is this error?
 	public function unassignPFPFromCompanies($pfpID) {
-		//$query = "DELETE FROM " . TB_PFP2COMPANY . " WHERE pfp_id=" . $pfpID;
+
 		$query_unassign = "UPDATE ".TB_PFP2COMPANY." SET is_assigned = 0 WHERE pfp_id = ".$pfpID;
 		$this->db->query($query_unassign);
 		if (mysql_errno() == 0) {
@@ -444,14 +443,11 @@ class PFPManager {
 
 
 	public function unassignPFPFromCompany($pfpID, $companyID) {
-		/*$query = "DELETE FROM " . TB_PFP2COMPANY . "
-				WHERE pfp_id = " . mysql_escape_string($pfpID) ."
-				AND company_id = " . mysql_escape_string($companyID);
-		$this->db->exec($query);*/
+
 		$query_unassign = "UPDATE ".TB_PFP2COMPANY." SET is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
 		$this->db->query($query_unassign);
 	}
-	
+
 	public function unavailablePFPFromCompany($pfpID, $companyID) {
 		$query_unavailable = "UPDATE ".TB_PFP2COMPANY." SET is_available = 0, is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
 		$this->db->query($query_unavailable);
@@ -478,10 +474,10 @@ class PFPManager {
 				$error = "Error!";
 			}
 		}
-		
+
 		return $error;
 	}
-	
+
 	public function availablePFP2Company($pfpID, $companyID) {
 		$sql_select = "SELECT * FROM ".TB_PFP2COMPANY." WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
 		$this->db->query($sql_select);
@@ -503,17 +499,12 @@ class PFPManager {
 				$error = "Error!";
 			}
 		}
-		
-		
+
+
 		return $error;
 	}
 
 	public function update(PFP $from, PFP $to) {
-
-		//echo "FROM:";
-		//var_dump($from);
-		//echo "TO:";
-		//var_Dump($to);
 
 		$this->db->beginTransaction();
 
@@ -541,10 +532,9 @@ class PFPManager {
 			}
 		}
 		echo $queryInsertPFPProducts; die();
-		//echo "<br/>$queryInsertPFPProducts";
+		
 		$this->db->query($queryInsertPFPProducts);
-		//exit;
-		//$this->db->commitTransaction();
+
 	}
 
 	private function removeProducts($pfpID) {
@@ -749,7 +739,7 @@ class PFPManager {
 		if ($industryType != 0) {
 			array_push($tables, TB_PRODUCT2TYPE." p2t ");
 		}
-		
+
 		if ($supplierID != 0) {
 			array_push($tables, TB_SUPPLIER." s ");
 		}

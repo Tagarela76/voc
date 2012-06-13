@@ -179,8 +179,6 @@ class MixValidator {
 				if ($mix->getEquipment()->getDailyLimit() == 0) {
 					return false;
 				}
-				//	хрень - Ежедневный выброс, а тут считается за все времена
-				//$totalEquipmentUsage = $mix->getEquipment()->getCurrentUsage();
 
 				//	DAILY DAILY DAILY
 				//$mixDetails = $mix->getMixDetails($mix->getMixID());

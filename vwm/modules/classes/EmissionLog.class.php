@@ -7,19 +7,19 @@ class EmissionLog {
     	$this->db = $db;
 		$this->db->select_db(DB_NAME);
     }
-    
+
     function getEmissionLog($year,$category,$categoryID) {
-    	
+
     	$beginDate = DateTime::createFromFormat("Y-m-d H:i", "$year-01-01 00:00");
-    	
+
     	$endDateTmp = DateTime::createFromFormat("Y-m-d H:i", "$year-12-01 23:59");
     	$lastDayInMonth = $endDateTmp->format("t");
-    	
+
     	$endDate = DateTime::createFromFormat("Y-m-d H:i", "$year-12-$lastDayInMonth 23:59");
-    	
+
     	$beginStamp = $beginDate->getTimestamp();
     	$endStamp = $endDate->getTimestamp();
-    	
+
     	switch ($category) {
     		case 'department':
     			$query = "SELECT  f.`voc_annual_limit` ,  f.`voc_limit`, f.`facility_id` FROM  `".TB_FACILITY."` f, `".TB_DEPARTMENT."` d " .
@@ -45,8 +45,7 @@ class EmissionLog {
 		    	return false;
     	}
     	
-    	//echo "<p>".$query;
-    	
+
     	$this->db->query($query);
     	if ($this->db->num_rows() > 0) {
 	    	$data = $this->db->fetch_all();
@@ -83,13 +82,13 @@ class EmissionLog {
     			if ($category == 'facility') {
     			foreach ($tmpLimitsDep[$i] as $department_id => $voc) {
     				if ($voc > $limits[$department_id]['monthly']) {
-    					$depLimit = true; 
+    					$depLimit = true;
     					break;
     				}
     			}
     			} else {
     				if ($tmpLimitsDep[$i][$categoryID] > $limits[$categoryID]['monthly']) {
-    					$depLimit = true; 
+    					$depLimit = true;
     				}
     			}
     			$resultByMonth['depLimit'] = ($depLimit === true)?true:false;
@@ -109,7 +108,7 @@ class EmissionLog {
 		    }
     	} else {
 	    	if ($tmpAnnualByDep[$i][$categoryID] > $limits[$categoryID]['annual']) {
-		    	$depLimitAnnual = true; 
+		    	$depLimitAnnual = true;
 	    	}
     	}
 	    $result['total'] = array(

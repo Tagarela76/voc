@@ -85,22 +85,7 @@ class Equipment extends EquipmentProperties {
 		//$this->db->select_db(DB_NAME);
 		$this->db->query("SELECT * FROM ".TB_EQUIPMENT." WHERE equipment_id=".$equipmentID);
 		$equipmentDetails=$this->db->fetch_array(0);
-	//	$DateType = new DateTypeConverter($this->db);
-		/*$equipmentDetails=array (
-			'equipment_id'		=>	$data->equipment_id,
-			'equipment_nr'		=>	$data->equipment_nr,
-			'equip_desc'		=>	$data->equip_desc,
-			'inventory_id'		=>	$data->inventory_id,
-			'permit'			=>	$data->permit,
-			'expire'			=>	date($DateType->getDatetypebyID($equipmentID), $data->expire),
-			'daily'				=>	$data->daily,
-			'dept_track'		=>	$data->dept_track,
-			'facility_track'	=>	$data->facility_track,
-			'date_type'         =>  $DateType->getDatetypebyID($equipmentID),
-			'department_id'		=>	$data->department_id,
-			'departmentID'		=>	$data->department_id
-		);*/
-		//$equipmentDetails['expire'] = date($DateType->getDatetypebyID($equipmentID), $equipmentDetails['expire']);
+
 		$equipmentDetails['expire'] = new TypeChain(date('Y-m-d',$equipmentDetails['expire']),'date',$this->db,$equipmentDetails['department_id'],'department');
 		if (!$vanilla){
 			$this->db->query("SELECT * FROM ".TB_DEPARTMENT." WHERE department_id=".$equipmentDetails['department_id']);
@@ -110,7 +95,7 @@ class Equipment extends EquipmentProperties {
 			$this->db->query("SELECT * FROM ".TB_INVENTORY." WHERE id = ".$equipmentDetails['inventory_id']);
 			$data2=$this->db->fetch(0);
 			$equipmentDetails['inventory_id']=$data2->name;
-		}		//var_dump($equipmentDetails);
+		}
 
 		return $equipmentDetails;
 	}
@@ -148,13 +133,12 @@ class Equipment extends EquipmentProperties {
 
 		//	save to trash_bin
 		$this->save2trash('C', $equipmentID);
-//		$tm = new TrackManager($this->db);
-//		$tm->save2trash(TB_EQUIPMENT, $equipmentID, 'C', $this->parentTrashRecord);
+//
 		return $equipmentID;
 	}
 
 
-	function setEquipmentNR() {	//	????
+	function setEquipmentNR() {
 		//$this->db->select_db(DB_NAME);
 		$query = "SELECT equipment_id FROM ".TB_EQUIPMENT. " WHERE equipment_nr = 0";
 		$this->db->query($query);
@@ -179,9 +163,7 @@ class Equipment extends EquipmentProperties {
 
 		//	save to trash_bin
 		$this->save2trash('U', $equipmentData['equipment_id']);
-//		$tm = new TrackManager($this->db);
-//		$tm->save2trash(TB_EQUIPMENT, $equipmentData['equipment_id'], 'U', $this->parentTrashRecord);
-
+//
 		//	check expire date change
 		$recalculteMixLimits = false;
 		if ($this->isExpireDateChanged($equipmentData["equipment_id"], $equipmentData["expire"])) {
@@ -208,20 +190,7 @@ class Equipment extends EquipmentProperties {
 		$query.=" WHERE equipment_id=".$equipmentData['equipment_id'];
 
 		$this->db->query($query);
-		//	DEPRECATED
-		//	Expire date or Daily limit was changed. We should recalculte all mix limits
-		//	It can take some minutes. Please wait...
-//		ini_set("max_execution_time","180");
-//		if ($recalculteMixLimits) {
-//			$query = "SELECT mix_id FROM ".TB_USAGE." WHERE equipment_id = ".$equipmentData["equipment_id"];
-//			$this->db->query($query);
-//
-//			$data = $this->db->fetch_all();
-//			$mix = new Mix($this->db);
-//			foreach($data as $mixData) {
-//				$mix->calculateAndSaveMixLimits($mixData->mix_id);
-//			}
-//		}
+
 
 	}
 
@@ -370,10 +339,7 @@ class Equipment extends EquipmentProperties {
 		    );
 		    $usages[]=$usage;
 		}
-		/*for ($i=0; $i < count($usageList); $i++) {
-		    $data=$usageList[$i];
 
-		}*/
 
 		return $usages;
 	}
@@ -464,28 +430,23 @@ class Equipment extends EquipmentProperties {
 
 	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 
-		//var_Dump($beginDate);
-		//var_Dump($endDate);
-
 		$beginstamp = $beginDate->getTimestamp();
 		$endstamp = $endDate->getTimestamp();
 
-
-		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
 		$categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
 		switch ($category) {
 			case "company":
 				$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-				$categoryDependedSql = "eq.department_id = d.department_id 
-										AND d.facility_id = f.facility_id 
+				$categoryDependedSql = "eq.department_id = d.department_id
+										AND d.facility_id = f.facility_id
 										AND f.company_id = {$categoryID} ";
 				break;
 			case "facility":
 				$tables .= ", ".TB_DEPARTMENT." d ";
 				$categoryDependedSql = "eq.department_id = d.department_id AND d.facility_id = {$categoryID} ";
 				break;
-			case "department":				
+			case "department":
 				$categoryDependedSql = "eq.department_id = {$categoryID} ";
 				break;
 			default :
@@ -500,7 +461,7 @@ class Equipment extends EquipmentProperties {
 					"AND m.creation_time BETWEEN '".$beginstamp."' AND '".$endstamp."' " .
 				" GROUP BY m.equipment_id, m.creation_time " .
 				" ORDER BY m.equipment_id ";
-				
+
 		$this->db->query($query);
 		$dailyEmissionsData = $this->db->fetch_all();
 		$result = array();
@@ -515,14 +476,8 @@ class Equipment extends EquipmentProperties {
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
 
-		//get all equipments list
-		//	TODO: rewrite for diff categories
-                
-		/*$query = "SELECT eq.equip_desc FROM ".TB_EQUIPMENT." eq".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
-				" WHERE ".(($category == 'facility')?
-							"eq.department_id = d.department_id AND d.facility_id = '$categoryID' " :
-							"eq.department_id = '$categoryID' ");*/
-                $query = "SELECT eq.equip_desc".
+
+		$query = "SELECT eq.equip_desc".
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} ";
 		$this->db->query($query);
@@ -535,8 +490,6 @@ class Equipment extends EquipmentProperties {
 
 
 		foreach ($dailyEmissionsData as $data) {
-			//$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
-
 
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
 			//$result[$data->equip_desc][$key] = array(strtotime($data->creation_time)*1000, $data->voc);
@@ -546,7 +499,7 @@ class Equipment extends EquipmentProperties {
 
 		return $result;
 	}
-	
+
 
 	//	check difference between $expireTimestamp and DB value
 	private function isExpireDateChanged($equipmentID, $expireTimestamp) {
@@ -589,43 +542,6 @@ class Equipment extends EquipmentProperties {
 
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_EQUIPMENT, $equipmentID, $CRUD, $this->parentTrashRecord);
-
-		//	DEPRECATED July 16, 2010
-
-//		$equipmentID=mysql_escape_string($equipmentID);
-//
-//		if (isset($this->trashRecord)) {
-//			$query = "SELECT * FROM ".TB_EQUIPMENT." WHERE equipment_id = ".$equipmentID."";//LAST_INSERT_ID()";
-//			$this->db->query($query);
-//			$dataRows = $this->db->fetch_all();
-//
-//			foreach ($dataRows as $dataRow) {
-//				$parentID = (isset($this->parentTrashRecord)) ? $this->parentTrashRecord->getID() : null;
-//
-//				$equipmentRecords = TrackingSystem::properties2array($dataRow);
-//				$this->trashRecord->setTable(TB_EQUIPMENT);
-//				$this->trashRecord->setData(json_encode($equipmentRecords[0]));
-//				$this->trashRecord->setUserID($_SESSION['user_id']);
-//				$this->trashRecord->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//				$this->trashRecord->setDate(time());	//	current time
-//				$this->trashRecord->setReferrer($parentID);
-//				$this->trashRecord->save();
-//			}
-//
-//			if ($CRUD != 'D') {
-//				//	load and save dependencies
-//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {
-//					foreach ($dependencies as $dependency) {
-//						$parentID = ($dependency->getParentObj() !== null) ? $dependency->getParentObj()->getID() : null;
-//						$dependency->setUserID($_SESSION['user_id']);
-//						$dependency->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//						$dependency->setDate(time());	//	current time
-//						$dependency->setReferrer($parentID);
-//						$dependency->save();
-//					}
-//				}
-//			}
-//		}
 	}
 
 }

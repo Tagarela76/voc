@@ -71,27 +71,27 @@ class Department extends DepartmentProperties {
 		$this->save2trash('C', $department_id);
 		return $department_id;
 	}
-	
+
 	public function getDailyEmissionsByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID){
-		
+
 		$beginstamp = $beginDate->getTimestamp();
 		$endstamp = $endDate->getTimestamp();
-		
+
 		$categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_EQUIPMENT." eq ";
 		if ($category == "company") {
 			$tables .= ", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
 			if ((!$_SESSION['DED']) || ($_SESSION['DED'] == 'all')) {
-				$categoryDependedSql = "eq.department_id = d.department_id	
-										AND d.facility_id = f.facility_id 
+				$categoryDependedSql = "eq.department_id = d.department_id
+										AND d.facility_id = f.facility_id
 										AND f.company_id = {$categoryID} ";
 			} else {
-				$categoryDependedSql = "eq.department_id = d.department_id". 
-										" AND d.facility_id = ".mysql_escape_string($_SESSION['DED']). 
+				$categoryDependedSql = "eq.department_id = d.department_id".
+										" AND d.facility_id = ".mysql_escape_string($_SESSION['DED']).
 										" AND f.company_id = {$categoryID} ";
-			}							
+			}
 		}
-		
+
 		$query = "SELECT sum(m.voc) as voc, d.name, m.creation_time " .
 				" FROM {$tables} " .
 				" WHERE {$categoryDependedSql} " .
@@ -113,7 +113,7 @@ class Department extends DepartmentProperties {
 			$emptyData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
-		
+
 		if ((!$_POST['facilityList']) || ($_POST['facilityList'] == 'all')) {
 		$query = "SELECT d.name ".
 				" FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f ".
@@ -125,38 +125,38 @@ class Department extends DepartmentProperties {
 				" WHERE d.facility_id = ".mysql_escape_string($_POST['facilityList']).
 				" GROUP BY d.name";
 		}
-		
+
 		$this->db->query($query);
-		$departmentList = $this->db->fetch_all();	
-		
+		$departmentList = $this->db->fetch_all();
+
 		foreach($departmentList as $data) {
 			$result[$data->name] = $emptyData;
 		}
-		
+
 		foreach ($dailyEmissionsData as $data) {
 			$key = round(($data->creation_time - $beginDate->getTimestamp())/$day, 2); //$key == day from the begin date
 			$result[$data->name][$key][1] += $data->voc;
 		}
 
 		return $result;
-				
+
 	}
-	
-	
+
+
 	public function getProductUsageByDaysByDepartments(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
-            
+
         $categoryDependedSql = "";
 		$tables = TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg ";
 
 			//if ((!$_POST['departmentListPU']) || ($_POST['departmentListPU'] == 'all')) {
 			if ((!$_SESSION['PUD']) || ($_SESSION['PUD'] == 'all')) {
 				$tables .=", ".TB_DEPARTMENT." d, ".TB_FACILITY." f ";
-				$categoryDependedSql = " m.department_id = d.department_id ". 
-                                        " AND d.facility_id = f.facility_id ". 
+				$categoryDependedSql = " m.department_id = d.department_id ".
+                                        " AND d.facility_id = f.facility_id ".
                                         " AND f.company_id = {$categoryID}  ";
 			} else {
 				$categoryDependedSql = " m.department_id = ".mysql_escape_string($_SESSION['PUD']);
-			}							
+			}
 
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM {$tables} " .
@@ -166,7 +166,7 @@ class Department extends DepartmentProperties {
 					" AND m.creation_time BETWEEN '".$beginDate->getTimestamp()."' AND '".$endDate->getTimestamp()."'".
 				" GROUP BY mg.product_id, m.creation_time " .
 				" ORDER BY p.product_id ";
-		
+
 		//"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
 
 		$this->db->query($query);
@@ -190,7 +190,7 @@ class Department extends DepartmentProperties {
 				$productList []= $data->product_nr;
 			}
 		}
-		
+
 
 		if (count($productList) == 0) {
 			$productList []= 'products not used!';
@@ -212,8 +212,8 @@ class Department extends DepartmentProperties {
 
 		return $result;
 	}
-	
-	
+
+
 	function getDepartmentDetails($department_id) {
 
 		$department_id=mysql_real_escape_string($department_id);
@@ -223,14 +223,7 @@ class Department extends DepartmentProperties {
 		$this->db->query("SELECT * FROM ".TB_DEPARTMENT." WHERE department_id='".$department_id."' ORDER BY name");
 
 		$departmentDetails=$this->db->fetch_array(0);
-		/*$departmentDetails=array (
-			'facility_id'		=>	$data->facility_id,
-			'department_id'		=>	$data->department_id,
-			'name'				=>	$data->name,
-			'creater_id'		=>	$data->creater_id,
-			'voc_limit'			=>	$data->voc_limit,
-			'voc_annual_limit'	=>	$data->voc_annual_limit
-		);*/
+
 		return $departmentDetails;
 	}
 
@@ -262,20 +255,6 @@ class Department extends DepartmentProperties {
 
 		$this->db->query($query);
 
-		//DEPRECATED
-		//	VOC limit was changed. We should recalculte all mix limits
-		//	It can take some minutes. Please wait...
-//		ini_set("max_execution_time","180");
-//		if ($recalculteMixLimits) {
-//			$query = "SELECT mix_id FROM ".TB_USAGE." WHERE department_id = ".$departmentData["department_id"];
-//			$this->db->query($query);
-//
-//			$mixesData = $this->db->fetch_all();
-//			$mix = new Mix($this->db);
-//			foreach($mixesData as $mixData) {
-//				$mix->calculateAndSaveMixLimits($mixData->mix_id);
-//			}
-//		}
 	}
 
 	function getDepartmentListByFacility($facility_id, Pagination $pagination = null, $filter='TRUE',$sort="ORDER BY name") {
@@ -326,9 +305,6 @@ class Department extends DepartmentProperties {
 				$equipment->deleteEquipment($equipmentToDelete[$i]->equipment_id);
 			}
 		}
-
-		//	remove use_location at material inventory
-		//$this->db->query("DELETE FROM use_location2material WHERE department_id = ".$departmentID."");
 
 		$this->db->query("DELETE FROM ".TB_DEPARTMENT." WHERE department_id = ".$departmentID);
 	}
@@ -411,7 +387,7 @@ class Department extends DepartmentProperties {
 
 	/**
 	 *
-	 * @return Facility 
+	 * @return Facility
 	 */
 	public function getFacility() {
 		$facility = new Facility($this->db);
@@ -613,47 +589,7 @@ class Department extends DepartmentProperties {
 				$solidSumm += $info['quantity'] * (1 - $info['vocwx']/$info['density']);
 			}
 		}
-			//----------------------
 
-//		$query = "SELECT mix_id FROM ".TB_USAGE." WHERE department_id = '".$departmentID."' ".
-//			"AND creation_time BETWEEN DATE_FORMAT('" . date("Y-m-d", strtotime($dateBegin)). "','%Y-%m-%d') " .
-//			"AND DATE_FORMAT('" . date("Y-m-d", strtotime($dateEnd)). "','%Y-%m-%d') " ." ";
-//		$this->db->query($query);
-//		$mixIds = $this->db->fetch_all();
-//		$solidSumm = 0;
-//		$productError = array();
-//		$productInfo = array();
-//		foreach($mixIds as $mixId) {
-//			$query = "SELECT product_id, quantity_lbs FROM ".TB_MIXGROUP." WHERE mix_id = '".$mixId->mix_id."' ";
-//			$this->db->query($query);
-//			$data = $this->db->fetch_all();
-//			foreach ($data as $productData) {
-//				if ($productData->quantity_lbs === null) {
-//					$productError []= $productData->product_id;
-//				} else {
-//					if (!isset($productInfo[$productData->product_id])) {
-//						$query = "SELECT vocwx, density, percent_volatile_weight FROM ".TB_PRODUCT." WHERE product_id = '$productData->product_id' LIMIT 0,1 ";
-//						$this->db->query($query);
-//						$pData = $this->db->fetch(0);
-//						$productInfo[$productData->product_id] = array(
-//							'vocwx' => (empty($pData->vocwx) || $pData->vocwx == '0.00')?'false':$pData->vocwx,
-//							'density' => (empty($pData->density) || $pData->density == '0.00')?'false':$pData->density,
-//							'percent' => (empty($pData->percent_volatile_weight) || $pData->percent_volatile_weight == '0.00')?'false':$pData->percent_volatile_weight
-//						);
-//					}
-//					if ($productInfo[$productData->product_id]['percent'] != 'false') {
-//						$forSumm = $productData->quantity_lbs * (1 - $productInfo[$productData->product_id]['percent']/100);
-//					} elseif($productInfo[$productData->product_id]['vocwx'] != 'false' && $productInfo[$productData->product_id]['density'] != 'false') {
-//						$forSumm = $productData->quantity_lbs * (1 - $productInfo[$productData->product_id]['vocwx']/$productInfo[$productData->product_id]['density']);
-//					} else {
-//						$productError []= $productData->product_id;
-//						$forSumm = 0;
-//					}
-//
-//					$solidSumm += $forSumm;
-//				}
-//			}
-//		}
 		$errorArr = array();
 		foreach ($productError as $error) {
 			if(!in_array($error,$errorArr)) {
@@ -706,7 +642,6 @@ class Department extends DepartmentProperties {
 					''.$input['departmentID'].', ' .
 					''.$input['facilityID'].')';
 
-			//echo "<br/>add Usage stats $query";
 			$this->db->exec($query);
 			return $value;
 
@@ -717,7 +652,7 @@ class Department extends DepartmentProperties {
 					 'value = '.$newValue.' ' .
 					 'WHERE mm = '.$input['mm'].' AND yyyy = '.$input['yyyy'].' AND department_id = '.$input['departmentID'].'';
 			$this->db->exec($query);
-			//echo "<br/>add new Usage stats $query";
+
 			return $newValue;
 		}
 	}
@@ -728,7 +663,7 @@ class Department extends DepartmentProperties {
 		$currentValue = $this->_isUsageStatExist($mm, $yyyy, $departmentID);
 
 		if (false === $currentValue) {
-			//	decrement unexisted usage. wtf?
+			//	decrement unexisted usage is wrong
 			throw new Exception('Something wrong. I cannot reduce usage for Department ID '.$departmentID.' ( period: '.$yyyy.'-'.$mm.') ');
 
 		} else {
@@ -736,7 +671,7 @@ class Department extends DepartmentProperties {
 			$newValue = $currentValue - $value;
 
 			if ($newValue < 0) {
-				//	new usage is less 0. wtf?
+				//	new usage is less 0.
 				throw new Exception('Something wrong. New usage is less than 0. I cannot reduce usage for Department ID '.$departmentID.' ( period: '.$yyyy.'-'.$mm.') ');
 			}
 
@@ -771,8 +706,7 @@ class Department extends DepartmentProperties {
 			$departmentID = $this->departmentID;
 			$facilityID = $this->getFacilityID();
 		} else {
-			//	если вызвали через жопу, тогда +1 лишний вызов getDepartmentDetails()
-			//	а что делать..
+
 			$departmentDetails = $this->getDepartmentDetails($departmentID);
 			$facilityID = $departmentDetails['facility_id'];
 		}
@@ -824,45 +758,6 @@ class Department extends DepartmentProperties {
 
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_DEPARTMENT, $departmentID, $CRUD, $this->parentTrashRecord);
-
-
-		//	DEPRECATED July 16, 2010
-
-
-//		$departmentID=mysql_real_escape_string($departmentID);
-//
-//		if (isset($this->trashRecord)) {
-//			$query = "SELECT * FROM ".TB_DEPARTMENT." WHERE department_id = ".$departmentID;
-//			$this->db->query($query);
-//			$dataRows = $this->db->fetch_all();
-//
-//			foreach ($dataRows as $dataRow) {
-//				$parentID = (isset($this->parentTrashRecord)) ? $this->parentTrashRecord->getID() : null;
-//
-//				$departmentRecords = TrackingSystem::properties2array($dataRow);
-//				$this->trashRecord->setTable(TB_DEPARTMENT);
-//				$this->trashRecord->setData(json_encode($departmentRecords[0]));
-//				$this->trashRecord->setUserID($_SESSION['user_id']);
-//				$this->trashRecord->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//				$this->trashRecord->setDate(time());	//	current time
-//				$this->trashRecord->setReferrer($parentID);
-//				$this->trashRecord->save();
-//
-//			}
-//			//	load and save dependencies
-//			if ($CRUD != 'D') {
-//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {
-//					foreach ($dependencies as $dependency) {
-//						$parentID = ($dependency->getParentObj() !== null) ? $dependency->getParentObj()->getID() : null;
-//						$dependency->setUserID($_SESSION['user_id']);
-//						$dependency->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//						$dependency->setDate(time());	//	current time
-//						$dependency->setReferrer($parentID);
-//						$dependency->save();
-//					}
-//				}
-//			}
-//		}
 
 	}
 }
