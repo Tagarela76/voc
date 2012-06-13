@@ -3473,6 +3473,13 @@ td.pcenter input, select {
     border: 1px solid gray;
 }
 
+.nox_indicator {
+    height: 16px;
+    background: url(images/nox_indicator.gif) repeat-x;
+    background-position: 0 0;
+    border: 1px solid gray;
+}
+
 
 .widhtrelac {
     position: relative;
@@ -3492,6 +3499,11 @@ td.pcenter input, select {
 
 .colors {
     background: url(images/gray_color.gif) repeat-x;
+    background-position: 0 -16px;
+    height: 16px
+}
+.nox_indicator_colors {
+    background: url(images/nox_indicator.gif) repeat-x;
     background-position: 0 -16px;
     height: 16px
 }

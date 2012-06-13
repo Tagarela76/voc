@@ -46,6 +46,16 @@
                 </div>
             </td>
         </tr>
+		<tr>			
+			<td class="border_users_l border_users_b" height="20">
+				NOX monthly limit:
+			</td>
+			<td class="border_users_l border_users_b border_users_r">
+				<div align="left">
+                    &nbsp;{$facility.monthly_nox_limit}
+                </div>							
+			</td>
+		</tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
                 Facility name:

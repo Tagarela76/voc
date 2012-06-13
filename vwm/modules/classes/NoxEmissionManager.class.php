@@ -275,5 +275,47 @@ class NoxEmissionManager {
 			return false;
 		}
 	}
+	
+	public function getTotalSumNoxByDepartment($departmentID) {
+
+		$query = "SELECT SUM(nox) nox_sum FROM nox WHERE department_id = {$departmentID} ";
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['nox_sum'];
+	}
+	
+	
+	/**
+	 *
+	 * @param int $departmentID
+	 * @param string $month
+	 * @param string $year
+	 * @return string 
+	 */
+	public function getCurrentUsageOptimizedByDepartment($id, $category, $month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
+
+		$month=mysql_real_escape_string($month);
+		$year=mysql_real_escape_string($year);
+		if ($category == 'department') {
+			$query = "SELECT sum( n.nox ) total_usage 
+				FROM ".TB_DEPARTMENT." d, nox n " .
+				"WHERE n.department_id = d.department_id " .
+				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$month." " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$year." " .
+				"AND d.department_id = ".$id;
+		} else {
+			$query = "SELECT sum( n.nox ) total_usage 
+				FROM ".TB_DEPARTMENT." d, nox n " .
+				"WHERE n.department_id = d.department_id " .
+				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$month." " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$year." " .
+				"AND d.facility_id = ".$id;
+		} 
+		
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['total_usage'];
+
+	}
 
 }

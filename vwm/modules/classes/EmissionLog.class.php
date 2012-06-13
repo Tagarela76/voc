@@ -119,5 +119,87 @@ class EmissionLog {
 		);
 		return $result;
     }
+	function getNoxEmissionLog($year, $categoryID, $category) {
+    	
+    	$beginDate = DateTime::createFromFormat("Y-m-d H:i", "$year-01-01 00:00");
+   	
+    	$endDateTmp = DateTime::createFromFormat("Y-m-d H:i", "$year-12-01 23:59");
+    	$lastDayInMonth = $endDateTmp->format("t");    	
+    	$endDate = DateTime::createFromFormat("Y-m-d H:i", "$year-12-$lastDayInMonth 23:59");	
+    	$beginStamp = $beginDate->getTimestamp();
+    	$endStamp = $endDate->getTimestamp();
+
+		// facility or department
+		
+		switch ($category) {
+    		case 'department':
+				$query = "SELECT  f.`monthly_nox_limit` ,  f.`facility_id` FROM  `".TB_FACILITY."` f, `".TB_DEPARTMENT."` d " .
+								"WHERE  f.`facility_id` = d.`facility_id` AND d.`department_id` = '$categoryID' LIMIT 1";
+				$this->db->query($query);
+				$limit = $this->db->fetch(0);
+				$fac_limit = array('monthly' => $limit->monthly_nox_limit, 'facility_id' => $limit->facility_id);
+				
+    			$query = "SELECT sum( n.nox ) AS nox, MONTH( FROM_UNIXTIME(n.start_time) ) AS month 
+					FROM ".TB_DEPARTMENT." d, nox n" .
+					" WHERE YEAR( FROM_UNIXTIME(n.start_time) ) = '$year'
+					AND n.department_id = d.department_id " .
+					"AND d.department_id = ".$categoryID .
+					" GROUP BY (concat(n.`department_id`,MONTH( FROM_UNIXTIME(n.start_time)))) ORDER BY MONTH( FROM_UNIXTIME(n.start_time) )";
+				$this->db->query($query);
+		    	break;
+		    case 'facility':
+				$query = "SELECT  f.`monthly_nox_limit` ,  f.`facility_id` FROM  `".TB_FACILITY."` f " .
+								"WHERE  f.`facility_id` = '$categoryID' LIMIT 1";
+				$this->db->query($query);
+				$limit = $this->db->fetch(0);
+				$fac_limit = array('monthly' => $limit->monthly_nox_limit, 'facility_id' => $limit->facility_id);
+		
+		    	$query = "SELECT sum( n.nox ) AS nox, MONTH( FROM_UNIXTIME(n.start_time) ) AS month 
+					FROM ".TB_DEPARTMENT." d, nox n" .
+					" WHERE YEAR( FROM_UNIXTIME(n.start_time) ) = '$year'
+					AND n.department_id = d.department_id " .
+					"AND d.facility_id = ".$categoryID .
+					" GROUP BY (concat(n.`department_id`,MONTH( FROM_UNIXTIME(n.start_time)))) ORDER BY MONTH( FROM_UNIXTIME(n.start_time) )";
+				$this->db->query($query);
+		    	break;
+		    default:
+		    	return false;
+    	}
+
+    	if ($this->db->num_rows() > 0) {
+	    	$data = $this->db->fetch_all();
+	    	$tmpResult = array();
+	    	$annualNoxFac = 0;
+	    	foreach($data as $record) {
+	    		$tmpResult [$record->month] += $record->nox;
+	    		$tmpResultFac [$record->month] +=$record->nox;
+	    		$annualNoxFac += $record->nox;
+	    	}
+	    }
+	
+    	$result = array();
+		$annualNox = 0;
+    	$monthes = array('January','February','March','April','May','June','July','August','September','October','November','December');
+	
+    	for ($i = 1; $i <= 12; $i++) {
+    		$resultByMonth = array('month' => $monthes[$i-1]);
+    		if (isset($tmpResult[$i])) {
+    			$resultByMonth['nox'] = $tmpResult[$i];
+    			$annualNox += $tmpResult[$i];
+    		} else {
+    			$resultByMonth['nox'] = 0;
+    		}
+    		$resultByMonth['facLimit'] = (isset($fac_limit['monthly']) && $tmpResultFac[$i] > $fac_limit['monthly'])?true:false;
+    		$result []= $resultByMonth;
+    	}
+
+	    $result['total'] = array(
+			'nox' => $annualNox,
+			'facLimit' => (isset($fac_limit['monthly']) && $annualNox > $fac_limit['monthly'])?true:false
+		);
+	
+		return $result;
+    }
+	
 }
 ?>

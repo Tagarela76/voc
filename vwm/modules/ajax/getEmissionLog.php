@@ -31,9 +31,15 @@ if(isset($form['year']))
 	$xnyo->filter_post_var('year', 'int');
 	$xnyo->filter_post_var('category', 'text');
 	$xnyo->filter_post_var('category_id', 'int');
-	
-	$emissionLog = new EmissionLog ($db);
-	$log = $emissionLog->getEmissionLog($form['year'],$form['category'],$form['category_id']);
+	$xnyo->filter_post_var('action', 'int');
+	$emissionLog = new EmissionLog ($db); 
+	if (isset($form['action']) && $form['action'] == 'getNoxLog') {
+		// get nox log
+		$log = $emissionLog->getNoxEmissionLog($form['year'], $form['category_id'], $form['category']);
+	} else {
+		$log = $emissionLog->getEmissionLog($form['year'],$form['category'],$form['category_id']);
+	}
+
 	echo json_encode($log);			
 	
 }

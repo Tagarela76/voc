@@ -29,11 +29,13 @@ class Controller {
 	private $blocksToInsert = array(
 		self::INSERT_AFTER_SEARCH => array(),
 		self::INSERT_AFTER_VOC_GAUGE => array(),
+		self::INSERT_NOX_LOG => array(),
 	);
 
 
 	const INSERT_AFTER_SEARCH = 0;
 	const INSERT_AFTER_VOC_GAUGE = 1;
+	const INSERT_NOX_LOG = 2;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;
@@ -1468,6 +1470,18 @@ class Controller {
 		}
 
 	}
+	
+	 //	nox indicator
+    protected function setNoxIndicator($noxLimit, $totalUsage) {
+        $this->smarty->assign('noxLimit', $noxLimit);
+	//	$this->smarty->assign('noxLog', 'true');
+        $this->smarty->assign('currenNoxtUsage', round($totalUsage, 2));
+        $pxNoxCount = round(200 * $totalUsage / $noxLimit);
+        if ($pxNoxCount > 200) {
+            $pxNoxCount = 200;
+        }
+        $this->smarty->assign('pxNoxCount', $pxNoxCount); //	200px - indicator length
+    }
 
 }
 

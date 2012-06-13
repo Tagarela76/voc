@@ -71,7 +71,17 @@
 							    {*/ERROR*}								
 				</td>
 			</tr>
-						
+			<tr>			
+				<td class="border_users_l border_users_b us_gray" height="20">
+					NOX monthly limit:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div class="floatleft">	<input type='text' name='monthly_nox_limit' {if $data.monthly_nox_limit != ''} value='{$data.monthly_nox_limit}' {else} value='30' {/if}></div>														
+			     				{*ERROR*}					
+								  <div id="error_monthly_nox_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
+							    {*/ERROR*}								
+				</td>
+			</tr>			
 			<tr>
 	            <td class="border_users_l border_users_b us_gray" height="20">
 					Facility name:

@@ -12,6 +12,7 @@ class FacilityProperties {
 	protected $annualUsage = array();
 
 	protected $vocLimit;
+	protected $monthlyNoxLimit;
 	protected $vocAnnualLimit;
 	protected $companyID;
 
@@ -20,6 +21,10 @@ class FacilityProperties {
 
     public function getMonthlyLimit() {
     	return $this->vocLimit;
+    }
+	
+	public function getMonthlyNoxLimit() {
+    	return $this->monthlyNoxLimit;
     }
 
     public function getCompanyID() {

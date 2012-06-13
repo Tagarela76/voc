@@ -160,7 +160,9 @@
 									{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
 								</div>
 							{/if}
-
+							<div style="clear: both;"> </div>
+							{if $request.category == 'department' || $request.category == 'facility'}
+							<div class="button_float_right">
 							{*INSERT_AFTER_VOC_GAUGE*}
 							{*Stupid Smarty does not support class constants*}
 							{*blocksToInsert.1 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
@@ -170,7 +172,9 @@
 									{/foreach}
 								{/if}
 							{*/INSERT_AFTER_VOC_GAUGE*}
-
+							</div>
+							{/if}
+							
 							{if $request.bookmark != 'emissionGraphs'}
 								<input type="hidden" name="category" value="{$childCategory}">
 								{if $request.category != 'root'}
@@ -186,9 +190,9 @@
 								<input type="hidden" name="id" value="{$request.id}" />
 								<input type="hidden" name="bookmark" value="{$request.bookmark}" />
 							{/if}
-
+							
 						</div>
-
+							
 					</div>
 
 

@@ -96,8 +96,16 @@ class CNox extends Controller {
 		$this->setListCategoriesLeftNew($parentCategory, $parentCategoryID, array('bookmark' => 'nox'));
 		$this->setPermissionsNew('viewData');
 
-		$this->smarty->assign('editUrl',
+	/*	$this->smarty->assign('editUrl',
 				'?action=edit&category='.$this->getFromRequest('tab')
+				.'&id='.$this->getFromRequest("id")
+				.'&'.urlencode($parentCategory).'ID='.urlencode($parentCategoryID)
+				."&tab=".  urlencode($this->getFromRequest('tab')));*/
+		/*
+		 * 404 error because controller byrner doesn't exist
+		 * so change part of edit url and set nox category instead burner
+		 */
+		$this->smarty->assign('editUrl', '?action=edit&category='.$this->category
 				.'&id='.$this->getFromRequest("id")
 				.'&'.urlencode($parentCategory).'ID='.urlencode($parentCategoryID)
 				."&tab=".  urlencode($this->getFromRequest('tab')));
@@ -373,7 +381,7 @@ class CNox extends Controller {
 				  $accessoryList = $accessory->searchAccessory($accessoryToFind);
 				  $this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 				 */
-			} else {
+			} else { 
 				switch ($this->getFromRequest('category')) {
 					case 'facility':
 						$noxList = $noxManager->getNoxListByFacility(
@@ -383,7 +391,7 @@ class CNox extends Controller {
 					case 'department':
 						$noxList = $noxManager->getNoxListByDepartment(
 								$departmentDetails['department_id'],
-								$sortStr);
+								$sortStr); 
 						break;
 					default:
 						throw new Exception('404');
@@ -432,8 +440,23 @@ class CNox extends Controller {
 						$noxList[$i]['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['start_time']);
 						$noxList[$i]['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['end_time']);
 					}
-				}
 
+					//	nox indicator
+					// choice category facility or department
+					if (isset($departmentDetails)) {
+						$category = "department";
+						$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($departmentDetails['department_id'], $category);
+					} else {
+						$category = "facility";
+						$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($facilityDetails['facility_id'], $category);
+					}
+					$this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);
+					// insert nox indicator bar into tpl
+					$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
+					// insert nox log into tpl
+					$this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG);
+				}
+				
 				$this->smarty->assign("childCategoryItems", $noxList);
 
 				//	set js scripts

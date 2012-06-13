@@ -809,6 +809,15 @@ class Validation {
 		return false;
 	}
 	
+	function check_monthly_nox_limit ($monthly_nox_limit) {
+		$monthly_nox_limit=trim($monthly_nox_limit);
+		$parametrs=array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
+		if ($this->noYes[Validate::number($monthly_nox_limit, $parametrs)] == 'YES') {
+			return true;
+		} 
+		return false;
+	}
+	
 	function check_specific_gravity ($voc_limit) {
 		$voc_limit=trim($voc_limit);
 		$parametrs=array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
@@ -1060,6 +1069,15 @@ class Validation {
 				$result['voc_limit']='success';
 			} else {
 				$result['voc_limit']='failed';
+				$result['summary']='false';
+			}
+		}
+		
+		if (isset($data['monthly_nox_limit'])) {
+			if ($this->check_monthly_nox_limit($data['monthly_nox_limit'])) {
+				$result['monthly_nox_limit']='success';
+			} else {
+				$result['monthly_nox_limit']='failed';
 				$result['summary']='false';
 			}
 		}

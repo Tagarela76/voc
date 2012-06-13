@@ -32,36 +32,37 @@ class Facility extends FacilityProperties {
 	function addNewFacility($facilityData) {
 
 		//screening of quotation marks
-		foreach ($facilityData as $key=>$value)
+	/*	foreach ($facilityData as $key=>$value)
 		{
 			$facilityData[$key]=mysql_escape_string($value);
 		}
-
+*/
 		//	GCG Creation
 		$GCG = new GCG($this->db);
 		$gcgID = $GCG->create();
 
 		//$this->db->select_db(DB_NAME);
-		$query="INSERT INTO ".TB_FACILITY." (epa, company_id, name, address, city, zip, county, state, country, phone, fax, email, contact, title, creater_id, voc_limit, voc_annual_limit, gcg_id) VALUES (";
+		$query="INSERT INTO ".TB_FACILITY." (epa, company_id, name, address, city, zip, county, state, country, phone, fax, email, contact, title, creater_id, voc_limit, voc_annual_limit, gcg_id, monthly_nox_limit) VALUES (";
 
-		$query.="'".$facilityData['epa']."', ";
-		$query.=$facilityData['company_id'].", ";
-		$query.="'".$facilityData['name']."', ";
-		$query.="'".$facilityData['address']."', ";
-		$query.="'".$facilityData['city']."', ";
-		$query.="'".$facilityData['zip']."', ";
-		$query.="'".$facilityData['county']."', ";
-		$query.="'".$facilityData['state']."', ";
-		$query.=$facilityData['country'].", ";
-		$query.="'".$facilityData['phone']."', ";
-		$query.="'".$facilityData['fax']."', ";
-		$query.="'".$facilityData['email']."', ";
-		$query.="'".$facilityData['contact']."', ";
-		$query.="'".$facilityData['title']."', ";
-		$query.="'".$facilityData['creater_id']."', ";
-		$query.=$facilityData['voc_limit'].", ";
-		$query.=$facilityData['voc_annual_limit'].", ";
-		$query .= $gcgID.")";
+		$query.="'".mysql_escape_string($facilityData['epa'])."', ";
+		$query.=mysql_escape_string($facilityData['company_id']).", ";
+		$query.="'".mysql_escape_string($facilityData['name'])."', ";
+		$query.="'".mysql_escape_string($facilityData['address'])."', ";
+		$query.="'".mysql_escape_string($facilityData['city'])."', ";
+		$query.="'".mysql_escape_string($facilityData['zip'])."', ";
+		$query.="'".mysql_escape_string($facilityData['county'])."', ";
+		$query.="'".mysql_escape_string($facilityData['state'])."', ";
+		$query.=mysql_escape_string($facilityData['country']).", ";
+		$query.="'".mysql_escape_string($facilityData['phone'])."', ";
+		$query.="'".mysql_escape_string($facilityData['fax'])."', ";
+		$query.="'".mysql_escape_string($facilityData['email'])."', ";
+		$query.="'".mysql_escape_string($facilityData['contact'])."', ";
+		$query.="'".mysql_escape_string($facilityData['title'])."', ";
+		$query.="'".mysql_escape_string($facilityData['creater_id'])."', ";
+		$query.=mysql_escape_string($facilityData['voc_limit']).", ";
+		$query.=mysql_escape_string($facilityData['voc_annual_limit']).", ";
+		$query.=$gcgID.", ";
+		$query .= mysql_escape_string($facilityData['monthly_nox_limit']).")"; 
 		$this->db->query($query);
 
 
@@ -144,11 +145,11 @@ class Facility extends FacilityProperties {
 	function setFacilityDetails($facilityData) {
 
 		//screening of quotation marks
-		foreach ($facilityData as $key=>$value)
+/*		foreach ($facilityData as $key=>$value)
 		{
 			$facilityData[$key]=mysql_escape_string($value);
 		}
-
+*/
 		//	check voc limit change
 		$recalculteMixLimits = false;
 		if ($this->isVocLimitChanged($facilityData["facility_id"], $facilityData["voc_limit"], $facilityData["voc_annual_limit"])) {
@@ -160,21 +161,22 @@ class Facility extends FacilityProperties {
 
 		$query="UPDATE ".TB_FACILITY." SET ";
 
-		$query.="epa='".		$facilityData['epa']."', ";
-		$query.="voc_limit='".	$facilityData['voc_limit']."', ";
-		$query.="voc_annual_limit='".	$facilityData['voc_annual_limit']."', ";
-		$query.="name='".		$facilityData['name']."', ";
-		$query.="address='".	$facilityData['address']."', ";
-		$query.="city='".		$facilityData['city']."', ";
-		$query.="zip='".		$facilityData['zip']."', ";
-		$query.="county='".		$facilityData['county']."', ";
-		$query.="state='".		$facilityData['state']."', ";
-		$query.="country=".		$facilityData['country'].", ";
-		$query.="phone='".		$facilityData['phone']."', ";
-		$query.="fax='".		$facilityData['fax']."', ";
-		$query.="email='".		$facilityData['email']."', ";
-		$query.="contact='".		$facilityData['contact']."', ";
-		$query.="title='".		$facilityData['title']."' ";
+		$query.="epa='".		mysql_escape_string($facilityData['epa'])."', ";
+		$query.="voc_limit='".	mysql_escape_string($facilityData['voc_limit'])."', ";
+		$query.="voc_annual_limit='".	mysql_escape_string($facilityData['voc_annual_limit'])."', ";
+		$query.="name='".		mysql_escape_string($facilityData['name'])."', ";
+		$query.="address='".	mysql_escape_string($facilityData['address'])."', ";
+		$query.="city='".		mysql_escape_string($facilityData['city'])."', ";
+		$query.="zip='".		mysql_escape_string($facilityData['zip'])."', ";
+		$query.="county='".		mysql_escape_string($facilityData['county'])."', ";
+		$query.="state='".		mysql_escape_string($facilityData['state'])."', ";
+		$query.="country=".		mysql_escape_string($facilityData['country']).", ";
+		$query.="phone='".		mysql_escape_string($facilityData['phone'])."', ";
+		$query.="fax='".		mysql_escape_string($facilityData['fax'])."', ";
+		$query.="email='".		mysql_escape_string($facilityData['email'])."', ";
+		$query.="contact='".		mysql_escape_string($facilityData['contact'])."', ";
+		$query.="monthly_nox_limit='".		mysql_escape_string($facilityData['monthly_nox_limit'])."', ";
+		$query.="title='".		mysql_escape_string($facilityData['title'])."' ";
 
 		$query.="WHERE facility_id=".$facilityData["facility_id"];
 		$this->db->query($query);
@@ -281,7 +283,8 @@ class Facility extends FacilityProperties {
 			$this->vocLimit = $facilityData->voc_limit;
 			$this->vocAnnualLimit = $facilityData->voc_annual_limit;
 			$this->companyID = $facilityData->company_id;
-
+			$this->monthlyNoxLimit = $facilityData->monthly_nox_limit;
+			
 			$query = 'SELECT sum(value) total_usage, yyyy, mm FROM '.TB_USAGE_STATS.' WHERE facility_id = '.$facilityID. ' GROUP BY yyyy, mm';
 			$this->db->query($query);
 

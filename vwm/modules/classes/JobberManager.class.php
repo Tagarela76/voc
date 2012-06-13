@@ -142,7 +142,16 @@ class JobberManager {
 	}	
 	
 	public function updateJobberFacility($facilityID, $jobberArr) {
-
+		// clear jobber array
+		foreach ($jobberArr as $jobberPost) {
+			if ($jobberPost != '') {
+				$jobber[] =  $jobberPost;
+			}
+		}
+		if (!isset($jobber)) {
+			// empty jobber array
+			return true;
+		}
 		$query = "DELETE FROM facility2jobber WHERE facility_id = {$facilityID}";
 		$this->db->query($query);
 		

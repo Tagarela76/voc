@@ -51,7 +51,8 @@
 			$xnyo->filter_post_var("fax", "text");
 			$xnyo->filter_post_var("email", "text");
 			$xnyo->filter_post_var("contact", "text");
-			$xnyo->filter_post_var("title", "text");						
+			$xnyo->filter_post_var("title", "text");	
+			$xnyo->filter_post_var("monthly_nox_limit", "text");
 			//$xnyo->filter_post_var("jobber[]", "text");	
 			// protecting from xss
 			foreach ($_POST as $key=>$value)
@@ -76,7 +77,8 @@
 				"email"			=>	$_POST["email"],
 				"contact"		=>	$_POST["contact"],
 				"title"			=>	$_POST["title"],				
-				"creater_id"	=>	0
+				"creater_id"	=>	0,
+				"monthly_nox_limit"	=> $_POST["monthly_nox_limit"]
 			);
 			
 			$registration = new Registration($db);
@@ -104,13 +106,20 @@
 			if ($validateStatus["summary"] == "true") {
 				//	setter injection
 				$facility->setTrashRecord(new Trash($db));															
-				$facility->setFacilityDetails($regData);
-				if ($_POST["jobber"]){
-					$jobber = $_POST["jobber"];
+				$facility->setFacilityDetails($regData); 
+				// clear jobber array
+				foreach ($_POST["jobber"] as $jobberPost) {
+					if ($jobberPost != '') {
+						$jobber[] =  $jobberPost;
+					}
+				}
+				
+				if ($_POST["jobber"] && isset($jobber)){
+				//	$jobber = $_POST["jobber"];
 					$jobberManager = new JobberManager($db);
 					$jobberManager->updateJobberFacility($regData['facility_id'], $jobber);
 
-				}				
+				}		
 			}
 
 			
@@ -132,6 +141,7 @@
 			$xnyo->filter_post_var("zip", "text");
 			$xnyo->filter_post_var("county", "text");
 			$xnyo->filter_post_var("country", "text");
+			$xnyo->filter_post_var("monthly_nox_limit", "text");
 			
 			//	"Init state" dances
 			$registration = new Registration($db);
@@ -175,7 +185,8 @@
 				"contact"		=>	$_POST["contact"],
 				"title"			=>	$_POST["title"],
 				"jobber"			=>	$_POST["jobber"],
-				"creater_id"	=>	$_SESSION['user_id']
+				"creater_id"	=>	$_SESSION['user_id'],
+				"monthly_nox_limit"	=> $_POST["monthly_nox_limit"]
 			);
 			
 			
@@ -186,7 +197,7 @@
 				$validStatus['summary'] = 'false';
 				$validStatus['name'] = 'alredyExist';
 			}
-			
+	
 			if ($validStatus['summary'] == 'true') {
 				//	setter injection
 				$facility->setTrashRecord(new Trash($db));	

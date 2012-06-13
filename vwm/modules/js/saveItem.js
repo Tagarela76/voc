@@ -78,6 +78,7 @@ function saveFacilityDetails()
 {	
 	var epa=document.addFacility.epa.value;
 	var voc_limit=document.addFacility.voc_limit.value;
+	var monthly_nox_limit=document.addFacility.monthly_nox_limit.value;
 	var voc_annual_limit=document.addFacility.voc_annual_limit.value;
 	var fac_name=document.addFacility.name.value;
 	var address=document.addFacility.address.value;
@@ -111,7 +112,7 @@ function saveFacilityDetails()
       url: "modules/ajax/saveFacility.php",      		
       type: "POST",
       async: false,
-      data: { "epa":epa,"voc_limit":voc_limit,"voc_annual_limit":voc_annual_limit,"name":fac_name,"address":address,"city":city,
+      data: { "epa":epa,"voc_limit":voc_limit,"voc_annual_limit":voc_annual_limit, "monthly_nox_limit":monthly_nox_limit,"name":fac_name,"address":address,"city":city,
       		"county":county,"selectState":selectState,"textState":textState,"zip":zip,"country":country,"phone":phone,
       		"fax":fax,"email":email,"contact":contact,"title":title,"jobber[]":jobber,"action":action,"id":id},      			
       dataType: "html",
