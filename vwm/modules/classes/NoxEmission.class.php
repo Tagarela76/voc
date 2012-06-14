@@ -45,26 +45,26 @@ class NoxEmission {
 
 		if ($this->nox_id != NULL) {
 			$query = "UPDATE nox SET 
-								description = '" . mysql_escape_string($this->description) . "',
-								department_id = " . mysql_escape_string($this->department_id) . ",
-								start_time = " . mysql_escape_string($this->start_time) . ",
-								end_time = " . mysql_escape_string($this->end_time) . ",
-								burner_id = " . mysql_escape_string($this->burner_id) . ",
-								note = '" . mysql_escape_string($this->note) . "',									
-								gas_unit_used = '" . mysql_escape_string($this->gas_unit_used) . "',
-								nox = " . mysql_escape_string($this->nox) . "
+								description = '" . $this->db->sqltext($this->description) . "',
+								department_id = " . $this->db->sqltext($this->department_id) . ",
+								start_time = " . $this->db->sqltext($this->start_time) . ",
+								end_time = " . $this->db->sqltext($this->end_time) . ",
+								burner_id = " . $this->db->sqltext($this->burner_id) . ",
+								note = '" . $this->db->sqltext($this->note) . "',									
+								gas_unit_used = " . $this->db->sqltext($this->gas_unit_used) . ",
+								nox = " . $this->db->sqltext($this->nox) . "
 								WHERE nox_id = {$this->nox_id}";
 		} else {
 
 			$query = "INSERT INTO nox (department_id, description, gas_unit_used, start_time, end_time, burner_id, note, nox) VALUES ("
-					. mysql_escape_string($this->department_id) . ",'"
-					. mysql_escape_string($this->description) . "','"
-					. mysql_escape_string($this->gas_unit_used) . "',"
-					. mysql_escape_string($this->start_time) . ", "
-					. mysql_escape_string($this->end_time) . ", "
-					. mysql_escape_string($this->burner_id) . ",'"
-					. mysql_escape_string($this->note) . "',"
-					. mysql_escape_string($this->nox) . ")";
+					. $this->db->sqltext($this->department_id) . ",'"
+					. $this->db->sqltext($this->description) . "',"
+					. $this->db->sqltext($this->gas_unit_used) . ","
+					. $this->db->sqltext($this->start_time) . ", "
+					. $this->db->sqltext($this->end_time) . ", "
+					. $this->db->sqltext($this->burner_id) . ",'"
+					. $this->db->sqltext($this->note) . "',"
+					. $this->db->sqltext($this->nox) . ")";
 		}
 
 		$this->db->query($query);
