@@ -21,7 +21,7 @@ class CNox extends Controller {
 			$NOxDetails = $NOx->getNoxEmissionDetails($id);
 			$NOx->deleteNoxEmissionsByID($id);
 		}
-		
+
 		if ($this->successDeleteInventories) {
 			$departmentID = $this->getFromRequest("departmentID");
 			$facilityID = $this->getFromRequest("facilityID");
@@ -30,7 +30,7 @@ class CNox extends Controller {
 			} else if ($facilityID) {
 				header("Location: ?action=browseCategory&category=facility&id=".$facilityID."&bookmark=nox&tab=nox&notify=47");
 			}
-			
+
 		}
 	}
 
@@ -46,7 +46,7 @@ class CNox extends Controller {
 				$itemForDelete[] = $delete;
 			}
 		}
-		
+
 		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID')) && !$this->user->checkAccess('facility', $this->getFromRequest('facilityID'))) {
 			throw new Exception('deny');
 		}
@@ -65,9 +65,9 @@ class CNox extends Controller {
 			$this->setPermissionsNew('viewData');
 			$this->smarty->assign("action", "?action=confirmDelete&facilityID=".$facilityID);
 		}
-		
+
 		$this->smarty->assign("cancelUrl", $cancelUrl);
-		
+
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 	}
 
@@ -295,7 +295,7 @@ class CNox extends Controller {
 						$noxDetails['end_time'] = $endTime->getTimestamp();
 						$nox = new NoxEmission($this->db, $noxDetails);
 						$totalNox = $noxManager->calculateNox($nox);
-						
+
 						if ($totalNox) {
 							$nox->nox = $totalNox;
 						}
@@ -339,7 +339,7 @@ class CNox extends Controller {
 			throw new Exception('deny');
 		}
 
-		//set permissions							
+		//set permissions
 		$this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark' => 'accessory'));
 		$this->setNavigationUpNew('department', $request['departmentID']);
 		$this->setPermissionsNew('viewData');
@@ -381,7 +381,7 @@ class CNox extends Controller {
 				  $accessoryList = $accessory->searchAccessory($accessoryToFind);
 				  $this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 				 */
-			} else { 
+			} else {
 				switch ($this->getFromRequest('category')) {
 					case 'facility':
 						$noxList = $noxManager->getNoxListByFacility(
@@ -391,7 +391,7 @@ class CNox extends Controller {
 					case 'department':
 						$noxList = $noxManager->getNoxListByDepartment(
 								$departmentDetails['department_id'],
-								$sortStr); 
+								$sortStr);
 						break;
 					default:
 						throw new Exception('404');
@@ -456,7 +456,7 @@ class CNox extends Controller {
 					// insert nox log into tpl
 					$this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG);
 				}
-				
+
 				$this->smarty->assign("childCategoryItems", $noxList);
 
 				//	set js scripts
@@ -656,6 +656,7 @@ class CNox extends Controller {
 				$noxEmission->start_time = $startTime->getTimestamp();
 				$noxEmission->end_time = $endTime->getTimestamp();
 				$totalNox = $manager->calculateNox($noxEmission);
+				
 				if ($totalNox) {
 					$noxEmission->nox = $totalNox;
 				}

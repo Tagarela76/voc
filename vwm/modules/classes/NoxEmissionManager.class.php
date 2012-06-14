@@ -200,7 +200,7 @@ class NoxEmissionManager {
 		if (isset($pagination)) {
 			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-		
+
 		$this->db->query($query);
 		if ($this->db->num_rows() > 0) {
 
@@ -236,8 +236,9 @@ class NoxEmissionManager {
 		}
 
 		$bef = $burnerDetails['output'] / $burnerDetails['input'];
+		$noxEmission->gas_unit_used = (float)$noxEmission->gas_unit_used;
 
-		if (empty($noxEmission->gas_unit_used)) {
+		if ($noxEmission->gas_unit_used == 0) {
 			$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
 			return $nox;
 		}
@@ -275,7 +276,7 @@ class NoxEmissionManager {
 			return false;
 		}
 	}
-	
+
 	public function getTotalSumNoxByDepartment($departmentID) {
 
 		$query = "SELECT SUM(nox) nox_sum FROM nox WHERE department_id = {$departmentID} ";
@@ -283,35 +284,33 @@ class NoxEmissionManager {
 		$row = $this->db->fetch_array(0);
 		return $row['nox_sum'];
 	}
-	
-	
+
+
 	/**
-	 *
+	 * Get NOx usage for defined month (current month by default)
 	 * @param int $departmentID
 	 * @param string $month
 	 * @param string $year
-	 * @return string 
+	 * @return string
 	 */
 	public function getCurrentUsageOptimizedByDepartment($id, $category, $month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
 
-		$month=mysql_real_escape_string($month);
-		$year=mysql_real_escape_string($year);
 		if ($category == 'department') {
-			$query = "SELECT sum( n.nox ) total_usage 
+			$query = "SELECT sum( n.nox ) total_usage
 				FROM ".TB_DEPARTMENT." d, nox n " .
 				"WHERE n.department_id = d.department_id " .
-				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$month." " .
-				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$year." " .
+				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($month)." " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($year)." " .
 				"AND d.department_id = ".$id;
 		} else {
-			$query = "SELECT sum( n.nox ) total_usage 
+			$query = "SELECT sum( n.nox ) total_usage
 				FROM ".TB_DEPARTMENT." d, nox n " .
 				"WHERE n.department_id = d.department_id " .
-				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$month." " .
-				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$year." " .
+				"AND MONTH(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($month)." " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($year)." " .
 				"AND d.facility_id = ".$id;
-		} 
-		
+		}
+
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['total_usage'];
