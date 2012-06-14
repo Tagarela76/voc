@@ -52,7 +52,7 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv
-
+			
 			if ($validation->productsCorrect) {
 				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
 					if (!$this->isVolumeRatio($validation->productsCorrect[$j][0])) {
@@ -64,7 +64,7 @@ class CABulkUploader extends Controller {
 					$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);
 				}
 			}
-			
+
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
 			$errorCnt = count($validation->productsError);
@@ -110,7 +110,7 @@ class CABulkUploader extends Controller {
 			$validation->validateGOM($input);
 			//var_dump($validation->productsCorrect);die();
 			$bu = new bulkUploader4GOM($this->db, $input, $validation);
-			
+
 			$errorCnt = count($validation->productsError);
 			$correctCnt = count($validation->productsCorrect);
 			$total = $errorCnt + $correctCnt;

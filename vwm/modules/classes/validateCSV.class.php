@@ -88,9 +88,9 @@ class validateCSV {
 		$comments = "";
 		if ($data[2]) {
 			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
-			$r = $this->db->fetch(0);
+			
 			//product check exist
-			if (empty($r)) {
+			if ($this->db->num_rows() == 0) {
 				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 				//$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 			}
@@ -107,7 +107,7 @@ class validateCSV {
 		}
 		return $comments;
 	}
-	
+
 	public function validateGOM($input) {
 		$CSVPath = $input['inputFile'];
 		//last row
@@ -119,7 +119,7 @@ class validateCSV {
 		$file = fopen($CSVPath, "r");
 
 		$headerKey = $this->tableHeader4GOM($file); //identification columns by their header
-				
+
 		$error = "";
 		$this->errorComments = "--------------------------------\n";
 		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
@@ -135,7 +135,7 @@ class validateCSV {
 						$current_GOM_data[$headerKey[$key]] = $value;
 					}
 				}
-				
+
 				if (!empty($current_GOM_data['gom_code']) && !empty($current_GOM_data['description']) && ($cJobber->getJobberByName($current_GOM_data['jobber']) != 0)) {
 					if (empty($current_GOM_data['unit'])) {
 						$current_GOM_data['unit'] = 'EACH';
@@ -154,12 +154,12 @@ class validateCSV {
 					$this->productsError[] = $current_GOM_data;
 				}
 			}
-			
+
 			$current_row++;
 		}
 		fclose($file);
 	}
-	
+
 	private function isEmptyGOMRow($row) {
 		$count = 0;
 		foreach ($row as $item) {
@@ -167,7 +167,7 @@ class validateCSV {
 				$count++;
 			}
 		}
-		
+
 		return (count($row) == $count);
 	}
 
@@ -1269,8 +1269,8 @@ class validateCSV {
 
 		return $key;
 	}
-	
-	
+
+
 	private function tableHeader4GOM($file){
 		$headerRowData = array();
 		$data = fgetcsv($file, 1000, ";");
@@ -1283,7 +1283,7 @@ class validateCSV {
 				$headerRowData[$j] .= " ".mysql_real_escape_string(trim($data[$j]));
 			}
 		}
-		
+
 		//possible headers variations
 		$possibleLocation = array ('LOCATION:');
 		$possibleInv = array ('INV#');
@@ -1302,11 +1302,11 @@ class validateCSV {
 		$possibleUnitQuantity = array('UNIT QTY');
 		$possibleQuantity = array('QTY', 'QUANTITY');
 		$possibleSales = array('SALES$', 'PRICING');
-		
+
 		$columnIndex = array();
 
 		$is_index2name = true;
-		
+
 		for ($i=0;$i<count($headerRowData);$i++) {
 			$columnIndex[$i] = false;
 			if (!isset($key['location'])) {
