@@ -3,16 +3,15 @@ $(document).ready(function() {
 
 	$("tr[name='pfp_row']").click(function(e){
 
-		//$("#pfpdetails").after($(this));
 		$("tr[name='pfp_details']").css("display","none");
 		$("tr[name='pfp_row']").attr('class','');
 
 
 		$("table[name='pfp_details_products']").remove();
 		id = $(this).attr('id');
-		//alert("table row len: " + $("#"+id+"_details").length);
+
 		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
-			//alert("IE!!");
+
 			$("#"+id+"_details").css("display","block");
 		} else {
 			$("#"+id+"_details").css("display","table-row");
@@ -20,9 +19,6 @@ $(document).ready(function() {
 
 		$("#"+id+"_details .preloader").css("display","block");
 		loadPFPDetails(id);
-		//$(this).simpletip({ content: 'My Simpletip', fixed: false });
-		//alert(e.pageX + ":" + e.pageY);
-		//$("#pfpdetails").css("left",e.pageX).css("top",e.pageY);
 	});
 
 		if(noMWS == true) {
@@ -63,8 +59,6 @@ $(document).ready(function() {
 				$("#errorAddProduct").css("display","none");
 			}
 		});
-
-		/*AAAAAAAAAAAAAAAA*/
 });
 
 function loadPFPDetails(pfp_id) {
@@ -77,7 +71,6 @@ function loadPFPDetails(pfp_id) {
 		dataType: "html",
   		success: function (response)
   			{
-  				//alert("len:"+$("#"+id+"_details .preloader").length);
   				$("#"+id+"_details .preloader").css("display","none").after(response);
   				$("#"+id).attr('class','pfpListItemSelected');
   			}
@@ -100,7 +93,7 @@ function initNoMWS() {
 
 
 
-//RECYCLE
+	//RECYCLE
 	recycle.value = $("#recycleValue").val();
 	if($("#selectRecycleUnittype").attr('value')) {
 	recycle.unittype = $("#selectRecycleUnittype").attr('value');
@@ -110,7 +103,7 @@ function initNoMWS() {
 		recycle.value = $(this).val();
 		calculateVOC();
 	});
-calculateVOC();
+	calculateVOC();
 }
 
 function initRecycle() {
@@ -124,7 +117,7 @@ function initRecycle() {
 		validateRecycle();
 		calculateVOC();
 	});
-//calculateVOC();
+
 }
 
 	function IsNumeric(input)
@@ -174,7 +167,6 @@ function initRecycle() {
 			return result;
 		} else {
 
-			/*TODO доделать если модуль выключен*/
 			return true;
 		}
 	}
@@ -211,8 +203,6 @@ function initRecycle() {
 
 
 		if(mixValidator.isValid() != true ) {
-
-			//alert("Mix invalid!");
 			return;
 		} else if (products.Count() == 0) {
 			alert("Product count is empty!");
@@ -267,7 +257,6 @@ function initRecycle() {
 
 
       				if(response == 'DONE') {
-      					//res = confirm("Mix updated successfully! Do you want browse mixes?");
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
       					}
@@ -284,14 +273,11 @@ function initRecycle() {
           				      val = $("option:selected", this).val();
 
           				      if(res.storageOverflow[val] != undefined) {
-
-          				    	  //$(this).append("<span style='color:Red;'>"+res.storageError+"</span>");
           				    	 $("<span name='storageOverflowError' style='color:Red;'>"+res.storageError+"</span>").insertAfter($(this));
           				      }
           				   });
       					} else if (res.products_error != undefined) {
       						if(currentSelectedPFP != null) {
-      							//productError_453
       							$("#PrimaryProductError").css("display","block");
       						}
       					}
@@ -304,8 +290,6 @@ function initRecycle() {
 
 		});
 
-		//$("#addMix").attr('href','/vwm/?action=addItemAjax&category=mix&departmentID='+departmentID+'&wasteJson='+waste);
-		//$("#addMix").css('display','inline');
 	}
 
 
@@ -352,9 +336,8 @@ function initRecycle() {
       				if(response!='false')
       				{
 		      			resp=eval("("+response+")");
-						//$('#product_desc').attr('value',resp['description']);
+
 		      			$('#product_desc').text(resp['description']);
-						//$('#coating').attr('value',resp['coatName']);
 		      			$('#coating').text(resp['coatName']);
 						var currentSelectedProductSupportDensity = resp['supportWeight'];
 
@@ -448,7 +431,6 @@ function initRecycle() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-	      				//writeUnittype(response,'selectWasteUnittype');
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
 						calculateVOC();
 	      			}
@@ -483,7 +465,6 @@ function initRecycle() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-	      				//writeUnittype(response,'selectRecycleUnittype');
 	      				recycle.unittype = $("#selectRecycleUnittype").attr('value');
 						calculateVOC();
 	      			}
@@ -513,11 +494,6 @@ function initRecycle() {
 			productAddedIdx = sel.name.substring(28);
 			$("#product_selectUnittype_"+productAddedIdx).empty();
 
-			//console.log("WRITE UNITTYPE");
-			//console.log("sysType = " + sysType);
-			//console.log("companyID = " + companyID);
-			//console.log("companyEx = " + companyEx);
-
 			if(sysType.length > 0){
 				$.ajax({
       			url: "modules/ajax/getUnitTypes.php",
@@ -527,9 +503,9 @@ function initRecycle() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-	      			//console.log("response = " + response);
+
 	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);
-	      				//console.log("END OF WRITE UNITTYPE");
+
 	      				productUnittype = products.getProduct(productAddedIdx).selectUnittype;
 
 	      				selector = "#product_selectUnittype_"+productAddedIdx;
@@ -588,13 +564,11 @@ function initRecycle() {
 	var currentSelectedPFP_descr = null;
 
 	function addPFPProducts(pfp_products,pfp_id,pfp_description) {
-		//alert($.toJSON(pfp_products));
-		//alert(products.Count());
 		yes = true;
 
 		// base product should be always on top
 		pfp_products = orderPfpProducts(pfp_products);
-		//console.log(pfp_products);
+
 		if(currentSelectedPFP != null) {
 			yes = confirm("Pre-formulated-products is already loaded from \""+currentSelectedPFP_descr+"\". Do you want clear products list and load products from pre-formulated-products \"" + pfp_description+"\"?");
 			if(yes == true) {
@@ -642,7 +616,6 @@ function initRecycle() {
 	}
 
 	function clearProductsList() {
-		//for (i=0; i<products.Count(); i++) {
 		while(products.Count() > 0){
 			id = products.products[0].productID;
 
@@ -676,8 +649,6 @@ function initRecycle() {
       		data: {"action":"getProductInfo", "productID":productID},
       		dataType: "html",
       		success: function (r) {
-      			//$('#addProductPreloader').css('display', 'none');
-
       			tr = $("<tr>").attr({
       				id:"product_row_"+productID
       			});
@@ -691,22 +662,7 @@ function initRecycle() {
 
       			td1 = $("<td>");
 
-
-
-      			/*checkbox = $("<input>").attr({
-      				type:"checkbox",
-      				value:"" + productID
-      			}
-      			);
-
-      			checkbox.attr('checked', false); */
-
       			checkbox = $("<input type='checkbox' value='"+productID+"' CHECKED>");
-
-
-      			//dCh = checkbox.get();
-      			//dCh.checked = true;
-      			//checkbox = $(dCh);
 
       			td1.attr({
       				"class":"border_users_r border_users_b border_users_l"
@@ -749,7 +705,7 @@ function initRecycle() {
 						}
 						txQ.attr("ratio",ratio);
 					}
-					//txQ..attr("onchange","setProductQuantity("+productID+")")
+
 					txQ.change( {"productID" : productID} ,function(eventObject) {
 						setProductQuantity(eventObject.data.productID);
 						if(currentSelectedPFP != null){
@@ -772,29 +728,16 @@ function initRecycle() {
 					}
 
 					tr.append(tdQuantity);
-					//tr.append($("<td>").attr({class:"border_users_r border_users_b"}).append($("<span>").text(unittypeClass)));
-
-					//elUnittypeClass = $("#selectUnittypeClass").clone(true);
-
-					//elUnittypeClass = $("<select>");
 
 					elUnittypeClass = createSelectUnittypeClass("product_selectUnittypeClass_"+productID);
-
-					//elUnittypeClass.append(selectOptions2UnitTypeClasses());
 
 					elUnittypeClass.attr("name","product_selectUnittypeClass_"+productID);
 
 					product = products.getProduct(productID);
 					elUnittypeClass.attr('value',product.unittypeClass);
 
-
-
-					//elUnittypeClass.attr("onchange","getUnittypes(this, "+companyId+", "+companyEx+"); setProductUnittype("+productID+"); setProductUnittypeClass("+productID+");");
-
 					elUnittypeClass.change( {"productID" : productID} ,function(eventObject) {
 
-						//console.log($(this).get());
-						//alert($(this).attr("name"));
 						getUnittypes(document.getElementById($(this).attr("name")), companyId, companyEx);
 						setProductUnittype(eventObject.data.productID);
 						setProductUnittypeClass(eventObject.data.productID);
@@ -809,15 +752,11 @@ function initRecycle() {
 					td = $("<td>").attr({"class":"border_users_r border_users_b"});
 					td.append(elUnittypeClass);
 
-
-
-					//elUnittypeId = $("#selectUnittype").clone(true);
 					elUnittypeId = $("<select>");
 					id = 'product_selectUnittype_'+productID;
 
 
 					elUnittypeId.attr('id',id).attr('name',id);
-					//elUnittypeId.attr("onchange","setProductUnittype("+productID+")");
 					elUnittypeId.change({"productID" : productID}, function(eventObject){
 						setProductUnittype(eventObject.data.productID);
 
@@ -832,11 +771,8 @@ function initRecycle() {
 						elUnittypeClass.css("display",'none');
 						elUnittypeId.css("display",'none');
 					}
-					//$(id + " option[value="+unittypeId+"]").attr("SELECTED",true).attr('ololo','trololo');
-
 
 					td.append(elUnittypeId);
-					//<div class="error_img"  id="mixDescriptionErrorAlreadyInUse" style="display:none;"><span class="error_text" >Entered name is already in use!</span></div>
 
 					if(isPFP == false) {
 						td.append("<div class='error_img error_text'  id='productError_"+productID+"' style='display:none;'>Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>")
@@ -853,19 +789,6 @@ function initRecycle() {
 
 
 				}
-
-
-				//var obj = {quantity:quantity,unittypeID:selectUnittype};
-				//selectedProducts["product_"+productID.toString()] = obj;
-				//alert(selectedProducts.length);//[productID.toString()].quantity);
-				//alert(selectedProducts["product_"+productID.toString()].unittypeID);
-				//arr = [productID, quantity, selectUnittype];
-				//selectedProducts.push(arr);
-
-
-				//alert(products.toJson());
-
-				//var encoded = $.toJSON(selectedProducts);
 
 				calculateVOC();
 
@@ -887,9 +810,8 @@ function initRecycle() {
 	}
 
 	function calculateQuantityInPFPProducts(productID) {
-		//alert(products.toJson());
+
 		primaryProduct = products.getProduct(productID);
-		//alert($.toJSON(primaryProduct));
 
 		if(primaryProduct.ratio > 0) {
 			delitel = primaryProduct.ratio;
@@ -909,7 +831,6 @@ function initRecycle() {
 				q_tmp = (pr_ratio / delitel) * quantity;
 				pr_id = products.products[i].productID;
 				q_tmp = q_tmp.toFixed(2);
-				//alert("apply quantity "+q_tmp+" to productID #"+pr_id);
 				products.products[i].quantity = q_tmp;
 				$("#product_"+pr_id+"_quantity").attr("value",q_tmp);
 			}
@@ -943,7 +864,6 @@ function initRecycle() {
 						m ++;i = i + m;
 					}
 
-					//alert(arr[n].pollutions);
 				}else{
 					if (arr[n].quantity){
 						quantity += parseFloat(arr[n].quantity);
@@ -983,9 +903,6 @@ function initRecycle() {
 			convertWaste = WasteConverter(allquan,alltype,ut);
 		}
 
-		//console.log('result:'+convertWaste);
-		//console.log(allquan.length);
-		//console.log(alltype.length);
 		var wasteJSON = {"value": convertWaste, "unittype": ut};
 		return wasteJSON;
 
@@ -1345,14 +1262,7 @@ function initRecycle() {
 			return;
 		}
 
-		//var unittypeClassSelectBox = $('#selectUnittypeClass').clone();
-		//var unittypeSelectBox = $('#selectUnittype').clone();
 
-		//alert(productID+", "+quantity+", "+selectUnittypeClass+", "+selectUnittype);
-
-
-
-		//$("#selectProduct option[value='"+productID+"']").remove();
 		selectedOption = $("#selectProduct option[value='"+productID+"']");
 
 		selectedOption.attr({disabled:"disabled"}).removeAttr('selected');
@@ -1381,7 +1291,6 @@ function initRecycle() {
 
 			id = this.value;
 			if(this.checked) {
-				//$("#product_row_"+id).remove();
 				rowsToRemove.push(id);
 				$("#selectProduct option[value='"+id+"']").removeAttr('disabled');
 			}
@@ -1394,8 +1303,6 @@ function initRecycle() {
 			products.removeProduct(id);
 		}
 		calculateVOC();
-		//alert(products.toJson());
-		//checkboxes.attr({checked:"checked"});
 	}
 
 	function selectAllProducts(select) {

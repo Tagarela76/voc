@@ -6,20 +6,7 @@ $(function()
 {
 	loadSearchTemplate();
 	loadLastTracks();	
-	
-	
-	
-	//options = 
-	//{ 
-	//	serviceUrl:'modules/ajax/autocomplete.php', 
-	//	minChars:2, 
-	//	delimiter: /(,|;)\s*/, 
-	//	params: { category:'track' }, 
-	//	deferRequestBy:300   								
-	//};
-	//a = $('#searchTrack').autocomplete(options);
-	
-});								
+});
 
 
 
@@ -27,73 +14,73 @@ $(function()
 function loadSearchTemplate()
 {
 	$("#preloader").css("display", "block");
-	$.ajax({		
-      	url: "modules/ajax/trackingSystem.php",      		
+	$.ajax({
+      	url: "modules/ajax/trackingSystem.php",
       	type: "POST",
       	async: false,
-      	data: { "action":"searchTpl"},      			
+      	data: { "action":"searchTpl"},
       	dataType: "html",
-      	success: function (r) {      		
-      		//	append HTML to special div								
+      	success: function (r) {
+      		//	append HTML to special div
 			$("#trackingContainer").html(r);
-			$("#preloader").css("display", "none");			
-			//	hide preloader					 											
-      	}      			   	
+			$("#preloader").css("display", "none");
+			//	hide preloader
+      	}
 	});
-	
+
 	$('#goSearchTrack').click(function(el)
-	{		
-		var searchText=$('#searchTrack').attr('value');	
+	{
+		var searchText=$('#searchTrack').attr('value');
 		searchText=searchText.replace(/^\s+/,"");
-		searchText=searchText.replace(/\s+$/,"");	
-		$('#searchTrack').attr('value',searchText);	
+		searchText=searchText.replace(/\s+$/,"");
+		$('#searchTrack').attr('value',searchText);
 		loadLastTracks(false,searchText);
 	});
-	
-	$('#searchTrack').keyup(function(e){    	
+
+	$('#searchTrack').keyup(function(e){
      	 if(e.keyCode==13)
-     		$('#goSearchTrack').trigger('click');  	
+     		$('#goSearchTrack').trigger('click');
 	});
 }
 
 function loadLastTracks(notification,searchText) {
 	//	show preloader
-	$("#preloader").css("display", "block");	
+	$("#preloader").css("display", "block");
 	$.ajax({
-      	url: "modules/ajax/trackingSystem.php",      		
+      	url: "modules/ajax/trackingSystem.php",
       	type: "POST",
       	async: false,
-      	data: { "action":"index","searchText":searchText},      			
+      	data: { "action":"index","searchText":searchText},
       	dataType: "html",
-      	success: function (r) {      		
-      		//	append HTML to special div								
+      	success: function (r) {
+      		//	append HTML to special div
 			$("#trackTable").html(r);
-			if (notification) {				
+			if (notification) {
 				$("#notify").html(notification);
 				$("#notify").fadeIn();
 			}
-			$("#preloader").css("display", "none");		
-			//	hide preloader		
-			 											
-      	}      			   	
-	});	
-} 
+			$("#preloader").css("display", "none");
+			//	hide preloader
+
+      	}
+	});
+}
 
 function searchInputIni() {
-	var searchInputID = "searchTrack", 
-		input = $("#" + searchInputID), 
-		label = input.parent(), 
-		labelSpan = label.children('span'), 
+	var searchInputID = "searchTrack",
+		input = $("#" + searchInputID),
+		label = input.parent(),
+		labelSpan = label.children('span'),
 		labelCss = {
         	'position': 'relative',
-        	'color': '#D3D3D3'        	
-        }    
-            
+        	'color': '#D3D3D3'
+        }
+
 	if (!input.value) {
 		labelSpan.text('Search action to rollback');
 		label.css(labelCss);
 	}
-	
+
 	input.focus(function(){
 		labelSpan.css('display', 'none');
 	});
@@ -108,43 +95,43 @@ function searchInputIni() {
 
 function rollback(trackID) {
 	//	show preloader
-	$("#preloader").css("display", "block");	
+	$("#preloader").css("display", "block");
 	selectedTrackID = trackID;
-	
+
 	$.ajax({
-      	url: "modules/ajax/trackingSystem.php",      		
+      	url: "modules/ajax/trackingSystem.php",
       	type: "POST",
-      	data: { "action":"rollback", "id":trackID },      			
+      	data: { "action":"rollback", "id":trackID },
       	dataType: "html",
       	success: function (r) {
-      		//	append HTML to special div	      							
+      		//	append HTML to special div
 			$("#trackingContainer").html(r);
-			$("#notify").fadeIn();				
+			$("#notify").fadeIn();
 			//	hide preloader
-			$("#preloader").css("display", "none");											
-      	}      			   	
+			$("#preloader").css("display", "none");
+      	}
 	});
 }
 
 
 
-function areYouSure() {		
+function areYouSure() {
 	//	show preloader
 	$("#preloader").css("display", "block");
-	
+
 	$.ajax({
-      	url: "modules/ajax/trackingSystem.php",      		
+      	url: "modules/ajax/trackingSystem.php",
       	type: "POST",
-      	data: { "action":"confirm", "id":selectedTrackID },      			
+      	data: { "action":"confirm", "id":selectedTrackID },
       	dataType: "html",
       	success: function (r) {
-      		//	append HTML to special div								
+      		//	append HTML to special div
 			$("#trackingContainer").html(r);
-			$("#notify").fadeIn();				
+			$("#notify").fadeIn();
 			//	hide preloader
-			$("#preloader").css("display", "none");											
-      	}      			   	
-	});  		
+			$("#preloader").css("display", "none");
+      	}
+	});
 }
 
 
@@ -152,28 +139,28 @@ function areYouSure() {
 function iAmSure() {
 	//	show preloader
 	$("#preloader").css("display", "block");
-	
+
 	$.ajax({
-      	url: "modules/ajax/trackingSystem.php",      		
+      	url: "modules/ajax/trackingSystem.php",
       	type: "POST",
-      	data: { "action":"rollbackConfirmed", "id":selectedTrackID },      			
+      	data: { "action":"rollbackConfirmed", "id":selectedTrackID },
       	dataType: "json",
-      	success: function (r) { 
-      		loadSearchTemplate();     		
+      	success: function (r) {
+      		loadSearchTemplate();
       		if (r.result) {
       			loadLastTracks(generateNotify('Rollback successfully completed. Thank you for using Tracking System','green'),'false');
       		} else {
       			loadLastTracks(generateNotify('Oops, call developers. PS: sorry(','red'),'false');
-      		}    		      		      			
-      	}      			   	
-	});  		
+      		}
+      	}
+	});
 }
 
 
 function generateNotify(text, color) {
 	var colorPrefix;
 	var colorPrefixTail;
-	
+
 	//	generate prefix by color
 	switch (color) {
 		case 'red':
@@ -188,7 +175,7 @@ function generateNotify(text, color) {
 			colorPrefix = 'r';	//	blue
 			colorPrefixTail = 'blue';
 	}
-		
+
 	//	create table
 	var table = document.createElement('TABLE');
 	table.align = 'center';
@@ -196,7 +183,7 @@ function generateNotify(text, color) {
 	table.cellSpacing = '0';
 	table.className = 'pop_up';
 	var tbody = document.createElement('TBODY');	//	TBODY is needed for IE
-		
+
 	//	create first row
 	var row1 = document.createElement('TR');
 	var data1 = document.createElement('TD');
@@ -208,12 +195,12 @@ function generateNotify(text, color) {
 	divIn.className = 'tl_'+colorPrefix;
 	var divText = document.createElement('DIV');
 	divText.className = 'tr_'+colorPrefix;
-		
+
 	//	create seond row
 	var row2 = document.createElement('TR');
 	var data2 = document.createElement('TD');
 	data2.className = 'tail_'+colorPrefixTail;
-	
+
 	//	build model
 	divText.appendChild(document.createTextNode(text));
 	divIn.appendChild(divText);
@@ -222,11 +209,11 @@ function generateNotify(text, color) {
 	data1.appendChild(divOut);
 	row1.appendChild(data1);
 	row2.appendChild(data2);
-		
+
 	tbody.appendChild(row1);
 	tbody.appendChild(row2);
-	
-	table.appendChild(tbody);		
-		
+
+	table.appendChild(tbody);
+
 	return table;
-} 		
+}

@@ -1,4 +1,3 @@
-<!-- БЫДЛОКОД -->
 {if $color eq "green"}
 {include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
@@ -37,12 +36,12 @@
                             </div>
                         </td>
                     </tr>
-                    
-					{*if ($itemType != "department" || $itemType != "insideDepartment") && 
-						$itemType != "mix" && 
+
+					{*if ($itemType != "department" || $itemType != "insideDepartment") &&
+						$itemType != "mix" &&
 						$itemType != "MSDS_Sheet"*}
-						
-					{if $itemType == 'company' || $itemType == 'facility'} 
+
+					{if $itemType == 'company' || $itemType == 'facility'}
                     <tr height="25px">
                         <td class="id_company1 border_users_b border_users_l" width="35%">
                             Location / Contact
@@ -54,7 +53,7 @@
                         </td>
                     </tr>
                     {/if}
-                    {if $itemType eq "mix"} 
+                    {if $itemType eq "mix"}
                     <tr height="25px">
                         <td class="id_company1 border_users_b border_users_l" width="35%">
                             Description
@@ -67,7 +66,7 @@
                     </tr>
                     {/if}
                     <tr>
-                        {**mix*************************} 
+                        {**mix*************************}
                         {if $itemForDelete[0].linkedItemCount>0}
                         <td colspan="4" class="border_users_l border_users_r">
                             <br>
@@ -135,9 +134,9 @@
                                         <br>
                                     </td>
                                 </tr>
-                                {/if} 
-                                {**/mix****************************}  
-                                {/section} 
+                                {/if}
+                                {**/mix****************************}
+                                {/section}
                             </table>
                         </td>
                         {/if}
@@ -147,27 +146,27 @@
                             &nbsp;
                         </td>
                         <td bgcolor="" height="20" class="users_u_bottom_r " colspan="2">
-                            &nbsp; 
+                            &nbsp;
                         </td>
                     </tr>
                 </table>
                 {*shadow*
             </div>
         </div>
-    </div>**} 
+    </div>**}
     <div align="center" class="padd7">
         <div align="right" style="width:690px ;padding:0 50px;">
             {if $itemsCount > 0 && ($itemType != "wastestorage" || $error != "date")}
             	{*if $gobackAction=="viewDetails"}
-        	<input type="button" value="No" class="button" style="float:right;" onclick="location.href='?action=viewDetails&itemID={$gobacktoViewCategory}&id={$itemID}'"> 
+        	<input type="button" value="No" class="button" style="float:right;" onclick="location.href='?action=viewDetails&itemID={$gobacktoViewCategory}&id={$itemID}'">
 				{else}
 			<input type="button" value="No" class="button" style="float:right;" onclick="location.href='?action=browseCategory&categoryID={$gobackCategory}&{if $gobackCategory eq "facility"}company{elseif $gobackCategory eq "department"}facility{else}department{/if}ID={$itemID}'">
             	{/if*}
 			<input type="button" value="No" class="button" onclick="location.href='{$cancelUrl}'">
 
-            <input type="submit" name="confirm" value="Yes" class="button" style="float:right;margin-left:5px;"> 			
+            <input type="submit" name="confirm" value="Yes" class="button" style="float:right;margin-left:5px;">
 			{elseif $error == "date"}
-			<input type="button" name="confirm" value="Ok" class="button" style="float:right;margin-left:5px;" onclick="location.href='{$cancelUrl}'"> 
+			<input type="button" name="confirm" value="Ok" class="button" style="float:right;margin-left:5px;" onclick="location.href='{$cancelUrl}'">
 			{else}
 			<input type="submit" name="confirm" value="Ok" class="button" style="float:right;margin-left:5px;">
 			{/if}
@@ -177,7 +176,7 @@
 			{*<input type="hidden" name="itemID2" value="{$itemID}">*}<!-- Гениально!! -->
             <input type="hidden" value="{$itemForDelete[0].id}" name="item_0">
 			{*<input type="hidden" name="action" value="confirmDelete">*}
-			{if $itemType == "MSDS_Sheet"}<input type="hidden" name="departmentID" value="{$departmentID}">{/if} 
+			{if $itemType == "MSDS_Sheet"}<input type="hidden" name="departmentID" value="{$departmentID}">{/if}
 			{if $itemType=="carbonfootprint" || $itemType=="logbook"}
 				<input type='hidden' name='facilityID' value="{$facilityID}">
 			{elseif $itemType =="wastestorage"}

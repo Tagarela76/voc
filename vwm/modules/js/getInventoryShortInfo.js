@@ -2,22 +2,21 @@ function getInventoryShortInfo(select)
 {
 	var inventoryID=select.options[select.selectedIndex].value;
 	//	Clear output elements
-	$('#inventoryDescription').attr('value',''); 
-	//$('#inventoryProduct').attr('value','');
-	//$('#inventoryQuantity').attr('value','');
+	$('#inventoryDescription').attr('value','');
+
 
 	if (inventoryID.length>0)
 	{
 		$.ajax({
-      	url: "modules/ajax/saveDepartment.php",      		
+      	url: "modules/ajax/saveDepartment.php",
       	type: "GET",
       	async: false,
-      	data: { "inventoryID":inventoryID},      			
+      	data: { "inventoryID":inventoryID},
       	dataType: "html",
-      	success: function (response) 
-      		{   
-      			$('#inventoryDescription').attr('value',response);    												
-      		}        		   			   	
+      	success: function (response)
+      		{
+      			$('#inventoryDescription').attr('value',response);
+      		}
 		});
 	}
 }

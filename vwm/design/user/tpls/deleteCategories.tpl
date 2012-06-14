@@ -13,7 +13,7 @@
     <div class="shadow">
         <div class="shadow_top">
             <div class="shadow_bottom">
-                непонятно нужно или нет, Аллаааааааааа!*}
+                *}
                 <table class="users_min" align="center" cellspacing="0" cellpadding="0">
                     {**header**}
                     <tr class="users_header_red">
@@ -23,7 +23,7 @@
                         <td >
                             <div>ID Number</div>
                         </td>
-                        <!-- Special Headers -->                                               
+                        <!-- Special Headers -->
                          {if $itemType eq "mix" or $itemType eq "nox"}
                             <td><div class="users_header_red_r"><div>Description</div></div></td>
 						 {elseif $itemType eq "equipment"}
@@ -44,19 +44,19 @@
                          	<td><div class="users_header_red_r"><div> Logbook Record Name</div></div></td>
                          {elseif $itemType eq "wastestorage"}
                          	<td><div class="users_header_red_r"><div> Storage Name</div></div></td>
-                         {/if}                        
-                        
+                         {/if}
+
                         {if $itemType eq "facility" || $itemType eq "company"}
                         <td><div class="users_header_red_r"><div>
                            	Location/Contact</div></div>
                         </td>
-                        {/if}                                             
+                        {/if}
                     </tr>
-                    {**/header**}  
-                    
-                    
-                    {if $itemsCount > 0} 
-                    {section name=i loop=$itemForDelete} 
+                    {**/header**}
+
+
+                    {if $itemsCount > 0}
+                    {section name=i loop=$itemForDelete}
                     <tr class="hov_company border_users_b border_users_r">
                         <td class="border_users_l">
                             <input type="checkbox" checked="checked" value="{$itemForDelete[i].id}" name="item_{$smarty.section.i.index}">
@@ -86,10 +86,10 @@
 						{if $itemType eq "facility" || $itemType eq "company"}
                         <td width="40%">
                             <div style="width:100%;">
-                                {$itemForDelete[i].address},&nbsp;{$itemForDelete[i].contact}&nbsp({$itemForDelete[i].phone}) 
+                                {$itemForDelete[i].address},&nbsp;{$itemForDelete[i].contact}&nbsp({$itemForDelete[i].phone})
                             </div>
                         </td>
-                        {/if} 
+                        {/if}
                         {/if}
                     </tr>
                     {*mix*}
@@ -159,16 +159,16 @@
                                         </table>
                                     </td>
                                 </tr>
-                                {/if} 
-                                {*/mix*}  
-                                {/section} 
+                                {/if}
+                                {*/mix*}
+                                {/section}
                             </table>
                         </td>
                     </tr>
-                
-                    {/if} 
-                    {/section} 
-                   
+
+                    {/if}
+                    {/section}
+
                     {else}
                     {*BEGIN	EMPTY LIST*}
                     {if $itemType == "department"}
@@ -225,31 +225,31 @@
                            No storages selected.&nbsp;
                         </td>
                     </tr>
-                    {/if} 
-                    {*END	EMPTY LIST*} 
+                    {/if}
+                    {*END	EMPTY LIST*}
                     {/if}
                     <tr class="users_u_top_size">
                      	{if $itemType eq "facility" || $itemType eq "company"}
                         <td bgcolor="" height="20" class="users_u_bottom " colspan="3">&nbsp;</td>
                         {else}
                         <td bgcolor="" height="20" class="users_u_bottom " colspan="2">&nbsp;</td>
-                        {/if}                     
+                        {/if}
                         <td bgcolor="" height="20" class="users_u_bottom_r ">
                             &nbsp;
                         </td>
                     </tr>
                 </table>
-                {*shadow 
+                {*shadow
             </div>
         </div>
     </div>
-    *}     
+    *}
     <div align="center" class="padd7">
         <div align="right" style="width:690px ;padding:0 50px" >
             {if $itemsCount > 0 && ($itemType != "wastestorage" || $error != "date")}
 				{*<input type="button" value="No" class="button" onclick="location.href='?action=browseCategory&categoryID={$itemType}&{if $itemType eq "facility"}company{elseif $itemType eq "department"}facility{else}department{/if}ID={$itemID}'">*}
 				<input type="button" value="No" class="button" onclick="location.href='{$cancelUrl}'">
-				<input type="submit" name="confirm" value="Yes" class="button">				
+				<input type="submit" name="confirm" value="Yes" class="button">
             {else}
             <input type="button" value="OK" class="button margintop10 button_big" onclick="location.href='{$cancelUrl}'">
             {*<input type="button" value="OK" class="button margintop10 button_big" onclick="location.href='?action=browseCategory&categoryID={$itemType}&{if $itemType eq "facility"}company{elseif $itemType eq "department"}facility{else}department{/if}ID={$itemID}'">*}
@@ -257,7 +257,7 @@
 			<input type="hidden" name="departmentID" value="{$departmentID}">
             <input type="hidden" name="itemsCount" value="{$itemsCount}">
 			{*<input type="hidden" name="itemID2" value="{$itemID}">*}
-			<input type="hidden" name="itemID" value="{$itemType}">			
+			<input type="hidden" name="itemID" value="{$itemType}">
 			{if $itemType=="inventory" && $deleteWithProducts==true}
 				<input type="hidden" name="deleteWithProducts" value="yes">
 			{/if}

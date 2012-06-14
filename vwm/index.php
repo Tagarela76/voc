@@ -50,11 +50,11 @@ if ($stats->validate()) {
 try {
 	//	Load localization file
 	$sl = new SL(REGION, $db);
-	// USER LOGGING	
+	// USER LOGGING
 	if (isset($_SESSION['user_id'])) {
 		$loggingManager = new UserLoggingManager($db);
 		$loggingManager->MakeLog($_GET, $_POST, $_SESSION['user_id']);
-		
+
 		//	also update all needed info for VOCApp
 		VOCApp::get_instance()->setUserID($_SESSION['user_id']);
 		$companyID = ($_SESSION['auth']['company_id']) ? $_SESSION['auth']['company_id'] : 0;	//	0 is for SuperUser
@@ -80,19 +80,19 @@ try {
 			}
 
 			switch ($_POST["action"]) {
-				//	AUTH HERE!					
+				//	AUTH HERE!
 				case 'auth':
 					$xnyo->filter_post_var('accessname', 'text');
 					$xnyo->filter_post_var('password', 'text');
 
 					//$db->select_db(DB_NAME);
 					if ($user->auth($_POST["accessname"], $_POST["password"])) {
-						$userDetails = $user->getUserDetails($user->getUserIDbyAccessname($_POST["accessname"]), true);						
+						$userDetails = $user->getUserDetails($user->getUserIDbyAccessname($_POST["accessname"]), true);
 						//	disable vps check
 						/*if ($userDetails['accesslevel_id'] != 3) {
 							$voc2vps = new VOC2VPS($db);
 							$customerDetails = $voc2vps->getCustomerDetails($userDetails['company_id'], true);
-				
+
 							if (VERSION != 'standalone' &&
 									($customerDetails['status'] == "off" || $customerDetails['status'] == "notReg") &&
 									(strtotime($customerDetails['trial_end_date']) <= strtotime(date('Y-m-d')))) {
@@ -157,7 +157,7 @@ try {
 								$company_id = $user->getUserDetails($_SESSION['user_id'], true);
 								$terms_conditions = $company_id['terms_conditions'];
 								$company_id = $company_id['company_id'];
-								//header("Location: ?action=browseCategory&categoryID=facility&companyID=".$company_id);
+							
 								if ($queryStrPost[0] == 'h') {
 									header("Location: " . $queryStrPost);
 								} else {
@@ -233,7 +233,7 @@ try {
 		//$smarty->assign("action", $_GET["action"]);
 		$user = new User($db, $xnyo, $access, $auth);
 
-		// Filter for free access to class 					
+		// Filter for free access to class
 		if (!$user->isLoggedIn() && $_GET["action"] != 'auth'
 				&& !(($_GET['action'] == "sendContactEmail" || $_GET['action'] == "requestRepresentativeForms") && $_GET['category'] == "common")
 				&& !(($_GET['action'] == 'processororder' || $_GET['action'] == 'processororderResult') && $_GET['category'] == "inventory")) {
@@ -246,7 +246,7 @@ try {
 			header('Location: ' . $xnyo->logout_redirect_url . '?error=timeout&url=http://' . $queryStr);
 		}
 
-		//	Global notify system			
+		//	Global notify system
 		if (isset($_GET["message"]) && isset($_GET["color"])) {
 			$notify = new Notify($smarty);
 			$notify->showMessage($_GET["message"], $_GET["color"]);
