@@ -8,7 +8,12 @@ class NoxEmissionManager {
 	 */
 	private $db;
 	private $burnerDetails = array();
-
+	
+	/*
+	 * 0.092 - EFx - emission factor for NOx
+	 */
+	const EMISSION_FACTOR_FOR_NOX = 0.092;
+	
 	function __construct(db $db) {
 		$this->db = $db;
 	}
@@ -239,7 +244,9 @@ class NoxEmissionManager {
 		$noxEmission->gas_unit_used = (float)$noxEmission->gas_unit_used;
 
 		if ($noxEmission->gas_unit_used == 0) {
-			$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
+			
+			//$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
+			$nox = $burnerDetails['btu']/1000000 * self::EMISSION_FACTOR_FOR_NOX * ($noxEmission->end_time - $noxEmission->start_time)/3600; 
 			return $nox;
 		}
 		/*

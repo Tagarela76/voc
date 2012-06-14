@@ -51,15 +51,15 @@ class NoxEmission {
 								end_time = " . mysql_escape_string($this->end_time) . ",
 								burner_id = " . mysql_escape_string($this->burner_id) . ",
 								note = '" . mysql_escape_string($this->note) . "',									
-								gas_unit_used = " . mysql_escape_string($this->gas_unit_used) . ",
+								gas_unit_used = '" . mysql_escape_string($this->gas_unit_used) . "',
 								nox = " . mysql_escape_string($this->nox) . "
 								WHERE nox_id = {$this->nox_id}";
 		} else {
 
 			$query = "INSERT INTO nox (department_id, description, gas_unit_used, start_time, end_time, burner_id, note, nox) VALUES ("
 					. mysql_escape_string($this->department_id) . ",'"
-					. mysql_escape_string($this->description) . "',"
-					. mysql_escape_string($this->gas_unit_used) . ","
+					. mysql_escape_string($this->description) . "','"
+					. mysql_escape_string($this->gas_unit_used) . "',"
 					. mysql_escape_string($this->start_time) . ", "
 					. mysql_escape_string($this->end_time) . ", "
 					. mysql_escape_string($this->burner_id) . ",'"
