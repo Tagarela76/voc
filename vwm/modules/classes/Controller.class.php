@@ -29,13 +29,13 @@ class Controller {
 	private $blocksToInsert = array(
 		self::INSERT_AFTER_SEARCH => array(),
 		self::INSERT_AFTER_VOC_GAUGE => array(),
-		self::INSERT_NOX_LOG => array(),
+		self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE => array(),
 	);
 
 
 	const INSERT_AFTER_SEARCH = 0;
 	const INSERT_AFTER_VOC_GAUGE = 1;
-	const INSERT_NOX_LOG = 2;
+	const INSERT_NOX_LOG_BEFORE_NOX_GAUGE = 2;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;
