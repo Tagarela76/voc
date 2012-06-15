@@ -15,6 +15,8 @@ class Product extends ProductProperties {
 	 */
 	public $productCategoryFilter = 0;
 
+	public $searchCriteria = array();
+
 	function Product($db) {
 		$this->db = $db;
 		$this->productType = new ProductTypes($db);
@@ -1037,6 +1039,16 @@ class Product extends ProductProperties {
 				"AND coat.coat_id = p.coating_id " .
 				"AND {$filter} ";
 
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $product) {
+				$searchSql[] = " (LOCATE('{$this->db->sqltext($product)}',product_nr) > 0 OR LOCATE('{$this->db->sqltext($product)}', name) > 0) ";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
+
 		if ($supplierID != 0) {
 			$query .= " AND s.original_id =" . $this->db->sqltext($supplierID) . " ";
 		}
@@ -1141,6 +1153,16 @@ class Product extends ProductProperties {
 				"FROM " . $this->_declareTablesForSearchAndListProducts($companyID) . " " .
 				"WHERE p.supplier_id = s.supplier_id " .
 				"AND coat.coat_id = p.coating_id ";
+
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $product) {
+				$searchSql[] = " (LOCATE('{$this->db->sqltext($product)}',product_nr) > 0 OR LOCATE('{$this->db->sqltext($product)}', name) > 0) ";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
 
 		if ($supplierID != 0) {
 			$query .= " AND s.original_id =" . $this->db->sqltext($supplierID) . " ";
