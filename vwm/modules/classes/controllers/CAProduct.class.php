@@ -77,7 +77,7 @@ class CAProduct extends Controller {
 		$companyList = $company->getCompanyList();
 
 		$this->smarty->assign('companyList',$companyList);
-		
+
 		// get facility list
 		$facility = new Facility($this->db);
 		foreach ($companyList as $item) {
@@ -87,7 +87,7 @@ class CAProduct extends Controller {
 			}
 			$facilityList[$item['id']] = $facility_details;
 		}
-		
+
 		$this->smarty->assign('facilityList', $facilityList);
 
 		$productTypesObj = new ProductTypes($this->db);
@@ -97,7 +97,7 @@ class CAProduct extends Controller {
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
 		//	THIS IS TEMPORARY ACTION. REFACTORING NEEDED
 		$product->productCategoryFilter = $productCategory;
-
+		
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
@@ -111,9 +111,9 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentSupplier', 0);
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		} else {
-			
+
 			$productCount = $product->getProductCount($companyID,$supplierID, $facilityID);
-			
+
 			$pagination = new Pagination($productCount);
 			$pagination->url = $url;
 			$this->smarty->assign('pagination', $pagination);
@@ -127,11 +127,11 @@ class CAProduct extends Controller {
 			$this->smarty->assign('currentFacility',$facilityID);
 			$this->smarty->assign('currentSupplier', $supplierID);
 		}
-		
+
 		if ($facilityID != 0) {
 			$productList = $product->filterProductsByFacility($companyID, $facilityID, $productList);
 		}
-		
+
 		$field = 'product_id';
 		$list = $productList;
 

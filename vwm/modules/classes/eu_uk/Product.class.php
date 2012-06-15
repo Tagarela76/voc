@@ -1,62 +1,62 @@
 <?php
 
 class Product extends ProductProperties {
-	
+
 	protected $db;
-	
+
 	function Product($db) {
 		$this->db=$db;
 	}
-		
-	
-	
-	public function getProductList($companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {	
+
+
+
+	public function getProductList($companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		if (is_null($pagination)) {
 			//here we get product list for dropdown => we shouls sort it by product_nr too
 			if (strstr($sort,'product_nr') == 0) {
 				$sort .= ', p.product_nr ';
 			}
 		}
-		$products = $this->selectProductsByCompany($companyID, 0, $pagination,$filter, $sort);		
-		if ($products) {			
+		$products = $this->selectProductsByCompany($companyID, 0, $pagination,$filter, $sort);
+		if ($products) {
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
 			if ($pagination) {
 				for ($i=0;$i<count($products);$i++) {
-					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);			
-				}			
-			}											
-			return $products;				
+					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);
+				}
+			}
+			return $products;
 		} else
-			return false;		
+			return false;
 	}
-	
-	
-	
-	public function getProductListByMFG($supplierID, $companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {		
+
+
+
+	public function getProductListByMFG($supplierID, $companyID = 0, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		$products = $this->selectProductsByCompany($companyID, $supplierID, $pagination,$filter,$sort);
-		
+
 		$supplier = new Supplier($this->db);
 		$supplierDetails = $supplier->getSupplierDetails($supplierID);
-		
+
 		if ($products) {
 			if ($pagination) {
 				for ($i=0;$i<count($products);$i++) {
-					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);			
+					$products[$i]['msdsLink'] = $this->checkForAvailableMSDS($products[$i]['product_id']);
 				}
-			}					
-			return $products;				
+			}
+			return $products;
 		} else
-			return false;		
+			return false;
 	}
-	
-	
-	
-	
-	private function getPaintMaterialByProductID($productID) {						
+
+
+
+
+	private function getPaintMaterialByProductID($productID) {
 		$query = "SELECT id FROM ".TB_MATERIAL2INVENTORY." WHERE product_id=".(int)$productID;
-		
+
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() != 0) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
@@ -64,21 +64,21 @@ class Product extends ProductProperties {
 				$m2iIDList[] = $m2iID;
 			}
 		}
-		
+
 		return $m2iIDList;
 	}
-			
-	public function isInUse($productID) {		
-		return false;				
+
+	public function isInUse($productID) {
+		return false;
 	}
-	
-	
+
+
 	public function getProductDetails($productID, $vanilla = false, $addNew = false) {
 		settype($productID,"integer");
-		
-		$this->db->query("SELECT * FROM ".TB_PRODUCT." WHERE product_id = ".(int)$productID." ORDER BY product_nr");		
+
+		$this->db->query("SELECT * FROM ".TB_PRODUCT." WHERE product_id = ".(int)$productID." ORDER BY product_nr");
 		$data = $this->db->fetch(0);
-		
+
 		if ($addNew){
 			$this->db->query("SELECT * FROM ".TB_COMPONENT." ORDER BY comp_name");
 			$data3 = $this->db->fetch(0);
@@ -88,11 +88,11 @@ class Product extends ProductProperties {
 			$data->component_id = $data3->component_id;
 			$data->densityuse 	= "";
 		}
-		
+
 		$product = array(
 			'product_id'				=>	$data->product_id,
 			'product_nr'				=>	$data->product_nr,
-			'name'						=>	$data->name,			
+			'name'						=>	$data->name,
 			'voclx'						=>	$data->voclx,
 			'vocwx'						=>	$data->vocwx,
 			'density'					=>	$data->density,
@@ -101,7 +101,7 @@ class Product extends ProductProperties {
 			'specialty_coating'			=>	$data->specialty_coating,
 			'aerosol'					=>	$data->aerosol,
 			'specific_gravity'			=>	$data->specific_gravity,
-			'specific_gravity_unit_id'	=>	$data->specific_gravity_unit_id, 
+			'specific_gravity_unit_id'	=>	$data->specific_gravity_unit_id,
 			'supplier_id'				=>	$data->supplier_id,
 			'boiling_range_from'		=>	$data->boiling_range_from,
 			'boiling_range_to'			=>	$data->boiling_range_to,
@@ -109,22 +109,22 @@ class Product extends ProductProperties {
 			'percent_volatile_volume'	=>	$data->percent_volatile_volume
 		);
 		$hazardous = new Hazardous($this->db);
-		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);		  
-		
-		
+		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
+
+
 		if (!$vanilla){
 			$this->db->query("SELECT * FROM ".TB_SUPPLIER." WHERE supplier_id = ".$data->supplier_id);
 			$data2 = $this->db->fetch(0);
-			$product['supplier_id'] = $data2->supplier;			
+			$product['supplier_id'] = $data2->supplier;
 			$product['supplier'] = $data2->supplier;
-			
+
 			$this->db->query("SELECT * FROM ".TB_COAT." WHERE coat_id = ".$data->coating_id);
 			$data2 = $this->db->fetch(0);
-			$product['coating_id'] = $data2->coat_desc;			
+			$product['coating_id'] = $data2->coat_desc;
 		}
-		
+
 		$rule = new Rule($this->db);
-		
+
 		$query = "SELECT * FROM ".TB_COMPONENTGROUP." WHERE product_id = ".$data->product_id;
 		$this->db->query($query);
 		$componentsCount = $this->db->num_rows();
@@ -143,61 +143,61 @@ class Product extends ProductProperties {
 				"substance_symbol"	=>	$data2->substance_symbol,
 			);
 
-			$component['mm_hg']   = $data[$i]->mm_hg; 
+			$component['mm_hg']   = $data[$i]->mm_hg;
 			$component['temp']   = $data[$i]->temp;
 			$component['weight'] = $data[$i]->weight;
 			$component['type']	 = $data[$i]->type;
 			$component['temp_vp'] = $data[$i]->temp;
 			$component['rule_id'] = $data[$i]->rule_id;
 			$component['substrate_id'] = $data[$i]->rule_id;
-			
+
 			$query_2 = "SELECT ".$rule->ruleNrMap[$rule->getRegion()]." FROM ".TB_RULE." WHERE rule_id = ".$data3->rule_id;
 			$this->db->query($query_2);
 			$data4 = $this->db->fetch(0);
 			$component['rule'] = $data4->$rule->ruleNrMap[$rule->getRegion()];
-			
+
 			$query_2 = "SELECT substrate_desc FROM ".TB_SUBSTRATE." WHERE substrate_id = ".$data3->substrate_id;
 			$this->db->query($query_2);
 			$data4 = $this->db->fetch(0);
 			$component['substrate'] = $data4->substrate_desc;
-			
+
 			$components[] = $component;
 		}
-		
-		$product['components'] = $components;		
+
+		$product['components'] = $components;
 
 		return $product;
 	}
-	
-	
-	
+
+
+
 	public function addNewProduct($productData, $companyID = 0) {
-		
+
 		//screening of quotation marks
 		foreach ($productData as $key=>$value)
 		{
 			switch ($key)
 			{
-				case 'chemicalClasses': break; 
+				case 'chemicalClasses': break;
 				case 'components':break;
-				default: 
+				default:
 				{
 					$productData[$key]=mysql_escape_string($value);
 				}
 			}
 		}
-										
+
 		$query="INSERT INTO ".TB_PRODUCT." (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 				"specific_gravity, specific_gravity_unit_id, specialty_coating, aerosol, boiling_range_from, boiling_range_to, " .
 				"supplier_id, percent_volatile_weight, percent_volatile_volume) VALUES (";
-		
+
 		$query.="'".$productData["product_nr"]."', ";
-		$query.="'".$productData["name"]."', ";		
+		$query.="'".$productData["name"]."', ";
 		$query.="'".$productData["voclx"]."', ";
 		$query.="'".$productData["vocwx"]."', ";
 		$query.="'".$productData["density"]."', ";
 		$query.="'".$productData["density_unit_id"]."', ";
-		$query.="'".$productData["coating_id"]."', ";		
+		$query.="'".$productData["coating_id"]."', ";
 		$query.="'".$productData["specific_gravity"]."', ";
 		$query.="'".$productData["specific_gravity_unit_id"]."', ";
 		$query.="'".$productData["specialty_coating"]."', ";
@@ -207,89 +207,89 @@ class Product extends ProductProperties {
 		$query.="'".$productData["supplier_id"]."', ";
 		$query.="'".$productData["percent_volatile_weight"]."', ";
 		$query.="'".$productData["percent_volatile_volume"]."' ";
-		
+
 		$query.=')';
-				
-	
+
+
 		$this->db->query($query);
 
 		$this->db->query("SELECT LAST_INSERT_ID() id");
 		$productID = $this->db->fetch(0)->id;
-		
+
 		//assign product2company
 		if (!empty($companyID)) {
 			$this->assignProduct2Company($productID, $companyID);
 		}
-		
+
 		$hazardous = new Hazardous($this->db);
 		$hazardous->setProduct2ChemicalClasses($productID, $productData['chemicalClasses']);
-						
-		//	add	components				
-		$this->addComponentgroupNR($productData['components'], $productID);	
-		return $productID;					
+
+		//	add	components
+		$this->addComponentgroupNR($productData['components'], $productID);
+		return $productID;
 	}
-	
-	
+
+
 	public function deleteProduct2($productID){
-		settype($productID,"integer");	
+		settype($productID,"integer");
 		// Delete from Material2Inventory
 		$m2iIDList = $this->getPaintMaterialByProductID($productID);
-		
+
 		foreach ($m2iIDList as $m2iID) {
 			$m2i = new PaintMaterial($this->db, $m2iID);
 			$m2i->delete();
 		}
-		
+
 		$query = "SELECT * FROM ".TB_MIXGROUP." WHERE product_id=".$productID;
 		$this->db->query($query);
-		
+
 		$mixGroupList = $this->db->fetch_all();
-		$mix=new Mix($this->db);			
+		$mix=new Mix($this->db);
 		for ($i=0; $i < count($mixGroupList); $i++) {
-		    $data=$mixGroupList[$i];		    	    		   
+		    $data=$mixGroupList[$i];
 			$mix->deleteUsage($data->mix_id);
 		}
-		
+
 		//	Delete Product's Component Group
 		$this->deleteComponentgroupNR($productID);
-		
-		//	Delete Product		
+
+		//	Delete Product
 		$this->db->query("DELETE FROM ".TB_PRODUCT." WHERE product_id=".$productID);
-		
+
 		//	unassign product from all companies
 		$this->unassignProductFromCompany($productID);
-		
+
 		//	unassign product from all companies
 		$hazardous = new Hazardous($this->db);
 		$hazardous->deleteProduct2ChemicalClassesLink($productID);
 	}
-	
 
-	
-	
-	
+
+
+
+
 	public function setProductDetails ($productData) {
-				
+
 		//screening of quotation marks
 		foreach ($productData as $key=>$value)
 		{
 			switch ($key)
 			{
-				case 'chemicalClasses': break; 
+				case 'chemicalClasses': break;
 				case 'components':break;
-				default: 
+				default:
 				{
 					$productData[$key]=mysql_escape_string($value);
 				}
 			}
 		}
-		
-		//	set hazardous (chemical) classes		
+
+		//	set hazardous (chemical) classes
 		$hazardous = new Hazardous($this->db);
 		$hazardous->setProduct2ChemicalClasses($productData['product_id'], $productData['chemicalClasses']);
-				
+
 		$query = "UPDATE ".TB_PRODUCT." SET ";
-		
+
 		$query .= "product_nr = '".$productData["product_nr"]."', ";
 		$query .= "name = '".$productData["name"]."', ";
 		$query .= "voclx = '".$productData["voclx"]."', ";
@@ -306,40 +306,40 @@ class Product extends ProductProperties {
 		$query .= "supplier_id = '".$productData["supplier_id"]."', ";
 		$query .= "percent_volatile_weight = '".$productData["percent_volatile_weight"]."', ";
 		$query .= "percent_volatile_volume = '".$productData["percent_volatile_volume"]."' ";
-		
+
 		$query .= " WHERE product_id = ".$productData['product_id'];
-		
+
 		$this->db->query($query);
-				
+
 		$this->deleteComponentgroupNR($productData['product_id']);
 		$this->addComponentgroupNR($productData['components'], $productData['product_id']);
-				
+
 	}
-	
-	
+
+
 	public function getProductIdByName($productName){
-		
+
 		$productName=mysql_escape_string($productName);
-		
+
 		$this->db->query("SELECT * FROM ".TB_PRODUCT." where product_nr='".$productName."'");
 		$data=$this->db->fetch(0);
 		$productID=$data->product_id;
-		
+
 		return $productID;
 	}
-	
-	
+
+
 	public function deleteProductOnly($productID){
-		
+
 		settype($productID,"integer");
-		
+
 		$this->db->query("DELETE FROM ".TB_PRODUCTGROUP." WHERE product_id=".$productID);
 		$this->db->query("SELECT componentgroup_nr FROM ".TB_PRODUCT." WHERE product_id=".$productID);
 		$data=$this->db->fetch(0);
 		$nr=$data->componentgroup_nr;
 		$this->deleteComponentgroupNR($nr);
 		$this->db->query("DELETE FROM ".TB_PRODUCT." WHERE product_id=".$productID);
-		
+
 		//	unassign product from all companies
 		$this->unassignProductFromCompany($productID);
 
@@ -347,7 +347,7 @@ class Product extends ProductProperties {
 		$hazardous = new Hazardous($this->db);
 		$hazardous->deleteProduct2ChemicalClassesLink($productID);
 	}
-	
+
 	public function getMaxComponentgroupNR() {
 		$query="SELECT componentgroup_nr FROM ".TB_PRODUCT." ORDER BY componentgroup_nr";
 		$this->db->query($query);
@@ -359,7 +359,7 @@ class Product extends ProductProperties {
 		}
 		return $maxNR;
 	}
-	
+
 	public function getVocSums($productList) {
 		$sums=array(
 			"voc"	=>	"0.00",
@@ -375,24 +375,24 @@ class Product extends ProductProperties {
 		}
 		return $sums;
 	}
-	
+
 	public function deleteComponentgroupNR($productID) {
-		
+
 		settype($productID,"integer");
-		
-		$query = "DELETE FROM ".TB_COMPONENTGROUP." WHERE product_id = ".$productID;		
+
+		$query = "DELETE FROM ".TB_COMPONENTGROUP." WHERE product_id = ".$productID;
 		$this->db->query($query);
 	}
-	
+
 	public function addComponentgroupNR($components, $id) {
-						
-		for ($i=0; $i < count($components); $i++) {		
+
+		for ($i=0; $i < count($components); $i++) {
 			//screening of quotation marks
 			foreach ($components[$i] as $key=>$value)
 			{
 				$components[$i][$key]=mysql_escape_string($value);
-			}	
-			
+			}
+
 			$query="INSERT INTO ".TB_COMPONENTGROUP." (component_id, product_id, substrate_id, rule_id, temp, mm_hg, weight, type) VALUES (";
 			$query.="'".$components[$i]['component_id']."', ";
 			$query.="'".$id."', ";
@@ -402,62 +402,62 @@ class Product extends ProductProperties {
 			$query.="'".$components[$i]['mm_hg']."', ";
 			$query.="'".$components[$i]['weight']."', ";
 			$query.="'".$components[$i]['type']."'";
-			
+
 			$query.=")";
 			$this->db->query($query);
 		}
 	}
-	
+
 	public function initializeByID($productID) {
-		
+
 		settype($productID,"integer");
-		
+
 		$query = "SELECT * FROM ".TB_PRODUCT." WHERE product_id = ".$productID;
-		
+
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() != 0) {
 			$productFields = $this->db->fetch(0);
-			
+
 			$this->voclx = $productFields->voclx;
 			$this->vocwx = $productFields->vocwx;
-			$this->density = $productFields->density;			
+			$this->density = $productFields->density;
 			$this->densityUnitID = $productFields->density_unit_id;	//	density's unit type
-			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;			
+			$this->perccentVolatileWeight = $productFields->percent_volatile_weight;
 			$this->perccentVolatileVolume = $productFields->percent_volatile_volume;	//	density's unit type
-			return true;			
+			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
 	public function toUpperCase() {
 		$this->db->query("SELECT * FROM ".TB_COAT);
 		$coatList = $this->db->fetch_all();
-		
+
 		for ($i=0; $i < count($coatList); $i++) {
 			$data = $coatList[$i];
-			$id = $data->coat_id;			
+			$id = $data->coat_id;
 			$coat = $data->coat_desc;
-			$coat = strtoupper($coat);			
+			$coat = strtoupper($coat);
 			//$coats[] = $coat;
-			
-			$query="UPDATE ".TB_COAT." SET coat_desc='".$coat."' WHERE coat_id='".$id."'";						
-			
+
+			$query="UPDATE ".TB_COAT." SET coat_desc='".$coat."' WHERE coat_id='".$id."'";
+
 			print_r($query." ");
 			$this->db->query($query);
-		
-		}			
+
+		}
 	}
-	
+
 	function getProductInfoInMixes($productID) {
 		settype($productID,"integer");
-		
+
 		$query = "SELECT * FROM ".TB_PRODUCT." WHERE product_id = '".$productID."'";
 		$this->db->query($query);
 		$data=$this->db->fetch(0);
 		$description = $data->name;
-		
+
 		$query = "SELECT * FROM ".TB_COAT." WHERE coat_id=".$data->coating_id;
 		$this->db->query($query);
 		$coatName = $this->db->fetch(0)->coat_desc;
@@ -467,50 +467,50 @@ class Product extends ProductProperties {
 		);
 		return $info;
 	}
-	
+
 	public function isInUseList($productID) {
 		settype($productID,"integer");
-		
+
 		//Looking in mix groups by product id for linked mixes
 		$query = "SELECT * FROM ".TB_MIXGROUP." WHERE product_id=".$productID;
 		$this->db->query($query);
-		
+
 		$mixList = $this->db->fetch_all();
 		for ($i=0; $i < count($mixList); $i++){
 			$mix = $mixList[$i]->mix_id;
 			$mixes[] = $mix;
 		}
-		
+
 		//Looking in product group by product id for linked inventory id
 		$query = "SELECT distinct inventory_id as inventory_id FROM ".TB_PRODUCTGROUP." WHERE product_id=".$productID;
 		$this->db->query($query);
-				
+
 		$inventoryList = $this->db->fetch_all();
-		for ($i=0; $i < count($inventoryList); $i++) {			  	   
-		    $inventory = $inventoryList[$i]->inventory_id;		 
+		for ($i=0; $i < count($inventoryList); $i++) {
+		    $inventory = $inventoryList[$i]->inventory_id;
 			//Looking in equipment by inventory for linked equipment
 			$query = "SELECT * FROM ".TB_EQUIPMENT." WHERE inventory_id=".$inventory;
 			$this->db->query($query);
-			
+
 			$equipmentList= $this->db->fetch_all();
-			for ($j=0; $j < count($equipmentList); $j++) {    
+			for ($j=0; $j < count($equipmentList); $j++) {
 		    	$equipment = $equipmentList[$j]->equipment_id;
-		    	
+
 		    	//Looking in mix by equipment for linked mix
 
 		    	$query = "SELECT * FROM ".TB_USAGE." WHERE equipment_id = ".$equipment;
 				$this->db->query($query);
-				
+
 				$mixList = $this->db->fetch_all();
-					for ($k=0; $k < count($mixList); $k++) {		  	   						
-		    			$mix = $mixList[$k]->mix_id;		    
+					for ($k=0; $k < count($mixList); $k++) {
+		    			$mix = $mixList[$k]->mix_id;
 		    			$mixes[] = $mix;
-					}									
-		    	$equipments[] = $equipment; 	
+					}
+		    	$equipments[] = $equipment;
 			}
-			$inventories[] = $inventory;									
+			$inventories[] = $inventory;
 		}
-		
+
 		if (count($mixes) != 0) {
 			$mixCnt = count (array_unique($mixes));
 		} else {
@@ -521,30 +521,30 @@ class Product extends ProductProperties {
 			"equipmentCnt" => count($equipments),
 			"mixCnt" => $mixCnt
 		);
-			
+
 		return $output;
 	}
-	
-	
+
+
 	public function assignProduct2Company($productID, $companyID) {
 		if (!$this->checkIsProduct2CompanyLink($productID, $companyID)) {
 			$this->insertProduct2CompanyLink($productID, $companyID);
-		}	
+		}
 	}
-	
+
 	public function unassignProductFromCompany($productID = false, $companyID = false) {
 		if ($this->checkIsProduct2CompanyLink($productID, $companyID)) {
 			$this->deleteProduct2CompanyLink($productID, $companyID);
 		}
 	}
-	
-	//	getting product list in format: SUPPLIER		PRODUCT_NR		PRODUCT_NAME 
+
+	//	getting product list in format: SUPPLIER		PRODUCT_NR		PRODUCT_NAME
 	public function getFormatedProductList($companyID, $products = false) {	//	arr $products = do not show these products
-				
+
 		$productListTemp = $this->getProductList($companyID);
-		
+
 		//	only if products are in company
-		if ($productListTemp) {			
+		if ($productListTemp) {
 			//$maxValues = $this->getMaxLenghtSupplierAndProductNR($productListTemp);
 			for ($i = 0; $i<count($productListTemp); $i++) {
 				$show = true;
@@ -555,37 +555,37 @@ class Product extends ProductProperties {
 							break;
 						}
 					}
-				}							
-				$formattedProduct = $productListTemp[$i]['product_nr']." &mdash;  	 ".$productListTemp[$i]['name'];									
+				}
+				$formattedProduct = $productListTemp[$i]['product_nr']." &mdash;  	 ".$productListTemp[$i]['name'];
 				$productListTemp[$i]['formattedProduct'] = $formattedProduct;
-					
-				$productList[]=$productListTemp[$i];													
+
+				$productList[]=$productListTemp[$i];
 			}
-			return $productList;						
-		} else 
+			return $productList;
+		} else
 			return false;
 	}
-	
-	
-	
+
+
+
 	//	get number of products for company or false
 	public function countProducts($companyID,$filter=' TRUE ') {
-		
+
 		settype($companyID,"integer");
-		
+
 		$query = "SELECT count(product_id) productCount FROM product2company WHERE company_id = $companyID AND $filter";
 		$this->db->query($query);
-		return ($this->db->num_rows() > 0) ? $this->db->fetch(0)->productCount : false;	
+		return ($this->db->num_rows() > 0) ? $this->db->fetch(0)->productCount : false;
 	}
-	
-	
-	
-	
+
+
+
+
 	public function productAutocomplete($occurrence, $companyID = 0) {
-		
+
 		$occurrence=mysql_escape_string($occurrence);
 		settype($companyID,"integer");
-		
+
 		if ($companyID === 0){
 			$query = "SELECT product_nr, name, LOCATE('".$occurrence."', product_nr) occurrence, LOCATE('".$occurrence."', name) occurrence2 " .
 				"FROM ".TB_PRODUCT." p WHERE LOCATE('".$occurrence."', product_nr)>0 OR LOCATE('".$occurrence."', name)>0 LIMIT ".AUTOCOMPLETE_LIMIT;
@@ -595,9 +595,9 @@ class Product extends ProductProperties {
 				"WHERE p.product_id = p2c.product_id " .
 				"AND p2c.company_id = ".$companyID."  AND (LOCATE('".$occurrence."', product_nr)>0 OR LOCATE('".$occurrence."', name)>0) LIMIT ".AUTOCOMPLETE_LIMIT;
 		}
-						
+
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() > 0) {
 			$productsData = $this->db->fetch_all();
 			for ($i = 0; $i < count($productsData); $i++) {
@@ -607,21 +607,21 @@ class Product extends ProductProperties {
 						"occurrence"	=>	$productsData[$i]->occurrence
 					);
 					$results[] = $product;
-					
+
 				} elseif ($productsData[$i]->occurrence2) {
 					$product = array (
 						"productNR"		=>	$productsData[$i]->name,
 						"occurrence"	=>	$productsData[$i]->occurrence2
 					);
 					$results[] = $product;
-				}				
-			}		
-			return (isset($results)) ? $results : false;								
-		} else 
+				}
+			}
+			return (isset($results)) ? $results : false;
+		} else
 			return false;
 	}
-	
-		
+
+
 	//	search product by product_nr or name.
 	public function searchProducts($products, $companyID = 0) {
 		$products = (!is_array($products))?array($products):$products;
@@ -647,36 +647,36 @@ class Product extends ProductProperties {
 			$searchedProducts [$key]['coating'] = $coatList[$product['coating_id']];
 			$searchedProducts [$key]['msdsLink'] = $this->checkForAvailableMSDS($product['product_id']);
 		}
-		
-		return (isset($searchedProducts)) ? $searchedProducts : null;		
+
+		return (isset($searchedProducts)) ? $searchedProducts : null;
 	}
-	
-	
-	
-	
+
+
+
+
 	public function assignProduct2WasteClass($productID, $wasteClassID) {
-		
+
 		$productID=mysql_escape_string($productID);
 		$wasteClassID=mysql_escape_string($wasteClassID);
-		
+
 		$query = "SELECT id FROM product2waste_class WHERE product_id = ".$productID." AND waste_class_id = ".$wasteClassID."";
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() == 0) {
 			$query = "INSERT INTO product2waste_class (product_id, waste_class_id) VALUES (" .
 					"".$productID.", ".$wasteClassID.")";
 			$this->db->exec($query);
 		}
 	}
-	
-	
-	
+
+
+
 	public function getProductUsageByDays(TypeChain $beginDate, TypeChain $endDate, $category, $categoryID) {
 		$query = "SELECT sum(mg.quantity_lbs) as sum, p.product_nr, p.name, m.creation_time " .
 				" FROM ".TB_USAGE." m, ".TB_PRODUCT." p, ".TB_MIXGROUP." mg".(($category == 'facility')?", ".TB_DEPARTMENT." d ":" ") .
 				" WHERE ".(($category == 'facility')?
-							"m.department_id = d.department_id AND d.facility_id = '$categoryID' " : 
-							"m.department_id = '$categoryID' ") . 
+							"m.department_id = d.department_id AND d.facility_id = '$categoryID' " :
+							"m.department_id = '$categoryID' ") .
 					"AND p.product_id = mg.product_id " .
 					"AND m.mix_id = mg.mix_id " .
 					"AND m.creation_time BETWEEN '".$beginDate->formatInput()."' AND '".$endDate->formatInput()."' " .
@@ -685,7 +685,7 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 		$productUsageData = $this->db->fetch_all();
 		$result = array();
-		
+
 		//get empty template for output for each product
 		$emptyProductData = array();
 		$day = 86400; // Day in seconds
@@ -695,7 +695,7 @@ class Product extends ProductProperties {
 			$emptyProductData []= array(strtotime($curDay)*1000, 0);
 			$curDay = date('Y-m-d',strtotime($curDay.' + 1 day'));
 		}
-		
+
 		//get all used products list
 		$productList = array();
 		foreach($productUsageData as $data) {
@@ -704,10 +704,10 @@ class Product extends ProductProperties {
 			}
 		}
 		$this->setProductNR($productList);
-		
+
 		if (count($productList) == 0) {
 			$productList []= 'products not used!';
-		} 
+		}
 
 		//format output for all products
 		foreach($productList as $data) {
@@ -718,72 +718,72 @@ class Product extends ProductProperties {
 			$key = round((strtotime($data->creation_time) - strtotime($beginDate->formatInput()))/$day); //$key == day from the begin date
 			$result[$data->product_nr][$key] = array(strtotime($data->creation_time)*1000, $data->sum);
 		}
-		
+
 		return $result;
 	}
-	
-	
-	
+
+
+
 	private function checkIsProduct2CompanyLink($productID = false, $companyID = false) {
-		
+
 		$productID=mysql_escape_string($productID);
 		$companyID=mysql_escape_string($companyID);
-		
+
 		//analyze different input situations
 		if (!$productID && $companyID) {
 			$query = "SELECT id FROM product2company WHERE company_id = ".$companyID;
 		} elseif (!$companyID && $productID) {
-			$query = "SELECT id FROM product2company WHERE product_id = ".$productID;	
+			$query = "SELECT id FROM product2company WHERE product_id = ".$productID;
 		} elseif (!$companyID && !$productID) {
-			$query = "SELECT id FROM product2company";	
+			$query = "SELECT id FROM product2company";
 		} else {
 			$query = "SELECT id FROM product2company WHERE product_id = ".$productID." AND company_id = ".$companyID;
-		}		
+		}
 		$this->db->query($query);
-		return ($this->db->num_rows()) ? true : false;		
+		return ($this->db->num_rows()) ? true : false;
 	}
-	
+
 	private function insertProduct2CompanyLink($productID, $companyID) {
-		
+
 		settype($companyID,"integer");
 		settype($productID,"integer");
-		
+
 		$query = "INSERT INTO product2company (product_id, company_id) VALUES (".$productID.", ".$companyID.")";
 		$this->db->query($query);
 	}
-	
+
 	private function deleteProduct2CompanyLink($productID, $companyID) {
 		settype($companyID,"integer");
 		settype($productID,"integer");
-		
+
 		//analyze different input situations
 		if (!$productID && $companyID) {
 			$query = "DELETE FROM product2company WHERE company_id = ".$companyID;
 		} elseif (!$companyID && $productID) {
-			$query = "DELETE FROM product2company WHERE product_id = ".$productID;	
+			$query = "DELETE FROM product2company WHERE product_id = ".$productID;
 		} elseif (!$companyID && !$productID) {
-			$query = "DELETE FROM product2company";	
+			$query = "DELETE FROM product2company";
 		} else {
 			$query = "DELETE FROM product2company WHERE product_id = ".$productID." AND company_id = ".$companyID;
-		}				
+		}
 		$this->db->query($query);
 	}
-	
-	
+
+
 	public function getProductCount($companyID, $supplierID)
 	{
 		settype($companyID,"integer");
-		if (empty($companyID)) {			
+		if (empty($companyID)) {
 			if ($supplierID == 0) {
 				$query = "SELECT count(*) AS cnt " .
 					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
 					"WHERE p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id ";															
+					"AND coat.coat_id = p.coating_id ";
 			} else {
 				$query = "SELECT count(*) AS cnt " .
 					"FROM ".TB_PRODUCT." p " .
-					"WHERE p.supplier_id = ".(int)$supplierID;							
-			}							
+					"WHERE p.supplier_id = ".(int)$supplierID;
+			}
 		} else {
 			if ($supplierID == 0) {
 				$query = "SELECT count(*) AS cnt " .
@@ -792,42 +792,42 @@ class Product extends ProductProperties {
 					"AND p2c.company_id = c.company_id " .
 					"AND p.supplier_id = s.supplier_id " .
 					"AND coat.coat_id = p.coating_id " .
-					"AND c.company_id = ".$companyID." ";				
-			} else {				
+					"AND c.company_id = ".$companyID." ";
+			} else {
 				$query = "SELECT count(*) AS cnt " .
 					"FROM ".TB_PRODUCT." p, product2company p2c " .
 					"WHERE p.product_id = p2c.product_id " .
 					"AND p.supplier_id = ".(int)$supplierID." " .
 					"AND p2c.company_id = ".$companyID;
 			}
-		}		
-		
+		}
+
 		$this->db->query($query);
-		
-		$numRows = $this->db->num_rows();			
-		if ($numRows==1) {						
+
+		$numRows = $this->db->num_rows();
+		if ($numRows==1) {
 			return $this->db->fetch(0)->cnt;
-		} else {			
+		} else {
 			return false;
 		}
 	}
-	
+
 	private function selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null,$filter=' TRUE ', $sort=' ORDER BY s.supplier ') {
 		settype($companyID,"integer");
-		
-		if (empty($companyID)) {			
+
+		if (empty($companyID)) {
 			if ($supplierID == 0) {
 				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
 					"FROM ".TB_PRODUCT." p, ".TB_SUPPLIER." s, ".TB_COAT." coat " .
 					"WHERE p.supplier_id = s.supplier_id " .
 					"AND coat.coat_id = p.coating_id " .
 					"AND $filter ".
-					" $sort ";											
+					" $sort ";
 			} else {
 				$query = "SELECT * " .
 					"FROM ".TB_PRODUCT." p " .
-					"WHERE p.supplier_id = ".(int)$supplierID;							
-			}							
+					"WHERE p.supplier_id = ".(int)$supplierID;
+			}
 		} else {
 			if ($supplierID == 0) {
 				$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
@@ -838,8 +838,8 @@ class Product extends ProductProperties {
 					"AND coat.coat_id = p.coating_id " .
 					"AND c.company_id = ".$companyID." " .
 					"AND $filter ".
-					" $sort ";				
-			} else {				
+					" $sort ";
+			} else {
 				$query = "SELECT * " .
 					"FROM ".TB_PRODUCT." p, product2company p2c " .
 					"WHERE p.product_id = p2c.product_id " .
@@ -847,104 +847,79 @@ class Product extends ProductProperties {
 					"AND p2c.company_id = ".$companyID;
 			}
 		}
-		
+
 		if (isset($pagination)) {
 			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
 		}
-		
-		$this->db->query($query);		
-		$numRows = $this->db->num_rows();		
-		if ($numRows) {			
+
+		$this->db->query($query);
+		$numRows = $this->db->num_rows();
+		if ($numRows) {
 			for ($i=0; $i < $numRows; $i++) {
 				$productData = $this->db->fetch($i);
 				$product = array (
 					'product_id'				=>	$productData->product_id,
 					'product_nr'				=>	$productData->product_nr,
-					'name'						=>	$productData->name,					
+					'name'						=>	$productData->name,
 					'voclx'						=>	$productData->voclx,
 					'vocwx'						=>	$productData->vocwx,
 					'supplier_id'				=>	$productData->supplier,	//clean it
 					'supplier'					=>	$productData->supplier,
 					'coating'					=>	$productData->coat_desc,
 					'percent_volatile_weight'	=>	$productData->percent_volatile_weight,
-					'percent_volatile_volume'	=>	$productData->percent_volatile_volume,					
+					'percent_volatile_volume'	=>	$productData->percent_volatile_volume,
 				);
-				$products[] = $product;						
+				$products[] = $product;
 			}
-			
+
 			return $products;
 		} else {
-			
+
 			return false;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	private function checkForAvailableMSDS($productID) {
 		settype($productID,"integer");
-		
+
 		$query = "SELECT real_name FROM ".TB_MSDS_FILE." WHERE product_id = ".$productID." LIMIT 1";
 		$this->db->query($query);
-				
+
 		if ($this->db->num_rows()) {
 			return "../msds/" . $this->db->fetch(0)->real_name;
 		} else return false;
 	}
-	
-	
-	
-	
-	private function getMaxLenghtSupplierAndProductNR($productList) {
-		foreach($productList as $value) {
-			$supplierLength[] = strlen($value['supplier_id']);
-			$productNrLength[] = strlen($value['product_nr']);							
-		}		
-		$maxValues = array (
-			'supplier'	=> max($supplierLength),
-			'productNR'	=> max($productNrLength)
-		);		
-		return $maxValues;
+
+
+
+	/**
+	 * Generate string to inculde into SQL from statement for count/list Products's
+	 * @param int $companyID
+	 * @param int $industryType
+	 * @return string Example preformulated_products pfp, product p, pfp2product pfp2p, product2type p2t
+	 */
+	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0, $supplierID = 0) {
+		$tables = array(
+			TB_PFP." pfp",
+			TB_PRODUCT." p",
+			TB_PFP2PRODUCT." pfp2p",
+			TB_PFP2COMPANY." pfp2c"
+		);
+
+		if ($industryType != 0) {
+			array_push($tables, TB_PRODUCT2TYPE." p2t ");
+		}
+
+		if ($supplierID != 0) {
+			array_push($tables, TB_SUPPLIER." s ");
+		}
+
+		return implode(', ', $tables);
 	}
-	
-	
-	
-	
-	private function selectProduct($product, $byField, $companyID = 0) {
-				
-		$product=mysql_escape_string($product);
-		$byField=mysql_escape_string($byField);
-		settype($companyID,"integer");
-		
-		if ($companyID === 0) {
-			$query = "SELECT p.product_id " .
-				"FROM ".TB_PRODUCT." p " .
-				"WHERE p.".$byField." = '".$product."'";
-			
-		} else {
-			$query = "SELECT p.product_id " .
-				"FROM ".TB_PRODUCT." p, product2company p2c " .
-				"WHERE p.product_id = p2c.product_id " .
-				"AND p.".$byField." = '".$product."' " .
-				"AND p2c.company_id = ".$companyID;
-				
-		}
-		
-		$this->db->query($query);
-		
-		if ($this->db->num_rows() > 0) {
-			$productsData = $this->db->fetch_all();
-			for ($i = 0; $i < count($productsData); $i++) {
-				$productDetails = $this->getProductDetails($productsData[$i]->product_id);
-				$productDetails['coating'] = $productDetails['coating_id']; 
-				$productDetails['msdsLink'] = $this->checkForAvailableMSDS($productsData[$i]->product_id);						
-				$selectedProducts[] = $productDetails;			
-			}
-			return $selectedProducts;
-		} else {
-			return false;			
-		}
-	}	
+
+
 }
 ?>
