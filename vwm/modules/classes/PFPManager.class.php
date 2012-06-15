@@ -59,11 +59,17 @@ class PFPManager {
 		$query .= $queryFilter;
 
 		if ($industryType != 0) {
-			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
 		}
 
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
+		}
+
+		if ($companyID != 0) {
+			$query .= " AND pfp2c.company_id = ".$this->db->sqltext($companyID);
 		}
 
 		$query .= " GROUP BY pfp.id";
@@ -73,38 +79,18 @@ class PFPManager {
 		return $this->db->num_rows();
 	}
 
+
+
+	/**
+	 * Alias for PFPManager::countPFPAssigned()
+	 * @param int $companyID
+	 * @param string $searchString
+	 * @param int $industryType
+	 * @param int $supplierID
+	 * @return int
+	 */
 	public function countPFP($companyID = 0, $searchString = '', $industryType = 0, $supplierID = 0) {
-		//	build mandatory sql
-		$query = "SELECT pfp.id as id " .
-				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
-
-		if ($searchString != "") {
-			$query .= " AND (" .
-					"pfp.description LIKE ('%" . $this->db->sqltext($searchString) . "%') OR " .
-					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
-					")";
-		}
-
-		if ($companyID != 0) {
-			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)}";
-		} else {
-			$query .= " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
-		}
-
-		if ($industryType != 0) {
-			$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
-		}
-
-		if ($supplierID != 0 ){
-			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
-		}
-
-		$query .= " GROUP BY pfp.id";
-
-		$this->db->query($query);
-
-		return $this->db->num_rows();
+		return $this->countPFPAllowed($companyID, $searchString, $industryType, $supplierID);
 	}
 
 	public function getCompaniesByPfpID($pfpID) {
@@ -171,6 +157,10 @@ class PFPManager {
 
 		if ($supplierID != 0 ){
 			$query .= " AND p.supplier_id = s.supplier_id  AND s.original_id = {$this->db->sqltext($supplierID)}";
+		}
+
+		if ($companyID !== null) {
+			$query .= " AND pfp2c.company_id = ".$this->db->sqltext($companyID);
 		}
 
 		if (isset($idArray) and is_array($idArray) and count($idArray) > 0) {
@@ -532,7 +522,7 @@ class PFPManager {
 			}
 		}
 		echo $queryInsertPFPProducts; die();
-		
+
 		$this->db->query($queryInsertPFPProducts);
 
 	}

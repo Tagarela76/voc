@@ -77,7 +77,7 @@ class CAProduct extends Controller {
 		$companyList = $company->getCompanyList();
 
 		$this->smarty->assign('companyList',$companyList);
-		
+
 		// get facility list
 		$facility = new Facility($this->db);
 		foreach ($companyList as $item) {
@@ -87,7 +87,7 @@ class CAProduct extends Controller {
 			}
 			$facilityList[$item['id']] = $facility_details;
 		}
-		
+
 		$this->smarty->assign('facilityList', $facilityList);
 
 		$productTypesObj = new ProductTypes($this->db);
@@ -98,40 +98,35 @@ class CAProduct extends Controller {
 		//	THIS IS TEMPORARY ACTION. REFACTORING NEEDED
 		$product->productCategoryFilter = $productCategory;
 
+		//	set search criteria
+		if (!is_null($this->getFromRequest('q'))) {
+			$product->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+		}
+
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
-		//	search??	!WITHOUT PAGINATION!
-		if (!is_null($this->getFromRequest('q'))) {
-			$productsToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
-			$productList = $product->searchProducts($productsToFind, $companyID);
+		$productCount = $product->getProductCount($companyID, $supplierID, $facilityID);
 
-			$this->smarty->assign('currentCompany',0);
-			$this->smarty->assign('currentFacility',0);
-			$this->smarty->assign('currentSupplier', 0);
-			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+		$pagination = new Pagination($productCount);
+		$pagination->url = $url;
+		$this->smarty->assign('pagination', $pagination);
+
+		if ($supplierID != 0) {
+			$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination, ' TRUE ', $sortStr);
 		} else {
-			
-			$productCount = $product->getProductCount($companyID,$supplierID, $facilityID);
-			
-			$pagination = new Pagination($productCount);
-			$pagination->url = $url;
-			$this->smarty->assign('pagination', $pagination);
-
-			if ($supplierID != 0) {
-				$productList = $product->getProductListByMFG($supplierID, $companyID, $pagination,' TRUE ',$sortStr);
-			} else {
-				$productList = $product->getProductList($companyID, $pagination,' TRUE ',$sortStr);
-			}
-			$this->smarty->assign('currentCompany',$companyID);
-			$this->smarty->assign('currentFacility',$facilityID);
-			$this->smarty->assign('currentSupplier', $supplierID);
+			$productList = $product->getProductList($companyID, $pagination, ' TRUE ', $sortStr);
 		}
-		
+		$this->smarty->assign('currentCompany', $companyID);
+		$this->smarty->assign('currentFacility', $facilityID);
+		$this->smarty->assign('currentSupplier', $supplierID);
+
+
 		if ($facilityID != 0) {
 			$productList = $product->filterProductsByFacility($companyID, $facilityID, $productList);
 		}
-		
+
 		$field = 'product_id';
 		$list = $productList;
 

@@ -34,12 +34,12 @@ class CPfpLibrary extends Controller {
 
 		// or get all
 		} else {
-			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed(0, '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
+			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
 			$pagination = new Pagination((int) $pfpCount);
 			$pagination->url = $url;
 
 			$pfps = ($this->getFromRequest('tab') == 'all')
-					? $manager->getListAllowed(null, $pagination, null, $productCategory)
+					? $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory)
 					: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
 		}
 
