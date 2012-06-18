@@ -586,22 +586,23 @@ class validateCSV {
 		$data[18] = str_replace("C","",$data[18]);
 		$data[18] = str_replace("F","",$data[18]);
 		$data[18] = trim($data[18]);
+		//if Boiling Range From is empty or N/A put 0
+		if (empty($data[18]) || $data[18] == 'N/A') 
+			$data[18] = '0';
 		if ( !preg_match("/^[0-9.]*$/",$data[18]) || (substr_count($data[18],".") > 1) ){
 			$comments .= "	Boiling Range From is undefined. Row " . $row . ".\n";
-		}
-		if (empty($data[18]) && ($data[18] !== '0') ){
-			$comments .= "	Boiling Range From is empty. Row " . $row . ".\n";
 		}
 
 		$data[19] = str_replace(",",".",$data[19]);
 		$data[19] = str_replace("C","",$data[19]);
 		$data[19] = str_replace("F","",$data[19]);
 		$data[19] = trim($data[19]);
+		//if Boiling Range To is empty or N/A put 0
+		if (empty($data[19]) || $data[19] == 'N/A') 
+				$data[19] = '0';
+		
 		if ( !preg_match("/^[0-9.]*$/",$data[19]) || (substr_count($data[19],".") > 1) ){
 			$comments .= "	Boiling Range To is undefined. Row " . $row . ".\n";
-		}
-		if (empty($data[19]) && ($data[19] !== '0') ){
-			$comments .= "	Boiling Range To is empty. Row " . $row . ".\n";
 		}
 
 		//hazardous class check
