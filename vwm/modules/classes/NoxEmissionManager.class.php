@@ -10,7 +10,7 @@ class NoxEmissionManager {
 	private $burnerDetails = array();
 
 	/*
-	 * 0.092 - EFx - emission factor for NOx
+	 * 0.092 - EFx - emission factor for NOx (lbs/MMBtu)
 	 */
 	const EMISSION_FACTOR_FOR_NOX = 0.092;
 
@@ -240,7 +240,8 @@ class NoxEmissionManager {
 			$hours = $noxEmission->gas_unit_used/$burnerDetails['btu'];
 		}
 
-		$nox = $burnerDetails['btu']/1000000 * self::EMISSION_FACTOR_FOR_NOX * $hours;
+		$nox = $burnerDetails['btu'] * self::EMISSION_FACTOR_FOR_NOX/1000000 * $hours;
+
 		return $nox;
 
 	}

@@ -2,15 +2,15 @@
 require_once ("modules/Validate.php");
 
 class Validation {
-	
+
 	var $noYes = array('NO', 'YES');
-	
+
 	var $db;
-	
+
 	function Validation($db) {
-		$this->db=$db;		
+		$this->db=$db;
 	}
-	
+
 	public function isUniqueRule($ruleData){
 		$result = array();
 		$fail = false;
@@ -29,7 +29,7 @@ class Validation {
 			$this->db->query($query);
 
 			if ($this->db->num_rows() == 0) {
-				$result[$ruleField] = true;				
+				$result[$ruleField] = true;
 			} else {
 				$result[$ruleField] = false;
 				$fail = true;
@@ -37,38 +37,38 @@ class Validation {
 		}
 		return ($fail) ? $result : true;
 	}
-	
+
 	public function isUniqueMsds($msdsData){
 		$query="SELECT * FROM ".TB_MSDS." WHERE cas='".$msdsData["cas"]."' and cas_desc='".$msdsData["cas_desc"]."' and voclx='".$msdsData["voclx"]."' and vocwx='".$msdsData["vocwx"]."' and temp_vp='".$msdsData["temp_vp"]."' and msds_id!=".$msdsData["msds_id"];
-		
+
 		//$this->db->select_db(DB_NAME);
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() == 0) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	public function isUniqueUsage($usageData){
 		$query = "SELECT * FROM ".TB_USAGE." WHERE description='".$usageData["description"]."'".
 			" AND department_id='".$usageData['department_id']."'";
 
 		//$this->db->select_db(DB_NAME);
 		$this->db->query($query);
-		
+
 		$data=$this->db->fetch(0);
-		
+
 		if ($this->db->num_rows() != 0 && $data->mix_id!=$usageData['mix_id']) {
 			return false;
 		} else {
 			return true;
 		}
-		
+
 	}
-	
+
 	public function isUniqueName($itemType, $itemName, $parrentID='none', $itemID="", $type="") {
 		//$this->db->select_db(DB_NAME);
 		$itemName = trim($itemName);
@@ -76,11 +76,11 @@ class Validation {
 			case 'company':
 				$query="SELECT * FROM ".TB_COMPANY." WHERE name='".$itemName."'";
 				break;
-			
+
 			case 'jobber':
 				$query="SELECT * FROM jobber WHERE name='".$itemName."'";
-				break;			
-				
+				break;
+
 			case 'facility':
 				if ($parrentID != 'none') {
 					$query = "SELECT * FROM ".TB_FACILITY." WHERE name='".$itemName."' and company_id=".$parrentID;
@@ -89,7 +89,7 @@ class Validation {
 					return false;
 				}
 				break;
-				
+
 			case 'department':
 				if ($parrentID != 'none') {
 					$query = "SELECT * FROM ".TB_DEPARTMENT." WHERE name='".$itemName."' and facility_id=".$parrentID;
@@ -98,14 +98,14 @@ class Validation {
 					return false;
 				}
 				break;
-				
+
 			case "product":
 				$query = "SELECT * FROM ".TB_PRODUCT." WHERE product_nr='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM ".TB_PRODUCT." WHERE product_nr='".$itemName."' and product_id!=".$itemID;
 				}
 				break;
-				
+
 			case "inventory":
 				if($parrentID!='none'){
 					$query = "SELECT * FROM ".TB_INVENTORY." WHERE name='".$itemName."' AND facility_id = '".$parrentID."' ";
@@ -115,7 +115,7 @@ class Validation {
 					if ($type!="") {
 						$query .= " AND type='".$type."' ";
 					}
-				} else {//for  compatibility reasons 
+				} else {//for  compatibility reasons
 					$query = "SELECT * FROM ".TB_INVENTORY." WHERE name='".$itemName."' ";
 					if ($itemID!="") {
 						$query = "SELECT * FROM ".TB_INVENTORY." WHERE name='".$itemName."' and id!='".$itemID."' ";
@@ -129,88 +129,88 @@ class Validation {
 					$query = "SELECT * FROM ".TB_INVENTORY." WHERE inventory_name='".$itemName."' and inventory_id!=".$itemID;
 				}*/
 				break;
-				
+
 			case "equipment":
 				$query = "SELECT * FROM ".TB_EQUIPMENT." WHERE equipment_name='".$itemName."'";
 				break;
-				
+
 			case "density":
 				$query = "SELECT * FROM ".TB_DENSITY." WHERE density_type='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_DENSITY." WHERE density_type='".$itemName."' and density_id!=".$itemID;
 				break;
-				
+
 			case "apmethod":
 				$query = "SELECT * FROM ".TB_APMETHOD." WHERE apmethod_desc='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_APMETHOD." WHERE apmethod_desc='".$itemName."' and apmethod_id!=".$itemID;
 				break;
-				
+
 			case "coat":
 				$query = "SELECT * FROM ".TB_COAT." WHERE coat_desc='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_COAT." WHERE coat_desc='".$itemName."' and coat_id!=".$itemID;
 				break;
-				
+
 			case "country":
 				$query = "SELECT * FROM ".TB_COUNTRY." WHERE name='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_COUNTRY." WHERE name='".$itemName."' and country_id!=".$itemID;
 				break;
-				
+
 			case "substrate":
 				$query = "SELECT * FROM ".TB_SUBSTRATE." WHERE substrate_desc='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_SUBSTRATE." WHERE substrate_desc='".$itemName."' and substrate_id!=".$itemID;
 				break;
-				
+
 			case "supplier":
 				$query = "SELECT * FROM ".TB_SUPPLIER." WHERE supplier='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_SUPPLIER." WHERE supplier='".$itemName."' and supplier_id!=".$itemID;
 				break;
-				
+
 			case "type":
 				$query = "SELECT * FROM ".TB_TYPE." WHERE type_desc='".$itemName."'";
 				if ($itemID!="")
 					$query = "SELECT * FROM ".TB_TYPE." WHERE type_desc='".$itemName."' and type_id!=".$itemID;
 				break;
-				
+
 			case "component":
 				$query = "SELECT * FROM ".TB_COMPONENT." WHERE cas='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM ".TB_COMPONENT." WHERE cas='".$itemName."' and component_id!=".$itemID;
 				}
 				break;
-				
+
 			case "unittype":
 				$query = "SELECT * FROM ".TB_UNITTYPE." WHERE name='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM ".TB_UNITTYPE." WHERE name='".$itemName."' and unittype_id!=".$itemID;
 				}
 				break;
-				
+
 			case "msds":
 				$query = "SELECT * FROM ".TB_MSDS." WHERE cas='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM ".TB_MSDS." WHERE cas='".$itemName."' and msds_id!=".$itemID;
 				}
 				break;
-				
+
 			case "lol":
 				$query = "SELECT * FROM `".TB_LOL."` WHERE name='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM `".TB_LOL."` WHERE name='".$itemName."' and lol_id!=".$itemID;
 				}
 				break;
-				
+
 			case "formulas":
 				$query = "SELECT * FROM `".TB_FORMULA."` WHERE formula_desc='".$itemName."'";
 				if ($itemID!="") {
 					$query = "SELECT * FROM `".TB_FORMULA."` WHERE formula_desc='".$itemName."' and formula_id!=".$itemID;
 				}
 				break;
-				
+
 			case "agency":
 				$query = "SELECT * FROM `".TB_AGENCY."` WHERE name='".$itemName."'";
 				if ($itemID!="") {
@@ -222,38 +222,38 @@ class Validation {
 					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND jobber_id=".(int)$parrentID;
 					if ($itemID!="") {
 						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND jobber_id=".(int)$parrentID." AND id!=".(int)$itemID;
-					}					
+					}
 				}else{
 					$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."'";
 					if ($itemID!="") {
 						$query = "SELECT * FROM ".TB_ACCESSORY." WHERE name='".$itemName."' AND id!=".(int)$itemID;
-					}					
+					}
 				}
 				break;
 			case "nox":
 				$sql = '';
 				if($parrentID!='none'){
-					$sql = " AND department_id = {$parrentID} ";  
+					$sql = " AND department_id = {$parrentID} ";
 				}
 				$query = "SELECT * FROM `nox` WHERE description='".$itemName."'"." ".$sql;
 				if ($itemID!="") {
 					$query = "SELECT * FROM `nox` WHERE description='".$itemName."' and nox_id!=".$itemID." ". $sql;
 				}
-				break;				
-				
-				
+				break;
+
+
 		}
-		
-		
+
+
 		$this->db->query($query);
 		if ($this->db->num_rows() == 0) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	function check_email($email) {
 		$email=html_entity_decode($email);
 		$email=trim($email);
@@ -263,8 +263,8 @@ class Validation {
 			return false;
 		}
 	}
-	
-	
+
+
 	function check_id($id) {
 		$id=trim($id);
 		$parametrs=array ('min'=>0, 'max'=>99999999999);
@@ -274,7 +274,7 @@ class Validation {
 			return false;
 		}
 	}
-	
+
 	function check_zip($zip) {
 		$zip=trim($zip);
 		if (strlen($zip) > 0) {
@@ -285,22 +285,22 @@ class Validation {
 		}
 		return false;
 	}
-	
-	
-	
+
+
+
 	function check_tab_localization_string($string) {
 		if ($string == '') {
 			return false;
 		}
-		
+
 		if (strlen($string) > 120) {
 			return false;
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	function check_state($state) {
 		$state = trim ($state);
 		if (strlen($state) <= LEN_STATE && strlen($state)>=0) {
@@ -308,7 +308,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_countryID($countryID) {
 		$countryID=trim($countryID);
 		$parametrs=array ('min'=>0, 'max'=>300);
@@ -318,7 +318,7 @@ class Validation {
 			return false;
 		}
 	}
-	
+
 	function check_city($city) {
 		$city = trim ($city);
 		if (strlen($city) <= LEN_CITY && strlen($city)>0) {
@@ -326,7 +326,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_phone($phone) {
 		$phone=trim($phone);
 		if (strlen($phone) <= LEN_PHONE && strlen($phone)>0) {
@@ -334,7 +334,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_mobile($mobile) {
 		$mobile=trim($mobile);
 		if (strlen($mobile) <= LEN_MOBILE && strlen($mobile)>0) {
@@ -342,7 +342,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_nameCompany($name) {
 		$name=trim($name);
 		if (strlen($name) <= LEN_NAME_COMPANY && strlen($name)>0) {
@@ -350,7 +350,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_nameFacility($name) {
 		$name = trim($name);
 		if (strlen($name) <= LEN_NAME_FACILITY) {
@@ -358,7 +358,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_nameDepartment($name) {
 		$name= trim($name);
 		if (strlen($name) <= LEN_NAME_DEPARTMENT) {
@@ -366,7 +366,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_username($username) {
 		$username = trim($username);
 		if (strlen($username) <= LEN_USERNAME) {
@@ -374,7 +374,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_accessname($accessname) {
 		$accessname=trim($accessname);
 		if (strlen($accessname) <= LEN_ACCESSNAME) {
@@ -382,7 +382,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_address($address) {
 		$address= trim($address);
 		if (strlen($address) <= LEN_ADDRESS && strlen($address)>0) {
@@ -390,7 +390,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_fax($fax) {
 		$fax = trim($fax);
 		if (strlen($fax) <= LEN_FAX && strlen($fax)>=0) {
@@ -398,7 +398,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_contact($contact) {
 		$contact = trim($contact);
 		if (strlen($contact) <= LEN_CONTACT && strlen($contact)>0) {
@@ -406,7 +406,7 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_title ($title) {
 		$title = trim ($title);
 		if (strlen($title) <= LEN_TITLE && strlen($title)>0) {
@@ -414,492 +414,492 @@ class Validation {
 		}
 		return false;
 	}
-	
+
 	function check_epa ($epa) {
 		$epa = trim($epa);
 		if (strlen($epa) <= LEN_FACILITY_EPA && strlen($epa)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_product_nr ($product_nr) {
 		$product_nr = trim($product_nr);
 		if (strlen($product_nr) <= LEN_PRODUCT_NR && strlen($product_nr)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_product_desc ($product_desc) {
 		$product_desc=trim($product_desc);
 		if (strlen($product_desc) <= LEN_PRODUCT_DESC && strlen($product_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_component_id ($component_id) {
 		$component_id=trim($component_id);
 		if (strlen($component_id) <= LEN_COMPONENT_ID && strlen($component_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_densityuse ($densityuse) {
 		$densityuse=trim($densityuse);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($densityuse, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_densitytype_id ($densitytype_id) {
 		$densitytype_id=trim($densitytype_id);
 		if (strlen($densitytype_id) <= LEN_DENSITYTYPE_ID && strlen($densitytype_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_unittype_id ($unittype_id) {
 		$unittype_id=trim($unittype_id);
 		if (strlen($unittype_id) <= LEN_UNITTYPE_ID && strlen($unittype_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_rule ($rule) {
 		$rule = trim($rule);
 		if (strlen($rule) <= LEN_RULE && strlen($rule)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_coat_id ($coat_id) {
 		$coat_id=trim($coat_id);
 		if (strlen($coat_id) <= LEN_COAT_ID && strlen($coat_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
-	
+
+
 	function check_substrate_id ($substrate_id) {
 		$substrate_id=trim($substrate_id);
 		if (strlen($substrate_id) <= LEN_SUBSTRATE_ID && strlen($substrate_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_apmethod_id ($apmethod_id) {
 		$apmethod_id=trim($apmethod_id);
 		if (strlen($apmethod_id) <= LEN_APMETHOD_ID && strlen($apmethod_id)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_inventory_name ($inventory_name) {
 		$inventory_name=trim($inventory_name);
 		if (strlen($inventory_name) <= LEN_INVENTORY_NAME && strlen($inventory_name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_inventory_desc ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_INVENTORY_DESC && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_quantity ($quantity) {
 		$quantity=trim($quantity);
-		$parametrs=array ('min'=>0.000000000001, 'max'=>99999999999, 'decimal'=>',.');		
+		$parametrs=array ('min'=>0.000000000001, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($quantity, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_quantity_inv ($quantity) {
-		$quantity=trim($quantity);		
+		$quantity=trim($quantity);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($quantity, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
-	
+
+
 	function check_equip_desc ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_EQUIP_DESC && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_permit ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_PERMIT && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_expire ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_EXPIRE && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
-	function check_voc_pct ($inventory_desc) {	
-		$inventory_desc=trim($inventory_desc);	
+
+	function check_voc_pct ($inventory_desc) {
+		$inventory_desc=trim($inventory_desc);
 		$parametrs=array ('min'=>0, 'max'=>100, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($inventory_desc, $parametrs)] == 'YES') {
 			return true;
 			echo "yes";
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_voc_desc ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_VOC_DESC && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_pm_pct ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		$parametrs=array ('min'=>0, 'max'=>100, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($inventory_desc, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_pm_desc ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		if (strlen($inventory_desc) <= LEN_PM_DESC && strlen($inventory_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_daily ($inventory_desc) {
 		$inventory_desc=trim($inventory_desc);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($inventory_desc, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function check_apmethod_desc ($apmethod_desc) {
 		$apmethod_desc=trim($apmethod_desc);
 		if (strlen($apmethod_desc) <= LEN_APMETHOD_DESC && strlen($apmethod_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_coat_desc ($coat_desc) {
 		$coat_desc=trim($coat_desc);
 		if (strlen($coat_desc) <= LEN_COAT_DESC && strlen($coat_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_density_type ($density_type) {
 		$density_type=trim($density_type);
 		if (strlen($density_type) <= LEN_DENSITY_TYPE && strlen($density_type)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_hazardous_class($density_type) {
 		$density_type=trim($density_type);
 		if (strlen($density_type) <= LEN_HAZARDOUS_TYPE && strlen($density_type)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_substrate_desc ($substrate_desc) {
 		$substrate_desc=trim($substrate_desc);
 		if (strlen($substrate_desc) <= LEN_SUBSTRATE_DESC && strlen($substrate_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_country_name ($country_name) {
 		$country_name=trim($country_name);
 		if (strlen($country_name) <= LEN_COUNTRY_NAME && strlen($country_name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_state_name ($state_name) {
 		$state_name=trim($state_name);
 		if (strlen($state_name) <= LEN_STATE_NAME && strlen($state_name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_county ($county) {
 		$county=trim($county);
 		if (strlen($county) <= LEN_STATE_NAME) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_supplier ($supplier) {
 		$supplier=trim($supplier);
 		if (strlen($supplier) <= LEN_SUPPLIER && strlen($supplier)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_type_desc ($type_desc) {
 		$type_desc=trim($type_desc);
 		if (strlen($type_desc) <= LEN_TYPE_DESC && strlen($type_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_cas ($cas) {
 		$cas=trim($cas);
 		if (strlen($cas) <= LEN_CAS && strlen($cas)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_cas_desc ($cas_desc) {
 		$cas_desc=trim($cas_desc);
 		if (strlen($cas_desc) <= LEN_CAS_DESC && strlen($cas_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_voclx ($voclx) {
 		$voclx=trim($voclx);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($voclx, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_vocwx ($vocwx) {
 		$vocwx=trim($vocwx);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($vocwx, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_temp_vp ($temp_vp) {
 		$temp_vp=trim($temp_vp);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($temp_vp, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_mm_hg ($temp_vp) {
 		$temp_vp=trim($temp_vp);
 		$parametrs=array ('min'=>0, 'max'=>99999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($temp_vp, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_rule_nr ($rule_nr) {
 		$rule_nr=trim($rule_nr);
 		if (strlen($rule_nr) <= LEN_RULE_NR && strlen($rule_nr)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_rule_desc ($rule_desc) {
 		$rule_desc=trim($rule_desc);
 		if (strlen($rule_desc) <= LEN_RULE_DESC && strlen($rule_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_product_code ($product_code) {
 		$product_code=trim($product_code);
 		if (strlen($product_code) <= LEN_PRODUCT_CODE && strlen($product_code)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_comp_name ($comp_name) {
 		$comp_name = trim($comp_name);
 		if (strlen($comp_name) <= LEN_COMP_NAME && strlen($comp_name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_comp_weight ($comp_weight) {
 		$comp_weight=trim($comp_weight);
 		$parametrs=array ('min'=>0, 'max'=>9999999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($comp_weight, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_boiling_range ($comp_weight) {
 		$comp_weight=trim($comp_weight);
 		$parametrs=array ('min'=>0, 'max'=>9999999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($comp_weight, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_comp_density ($comp_density) {
 		$comp_density=trim($comp_density);
 		$parametrs=array ('min'=>0, 'max'=>100, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($comp_density, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_voc_limit ($voc_limit) {
 		$voc_limit=trim($voc_limit);
 		$parametrs=array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($voc_limit, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_monthly_nox_limit ($monthly_nox_limit) {
 		$monthly_nox_limit=trim($monthly_nox_limit);
 		$parametrs=array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($monthly_nox_limit, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_specific_gravity ($voc_limit) {
 		$voc_limit=trim($voc_limit);
 		$parametrs=array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($voc_limit, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_description ($description) {
 		$description=trim($description);
 		if (strlen($description) <= LEN_DESCRIPTION && strlen($description)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_name ($name) {
 		$name=trim($name);
 		if (strlen($name) <= LEN_NAME && strlen($name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_unittype_desc ($unittype_desc) {
 		$unittype_desc=trim($unittype_desc);
 		if (strlen($unittype_desc) <= LEN_UNITTYPE_DESC && strlen($unittype_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_lol_name ($lol_name) {
 		$lol_name=trim($lol_name);
 		if (strlen($lol_name) <= LEN_LOL_NAME && strlen($lol_name)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_formula ($formula) {
 		$formula=trim($formula);
 		if (strlen($formula) <= LEN_FORMULA && strlen($formula)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_formula_desc ($formula_desc) {
 		$formula_desc=trim($formula_desc);
 		if (strlen($formula_desc) <= LEN_FORMULA_DESC && strlen($formula_desc)>0) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_agency_name ($name, $isMain = 0) {
 		$name= trim($name);
 		if (strlen($name) <= LEN_AGENCY_NAME && (( strlen($name)>0 && $isMain == 1) || ($isMain == 0 && strlen($name)>=0))) {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_expire_date ($expireDate) {
 		$expireDate=trim($expireDate);
 		if (trim($expireDate) != "") {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function check_percent_value ($percent) {
 		$percent=trim($percent);
 		$parametrs = array ('min'=>0, 'max'=>100, 'decimal'=>',.');
 		if ($this->noYes[Validate::number($percent, $parametrs)] == 'YES') {
 			return true;
-		} 
+		}
 		return false;
 	}
-	
+
 	function validateRegData($data) {
 		$result['summary']='true';
 
@@ -911,7 +911,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 /*
 			if (isset($data['supplier'])) {
 				$result['supplier']='success';
@@ -919,15 +919,15 @@ class Validation {
 				$result['supplier']='failed';
 				$result['summary']='false';
 			}
-			
+
 			if (isset($data['jobber'])) {
 				$result['jobber']='success';
 			} else {
 				$result['jobber']='failed';
 				$result['summary']='false';
-			}			
-*/		
-		
+			}
+*/
+
 		if (isset($data['id'])) {
 			if ($this->check_id($data['id'])) {
 				$result['id']='success';
@@ -936,7 +936,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['zip'])) {
 			if ($this->check_zip($data['zip'])) {
 				$result['zip']='success';
@@ -945,7 +945,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['state'])) {
 			if ($this->check_state($data['state'])) {
 				$result['state']='success';
@@ -954,7 +954,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['country_id'])) {
 			if ($this->check_countryID($data['countryID'])) {
 				$result['country_id']='success';
@@ -963,9 +963,9 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['city'])) {
-			
+
 			if ($this->check_city($data['city'])) {
 				$result['city']='success';
 			} else {
@@ -973,7 +973,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['phone'])) {
 			if ($this->check_phone($data['phone'])) {
 				$result['phone']='success';
@@ -982,7 +982,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['mobile'])) {
 			if ($this->check_mobile($data['mobile'])) {
 				$result['mobile']='success';
@@ -991,7 +991,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['name'])) {
 			if ($this->check_nameCompany($data['name'])) {
 				$result['name']='success';
@@ -1000,7 +1000,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['epa'])) {
 			if ($this->check_epa($data['epa'])) {
 				$result['epa']='success';
@@ -1009,7 +1009,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['title'])) {
 			if ($this->check_title($data['title'])) {
 				$result['title']='success';
@@ -1018,7 +1018,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['contact'])) {
 			if ($this->check_contact($data['contact'])) {
 				$result['contact']='success';
@@ -1027,7 +1027,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['fax'])) {
 			if ($this->check_fax($data['fax'])) {
 				$result['fax']='success';
@@ -1036,7 +1036,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['address'])) {
 			if ($this->check_address($data['address'])) {
 				$result['address']='success';
@@ -1045,7 +1045,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['description'])) {
 			if ($this->check_description($data['description'])) {
 				$result['description']='success';
@@ -1054,7 +1054,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['quantity'])) {
 			if ($this->check_quantity($data['quantity'])) {
 				$result['quantity']='success';
@@ -1063,7 +1063,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voc_limit'])) {
 			if ($this->check_voc_limit($data['voc_limit'])) {
 				$result['voc_limit']='success';
@@ -1072,7 +1072,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['monthly_nox_limit'])) {
 			if ($this->check_monthly_nox_limit($data['monthly_nox_limit'])) {
 				$result['monthly_nox_limit']='success';
@@ -1081,7 +1081,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voc_annual_limit'])) {
 			if ($this->check_voc_limit($data['voc_annual_limit'])) {
 				$result['voc_annual_limit']='success';
@@ -1090,7 +1090,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voc'])) {
 			if ($this->check_vocwx($data['voc'])) {
 				$result['voc']='success';
@@ -1099,7 +1099,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voclx'])) {
 			if ($this->check_voclx($data['voclx'])) {
 				$result['voclx']='success';
@@ -1108,7 +1108,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['vocwx'])) {
 			if ($this->check_vocwx($data['vocwx'])) {
 				$result['vocwx']='success';
@@ -1117,7 +1117,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['creationTime'])) {
 			if ($this->check_creation_time($data['creationTime'])) {
 				$result['creationTime']='success';
@@ -1126,70 +1126,70 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
-		if (isset($data['waste'])) {			
+
+		if (isset($data['waste'])) {
 			//	percent
-			if ($data['waste']['unittypeClass'] == 'percent') {				
+			if ($data['waste']['unittypeClass'] == 'percent') {
 				if ($this->check_percent_value($data['waste']['value'])) {
-					$result['waste']['value'] = 'success'; 
+					$result['waste']['value'] = 'success';
 				} else {
 					$result['waste']['value'] = 'failed';
 					$result['summary'] = 'false';
-				}				
-			//	weight	
-			} else {				
+				}
+			//	weight
+			} else {
 				if ($this->check_quantity_inv($data['waste']['value'])) {
-					$result['waste']['value'] = 'success'; 
+					$result['waste']['value'] = 'success';
 				} else {
 					$result['waste']['value'] = 'failed';
 					$result['summary'] = 'false';
 				}
 			}
 		}
-				
+
 		return $result;
 	}
-	
+
 	public function validateRegDataProduct ($data){
-		
+
 		$result['summary']='true';
-		
-		if (isset($data['components'])) {			
-			$result['isComponents']='success';				
-		}	
+
+		if (isset($data['components'])) {
+			$result['isComponents']='success';
+		}
 		else
 		{
 			$result['isComponents']='failed';
-			$result['summary']='false';		
+			$result['summary']='false';
 		}
-		
+
 		if (isset($data['density'])) {
 			if ($this->check_densityuse($data['density'])) {
 				$result['density']='success';
-			} else {				
+			} else {
 				$result['density']='failed';
 				$result['summary']='false';
 			}
-		}	
-			
+		}
+
 		if (isset($data['percent_volatile_weight'])) {
 			if ($this->check_percent_value($data['percent_volatile_weight'])) {
 				$result['percent_volatile_weight']='success';
-			} else {				
+			} else {
 				$result['percent_volatile_weight']='failed';
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['percent_volatile_volume'])) {
 			if ($this->check_percent_value($data['percent_volatile_volume'])) {
 				$result['percent_volatile_volume']='success';
 			} else {
 				$result['percent_volatile_volume']='failed';
-				$result['summary']='false';				
+				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['product_id'])) {
 			if (trim($data['product_id']) == '' || $data['product_id'] == 0) {
 				$result['product_id']='failed';
@@ -1198,7 +1198,7 @@ class Validation {
 				$result['product_id']='success';
 			}
 		}
-		
+
 		if (isset($data['product_nr'])) {
 			if ($this->check_product_nr($data['product_nr'])) {
 				$result['product_nr']='success';
@@ -1207,7 +1207,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['name'])) {
 			if ($this->check_product_desc($data['name'])) {
 				$result['name']='success';
@@ -1216,7 +1216,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['vocwx'])) {
 			if ($this->check_vocwx($data['vocwx'])) {
 				$result['vocwx']='success';
@@ -1225,7 +1225,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voclx'])) {
 			if ($this->check_voclx($data['voclx'])) {
 				$result['voclx']='success';
@@ -1234,7 +1234,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['specific_gravity'])) {
 			if ($this->check_specific_gravity($data['specific_gravity'])) {
 				$result['specific_gravity']='success';
@@ -1243,7 +1243,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['hazardous_class'])) {
 			if ($this->check_hazardous_class($data['hazardous_class'])) {
 				$result['hazardous_class']='success';
@@ -1252,7 +1252,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['boiling_range_from'])) {
 			if ($this->check_boiling_range($data['boiling_range_from'])) {
 				$result['boiling_range_from']='success';
@@ -1261,7 +1261,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['boiling_range_to'])) {
 			if ($this->check_boiling_range($data['boiling_range_to'])) {
 				$result['boiling_range_to']='success';
@@ -1270,7 +1270,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if ($result['boiling_range_to']=='success' && $result['boiling_range_from']=='success') {
 			if ($data['boiling_range_to'] < $data['boiling_range_from']) {
 				$result['boiling_range_from']='failed';
@@ -1281,7 +1281,7 @@ class Validation {
 				$result['boiling_range_to']='success';
 			}
 		}
-		
+
 		if (isset($data['quantity'])) {
 			if ($this->check_quantity($data['quantity'])) {
 				$result['quantity']='success';
@@ -1289,17 +1289,17 @@ class Validation {
 				$result['quantity']='failed';
 				$result['summary']='false';
 			}
-		}		
+		}
 
 		return $result;
-		
+
 	}
-	
-	
+
+
 	public function validateRegDataEquipment ($data){
-		
+
 		$result['summary']='true';
-		
+
 		if (isset($data['expire_date']))
 		{
 			if ($this->check_expire_date($data['expire_date'])) {
@@ -1310,7 +1310,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['equip_desc']))
 		{
 			if ($this->check_equip_desc($data['equip_desc'])) {
@@ -1321,7 +1321,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['permit']))
 		{
 			if ($this->check_permit($data['permit'])) {
@@ -1332,7 +1332,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['expire']))
 		{
 			if ($this->check_expire($data['expire'])) {
@@ -1343,7 +1343,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voc_pct']))
 		{
 			if ($this->check_voc_pct($data['voc_pct'])) {
@@ -1354,7 +1354,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voc_desc']))
 		{
 			if ($this->check_voc_desc($data['voc_desc'])) {
@@ -1365,7 +1365,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['pm_pct']))
 		{
 			if ($this->check_pm_pct($data['pm_pct'])) {
@@ -1376,7 +1376,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['pm_desc']))
 		{
 			if ($this->check_pm_desc($data['pm_desc'])) {
@@ -1387,7 +1387,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['daily']))
 		{
 			if ($this->check_daily($data['daily'])) {
@@ -1398,18 +1398,18 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
-		
+
+
 		return $result;
-		
+
 	}
-	
-	
+
+
 	public function validateRegDataInventory ($data, $productCount){
-		
+
 		$result['summary']='true';
-		
-		
+
+
 		if (isset($data['inventory_name']))
 		{
 			if ($this->check_inventory_name($data['inventory_name'])) {
@@ -1420,7 +1420,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['inventory_desc']))
 		{
 			if ($this->check_inventory_desc($data['inventory_desc'])) {
@@ -1431,14 +1431,14 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		$quantityValues = array('quantity','OSuse','CSuse');
-		
+
 		if ($productCount == 0) {
 			$result['summary']='false';
 			$result['product']='failed';
 		}
-		
+
 		for ($i=0;$i<$productCount;$i++){
 			foreach ($quantityValues as $value) {
 				if (isset($data['products'][$i][$value])) {
@@ -1451,18 +1451,18 @@ class Validation {
 						$result['summary']='false';
 					}
 				}
-			}						
+			}
 		}
-		
+
 		return $result;
-		
+
 	}
-	
-	
+
+
 	public function validateRegDataAdminClasses ($data){
-		
+
 		$result['summary']='true';
-		
+
 		if (isset($data['apmethod_desc']))
 		{
 			if ($this->check_apmethod_desc($data['apmethod_desc'])) {
@@ -1473,7 +1473,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['coat_desc']))
 		{
 			if ($this->check_coat_desc($data['coat_desc'])) {
@@ -1484,7 +1484,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['density_type']))
 		{
 			if ($this->check_density_type($data['density_type'])) {
@@ -1495,7 +1495,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['substrate']))
 		{
 			if ($this->check_substrate_desc($data['substrate'])) {
@@ -1506,7 +1506,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['substrate_desc']))
 		{
 			if ($this->check_substrate_desc($data['substrate_desc'])) {
@@ -1517,7 +1517,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['country_name']))
 		{
 			if ($this->check_country_name($data['country_name'])) {
@@ -1528,7 +1528,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['country']))
 		{
 			if ($this->check_country_name($data['country'])) {
@@ -1539,7 +1539,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['state_name']))
 		{
 			if ($this->check_state_name($data['state_name'])) {
@@ -1550,7 +1550,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['state']))
 		{
 			if ($this->check_state_name($data['state'])) {
@@ -1561,7 +1561,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['supplier']))
 		{
 			if ($this->check_supplier($data['supplier'])) {
@@ -1572,7 +1572,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['type']))
 		{
 			if ($this->check_type_desc($data['type'])) {
@@ -1583,7 +1583,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['cas']))
 		{
 			if ($this->check_cas($data['cas'])) {
@@ -1594,7 +1594,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['cas_desc']))
 		{
 			if ($this->check_cas_desc($data['cas_desc'])) {
@@ -1605,7 +1605,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['voclx']))
 		{
 			if ($this->check_voclx($data['voclx'])) {
@@ -1616,7 +1616,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['vocwx']))
 		{
 			if ($this->check_vocwx($data['vocwx'])) {
@@ -1627,7 +1627,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['temp_vp']))
 		{
 			if ($this->check_temp_vp($data['temp_vp'])) {
@@ -1638,7 +1638,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['country_id']))
 		{
 			if ($this->check_countryID($data['country_id'])) {
@@ -1649,7 +1649,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['city']))
 		{
 			if ($this->check_city($data['city'])) {
@@ -1660,7 +1660,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['county']))
 		{
 			if ($this->check_county($data['county'])) {
@@ -1671,7 +1671,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['zip']))
 		{
 			if ($this->check_zip($data['zip'])) {
@@ -1682,7 +1682,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['rule_nr']))
 		{
 			if ($this->check_rule_nr($data['rule_nr'])) {
@@ -1692,8 +1692,8 @@ class Validation {
 				$result['rule_nr']='failed';
 				$result['summary']='false';
 			}
-		}				
-		
+		}
+
 		if (isset($data['rule_desc']))
 		{
 			if ($this->check_rule_desc($data['rule_desc'])) {
@@ -1704,7 +1704,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['product_code']))
 		{
 			if ($this->check_product_code($data['product_code'])) {
@@ -1715,7 +1715,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['comp_name']))
 		{
 			if ($this->check_comp_name($data['comp_name'])) {
@@ -1726,7 +1726,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['comp_weight']))
 		{
 			if ($this->check_comp_weight($data['comp_weight'])) {
@@ -1737,7 +1737,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['comp_density']))
 		{
 			if ($this->check_comp_density($data['comp_density'])) {
@@ -1748,7 +1748,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['description']) && !isset($data['agency_id']))
 		{
 			if ($this->check_description($data['description'])) {
@@ -1759,7 +1759,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['name']))
 		{
 			if ($this->check_name($data['name'])) {
@@ -1770,8 +1770,8 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
-		
+
+
 		if (isset($data['lol_name']))
 		{
 			if ($this->check_name($data['lol_name'])) {
@@ -1782,7 +1782,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['formula']))
 		{
 			if ($this->check_formula($data['formula'])) {
@@ -1793,7 +1793,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['formula_desc']))
 		{
 			if ($this->check_formula_desc($data['formula_desc'])) {
@@ -1804,7 +1804,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['name']))
 		{
 			if ($this->check_agency_name($data['name'],1)) {
@@ -1815,7 +1815,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['name_us']) || isset($data['name_eu']) || isset($data['name_cn']))
 		{
 			if ($this->check_agency_name($data['name_us'])) {
@@ -1840,8 +1840,8 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
-		if (isset($data['address']))	
+
+		if (isset($data['address']))
 		{
 			if ($this->check_address($data['address'])) {
 				$result['address']='success';
@@ -1851,7 +1851,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['phone']))
 		{
 			if ($this->check_phone($data['phone'])) {
@@ -1862,7 +1862,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['contact']))
 		{
 			if ($this->check_contact($data['contact'])) {
@@ -1883,19 +1883,19 @@ class Validation {
 				$result['emissionFactor']='failed';
 				$result['summary']='false';
 			}
-		}	
-		
-		
+		}
+
+
 		return $result;
-		
+
 	}
-	
-	
-	
+
+
+
 	public function validateRegDataMakeInventory ($data, $productCount){
-		
+
 		$result['summary']='true';
-		
+
 		if (isset($data['inventory_name']))
 		{
 			if ($this->check_inventory_name($data['inventory_name'])) {
@@ -1906,7 +1906,7 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		if (isset($data['inventory_desc']))
 		{
 			if ($this->check_inventory_desc($data['inventory_desc'])) {
@@ -1917,10 +1917,10 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 
 		for ($i=0;$i<$productCount;$i++){
-			
+
 			if (isset($data['products'][$i]['quantity']))
 			{
 				if ($this->check_quantity($data['products'][$i]['quantity'])) {
@@ -1931,21 +1931,21 @@ class Validation {
 					$result['summary']='false';
 				}
 			}
-			
+
 		}
-		
-		
-		
-		
+
+
+
+
 		return $result;
-		
+
 	}
-	
-	
+
+
 	public function validateRegDataUsage ($data){
-		
+
 		$result['summary']='true';
-				
+
 		if (isset($data['description']))
 		{
 			if ($this->check_description($data['description'])) {
@@ -1956,9 +1956,9 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		for ($i=0;$i<count($data['products']);$i++){
-			
+
 			if (isset($data['products'][$i]['quantity']))
 			{
 				if ($this->check_quantity($data['products'][$i]['quantity'])) {
@@ -1970,15 +1970,15 @@ class Validation {
 				}
 			}
 		}
-		
+
 		return $result;
-		
+
 	}
-	
-	
+
+
 	public function validateNewComponent($data){
 		$result['summary']='true';
-		
+
 		if (isset($data['temp_vp'])) {
 			if ($this->check_temp_vp($data['temp_vp'])) {
 				$result['temp_vp']='success';
@@ -2005,32 +2005,32 @@ class Validation {
 				$result['summary']='false';
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
 	public function validateIssue($issue) {
 		$result["summary"] = "true";
-		
+
 		$result["title"] = "failed";
 		if (isset($issue["title"])) {
 			$issue["title"] = trim($issue["title"]);
 			$titleLength = strlen($issue["title"]);
-			
+
 			if ($titleLength > 0 && $titleLength < 120) {
 				$result["title"] = "success";
 			} else {
 				$result["summary"] = "false";
 			}
-		} else { 
+		} else {
 			$result["summary"] = "false";
 		}
-		
+
 		$result["description"] = "failed";
 		if (isset($issue["description"])) {
 			$issue["description"] = trim($issue["description"]);
 			$descLength = strlen($issue["description"]);
-			
+
 			if ($descLength > 0) {
 				$result["description"] = "success";
 			} else {
@@ -2039,18 +2039,18 @@ class Validation {
 		} else {
 			$result["summary"] = "false";
 		}
-		
+
 		return $result;
 	}
-	
-	
-	
-	
+
+
+
+
 	public function checkWeight2Volume($productID, $unitTypeID) {
 //		$this->db->select_db(DB_NAME);
 	$unittype = new Unittype($this->db);
 	$WeightOrVolume = $unittype->isWeightOrVolume($unitTypeID);
-	$query = "SELECT vocwx, percent_volatile_weight, percent_volatile_volume FROM ".TB_PRODUCT." WHERE product_id = ".$productID;	
+	$query = "SELECT vocwx, percent_volatile_weight, percent_volatile_volume FROM ".TB_PRODUCT." WHERE product_id = ".$productID;
 	$this->db->query($query);
 	if ($this->db->num_rows()>0) {
 		$data = $this->db->fetch(0);
@@ -2068,7 +2068,7 @@ class Validation {
 					}
 				} else {
 					return true; //all ok!
-				}				
+				}
 				break;
 			case 'volume':
 				if ((empty($data->vocwx) || $data->vocwx == '0.00')/* && (empty($data->percent_volatile_volume) || $data->percent_volatile_volume == '0.000')*/) {
@@ -2088,9 +2088,9 @@ class Validation {
 			default:
 				//if needs type = distance
 		}
-	}	
 	}
-	
+	}
+
 		public function checkWaste($mixRecord,$wasteUnitTypeID)
 	{
 		if (!$wasteUnitTypeID) {
@@ -2100,29 +2100,29 @@ class Validation {
 		$unittype = new Unittype($this->db);
 		$isDensity =true;
 		$wasteUnitDetails = $unittype->getUnittypeDetails($wasteUnitTypeID);
-		$mixUnitTypeID = $mixRecord->getUnitType();		
+		$mixUnitTypeID = $mixRecord->getUnitType();
 		$mixUnitTypeType = $unittype->isWeightOrVolume($mixUnitTypeID);
 		$wasteUnitTypeType = $unittype->isWeightOrVolume($wasteUnitTypeID);
 		if ($wasteUnitTypeType === $mixUnitTypeType) {
 			return true;
 		} else {
 			$density = $mixRecord->getProduct()->getDensity();
-			if (empty($density) || $density == '0.00') 
-			{			
-				return false;				
+			if (empty($density) || $density == '0.00')
+			{
+				return false;
 			} else {
 				return true;
 			}
-		}	
-		
+		}
+
 	}
-	
+
 	public function checkDensitySet($productID) {
 		$query = "SELECT density FROM ".TB_PRODUCT." WHERE product_id = ".$productID;
 		$this->db->query($query);
-		
+
 		if ($this->db->num_rows() > 0) {
-			$density = $this->db->fetch(0)->density;					
+			$density = $this->db->fetch(0)->density;
 			if (empty($density) || $density == '0.00') {
 				return false;
 			} else {
@@ -2130,121 +2130,126 @@ class Validation {
 			}
 		} else {
 			return false;
-		}					
+		}
 	}
-	
+
 	public function check_creation_time($mmddyyyy) {
 		if (preg_match('/^\d{2}\-\d{2}\-\d{4}$/',$mmddyyyy)) {
 			$mm = substr($mmddyyyy,0,2);
 			$dd = substr($mmddyyyy,3,2);
 			$yyyy = substr($mmddyyyy,6,4);
 			$currentDate = getdate();
-			if ($currentDate['year'] > $yyyy || ($currentDate['year'] == $yyyy && $currentDate['mon'] > $mm) || 
+			if ($currentDate['year'] > $yyyy || ($currentDate['year'] == $yyyy && $currentDate['mon'] > $mm) ||
 				($currentDate['year'] == $yyyy && $currentDate['mon'] == $mm && $currentDate['mday'] >= $dd)) {
 					return true;
 				} else return false;
 		} else return false;
-	}			
-	
-	
+	}
+
+
 	public function validateAccessoryUsage($form, TypeChain $dateChain) {
-		$result["summary"] = true;				
-		
+		$result["summary"] = true;
+
 		if (!$dateChain->getTimestamp()) {
-			$result["summary"] = false;		
+			$result["summary"] = false;
 			$result["date"] = "Wrong date format";
-		}			
-		
+		}
+
 		//	process usage
 		if (!$this->check_quantity($form['usage'])) {
-			$result["summary"] = false;		
+			$result["summary"] = false;
 			$result["usage"] = "Usage should be countable";
 		}
-		
-		return $result;			
+
+		return $result;
 	}
-	
-	
+
+
 	public function validateNoxBurner(NoxBurner $burner) {
 		$result = array(
 			'summary' => true
-		);		
-								
+		);
+
 		if (!$this->check_name($burner->model)) {
 			$result['summary'] = 'false';
 			$result['model'] = 'failed';
 		}
-		
+
 		if (!$this->check_name($burner->serial)) {
 			$result['summary'] = 'false';
 			$result['serial'] = 'failed';
 		}
-			
-		if (!$this->check_id($burner->manufacturer_id)) {			
+
+		if (!$this->check_id($burner->manufacturer_id)) {
 			$result['summary'] = 'false';
 			$result['manufacturer_id'] = 'failed';
 		}
-		
-		if (!$this->check_quantity($burner->input)) {			
+
+		if (!$this->check_quantity($burner->input)) {
 			$result['summary'] = 'false';
 			$result['input'] = 'failed';
 		}
-		
-		if (!$this->check_quantity($burner->output)) {			
+
+		if (!$this->check_quantity($burner->output)) {
 			$result['summary'] = 'false';
 			$result['output'] = 'failed';
 		}
-		
-		if (!$this->check_quantity($burner->btu)) {			
+
+		if (!$this->check_quantity($burner->btu)) {
 			$result['summary'] = 'false';
 			$result['btu'] = 'failed';
-		}							
-		
-		return $result;			
+		}
+
+		return $result;
 	}
-	
-	
-	
+
+
+
 	public function validateNoxEmission(NoxEmission $noxEmission) {
 		$result = array(
 			'summary' => true
-		);		
-								
+		);
+
 		if (!$this->check_name($noxEmission->description)) {
 			$result['summary'] = 'false';
 			$result['description'] = 'failed';
 		} else {
-			// check for duplicate names			
-			if (!$noxEmission->nox_id 
-					&& $result['summary'] == 'true' 
+			// check for duplicate names
+			if (!$noxEmission->nox_id
+					&& $result['summary'] == 'true'
 					&& !$this->isUniqueName("nox", $noxEmission->description, $noxEmission->department_id)) {
 				$result['summary'] = 'false';
 				$result['description'] = 'alreadyExist';
 			}
 		}
-		
-		if (!$this->check_quantity($noxEmission->gas_unit_used)) {
+
+		if (!$this->check_quantity($noxEmission->gas_unit_used) && !empty($noxEmission->gas_unit_used)) {
 			$result['summary'] = 'false';
 			$result['gas_unit_used'] = 'failed';
 		}
-			
-		if (!$this->check_expire_date($noxEmission->start_time)) {			
+
+		if (!$this->check_expire_date($noxEmission->start_time)) {
 			$result['summary'] = 'false';
 			$result['start_time'] = 'failed';
 		}
-		
-		if (!$this->check_expire_date($noxEmission->end_time)) {			
+
+		if (!$this->check_expire_date($noxEmission->end_time)) {
 			$result['summary'] = 'false';
 			$result['end_time'] = 'failed';
 		}
-		
-		if (!$this->check_id($noxEmission->burner_id)) {			
+
+		if ($noxEmission->end_time <= $noxEmission->start_time) {
+			$result['summary'] = 'false';
+			$result['end_time'] = 'failed';
+		}
+
+		if (!$this->check_id($noxEmission->burner_id)) {
 			$result['summary'] = 'false';
 			$result['burner_id'] = 'failed';
 		}
-				
-		return $result;			
+
+		return $result;
 	}
-	
+
 }
 ?>
