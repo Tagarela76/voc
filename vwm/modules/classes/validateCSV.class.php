@@ -53,6 +53,7 @@ class validateCSV {
 			//	pfp's are splitted by empty row
 			if ($this->isEmptyRow($data)) {
 				if (count($currentPfp) > 0) {
+
 					if($isErrorInCurrentPfp) {
 						$this->productsError[] = $currentPfp;
 					} else {
@@ -88,7 +89,7 @@ class validateCSV {
 		$comments = "";
 		if ($data[2]) {
 			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
-			
+
 			//product check exist
 			if ($this->db->num_rows() == 0) {
 				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
@@ -587,7 +588,7 @@ class validateCSV {
 		$data[18] = str_replace("F","",$data[18]);
 		$data[18] = trim($data[18]);
 		//if Boiling Range From is empty or N/A put 0
-		if (empty($data[18]) || $data[18] == 'N/A') 
+		if (empty($data[18]) || $data[18] == 'N/A')
 			$data[18] = '0';
 		if ( !preg_match("/^[0-9.]*$/",$data[18]) || (substr_count($data[18],".") > 1) ){
 			$comments .= "	Boiling Range From is undefined. Row " . $row . ".\n";
@@ -598,9 +599,9 @@ class validateCSV {
 		$data[19] = str_replace("F","",$data[19]);
 		$data[19] = trim($data[19]);
 		//if Boiling Range To is empty or N/A put 0
-		if (empty($data[19]) || $data[19] == 'N/A') 
+		if (empty($data[19]) || $data[19] == 'N/A')
 				$data[19] = '0';
-		
+
 		if ( !preg_match("/^[0-9.]*$/",$data[19]) || (substr_count($data[19],".") > 1) ){
 			$comments .= "	Boiling Range To is undefined. Row " . $row . ".\n";
 		}
