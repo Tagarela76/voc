@@ -83,5 +83,9 @@
 <input type="hidden" name="hiddenSelectedBookmark" id="selectedBookmark" value="{$selectedBookmark}"/>
 </table>
 
+{*PAGINATION*}
+		{include file="tpls:tpls/paginationabc.tpl"}
+{*/PAGINATION*}
+
 {include file="tpls:tpls/productTypesDropDown.tpl"}
 

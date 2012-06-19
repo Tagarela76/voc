@@ -19,29 +19,19 @@ class CPfpLibrary extends Controller {
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
-		//	process search request
-		if ($this->getFromRequest('q')) {
-			$pfpCount = ($this->getFromRequest('tab') == 'all')
-					? $manager->countPFPAllowed(0, $this->getFromRequest('q'), $productCategory)
-					: $manager->countPFPAssigned($companyDetails['company_id'], $this->getFromRequest('q'), $productCategory);
-
-			$pagination = new Pagination((int) $pfpCount);
-			$pagination->url = $url;
-
-			$pfps = ($this->getFromRequest('tab') == 'all') ? $manager->searchPFP(0, $pagination,  $this->getFromRequest('q')) : $manager->searchPFP($companyDetails['company_id'], $pagination,  $this->getFromRequest('q'));
-
+		//	set search criteria
+		if (!is_null($this->getFromRequest('q'))) {
+			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
-
-		// or get all
-		} else {
-			$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
-			$pagination = new Pagination((int) $pfpCount);
-			$pagination->url = $url;
-
-			$pfps = ($this->getFromRequest('tab') == 'all')
-					? $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory)
-					: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
 		}
+
+		$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
+		$pagination = new Pagination((int) $pfpCount);
+		$pagination->url = $url;
+
+		$pfps = ($this->getFromRequest('tab') == 'all')
+				? $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory)
+				: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
 
 		//	get list of Industry Types
 		$productTypesObj = new ProductTypes($this->db);

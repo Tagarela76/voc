@@ -291,6 +291,8 @@ class CABulkUploader extends Controller {
 			}
 		}
 
+
+
 		return $products;
 	}
 

@@ -27,6 +27,7 @@ class bulkUploader4PFP {
 	const PRODUCTUNITTYPE_INDEX = 5;
 
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
+		
 		$pfpArray = $validate->productsCorrect;
 		$this->db = $db;
 
@@ -210,10 +211,18 @@ class bulkUploader4PFP {
 		return preg_match("/^\d+\-\d+\%$/", $ratioField);
 	}
 
+
 	public static function splitRangeRatio($ratioField) {
 		$ratioField = str_replace(' ', '', $ratioField);
 		$ratioField = str_replace('%', '', $ratioField);
 		return split('-', $ratioField);
+	}
+
+
+	public static function isRtuOrRtsRatio($ratioField) {
+		$possibleValues = array('RTU', 'RTS');
+		return in_array(trim(strtoupper($ratioField)), $possibleValues);
+
 	}
 
 }

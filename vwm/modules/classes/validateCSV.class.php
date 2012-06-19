@@ -76,6 +76,10 @@ class validateCSV {
 				$data['ratioRangeTo'] = $ranges[1];
 			}
 
+			if(bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				$data[bulkUploader4PFP::PRODUCTRATIO_INDEX]	= 1;
+			}
+
 			if ($currRowComments != "") {
 				$this->errorComments .= $currRowComments;
 				$isErrorInCurrentPfp = true;
@@ -96,15 +100,28 @@ class validateCSV {
 				//$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 			}
 
-			if (!preg_match("/^\d+(\.\d)*(\%)*$/", $data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
-				//	this could be range percetnage
-				if (!bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
-					//	no, it's just a validation error
-					$comments .= "Product with ID : " . $data[2] . " has validation error at Ratio. Row " . $row . ".\n";
-				}
-
-
+			//	check for percent - "10%"
+			if (Validation::isPercent($data[bulkUploader4PFP::PRODUCTRATIO_INDEX], true)) {
+				return $comments;
 			}
+
+			//	check for cumulative "344.32"
+			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	check for range "5-10%"
+			if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	check for RTU or RTS
+			if (bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	no, it's just a validation error
+			$comments .= "Product with ID : " . $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] . " has validation error at Ratio. Row " . $row . ".\n";
 		}
 		return $comments;
 	}

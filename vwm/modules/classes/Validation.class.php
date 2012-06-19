@@ -900,6 +900,36 @@ class Validation {
 		return false;
 	}
 
+
+	/**
+	 * Check string for float/integer value in it
+	 * @param string $float
+	 * @return boolean true if float, false if not
+	 */
+	public static function isFloat($float) {
+		$float = trim($float);
+		$parametrs = array ('min'=>0, 'max'=>99999999999999, 'decimal'=>',.');
+		return Validate::number($float, $parametrs);
+	}
+
+
+	/**
+	 * Check string for percent value
+	 * @param string $percent may contain % sign
+	 * @return boolean
+	 */
+	public static function isPercent($percent, $signIncluded = false) {
+		$percent = trim($percent);
+		if ($signIncluded) {
+			if(substr($percent, -1) != "%") {
+				return false;
+			}
+			$percent = trim(substr($percent, 0, -1));
+		}
+		$parametrs = array ('min'=>0, 'max'=>100, 'decimal'=>',.');
+		return Validate::number($percent, $parametrs);
+	}
+
 	function validateRegData($data) {
 		$result['summary']='true';
 
