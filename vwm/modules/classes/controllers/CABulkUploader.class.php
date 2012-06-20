@@ -52,7 +52,8 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv
-			
+
+
 			if ($validation->productsCorrect) {
 				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
 					if (!$this->isVolumeRatio($validation->productsCorrect[$j][0])) {
@@ -61,7 +62,14 @@ class CABulkUploader extends Controller {
 						}
 						$validation->productsCorrect[$j] = $this->convertFromCumulativeQty($validation->productsCorrect[$j]);
 					}
-					$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);
+
+					if (count($validation->productsCorrect[$j]) == 1) {
+						// RDU or RTS
+						//	keep ratio as 1
+					} else {
+						$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);
+					}
+
 				}
 			}
 
@@ -283,12 +291,31 @@ class CABulkUploader extends Controller {
 			}
 		}
 
+
+
 		return $products;
 	}
 
 
+	/**
+	 * Check product for volume ratio. Actually Volume is default value,
+	 * so if it meets empty string this is also Volume
+	 * @param array $product from CSV file
+	 * @return boolean
+	 */
 	private function isVolumeRatio($product) {
-		return (strtoupper($product[bulkUploader4PFP::PRODUCTUNITTYPE_INDEX]) == 'VOL') ? true : false;
+		$possibleVolumeStrings = array('VOL', 'VOLUME', '');
+		$isVolume = false;
+
+		foreach ($possibleVolumeStrings as $volumeString) {
+			$isVolume = (strtoupper($product[bulkUploader4PFP::PRODUCTUNITTYPE_INDEX]) == $volumeString)
+					? true : false;
+			if ($isVolume) {
+				break;
+			}
+		}
+
+		return $isVolume;
 	}
 
 

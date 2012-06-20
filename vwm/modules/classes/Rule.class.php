@@ -207,28 +207,35 @@ class Rule {
 		return $rules;
 	}
 
-
+	/**
+	 * Starting from June 15, 2012 I ignore all other types other than company
+	 * @param int $userID
+	 * @param int $companyID
+	 * @param int $facilityID
+	 * @param int $departmentID
+	 * @return boolean|array
+	 */
 	public function getCustomizedRuleList($userID, $companyID = false, $facilityID = false, $departmentID = false) {
 		//$this->db->select_db(DB_NAME);
 
 		//	try to find by user
-		if (false === ($rules = $this->tryFindRuleList('user', $userID))) {
-			//	try to find by department
-			if (!empty($departmentID)) {
-				if (false === ($rules = $this->tryFindRuleList('department' , $departmentID))) {
-					//	try to find by facility
-					if (!empty($facilityID)) {
-						if (false === ($rules = $this->tryFindRuleList('facility' , $facilityID))) {
+//		if (false === ($rules = $this->tryFindRuleList('user', $userID))) {
+//			//	try to find by department
+//			if (!empty($departmentID)) {
+//				if (false === ($rules = $this->tryFindRuleList('department' , $departmentID))) {
+//					//	try to find by facility
+//					if (!empty($facilityID)) {
+//						if (false === ($rules = $this->tryFindRuleList('facility' , $facilityID))) {
 							//	try to find by company
 							if (!empty($companyID)) {
 								if (false === ($rules = $this->tryFindRuleList('company' , $companyID))) {
 								}
 							}
-						}
-					}
-				}
-			}
-		}
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		if (!$rules) {
 			// load all list
@@ -267,7 +274,7 @@ class Rule {
 		return $this->db->fetch(0)->cnt;
 	}
 
-	
+
 	private function tryFindRuleList($category, $categoryID) {
 		$query = "SELECT rule_id FROM ".TB_SELECTED_RULES_LIST." WHERE category = '".$category."' AND category_id = ".$categoryID;
 		$this->db->query($query);

@@ -11,6 +11,9 @@ class PFPManager {
 	 */
 	private $db;
 
+
+	public $searchCriteria = array();
+
 	function PFPManager($db) {
 		$this->db = $db;
 	}
@@ -49,14 +52,24 @@ class PFPManager {
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
 				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
 
-		if ($searchString != "") {
+		/*if ($searchString != "") {
 			$query .= " AND (" .
 					"pfp.description LIKE ('%" . $this->db->sqltext($searchString) . "%') OR " .
 					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
 					")";
 		}
 
-		$query .= $queryFilter;
+		$query .= $queryFilter;*/
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $pfp) {
+				$searchSql[] = " pfp.description LIKE ('%" . $this->db->sqltext($pfp) . "%') " .
+						"OR p.name LIKE ('%" . $this->db->sqltext($pfp) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
 
 		if ($industryType != 0) {
 			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
@@ -149,6 +162,17 @@ class PFPManager {
 
 		$query .= $queryFilter;
 
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $pfp) {
+				$searchSql[] = " pfp.description LIKE ('%" . $this->db->sqltext($pfp) . "%') " .
+						"OR p.name LIKE ('%" . $this->db->sqltext($pfp) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
+
 		if ($industryType != 0) {
 			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
 			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
@@ -232,25 +256,19 @@ class PFPManager {
 	}
 
 
+	/**
+	 * Alias for PFPManager::getListAllowed()
+	 * @param integer $companyID
+	 * @param Pagination $pagination
+	 * @param string $searchString
+	 * @return array
+	 */
 	public function searchPFP($companyID = 0, Pagination $pagination = null, $searchString = "") {
-		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
-				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
-					"pfp.description LIKE ('%".$this->db->sqltext($searchString)."%') OR " .
-					"p.name LIKE ('%".$this->db->sqltext($searchString)."%') " .
-				")";
-
-		if ($companyID != 0) {
-			$query .= " AND company_id = $companyID";
+		if (empty($companyID)) {
+			$companyID = null;
 		}
-
-		$query .= " GROUP BY pfp.id";
-
-		if (isset($pagination)) {
-			$query .=  " LIMIT ".$pagination->getLimit()." OFFSET ".$pagination->getOffset()."";
-		}
-
-		return $this->_processGetPFPListQuery($query);
+		$this->searchCriteria[] = $searchString;
+		return $this->getListAllowed($companyID, $pagination);
 	}
 
 	public function getPfpList($PfpIdArray = null) {

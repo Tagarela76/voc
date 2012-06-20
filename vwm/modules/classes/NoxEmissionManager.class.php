@@ -8,12 +8,12 @@ class NoxEmissionManager {
 	 */
 	private $db;
 	private $burnerDetails = array();
-	
+
 	/*
-	 * 0.092 - EFx - emission factor for NOx
+	 * 0.092 - EFx - emission factor for NOx (lbs/MMBtu)
 	 */
 	const EMISSION_FACTOR_FOR_NOX = 0.092;
-	
+
 	function __construct(db $db) {
 		$this->db = $db;
 	}
@@ -232,36 +232,18 @@ class NoxEmissionManager {
 
 	public function calculateNox(NoxEmission $noxEmission) {
 		$burnerDetails = $this->getBurnerDetail($noxEmission->burner_id);
-		/*
-		 * BURNER INPUT / BURNER OUTPUT = BEF (BURNER EFFICIENCY FACTOR)
-		 * BEF should be less than 1
-		 */
-		if (!$burnerDetails || $burnerDetails['input'] == 0 || $burnerDetails['btu'] == 0) {
-			return false;
-		}
-
-		$bef = $burnerDetails['output'] / $burnerDetails['input'];
 		$noxEmission->gas_unit_used = (float)$noxEmission->gas_unit_used;
 
 		if ($noxEmission->gas_unit_used == 0) {
-			
-			//$nox = $bef*100*1*($noxEmission->end_time - $noxEmission->start_time)/3600;
-			$nox = $burnerDetails['btu']/1000000 * self::EMISSION_FACTOR_FOR_NOX * ($noxEmission->end_time - $noxEmission->start_time)/3600; 
-			return $nox;
+			$hours = ($noxEmission->end_time - $noxEmission->start_time)/3600;
+		} else {
+			$hours = $noxEmission->gas_unit_used/$burnerDetails['btu'];
 		}
-		/*
-		 * BURNER EFFICIENCY FACTOR / (BTUS / KW'S PER HOUR RATING) = UEF (UNIT EFFICIENCY FACTOR)
-		 */
-/*		$uef = $bef*100 / $burnerDetails['btu'];*/
-		/*
-		 * UNIT EFFICIENCY FACTOR * GAS THERMAL UNITS USED = Nox (TOTAL Nox EMISSION)
-		 */
-	/*	$nox = $uef * $noxEmission->gas_unit_used;*/
-		
-		/*$hours = $noxEmission->gas_unit_used/$burnerDetails['btu']; //hour will work
-		$nox = $burnerDetails['btu']/1000000 * self::EMISSION_FACTOR_FOR_NOX * ($noxEmission->end_time - $noxEmission->start_time)/3600; */
-		$nox = (self::EMISSION_FACTOR_FOR_NOX * $noxEmission->gas_unit_used) / 1000000;
+
+		$nox = $burnerDetails['btu'] * self::EMISSION_FACTOR_FOR_NOX/1000000 * $hours;
+
 		return $nox;
+
 	}
 
 

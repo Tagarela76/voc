@@ -58,7 +58,8 @@ class MReports {
 
 	    // getting rule list
 	    $rule = new Rule($db);
-	    $rulesList = $rule->getRuleListFromMix($request['category'], $request['id']);
+	    //$rulesList = $rule->getRuleListFromMix($request['category'], $request['id']);
+		$rulesList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID);
 
 	    $result["rules"] = $rulesList;
 
@@ -90,10 +91,10 @@ while ( ( $dateObj->format('Y') - $clone->format('Y') ) <= 2 ){
 		$listdate['text'] = $clone->format('m/y');
 		$listdate['value'] = $clone->format('m/01/y');
 		$mas[] = $listdate;
-		$clone->sub(new DateInterval('P1M')); 
+		$clone->sub(new DateInterval('P1M'));
 }
 $result["monthes"] = $mas;
-	
+
 
 	    //getting supplier list for projectCoat report
 	    if ($reportType == "projectCoat") {

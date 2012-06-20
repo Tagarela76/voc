@@ -53,6 +53,7 @@ class validateCSV {
 			//	pfp's are splitted by empty row
 			if ($this->isEmptyRow($data)) {
 				if (count($currentPfp) > 0) {
+
 					if($isErrorInCurrentPfp) {
 						$this->productsError[] = $currentPfp;
 					} else {
@@ -75,6 +76,10 @@ class validateCSV {
 				$data['ratioRangeTo'] = $ranges[1];
 			}
 
+			if(bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				$data[bulkUploader4PFP::PRODUCTRATIO_INDEX]	= 1;
+			}
+
 			if ($currRowComments != "") {
 				$this->errorComments .= $currRowComments;
 				$isErrorInCurrentPfp = true;
@@ -88,22 +93,35 @@ class validateCSV {
 		$comments = "";
 		if ($data[2]) {
 			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
-			
+
 			//product check exist
 			if ($this->db->num_rows() == 0) {
 				$comments .= "Product with ID : " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 				//$this->productsError[]['errorComments'] = "Product with ID value " . $data[2] . " doesn't exist. Row " . $row . ".\n";
 			}
 
-			if (!preg_match("/^\d+(\.\d)*(\%)*$/", $data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
-				//	this could be range percetnage
-				if (!bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
-					//	no, it's just a validation error
-					$comments .= "Product with ID : " . $data[2] . " has validation error at Ratio. Row " . $row . ".\n";
-				}
-
-
+			//	check for percent - "10%"
+			if (Validation::isPercent($data[bulkUploader4PFP::PRODUCTRATIO_INDEX], true)) {
+				return $comments;
 			}
+
+			//	check for cumulative "344.32"
+			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	check for range "5-10%"
+			if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	check for RTU or RTS
+			if (bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+
+			//	no, it's just a validation error
+			$comments .= "Product with ID : " . $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] . " has validation error at Ratio. Row " . $row . ".\n";
 		}
 		return $comments;
 	}
@@ -587,7 +605,7 @@ class validateCSV {
 		$data[18] = str_replace("F","",$data[18]);
 		$data[18] = trim($data[18]);
 		//if Boiling Range From is empty or N/A put 0
-		if (empty($data[18]) || $data[18] == 'N/A') 
+		if (empty($data[18]) || $data[18] == 'N/A')
 			$data[18] = '0';
 		if ( !preg_match("/^[0-9.]*$/",$data[18]) || (substr_count($data[18],".") > 1) ){
 			$comments .= "	Boiling Range From is undefined. Row " . $row . ".\n";
@@ -598,9 +616,9 @@ class validateCSV {
 		$data[19] = str_replace("F","",$data[19]);
 		$data[19] = trim($data[19]);
 		//if Boiling Range To is empty or N/A put 0
-		if (empty($data[19]) || $data[19] == 'N/A') 
+		if (empty($data[19]) || $data[19] == 'N/A')
 				$data[19] = '0';
-		
+
 		if ( !preg_match("/^[0-9.]*$/",$data[19]) || (substr_count($data[19],".") > 1) ){
 			$comments .= "	Boiling Range To is undefined. Row " . $row . ".\n";
 		}

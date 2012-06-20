@@ -15,92 +15,7 @@ class CAPfpLibrary extends Controller {
 			$this->$functionName();
 	}
 
-	/*private function actionBrowseCategory() {
-		$bookmark=$this->getFromRequest('bookmark');
-
-		        $manager = new BookmarksManager($this->db);
-                $bookmarksList = $manager->getBookmarksListSupplier();
-                $this->smarty->assign("bookmarks",$bookmarksList);
-
-
-				$bmcount = $manager->getCountSupplier();
-				for ($i=0;$i<$bmcount;$i++){
-					if ($_GET['subBookmark'] == $bookmarksList[$i]['supplier_id']){
-					$check = $i;break; }
-				}
-				if ($check < $bmcount/3){
-					$tmp = $check;
-					$indent = $check/2;
-				}
-				if ( $bmcount/3 <= $check AND $check < 2*($bmcount/3)){
-
-				$indent = $check/2 + $check/10;
-				}
-				if ($check >= 2*($bmcount/3)){
-				$indent = $check/2 + 2*($check/10) ;
-				}
-				if ($check == $bmcount){
-				$indent = $check/2 + 2*($check/10) ;
-				}
-				$this->smarty->assign('selectedBookmark',$indent);
-
-
-		//die(var_dump($_GET,$bookmarksList));
-		//$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
-
-		//FILTER
-
-		$filter=new Filter($this->db,$bookmark);
-
-		$this->smarty->assign('filterArray',$filter->getJsonFilterArray());
-		$filterData= array
-			(
-				'filterField'=>$this->getFromRequest('filterField'),
-				'filterCondition'=>$this->getFromRequest('filterCondition'),
-				'filterValue'=>$this->getFromRequest('filterValue')
-			);
-
-		if ($this->getFromRequest('searchAction')=='filter') {
-			$this->smarty->assign('filterData',$filterData);
-			$this->smarty->assign('searchAction','filter');
-		}
-		$filterStr = $filter->getSubQuery($filterData);
-		//FILTER
-
-		//SORT
-		if (!is_null($this->getFromRequest('sort')))
-		{
-			$sort= new Sort($this->db,$bookmark,0);
-			$sortStr = $sort->getSubQuerySort($this->getFromRequest('sort'));
-			$this->smarty->assign('sort',$this->getFromRequest('sort'));
-		}
-		else
-			$this->smarty->assign('sort',0);
-
-		if (!is_null($this->getFromRequest('searchAction')))
-			$this->smarty->assign('searchAction',$this->getFromRequest('searchAction'));
-		//SORT
-
-		$vars = array(
-				'sortStr' => $sortStr,
-				'filterStr' => $filterStr,
-				'filterData' => $filterData
-			);
-
-
-		/*$manager = new PFPManager($this->db);
-		$pfps = $manager->getList();
-		$this->smarty->assign('itemsCount', count($pfps));
-		$jsSources = array  ('modules/js/checkBoxes.js',
-                             'modules/js/autocomplete/jquery.autocomplete.js');
-		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign('pfps', $pfps);
-		$this->smarty->assign('childCategoryItems', $pfps);
-		//$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
-
-		$this->forward($bookmark,'bookmark'.ucfirst($bookmark),$vars,'admin');
-		$this->smarty->display("tpls:index.tpl");
-		}*/
+	
 
 	protected function actionBrowseCategory($vars) {
 		$this->bookmarkPfpLibrary($vars);
@@ -138,22 +53,28 @@ class CAPfpLibrary extends Controller {
 		//$pfplist = $manager->getList();
 
 		$sub = $this->getFromRequest("subBookmark");
-		
+
 		$supplierID = $this->getFromRequest('subBookmark');
-		$supplierID = (is_null($supplierID) || $supplierID == 'custom')?0:$supplierID;
-		
-		$pfpsCount = $manager->countPFPAll(0, '', $this->getFromRequest('productCategory'), $supplierID);				
-		
+		$supplierID = (is_null($supplierID) || $supplierID == 'custom') ? 0 : $supplierID;
+
+		//	set search criteria
+		if (!is_null($this->getFromRequest('q'))) {
+			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+		}
+
+		$pfpsCount = $manager->countPFPAll(0, '', $this->getFromRequest('productCategory'), $supplierID);
+
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
 		$pagination = new Pagination($pfpsCount);
 		$pagination->url = $url;
 		$this->smarty->assign('pagination', $pagination);
-	   
+
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
 		$pfps = $manager->getListAll(null,$pagination,null, $productCategory, $supplierID);
-		
+
 		/*
 		$pfplist = $manager->getPfpList($sub);
 		$pfps = $manager->getListSpecial(null,null,$pfplist);
@@ -465,7 +386,7 @@ class CAPfpLibrary extends Controller {
 		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=".$this->getFromRequest('subBookmark')."&letterpage=".$this->getFromRequest('letterpage')."&productCategory=".$this->getFromRequest("productCategory")."");
 		die();
 	}
-	
+
 	protected function actionAccessToCompany() {
 		if ($_POST['assign'] == "Assign") {
 			$industry_type = $_POST['industryType'];
@@ -492,7 +413,7 @@ class CAPfpLibrary extends Controller {
 				foreach ($company_id as $company_id_item) {
 					$already_assign = false;
 					foreach ($pfp2company as $pfp2company_item) {
-						if ((intval($pfp_list_item['id']) == intval($pfp2company_item['pfp_id'])) 
+						if ((intval($pfp_list_item['id']) == intval($pfp2company_item['pfp_id']))
 								&& (intval($company_id_item) == intval($pfp2company_item['company_id']))) {
 							$already_assign = true;		// is $pfp_list_item assigned to $company_id_item
 						}
@@ -504,7 +425,7 @@ class CAPfpLibrary extends Controller {
 						//$result_log .= "<b>Error!</b> ".$pfp_list_item['description']." is already assigned to company ".$company_id_item."<br/>";
 					//}
 				}
-				
+
 			}
 			//empty($result_log) ? $result_log = "PFP's were not assigned to companies.<br/>" : "";
 			//$this->smarty->assign("log", $result_log);

@@ -96,11 +96,6 @@ class CNox extends Controller {
 		$this->setListCategoriesLeftNew($parentCategory, $parentCategoryID, array('bookmark' => 'nox'));
 		$this->setPermissionsNew('viewData');
 
-	/*	$this->smarty->assign('editUrl',
-				'?action=edit&category='.$this->getFromRequest('tab')
-				.'&id='.$this->getFromRequest("id")
-				.'&'.urlencode($parentCategory).'ID='.urlencode($parentCategoryID)
-				."&tab=".  urlencode($this->getFromRequest('tab')));*/
 		/*
 		 * 404 error because controller byrner doesn't exist
 		 * so change part of edit url and set nox category instead burner
@@ -576,6 +571,8 @@ class CNox extends Controller {
 		$noxEmission->start_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
 		$noxEmission->end_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
 
+		$manager->calculateNox($noxEmission);
+
 		$burnerDetails = $manager->getBurnerDetail($noxEmission->burner_id);
 
 		$this->smarty->assign('noxEmission', $noxEmission);
@@ -646,17 +643,19 @@ class CNox extends Controller {
 			$noxEmissionDetails = $form;
 			$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
 
+			//	convert time to timestamp
+			$startTime = new TypeChain($noxEmissionDetails['start_time'], 'date', $this->db, $companyID, 'company');
+			$endTime = new TypeChain($noxEmissionDetails['end_time'], 'date', $this->db, $companyID, 'company');
+			$noxEmission->start_time = $noxEmissionDetails['start_time'] = $startTime->getTimestamp();
+			$noxEmission->end_time = $noxEmissionDetails['end_time'] = $endTime->getTimestamp();
+
 			$validation = new Validation($this->db);
 			$validStatus = $validation->validateNoxEmission($noxEmission);
 
 			if ($validStatus['summary'] == 'true') {
-				$startTime = new TypeChain($noxEmission->start_time, 'date', $this->db, $companyID, 'company');
-				$endTime = new TypeChain($noxEmission->end_time, 'date', $this->db, $companyID, 'company');
 
-				$noxEmission->start_time = $startTime->getTimestamp();
-				$noxEmission->end_time = $endTime->getTimestamp();
 				$totalNox = $manager->calculateNox($noxEmission);
-				
+
 				if ($totalNox) {
 					$noxEmission->nox = $totalNox;
 				}
