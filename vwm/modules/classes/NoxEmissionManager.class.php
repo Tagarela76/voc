@@ -237,7 +237,9 @@ class NoxEmissionManager {
 		if ($noxEmission->gas_unit_used == 0) {
 			$hours = ($noxEmission->end_time - $noxEmission->start_time)/3600;
 		} else {
-			$hours = $noxEmission->gas_unit_used/$burnerDetails['btu'];
+			//	gas_unit_used is in terms
+			//	1 term = 100000 BTU
+			$hours = $noxEmission->gas_unit_used * 100000/$burnerDetails['btu'];
 		}
 
 		$nox = $burnerDetails['btu'] * self::EMISSION_FACTOR_FOR_NOX/1000000 * $hours;
