@@ -394,7 +394,7 @@ class validateCSV {
 					$product["component"][] = $component;
 					$componentKey++;
 
-				} else {
+				} else { 
 					if ($industryTypeEnd) {
 					$brokenLine = false;
 
