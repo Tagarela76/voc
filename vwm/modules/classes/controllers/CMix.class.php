@@ -212,7 +212,7 @@ class CMix extends Controller
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionGetPFPProductInfo() {
+	/*private function actionGetPFPProductInfo() {
 		$id = $this->getFromRequest("id");
 		$pfpProduct = new PFPProduct($this->db,$id);
 		if($this->getFromRequest("json")) {
@@ -221,7 +221,7 @@ class CMix extends Controller
 
 		}
 		exit;
-	}
+	}*/
 
 	private function actionEditPFP() {
 		//	Access control
@@ -1365,7 +1365,7 @@ class CMix extends Controller
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 
 		$pfpmanager = new PFPManager($this->db);
-		$pfps = $pfpmanager->getList($companyID);
+		$pfps = $pfpmanager->getListAssigned($companyID);
 
 		$this->smarty->assign("pfps",$pfps);
 
@@ -1676,7 +1676,7 @@ class CMix extends Controller
 
 		$department = new Department($this->db);
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
-		
+
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 
@@ -1700,7 +1700,7 @@ class CMix extends Controller
 		//	Getting Product list
 
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
-		
+
 		$this->smarty->assign('products', $productsListGrouped);
 
 		$product = new Product($this->db);
@@ -2174,7 +2174,7 @@ class CMix extends Controller
 		$products = $product->getFormatedProductList($companyID);
 		$productList = $product->filterProductsByFacility($companyID, $department_details['facility_id'], $products);
 		//	NICE PRODUCT LIST
-		
+
 		if(isset($apelsin)) {
 			$isApelsin = true;
 		}
