@@ -15,7 +15,7 @@ class CAPfpLibrary extends Controller {
 			$this->$functionName();
 	}
 
-	
+
 
 	protected function actionBrowseCategory($vars) {
 		$this->bookmarkPfpLibrary($vars);
