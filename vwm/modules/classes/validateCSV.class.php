@@ -519,10 +519,10 @@ class validateCSV {
 
 	}
 
-	private function toCelsius($data){
+	private function toCelsius($data){ 
 		$cUnitTypeConvertor = new UnitTypeConverter();
-		$data = trim($data);
-		if (preg_match("/^\d+\s*[FCfc]{1}$/",$data)){
+		$data = trim($data); 
+		if (preg_match("/^\d+\.{0,1}\d*\s*[FCfc]{1}$/",$data)){
 			if (strtoupper(substr($data, strlen($data)-1)) == "F"){
 				$data = str_replace('F', '', $data);
 				$data = str_replace('f', '', $data);

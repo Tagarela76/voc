@@ -295,7 +295,8 @@ class UnitTypeConverter {
 	}
 	
 	public function convertFahrenheitToCelsius($tempF){
-		$tempC = round(($tempF - 32)*0.556);
+	//	$tempC = round(($tempF - 32)*0.556);
+		$tempC = ($tempF - 32)*0.556;
 		return $tempC;
 	}
 
