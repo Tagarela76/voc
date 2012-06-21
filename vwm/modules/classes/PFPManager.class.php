@@ -50,16 +50,14 @@ class PFPManager {
 		//	build mandatory sql
 		$query = "SELECT pfp.id as id " .
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
+				"WHERE pfp2p.preformulated_products_id = pfp.id ";
 
-		/*if ($searchString != "") {
-			$query .= " AND (" .
-					"pfp.description LIKE ('%" . $this->db->sqltext($searchString) . "%') OR " .
-					"p.name LIKE ('%" . $this->db->sqltext($searchString) . "%') " .
-					")";
+		$query .= $queryFilter;
+
+		if (count($this->searchCriteria) > 0 || $industryType != 0 || $supplierID != 0) {
+			$query .= " AND p.product_id = pfp2p.product_id ";
 		}
 
-		$query .= $queryFilter;*/
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= "AND ( ";
@@ -158,9 +156,13 @@ class PFPManager {
 		//	build mandatory sql
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id " .
 				"FROM ".$this->_declareTablesForSearchAndListPFPs($companyID, $industryType, $supplierID)." " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id ";
+				"WHERE pfp2p.preformulated_products_id = pfp.id ";
 
 		$query .= $queryFilter;
+
+		if (count($this->searchCriteria) > 0 || $industryType != 0 || $supplierID != 0) {
+			$query .= " AND p.product_id = pfp2p.product_id ";
+		}
 
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
@@ -739,11 +741,16 @@ class PFPManager {
 	private function _declareTablesForSearchAndListPFPs($companyID = 0, $industryType = 0, $supplierID = 0) {
 		$tables = array(
 			TB_PFP." pfp",
-			TB_PRODUCT." p",
-			TB_PFP2PRODUCT." pfp2p",
-			TB_PFP2COMPANY." pfp2c"
+			TB_PFP2PRODUCT." pfp2p"
 		);
 
+		if (count($this->searchCriteria) > 0 || $industryType != 0 || $supplierID != 0) {
+			array_push($tables, TB_PRODUCT." p");
+		}
+
+		if ($companyID != 0) {
+			array_push($tables, TB_PFP2COMPANY." pfp2c");
+		}
 		if ($industryType != 0) {
 			array_push($tables, TB_PRODUCT2TYPE." p2t ");
 		}
