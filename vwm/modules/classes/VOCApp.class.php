@@ -16,12 +16,29 @@ class VOCApp {
 	private $date_format;
 	private $date_format_js;
 
+	/**
+	 * @var Cache
+	 */
+	private $_cache;
+
 	private function __construct() {
 
 	}
 
 	private function startup() {
 		$this->date_format = DEFAULT_DATE_FORMAT;
+
+		//	load cache
+		if($this->_cache === null && defined(USE_MEMCACHE)) {
+			$cacheServers = array(
+				//	server config here
+			);
+
+			$this->_cache = new VOCMemCache();
+			$this->_cache->setServers($cacheServers);
+			$this->_cache->init();
+		}
+
 	}
 
 	/**
@@ -77,6 +94,14 @@ class VOCApp {
 			$this->date_format_js = $chain->getFromTypeController('getFormatForCalendar');
 		}
 		return $this->date_format_js;
+	}
+
+
+	/**
+	 * @return Cache
+	 */
+	public function getCache() {
+		return $this->_cache;
 	}
 
 	/**
