@@ -690,14 +690,24 @@ class PFPManager {
 
 
 	private function _processGetPFPListQuery($query) {
+		$pfps = array(); //Array of objects PFP
+
+		//	try to read from cache
+		$cache = VOCApp::get_instance()->getCache();
+		$key = md5('query'.$query);
+		if ($cache) {
+			$pfps = $cache->get($key);
+			if ($pfps) {
+				echo "from cache";
+				return $pfps;
+			}
+		}
+
 		$this->db->query($query);
 
 		//Init PFPProducts for each PFP...
 		$pfpArray = $this->db->fetch_all_array();
 		$count = count($pfpArray);
-		//var_dump($pfpArray);
-
-		$pfps = array(); //Array of objects PFP
 
 		for ($i = 0; $i < $count; $i++) {
 
@@ -727,6 +737,11 @@ class PFPManager {
 			$pfp->products = $PFPProductsArray;
 			$pfp->isRangePFP = $isRangePFP;
 			$pfps[] = $pfp;
+		}
+
+		//save to cache
+		if ($cache) {
+			$cache->set($key, $pfps);
 		}
 
 		return $pfps;

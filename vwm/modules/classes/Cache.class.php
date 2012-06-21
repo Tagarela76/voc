@@ -2,18 +2,23 @@
 
 abstract class Cache implements ArrayAccess {
 
+	const UNIQUE_KEY = 'vwm';
 
 	public function init() {
 
 	}
-	
+
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * @param string $id a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache, expired or the dependency has changed.
 	 */
 	public function get($id) {
-
+		if (($value = $this->getValue(self::UNIQUE_KEY.$id)) !== false) {
+			$data = unserialize($value);
+			return $data;
+		}
+		return false;
 	}
 
 	/**
@@ -42,7 +47,7 @@ abstract class Cache implements ArrayAccess {
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null) {
-
+		return $this->setValue(self::UNIQUE_KEY.$id, serialize($value), $expire);
 	}
 
 	/**

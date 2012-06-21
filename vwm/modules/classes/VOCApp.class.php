@@ -101,7 +101,12 @@ class VOCApp {
 	 * @return Cache
 	 */
 	public function getCache() {
-		return $this->_cache;
+		if ($this->_cache !== null) {
+			return $this->_cache;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
