@@ -179,6 +179,7 @@ function initRecycle() {
 			return true;
 		}
 	}
+
 	function getMix() {
 
 		mixObj = new CMix();
@@ -192,6 +193,9 @@ function initRecycle() {
 		mixObj.setRule($("#rule option:selected").val());
 		mixObj.selectUnittypeClass = $("#selectUnittypeClass option:selected").val();
 		mixObj.setNotes($("#notes").val());
+
+		mixObj.setIteration($("#workOrderIteration").val());
+		mixObj.setParentID($("#mixParentID").val());
 
 		return mixObj;
 	}

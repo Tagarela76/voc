@@ -23,11 +23,18 @@
         <td class="users_u_top" width="60">
             <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
         </td>
-        <td class="" width="20%">
+        <td class="" width="10%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
                 	Mix ID
 					{if $sort==1 || $sort==2}<img src="{if $sort==1}images/asc2.gif{/if}{if $sort==2}images/desc2.gif{/if}" alt=""/>{/if}
+				</div>
+			</a>
+        </td>
+		<td class="" width="10%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	Add Job
 				</div>
 			</a>
         </td>
@@ -91,6 +98,11 @@
                 </div>
             </a>
         </td>
+		<td class="border_users_b border_users_r" >
+                <div style="width:100%;">
+                    <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}" title="Add child job">add</a> &nbsp;
+                </div>
+        </td>
         <td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">
@@ -123,7 +135,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr class="">
-        <td colspan="5"class="border_users_l border_users_r" align="center">
+        <td colspan="6"class="border_users_l border_users_r" align="center">
             No mixes in the department
         </td>
     </tr>

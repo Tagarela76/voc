@@ -760,7 +760,11 @@ function createSelectUnittypeClass(id) {
 			<input type='hidden' name='unittype_{$smarty.section.i.index}' value='{$productsAdded[i]->unittype}'>
 			{/section}
 		{/if}
-			<input type='hidden' name='productCount' value='{$productCount}'>
+
+		<input type='hidden' name='productCount' value='{$productCount}'>
+		<input id='workOrderIteration' type='hidden' name='workOrderIteration' value='{$workOrderIteration}'/>
+		<input id='mixParentID' type='hidden' name='mixParentID' value='{$mixParentID}'/>
+
 		{if $request.action eq "addItem"}
 			<input type='hidden' name='department_id' value='{$request.departmentID}'>
 		{/if}

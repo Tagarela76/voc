@@ -1305,6 +1305,30 @@ class MixOptimized {
 		return $result;
 	}
 
+
+	/**
+	 * Generate description for next mix. For example, mix A has description
+	 * WO-1234. Child mix B should have description WO-1234-01
+	 * @return boolean|string
+	 */
+	public function generateNextIterationDescription() {
+		if(!$this->mix_id) {
+			return false;
+		}
+
+		$delimeter = "-";
+		$nextIteration = $this->iteration+1;
+
+		$description = $this->description;
+		if($this->iteration > 0) {
+			//	3 last symbols are suffix by design
+			$description = substr($description, 0, -3);
+		}
+		$description .= $delimeter.sprintf("%02d",$nextIteration);
+
+		return $description;
+	}
+
 	//	Tracking System
 	private function save2trash($CRUD, $id) {
 		//	protect from SQL injections

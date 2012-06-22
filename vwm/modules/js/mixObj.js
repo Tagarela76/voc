@@ -41,6 +41,14 @@ function CMix() {
 		this.rule = r;
 	}
 
+	this.setIteration = function(iteration) {
+		this.iteration = iteration;
+	}
+
+	this.setParentID = function(parentID) {
+		this.parentID = parentID;
+	}
+
 	//Convert Wastes to JSON format sting
 	this.toJson = function() {
 		var encoded = $.toJSON(this);
