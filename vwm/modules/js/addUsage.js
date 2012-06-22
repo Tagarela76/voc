@@ -199,9 +199,6 @@ function initRecycle() {
 
 
 	function addMix() {
-
-
-
 		if(mixValidator.isValid() != true ) {
 			return;
 		} else if (products.Count() == 0) {
@@ -253,9 +250,6 @@ function initRecycle() {
 			dataType: "html",
       		success: function (response)
       			{
-
-
-
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";

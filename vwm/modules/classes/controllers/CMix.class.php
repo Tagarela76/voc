@@ -1061,7 +1061,6 @@ class CMix extends Controller
 
 		}
 		$mixValidator = new MixValidatorOptimized();
-		//TODO: stopped here Denis April 4, 2011  -->
 		$mix->calculateCurrentUsage();
 		$mixValidatorResponse = $mixValidator->isValidMix($mix);
 
@@ -1077,25 +1076,16 @@ class CMix extends Controller
 			var_dump($mWasteStreams->resultParams['waste']);
 		}
 
-		if($debug) {
-			$this->db->beginTransaction();
-		}
-
 		$mix->waste = $jwaste;
 		$mix->debug = $debug;
 		$mix->recycle = $jrecycle;
 
 		$newMixID = $mix->save($isMWS,$optMix);
-		if($debug) {
-			echo "<h1>optMix:</h1>";
-			var_dump($mix,$newMixID);
+		if(!$newMixID) {
+			echo "Failed to save Mix. Please contact system administrator";
+			exit;
 		}
 
-
-
-		if($debug) {
-			echo "<h1>mix #$newMixID saved!</h1>";
-		}
 		//If module 'Waste Streams' is disabled, waste is already saved in mix->save func
 		if($isMWS) {
 			//echo "prepareSaveWasteStreams";

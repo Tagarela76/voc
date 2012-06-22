@@ -44,7 +44,7 @@ var unittypes = new Array();
 var editForm = true;
 var isPfp = ({$data->isPfp} == 1) ? true : false;
 var mixID = '{$smarty.request.id}';
-var mixDescription = '{$data->description}';
+var mixDescription = '{$data->description|escape:'quotes'}';
 {else}
 var editForm = false;
 var isPfp = false;
@@ -127,7 +127,7 @@ function createSelectUnittypeClass(id) {
 							</td>
 							<td class="border_users_r border_users_b">
 							<div class="floatleft" >
-								<input type='text' id="mixDescription" name='description' value='{$data->description}'></div>
+								<input type='text' id="mixDescription" name='description' value='{$data->description|escape}'></div>
 								<div class="error_img"  id="mixDescriptionErrorAlreadyInUse" style="display:none;"><span class="error_text" >Entered name is already in use!</span></div>
 								<div class="error_img"  id="mixDescriptionError" style="display:none;"><span class="error_text" >Error!</span></div>
 							</td>
@@ -139,7 +139,7 @@ function createSelectUnittypeClass(id) {
 								Exempt Rule: (not necessary)
 							</td>
 							<td class="border_users_r border_users_b">
-							<div align="left" ><input type="text" name="exemptRule" value="{$data->exempt_rule}" id="exemptRule"></div>
+							<div align="left" ><input type="text" name="exemptRule" value="{$data->exempt_rule|escape}" id="exemptRule"></div>
 							</td>
 						</tr>
 
@@ -173,18 +173,18 @@ function createSelectUnittypeClass(id) {
 							{/literal}
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								Notes:
 							</td>
 							<td class="border_users_b border_users_r">
 								<div class="floatleft">
-									<textarea name="notes" id="notes" >{$data->notes}</textarea>
+									<textarea name="notes" id="notes" >{$data->notes|escape}</textarea>
 								</div>
 							</td>
 						</tr>
-						
+
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" height="20">
 								AP method:
@@ -314,20 +314,20 @@ function createSelectUnittypeClass(id) {
 							</td>
 						</tr>
 					</table>
-{/if}							
-{*SET RECYCLE*}		
+{/if}
+{*SET RECYCLE*}
 <table class="users" cellpadding="0" cellspacing="0" align="center">
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td colspan="2"><div id='recycle'>Set recycle </div></td>
-						</tr>	
+						</tr>
 
 						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
 							<td class="border_users_l border_users_b border_users_r" width="30%" height="20" >
 								Recycle value:
 							</td>
 							<td class="border_users_r border_users_b" >
-								<div align="left" >											
-								<input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}"> 
+								<div align="left" >
+								<input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}">
 									{if $validStatus.summary eq 'false'}
 									{if $validStatus.waste.value eq 'failed'}
 									{*ERORR*}
@@ -346,19 +346,19 @@ function createSelectUnittypeClass(id) {
 										<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate recycle for mix. Please enter valid recycle value in % or set density for all products used in mix. VOC was calculated with recycle = 0.</font></div>
 									{*/ERORR*}
-									{/if}	
+									{/if}
 									{/if}
 							<script type="text/javascript">
 										$("#recycleValue").numeric();
-							</script>	
+							</script>
 
-								</div>	
-							
-							<div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>							
+								</div>
+
+							<div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>
 							</td>
 						</tr>
 
-					
+
 
 						<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
 							<td class="border_users_l border_users_b border_users_r" height="20">
@@ -366,46 +366,46 @@ function createSelectUnittypeClass(id) {
 							</td>
 
 							<td class="border_users_r border_users_b">
-								<div class="floatleft">	
-								
-									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >									 										
+								<div class="floatleft">
+
+									<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >
 										{section name=j loop=$typeEx}
 										{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
 										{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}										
+										{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
 										{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}		
+										{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
 										{/section}
 										<!-- 'percent' eq $data->waste.unittypeClass or  -->
-										<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>										
+										<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
 									</select>
 									<input type="hidden" id="company" value="{$companyID}">
 									<input type="hidden" id="companyEx" value="{$companyEx}">
 								</div>
-								<div class="floatleft padd_left">	
-									<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$companyID}, {$companyEx})">									
-										{section name=i loop=$data->recycle.unitTypeList}	
-											<option value='{$data->recycle.unitTypeList[i].unittype_id}' {if $data->recycle.unitTypeList[i].unittype_id eq $data->recycle.unittypeID}selected="selected"{/if}>{$data->recycle.unitTypeList[i].description}</option>										
-										{/section}									
-									</select>									
+								<div class="floatleft padd_left">
+									<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$companyID}, {$companyEx})">
+										{section name=i loop=$data->recycle.unitTypeList}
+											<option value='{$data->recycle.unitTypeList[i].unittype_id}' {if $data->recycle.unitTypeList[i].unittype_id eq $data->recycle.unittypeID}selected="selected"{/if}>{$data->recycle.unitTypeList[i].description}</option>
+										{/section}
+									</select>
 								</div>
-								
-								
+
+
 								<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
 									<img src='images/ajax-loader.gif' height=16  style="float:left;">
 								</div>
 							</td>
 						</tr>
-					
+
 					</table>
-								
+
 							{literal}
 							<script>
 								$("#recycle").click(function () {
 								$(".recycleview").slideToggle("slow");
 								});
 							</script>
-							{/literal}	
+							{/literal}
 
 {*/WASTE*}
 
@@ -770,7 +770,7 @@ function createSelectUnittypeClass(id) {
 
 		</form>
 </div>
-	
+
 {if $validStatus.summary eq 'true'}
 	{literal}
 		<script type="text/javascript">

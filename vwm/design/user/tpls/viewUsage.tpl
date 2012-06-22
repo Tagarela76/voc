@@ -1,5 +1,5 @@
-{if $color eq "green"} 
-{include file="tpls:tpls/notify/greenNotify.tpl" text=$message} 
+{if $color eq "green"}
+{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
 {if $color eq "orange"}
 {include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
@@ -30,7 +30,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->description} 
+                                &nbsp; {$usage->description|escape}
                             </div>
                         </td>
                     </tr>
@@ -40,7 +40,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->equipment_id} 
+                                &nbsp; {$usage->equipment_id}
                             </div>
                         </td>
                     </tr>
@@ -50,7 +50,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$apMethodDetails.apmethod_desc} 
+                                &nbsp; {$apMethodDetails.apmethod_desc}
                             </div>
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->rule.rule_nr_us} 
+                                &nbsp; {$usage->rule.rule_nr_us}
                             </div>
                         </td>
                     </tr>
@@ -70,7 +70,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->creation_time} 
+                                &nbsp; {$usage->creation_time}
                             </div>
                         </td>
                     </tr>
@@ -80,7 +80,7 @@
                         </td>
                         <td>
                             <div align="left">
-                                &nbsp; {$usage->expire} 
+                                &nbsp; {$usage->expire}
                             </div>
                         </td>
                     </tr>
@@ -105,21 +105,21 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->exempt_rule} 
+                                &nbsp; {$usage->exempt_rule|escape}
                             </div>
                         </td>
                     </tr>
-					
+
                     <tr>
                         <td class="" height="20">
                             Notes:
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->notes} 
+                                &nbsp; {$usage->notes|escape}
                             </div>
                         </td>
-                    </tr>					
+                    </tr>
                 </table>
             </td>
             <td width="50%"style="padding:0 5px 0 2px" valign="top" class="border_users_r">
@@ -139,7 +139,7 @@
                             </div>
                         </td>
                     </tr>
-<!-- RECYCLE -->                   
+<!-- RECYCLE -->
 					<tr>
                         <td class="" height="20">
                             Recycle:
@@ -149,7 +149,7 @@
                                 &nbsp; {$usage->recycle_percent} %
                             </div>
                         </td>
-                    </tr>					
+                    </tr>
                     <tr>
                         <td class="" height="20">
                             VOC:
@@ -166,7 +166,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->voclx} 
+                                &nbsp; {$usage->voclx}
                             </div>
                         </td>
                     </tr>
@@ -176,7 +176,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$usage->vocwx} 
+                                &nbsp; {$usage->vocwx}
                             </div>
                         </td>
                     </tr>
@@ -186,7 +186,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 
+                                &nbsp; {if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
                             </div>
                         </td>
                     </tr>
@@ -196,7 +196,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 
+                                &nbsp; {if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
                             </div>
                         </td>
                     </tr>
@@ -206,7 +206,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {if $facilityLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 
+                                &nbsp; {if $facilityLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
                             </div>
                         </td>
                     </tr>
@@ -216,7 +216,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {if $departmentAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 
+                                &nbsp; {if $departmentAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
                             </div>
                         </td>
                     </tr>
@@ -226,7 +226,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {if $facilityAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if} 
+                                &nbsp; {if $facilityAnnualLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
                             </div>
                         </td>
                     </tr>
@@ -279,13 +279,13 @@
                     {/foreach}
                 </table>
             </td>
-        </tr>        
+        </tr>
         <tr>
             <td bgcolor="" height="20" class="users_u_bottom ">
-                &nbsp; 
+                &nbsp;
             </td>
             <td bgcolor="" height="20" class="users_u_bottom_r ">
-                &nbsp; 
+                &nbsp;
             </td>
         </tr>
     </table>
