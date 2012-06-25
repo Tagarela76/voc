@@ -684,7 +684,7 @@ class validateCSV {
 		}
 
 		//comp description check
-		if (strlen($data[11])>128) {
+		if (strlen($data[11])>500) {
 			$comments .= "	Description value is too long. Row " . $row . ".\n";
 		}
 		if (empty($data[11]) && ($data[11] !== '0')) {
