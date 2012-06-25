@@ -101,11 +101,19 @@
 						$mix->valid = MixOptimized::MIX_IS_INVALID;
 						$mix->hoverMessage = $mixHover->mixInvalid();						
 					}
+				} 
+				// check mix to has child mixes
+				$sql = "SELECT * FROM ".TB_USAGE." WHERE parent_id = " . $mixData->mix_id; 
+				$this->db->query($sql); 
+				if ($this->db->num_rows() > 0) {
+					$mix->hasChild = true;
+				} else {
+					$mix->hasChild = false;
 				}
-										
+				
 				$usageList[] = $mix;
-			}
-			
+			} 
+
 			return $usageList;
 		}
 		

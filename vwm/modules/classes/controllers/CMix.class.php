@@ -418,16 +418,16 @@ class CMix extends Controller {
 	}
 
 	/**
+	 * TODO: completly rewrite
 	 * bookmarkDMix($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDMix($vars) {
+	protected function bookmarkDMix($vars) { 
 		if (!isset($_GET['tab'])) {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
 		extract($vars);
 		/**
-		 * * Fuck the extract!
 		 * @departmentID int
 		 */
 		if ($tab == "pfp") {
@@ -544,7 +544,7 @@ class CMix extends Controller {
 				$mixHover = new Hover();
 				$departmentID = $this->getFromRequest('id');
 				$mixOptimized = new MixManager($this->db, $departmentID);
-				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
+				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray); 
 				$department = new Department($this->db);
 				$department->initializeByID($departmentID);
 				$curUsage = $department->getCurrentUsage();

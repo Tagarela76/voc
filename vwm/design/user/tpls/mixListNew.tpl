@@ -99,9 +99,11 @@
             </a>
         </td>
 		<td class="border_users_b border_users_r" >
+			{if !$mix->hasChild}
                 <div style="width:100%;">
                     <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}" title="Add child job">add</a> &nbsp;
                 </div>
+			{/if}	
         </td>
         <td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">

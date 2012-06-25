@@ -63,6 +63,13 @@ class MixOptimized {
 	public $dateFormatForCalendar;
 	public $dateFormat;
 	public $debug;
+	
+	/**
+	 * Mixes may have sub mixes, for example WO-1234 and WO-1234-01
+	 * This property says does mix have such submix
+	 * @var boolean
+	 */
+	public $hasChild = false;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
