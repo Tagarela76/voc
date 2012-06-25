@@ -926,7 +926,7 @@ class Validation {
 			}
 			$percent = trim(substr($percent, 0, -1));
 		}
-		$parametrs = array ('min'=>0, 'max'=>100, 'decimal'=>',.');
+		$parametrs = array ('min'=>0, 'max'=>1000, 'decimal'=>',.');
 		return Validate::number($percent, $parametrs);
 	}
 
