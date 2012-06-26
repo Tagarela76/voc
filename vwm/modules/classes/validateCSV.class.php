@@ -412,7 +412,7 @@ class validateCSV {
 					$product["component"][] = $component;
 					$componentKey++;
 
-				} else { 
+				} else {
 					if ($industryTypeEnd) {
 					$brokenLine = false;
 
@@ -519,9 +519,9 @@ class validateCSV {
 
 	}
 
-	private function toCelsius($data){ 
+	private function toCelsius($data){
 		$cUnitTypeConvertor = new UnitTypeConverter();
-		$data = trim($data); 
+		$data = trim($data);
 		if (preg_match("/^\d+\.{0,1}\d*\s*[FCfc]{1}$/",$data)){
 			if (strtoupper(substr($data, strlen($data)-1)) == "F"){
 				$data = str_replace('F', '', $data);
@@ -634,11 +634,13 @@ class validateCSV {
 
 		//percent volatile by weight
 		$data[29] = str_replace(",",".",$data[29]);
+		$data[29] = str_replace("%","",$data[29]);
 		if ( !preg_match("/^[0-9.]*$/",$data[29]) || (substr_count($data[29],".") > 1) || $data[29] > 100 ){
 			$comments .= "	Percent Volatile by Weight is undefined. Row " . $row . ".\n";
 		}
 		//percent volatile by volume
 		$data[30] = str_replace(",",".",$data[30]);
+		$data[30] = str_replace("%","",$data[30]);
 		if ( !preg_match("/^[0-9.]*$/",$data[30]) || (substr_count($data[30],".") > 1) || $data[30] > 100 ){
 			$comments .= "	Percent Volatile by Weight is undefined. Row " . $row . ".\n";
 		}
