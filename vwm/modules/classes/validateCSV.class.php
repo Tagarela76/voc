@@ -314,8 +314,8 @@ class validateCSV {
 						"coating" => $data[3],
 						"specialtyCoating" => $data[4],
 						"aerosol" => $data[5],
-						"vocwx" => $data[8],
-						"voclx" => $data[9],
+						"vocwx" => $this->convertDensity($data[8]),
+						"voclx" => $this->convertDensity($data[9]),
 						"density" => $data[16],
 						"gavity" => $data[17],
 						"boilingRangeFrom" => $this->toCelsius($data[18]),
@@ -577,13 +577,13 @@ class validateCSV {
 
 		//vocwx check
 		$data[8] = str_replace(",",".",$data[8]);
-		if ( !preg_match("/^[0-9.]*$/",$data[8]) || (substr_count($data[8],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[8]) && !preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data[8])) || (substr_count($data[8],".") > 1) ){
 			$comments .= "	VOCWX is undefined. Row " . $row . ".\n";
 		}
 
 		//voclx check
 		$data[9] = str_replace(",",".",$data[9]);
-		if ( !preg_match("/^[0-9.]*$/",$data[9]) || (substr_count($data[9],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[9]) && !preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data[9]) ) || (substr_count($data[9],".") > 1) ){
 			$comments .= "	VOCLX is undefined. Row " . $row . ".\n";
 		}
 
@@ -1543,6 +1543,40 @@ class validateCSV {
 
 		return true;
 	}
+	
+	/*
+	 * 
+	 */
+	private function convertDensity($data) {
+		$data = trim($data);
+		if (preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data)){
+			$data = str_replace('G/L', '', $data);
+			$data = str_replace('g/L', '', $data);
+			$data = str_replace('G/l', '', $data);
+			$data = str_replace('g/l', '', $data);
+			//	gram per liter
+			$from = new Density($this->db);
+			$from->setNumerator(Unittype::UNIT_G_ID);
+			$from->setDenominator(Unittype::UNIT_L_ID);
+
+			// lbs per gallon
+			$to = new Density($this->db);
+			$to->setNumerator(Unittype::UNIT_LBS_ID);
+			$to->setDenominator(Unittype::UNIT_GAL_ID);
+
+			$converter = new UnitTypeConverter();
+
+			$result = $converter->convertDensity($data, $from, $to, new Unittype($this->db)); 
+			
+		} else {
+			$result = trim($data);
+		}
+		$result = strval($result);
+
+		return $result;
+
+	}
+
 
 }
 
