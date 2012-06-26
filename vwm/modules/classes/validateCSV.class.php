@@ -577,13 +577,13 @@ class validateCSV {
 
 		//vocwx check
 		$data[8] = str_replace(",",".",$data[8]);
-		if ( (!preg_match("/^[0-9.]*$/",$data[8]) && !preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data[8])) || (substr_count($data[8],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[8]) && !preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data[8])) || (substr_count($data[8],".") > 1) ){
 			$comments .= "	VOCWX is undefined. Row " . $row . ".\n";
 		}
 
 		//voclx check
 		$data[9] = str_replace(",",".",$data[9]);
-		if ( (!preg_match("/^[0-9.]*$/",$data[9]) && !preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data[9]) ) || (substr_count($data[9],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[9]) && !preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data[9]) ) || (substr_count($data[9],".") > 1) ){
 			$comments .= "	VOCLX is undefined. Row " . $row . ".\n";
 		}
 
@@ -1549,7 +1549,7 @@ class validateCSV {
 	 */
 	private function convertDensity($data) {
 		$data = trim($data);
-		if (preg_match("/^\d+\.{0,1}\d*\s*[Gg]{1}\/[Ll]{1}$/",$data)){
+		if (preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data)){
 			$data = str_replace('G/L', '', $data);
 			$data = str_replace('g/L', '', $data);
 			$data = str_replace('G/l', '', $data);
