@@ -1550,10 +1550,10 @@ class validateCSV {
 	private function convertDensity($data) {
 		$data = trim($data);
 		if (preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data)){
-			$data = str_replace('G/L', '', $data);
-			$data = str_replace('g/L', '', $data);
-			$data = str_replace('G/l', '', $data);
-			$data = str_replace('g/l', '', $data);
+			$data = preg_replace('/[A-Za-z]/', '', $data);
+			$data = preg_replace('/\//', '', $data);
+			$data = trim($data);
+	
 			//	gram per liter
 			$from = new Density($this->db);
 			$from->setNumerator(Unittype::UNIT_G_ID);
