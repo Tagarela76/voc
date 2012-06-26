@@ -40,7 +40,7 @@ class bulkUploader {
 		$actionLog = "--------------------------------\n";
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of ". $input['realFileName'] . "...\n";
 
-		$validation = new validateCSV();
+		$validation = new validateCSV($this->db);
 		$validation->validate($input);
 
 
