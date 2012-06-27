@@ -422,17 +422,23 @@ class CMix extends Controller {
 	 * bookmarkDMix($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDMix($vars) { 
+	protected function bookmarkDMix($vars) {
 		if (!isset($_GET['tab'])) {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
 		extract($vars);
+
 		/**
 		 * @departmentID int
 		 */
 		if ($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {
+			$mixManager = new MixManager($this->db, $this->getFromRequest('id'));
+			$mixList = $mixManager->getMixList();
+			var_dump($mixList);
+die();
+			//-------------------
 			$gacl_api = new gacl_api();
 
 			$departmentID = $vars['departmentDetails']['department_id'];
@@ -544,7 +550,7 @@ class CMix extends Controller {
 				$mixHover = new Hover();
 				$departmentID = $this->getFromRequest('id');
 				$mixOptimized = new MixManager($this->db, $departmentID);
-				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray); 
+				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
 				$department = new Department($this->db);
 				$department->initializeByID($departmentID);
 				$curUsage = $department->getCurrentUsage();

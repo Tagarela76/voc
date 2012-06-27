@@ -1,0 +1,77 @@
+%YAML 1.1
+---
+# voc_max.mix
+-
+  mix_id: 2967
+  equipment_id: 3215091
+  department_id: 292
+  description: "FixtureMix"
+  voc: 2.90
+  voclx: 2.90
+  vocwx: 2.90
+  rule_id: 1
+  apmethod_id: 3
+  waste_percent: 0.00
+  recycle_percent: 0.00
+  creation_time: 1340606319
+  iteration: 0
+-
+  mix_id: 3032
+  equipment_id: 3215091
+  department_id: 292
+  description: "06252012-02"
+  voc: 2.90
+  voclx: 2.90
+  vocwx: 2.90
+  rule_id: 1
+  apmethod_id: 3
+  waste_percent: 0.00
+  recycle_percent: 0.00
+  creation_time: 1340606319
+  iteration: 2
+  parent_id: 3031
+-
+  mix_id: 3031
+  equipment_id: 3215091
+  department_id: 292
+  description: "06252012-01"
+  voc: 1.93
+  voclx: 1.93
+  vocwx: 1.93
+  rule_id: 1
+  apmethod_id: 3
+  waste_percent: 0.00
+  recycle_percent: 0.00
+  creation_time: 1340606281
+  iteration: 1
+  parent_id: 3030
+-
+  mix_id: 3030
+  equipment_id: 3215091
+  department_id: 292
+  description: 06252012
+  voc: 0.97
+  voclx: 0.97
+  vocwx: 0.97
+  rule_id: 1
+  apmethod_id: 3
+  waste_percent: 0.00
+  recycle_percent: 0.00
+  creation_time: 1340606246
+  iteration: 0
+-
+  mix_id: 3029
+  equipment_id: 3215091
+  department_id: 292
+  description: "03012012-01"
+  voc: 1.93
+  voclx: 1.93
+  vocwx: 1.93
+  rule_id: 1
+  apmethod_id: 3
+  waste_percent: 0.00
+  recycle_percent: 0.00
+  creation_time: 1340377520
+  iteration: 1
+  parent_id: 2967
+...
