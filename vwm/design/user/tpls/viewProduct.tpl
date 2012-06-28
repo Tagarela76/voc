@@ -166,6 +166,16 @@
                             </div>
                         </td>
                     </tr>
+					{if $product.discontinued}
+							<tr>
+								<td class="border_users_l border_users_b" height="20">
+										Discontinued:
+								</td>
+								<td class="border_users_l border_users_r border_users_b">
+									<div align="left" style="font-weight: bold; color: #F00">	&nbsp; YES </div>
+								</td>
+							</tr>
+						{/if}
                 </table>
             </td>
         </tr>
