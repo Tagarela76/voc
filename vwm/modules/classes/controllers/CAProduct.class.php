@@ -95,8 +95,8 @@ class CAProduct extends Controller {
 		$this->smarty->assign("productTypeList", $productTypeList);
 
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
-		//	THIS IS TEMPORARY ACTION. REFACTORING NEEDED
 		$product->productCategoryFilter = $productCategory;
+
 
 		//	set search criteria
 		if (!is_null($this->getFromRequest('q'))) {
@@ -104,10 +104,14 @@ class CAProduct extends Controller {
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		}
 
+		// set organoization criteria
+		$product->organizationCriteria['companyID'] = ($companyID) ? $companyID : false;
+		$product->organizationCriteria['facilityID'] = ($facilityID) ? $facilityID : false;
+
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
-		$productCount = $product->getProductCount($companyID, $supplierID, $facilityID);
+		$productCount = $product->getProductCount($supplierID);
 
 		$pagination = new Pagination($productCount);
 		$pagination->url = $url;
@@ -121,11 +125,6 @@ class CAProduct extends Controller {
 		$this->smarty->assign('currentCompany', $companyID);
 		$this->smarty->assign('currentFacility', $facilityID);
 		$this->smarty->assign('currentSupplier', $supplierID);
-
-
-		if ($facilityID != 0) {
-			$productList = $product->filterProductsByFacility($companyID, $facilityID, $productList);
-		}
 
 		$field = 'product_id';
 		$list = $productList;

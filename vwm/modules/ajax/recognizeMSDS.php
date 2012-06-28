@@ -81,11 +81,6 @@ unset($alreadyUploadedSheet);
 $xnyo->filter_get_var('companyID','int');
 $product = new Product($db);
 $productList = $product->getFormatedProductList($_GET['companyID']);
-//	NICE PRODUCT LIST
-foreach ($productList as $oneProduct) {
-	$formattedProductList[$oneProduct['supplier']][] = $oneProduct;
-}
-
 
 //recognize
 $countRec = 0;
@@ -163,7 +158,7 @@ for($i=0;$i<count($msdsProducts);$i++) {
 
 	$obj .= "select.options[select.options.length] = new Option('none','');\n";
 	//for ($j=0; $j<count($formattedProductList); $j++) {
-		foreach ($formattedProductList as $supplier=>$products) {
+		foreach ($productList as $supplier=>$products) {
 			$obj .= "var supplier = document.createElement('optgroup');\n";
 			$obj .= "supplier.label = '".$supplier."';\n";
 

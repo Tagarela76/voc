@@ -16,6 +16,10 @@ class Product extends ProductProperties {
 	public $productCategoryFilter = 0;
 
 	public $searchCriteria = array();
+	public $organizationCriteria = array(
+		'company_id'	=> false,
+		'facility_id'	=> false,
+	);
 
 	function Product($db) {
 		$this->db = $db;
@@ -55,7 +59,10 @@ class Product extends ProductProperties {
 			}
 		}
 
-		$products = $this->_selectProductsByCompany($companyID, 0, $pagination, $filter, $sort);
+		if($companyID) {
+			$this->organizationCriteria['companyID'] = $companyID;
+		}
+		$products = $this->_selectProductsByCompany(0, $pagination, $filter, $sort);
 
 		if ($products) {
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
@@ -79,7 +86,10 @@ class Product extends ProductProperties {
 	}
 
 	public function getProductListByMFG($supplierID, $companyID = 0, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
-		$products = $this->_selectProductsByCompany($companyID, $supplierID, $pagination, $filter, $sort);
+		if($companyID) {
+			$this->organizationCriteria['companyID'] = $companyID;
+		}
+		$products = $this->_selectProductsByCompany($supplierID, $pagination, $filter, $sort);
 
 		$supplier = new Supplier($this->db);
 		$supplierDetails = $supplier->getSupplierDetails($supplierID);
@@ -693,13 +703,17 @@ class Product extends ProductProperties {
 		}
 	}
 
-	//	getting product list in format: SUPPLIER		PRODUCT_NR		PRODUCT_NAME
-	public function getFormatedProductList($companyID, $products = false) { //	arr $products = do not show these products
+	/**
+	 * Get product list for grouped by supplier dropdowm
+	 * @param int $companyID
+	 * @param array $products that should be exluded from this list
+	 * @return string|boolean product list in format: PRODUCT_NR - PRODUCT_NAME
+	 */
+	public function getFormatedProductListJunk($companyID, $products = false) {
 		$productListTemp = $this->getProductList($companyID);
-
 		//	only if products are in company
 		if ($productListTemp) {
-			//$maxValues = $this->getMaxLenghtSupplierAndProductNR($productListTemp);
+			$productList = false;
 			for ($i = 0; $i < count($productListTemp); $i++) {
 				$show = true;
 				if ($products) {
@@ -720,15 +734,66 @@ class Product extends ProductProperties {
 			return false;
 	}
 
+
+	/**
+	 * Get product list for grouped by supplier dropdowm
+	 * @param int $companyID
+	 * @param int $facilityID by default is false
+	 * @param array $excludedProducts that should be exluded from this list
+	 * @return string|boolean product list in format: PRODUCT_NR - PRODUCT_NAME
+	 */
+	public function getFormatedProductList($companyID, $facilityID = false, $excludedProducts = false) {
+
+		//	do not show discontnued products
+		$filter = ' p.discontinued = 0 ';
+
+		if($excludedProducts) {
+			if (!is_array($excludedProducts)) {
+				return new Exception('$excludedProducts should be an array');
+			}
+			$excludedIDs = array();
+			foreach ($excludedProducts as $excludedProduct) {
+				//	seems $excludedProducts may come in 2 formats:
+				//	1- array of produts arrays with keys product_id, product_nr, etc
+				//	2- array of product id's
+				if(isset($excludedProduct['product_id'])) {
+					array_push($excludedIDs, $excludedProduct['product_id']);
+				} else {
+					array_push($excludedIDs, $excludedProduct);
+				}
+
+			}
+			$filter .= ' AND p.product_id NOT IN ('.  implode(',', $excludedIDs).') ';
+		}
+
+		if($companyID) {
+			$this->organizationCriteria['companyID'] = $companyID;
+			if($facilityID) {
+				$this->organizationCriteria['facilityID'] = $facilityID;
+			}
+		}
+
+		$products = $this->_selectProductsByCompany(0, null, $filter);
+
+		$productListGrouped = array();
+		foreach ($products as $product) {
+			$product['formattedProduct'] =  $product['product_nr'] . " &mdash;  	 " . $product['name'];
+			$productListGrouped[$product['supplier']][] = $product;
+		}
+		return $productListGrouped;
+	}
+
 	/**
 	 * Alias for Product::getProductCount()
-	 * @param int $company_id
-	 * @param int $facility_id
+	 * @param int $companyID
+	 * @param int $facilityID
 	 * @param string $filter
 	 * @return int
 	 */
-	public function countProducts($company_id, $facility_id, $filter = ' TRUE ') {
-		return $this->getProductCount($company_id, 0, $facility_id, $filter);
+	public function countProducts($companyID, $facilityID, $filter = ' TRUE ') {
+		$this->organizationCriteria['companyID'] = ($companyID) ? $companyID : false;
+		$this->organizationCriteria['facilityID'] = ($facilityID) ? $facilityID : false;
+		return $this->getProductCount(0, $filter);
 	}
 
 	public function productAutocomplete($occurrence, $companyID = 0) {
@@ -1032,9 +1097,9 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 	}
 
-	public function getProductCount($companyID, $supplierID, $facilityID = null, $filter = ' TRUE ') {
+	public function getProductCount($supplierID, $filter = ' TRUE ') {
 		$query = "SELECT count(*) AS cnt " .
-				"FROM " . $this->_declareTablesForSearchAndListProducts($companyID) . " " .
+				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 				"WHERE p.supplier_id = s.supplier_id " .
 				"AND coat.coat_id = p.coating_id " .
 				"AND {$filter} ";
@@ -1053,12 +1118,11 @@ class Product extends ProductProperties {
 			$query .= " AND s.original_id =" . $this->db->sqltext($supplierID) . " ";
 		}
 
-		if (!(empty($companyID) && $companyID == 0)) {
-			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = " . $this->db->sqltext($companyID) . " ";
-		}
-
-		if (!is_null($facilityID) && $facilityID != 0) {
-			$query .= " AND (p2c.facility_id IS NULL OR p2c.facility_id = " . $this->db->sqltext($facilityID) . ") ";
+		if ($this->organizationCriteria["companyID"]) {
+			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = " . $this->db->sqltext($this->organizationCriteria["companyID"]) . " ";
+			if($this->organizationCriteria["facilityID"]) {
+				$query .= " AND (facility_id = " . $this->db->sqltext($this->organizationCriteria["facilityID"]) . " OR facility_id IS NULL)";
+			}
 		}
 
 		if ($this->productCategoryFilter != 0) {
@@ -1138,7 +1202,6 @@ class Product extends ProductProperties {
 
 	/**
 	 * Do select query and fetch products
-	 * @param int $companyID
 	 * @param int $supplierID
 	 * @param Pagination $pagination
 	 * @param string $filter
@@ -1147,10 +1210,10 @@ class Product extends ProductProperties {
 	 * supplier_id, supplier, voclx, vocwx, percent_volatile_weight,
 	 * percent_volatile_volume
 	 */
-	private function _selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
 		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
-				"FROM " . $this->_declareTablesForSearchAndListProducts($companyID) . " " .
+				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 				"WHERE p.supplier_id = s.supplier_id " .
 				"AND coat.coat_id = p.coating_id ";
 
@@ -1168,8 +1231,11 @@ class Product extends ProductProperties {
 			$query .= " AND s.original_id =" . $this->db->sqltext($supplierID) . " ";
 		}
 
-		if (!(empty($companyID) && $companyID == 0)) {
-			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = " . $this->db->sqltext($companyID) . " ";
+		if ($this->organizationCriteria["companyID"]) {
+			$query .= " AND p2c.product_id = p.product_id AND p2c.company_id = " . $this->db->sqltext($this->organizationCriteria["companyID"]) . " ";
+			if($this->organizationCriteria["facilityID"]) {
+				$query .= " AND (facility_id = " . $this->db->sqltext($this->organizationCriteria["facilityID"]) . " OR facility_id IS NULL)";
+			}
 		}
 
 		if ($this->productCategoryFilter != 0) {
@@ -1220,17 +1286,16 @@ class Product extends ProductProperties {
 
 	/**
 	 * Generate string to inculde into SQL from statement for count/list products
-	 * @param int $companyID
 	 * @return string Example product p, supplier s
 	 */
-	private function _declareTablesForSearchAndListProducts($companyID = 0) {
+	private function _declareTablesForSearchAndListProducts() {
 		$tables = array(
 			TB_PRODUCT . " p",
 			TB_SUPPLIER . " s",
 			TB_COAT . " coat",
 		);
 
-		if ($companyID != 0) {
+		if($this->organizationCriteria["companyID"]) {
 			array_push($tables, "product2company p2c");
 		}
 
