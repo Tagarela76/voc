@@ -298,14 +298,6 @@ class validateCSV {
 						$data[35] = '0';
 					}
 
-					if ($data[18] == ''){
-						$data[18] = '0';
-					}
-
-					if ($data[19] == ''){
-						$data[19] = '0';
-					}
-
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
@@ -314,8 +306,8 @@ class validateCSV {
 						"coating" => $data[3],
 						"specialtyCoating" => $data[4],
 						"aerosol" => $data[5],
-						"vocwx" => $data[8],
-						"voclx" => $data[9],
+						"vocwx" => $this->convertDensity($data[8]),
+						"voclx" => $this->convertDensity($data[9]),
 						"density" => $data[16],
 						"gavity" => $data[17],
 						"boilingRangeFrom" => $this->toCelsius($data[18]),
@@ -336,7 +328,7 @@ class validateCSV {
 						"health" => $data[36]
 					);
 				}
-
+var_dump($product); die();
 				if ($inProduct){
 					if (!empty($data[32])) {
 						$industryType = array(
@@ -522,6 +514,12 @@ class validateCSV {
 	private function toCelsius($data){
 		$cUnitTypeConvertor = new UnitTypeConverter();
 		$data = trim($data);
+		//boiling range clear
+		$data = str_replace(",",".",$data);
+		//if Boiling Range is empty or N/A put 0
+		if (empty($data) || $data == 'N/A')
+			$data = '0';
+
 		if (preg_match("/^\d+\.{0,1}\d*\s*[FCfc]{1}$/",$data)){
 			if (strtoupper(substr($data, strlen($data)-1)) == "F"){
 				$data = str_replace('F', '', $data);
@@ -577,13 +575,13 @@ class validateCSV {
 
 		//vocwx check
 		$data[8] = str_replace(",",".",$data[8]);
-		if ( !preg_match("/^[0-9.]*$/",$data[8]) || (substr_count($data[8],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[8]) && !preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data[8])) || (substr_count($data[8],".") > 1) ){
 			$comments .= "	VOCWX is undefined. Row " . $row . ".\n";
 		}
 
 		//voclx check
 		$data[9] = str_replace(",",".",$data[9]);
-		if ( !preg_match("/^[0-9.]*$/",$data[9]) || (substr_count($data[9],".") > 1) ){
+		if ( (!preg_match("/^[0-9.]*$/",$data[9]) && !preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data[9]) ) || (substr_count($data[9],".") > 1) ){
 			$comments .= "	VOCLX is undefined. Row " . $row . ".\n";
 		}
 
@@ -1543,6 +1541,40 @@ class validateCSV {
 
 		return true;
 	}
+	
+	/*
+	 * 
+	 */
+	private function convertDensity($data) {
+		$data = trim($data);
+		if (preg_match("/^\d+\.{0,1}\d*\s*[A-Za-z]{1}\s*\/\s*[A-Za-z]{1}$/",$data)){
+			$data = preg_replace('/[A-Za-z]/', '', $data);
+			$data = preg_replace('/\//', '', $data);
+			$data = trim($data);
+	
+			//	gram per liter
+			$from = new Density($this->db);
+			$from->setNumerator(Unittype::UNIT_G_ID);
+			$from->setDenominator(Unittype::UNIT_L_ID);
+
+			// lbs per gallon
+			$to = new Density($this->db);
+			$to->setNumerator(Unittype::UNIT_LBS_ID);
+			$to->setDenominator(Unittype::UNIT_GAL_ID);
+
+			$converter = new UnitTypeConverter();
+
+			$result = $converter->convertDensity($data, $from, $to, new Unittype($this->db)); 
+			
+		} else {
+			$result = trim($data);
+		}
+		$result = strval($result);
+
+		return $result;
+
+	}
+
 
 }
 
