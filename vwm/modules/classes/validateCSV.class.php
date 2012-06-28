@@ -298,14 +298,6 @@ class validateCSV {
 						$data[35] = '0';
 					}
 
-					if ($data[18] == ''){
-						$data[18] = '0';
-					}
-
-					if ($data[19] == ''){
-						$data[19] = '0';
-					}
-
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
@@ -336,7 +328,7 @@ class validateCSV {
 						"health" => $data[36]
 					);
 				}
-
+var_dump($product); die();
 				if ($inProduct){
 					if (!empty($data[32])) {
 						$industryType = array(
@@ -522,6 +514,12 @@ class validateCSV {
 	private function toCelsius($data){
 		$cUnitTypeConvertor = new UnitTypeConverter();
 		$data = trim($data);
+		//boiling range clear
+		$data = str_replace(",",".",$data);
+		//if Boiling Range is empty or N/A put 0
+		if (empty($data) || $data == 'N/A')
+			$data = '0';
+
 		if (preg_match("/^\d+\.{0,1}\d*\s*[FCfc]{1}$/",$data)){
 			if (strtoupper(substr($data, strlen($data)-1)) == "F"){
 				$data = str_replace('F', '', $data);
