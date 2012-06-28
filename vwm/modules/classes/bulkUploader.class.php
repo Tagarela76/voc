@@ -154,7 +154,7 @@ class bulkUploader {
 
 		$query = "INSERT INTO product (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 					"specific_gravity, specific_gravity_unit_id, boiling_range_from, " .
-					"boiling_range_to, flash_point, supplier_id, percent_volatile_weight, percent_volatile_volume, closed) " .
+					"boiling_range_to, flash_point, supplier_id, percent_volatile_weight, percent_volatile_volume, closed, discontinued) " .
 			 "VALUES ('".$product['productID']."', '" .
 				 $product['productName']."', " .
 				 $product['voclx'].", " .
@@ -170,7 +170,8 @@ class bulkUploader {
 				 $supplier_id.", " .
 				 "".$product['percentVolatileWeight'].", " .
 				 "".$product['percentVolatileVolume'].", " .
-				 "'".$product['closed']."' ".
+				 "'".$product['closed']."', ".
+				 $product['discontinued'] .
 				 ")";
 		$this->db->query($query);
 
@@ -287,7 +288,8 @@ class bulkUploader {
 					"supplier_id=".$supplier_id.", " .
 					"percent_volatile_weight = ".$product['percentVolatileWeight'].", " .
 					"percent_volatile_volume = ".$product['percentVolatileVolume'].", " .
-					"closed='".$product['closed']."' ".
+					"closed='".$product['closed']."', ".
+				    "discontinued =" . $product['discontinued'] . " " .
 				"WHERE product_id = ".$productID;
 		$this->db->query($queryUpd);
 

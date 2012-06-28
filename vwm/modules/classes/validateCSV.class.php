@@ -253,7 +253,8 @@ class validateCSV {
 			$data_tmp[34] = $data[$headerKey['paintOrChemical']];
 			$data_tmp[35] = $data[$headerKey['flashPoint']];
 			$data_tmp[36] = $data[$headerKey['health']];
-
+			$data_tmp[37] = 0; // set place for discontinued product marker
+			
 			$data = $data_tmp;
 
 				if (!empty($data[0])) {
@@ -272,7 +273,13 @@ class validateCSV {
 					}
 
 					$inProduct = true;
-
+					// check product to be discontinued
+					if ($data[8] == 'DISC' || $data[8] == 'discontinued' || $data[9] == 'DISC' || $data[9] == 'discontinued') {
+						$data[8] = '0';
+						$data[9] = '0';
+						$data[37] = 1;
+					}
+					
 					$currRowComments = $this->productDataCheck($data,$row);
 					if ($currRowComments != "") {
 						//$error = TRUE;
@@ -325,7 +332,8 @@ class validateCSV {
 						//"industrySubType" => $data[33],
 						"paintOrChemical" => $data[34],
 						"flashPoint" => $this->toCelsius($data[35]),
-						"health" => $data[36]
+						"health" => $data[36],
+						"discontinued" => $data[37]
 					);
 				}
 

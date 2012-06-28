@@ -250,7 +250,8 @@ class Product extends ProductProperties {
 			'percent_volatile_volume' => $data->percent_volatile_volume,
 			'product_instock' => $data->product_instock,
 			'product_limit' => $data->product_limit,
-			'product_amount' => $data->product_amount
+			'product_amount' => $data->product_amount,
+			'discontinued' => $data->discontinued
 		);
 		$hazardous = new Hazardous($this->db);
 		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
