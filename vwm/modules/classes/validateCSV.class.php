@@ -328,7 +328,7 @@ class validateCSV {
 						"health" => $data[36]
 					);
 				}
-var_dump($product); die();
+
 				if ($inProduct){
 					if (!empty($data[32])) {
 						$industryType = array(
