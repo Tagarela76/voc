@@ -8,7 +8,7 @@
  *  comes from his "XML Template to PDF Class v1.1"
  *  Credits Edward
  *
- *  Part of the code added and/or modified by Klemen Vodopivec 
+ *  Part of the code added and/or modified by Klemen Vodopivec
  *  <klemen@vodopivec.org>. Changes:
  *  - new meta tag addfont for adding external fonts (useful for
  *    non-ascii languages)
@@ -252,36 +252,36 @@ class XML2PDF extends PDF_MC_Table {
 
 			case "TABLE":
 				$this->header();
-				
+
 				break;
-		
-			case "DEPARTMENT":								
+
+			case "DEPARTMENT":
 				$this->widths = array(75, 45, 45, 45);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C', 'C');
 				$this->SetAligns($this->aligns);
 				$this->SetFillColor(200, 200, 200, 200);
-				
-				$this->Ln(1);				
+
+				$this->Ln(1);
 				$this->SetFont('Arial', 'B', 10);
 				$this->Cell($this->widths[0], 7, $attribs["ID"], 0, 0, 'L');
 				$this->Ln(5);
-				
+
 				$this->rows[0] = 'Date';
 				$this->rows[1] = 'GOM';
 				$this->rows[2] = 'Usage(gtu)';
-				$this->rows[3] = 'Total Price';	
-				foreach ($this->rows as $key => $value) {								
-					$this->Cell($this->widths[$key], 7, $value, 1, 0, 'L', true);	
+				$this->rows[3] = 'Total Price';
+				foreach ($this->rows as $key => $value) {
+					$this->Cell($this->widths[$key], 7, $value, 1, 0, 'L', true);
 				}
 				$this->Ln();
 				break;
 			case "GOMPRODUCTS":
-			case "TOTALFORDEPARTMENT":	
+			case "TOTALFORDEPARTMENT":
 			case "TOTALSUPER":
-				//	reset				
-				$this->rows = array();				
-				break;										
+				//	reset
+				$this->rows = array();
+				break;
 		} /* switch */
 	}
 
@@ -291,21 +291,21 @@ class XML2PDF extends PDF_MC_Table {
 		$tag = $this->parser->structure[$path]["Tag"];
 		$this->DebugPrint("End: $tag\n");
 
-		switch ($tag) {						
+		switch ($tag) {
 			case "TOTALSUPER":
 				$this->Ln(5);
 			case "GOMPRODUCTS":
-			case "TOTALFORDEPARTMENT":				
+			case "TOTALFORDEPARTMENT":
 				$this->SetFont('Arial', '', 10);
 				//$this->SetFillColor(255, 255, 255, 255, 255, 255);
 				//	print row
 				for ($i = 0; $i < 4; $i++) {
-					$this->Cell($this->widths[$i], 7, $this->rows[$i], 1, 0, 'L', false);	
+					$this->Cell($this->widths[$i], 7, $this->rows[$i], 1, 0, 'L', false);
 				}
 				$this->Ln();
-				
+
 				$this->rows = array();
-				break;										
+				break;
 		}
 	}
 
@@ -386,29 +386,29 @@ class XML2PDF extends PDF_MC_Table {
 			case 'PERIOD':
 				$this->header['PERIOD'] = $data;
 				break;
-			
+
 			case 'GOMPRODUCTSDATE':
 				$this->rows[0] = $data;
 				break;
-			
+
 			case 'GOMPRODUCTSNAME':
 				$this->rows[1] = $data;
 				break;
-			
+
 			case 'USAGE':
 				$this->rows[2] = $data;
 				break;
-			
+
 			case 'GOMPRODUCTSPRICE':
 				$this->rows[3] = $data;
 				break;
-			
+
 			case 'GOM':
 			case 'TOTALGOMDEP':
 			case 'TOTALGOMSUPER':
 				$this->rows[2] = $data;
-				break;	
-			
+				break;
+
 			case 'TOTALPRICESUPER':
 				$this->rows[3] = $data;
 				break;
