@@ -11,10 +11,10 @@
 	{if $color eq "blue2" && $itemsCount == 0}
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
-	
-	
+
+
 <div class="padd7">
-<form method="POST" action="admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps">
+<form method="POST" action="admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.supplier|escape:'url'}">
 	<table  class="users" height="140"  cellspacing="0" cellpadding="0" align="center">
 		<tr height="27" class="users_top_violet">
 			<td width="35%" class="users_u_top_violet">Industry Type</td>
@@ -24,7 +24,7 @@
 		<tr height="100px" class="hov_company">
 			<td  class="border_users_l border_users_r border_users_b">
 				<select class="addInventory" name="industryType">
-					{* TYPES AND SUB-TYPES 
+					{* TYPES AND SUB-TYPES
 					<optgroup label="All">
 						<option value="0">All</option>
 					</optgroup>
@@ -38,9 +38,9 @@
 						</optgroup>
 					{/foreach}
 					*}
-					
+
 					{*ONLY TYPES*}
-					
+
 					{foreach from=$typesList item='type' key="name"}
 						<option value="{$type.id}">{$name}</option>
 					{/foreach}
