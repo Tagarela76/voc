@@ -16,7 +16,13 @@ abstract class Cache implements ArrayAccess {
 	public function get($id) {
 		if (($value = $this->getValue(self::UNIQUE_KEY.$id)) !== false) {
 			$data = unserialize($value);
-			return $data;
+			if (!is_array($data)) {
+				return false;
+			}
+
+			if ( !($data[1] instanceof DbCacheDependency) || !$data[1]->hasChanged()) {
+				return $data[0];
+			}
 		}
 		return false;
 	}
@@ -43,11 +49,16 @@ abstract class Cache implements ArrayAccess {
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
 	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
+	 * @param DbCacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null) {
-		return $this->setValue(self::UNIQUE_KEY.$id, serialize($value), $expire);
+		if ($dependency !== null) {
+			$dependency->evaluateDependency();
+		}
+		$data = array($value, $dependency);
+
+		return $this->setValue(self::UNIQUE_KEY.$id, serialize($data), $expire);
 	}
 
 	/**

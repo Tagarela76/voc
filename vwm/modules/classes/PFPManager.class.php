@@ -369,6 +369,7 @@ class PFPManager {
 		}
 	}
 
+	// TODO: needs complete rewrite
 	public function add(PFP $product, $companyID) {
 
 		$count = count($product->products);
@@ -377,8 +378,14 @@ class PFPManager {
 			return false;
 		}
 
+		$this->db->beginTransaction();
+		$last_update_time = 'NOW()';
+		if(empty($companyID)) {
+			$companyID = 0;
+		}
+
 		if (isset($companyID) and is_array($companyID) and count($companyID) > 0) {
-			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('" . $product->getDescription() . "',NULL)";
+			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id, last_update_time) VALUES ('" . $product->getDescription() . "',NULL, {$last_update_time})";
 
 			$this->db->query($queryAddPFP);
 
@@ -391,7 +398,7 @@ class PFPManager {
 				$i++;
 			}
 		} else {
-			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id) VALUES ('" . $product->getDescription() . "','" . $companyID . "')";
+			$queryAddPFP = "INSERT INTO " . TB_PFP . " (description,company_id, last_update_time) VALUES ('" . $product->getDescription() . "', " . $companyID . ", {$last_update_time})";
 			$this->db->query($queryAddPFP);
 
 			$pfpID = $this->db->getLastInsertedID();
@@ -419,6 +426,7 @@ class PFPManager {
 
 		$this->db->query($queryInsertPFPProducts);
 
+		$this->db->commitTransaction();
 	}
 
 	public function remove(PFP $product) {
@@ -518,32 +526,42 @@ class PFPManager {
 
 		$this->db->beginTransaction();
 
+		$last_update_time = 'NOW()';
+
 		$this->removeProducts($from->getId());
 
 		$updatePFPQuery = "UPDATE " . TB_PFP . " SET " .
-				" description = '" . mysql_escape_string($to->getDescription()) . "'
-							WHERE id = " . $from->getId();
-		//echo "<br/>".$updatePFPQuery;
-		$this->db->query($updatePFPQuery);
+				" description = '" . $this->db->sqltext($to->getDescription()) . "', " .
+				" last_update_time = {$last_update_time}" .
+				" WHERE id = " . $from->getId();
+
+		if (!$this->db->query($updatePFPQuery)) {
+			$this->db->rollbackTransaction();
+		}
 
 		$count = count($to->products);
 		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary,ratio_to,ratio_from_original,ratio_to_original) VALUES ";
 		for ($i = 0; $i < $count; $i++) {
 			$isPrimary = $to->products[$i]->isPrimary() ? "true" : "false";
-			if ($product->isRange) {
-				$range_ratio = explode("-", $product->range_ratio);
+			if ($to->products[$i]->isRange()) {
+				$ratio_to = $to->products[$i]->ratio_to;
+				$range_ratio = explode("-", $to->products[$i]->range_ratio);
 				$ratio_from_original = $range_ratio[0];
 				$ratio_to_original = $range_ratio[count($range_ratio)-1];
+			} else {
+				$ratio_to = $range_ratio = $ratio_from_original = $ratio_to_original = 'NULL';
 			}
 			$queryInsertPFPProducts .= " ( " . $to->products[$i]->getRatio() .
-					", " . $to->products[$i]->product_id . " , {$from->getId()}, $isPrimary, ".$product->products[$i]->ratio_to.", $ratio_from_original, $ratio_to_original) ";
+					", " . $to->products[$i]->product_id . " , {$from->getId()}, $isPrimary, {$ratio_to}, $ratio_from_original, $ratio_to_original) ";
 			if ($i < $count - 1) {
 				$queryInsertPFPProducts .= " , ";
 			}
 		}
-		echo $queryInsertPFPProducts; die();
 
-		$this->db->query($queryInsertPFPProducts);
+		if (!$this->db->query($queryInsertPFPProducts)) {
+			$this->db->rollbackTransaction();
+		}
+		$this->db->commitTransaction();
 
 	}
 
