@@ -67,7 +67,6 @@ class CMix extends Controller {
 		$mixOptimized->getRule();
 
 
-
 		$this->smarty->assign("usage", $mixOptimized);
 		$apMethodObject = new Apmethod($this->db);
 		$apMethodDetails = $apMethodObject->getApmethodDetails($mixOptimized->apmethod_id);
