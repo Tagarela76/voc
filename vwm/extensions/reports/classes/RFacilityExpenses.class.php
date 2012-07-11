@@ -413,7 +413,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 							if ($unittype2price){
 								/* temporary replace expenses by potential expences by Masha 11.07.12*/
 		//						$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-								if ($data->price != '0.00') {
+								if ( isset($data->price) && $data->price != '0.00') {
 									$expenses[count($depName)] += $data->price;
 								} else {
 									$expenses[count($depName)] += $data->price_by_manufacturer;
@@ -435,7 +435,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 							if ($unittype2price){
 								/* temporary replace expenses by potential expences by Masha 11.07.12*/
 			//					$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-								if ($data->price != '0.00') {
+								if ( isset($data->price) && $data->price != '0.00') {
 									$expenses[count($depName)] += $data->price;
 								} else {
 									$expenses[count($depName)] += $data->price_by_manufacturer;
