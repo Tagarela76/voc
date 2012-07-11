@@ -676,7 +676,7 @@ class validateCSV {
 		//product pricing
 		$data[38] = str_replace(",",".",$data[38]);
 		$data[38] = str_replace("$","",$data[38]);
-		if ( !preg_match("/^[0-9.]*$/",$data[38]) || (substr_count($data[38],".") > 1) || $data[38] > 100 ){
+		if ( !preg_match("/^[0-9.]*$/",$data[38]) || (substr_count($data[38],".") > 1) ){
 			$comments .= "	Product pricing is undefined. Row " . $row . ".\n";
 		}
 		//unit type
