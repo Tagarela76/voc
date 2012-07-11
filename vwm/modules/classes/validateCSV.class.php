@@ -684,7 +684,8 @@ class validateCSV {
 		if ($data[39] != "") {
 			// isn't empty
 			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
-					$data[39] != "gallon" && $data[39] != "CAN" && $data[39] != "can" && $data[39] != "PINT" && $data[39] != "pint" && $data[39] != "LITRE" && $data[39] != "litre" ){
+					$data[39] != "gallon" && $data[39] != "CAN" && $data[39] != "can" && $data[39] != "PINT" && $data[39] != "pint" 
+					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg" ){
 				$comments .= "	Unit type is undefined. Row " . $row . ".\n";
 			}
 		}
