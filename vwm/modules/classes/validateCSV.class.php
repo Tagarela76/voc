@@ -254,6 +254,9 @@ class validateCSV {
 			$data_tmp[35] = $data[$headerKey['flashPoint']];
 			$data_tmp[36] = $data[$headerKey['health']];
 			$data_tmp[37] = 0; // set place for discontinued product marker
+			$data_tmp[38] = $data[$headerKey['productPricing']] ; // product price(from manufacturer)
+			$data_tmp[39] = $data[$headerKey['unitType']] ; // unit type
+			$data_tmp[40] = $data[$headerKey['QTY']] ; // product quentity
 			
 			$data = $data_tmp;
 
@@ -304,6 +307,9 @@ class validateCSV {
 					if ($data[35] == ''){
 						$data[35] = '0';
 					}
+					
+					// unit type clear
+					$data[39] = trim($data[39]); 
 
 					//	product processing
 					$product = array (
@@ -333,7 +339,10 @@ class validateCSV {
 						"paintOrChemical" => $data[34],
 						"flashPoint" => $this->toCelsius($data[35]),
 						"health" => $data[36],
-						"discontinued" => $data[37]
+						"discontinued" => $data[37],
+						"productPricing" => $this->calculateProductPrice($data[38], $data[40]),
+						"unitType" => $data[39],
+						"QTY" => $data[40]
 					);
 				}
 
@@ -546,7 +555,20 @@ class validateCSV {
 
 		return $result;
 	}
+	
+	private function calculateProductPrice($price, $qty){
+		// preparate data
+		$price = trim($price); // for one unit
+		$qty = trim($qty);
+		$price = str_replace(",",".",$price);
+		$price = str_replace("$","",$price);
+		// to float value
+		$fullPrice = (float)$price * (float)$qty;	
+		$result = strval($fullPrice);
 
+		return $result;
+	}
+	
 	private function productDataCheck($data,$row){
 		$comments = "";
 		//product id check
@@ -644,6 +666,34 @@ class validateCSV {
 		if ( !preg_match("/^[0-9.]*$/",$data[29]) || (substr_count($data[29],".") > 1) || $data[29] > 100 ){
 			$comments .= "	Percent Volatile by Weight is undefined. Row " . $row . ".\n";
 		}
+		//percent volatile by volume
+		$data[30] = str_replace(",",".",$data[30]);
+		$data[30] = str_replace("%","",$data[30]);
+		if ( !preg_match("/^[0-9.]*$/",$data[30]) || (substr_count($data[30],".") > 1) || $data[30] > 100 ){
+			$comments .= "	Percent Volatile by Weight is undefined. Row " . $row . ".\n";
+		}
+		
+		//product pricing
+		$data[38] = str_replace(",",".",$data[38]);
+		$data[38] = str_replace("$","",$data[38]);
+		if ( !preg_match("/^[0-9.]*$/",$data[38]) || (substr_count($data[38],".") > 1) || $data[38] > 100 ){
+			$comments .= "	Product pricing is undefined. Row " . $row . ".\n";
+		}
+		//unit type
+		$data[39] = trim($data[39]);
+		if ($data[39] != "") {
+			// isn't empty
+			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
+					$data[39] != "gallon" && $data[39] != "CAN" && $data[39] != "can" && $data[39] != "PINT" && $data[39] != "pint" && $data[39] != "LITRE" && $data[39] != "litre" ){
+				$comments .= "	Unit type is undefined. Row " . $row . ".\n";
+			}
+		}
+		//QTY
+		$data[40] = str_replace(",",".",$data[40]);
+		if ( !preg_match("/^[0-9.]*$/",$data[40]) || (substr_count($data[40],".") > 1) ){
+			$comments .= "	Quentity is undefined. Row " . $row . ".\n";
+		}
+
 		//percent volatile by volume
 		$data[30] = str_replace(",",".",$data[30]);
 		$data[30] = str_replace("%","",$data[30]);
@@ -809,6 +859,10 @@ class validateCSV {
 		$possiblePercentVolatile = array();
 		$possibleHealth = array('HEALTH');
 
+		$possibleProductPricing = array('PRODUCT PRICING');
+		$possibleUnitType = array('UNIT TYPE');
+		$possibleQTY = array('QTY');
+		
 		$columnIndex = array();
 
 		for ($i=0;$i<count($secondRowData);$i++){
@@ -1272,6 +1326,54 @@ class validateCSV {
 					$columnIndex[$i] = TRUE;
 				}
 			}
+			
+			//product pricing mapping
+			if (!isset($key['productPricing'])){
+				if ( (strtoupper(trim($firstRowData[$i])) == 'PRODUCT') &&
+						strtoupper(trim($secondRowData[$i])) == 'PRICING' ) {
+					$key['productPricing'] = $i;
+					$columnIndex[$i] = TRUE;
+				}
+				foreach ($possibleProductPricing as $header){
+					if ( strtoupper(trim($firstRowData[$i])) == $header ){
+						$key['possibleProductPricing'] = $i;
+						$columnIndex[$i] = TRUE;
+					} elseif ( strtoupper(trim($secondRowData[$i])) == $header ){
+						$key['possibleProductPricing'] = $i;
+						$columnIndex[$i] = TRUE;
+					}
+				}
+			}
+			// unit type mapping
+			if (!isset($key['unitType'])){
+				if ( (strtoupper(trim($firstRowData[$i])) == 'UNIT') &&
+						strtoupper(trim($secondRowData[$i])) == 'TYPE' ) {
+					$key['unitType'] = $i;
+					$columnIndex[$i] = TRUE;
+				}
+				foreach ($possibleUnitType as $header){
+					if ( strtoupper(trim($firstRowData[$i])) == $header ){
+						$key['unitType'] = $i;
+						$columnIndex[$i] = TRUE;
+					} elseif ( strtoupper(trim($secondRowData[$i])) == $header ){
+						$key['unitType'] = $i;
+						$columnIndex[$i] = TRUE;
+					}
+				}
+			}
+			
+			//QTY mapping
+			if (!isset($key['QTY'])){
+				foreach ($possibleQTY as $header){
+					if ( strtoupper(trim($firstRowData[$i])) == $header ){
+						$key['QTY'] = $i;
+						$columnIndex[$i] = TRUE;
+					} elseif ( strtoupper(trim($secondRowData[$i])) == $header ){
+						$key['QTY'] = $i;
+						$columnIndex[$i] = TRUE;
+					}
+				}
+			}
 
 
 		}
@@ -1280,7 +1382,7 @@ class validateCSV {
 								'rule','vocwx','voclx','case','description','mmhg','temp','weight',
 								'density','gavity','boilingRangeFrom','boilingRangeTo','class','irr',
 								'ohh','sens','oxy1','VOCPM', 'einecsElincs','substanceSymbol', 'substanceR',
-								'percentVolatileWeight', 'percentVolatileVolume', 'waste');
+								'percentVolatileWeight', 'percentVolatileVolume', 'waste', 'productPricing', 'unitType', 'QTY');
 		for ($i=0;$i<count($columnsArray);$i++){
 			if ( !isset($key[$columnsArray[$i]]) && !$columnIndex[$i]){
 				//$key[$columnsArray[$i]] = $i;

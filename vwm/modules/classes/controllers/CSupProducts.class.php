@@ -34,9 +34,9 @@ class CSupProducts extends Controller {
 		// SOrt
 		$sortStr = $this->sortList('productsPrice',2);		
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID,null,$jobberID);
+/*		$products = $productManager->getProductPriceBySupplier($supplierID,null,$jobberID);*/
 
-		if (!$products){
+/*		if (!$products){
 			$products = $productManager->getProductListByMFG($supplierID);
 			foreach ($products as $product){
 				$priceProduct = new ProductPrice($this->db, $product);
@@ -45,17 +45,18 @@ class CSupProducts extends Controller {
 				$priceProduct->save();
 			}
 			
-		}
+		}*/
 		// Pagination	
 		$count = $productManager->getCountSupplierProducts($supplierID);
 		$pagination = new Pagination($count);
 		$pagination->url = "?action=browseCategory&category=sales&bookmark=products&jobberID={$request['jobberID']}&supplierID={$request['supplierID']}";
 		$this->smarty->assign('pagination', $pagination);
 		
-		$products = $productManager->getProductPriceBySupplier($supplierID, null,$jobberID, $pagination, $sortStr);
+	//	$products = $productManager->getProductPriceBySupplier($supplierID, null,$jobberID, $pagination, $sortStr); 
+		$products = $productManager->getProductListByMFG($supplierID, 0, $pagination, ' TRUE ', $sortStr);
 	
 		foreach ($products as $product){
-			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);
+			$comapnyArray = $productManager->getCompanyListWhichProductUse($product['product_id']);	  
 			$price4prduct = new ProductPrice($this->db, $product);
 			$price4prduct->jobber_id = $jobberID;
 			$price4prduct->supman_id = $supplierID;

@@ -52,7 +52,7 @@
 			</td>
 			
 			<td class="border_users_b border_users_l" >
-				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">$ {$product->price}</div ></a>
+				<a href="{$product->url}{if $page}&page={$page}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}"><div style="width:100%;">$ {if $product->price != '0.00'} {$product->price} {else} {$product->price_by_manufacturer}{/if}</div ></a>
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r" >
