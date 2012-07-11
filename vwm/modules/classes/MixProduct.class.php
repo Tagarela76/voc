@@ -64,7 +64,7 @@
 		/** overrides super class method **/
 		public function initializeByID($productID) {
 
-			$query = "SELECT sup.*, p.*, coat.coat_desc as coatDesc FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT . "
+			$query = "SELECT sup.*,  p.product_id, p.product_nr, p.name, p.paint_chemical, coat.coat_desc as coatDesc FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT . "
 							WHERE p.supplier_id = sup.supplier_id
 							AND coat.coat_id = coating_id
 							AND p.product_id = $productID";

@@ -754,7 +754,7 @@ class MixOptimized {
 
 		$this->products = array();
 		$mixID = mysql_escape_string($this->mix_id);
-		$query = "SELECT mg.*, sup.*, p.*, coat.coat_desc as coatDesc FROM " . TB_MIXGROUP . " mg, " . TB_PRODUCT . " p, " . TB_SUPPLIER . " sup, " . TB_COAT . "
+		$query = "SELECT mg.*, sup.*, p.product_id, p.product_nr, p.name, p.paint_chemical, coat.coat_desc as coatDesc FROM " . TB_MIXGROUP . " mg, " . TB_PRODUCT . " p, " . TB_SUPPLIER . " sup, " . TB_COAT . "
 							WHERE mg.mix_id=" . $mixID . "
 							AND mg.product_id = p.product_id
 							AND p.supplier_id = sup.supplier_id
