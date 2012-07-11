@@ -422,7 +422,7 @@ class CMix extends Controller {
 	 * bookmarkDMix($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDMix($vars) { 
+	protected function bookmarkDMix($vars) {
 		if (!isset($_GET['tab'])) {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
@@ -544,7 +544,7 @@ class CMix extends Controller {
 				$mixHover = new Hover();
 				$departmentID = $this->getFromRequest('id');
 				$mixOptimized = new MixManager($this->db, $departmentID);
-				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray); 
+				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
 				$department = new Department($this->db);
 				$department->initializeByID($departmentID);
 				$curUsage = $department->getCurrentUsage();
@@ -2089,39 +2089,13 @@ class CMix extends Controller {
 	}
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $companyID
-	 * @param unknown_type $apelsin - array of id, to add property to product - disabled (for smarty in addPFP.tpl)
+	 * Loads products grouped by supplier for dropdown
+	 * @param integer $companyID
+	 * @param array $excludedProducts - array of product id to exclude (for smarty in addPFP.tpl)
 	 */
-	private function getProductsListGrouped($companyID, $apelsin = null) {
-
-		$department_id = $this->getFromRequest('departmentID');
-		if (is_null($department_id)) {
-			$cMix = new Mix($this->db);
-			$department_id = $cMix->getMixDepartment($this->getFromRequest('id'));
-		}
-		$cDepartment = new Department($this->db);
-		$department_details = $cDepartment->getDepartmentDetails($department_id);
-		// get product list
+	private function getProductsListGrouped($companyID, $excludedProducts = false) {
 		$product = new Product($this->db);
-		$products = $product->getFormatedProductList($companyID);
-		$productList = $product->filterProductsByFacility($companyID, $department_details['facility_id'], $products);
-		//	NICE PRODUCT LIST
-
-		if (isset($apelsin)) {
-			$isApelsin = true;
-		}
-
-		foreach ($productList as $oneProduct) {
-			if ($isApelsin) {
-				if (in_array($oneProduct['product_id'], $apelsin)) {
-					$oneProduct['disabled'] = true;
-				}
-			}
-			$productListGrouped[$oneProduct['supplier']][] = $oneProduct;
-		}
-		return $productListGrouped;
+		return $product->getFormatedProductList($companyID, $excludedProducts);
 	}
 
 	private function getUnitTypeList($companyID) {

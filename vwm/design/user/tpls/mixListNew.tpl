@@ -99,11 +99,12 @@
             </a>
         </td>
 		<td class="border_users_b border_users_r" >
-			{if !$mix->hasChild}
-                <div style="width:100%;">
+			<div style="width:100%;">
+				{if !$mix->hasChild}
                     <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}" title="Add child job">add</a> &nbsp;
-                </div>
-			{/if}	
+				{/if}
+				&nbsp;
+			</div>
         </td>
         <td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
@@ -129,7 +130,7 @@
     </tr>
     {/foreach}
     <tr>
-        <td colspan="5" class="border_users_l border_users_r">
+        <td colspan="6" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -146,7 +147,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="3" height="15" class="border_users">
+        <td colspan="4" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
