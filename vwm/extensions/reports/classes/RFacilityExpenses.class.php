@@ -43,7 +43,8 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					
 				); 				
 				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
+				/*	temporary replace expenses to potential expenses
+	 			$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id in (".$facilityString.")
@@ -53,7 +54,13 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				AND p.product_id = io.order_product_id
 				AND io.order_facility_id in (".$facilityString.")
 				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";				
+				AND io.order_completed_date <= m.creation_time";*/
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
+				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
+				WHERE d.facility_id in (".$facilityString.")
+				AND d.department_id = m.department_id
+				AND mg.mix_id = m.mix_id";
 				break;
 			case "facility":
 				$facility = new Facility($this->db);    				
@@ -65,6 +72,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 				
+				/*temporary replace expenses to potential expenses
 				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
@@ -75,7 +83,14 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				AND p.product_id = io.order_product_id
 				AND io.order_facility_id = ".$this->categoryID."
 				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";
+				AND io.order_completed_date <= m.creation_time";*/
+				
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
+				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
+				WHERE d.facility_id = ".$this->categoryID."
+				AND d.department_id = m.department_id
+				AND mg.mix_id = m.mix_id";
 
 				break;
 			case "department":
@@ -91,7 +106,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'name' => $departmentDetails['name'],
 					'notes' => ""
 				); 
-			
+				/*temporary replace expenses to potential expenses
 				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer  
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
@@ -103,8 +118,15 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				AND p.product_id = io.order_product_id
 				AND io.order_facility_id = d.facility_id
 				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";
-				
+				AND io.order_completed_date <= m.creation_time";*/
+			
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer  
+				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
+				WHERE d.department_id = ".$this->categoryID."
+					
+				AND d.department_id = m.department_id
+				AND mg.mix_id = m.mix_id";
 				break;
 			
 			
