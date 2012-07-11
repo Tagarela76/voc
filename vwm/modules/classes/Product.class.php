@@ -1097,7 +1097,7 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 	}
 
-	public function getProductCount($supplierID, $filter = ' TRUE ') {
+	public function getProductCount($supplierID = 0, $filter = ' TRUE ') {
 		$query = "SELECT count(*) AS cnt " .
 				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 				"WHERE p.supplier_id = s.supplier_id " .
@@ -1212,7 +1212,9 @@ class Product extends ProductProperties {
 	 */
 	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
-		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer " .
+		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
+					p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
+					p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer " .
 				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 				"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
 
@@ -1255,7 +1257,7 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 
 		if ($this->db->num_rows() > 0) {
-			$products = $this->db->fetch_all_array(); 
+			$products = $this->db->fetch_all_array();
 			return $products;
 		} else {
 			return false;
@@ -1294,7 +1296,6 @@ class Product extends ProductProperties {
 		$tables = array(
 			TB_SUPPLIER . " s",
 			TB_COAT . " coat",
-			TB_PRODUCT . " p",
 		);
 
 		if($this->organizationCriteria["companyID"]) {
@@ -1305,6 +1306,8 @@ class Product extends ProductProperties {
 			array_push($tables, TB_PRODUCT2TYPE . " p2t");
 		}
 
+		//	product table should be always the last
+		array_push($tables, TB_PRODUCT . " p");
 		return implode(', ', $tables);
 	}
 

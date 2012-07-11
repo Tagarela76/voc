@@ -74,58 +74,33 @@ class CProduct extends Controller {
 
 		$sortStr = $this->sortList('chemicalProduct', 3);
 		$filterStr = $this->filterList('chemicalProduct');
-		//	search??
-		if ($this->getFromRequest('searchAction') == 'search') {
-			//$productsToFind = convertSearchItemsToArray($request['q']);
-			//$productList = $product->searchProducts($productsToFind, $facilityDetails['company_id']);
-			$fields = array(0 => 'p.product_nr', 1 => 'p.name');
-			$searchStr = $this->filter->getSearchSubQuery($fields, $this->getFromRequest('q'));
-			if (!is_null($this->getFromRequest('export'))) {
-				$pagination = null;
-			} else {
-				$pagination = new Pagination((int) $product->countProducts($facilityDetails['company_id'], $facilityDetails['facility_id'], $searchStr));
-				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&id=" . $this->getFromRequest('id') . "&bookmark=" . $this->getFromRequest('bookmark') .
-						(!is_null($this->getFromRequest('q')) ? "&q=" . $this->getFromRequest('q') . "&searchAction=search" : "");
-				$this->smarty->assign('pagination', $pagination);
-			}
-			$productList = $product->getProductList($companyDetails['company_id'], $pagination, $searchStr, false);
-			$productList = $product->filterProductsByFacility($companyDetails['company_id'], $facilityDetails['facility_id'], $productList);
+
+		//	set search criteria
+		if (!is_null($this->getFromRequest('q'))) {
+			$product->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
-		} else {
-			if (!is_null($this->getFromRequest('export'))) {
-				$pagination = null;
-			} else {
-				
-				$company_id = $companyDetails['company_id'];
-				$facility_id = $facilityDetails['facility_id'];
-
-				$productsCount = (int) $product->countProducts($company_id, $facility_id, $filterStr);
-				$pagination = new Pagination($productsCount);
-
-				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&id=" . $this->getFromRequest('id') . "&bookmark=" . $this->getFromRequest('bookmark') .
-						(!is_null($this->getFromRequest('filterField')) ? "&filterField=" . $this->getFromRequest('filterField') : "") .
-						(!is_null($this->getFromRequest('filterCondition')) ? "&filterCondition=" . $this->getFromRequest('filterCondition') : "") .
-						(!is_null($this->getFromRequest('filterValue')) ? "&filterValue=" . $this->getFromRequest('filterValue') : "") .
-						(!is_null($this->getFromRequest('filterField')) ? "&searchAction=filter" : "");
-
-				$this->smarty->assign('pagination', $pagination);
-			}
-			$productList = $product->getProductList($companyDetails['company_id'], $pagination, $filterStr, $sortStr, false);
-			$productList = $product->filterProductsByFacility($companyDetails['company_id'], $facilityDetails['facility_id'], $productList);
 		}
+
+		// set organization criteria
+		$product->organizationCriteria['companyID'] = ($companyDetails['company_id']) ? $companyDetails['company_id'] : false;
+		$product->organizationCriteria['facilityID'] = ($facilityDetails['facility_id']) ? $facilityDetails['facility_id'] : false;
+
+		$productCount = $product->getProductCount();
+
+		$url = "?".$_SERVER["QUERY_STRING"];
+		$url = preg_replace("/\&page=\d*/","", $url);
+
+		$pagination = new Pagination($productCount);
+		$pagination->url = $url;
+		$this->smarty->assign('pagination', $pagination);
+
+		$productList = $product->getProductList($companyDetails['company_id'], $pagination, $filterStr, $sortStr, false);
 		$itemsCount = ($productList) ? count($productList) : 0;
-
-
-
 
 		for ($i = 0; $i < $itemsCount; $i++) {
 			$url = "?action=viewDetails&category=product&id=" . $productList[$i]['product_id'] . "&" . $this->getFromRequest('category') . "ID=" . $this->getFromRequest('id');
 			$productList[$i]['url'] = $url;
 		}
-
-
-
-
 
 		$this->smarty->assign("childCategoryItems", $productList);
 		if (!is_null($this->getFromRequest('export'))) {
