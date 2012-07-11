@@ -256,7 +256,7 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 		
 			case "DEPARTMENT":								
-				$this->widths = array(75, 45, 45, 45);
+				$this->widths = array(55, 45, 45, 45);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C', 'C');
 				$this->SetAligns($this->aligns);

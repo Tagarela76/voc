@@ -154,7 +154,7 @@ class bulkUploader {
 
 		$query = "INSERT INTO product (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 					"specific_gravity, specific_gravity_unit_id, boiling_range_from, " .
-					"boiling_range_to, flash_point, supplier_id, percent_volatile_weight, percent_volatile_volume, closed, discontinued) " .
+					"boiling_range_to, flash_point, supplier_id, percent_volatile_weight, percent_volatile_volume, closed, discontinued, product_pricing, unit_type, qty) " .
 			 "VALUES ('".$product['productID']."', '" .
 				 $product['productName']."', " .
 				 $product['voclx'].", " .
@@ -171,7 +171,9 @@ class bulkUploader {
 				 "".$product['percentVolatileWeight'].", " .
 				 "".$product['percentVolatileVolume'].", " .
 				 "'".$product['closed']."', ".
-				 $product['discontinued'] .
+				 $product['discontinued'] .", ".
+				 $product['productPricing'] .", '".
+				 $product['unitType'] ."' ".
 				 ")";
 		$this->db->query($query);
 
@@ -289,8 +291,10 @@ class bulkUploader {
 					"percent_volatile_weight = ".$product['percentVolatileWeight'].", " .
 					"percent_volatile_volume = ".$product['percentVolatileVolume'].", " .
 					"closed='".$product['closed']."', ".
-				    "discontinued =" . $product['discontinued'] . " " .
-				"WHERE product_id = ".$productID;
+				    "discontinued =" . $product['discontinued'] . ", " .
+					"product_pricing =" . $product['productPricing'] . ", " .
+					"unit_type ='" . $product['unitType'] . "'" .
+				"WHERE product_id = ".$productID;  
 		$this->db->query($queryUpd);
 
 		//	set product to company link

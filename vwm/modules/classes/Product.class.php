@@ -115,12 +115,12 @@ class Product extends ProductProperties {
 		$arr = $this->db->fetch_all_array();
 		$productPrice = array();
 		foreach ($arr as $b) {
-
 			$productPrice[] = $b;
 		}
 
 		return $productPrice;
 	}
+	
 
 	public function getProductPriceBySupplier($supplierID, $priceID = null, $jobberID, Pagination $pagination = null, Sort $sortStr = null) {
 
@@ -150,9 +150,8 @@ class Product extends ProductProperties {
 		$arr = $this->db->fetch_all_array();
 		$productPrice = array();
 		foreach ($arr as $b) {
-
 			$productPrice[] = $b;
-		}
+		} 
 
 		return $productPrice;
 	}
@@ -1150,11 +1149,12 @@ class Product extends ProductProperties {
 	 */
 	private function _selectProductsByCompany($companyID, $supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
 
-		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume " .
+		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx, p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer " .
 				"FROM " . $this->_declareTablesForSearchAndListProducts($companyID) . " " .
+				"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
 				"WHERE p.supplier_id = s.supplier_id " .
 				"AND coat.coat_id = p.coating_id ";
-
+	
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= "AND ( ";
@@ -1188,7 +1188,7 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 
 		if ($this->db->num_rows() > 0) {
-			$products = $this->db->fetch_all_array();
+			$products = $this->db->fetch_all_array(); 
 			return $products;
 		} else {
 			return false;
@@ -1226,9 +1226,9 @@ class Product extends ProductProperties {
 	 */
 	private function _declareTablesForSearchAndListProducts($companyID = 0) {
 		$tables = array(
-			TB_PRODUCT . " p",
 			TB_SUPPLIER . " s",
 			TB_COAT . " coat",
+			TB_PRODUCT . " p",
 		);
 
 		if ($companyID != 0) {

@@ -43,8 +43,9 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					
 				); 				
 				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * 
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id in (".$facilityString.")
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id
@@ -64,8 +65,9 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * 
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id = ".$this->categoryID."
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id
@@ -90,8 +92,9 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 			
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * 
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer  
 				FROM mix m, mixgroup mg, department d, inventory_order io, product p
+				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.department_id = ".$this->categoryID."
 					
 				AND d.department_id = m.department_id
@@ -378,11 +381,16 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 							
 							$mixName[$count+1] = $data->description;
 
-							
+			 				
 							$unittype2price = $inventoryManager->unitTypeConverter($data);
 							if ($unittype2price){
-								$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-
+								/* temporary replace expenses by potential expences by Masha 11.07.12*/
+		//						$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
+								if ($data->price != '0.00') {
+									$expenses[count($depName)] += $data->price;
+								} else {
+									$expenses[count($depName)] += $data->price_by_manufacturer;
+								}
 								//$mp[$count+1] = $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
 								//var_dump($data->description.'==>'.$data->product_id,$unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100);
 
@@ -398,7 +406,13 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 							$tmpName[] = $data->product_nr;
 							$unittype2price = $inventoryManager->unitTypeConverter($data);
 							if ($unittype2price){
-								$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
+								/* temporary replace expenses by potential expences by Masha 11.07.12*/
+			//					$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
+								if ($data->price != '0.00') {
+									$expenses[count($depName)] += $data->price;
+								} else {
+									$expenses[count($depName)] += $data->price_by_manufacturer;
+								}
 								//$mp[$count] = $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;	
 								//var_dump($data->description.'==>'.$data->product_id,$unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100);
 							
