@@ -1214,7 +1214,7 @@ class Product extends ProductProperties {
 
 		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
 					p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
-					p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer " .
+					p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_my_manufacturer " .
 				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 				"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
 
