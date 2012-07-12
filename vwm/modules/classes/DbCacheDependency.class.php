@@ -32,6 +32,7 @@ class DbCacheDependency {
 
 
 	public function hasChanged() {
+		$this->db->select_db(DB_NAME);
 		return $this->generateDependentData() != $this->_data;
 	}
 

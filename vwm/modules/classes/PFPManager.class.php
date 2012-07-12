@@ -759,7 +759,8 @@ class PFPManager {
 
 		//save to cache
 		if ($cache) {
-			$cache->set($key, $pfps);
+			$sqlDependency = "SELECT MAX(last_update_time) FROM ".TB_PFP."";
+			$cache->set($key, $pfps, 0, new DbCacheDependency($this->db, $sqlDependency));
 		}
 
 		return $pfps;
