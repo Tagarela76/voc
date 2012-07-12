@@ -1014,9 +1014,7 @@ class CMix extends Controller {
 		$mix->iniRecycle(false);
 		$mix->recycle['value'] = $r->value;
 		$mix->recycle['unitttypeID'] = $r->unittype;
-		if ($debug) {
-			var_dump('$mix->products', $mix->products);
-		}
+
 		$mixValidator = new MixValidatorOptimized();
 		$mix->calculateCurrentUsage();
 		$mixValidatorResponse = $mixValidator->isValidMix($mix);

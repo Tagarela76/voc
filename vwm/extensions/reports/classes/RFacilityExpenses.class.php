@@ -60,7 +60,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id in (".$facilityString.")
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 				break;
@@ -92,7 +92,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 
@@ -129,7 +129,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.department_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 				break;

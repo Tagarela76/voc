@@ -7,6 +7,8 @@ class PFP
 	private $db;
 	private $id;
 	private $description;
+	private $company_id;
+	private $last_update_time;
 
 	public $products;
 
@@ -61,6 +63,7 @@ class PFP
 		return implode(':', $res);
 	}
 
+
 	public function setDescription($val) {
 		$this->description = $val;
 	}
@@ -72,6 +75,22 @@ class PFP
 	public function toJson() {
 		$arr = array("descrtiption"=>$this->description, "id" => $this->id, "ratio" => $this->getRatio(), "products" => $this->products);
 		return json_encode($arr);
+	}
+
+	public function setCompanyID($company_id) {
+		$this->company_id = $company_id;
+	}
+
+	public function getCompanyID() {
+		return $this->company_id;
+	}
+
+	public function setLastUpdateTime($last_update_time) {
+		$this->last_update_time = $last_update_time;
+	}
+
+	public function getLastUpdateTime() {
+		return $this->last_update_time;
 	}
 }
 ?>
