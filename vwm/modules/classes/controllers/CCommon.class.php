@@ -24,35 +24,42 @@ class CCommon extends Controller
 			throw new Exception('404');
 	}
 
-	private function actionCreatePFP() {
+	private function actionCleanIndustriesOne() {
+		$sql = "SELECT type, count(it.id) CNT " .
+				"FROM `industry_type` it LEFT JOIN `product2type` p2t ON it.id = p2t.type_id " .
+				"WHERE p2t.product_id IS NULL ".
+				"AND it.parent IS NOT NULL " .
+				"GROUP BY type ORDER BY count(it.id) DESC";
+		$this->db->query($sql);
+		die($sql);
+		if ($this->db->num_rows() == 0) {
+			echo "no potential errors found";
+			return ;
+		}
 
-		$query = "
-			CREATE TABLE IF NOT EXISTS `preformulated_products` (
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-			  `company_id` int(11) DEFAULT NULL,
-			  PRIMARY KEY (`id`)
-			)
-		";
+		$typesWithProblems = $this->db->fetch_all_array();
+		foreach ($typesWithProblems as $typeWithProblems) {
+			if($typeWithProblems['CNT'] <= 2) {
+				continue;
+			}
+			$sql = "SELECT it.id " .
+				"FROM `industry_type` it LEFT JOIN `product2type` p2t ON it.id = p2t.type_id " .
+				"WHERE p2t.product_id IS NULL ".
+				"AND it.type = '{$typeWithProblems['type']}' " ;
+			$this->db->query($sql);
+			if($this->db->num_rows() == 0) {
+				continue;
+			}
 
-		echo "Create table preformulated_products.. ";
-		$this->db->query($query);
-		echo "done<br/>";
+			$ids2delete = $this->db->fetch_all_array();
+			$cleanIds2delete = array();
+			foreach ($ids2delete as $id2delete) {
+				$cleanIds2delete[] = $id2delete['id'];
+			}
 
-		$query = "
-		CREATE TABLE IF NOT EXISTS `pfp2product` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
-		  `ratio` int(10) unsigned NOT NULL,
-		  `product_id` int(11) DEFAULT NULL,
-		  `preformulated_products_id` int(11) DEFAULT NULL,
-		  `isPrimary` tinyint(1) NOT NULL DEFAULT '0',
-		  PRIMARY KEY (`id`)
-		)
-		";
-		echo "Create table pfp2product.. ";
-		$this->db->query($query);
-		echo "done<br/>";
-
+			$sql = "DELETE FROM industry_type WHERE id IN (".implode(',', $cleanIds2delete).")";
+			$this->db->exec($sql);
+		}
 
 	}
 
