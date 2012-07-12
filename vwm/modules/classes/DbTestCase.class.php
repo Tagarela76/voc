@@ -1,11 +1,17 @@
 <?php
 
-abstract class DbTestCase extends TestCase {
+require_once('PHPUnit/Runner/Version.php');
+require_once('PHPUnit/Autoload.php');
+
+abstract class DbTestCase extends PHPUnit_Extensions_Database_TestCase {
 
 	// only instantiate pdo once for test clean-up/fixture load
 	static private $pdo = null;
+
 	// only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
 	private $conn = null;
+
+	protected $fixtures = false;
 
 	final public function getConnection() {
 		if ($this->conn === null) {
@@ -17,9 +23,4 @@ abstract class DbTestCase extends TestCase {
 
 		return $this->conn;
 	}
-
-	final protected function getDataSet() {
-		
-	}
-
 }
