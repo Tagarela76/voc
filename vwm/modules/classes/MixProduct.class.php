@@ -32,7 +32,7 @@
 
 
 
-		public function __construct($db, $mixgroup_id = null) {
+		public function __construct(db $db, $mixgroup_id = null) {
 			$this->db = $db;
 			if (isset($mixgroup_id)) {
 				$this->$mixgroup_id = $mixgroup_id;
@@ -64,37 +64,25 @@
 		/** overrides super class method **/
 		public function initializeByID($productID) {
 
-			$query = "SELECT sup.*,  p.product_id, p.product_nr, p.name, p.paint_chemical, coat.coat_desc as coatDesc FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT . "
-							WHERE p.supplier_id = sup.supplier_id
-							AND coat.coat_id = coating_id
-							AND p.product_id = $productID";
+			$query = "SELECT sup.*,  p.*, coat.coat_desc as coatDesc " .
+							" FROM ".TB_PRODUCT." p, ". TB_SUPPLIER ." sup, " . TB_COAT .
+							" WHERE p.supplier_id = sup.supplier_id " .
+							" AND coat.coat_id = coating_id " .
+							" AND p.product_id = {$this->db->sqltext($productID)}";
 
 			$this->db->query($query);
 
 			if ($this->db->num_rows() == 0) return false;
 
 			$productData = $this->db->fetch(0);
-			//echo "<h1> Product Data</h1>";
-			//var_dump($productData);
-			//exit;
-
 			$this->perccentVolatileVolume = $productData->percent_volatile_volume;
 			$this->perccentVolatileWeight = $productData->percent_volatile_weight;
 
 			foreach ($productData as $property =>$value) {
-
 				if (property_exists($this,$property)) {
-					//echo "<br/>set property: $property => $value";
-						$this->$property = $productData->$property;
+					$this->$property = $productData->$property;
 				}
 			}
-
-			//	TODO: add userfriendly records to product properties (by Product::initializeByID)
-			//parent::initializeByID($mixProduct->product_id);
-
-			//var_dump($this);
-			//exit;
-
 
 			return true;
 		}

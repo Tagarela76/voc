@@ -1003,6 +1003,8 @@ class MixOptimized {
 		$defaultType = $unittype->getDescriptionByID($companyDetails['voc_unittype_id']);
 
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
+		$quantitiWeightSum = 0;
+		$quantitiVolumeSum = 0;
 
 		foreach ($this->products as $key => $product) {
 			$errors['isVocwxOrPercentWarning'][$key] = 'false';
