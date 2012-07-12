@@ -132,7 +132,7 @@ class bulkUploader4PFP {
 		}
 		$actionLog .= "	Adding pfp " . $description . "\n";
 
-		$sql = "INSERT INTO preformulated_products  (description,company_id,creater_id) VALUES ('" . $description . "',{$companyID},NULL)";
+		$sql = "INSERT INTO preformulated_products  (description,company_id,creater_id, last_update_time) VALUES ('" . $description . "',{$companyID},NULL, NOW())";
 		$this->db->query($sql);
 
 		$this->db->query("SELECT id FROM preformulated_products WHERE description = '" . $description . "'");
@@ -174,7 +174,7 @@ class bulkUploader4PFP {
 
 		$actionLog .= "	Updating pfp " . $description . "\n";
 		if ($companyID != 0) {
-			$sql = "UPDATE preformulated_products SET company_id= " . $companyID . " WHERE id=" . $pfp_id . "";
+			$sql = "UPDATE preformulated_products SET company_id= " . $companyID . ", last_update_time = NOW() WHERE id=" . $pfp_id . "";
 			$this->db->query($sql);
 
 			$sql = "INSERT INTO pfp2company (pfp_id ,company_id) VALUES (" . $pfp_id . ", " . $companyID . ")";

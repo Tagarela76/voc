@@ -29,7 +29,7 @@ class VOCApp {
 		$this->date_format = DEFAULT_DATE_FORMAT;
 
 		//	load cache
-		if($this->_cache === null && defined(USE_MEMCACHE)) {
+		if($this->_cache === null && defined(USE_MEMCACHED)) {
 			$cacheServers = array(
 				//	server config here
 			);
@@ -101,7 +101,12 @@ class VOCApp {
 	 * @return Cache
 	 */
 	public function getCache() {
-		return $this->_cache;
+		if ($this->_cache !== null) {
+			return $this->_cache;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**

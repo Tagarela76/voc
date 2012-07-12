@@ -56,7 +56,7 @@ class db {
 		$xnyo_parent->trigger_error('Attempting to connect to MySQL Server '.(empty($args['host']) ? '' : 'at '.$args['host']).' for database <i>'.$args['dbname'].'</i>.', DEBUG);
 
 		// do we have a connection to this db open already?
-		if (isset($this->_connections[$dbname]))
+		if (isset($this->_connections[$dbname]) && !empty($this->_connections[$dbname]['resource']))
 		{
 			$xnyo_parent->trigger_error('Connection to <i>'.$dbname.'</i> cached.', DEBUG);
 			$this->_connections[$dbname]['times']++;
@@ -95,10 +95,10 @@ class db {
 			'connect_time' => ($after - $before)
 		);
 
-		//	forse xnyo to use utf
+		//	force xnyo to use utf
 		//	@author Denis
 		mysql_query('SET NAMES utf8');
-		
+
 		// return it so the calling function can use it		
 		return $conn;
 	}
@@ -159,7 +159,7 @@ class db {
 		global $xnyo_parent;
 
 		// already using warez?
-		if (isset($this->_connections[$dbname]))
+		if (isset($this->_connections[$dbname]) && !empty($this->_connections[$dbname]['resource']))
 		{
 			$xnyo_parent->trigger_error('Setting connection to database <i>'.$dbname.'</i> as current, previous stored in history.', DEBUG);
 			$this->_connections[$dbname]['times']++;
