@@ -579,9 +579,13 @@ class Unittype {
 		}
 		//echo $query;
 	}
-
+	/**
+	 * get unit type id my name
+	 * @param string $unittype
+	 * @return array 
+	 */
 	public function getUnittypeByName($unittype) {
-		$query = "SELECT * FROM " . TB_UNITTYPE . " WHERE name LIKE '" . mysql_real_escape_string($unittype) . "'";
+		$query = "SELECT * FROM " . TB_UNITTYPE . " WHERE name LIKE '" . $this->db->sqltext($unittype) . "'";
 		$this->db->query($query);
 
 		if ($this->db->num_rows() == 0) {
