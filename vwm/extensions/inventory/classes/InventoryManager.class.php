@@ -1151,10 +1151,19 @@ echo $query;
 	}
 
 	
-	
+	/**
+	 *
+	 * @param ProductInventory $inventory
+	 * @param ProductPrice $price
+	 * @param type $IsConvertOrderAmountToStockUnittype
+	 * @return boolean 
+	 */
 	public function unitTypeConverter(ProductInventory $inventory, ProductPrice $price = null, $IsConvertOrderAmountToStockUnittype = false) {
 		// UNITTYPE CONVERTER
 
+		if (is_null($inventory->in_stock_unit_type)) {
+			$inventory->in_stock_unit_type = $inventory->unittype;
+		}
 		$unittype = new Unittype($this->db);
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($inventory->product_id);
@@ -1172,13 +1181,12 @@ echo $query;
 			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
 		);
 
-
 		$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 		$unittypeDetails = $unittype->getUnittypeDetails($inventory->in_stock_unit_type);
 	
 		$unitTypeConverter = new UnitTypeConverter($defaultType);
 		$quantitiWeightSum = $unitTypeConverter->convertFromTo($inventory->usage, "lb", $unittypeDetails['description'], $productDetails['density'], $densityType); //	in weight
-	
+
 		if ($price){
 			$defaultType = $unittype->getUnittypeClass($inventory->in_stock_unit_type);
 			$unitTypeConverter = new UnitTypeConverter($defaultType);
@@ -1499,5 +1507,48 @@ fclose ($fp);
 		$unittypeList = $unittype->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
 		return $unittypeList;
 	}	
+		
+		/**
+	 *
+	 * @param ProductInventory $inventory
+	 * @return boolean 
+	 */
+	public function convertUnitTypeFromTo(ProductInventory $inventory) {
+		// UNITTYPE CONVERTER
+
+		$unittype = new Unittype($this->db);
+		$product = new Product($this->db);
+		$productDetails = $product->getProductDetails($inventory->product_id);
+		$densityObj = new Density($this->db, $productDetails['densityUnitID']);
+
+		//	check density
+		if (empty($productDetails['density']) || $productDetails['density'] == '0.00') {
+			$productDetails['density'] = false;
+			$isThereProductWithoutDensity = true;
+		}
+
+		// get Density Type
+		$densityType = array(
+			'numerator' => $unittype->getDescriptionByID($densityObj->getNumerator()),
+			'denominator' => $unittype->getDescriptionByID($densityObj->getDenominator())
+		);
+
+		$defaultType = $unittype->getUnittypeClass($inventory->unittype);
+		$unittypeDetails = $unittype->getUnittypeDetails($inventory->unittype);
+	
+		$unitTypeConverter = new UnitTypeConverter($defaultType);
+		$quantitiWeightSum = $unitTypeConverter->convertFromTo(1, $unittypeDetails['description'],"lb" , $productDetails['density'], $densityType); //	in weight
+
+		if ($quantitiWeightSum != null && $quantitiWeightSum != 0 && $quantitiWeightSum != ''){
+			$data = array();
+			$data['usage'] = number_format($quantitiWeightSum, 2, '.', '');
+			$data['unittype'] = $unittypeDetails['name'];
+			return  $data;
+		}else{
+			return false;
+		}
+
+	}
 			
+
 }

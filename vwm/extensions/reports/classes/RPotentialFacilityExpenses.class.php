@@ -1,12 +1,12 @@
 <?php
-class RFacilityExpenses extends ReportCreator implements iReportCreator {
+class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator {
 	
 	private $dateBegin;
 	private $dateEnd;
 	
 	private $dateFormat;
 
-    function RFacilityExpenses($db, $reportRequest) {
+    function RPotentialFacilityExpenses($db, $reportRequest) {
 
     	$this->db = $db;
 		$this->categoryType = $reportRequest->getCategoryType();
@@ -42,25 +42,12 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'notes' => ""
 					
 				); 				
-				
-				/*	temporary replace expenses to potential expenses
-	 			$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
-				FROM mix m, mixgroup mg, department d, inventory_order io, product p
-				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
-				WHERE d.facility_id in (".$facilityString.")
-				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id
-				AND mg.product_id = io.order_product_id
-				AND p.product_id = io.order_product_id
-				AND io.order_facility_id in (".$facilityString.")
-				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";*/
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id in (".$facilityString.")
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 				break;
@@ -74,25 +61,12 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'notes' => ""
 				); 
 				
-				/*temporary replace expenses to potential expenses
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer 
-				FROM mix m, mixgroup mg, department d, inventory_order io, product p
-				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
-				WHERE d.facility_id = ".$this->categoryID."
-				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id
-				AND mg.product_id = io.order_product_id
-				AND p.product_id = io.order_product_id
-				AND io.order_facility_id = ".$this->categoryID."
-				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";*/
-				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 
@@ -110,42 +84,27 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 					'name' => $departmentDetails['name'],
 					'notes' => ""
 				); 
-				/*temporary replace expenses to potential expenses
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, io . * , pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer  
-				FROM mix m, mixgroup mg, department d, inventory_order io, product p
-				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
-				WHERE d.department_id = ".$this->categoryID."
-					
-				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id
-				AND mg.product_id = io.order_product_id
-				AND p.product_id = io.order_product_id
-				AND io.order_facility_id = d.facility_id
-				AND io.order_status = 3
-				AND io.order_completed_date <= m.creation_time";*/
 			
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .*, p.product_pricing as price_by_manufacturer, p.unit_type as unit_type_my_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.department_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
-				AND pp.jobber_id != 0
+				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
 				break;
-			
-			
+	
 		}
 
-		$voc_arr= $this->group($query, $this->dateBegin, $this->dateEnd);
+		$mix_arr= $this->group($query, $this->dateBegin, $this->dateEnd);   
 		$DatePeriod = "From ".$this->dateBegin." To ".$this->dateEnd;
 
-
-		$this->createXML($voc_arr, $orgInfo, $DatePeriod, $fileName);	
+		$this->createXML($mix_arr, $orgInfo, $DatePeriod, $fileName);	
 	
 	}
 	
-	public function createXML($voc_arr, $orgInfo, $DatePeriod, $fileName) {
+	public function createXML($expenses_arr, $orgInfo, $DatePeriod, $fileName) { 
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;     							  							  							  						
 
@@ -193,7 +152,7 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Facility Coating Usage Cost Report") 
+			$doc->createTextNode("Potential Facility Expenses Report") 
 		);
 		$page->appendChild( $title );
 		
@@ -277,51 +236,80 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 		$page->appendChild( $tableTag );		
 
 		//by month
-		
-		foreach ($voc_arr['data'] as $vocByMonth) {
+	
+		foreach ($expenses_arr['data'] as $expensesByMonth) {
 			$monthTag = $doc->createElement( "month" );		
 			$tableTag->appendChild( $monthTag );
 			
 			$monthNameTag = $doc->createAttribute( "name" );
 			$monthNameTag->appendChild(
-				$doc->createTextNode((string)$vocByMonth['month'])
+				$doc->createTextNode((string)$expensesByMonth['month'])
 			);
 			$monthTag->appendChild( $monthNameTag );
 			
-			//by rule or exempt rule
-			foreach ($vocByMonth['data'] as $vocByRule) {
-				if ($vocByRule['depName'] != 'none'){
-					for ($i=1;$i<=count($vocByRule['depName']);$i++){
-
-						$infoTag = $doc->createElement( "info" );
-						$monthTag->appendChild( $infoTag );
-
-							$ruleTag = $doc->createAttribute( "depName" );
-							$ruleTag->appendChild(
-								$doc->createTextNode( html_entity_decode ($vocByRule['depName'][$i]))
-							);
-
-
-
-						$infoTag->appendChild( $ruleTag );
-						$vocTag = $doc->createAttribute( "expenses" );
-						$vocTag->appendChild(
-						$doc->createTextNode($vocByRule['expenses'][$i])
+			//get product list by mix
+			foreach ($expensesByMonth['data'] as $mixKey => $productsInformation) { 
+				
+				$monthMixTag = $doc->createElement( "mixName" );
+				$monthTag->appendChild( $monthMixTag );
+				$monthNameAttribute = $doc->createAttribute( "name" );
+				$monthNameAttribute->appendChild(
+					$doc->createTextNode((string)$mixKey)
+				);
+				$monthMixTag->appendChild( $monthNameAttribute );
+                                $totalExpensesByMix = 0;
+				// get product detailed information
+				$productCount = 0;				
+				foreach ($productsInformation as $productInformation) {
+					if ($productInformation['depName'] != 'none'){
+						
+						$productsTag = $doc->createElement( "products" );
+						$monthMixTag->appendChild( $productsTag );
+						
+						$producDepNametTag = $doc->createElement( "depName" );
+						$producDepNametTag->appendChild(
+							$doc->createTextNode( html_entity_decode ($productInformation['depName']))
 						);
-						$infoTag->appendChild( $vocTag );
+						$productsTag->appendChild( $producDepNametTag );
+						
+						$producExpensestTag = $doc->createElement( "expenses" );
+						$producExpensestTag->appendChild(
+						$doc->createTextNode($productInformation['potentialExpenses'])
+						);
+						$productsTag->appendChild( $producExpensestTag );
+						
+						$producProductNameTag = $doc->createElement( "productName" );
+						$producProductNameTag->appendChild(
+						$doc->createTextNode($productInformation['productName'])
+						);
+						$productsTag->appendChild( $producProductNameTag );
+                        $totalExpensesByMix += $productInformation['potentialExpenses'];
+						$productCount++;
 					}
 				}
+				$totalExpensesByMixTag = $doc->createElement( "totalExpensesByMix" );
+				$totalExpensesByMixTag->appendChild(
+				$doc->createTextNode($totalExpensesByMix)
+				);
+				$monthMixTag->appendChild( $totalExpensesByMixTag );
+				
+				$productCountTag = $doc->createAttribute( "productCount" );
+				$productCountTag->appendChild(
+				$doc->createTextNode($productCount)
+				);
+				$monthMixTag->appendChild( $productCountTag );
+			//	var_dump($mixKey, $expensesByRule); die();
 			}
 			$totalTag = $doc->createElement( "total" );
 			$totalTag->appendChild(
-				$doc->createTextNode($vocByMonth['total'])
+				$doc->createTextNode($expensesByMonth['total'])
 			);
 			$monthTag->appendChild( $totalTag );			
 		
 		}
 		$fullTotalTag = $doc->createElement( "fullTotal" );
 		$fullTotalTag->appendChild(
-			$doc->createTextNode($voc_arr['total'])
+			$doc->createTextNode($expenses_arr['total'])
 		);
 		$tableTag->appendChild( $fullTotalTag );		
 
@@ -329,11 +317,13 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 
 	}	
 	
-		private function group($query, $dateBegin, $dateEnd) {
-			
+	private function group($query, $dateBegin, $dateEnd) { 
+		
 		$emptyData [0] = array (
 						'depName' => 'none',
-						'expenses' => 'none'
+						'potentialExpenses' => 'none',
+						'mixName' => 'none',
+						'products' => 'none',
 		);
 	
 
@@ -345,9 +335,9 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 		$dateBeginObj = DateTime::createFromFormat($this->dateFormat, $dateBegin);
 		$dateEndObj = DateTime::createFromFormat($this->dateFormat, $dateEnd);				
 
-		$tmpYear = $dateBeginObj->format('Y');			
-		$tmpMonth = $dateBeginObj->format('m');
-		$tmpDay = 1;
+		$beginYear = $dateBeginObj->format('Y');			
+		$beginMonth = $dateBeginObj->format('m');
+		$beginDay = 1;
 		
 		$endYear = $dateEndObj->format('Y');
 		$endMonth = $dateEndObj->format('m');
@@ -356,116 +346,91 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 		$results = array();
 		$fullTotalMix = 0;
 
-
 		$inventoryManager = new InventoryManager($this->db);
-
 		
-		while ( ( ((int)$tmpYear == (int)$endYear) && ((int)$tmpMonth <= (int)$endMonth) )  || ( (int)$tmpYear<(int)$endYear) )	{
+		while ( ( ((int)$beginYear == (int)$endYear) && ((int)$beginMonth <= (int)$endMonth) )  || ( (int)$beginYear<(int)$endYear) )	{
 			
-			if (((int)$tmpMonth == (int)$endMonth)&&((int)$tmpYear == (int)$endYear)) {
+			if (((int)$beginMonth == (int)$endMonth)&&((int)$beginYear == (int)$endYear)) {
 				//$tmpDateEnd = $dateEnd;
 				$tmpDateEndObj = $dateEndObj;
 			} else {
-				if ( $tmpMonth==12 ) {
-					$tmpYear +=1;
-					$tmpMonth = 1;
+				if ( $beginMonth ==12 ) {
+					$beginYear +=1;
+					$beginMonth = 1;
 				} else {
-					$tmpMonth += 1; 
+					$beginMonth += 1; 
 				}
 				//$tmpDateEnd = $tmpYear."-".$tmpMonth."-".$tmpDay;
-				$tmpDateEndObj = new DateTime(date('Y-m-d',mktime(0, 0, 0, $tmpMonth, $tmpDay, $tmpYear)));
+				$tmpDateEndObj = new DateTime(date('Y-m-d',mktime(0, 0, 0, $beginMonth, $beginDay, $beginYear)));
 			}
 			$results = array();
 
-				$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
-				//AND io.order_completed_date >= ".$dateBeginObj->getTimestamp()."  NEED???????
-				$tmpQuery .= " ORDER BY m.creation_time";
+			$tmpQuery = $query." AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$tmpDateEndObj->getTimestamp()." ";
+			//AND io.order_completed_date >= ".$dateBeginObj->getTimestamp()."  NEED???????
+			$tmpQuery .= " ORDER BY m.creation_time";
 
-				$this->db->query($tmpQuery);
+			$this->db->query($tmpQuery);
 
-				$res = array();
-				$mixName = array();
-				$depName = array();
-				$expenses = array();
-				if ($this->db->num_rows()) {
-					$num = $this->db->num_rows();
-					for ($j=0; $j<$num; $j++) {
-						$this->db->query($tmpQuery);
-						
-						$data = $this->db->fetch($j);	
+			$res = array();
+			$mixArray = array();
+			$productList = array();
+			
+			$potentialExpenses = array();
 
-						$data->usage = $data->quantity_lbs;
-						$data->in_stock_unit_type = $data->order_unittype;
+			if ($this->db->num_rows()) {
 
-						$count=(count($mixName))? count($mixName) : 0;
-						$depCount=(count($depName))? count($depName) : 0;
-						if ($depName[$depCount] != $data->name){
-							$depName[$depCount+1] = $data->name;
-						}
-						
-						if ($mixName[$count] != $data->description){
-							$tmpName = array();
-							
-							$mixName[$count+1] = $data->description;
+				$resultData = $this->db->fetch_all();
+				foreach ($resultData as $data) {  
 
-			 				
-							$unittype2price = $inventoryManager->unitTypeConverter($data);
-							if ($unittype2price){
-								/* temporary replace expenses by potential expences by Masha 11.07.12*/
-		//						$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-								if ( isset($data->price) && $data->price != '0.00') {
-									$expenses[count($depName)] += $data->price;
-								} else {
-									$expenses[count($depName)] += $data->price_by_manufacturer;
-								}
-								//$mp[$count+1] = $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-								//var_dump($data->description.'==>'.$data->product_id,$unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100);
+					$data->usage = $data->quantity_lbs;
 
-								
-							}else{
-								//TODO can't convert
-							}
-							
-							$tmpName[] = $data->product_nr;
-						}elseif (!in_array($data->product_nr, $tmpName)){
+					// if supllier doesn't set price we get manufacturer price
+					if ( is_null($data->price) || $data->price == '0.00') {
+						$data->price = $data->price_by_manufacturer;
+					} 
+					// if supllier doesn't set unit type we get manufacturer unit type
+					if ( is_null($data->unittype) ) {
+						$data->unittype = $data->unit_type_by_manufacturer;
+					}
 
-							
-							$tmpName[] = $data->product_nr;
-							$unittype2price = $inventoryManager->unitTypeConverter($data);
-							if ($unittype2price){
-								/* temporary replace expenses by potential expences by Masha 11.07.12*/
-			//					$expenses[count($depName)] += $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;
-								if ( isset($data->price) && $data->price != '0.00') {
-									$expenses[count($depName)] += $data->price;
-								} else {
-									$expenses[count($depName)] += $data->price_by_manufacturer;
-								}
-								//$mp[$count] = $unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100;	
-								//var_dump($data->description.'==>'.$data->product_id,$unittype2price['usage'] * $data->order_price - ($unittype2price['usage'] * $data->order_price)*$data->order_discount/100);
-							
-							}else{
-								//TODO can't convert
-							}
-						}
-						$expenses[count($depName)] = number_format($expenses[count($depName)], 2, '.', '');			
+					$unittype2price = $inventoryManager->convertUnitTypeFromTo($data); 
 
-					}//end for
-					
+					if ($unittype2price){
+						$price = $data->usage * ( $data->price / $unittype2price['usage'] ); // qty (always in lbsp * price for one product unit / price for one lbsp
+					} else {
+
+					}
+
+					$potentialExpenses[] = number_format($price, 2, '.', '');			
+
 					$res = array(
-						'depName' => $depName,
-						'expenses' => $expenses
+						'depName' => $data->name,
+						'potentialExpenses' => number_format($price, 2, '.', ''),
+						'mixName' => $data->description,
+						'productName' => $data->product_nr,
 					);
-					
-					$results[] = $res;
-					$WasARule = true;
-					
+
+					$results[] = $res; 
+				}  
+			} else {
+				$res = $emptyData;
+				$results[] = $res;
+			} 
+			foreach ($results as $result) {
+				if (!in_array($result['mixName'], $mixArray)) {
+					$mixArray[] = $result['mixName'];
 				}
+			}
 
+			foreach ($mixArray as $mix) {
+				foreach ($results as $result) {
+					if ($result['mixName'] == $mix) {
+						$productList[$mix][] = $result;
+					}
+				}
+			}
 
-			if ($WasARule == false) {
-				$results [] = $emptyData[0];
-			}	
-			foreach($expenses as $sum){
+			foreach($potentialExpenses as $sum){
 				$total += $sum;
 			}
 			$total = number_format($total, 2, '.', '');
@@ -473,26 +438,24 @@ class RFacilityExpenses extends ReportCreator implements iReportCreator {
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
-				'data' => $results,
+				'data' => $productList,
 				'total' => $total
 			);
-			
+		
 			$fullTotalMix += $total;
 			$total = 0;
-
-				
-			
-
-			$dateBeginObj = $tmpDateEndObj;
-			if ($dateBeginObj == DateTime::createFromFormat($this->dateFormat, $dateEnd)) {
+ 
+			$dateBeginObj = $tmpDateEndObj; 
+		
+			if ($dateBeginObj == $dateEndObj) {
 				break;
-			}
+			} 
 		}
 		$totalResults = array(
 			'total' => $fullTotalMix,
 			'data' => $resultByMonth
 		); 
-		
+	
 		return $totalResults;			
 	}
 		

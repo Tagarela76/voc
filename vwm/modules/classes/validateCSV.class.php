@@ -190,6 +190,8 @@ class validateCSV {
 	}
 
 	public function validate($input) {
+		$unitTypeClass = new Unittype($this->db);
+		
 		$CSVPath = $input['inputFile'];
 		//last row
 		$file = fopen($CSVPath, "a");
@@ -310,7 +312,46 @@ class validateCSV {
 					
 					// unit type clear
 					$data[39] = trim($data[39]); 
-
+					// prepare unit type
+					switch ($data[39]) {
+						case "QUART":
+						case "quart":	
+							$unitType = "qt";
+							break;
+						case "GALLON": 
+						case "gallon": 	
+							$unitType = "gal";
+							break;
+						case "PINT": 
+						case "pint": 	
+							$unitType = "pt";
+							break;
+						case "LITRE": 
+						case "litre": 	
+							$unitType = "L";
+							break;
+						case "KG": 
+						case "kg": 	
+							$unitType = "KG";
+							break;
+						case "ML": 
+						case "ml": 	
+							$unitType = "ml";
+							break;
+						case "GRAMS": 
+						case "grams": 	
+							$unitType = "GRAM";
+							break;
+						case "OUNCES": 
+						case "ounces": 	
+							$unitType = "OZS";
+							break;					
+						default:
+							$unitType = "LBS";
+							break;	
+					}
+					$unitType = $unitTypeClass->getUnittypeByName($unitType);
+					$unitType = $unitType['unittype_id']; // get unit type id
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
@@ -341,7 +382,7 @@ class validateCSV {
 						"health" => $data[36],
 						"discontinued" => $data[37],
 						"productPricing" => $this->calculateProductPrice($data[38], $data[40]),
-						"unitType" => $data[39],
+						"unitType" => $unitType,
 						"QTY" => $data[40]
 					);
 				}
@@ -684,7 +725,7 @@ class validateCSV {
 		if ($data[39] != "") {
 			// isn't empty
 			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
-					$data[39] != "gallon" && $data[39] != "CAN" && $data[39] != "can" && $data[39] != "PINT" && $data[39] != "pint" 
+					$data[39] != "gallon" && $data[39] != "PINT" && $data[39] != "pint" 
 					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg" 
 					&& $data[39] != "ML" && $data[39] != "ml" && $data[39] != "GRAMS" && $data[39] != "grams" && $data[39] != "OUNCES" && $data[39] != "ounces"){
 				$comments .= "	Unit type is undefined. Row " . $row . ".\n";
