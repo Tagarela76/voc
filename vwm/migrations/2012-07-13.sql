@@ -1,0 +1,1 @@
+ALTER TABLE  `product` CHANGE  `price_unit_type`  `price_unit_type` INT( 11 ) NULL DEFAULT NULL
