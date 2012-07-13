@@ -3,7 +3,7 @@
 $site_path = getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
 
-require('../config/constants.php');
+require('../config/constants4unitTest.php');
 require_once ('../modules/xnyo/xnyo.class.php');
 
 //	Include Class Autoloader
