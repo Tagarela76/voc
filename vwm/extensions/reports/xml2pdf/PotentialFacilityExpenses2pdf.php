@@ -269,7 +269,7 @@ class XML2PDF extends PDF_MC_Table {
 			case "MIXNAME":
 				$name = $attribs["NAME"];
 				$productCount = $attribs["PRODUCTCOUNT"];
-				$this->widths = array(45, 45, 45, 85);
+				$this->widths = array(45, 45, 45, 50);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C');
 				$this->SetAligns($this->aligns);
