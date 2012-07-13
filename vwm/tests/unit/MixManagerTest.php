@@ -46,17 +46,17 @@ class MixManagerTest extends DbTestCase {
 
 	public function testGetMixList() {
 		$mixManager = new MixManager($this->db);
-		$mixList = $mixManager->getMixList2();
+		$mixList = $mixManager->getMixList();
 		//	we did not set departmentID
 		$this->assertTrue($mixList === false);
 
 		$mixManager->departmentID = 666;
-		$mixList = $mixManager->getMixList2();
+		$mixList = $mixManager->getMixList();
 		//	no mixes for this department
 		$this->assertTrue($mixList === false);
 
 		$mixManager->departmentID = 1;
-		$mixList = $mixManager->getMixList2();
+		$mixList = $mixManager->getMixList();
 		$this->assertTrue(is_array($mixList));
 		$this->assertTrue(count($mixList) == 4);
 		$this->assertTrue($mixList[3] instanceof MixOptimized);

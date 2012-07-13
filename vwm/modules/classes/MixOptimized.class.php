@@ -1344,4 +1344,20 @@ class MixOptimized {
 		$this->trashRecord = $tm->save2trash(TB_USAGE, $id, $CRUD, $this->parentTrashRecord);
 	}
 
+	/**
+	 * Check does mix has child mixes
+	 * @return boolean
+	 */
+	public function getHasChild() {
+		$sql = "SELECT * FROM " . TB_USAGE . " WHERE parent_id = " . $this->db->sqltext($this->mix_id);
+		$this->db->query($sql);
+		if ($this->db->num_rows() > 0) {
+			$this->hasChild = true;
+		} else {
+			$this->hasChild = false;
+		}
+
+		return $this->hasChild;
+	}
+
 }

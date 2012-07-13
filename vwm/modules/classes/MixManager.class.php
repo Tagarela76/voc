@@ -8,6 +8,11 @@ class MixManager {
 	private $db;
 	public $departmentID;
 
+	/**
+	 * @var array Search strings
+	 */
+	public $searchCriteria = array();
+
 	public function __construct(db $db, $departmentID = null) {
 		$this->db = $db;
 		if (isset($departmentID)) {
@@ -15,116 +20,167 @@ class MixManager {
 		}
 	}
 
-	public function countMixes() {
-		
+	/**
+	 * Count mixes in department. Useful for pagination
+	 * @param string $filter
+	 * @return bool|int false on failure
+	 */
+	public function countMixes( $filter=' TRUE ') {
+		if(!$this->departmentID) {
+			return false;
+		}
+		$query = "SELECT count(mix_id) mixCount FROM ".TB_USAGE." WHERE department_id = {$this->db->sqltext($this->departmentID)} " .
+			"AND $filter ";
+
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $mixDescription) {
+				$searchSql[] = " (description LIKE '%{$this->db->sqltext($mixDescription)}%') ";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
+
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0) {
+			return (int)$this->db->fetch(0)->mixCount;
+		} else {
+			return false;
+		}
 	}
 
 	/**
-	 * getMixList
-	 *
-	 * @param Pagination $pagination
-	 * @param unknown_type $filter
-	 * @param array $mixArr array of mixes to get. <b>default null</b>
+	 * Count mixes in facility
+	 * @param int $facilityID
+	 * @param string $filter
+	 * @return bool|int false on failure
 	 */
-	public function getMixList(Pagination $pagination = null, $filter = ' TRUE ', $mixArr = null) {
+	public function countMixesInFacility($facilityID, $filter = ' TRUE ') {
+		$query = "SELECT count(m.mix_id) mixCount " .
+			" FROM ".TB_USAGE." m " .
+			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+			" WHERE d.facility_id = {$this->db->sqltext($facilityID)} " .
+			" AND {$filter} ";
 
-		if (!isset($this->departmentID))
-			return false;
-		$departmentID = mysql_escape_string($this->departmentID);
-
-		if (!is_null($mixArr) and count($mixArr) > 0) {
-			$sql_param = " AND mix_id IN (";
-			$count = count($mixArr);
-			for ($i = 0; $i < $count; $i++) {
-				$sql_param .= $mixArr[$i];
-				if ($i < $count - 1) {
-					$sql_param .= ", ";
-				}
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $mixDescription) {
+				$searchSql[] = " (m.description LIKE '%{$this->db->sqltext($mixDescription)}%') ";
 			}
-			$sql_param .= ") ";
-		} else {
-			$sql_param = "";
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
 		}
 
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0) {
+			return (int)$this->db->fetch(0)->mixCount;
+		} else {
+			return false;
+		}
+	}
 
 
-		$query = "SELECT * FROM " . TB_USAGE . " WHERE department_id = " . $departmentID . " AND " . $filter . " $sql_param ORDER BY mix_id DESC";
+	/**
+	 * Get mix list
+	 * @param Pagination $pagination
+	 * @param string $filter
+	 * @return array|bool
+	 */
+	public function getMixList(Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY mix_id DESC ' ) {
+		if(!$this->departmentID) {
+			return false;
+		}
 
+		$query = "SELECT * FROM ".TB_USAGE." " .
+			"WHERE department_id = {$this->db->sqltext($this->departmentID)} " .
+			"AND $filter ";
 
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $mixDescription) {
+				$searchSql[] = " (description LIKE '%{$this->db->sqltext($mixDescription)}%') ";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
 
-		if (isset($pagination) and is_null($mixArr)) {
+		$query .= $sort;
+
+		if (isset($pagination)) {
 			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
 
+		return $this->_processListQuery($query);
+	}
 
 
-		$this->db->query($query);
+	/**
+	 * Get mix list for facility
+	 * @param int $facilityID facility scope
+	 * @param Pagination $pagination
+	 * @param string $filter
+	 * @return array|bool false on failure
+	 */
+	public function getMixListInFacility($facilityID, Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
+		$query = "SELECT m.* " .
+			" FROM ".TB_USAGE." m " .
+			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+			" WHERE d.facility_id = {$this->db->sqltext($facilityID)} " .
+			" AND {$filter} ";
 
-		if ($this->db->num_rows() == 0)
-			return false;
-
-		//	prepare all stuff
-		$mixesData = $this->db->fetch_all();
-		$mixValidator = new MixValidatorOptimized();
-		$department = new Department($this->db);
-		$department->initializeByID($this->departmentID);
-		$facility = new Facility($this->db);
-		$facility->initializeByID($department->getFacilityID());
-		$mixHover = new Hover();
-		$equipments = array();
-
-		foreach ($mixesData as $mixData) {
-
-			$mix = new MixOptimized($this->db);
-			foreach ($mixData as $property => $value) {
-				if (property_exists($mix, $property)) {
-					$mix->$property = $mixData->$property;
-				}
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= "AND ( ";
+			foreach ($this->searchCriteria as $mixDescription) {
+				$searchSql[] = " (m.description LIKE '%{$this->db->sqltext($mixDescription)}%') ";
 			}
-
-			$mix->url = "?action=viewDetails&category=mix&id=" . $mixData->mix_id . "&departmentID=" . $departmentID;
-
-			$mix->setDepartment($department);
-			$mix->setFacility($facility);
-
-			if (!$equipments[$mix->equipment_id]) {
-				//	we didnot created this equipment yet
-				$equipment = new Equipment($this->db);
-				$equipment->initializeByID($mix->equipment_id);
-				$equipments[$mix->equipment_id] = $equipment;
-			}
-			$mix->setEquipment($equipments[$mix->equipment_id]);
-
-			// validate them
-			$validatorResponse = $mixValidator->isValidMix($mix);
-
-			if ($validatorResponse->isValid()) {
-				$mix->valid = MixOptimized::MIX_IS_VALID;
-				$mix->hoverMessage = $mixHover->mixValid();
-			} else {
-				if ($validatorResponse->isPreExpired()) {
-					$mix->valid = MixOptimized::MIX_IS_PREEXPIRED;
-					$mix->hoverMessage = $mixHover->mixPreExpired();
-				}
-				if ($validatorResponse->isSomeLimitExceeded() or $validatorResponse->isExpired()) {
-					$mix->valid = MixOptimized::MIX_IS_INVALID;
-					$mix->hoverMessage = $mixHover->mixInvalid();
-				}
-			}
-			// check mix to has child mixes
-			$sql = "SELECT * FROM " . TB_USAGE . " WHERE parent_id = " . $mixData->mix_id;
-			$this->db->query($sql);
-			if ($this->db->num_rows() > 0) {
-				$mix->hasChild = true;
-			} else {
-				$mix->hasChild = false;
-			}
-
-			$usageList[] = $mix;
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
 		}
 
-		return $usageList;
+		$query .= $sort;
+
+		if (isset($pagination)) {
+			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}
+
+		return $this->_processListQuery($query);
 	}
+
+	/**
+	 * Process SQL query for mix listing
+	 * @param string $query
+	 * @return array|bool array of MixOptimized or false on empty result
+	 * @throws Exception
+	 */
+	private function _processListQuery($query) {
+		if (!$this->db->query($query)) {
+			throw new Exception('SQL query failed.');
+		}
+
+		$rowCount = $this->db->num_rows();
+		if($rowCount == 0) {
+			return false;
+		}
+
+		$rows = $this->db->fetch_all_array();
+		$mixes = array();
+		foreach($rows as $row) {
+			$mix = new MixOptimized($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($mix, $key)) {
+					$mix->$key = $value;
+				}
+			}
+			$mixes[] = $mix;
+		}
+
+		return $mixes;
+	}
+
 
 	public function fillProductsUnitTypes($mixesProducts) {
 
