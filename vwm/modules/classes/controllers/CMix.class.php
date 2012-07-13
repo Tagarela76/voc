@@ -426,75 +426,54 @@ class CMix extends Controller {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
 		extract($vars);
+
 		/**
 		 * @departmentID int
 		 */
 		if ($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {
-			$gacl_api = new gacl_api();
 
-			$departmentID = $vars['departmentDetails']['department_id'];
-			$chain = new TypeChain(null, 'Date', $this->db, $departmentID, 'department');
+			$chain = new TypeChain(null, 'Date', $this->db, $departmentDetails['departmentID'], 'department');
 			$dateFormatForCalendar = $chain->getFromTypeController('getFormatForCalendar');
 			$this->smarty->assign("dateFormat", $dateFormatForCalendar);
 			$dateFormat = $chain->getFromTypeController('getFormat');
 			$sortStr = $this->sortList('mix', 2);
 			$filterStr = $this->filterList('mix', $dateFormat);
-			$usages = new Mix($this->db);
 
-			//	search??
-			if ($this->getFromRequest('searchAction') == 'search') {
-				$mixesToFind = $this->convertSearchItemsToArray($this->getFromRequest('q'));
-				if (!is_null($this->getFromRequest('export'))) {
-					$pagination = null;
-				} else {
-					$searchedMixesCount = $usages->countSearchedMixes($mixesToFind, 'description', $this->getFromRequest('id'));
-					$pagination = new Pagination($searchedMixesCount);
-					$pagination->url = "?q=" . urlencode($this->getFromRequest('q')) . "&action=browseCategory&category=" . $this->getFromRequest('category') . "&id=" . $this->getFromRequest('id') . "&bookmark=" . $this->getFromRequest('bookmark') . "&searchAction=search";
-				}
-				$usageList = $usages->searchMixes($mixesToFind, 'description', $this->getFromRequest('id'), $pagination);
-				//msdsUploader
-				$usageIDArray = array();
-				foreach ($usageList as $u) {
-					$usageIDArray[] = $u['mix_id'];
-				}
+			$mixManager = new MixManager($this->db, $this->getFromRequest('id'));
+
+			//	set search criteria
+			if (!is_null($this->getFromRequest('q'))) {
+				$mixManager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
-				$this->smarty->assign('pagination', $pagination);
-			} else {
-				if ($this->getFromRequest('export')) {
-					$pagination = null;
-				} else {
-					$pagination = new Pagination((int) $usages->countMixes($this->getFromRequest('id'), $filterStr));
-					$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&id=" . $this->getFromRequest('id') . "&bookmark=" . $this->getFromRequest('bookmark');
-					if ($this->getFromRequest('filterField') != '') {
-						$pagination->url .= "&filterField=" . $this->getFromRequest('filterField');
-					}
-					if ($this->getFromRequest('filterCondition') != '') {
-						$pagination->url .= "&filterCondition=" . $this->getFromRequest('filterCondition');
-					}
-					if ($this->getFromRequest('filterValue') != '') {
-						$pagination->url .= "&filterValue=" . $this->getFromRequest('filterValue');
-					}
-					if ($this->getFromRequest('filterField') != '') {
-						$pagination->url .= "&searchAction=filter";
-					}
-				}
-
-				$usageList = $usages->getMixList($this->getFromRequest('id'), $pagination, $filterStr, $sortStr);
-
-				$tmp = $gacl_api->get_object_groups(91, "ARO");
-				$tmp1 = $gacl_api->get_group_data(125, "ARO");
-				//var_dump($tmp,$tmp1);
-				// TODO: what is this?
-				$usageIDArray = array();
-				foreach ($usageList as $u) {
-					$usageIDArray[] = $u['mix_id'];
-				}
-				$this->smarty->assign('pagination', $pagination);
 			}
 
-			if (!is_null($this->getFromRequest('export'))) {
+			$url = "?".$_SERVER["QUERY_STRING"];
+			$url = preg_replace("/\&page=\d*/","", $url);
+			$url = preg_replace("/\&sort=\d*/","", $url);
+
+			$mixCount = $mixManager->countMixesInFacility($departmentDetails['facility_id']);
+
+			if ($this->getFromRequest('export')) {
+				$pagination = null;
+			} else {
+				$pagination = new Pagination($mixCount);
+				$pagination->url = $url;
+			}
+			$this->smarty->assign('pagination', $pagination);
+
+			$facility = new Facility($this->db);
+			$facility->initializeByID($departmentDetails['departmentID']);
+			$departments = array();
+			$equipments = array();
+
+			$mixValidator = new MixValidatorOptimized();
+			$mixHover = new Hover();
+
+			$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
+
+			if ($mixList && !is_null($this->getFromRequest('export'))) {
 				//	EXPORT THIS PAGE
 				$exporter = new Exporter(Exporter::PDF);
 				$exporter->company = $companyDetails['name'];
@@ -521,12 +500,7 @@ class CMix extends Controller {
 					'creation_time' => 'Creation Date'
 				);
 
-				$departmentID = $this->getFromRequest('id');
-				$mixOptimized = new MixManager($this->db, $departmentID);
-				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
-
 				$goodUsageList = array();
-
 				foreach ($mixList as $m) {
 					$tmp = array("mix_id" => $m->mix_id, "description" => $m->description, "voc" => $m->voc, "creation_time" => $m->creation_time);
 					$goodUsageList[] = $tmp;
@@ -537,25 +511,61 @@ class CMix extends Controller {
 				$exporter->setTbody($goodUsageList);
 				$exporter->export();
 				die();
-			} else {
-				//================	Begin MIX'es Highliting
-				$mixValidator = new MixValidator();
-				$mixHover = new Hover();
-				$departmentID = $this->getFromRequest('id');
-				$mixOptimized = new MixManager($this->db, $departmentID);
-				$mixList = $mixOptimized->getMixList($pagination, " TRUE ", $usageIDArray);
-				$department = new Department($this->db);
-				$department->initializeByID($departmentID);
-				$curUsage = $department->getCurrentUsage();
-				$this->smarty->assign('currentUsage', $curUsage);
-				$this->smarty->assign('childCategoryItems', $mixList);
-				//set js scripts
-				$jsSources = array('modules/js/checkBoxes.js',
-					'modules/js/autocomplete/jquery.autocomplete.js');
-				$this->smarty->assign('jsSources', $jsSources);
-				//set tpl
-				$this->smarty->assign('tpl', 'tpls/mixListNew.tpl');
+				return ;
 			}
+
+			if (!$mixList) {
+				$mixList = array();
+			}
+
+			foreach ($mixList as $mix) {
+				$mix->url = "?action=viewDetails&category=mix&id=" . urlencode($mix->mix_id) . "&departmentID=" .
+					urlencode($this->getFromRequest('id'));
+
+				if(!$departments[$mix->department_id]) {
+					$department = new Department($this->db);
+					$department->initializeByID($mix->department_id);
+					$departments[$mix->department_id] = $department;
+				}
+
+				if (!$equipments[$mix->equipment_id]) {
+					$equipment = new Equipment($this->db);
+					$equipment->initializeByID($mix->equipment_id);
+					$equipments[$mix->equipment_id] = $equipment;
+				}
+
+				$mix->setDepartment($departments[$mix->department_id]);
+				$mix->setFacility($facility);
+				$mix->setEquipment($equipments[$mix->equipment_id]);
+
+				// validate them
+				$validatorResponse = $mixValidator->isValidMix($mix);
+
+				if ($validatorResponse->isValid()) {
+					$mix->valid = MixOptimized::MIX_IS_VALID;
+					$mix->hoverMessage = $mixHover->mixValid();
+				} else {
+					if ($validatorResponse->isPreExpired()) {
+						$mix->valid = MixOptimized::MIX_IS_PREEXPIRED;
+						$mix->hoverMessage = $mixHover->mixPreExpired();
+					}
+					if ($validatorResponse->isSomeLimitExceeded() or $validatorResponse->isExpired()) {
+						$mix->valid = MixOptimized::MIX_IS_INVALID;
+						$mix->hoverMessage = $mixHover->mixInvalid();
+					}
+				}
+
+				$mix->getHasChild();
+			}
+
+			$this->smarty->assign('childCategoryItems', $mixList);
+			//set js scripts
+			$jsSources = array('modules/js/checkBoxes.js',
+				'modules/js/autocomplete/jquery.autocomplete.js');
+			$this->smarty->assign('jsSources', $jsSources);
+			//set tpl
+			$this->smarty->assign('tpl', 'tpls/mixListNew.tpl');
+
 		}
 	}
 
