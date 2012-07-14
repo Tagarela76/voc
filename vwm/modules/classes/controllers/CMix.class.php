@@ -472,7 +472,6 @@ class CMix extends Controller {
 			}
 
 			if(!$mixList) {
-				echo 'get from db';
 				// no mix list in cache  - so we need to calculate it
 				$facility = new Facility($this->db);
 				$facility->initializeByID($departmentDetails['departmentID']);
