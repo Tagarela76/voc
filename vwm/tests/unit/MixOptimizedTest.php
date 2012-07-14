@@ -88,4 +88,19 @@ class MixOptimizedTest extends DbTestCase {
 		$this->assertTrue(is_null($deletedMix));
 	}
 
+	public function testDoesProductsHaveDuplications() {
+		$goodMixProduct = new MixProduct($this->db);
+		$goodMixProduct->initializeByID(4);
+
+		$badMixProduct = new MixProduct($this->db);
+		$badMixProduct->initializeByID(2);
+
+		$mix = new MixOptimized($this->db, 1);
+		$mix->products[] = $goodMixProduct;
+		$this->assertTrue($mix->doesProductsHaveDuplications() === false);
+
+		$mix->products[] = $badMixProduct;
+		$this->assertTrue($mix->doesProductsHaveDuplications() === true);
+	}
+
 }

@@ -241,6 +241,11 @@ class MixOptimized {
 	 */
 	public function save($isMWS, $mix = null) {
 
+		//check mix products for duplication
+		if($this->doesProductsHaveDuplications()) {
+			return false;
+		}
+
 		if (!isset($this->mix_id)) {
 			$mixID = $this->addNewMix();
 		} else {
@@ -254,8 +259,6 @@ class MixOptimized {
 		//	save waste data (If module 'Waste Stream' is disabled)
 		if (!$isMWS and isset($this->waste) and ($this->waste->value) and $this->waste->value != "" and $this->waste->value != "0.00") {
 			$this->saveWaste($mixID, $this->waste->value, $this->waste->unittype);
-		} else {
-			//echo "not MWS!!";
 		}
 
 		//	save recycle data
@@ -1392,6 +1395,21 @@ class MixOptimized {
 		if ($cache) {
 			$cache->flush();
 		}
+	}
+
+
+	/**
+	 * Does Products Have Duplications ?
+	 * @return bool true if mix have duplicated products, false if not
+	 */
+	public function doesProductsHaveDuplications() {
+		$productIDs = array();
+		foreach ($this->products as $product) {
+			$productIDs[] = $product->product_id;
+		}
+
+		$uniqueProductIDs = array_unique($productIDs);
+		return (count($productIDs) != count($uniqueProductIDs));
 	}
 
 }
