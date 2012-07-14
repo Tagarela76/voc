@@ -1379,4 +1379,19 @@ class MixOptimized {
 		return $this->hasChild;
 	}
 
+
+	/**
+	 * Remove mix from DB
+	 */
+	public function delete() {
+		$sql = "DELETE FROM ".TB_USAGE. " WHERE mix_id = {$this->db->sqltext($this->mix_id)}";
+		$this->db->exec($sql);
+
+		//	remove everything from cache
+		$cache = VOCApp::get_instance()->getCache();
+		if ($cache) {
+			$cache->flush();
+		}
+	}
+
 }

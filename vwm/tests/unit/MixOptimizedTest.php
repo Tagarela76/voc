@@ -76,7 +76,16 @@ class MixOptimizedTest extends DbTestCase {
 		$this->assertTrue(count($newMix->products) == 2);
 		$this->assertTrue($newMix->products[0] instanceof MixProduct);
 		$this->assertTrue($newMix->products[0]->product_nr == '17-033-A');
+	}
 
+
+	public function testDelete() {
+		$mixID = 1;
+		$mix = new MixOptimized($this->db, $mixID);
+		$mix->delete();
+
+		$deletedMix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID));
+		$this->assertTrue(is_null($deletedMix));
 	}
 
 }

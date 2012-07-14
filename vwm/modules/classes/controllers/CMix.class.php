@@ -16,16 +16,11 @@ class CMix extends Controller {
 	}
 
 	private function actionConfirmDelete() {
-		$usage = new Mix($this->db, $trashRecord);
 		foreach ($this->itemID as $ID) {
-			//setter injection
-			$usage->setTrashRecord(new Trash($this->db));
-			$usageDetails = $usage->getMixDetails($ID);
-			$itemForDeleteName[] = $usageDetails["description"];
-			$usage->deleteUsage($ID);
+			$mix = new MixOptimized($this->db, $ID);
+			$mix->delete();
 		}
-		if ($this->successDeleteInventories)
-			header("Location: ?action=browseCategory&category=department&id=" . $usageDetails['department_id'] . "&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));
+		header("Location: ?action=browseCategory&category=department&id=" . $mix->department_id . "&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));
 	}
 
 	private function actionDeleteItem() {

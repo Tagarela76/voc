@@ -89,7 +89,7 @@ abstract class Cache implements ArrayAccess {
 	 * @return boolean whether the flush operation was successful.
 	 */
 	public function flush() {
-
+		return $this->flushValues();
 	}
 
 	/**
@@ -168,7 +168,6 @@ abstract class Cache implements ArrayAccess {
 	 * Deletes all values from cache.
 	 * Child classes may implement this method to realize the flush operation.
 	 * @return boolean whether the flush operation was successful.
-	 * @throws Exception if this method is not overridden by child classes
 	 */
 	protected function flushValues() {
 
