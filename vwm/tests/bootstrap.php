@@ -1,13 +1,13 @@
 <?php
 
-$site_path = getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+$site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
 
-require('../config/constants4unitTest.php');
-require_once ('../modules/xnyo/xnyo.class.php');
+require($site_path.'config/constants4unitTest.php');
+require_once ($site_path.'modules/xnyo/xnyo.class.php');
 
 //	Include Class Autoloader
-require_once('../modules/classAutoloader.php');
+require_once($site_path.'modules/classAutoloader.php');
 
 //http://stackoverflow.com/questions/6612413/autoload-not-respected-when-testing-with-phpunit
 spl_autoload_register('__autoload');

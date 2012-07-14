@@ -354,9 +354,9 @@ class MixOptimized {
 		$query .= "notes = ". ((empty($this->notes)) ? "NULL" : "'{$this->db->sqltext($this->notes)}'") . ", ";
 		$query .= "creation_time = {$this->db->sqltext($this->creation_time)}, ";
 		$query .= "iteration = {$this->db->sqltext($this->iteration)}, ";
-		$query .= "parent_id = " . ((empty($this->parent_id)) ? "NULL" : $this->db->sqltext($this->parent_id)) . " ";
+		$query .= "parent_id = " . ((empty($this->parent_id)) ? "NULL" : $this->db->sqltext($this->parent_id)) . ", ";
+		$query .= "last_update_time = NOW() ";
 		$query .= " WHERE mix_id ={$this->db->sqltext($this->mix_id)}";
-
 		return $query;
 	}
 
@@ -608,7 +608,7 @@ class MixOptimized {
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, rule_id, " .
 					"apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id ) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time ) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -623,7 +623,8 @@ class MixOptimized {
 						"{$waste_percent}, " .
 						"{$recycle_percent}, " .
 						"{$this->db->sqltext($this->iteration)}, " .
-						"{$parentID} " .
+						"{$parentID}, " .
+						" NOW() " .
 						") ";
 
 		return $query;
@@ -658,38 +659,50 @@ class MixOptimized {
 	}
 
 	private function _load() {
-		if (!isset($this->mix_id))
+		if (!isset($this->mix_id)) {
 			return false;
+		}
 
-		$mixID = mysql_escape_string($this->mix_id);
-
-		$query = 'SELECT mix.*, facility_id FROM ' . TB_USAGE . ' , ' . TB_DEPARTMENT . '  WHERE mix_id = ' . $mixID . ' AND  department.department_id = mix.department_id';
+		$query = "SELECT m.*, d.facility_id " .
+				"FROM " . TB_USAGE . " m " .
+				"JOIN " . TB_DEPARTMENT. " d ON  d.department_id = m.department_id " .
+				"WHERE mix_id = {$this->db->sqltext($this->mix_id)}";
 		$this->db->query($query);
 
-		if ($this->db->num_rows() == 0)
+		if ($this->db->num_rows() == 0) {
 			return false;
+		}
 
 		$mixData = $this->db->fetch(0);
 
-
 		foreach ($mixData as $property => $value) {
 			if (property_exists($this, $property)) {
-
 				$this->$property = $mixData->$property;
 			}
 		}
 
 		$this->iniDateFormat();
 
+		//TODO: move this to Equipment.class.php
 		$query = "SELECT expire FROM " . TB_EQUIPMENT . " WHERE equipment_id=" . $this->equipment_id;
-
 		$this->db->query($query);
 		$exp = $this->db->fetch(0)->expire;
 		$DateType = new DateTypeConverter($this->db);
-
 		$this->expire = date($DateType->getDatetypebyID($this->equipment_id), $exp);
 
-		$this->loadProducts();
+		$this->getProducts();
+	}
+
+	/**
+	 * Mix products getter
+	 * @return array
+	 */
+	public function getProducts() {
+		if(!is_array($this->products) && count($this->products) == 0) {
+			$this->loadProducts();
+		}
+
+		return $this->products;
 	}
 
 	private function iniDateFormat($departmentID = null) {
@@ -747,27 +760,34 @@ class MixOptimized {
 		$this->equipment = $equipment;
 	}
 
-	public function loadProducts() {
 
-		if (!isset($this->mix_id))
+	/**
+	 * Load mix products from database
+	 * @return bool|null
+	 */
+	public function loadProducts() {
+		if (!isset($this->mix_id)) {
 			return false;
+		}
 
 		$this->products = array();
-		$mixID = mysql_escape_string($this->mix_id);
-		$query = "SELECT mg.*, sup.*, p.product_id, p.product_nr, p.name, p.paint_chemical, coat.coat_desc as coatDesc FROM " . TB_MIXGROUP . " mg, " . TB_PRODUCT . " p, " . TB_SUPPLIER . " sup, " . TB_COAT . "
-							WHERE mg.mix_id=" . $mixID . "
-							AND mg.product_id = p.product_id
-							AND p.supplier_id = sup.supplier_id
-							AND coat.coat_id = coating_id";
+		$query = "SELECT mg.*, sup.*, p.product_id, p.product_nr, p.name, p.paint_chemical, coat.coat_desc as coatDesc " .
+					"FROM " . TB_MIXGROUP . " mg " .
+					"JOIN " . TB_PRODUCT . " p ON p.product_id = mg.product_id " .
+					"JOIN " . TB_SUPPLIER . " sup ON p.supplier_id = sup.supplier_id " .
+					"JOIN " . TB_COAT . " coat ON coat.coat_id = coating_id " .
+					"WHERE mg.mix_id = {$this->db->sqltext($this->mix_id)}";
 
 		$this->db->query($query);
-		if ($this->db->num_rows() == 0)
+		if ($this->db->num_rows() == 0) {
 			return false;
+		}
 
 		$productsData = $this->db->fetch_all();
 
+		$unittype = new Unittype($this->db);
 		foreach ($productsData as $productData) {
-			$mixProduct = new MixProduct($this->db, $productData->mixgroup_id);
+			$mixProduct = new MixProduct($this->db);
 			foreach ($productData as $property => $value) {
 				if (property_exists($mixProduct, $property)) {
 					$mixProduct->$property = $productData->$property;
@@ -775,7 +795,6 @@ class MixOptimized {
 			}
 			//	TODO: add userfriendly records to product properties
 			$mixProduct->initializeByID($mixProduct->product_id);
-			array_push($this->products, $mixProduct);
 
 			//	if there is a primary product then this is an pfp-based mix
 			if ($mixProduct->is_primary) {
@@ -785,21 +804,19 @@ class MixOptimized {
 			if ($productData->ratio) {
 				$mixProduct->ratio_to_save = $productData->ratio;
 			}
+
+			$mixProduct->unittypeDetails = $unittype->getUnittypeDetails($mixProduct->unit_type);
+			$unittypeClass = $unittype->getUnittypeClass($mixProduct->unit_type);
+
+			$mixProduct->unittypeDetails['unittypeClass'] = $unittypeClass;
+			$mixProduct->initUnittypeList($unittype);
+
+			$mixProduct->json = json_encode($mixProduct);
+
+			//	push to mix products
+			array_push($this->products, $mixProduct);
 		}
 
-		$unittype = new Unittype($this->db);
-		$count = count($this->products);
-		for ($i = 0; $i < $count; $i++) {
-			$this->products[$i]->unittypeDetails = $unittype->getUnittypeDetails($this->products[$i]->unit_type);
-			$unittypeClass = $unittype->getUnittypeClass($this->products[$i]->unit_type);
-
-			$this->products[$i]->unittypeDetails['unittypeClass'] = $unittypeClass;
-			$this->products[$i]->initUnittypeList($unittype);
-		}
-
-		for ($i = 0; $i < $count; $i++) {
-			$this->products[$i]->json = json_encode($this->products[$i]);
-		}
 		return $this->products;
 	}
 

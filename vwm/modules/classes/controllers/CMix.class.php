@@ -463,17 +463,83 @@ class CMix extends Controller {
 			}
 			$this->smarty->assign('pagination', $pagination);
 
-			$facility = new Facility($this->db);
-			$facility->initializeByID($departmentDetails['departmentID']);
-			$departments = array();
-			$equipments = array();
+			//	Try to get mix list from cache
+			$mixList = false;
+			$cache = VOCApp::get_instance()->getCache();
+			$key = md5('mixListByFacility'.$_SERVER["QUERY_STRING"]);
+			if ($cache) {
+				$mixList = $cache->get($key);
+			}
 
-			$mixValidator = new MixValidatorOptimized();
-			$mixHover = new Hover();
+			if(!$mixList) {
+				echo 'get from db';
+				// no mix list in cache  - so we need to calculate it
+				$facility = new Facility($this->db);
+				$facility->initializeByID($departmentDetails['departmentID']);
+				$departments = array();
+				$equipments = array();
 
-			$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
+				$mixValidator = new MixValidatorOptimized();
+				$mixHover = new Hover();
 
-			if ($mixList && !is_null($this->getFromRequest('export'))) {
+				$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
+
+				if (!$mixList) {
+					$mixList = array();
+				}
+
+				foreach ($mixList as $mix) {
+					$mix->url = "?action=viewDetails&category=mix&id=" . urlencode($mix->mix_id) . "&departmentID=" .
+						urlencode($this->getFromRequest('id'));
+
+					if(!$departments[$mix->department_id]) {
+						$department = new Department($this->db);
+						$department->initializeByID($mix->department_id);
+						$departments[$mix->department_id] = $department;
+					}
+
+					if (!$equipments[$mix->equipment_id]) {
+						$equipment = new Equipment($this->db);
+						$equipment->initializeByID($mix->equipment_id);
+						$equipments[$mix->equipment_id] = $equipment;
+					}
+
+					$mix->setDepartment($departments[$mix->department_id]);
+					$mix->setFacility($facility);
+					$mix->setEquipment($equipments[$mix->equipment_id]);
+
+					// validate them
+					$validatorResponse = $mixValidator->isValidMix($mix);
+
+					if ($validatorResponse->isValid()) {
+						$mix->valid = MixOptimized::MIX_IS_VALID;
+						$mix->hoverMessage = $mixHover->mixValid();
+					} else {
+						if ($validatorResponse->isPreExpired()) {
+							$mix->valid = MixOptimized::MIX_IS_PREEXPIRED;
+							$mix->hoverMessage = $mixHover->mixPreExpired();
+						}
+						if ($validatorResponse->isSomeLimitExceeded() or $validatorResponse->isExpired()) {
+							$mix->valid = MixOptimized::MIX_IS_INVALID;
+							$mix->hoverMessage = $mixHover->mixInvalid();
+						}
+					}
+
+					$mix->getHasChild();
+				}
+
+				//save to cache
+				if ($cache) {
+					$sqlDependency = "SELECT MAX(m.last_update_time) " .
+						"FROM ".TB_USAGE." m " .
+						"JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+						"WHERE d.facility_id = {$this->db->sqltext($departmentDetails['facility_id'])}";
+					$cache->set($key, $mixList, 86400, new DbCacheDependency($this->db, $sqlDependency));
+				}
+			}
+
+
+			if (is_array($mixList) && count($mixList) > 0 && !is_null($this->getFromRequest('export'))) {
 				//	EXPORT THIS PAGE
 				$exporter = new Exporter(Exporter::PDF);
 				$exporter->company = $companyDetails['name'];
@@ -512,50 +578,6 @@ class CMix extends Controller {
 				$exporter->export();
 				die();
 				return ;
-			}
-
-			if (!$mixList) {
-				$mixList = array();
-			}
-
-			foreach ($mixList as $mix) {
-				$mix->url = "?action=viewDetails&category=mix&id=" . urlencode($mix->mix_id) . "&departmentID=" .
-					urlencode($this->getFromRequest('id'));
-
-				if(!$departments[$mix->department_id]) {
-					$department = new Department($this->db);
-					$department->initializeByID($mix->department_id);
-					$departments[$mix->department_id] = $department;
-				}
-
-				if (!$equipments[$mix->equipment_id]) {
-					$equipment = new Equipment($this->db);
-					$equipment->initializeByID($mix->equipment_id);
-					$equipments[$mix->equipment_id] = $equipment;
-				}
-
-				$mix->setDepartment($departments[$mix->department_id]);
-				$mix->setFacility($facility);
-				$mix->setEquipment($equipments[$mix->equipment_id]);
-
-				// validate them
-				$validatorResponse = $mixValidator->isValidMix($mix);
-
-				if ($validatorResponse->isValid()) {
-					$mix->valid = MixOptimized::MIX_IS_VALID;
-					$mix->hoverMessage = $mixHover->mixValid();
-				} else {
-					if ($validatorResponse->isPreExpired()) {
-						$mix->valid = MixOptimized::MIX_IS_PREEXPIRED;
-						$mix->hoverMessage = $mixHover->mixPreExpired();
-					}
-					if ($validatorResponse->isSomeLimitExceeded() or $validatorResponse->isExpired()) {
-						$mix->valid = MixOptimized::MIX_IS_INVALID;
-						$mix->hoverMessage = $mixHover->mixInvalid();
-					}
-				}
-
-				$mix->getHasChild();
 			}
 
 			$this->smarty->assign('childCategoryItems', $mixList);
