@@ -62,6 +62,56 @@ class CCommon extends Controller
 		}
 
 	}
+	
+	private function actionCleanIndustriesTwo() { 
+		$sql = "SELECT it.`type`, count(it.`type`) cnt
+				FROM `industry_type` it
+				WHERE it.parent IS NOT NULL
+				GROUP BY it.`type`, it.`parent`
+				ORDER BY count(it.`type`) DESC";
+		$this->db->query($sql);
+
+		if ($this->db->num_rows() == 0) {
+			echo "no potential errors found";
+			return ;
+		}
+		$typesWithProblems = array();
+		$types = $this->db->fetch_all_array();
+		foreach ($types as $type) {
+			if ($type['cnt'] > 1){
+				$typesWithProblems[] = $type['type'];
+			}
+		}
+		foreach ($typesWithProblems as $typeWithProblems) {
+			$sql = "SELECT *
+					FROM `industry_type`
+					WHERE parent IS NOT NULL
+					AND `type` = '" . $typeWithProblems . "'
+					GROUP BY `parent`";
+			$this->db->query($sql);
+			$selectTypes = $this->db->fetch_all_array();
+			
+			foreach ($selectTypes as $selectType) {
+				$sql = "UPDATE `product2type` " .
+						"SET `type_id`= " . $selectType['id'] . "
+						WHERE type_id IN (
+							SELECT `id` 
+							FROM `industry_type`
+							WHERE `type` = '" . $typeWithProblems . "'
+						    AND `parent` = 	" . $selectType['parent'] . ")";
+				$this->db->query($sql);
+
+				$sql = "DELETE
+						FROM `industry_type`
+						WHERE `id`<>" . $selectType['id'] . "
+						AND `type` = '" . $typeWithProblems . "'
+						AND `parent` = 	" . $selectType['parent']; 
+				$this->db->query($sql);
+			}
+	
+		}
+
+	}
 
 	/**
 	 *
