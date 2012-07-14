@@ -1,7 +1,7 @@
 <?php
 //we should require gacl & gacl_api cause it's no autoloader for it, but we use it!
-require_once('modules/phpgacl/gacl.class.php');
-require_once('modules/phpgacl/gacl_api.class.php');
+require_once(site_path.'modules/phpgacl/gacl.class.php');
+require_once(site_path.'modules/phpgacl/gacl_api.class.php');
 
 /**
  * Project:     VOC WEB MANAGER

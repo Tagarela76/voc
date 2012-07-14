@@ -1,7 +1,7 @@
 <?php
 
-require_once('modules/phpgacl/gacl.class.php');
-require_once('modules/phpgacl/gacl_api.class.php');
+require_once(site_path.'modules/phpgacl/gacl.class.php');
+require_once(site_path.'modules/phpgacl/gacl_api.class.php');
 
 class Department extends DepartmentProperties {
 	//	Properties

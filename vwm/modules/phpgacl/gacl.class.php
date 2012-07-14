@@ -48,7 +48,7 @@ if ( !defined('ADODB_DIR') ) {
 * @author Mike Benoit <ipso@snappymail.ca>
 */
 //require('../../../config/constants.php');
-require('config/constants.php');
+//require(site_path.'config/constants.php');
 
 class gacl {
 	/*
