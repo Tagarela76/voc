@@ -1,6 +1,7 @@
 <?php
+use VWM\Framework\Test as Testing;
 
-class MixManagerTest extends DbTestCase {
+class MixManagerTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
 		'department', 'mix'

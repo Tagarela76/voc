@@ -1,6 +1,8 @@
 <?php
 
-class UnitTypeConverterTest extends TestCase {
+use VWM\Framework\Test as Testing;
+
+class UnitTypeConverterTest extends Testing\TestCase {
 
 	public function testConvertDensity(){
 		$value = 3;

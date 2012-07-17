@@ -1,6 +1,8 @@
 <?php
 
-abstract class Cache implements ArrayAccess {
+namespace VWM\Framework\Cache;
+
+abstract class Cache implements \ArrayAccess {
 
 	const UNIQUE_KEY = 'vwm';
 

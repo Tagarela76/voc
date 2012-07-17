@@ -1,9 +1,11 @@
 <?php
 
+namespace VWM\Framework\Test;
+
 require_once('PHPUnit/Runner/Version.php');
 require_once('PHPUnit/Autoload.php');
 
-abstract class TestCase extends PHPUnit_Framework_TestCase {
+abstract class TestCase extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var db

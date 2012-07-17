@@ -1,5 +1,8 @@
 <?php
 
+namespace VWM\Framework\Test;
+
+
 class DbCacheDependency {
 
 	private $_data;
@@ -51,7 +54,7 @@ class DbCacheDependency {
 				return $this->db->fetch(0);
 			}
 		} else {
-			throw new Exception('DbCacheDependency.sql cannot be empty.');
+			throw new \Exception('DbCacheDependency.sql cannot be empty.');
 		}
 	}
 

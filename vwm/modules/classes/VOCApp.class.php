@@ -1,5 +1,6 @@
 <?php
 
+use VWM\Framework\Cache as Caching;
 /**
  * Description of VOCApp
  *
@@ -17,7 +18,7 @@ class VOCApp {
 	private $date_format_js;
 
 	/**
-	 * @var Cache
+	 * @var VWM\Framework\Cache\Cache
 	 */
 	private $_cache;
 
@@ -34,7 +35,7 @@ class VOCApp {
 				//	server config here
 			);
 
-			$this->_cache = new VOCMemCache();
+			$this->_cache = new Caching\VOCMemCache();
 			$this->_cache->setServers($cacheServers);
 			$this->_cache->init();
 		}
@@ -98,7 +99,7 @@ class VOCApp {
 
 
 	/**
-	 * @return Cache
+	 * @return VWM\Framework\Cache\Cache
 	 */
 	public function getCache() {
 		if ($this->_cache !== null) {

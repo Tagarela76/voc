@@ -1,6 +1,9 @@
 <?php
 function __autoload($class_name) {
-	//var_dump($class_name);
+
+    //  tweak for PHP 5.3 namespaces
+	$class_name = str_replace('\\', '/', $class_name);
+
 	$filePath = site_path.'modules'.DIRSEP.'classes'.DIRSEP;
 	$controllersFilePath=$filePath.'controllers'.DIRSEP; 
 	$localizedFilePath = $filePath; 
@@ -31,8 +34,8 @@ function __autoload($class_name) {
 	}
 		//echo "<br/>Controller: ".$controllersFilePath . "<br/>";
         //
-	
-    
+
+
 	//	TRY TO LOAD CONTROLLER CLASS
 	if (file_exists($controllersFilePath) == false)	{	
 		//	TRY TO LOAD LOCALIZED CLASS

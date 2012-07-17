@@ -1,5 +1,7 @@
 <?php
 
+namespace VWM\Framework\Test;
+
 require_once('PHPUnit/Runner/Version.php');
 require_once('PHPUnit/Autoload.php');
 
@@ -17,20 +19,20 @@ abstract class DbTestCase extends TestCase {
 
 
 	public static function setUpBeforeClass() {
-		if (Phactory::getConnection() === null) {
+		if (\Phactory::getConnection() === null) {
 			if (self::$pdo == null) {
-				self::$pdo = new PDO($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD']);
+				self::$pdo = new \PDO($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD']);
 			}
 
-			Phactory::setConnection(self::$pdo);
+			\Phactory::setConnection(self::$pdo);
 		}
 
 		// reset any existing blueprints and empty any tables Phactory has used
-		Phactory::reset();
+		\Phactory::reset();
 	}
 
 	public static function tearDownAfterClass() {
-		Phactory::reset();
+		\Phactory::reset();
 	}
 
 	protected function setUp() {
@@ -41,7 +43,7 @@ abstract class DbTestCase extends TestCase {
 
 	protected function loadFixtures($tableNames) {
 		//reset tables
-		Phactory::reset();
+		\Phactory::reset();
 
 		foreach ($tableNames as $tableName) {
 			//load table
@@ -58,13 +60,13 @@ abstract class DbTestCase extends TestCase {
 		}
 
 		// https://github.com/chriskite/phactory/issues/3
-		Phactory::setInflection($tableName, $tableName);
+		\Phactory::setInflection($tableName, $tableName);
 
 		// define default values for each user we will create
-		Phactory::define($tableName);
+		\Phactory::define($tableName);
 
 		foreach(require($fileName) as $row) {
-			Phactory::create($tableName, $row);
+			\Phactory::create($tableName, $row);
 		}
 	}
 

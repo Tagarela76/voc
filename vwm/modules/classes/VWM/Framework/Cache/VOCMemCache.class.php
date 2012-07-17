@@ -1,5 +1,7 @@
 <?php
 
+namespace VWM\Framework\Cache;
+
 class VOCMemCache extends Cache {
 
 	/**
@@ -41,7 +43,7 @@ class VOCMemCache extends Cache {
 		if ($this->_cache !== null) {
 			return $this->_cache;
 		} else {
-			return $this->_cache = $this->useMemcached ? new Memcached : new Memcache;
+			return $this->_cache = $this->useMemcached ? new \Memcached : new \Memcache;
 		}
 	}
 
@@ -174,7 +176,7 @@ class MemCacheServerConfiguration {
 	/**
 	 * Constructor.
 	 * @param array $config list of memcache server configurations.
-	 * @throws Exception if the configuration is not an array
+	 * @throws \Exception if the configuration is not an array
 	 */
 	public function __construct($config) {
 		if (is_array($config)) {
@@ -183,10 +185,10 @@ class MemCacheServerConfiguration {
 			}
 
 			if ($this->host === null) {
-				throw new Exception('MemCache server configuration must have "host" value.');
+				throw new \Exception('MemCache server configuration must have "host" value.');
 			}
 		} else {
-			throw new Exception('MemCache server configuration must be an array.');
+			throw new \Exception('MemCache server configuration must be an array.');
 		}
 	}
 

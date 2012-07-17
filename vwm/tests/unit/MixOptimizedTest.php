@@ -1,7 +1,9 @@
 <?php
 
+use VWM\Framework\Test as Testing;
 
-class MixOptimizedTest extends DbTestCase {
+
+class MixOptimizedTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
 		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP,
