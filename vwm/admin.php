@@ -8,6 +8,9 @@ $site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP;
 define('site_path', $site_path);
 
 require_once('modules/classAutoloader.php');
+//http://www.php.net/manual/en/function.spl-autoload-register.php
+spl_autoload_register('__autoload');
+
 require_once('modules/Reform.inc.php');
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');

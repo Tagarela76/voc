@@ -584,7 +584,7 @@ function createSelectUnittypeClass(id) {
 
 </div>
     <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
-
+    {if $pfps|count > 0}
       <table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
       	<tr id="title">
       		<td>Description</td>
@@ -592,20 +592,24 @@ function createSelectUnittypeClass(id) {
       		<td>Ratio</td>
       		<td>Supplier</td>
       	</tr>
-      	{foreach from=$pfps item=pfp}
-      		<tr id="{$pfp->getId()}" name="pfp_row">
-      			<td>{$pfp->getDescription()}</td>
-	      		<td>{$pfp->getProductsCount()}</td>
-	      		<td>{$pfp->getRatio()}{if $pfp->isRangePFP} (with range){/if}</td>
-	      		<td>Supplier</td>
-      		</tr>
-      		<tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
-      			<td colspan="4" style="text-align:center;"><img src="images/ajax-loader.gif" class="preloader" />
 
-      			</td>
-      		</tr>
-      	{/foreach}
+              {foreach from=$pfps item=pfp}
+                  <tr id="{$pfp->getId()}" name="pfp_row">
+                      <td>{$pfp->getDescription()}</td>
+                      <td>{$pfp->getProductsCount()}</td>
+                      <td>{$pfp->getRatio()}{if $pfp->isRangePFP} (with range){/if}</td>
+                      <td>Supplier</td>
+                  </tr>
+                  <tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
+                      <td colspan="4" style="text-align:center;"><img src="images/ajax-loader.gif" class="preloader" />
+
+                      </td>
+                  </tr>
+              {/foreach}
       </table>
+    {else}
+        You do not have any preformulated products yet
+    {/if}
 
 
     </div>

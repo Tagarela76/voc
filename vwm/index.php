@@ -11,6 +11,9 @@ define('site_path', $site_path);
 //	Include Class Autoloader
 require_once('modules/classAutoloader.php');
 
+//http://www.php.net/manual/en/function.spl-autoload-register.php
+spl_autoload_register('__autoload');
+
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');
 //v
