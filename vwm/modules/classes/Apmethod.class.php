@@ -9,7 +9,7 @@ class Apmethod {
 	}
 	
 	
-	public function getApmethodList($pagination) {
+	public function getApmethodList(Pagination $pagination = null) {
 		$query = "SELECT * FROM ".TB_APMETHOD." ORDER BY apmethod_desc";
 		
 		if (isset($pagination)) {

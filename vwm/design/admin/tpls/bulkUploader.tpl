@@ -38,7 +38,7 @@
 			<td>
 				<select name="companyID">
 					{section name=i loop=$companyList}
-					<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name}</option>
+					<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape}</option>
 					{/section}
 				</select>
 			</td>

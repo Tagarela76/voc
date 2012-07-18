@@ -40,7 +40,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div class="floatleft" >
-						<input type='text' name='epa' value='{$data.epa}'>
+						<input type='text' name='epa' value='{$data.epa|escape}'>
 					</div>
 						{*ERROR*}					
                         <div id="error_epa" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>	{*ASK_ALLA!*}
@@ -53,7 +53,7 @@
 					VOC monthly limit:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div class="floatleft">	<input type='text' name='voc_limit' value='{$data.voc_limit}'></div>														
+					<div class="floatleft">	<input type='text' name='voc_limit' value='{$data.voc_limit|escape}'></div>
 			     				{*ERROR*}					
 								  <div id="error_voc_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
 							    {*/ERROR*}								
@@ -65,7 +65,7 @@
 					VOC annual limit:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div class="floatleft">	<input type='text' name='voc_annual_limit' value='{$data.voc_annual_limit}'></div>														
+					<div class="floatleft">	<input type='text' name='voc_annual_limit' value='{$data.voc_annual_limit|escape}'></div>
 			     				{*ERROR*}					
 								  <div id="error_voc_annual_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
 							    {*/ERROR*}								
@@ -76,7 +76,7 @@
 					NOX monthly limit:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div class="floatleft">	<input type='text' name='monthly_nox_limit' {if $data.monthly_nox_limit != ''} value='{$data.monthly_nox_limit}' {else} value='30' {/if}></div>														
+					<div class="floatleft">	<input type='text' name='monthly_nox_limit' {if $data.monthly_nox_limit != ''} value='{$data.monthly_nox_limit|escape}' {else} value='30' {/if}></div>
 			     				{*ERROR*}					
 								  <div id="error_monthly_nox_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
 							    {*/ERROR*}								
@@ -87,7 +87,7 @@
 					Facility name:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" class="floatleft"><input type='text' name='name' value='{$data.name}'></div>
+					<div align="left" class="floatleft"><input type='text' name='name' value='{$data.name|escape}'></div>
 								{*ERROR*}		
 								  <div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>							
 								  <div id="error_name_alredyExist" class="error_img" style="display:none;"><span class="error_text">Such facility is already exist!</span></div>
@@ -100,7 +100,7 @@
 					Address:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" class="floatleft"><input type='text' name='address' value='{$data.address}'></div>
+					<div align="left" class="floatleft"><input type='text' name='address' value='{$data.address|escape}'></div>
 							{*ERROR*}
                                  <div id="error_address" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
                           	{*/ERROR*}
@@ -112,7 +112,7 @@
 					City:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" class="floatleft">	<input type='text' name='city' value='{$data.city}'></div>
+					<div align="left" class="floatleft">	<input type='text' name='city' value='{$data.city|escape}'></div>
 						    {*ERROR*}
                                   <div id="error_city" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
                             {*/ERROR*}							
@@ -124,7 +124,7 @@
 					County:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" class="floatleft">	<input type='text' name='county' value='{$data.county}'></div>
+					<div align="left" class="floatleft">	<input type='text' name='county' value='{$data.county|escape}'></div>
 							 {*ERROR*}
                                   <div id="error_county" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
                              {*/ERROR*}				
@@ -141,11 +141,11 @@
 						<div class="floatleft"> 
 							<select name="selectState" id="selectState" {if $selectMode eq true} style="display: block" {else} style="display: none" {/if}>
 									{section name=i loop=$state}
-										<option value='{$state[i].id}' {if $state[i].id eq $data.state} selected="selected" {/if}> {$state[i].name} </option>
+										<option value='{$state[i].id}' {if $state[i].id eq $data.state} selected="selected" {/if}> {$state[i].name|escape} </option>
 									{/section}
 							</select>
 								
-							<input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state}{/if}' {if $selectMode eq true} style="display: none" {else} style="display: black" {/if}>
+							<input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state|escape}{/if}' {if $selectMode eq true} style="display: none" {else} style="display: black" {/if}>
 						</div>
 							{*ERROR*}
                                <div id="error_state" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -161,7 +161,7 @@
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style="padding:0px;">
 						<div class="floatleft" >    
-				               <input type="text" name="zip" value="{$data.zip}">
+				               <input type="text" name="zip" value="{$data.zip|escape}">
 				        </div>				        	       						
 										{*ERROR*}
 											  <div id="error_zip" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -178,7 +178,7 @@
 					<div>								
 						<select name="country" id="selectCountry" onchange="getStateList(this)">
 						{section name=i loop=$country}
-							<option value='{$country[i].id}' {if $country[i].id eq $data.country}selected="selected"{/if}> {$country[i].name} </option>
+							<option value='{$country[i].id}' {if $country[i].id eq $data.country}selected="selected"{/if}> {$country[i].name|escape} </option>
 						{/section}
 						</select>
 					</div>
@@ -191,7 +191,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div  class="floatleft" >
-						<input type='text' name='phone' value='{$data.phone}'>
+						<input type='text' name='phone' value='{$data.phone|escape}'>
 				    </div>				           
 				    				{*ERROR*} 
                                   <div id="error_phone" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -205,7 +205,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div  class="floatleft" >
-						  <input type='text' name='fax' value='{$data.fax}'> 
+						  <input type='text' name='fax' value='{$data.fax|escape}'>
 					</div>
 						    {*ERROR*} 
                                   <div id="error_fax" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -219,7 +219,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div  class="floatleft" >		
-						<input type='text' name='email' value='{$data.email}'>
+						<input type='text' name='email' value='{$data.email|escape}'>
 					</div>
 							{*ERROR*}
                                   <div id="error_email" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -233,7 +233,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div  class="floatleft">
-						 <input type='text' name='contact' value='{$data.contact}'> 
+						 <input type='text' name='contact' value='{$data.contact|escape}'>
 					</div>
 							{*ERROR*}
                                  <div id="error_contact" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -247,7 +247,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div class="floatleft" >
-						 <input type='text' name='title' value='{$data.title}'>
+						 <input type='text' name='title' value='{$data.title|escape}'>
 					</div>
 							{*ERROR*}
                                <div id="error_title" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>

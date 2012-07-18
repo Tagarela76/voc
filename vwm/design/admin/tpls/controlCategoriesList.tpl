@@ -1,7 +1,7 @@
 {foreach from=$facilityList item=item key=key}
 	<div style="display: none;" id="company_{$key}">
 	{foreach from=$item item=facility}
-		<input type="hidden" name="facility_{$facility.id}" value="{$facility.name}"/>
+		<input type="hidden" name="facility_{$facility.id}" value="{$facility.name|escape}"/>
 	{/foreach}
 	</div>
 {/foreach}
@@ -105,7 +105,7 @@
 		<select name="companyID" onchange="getFacility(value);">
 			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
 			{section name=i loop=$companyList}
-				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
+				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
 			{/section}
 		</select>
 		<select name="facilityID" disabled="disabled"></select>
@@ -181,13 +181,13 @@
 		<select name="company_id" id="selectCompany">
 			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
 			{section name=i loop=$companyList}
-				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
+				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
 			{/section}
 		</select>
 		<select id="selectFacility" name="facility_id" style="display: none;">
 			{if isset($facility)}
 				{section name=i loop=$facility}
-					<option value="{$facility[i].id}" {if $facility[i].id == $reg_field.facility_id} selected='selected' {/if} >{$facility[i].name}</option>
+					<option value="{$facility[i].id}" {if $facility[i].id == $reg_field.facility_id} selected='selected' {/if} >{$facility[i].name|escape}</option>
 				{/section}
 			{/if}
 
@@ -195,7 +195,7 @@
 		<select id="selectDepartment" name="department_id" style="display: none;">
 			{if isset($department)}
 				{section name=i loop=$department}
-					<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name}</option>
+					<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name|escape}</option>
 				{/section}
 			{/if}
 		</select>
@@ -285,7 +285,7 @@
 				$("select[name='facilityID']").find('option').remove();
 				$("div#company_"+company+" input").each(
 					function() {
-						content += '<option value="'+$(this).attr('name').split('_').reverse()[0]+'">'+$(this).attr('value')+'</option>';
+						content += '<option value="'+$(this).attr('name').split('_').reverse()[0]+'">'+($(this).attr('value'))+'</option>';
 					}
 				);
 				if (content != "") {

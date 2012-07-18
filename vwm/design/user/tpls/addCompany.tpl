@@ -25,7 +25,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='' name='name' value='{$data.name}' maxlength="96">
+                        <input type='' name='name' value='{$data.name|escape}' maxlength="96">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.name eq 'failed'}
                     {*ERORR*}
@@ -48,7 +48,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='address' value='{$data.address}' maxlength="384">
+                        <input type='text' name='address' value='{$data.address|escape}' maxlength="384">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.address eq 'failed'}
                     {*ERORR*}
@@ -67,7 +67,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='city' value='{$data.city}' maxlength="192">
+                        <input type='text' name='city' value='{$data.city|escape}' maxlength="192">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.city eq 'failed'}
                     {*ERORR*}
@@ -86,7 +86,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='county' value='{$data.county}' maxlength="192">
+                        <input type='text' name='county' value='{$data.county|escape}' maxlength="192">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.county eq 'failed'}
                     {*ERORR*}
@@ -108,10 +108,10 @@
                         <div style="float:left;">
                             <select name="selectState" id="selectState" {if $selectMode  eq true}  style="display: block" {else}  style="display: none"{/if}>
 							{section name=i loop=$state}
-                                <option value='{$state[i].id}' {if $state[i].id  eq $data.state}  selected="selected" {/if}> {$state[i].name}  </option>
+                                <option value='{$state[i].id}' {if $state[i].id  eq $data.state}  selected="selected" {/if}> {$state[i].name|escape}  </option>
                             {/section}
                             </select>
-                            <input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state}{/if}' {if $selectMode  eq true}  style="display: none" {else}  style="display: block" {/if} maxlength="96">
+                            <input type='text' name='textState' id='textState' value='{if $selectMode ne true}{$data.state|escape}{/if}' {if $selectMode  eq true}  style="display: none" {else}  style="display: block" {/if} maxlength="96">
                         </div>{if $validStatus.summary eq 'false'}
                         {if $validStatus.state eq 'failed'}
                         {*ERORR*}
@@ -132,7 +132,7 @@
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft" style="padding:0px;">
                         <div style="float:left;">
-                            <input type="text" name="zip" value="{$data.zip}" maxlength="32">
+                            <input type="text" name="zip" value="{$data.zip|escape}" maxlength="32">
                         </div>{if $validStatus.summary eq 'false'}
                         {if $validStatus.zip eq 'failed'}
                         {*ERORR*}
@@ -153,7 +153,7 @@
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
                         <select name="country" id="selectCountry" onchange="getStateList(this)">
-                            {section name=i loop=$country}<option value='{$country[i].id}' {if $country[i].id  eq $data.country}selected="selected"{/if}> {$country[i].name}  </option>
+                            {section name=i loop=$country}<option value='{$country[i].id}' {if $country[i].id  eq $data.country}selected="selected"{/if}> {$country[i].name|escape}  </option>
                             {/section}
                         </select>
                     </div>
@@ -166,7 +166,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='phone' value='{$data.phone}' maxlength="32">
+                        <input type='text' name='phone' value='{$data.phone|escape}' maxlength="32">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.phone eq 'failed'}
                     {*ERORR*}
@@ -185,7 +185,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='fax' value='{$data.fax}' maxlength="32">
+                        <input type='text' name='fax' value='{$data.fax|escape}' maxlength="32">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.fax eq 'failed'}
                     {*ERORR*}
@@ -204,7 +204,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='email' value='{$data.email}' maxlength="128">
+                        <input type='text' name='email' value='{$data.email|escape}' maxlength="128">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.email eq 'failed'}
                     {*ERORR*}
@@ -224,7 +224,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='contact' value='{$data.contact}' maxlength="384">
+                        <input type='text' name='contact' value='{$data.contact|escape}' maxlength="384">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.contact eq 'failed'}
                     {*ERORR*}
@@ -243,7 +243,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div class="floatleft">
-                        <input type='text' name='title' value='{$data.title}' maxlength="192">
+                        <input type='text' name='title' value='{$data.title|escape}' maxlength="192">
                     </div>{if $validStatus.summary eq 'false'}
                     {if $validStatus.title eq 'failed'}
                     {*ERORR*}

@@ -40,14 +40,14 @@
             <td class="border_users_b border_users_l border_users_r">
                 <a {if $permissions.viewItem}href="{$company.url}"{/if}>
                     <div style="width:100%;">
-                        {$company.name}
+                        {$company.name|escape}
                     </div>
                 </a>
             </td>                 
             <td class="border_users_r border_users_b ">
                 <a {if $permissions.viewItem}href="{$company.url}"{/if}>
                     <div style="width:100%;">
-                        {$company.address},&nbsp;{$company.contact}&nbsp({$company.phone}) 
+                        {$company.address|escape},&nbsp;{$company.contact|escape}&nbsp({$company.phone|escape})
                     </div>
                 </a>
             </td>           

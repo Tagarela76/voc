@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.epa}
+                    &nbsp;{$facility.epa|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.voc_limit}
+                    &nbsp;{$facility.voc_limit|escape}
                 </div>
             </td>
         </tr>
@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.voc_annual_limit}
+                    &nbsp;{$facility.voc_annual_limit|escape}
                 </div>
             </td>
         </tr>
@@ -52,7 +52,7 @@
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
 				<div align="left">
-                    &nbsp;{$facility.monthly_nox_limit}
+                    &nbsp;{$facility.monthly_nox_limit|escape}
                 </div>							
 			</td>
 		</tr>
@@ -62,7 +62,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.name} 
+                    &nbsp;{$facility.name|escape}
                 </div>
             </td>
         </tr>
@@ -72,7 +72,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.address}
+                    &nbsp;{$facility.address|escape}
                 </div>
             </td>
         </tr>
@@ -82,7 +82,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.city}
+                    &nbsp;{$facility.city|escape}
                 </div>
             </td>
         </tr>
@@ -92,7 +92,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.county}
+                    &nbsp;{$facility.county|escape}
                 </div>
             </td>
         </tr>
@@ -102,7 +102,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.state}
+                    &nbsp;{$facility.state|escape}
                 </div>
             </td>
         </tr>
@@ -112,7 +112,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.zip}
+                    &nbsp;{$facility.zip|escape}
                 </div>
             </td>
         </tr>
@@ -122,7 +122,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.country}
+                    &nbsp;{$facility.country|escape}
                 </div>
             </td>
         </tr>
@@ -132,7 +132,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.phone}
+                    &nbsp;{$facility.phone|escape}
                 </div>
             </td>
         </tr>
@@ -142,7 +142,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.fax} 
+                    &nbsp;{$facility.fax|escape}
                 </div>
             </td>
         </tr>
@@ -152,7 +152,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.email}
+                    &nbsp;{$facility.email|escape}
                 </div>
             </td>
         </tr>
@@ -162,7 +162,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.contact} 
+                    &nbsp;{$facility.contact|escape}
                 </div>
             </td>
         </tr>
@@ -172,7 +172,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.title}
+                    &nbsp;{$facility.title|escape}
                 </div>
             </td>
         </tr>
@@ -184,9 +184,9 @@
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
 					{if $jobberDetails}
-						{$jobberDetails[0].name}
+						{$jobberDetails[0].name|escape}
 						{section name=i loop=$jobberDetails start=1}
-							, {$jobberDetails[i].name}
+							, {$jobberDetails[i].name|escape}
 						{/section}	
 					{/if}
                 </div>

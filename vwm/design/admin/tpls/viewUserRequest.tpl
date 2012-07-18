@@ -75,7 +75,7 @@
 				Department Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->department_name}</div>
+				<div align="left" >&nbsp;{$userRequest->department_name|escape}</div>
 			</td>
 		</tr>	
 		<tr>
@@ -83,7 +83,7 @@
 				Facility Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->facility_name}</div>
+				<div align="left" >&nbsp;{$userRequest->facility_name|escape}</div>
 			</td>
 		</tr>
 		<tr>
@@ -91,7 +91,7 @@
 				Company Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->company_name}</div>
+				<div align="left" >&nbsp;{$userRequest->company_name|escape}</div>
 			</td>
 		</tr>
 		{/if}
@@ -102,7 +102,7 @@
 				Facility Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->facility_name}</div>
+				<div align="left" >&nbsp;{$userRequest->facility_name|escape}</div>
 			</td>
 		</tr>
 		<tr>
@@ -110,7 +110,7 @@
 				Company Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->company_name}</div>
+				<div align="left" >&nbsp;{$userRequest->company_name|escape}</div>
 			</td>
 		</tr>
 		{/if}
@@ -121,7 +121,7 @@
 				Company Name:
 			</td>
 			<td class="border_users_l border_users_r border_users_b">
-				<div align="left" >&nbsp;{$userRequest->company_name}</div>
+				<div align="left" >&nbsp;{$userRequest->company_name|escape}</div>
 			</td>
 		</tr>	
 		{/if}

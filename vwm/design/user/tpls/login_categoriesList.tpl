@@ -21,9 +21,9 @@
 					>
 				{/if}
 				{if !$permissions.company.view}
-					<a href="{$urlCompany}" class="id_company_link">{$companyName}</a>
+					<a href="{$urlCompany}" class="id_company_link">{$companyName|escape}</a>
 				{else}
-					<span class="id_company_link ">{$companyName}</span>
+					<span class="id_company_link ">{$companyName|escape}</span>
 				{/if}
 
 			{elseif $request.category eq "facility"}
@@ -33,15 +33,15 @@
 					>
 				{/if}
 				{if $permissions.company.view}
-					<a href="{$urlCompany}" class="id_company_link">{$companyName}</a>
+					<a href="{$urlCompany}" class="id_company_link">{$companyName|escape}</a>
 					>
 				{else}
-					<span class="id_company_link ">{$companyName} > </span>
+					<span class="id_company_link ">{$companyName|escape} > </span>
 				{/if}
 				{if !$permissions.facility.view}
-					<a href="{$urlFacility}" class="id_company_link">{$facilityName}</a>
+					<a href="{$urlFacility}" class="id_company_link">{$facilityName|escape}</a>
 				{else}
-					<span class="id_company_link ">{$facilityName}</span>
+					<span class="id_company_link ">{$facilityName|escape}</span>
 				{/if}
 
 			{elseif  $request.category eq "department"}
@@ -51,25 +51,25 @@
 					>
 				{/if}
 				{if $permissions.company.view}
-					<a href="{$urlCompany}" class="id_company_link">{$companyName}</a>
+					<a href="{$urlCompany}" class="id_company_link">{$companyName|escape}</a>
 					>
 				{else}
-					<span class="id_company_link ">{$companyName} > </span>
+					<span class="id_company_link ">{$companyName|escape} > </span>
 				{/if}
 				{if $permissions.facility.view}
-					<a href="{$urlFacility}" class="id_company_link">{$facilityName}</a>
+					<a href="{$urlFacility}" class="id_company_link">{$facilityName|escape}</a>
 					>
 				{else}
-					<span class="id_company_link ">{$facilityName} > </span>
+					<span class="id_company_link ">{$facilityName|escape} > </span>
 				{/if}
 				{if !$permissions.department.view}
-					<a href="{$urlDepartment}" class="id_company_link">{$departmentName}</a>
+					<a href="{$urlDepartment}" class="id_company_link">{$departmentName|escape}</a>
 				{else}
-					<span class="id_company_link ">{$departmentName}</span>
+					<span class="id_company_link ">{$departmentName|escape}</span>
 				{/if}
             {/if}
 
-			{/*All companies > Company name > Faciality name > Department name*}
+			{*/All companies > Company name > Faciality name > Department name*}
 
             <br>
             <br>
@@ -77,17 +77,17 @@
 			{*Contacts*}
             {if $request.category == "company" || $request.category == "facility"}
 				{if $request.action != 'addItem' && $request.action != 'deleteItem'}
-					<i>{$address}</i>
+					<i>{$address|escape}</i>
 					<br>
-					<i>{$contact}&nbsp;( {$phone} )</i>
+					<i>{$contact|escape}&nbsp;( {$phone|escape} )</i>
 					<br>
 				{/if}
             {/if}
 
 			{if $request.category != "root" && $request.action=="browseCategory"}
-				{include file="tpls:tpls/controlBrowseCategory.tpl}
+				{include file="tpls:tpls/controlBrowseCategory.tpl"}
 			{/if}
-            {/*Contacts*}
+            {*/Contacts*}
 
         </td>
 

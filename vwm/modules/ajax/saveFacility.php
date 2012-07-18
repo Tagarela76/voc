@@ -53,13 +53,6 @@
 			$xnyo->filter_post_var("contact", "text");
 			$xnyo->filter_post_var("title", "text");	
 			$xnyo->filter_post_var("monthly_nox_limit", "text");
-			//$xnyo->filter_post_var("jobber[]", "text");	
-			// protecting from xss
-			foreach ($_POST as $key=>$value)
-			{	if ($key!='jobber'){				
-					$_POST[$key]=Reform::HtmlEncode($value);
-				}
-			}
 			
 			$regData = array (
 				"facility_id"	=>	$_POST["id"],
@@ -158,14 +151,6 @@
 			$xnyo->filter_post_var("email", "text");
 			$xnyo->filter_post_var("contact", "text");
 			$xnyo->filter_post_var("title", "text");
-			
-			// protecting from xss
-			foreach ($_POST as $key=>$value)
-			{								
-				if ($key!='jobber'){
-					$_POST[$key]=Reform::HtmlEncode($value);
-				}
-			}
 	
 			$facilityData = array (
 				"voc_limit"		=>	$_POST["voc_limit"],

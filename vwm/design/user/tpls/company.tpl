@@ -46,14 +46,14 @@
 					<td>
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
-								{$facility.name}
+								{$facility.name|escape}
 							</div>
 						</a>
 					</td>
 					<td>
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
-								{$facility.address},&nbsp;{$facility.contact}&nbsp({$facility.phone})
+								{$facility.address|escape},&nbsp;{$facility.contact|escape}&nbsp({$facility.phone|escape})
 							</div>
 						</a>
 					</td>

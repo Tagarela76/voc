@@ -101,7 +101,7 @@
 			<tr  height="10px" class="hov_company" id="row_{$smarty.section.company.index}">			
 									
 				<td  class="border_users_l border_users_r border_users_b">			      	
-							{$companyList[company].name}					
+							{$companyList[company].name|escape}
 				</td>
 				
 				<td width="50px" class=" border_users_r border_users_b"> <span style='display:inline-block;'><a onclick="CheckClassOfUnitTypes(document.getElementById('row_{$smarty.section.company.index}'))">all</a>/<a onclick="unCheckClassOfUnitTypes(document.getElementById('row_{$smarty.section.company.index}'))">none</a></span> </td>

@@ -128,7 +128,7 @@
 				
 				<td style="border-bottom:1px solid #cacaca;" class="border_users_r">
 				{if $request.bookmark != "admin" and $request.bookmark != "sales"}
-					<a href="{$category[i].url}" ><div style="width:100%;">{$category[i].startPoint}</div ></a>
+					<a href="{$category[i].url}" ><div style="width:100%;">{$category[i].startPoint|escape}</div ></a>
 				{else}
 					&nbsp;
 				{/if}

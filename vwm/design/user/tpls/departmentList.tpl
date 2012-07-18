@@ -59,7 +59,7 @@
             <td class="border_users_b border_users_l">
                 <a {if $permissions.viewItem}href="{$department.url}"{/if}>
                     <div style="width:100%;">
-                        {$department.name}
+                        {$department.name|escape}
                     </div>
                 </a>
             </td>

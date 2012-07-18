@@ -38,12 +38,6 @@
 			$xnyo->filter_post_var("voc_limit", "text");
 			$xnyo->filter_post_var("voc_annual_limit", "text");
 			$xnyo->filter_post_var("name", "text");
-					
-			// protecting from xss
-			foreach ($_POST as $key=>$value)
-			{								
-				$_POST[$key]=Reform::HtmlEncode($value);
-			}
 				
 			$regData = array(
 				"department_id"	=>	$_POST["id"],
@@ -94,13 +88,7 @@
 			$xnyo->filter_post_var("name", "text");
 			$xnyo->filter_post_var("voc_limit", "text");
 			$xnyo->filter_post_var("voc_annual_limit", "text");
-			
-			// protecting from xss
-			foreach ($_POST as $key=>$value)
-			{								
-				$_POST[$key]=Reform::HtmlEncode($value);
-			}
-						
+
 			$departments = new Department($db);			
 			
 			$departmentData = array (

@@ -9,7 +9,7 @@
                     <div align="left" width="100%">
                         <ul class="link">
                             <li>
-                                <a href="{$upCategory[i].url}"   class="id_company">{$upCategory[i].name} </a>
+                                <a href="{$upCategory[i].url}"   class="id_company">{$upCategory[i].name|escape} </a>
                             </li>
                         </ul>
                     </div>

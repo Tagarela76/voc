@@ -215,7 +215,7 @@
 								<select id="selectCompany" name="company_id">
 									{*<option value="">Select a company</option>*}
 									{section name=i loop=$company}
-										<option value="{$company[i].id}" {if $company[i].id == $reg_field.company_id} selected='selected' {/if} >{$company[i].name}</option>
+										<option value="{$company[i].id}" {if $company[i].id == $reg_field.company_id} selected='selected' {/if} >{$company[i].name|escape}</option>
 									{/section}
 								</select>
 									<span id='compError' class="error_text" style="display:none">Error</span>
@@ -234,7 +234,7 @@
 							<select id="selectFacility" name="facility_id" >
 							{if isset($facility)}
 								{section name=i loop=$facility}
-									<option value="{$facility[i].id}" {if $facility[i].id == $reg_field.facility_id} selected='selected' {/if} >{$facility[i].name}</option>
+									<option value="{$facility[i].id}" {if $facility[i].id == $reg_field.facility_id} selected='selected' {/if} >{$facility[i].name|escape}</option>
 								{/section}
 							{/if}
 	
@@ -255,7 +255,7 @@
 							<div align="left" >	<select id="selectDepartment" name="department_id">
 							{if isset($department)}
 								{section name=i loop=$department}
-									<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name}</option>
+									<option value="{$department[i].id}" {if $department[i].id == $reg_field.department_id} selected='selected' {/if} >{$department[i].name|escape}</option>
 								{/section}
 							{/if}
 	

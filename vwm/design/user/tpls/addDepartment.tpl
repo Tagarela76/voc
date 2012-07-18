@@ -28,7 +28,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='departmentName' type='text' name='name' value='{$data.name}' maxlength="64">
+						<input id='departmentName' type='text' name='name' value='{$data.name|escape}' maxlength="64">
 					</div>					
 			     		{*ERROR*}					
 							<div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>					    						
@@ -44,7 +44,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='departmentLimit' type='text' name='voc_limit' value='{$data.voc_limit}' maxlength="14">
+						<input id='departmentLimit' type='text' name='voc_limit' value='{$data.voc_limit|escape}' maxlength="14">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_voc_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -58,7 +58,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='departmentAnnualLimit' type='text' name='voc_annual_limit' value='{$data.voc_annual_limit}' maxlength="14">
+						<input id='departmentAnnualLimit' type='text' name='voc_annual_limit' value='{$data.voc_annual_limit|escape}' maxlength="14">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_voc_annual_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
