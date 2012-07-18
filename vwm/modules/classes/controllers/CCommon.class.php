@@ -113,6 +113,44 @@ class CCommon extends Controller
 
 	}
 
+
+    private function actionRenameAllPFPs() {
+        $sql = "SELECT * FROM ".TB_PFP." ";
+        $this->db->query($sql);
+
+        $pfps = $this->db->fetch_all();
+        foreach ($pfps as $pfp) {
+            $sql = "SELECT * " .
+                "FROM ".TB_PFP2PRODUCT." pfp2p " .
+                "JOIN ".TB_PRODUCT." p ON pfp2p.product_id = p.product_id " .
+                "WHERE pfp2p.preformulated_products_id = {$pfp->id} ORDER BY pfp2p.isPrimary DESC";
+            $this->db->query($sql);
+
+            $numrows = $this->db->num_rows();
+            if ($numrows == 0) {
+                continue;
+            }
+
+            $description = array();
+            for($i=0;$i<$numrows;$i++) {
+                $product = $this->db->fetch($i);
+                if($i == 0) {
+                    $description = array(
+                        $product->name,
+                    );
+                }
+                $description[] = $product->product_nr;
+
+            }
+
+            $description = implode(' / ', $description);
+
+            $sql = "UPDATE ".TB_PFP." SET description = '{$this->db->sqltext($description)}' WHERE id = {$pfp->id}";
+            $this->db->exec($sql);
+        }
+
+    }
+
 	/**
 	 *
 	 * Refresh usage stats. Useful when unsync happens
