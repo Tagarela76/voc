@@ -1,5 +1,7 @@
 <?php
 
+use VWM\Framework\Cache\DbCacheDependency;
+
 /**
  * PreFormulatedProductsManager (PFPManager)
  */
@@ -372,7 +374,7 @@ class PFPManager {
 	// TODO: needs complete rewrite
 	public function add(PFP $product, $companyID) {
 
-		$count = count($product->products);
+		$count = count($product->getProducts());
 		if ($count == 0) {
 
 			return false;
@@ -407,18 +409,19 @@ class PFPManager {
 			$this->db->query($queryAddPFPRelation2Company);
 		}
 		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary,ratio_to,ratio_from_original,ratio_to_original) VALUES ";
+        $pfpProducts = $product->getProducts();
 		for ($i = 0; $i < $count; $i++) {
-			$isPrimary = $product->products[$i]->isPrimary() ? "true" : "false";
-			if ($product->products[$i]->isRange()) {
-				$range_ratio = explode("-", $product->products[$i]->getRangeRatio());
+			$isPrimary = $pfpProducts[$i]->isPrimary() ? "true" : "false";
+			if ($pfpProducts[$i]->isRange()) {
+				$range_ratio = explode("-", $pfpProducts[$i]->getRangeRatio());
 				$ratio_from_original = isset($range_ratio[0]) ? $range_ratio[0] : "null";
 				$ratio_to_original = isset($range_ratio[count($range_ratio)-1]) ? $range_ratio[count($range_ratio)-1] : "null";
 			} else {
 				$ratio_from_original = "null";
 				$ratio_to_original = "null";
 			}
-			$queryInsertPFPProducts .= " ( " . $product->products[$i]->getRatio() .
-					", " . $product->products[$i]->product_id . " , $pfpID , $isPrimary, 1, $ratio_from_original, $ratio_to_original) ";
+			$queryInsertPFPProducts .= " ( " . $pfpProducts[$i]->getRatio() .
+					", " . $pfpProducts[$i]->product_id . " , $pfpID , $isPrimary, 1, $ratio_from_original, $ratio_to_original) ";
 			if ($i < $count - 1) {
 				$queryInsertPFPProducts .= " , ";
 			}
@@ -539,20 +542,21 @@ class PFPManager {
 			$this->db->rollbackTransaction();
 		}
 
-		$count = count($to->products);
+		$count = count($to->getProducts());
 		$queryInsertPFPProducts = "INSERT INTO " . TB_PFP2PRODUCT . "(ratio,product_id,preformulated_products_id,isPrimary,ratio_to,ratio_from_original,ratio_to_original) VALUES ";
+        $pfpProducts = $to->getProducts();
 		for ($i = 0; $i < $count; $i++) {
-			$isPrimary = $to->products[$i]->isPrimary() ? "true" : "false";
-			if ($to->products[$i]->isRange()) {
-				$ratio_to = $to->products[$i]->ratio_to;
-				$range_ratio = explode("-", $to->products[$i]->range_ratio);
+			$isPrimary = $pfpProducts[$i]->isPrimary() ? "true" : "false";
+			if ($pfpProducts[$i]->isRange()) {
+				$ratio_to = $pfpProducts[$i]->ratio_to;
+				$range_ratio = explode("-", $pfpProducts[$i]->range_ratio);
 				$ratio_from_original = $range_ratio[0];
 				$ratio_to_original = $range_ratio[count($range_ratio)-1];
 			} else {
 				$ratio_to = $range_ratio = $ratio_from_original = $ratio_to_original = 'NULL';
 			}
-			$queryInsertPFPProducts .= " ( " . $to->products[$i]->getRatio() .
-					", " . $to->products[$i]->product_id . " , {$from->getId()}, $isPrimary, {$ratio_to}, $ratio_from_original, $ratio_to_original) ";
+			$queryInsertPFPProducts .= " ( " . $pfpProducts[$i]->getRatio() .
+					", " . $pfpProducts[$i]->product_id . " , {$from->getId()}, $isPrimary, {$ratio_to}, $ratio_from_original, $ratio_to_original) ";
 			if ($i < $count - 1) {
 				$queryInsertPFPProducts .= " , ";
 			}

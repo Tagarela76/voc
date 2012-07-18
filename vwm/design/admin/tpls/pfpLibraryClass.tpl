@@ -92,10 +92,11 @@
                 </div>
 				<div>
 					<table style="font-size: 10; color: #8B7765;">
-						{foreach from=$pfp->getProducts() item=item}
+                        {assign var="pfpProducts" value=$pfp->getProducts()}
+						{foreach from=$pfpProducts item=item}
 							<tr>
-								<td>{$item.product_nr}</td>
-								<td>{$item.name}</td>
+								<td>{$item->product_nr}</td>
+								<td>{$item->name}</td>
 							</tr>
 						{/foreach}
 					</table>

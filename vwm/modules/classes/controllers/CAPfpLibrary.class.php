@@ -112,12 +112,6 @@ class CAPfpLibrary extends Controller {
 		$company = new Company($this->db);
 		$companyList = $company->getCompanyList();
 
-		//	Getting Product list
-		$productsIDArray = array();
-		foreach ($pfp->products as $p) {
-			$productsIDArray[] = $p->product_id;
-		}
-
 		$sub = $this->getFromRequest("subBookmark");
 		if ($sub == 'custom') {
 

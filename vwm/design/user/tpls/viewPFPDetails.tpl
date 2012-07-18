@@ -73,8 +73,9 @@
                             <b>Ratio</b>
                         </td>
                     </tr>
-                    
-                    {foreach from=$pfp->products item=product}
+
+                    {assign var="pfpProducts" value=$pfp->getProducts()}
+                    {foreach from=$pfpProducts item=product}
                     <tr>
                         <td class="border_users_l border_users_b " height="20" width="20%">
                             {$product->supplier}

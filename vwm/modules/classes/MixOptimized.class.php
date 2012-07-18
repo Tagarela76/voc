@@ -3,7 +3,10 @@
 /**
  * Class for mix table in database
  */
-class MixOptimized {
+
+use VWM\Framework\Model as Model;
+
+class MixOptimized extends Model {
 
 	/**
 	 * @var db

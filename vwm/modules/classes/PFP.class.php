@@ -4,20 +4,81 @@
  */
 class PFP
 {
-	private $db;
+    /**
+     * @var db
+     */
+    private $db;
+
 	private $id;
 	private $description;
 	private $company_id;
 	private $last_update_time;
 
-	public $products;
+    private $products;
 
-	function PFP($PFPProductsArray) {
+	function __construct($PFPProductsArray) {
 		$this->products = $PFPProductsArray;
 
 	}
 
+
+    public function __set($property, $value) {
+        $methodName = "set_".$property;
+        if(method_exists($this, $methodName)) {
+            $this->$methodName($value);
+        }
+    }
+
+    public function __get($property) {
+        $methodName = "get_".$property;
+        if(method_exists($this, $methodName)) {
+            $this->$methodName();
+        }
+    }
+
+
+    /**
+     * PFP::products where public one day and there are still some places in VWM where PFP->products is called
+     * That is why I need this method
+     * @return PFPProduct[]
+     */
+    public function get_products() {
+        return $this->getProducts();
+    }
+
+
+    /**
+     * Setter for PFP Products
+     * This actually the best place to sorts array in a correct way - primary product should be always on top
+     * @param PFPProduct[] $PFPProductsArray
+     * @return bool
+     */
+    public function set_products($PFPProductsArray) {
+        if (!is_array($PFPProductsArray)) {
+            return false;
+        }
+
+        if (!($PFPProductsArray[0] instanceof PFPProduct)) {
+            return false;
+        }
+
+        $j = 1;
+        $count = count($PFPProductsArray);
+        for($i=0; $i<$count; $i++) {
+            if($PFPProductsArray[$i]->isPrimary()){
+                $res[0] = $PFPProductsArray[$i];
+            } else {
+                $res[$j] = $PFPProductsArray[$i];
+                $j++;
+            }
+        }
+        ksort($res);
+        $this->products = $res;
+        return true;
+    }
+
 	public function getProducts() {
+        return $this->products;
 		$products = array();
 		if (isset($this->products)) {
 			foreach ($this->products as $item) {
@@ -48,18 +109,13 @@ class PFP
 
 	public function getRatio() {
 		$res = array();
-		$j = 1;
-		$count = $this->getProductsCount();
-		for($i=0; $i<$count; $i++) {
-			if($this->products[$i]->isPrimary()){
-				$res[0] = "<b>".$this->products[$i]->getRatio()."</b>";
-			} else {
-				$res[$j] = $this->products[$i]->getRatio();
-				$j++;
-			}
-		}
-		ksort($res);
-		
+        foreach ($this->products as $product) {
+            if($product->isPrimary()){
+                $res[] = "<b>".$product->getRatio()."</b>";
+            } else {
+                $res[] = $product->getRatio();
+            }
+        }
 		return implode(':', $res);
 	}
 

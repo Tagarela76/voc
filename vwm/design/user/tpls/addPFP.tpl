@@ -15,19 +15,6 @@
 {if $edit}
 var edit = true;
 
-{literal}
-$(function() {
-	/*Add smarty products to list via JS*/
-	{/literal}
-	{foreach from=$pfp->products item=product}
-	
-		//addProduct({$product->getId()},{$product->getRatio()});
-	
-	{/foreach}
-	{literal}
-});
-{/literal}
-
 var pfp_descr = '{$pfp->getDescription()}';
 {else}
 var edit = false;
@@ -147,7 +134,8 @@ var pfp_descr = "";
 		<td class="border_users_r">Ratio</td>
 	</tr>	
 	{assign var=count value=0}
-	{foreach from=$pfp->products item=product}
+    {assign var="pfpProduct" value=$pfp->getProducts()}
+	{foreach from=$pfpProduct item=product}
 	
 		<tr id="product_row_{$count}">
 			<td class="border_users_r border_users_b border_users_l">

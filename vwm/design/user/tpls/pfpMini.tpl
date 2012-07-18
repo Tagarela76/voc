@@ -6,7 +6,8 @@
 	<td>Ratio</td>
 </tr>
 {assign var=i value=1}
-{foreach from=$pfp->products item=product}
+{assign var="pfpProducts" value=$pfp->getProducts()}
+{foreach from=$pfpProducts item=product}
 <tr {if $product->isPrimary()}class="pfpListItemSelectedPrimary"{/if}>
 	<td>{$i}. {$product->supplier}</td>
 	<td>{$product->product_nr}</td>
@@ -37,7 +38,8 @@
 	
 pfp_products = [];
 {assign var=jj value=0}
-{foreach from=$pfp->products item=p}
+{assign var="pfpProducts" value=$pfp->getProducts()}
+{foreach from=$pfpProducts item=p}
 	pr = new CProductObj({$p->product_id},0,0,0);
 	{if $p->isRange()}
 		pr.ratio = $("select.selectRange[id=prod_range_{$jj}]").val();

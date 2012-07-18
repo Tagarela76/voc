@@ -1,5 +1,7 @@
 <?php
 
+use VWM\Framework\Cache\DbCacheDependency;
+
 class CMix extends Controller {
 
 	function CMix($smarty, $xnyo, $db, $user, $action) {
@@ -226,7 +228,7 @@ class CMix extends Controller {
 
 		//	Getting Product list
 		$productsIDArray = array();
-		foreach ($pfp->products as $p) {
+		foreach ($pfp->getProducts() as $p) {
 			$productsIDArray[] = $p->product_id;
 		}
 

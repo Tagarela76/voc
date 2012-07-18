@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Framework\Test;
+namespace VWM\Framework\Cache;
 
 
 class DbCacheDependency {
@@ -8,7 +8,7 @@ class DbCacheDependency {
 	private $_data;
 
 	/**
-	 * @var db
+	 * @var \db
 	 */
 	private $db;
 
@@ -19,7 +19,7 @@ class DbCacheDependency {
 	private $sql;
 
 
-	public function __construct(db $db, $sql = null) {
+	public function __construct(\db $db, $sql = null) {
 		$this->db = $db;
 		$this->sql = $sql;
 	}
