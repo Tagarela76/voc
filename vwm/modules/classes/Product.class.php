@@ -1210,7 +1210,7 @@ class Product extends ProductProperties {
 	 * supplier_id, supplier, voclx, vocwx, percent_volatile_weight,
 	 * percent_volatile_volume
 	 */
-	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier, p.product_nr ') {
 
 		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
 					p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
@@ -1248,6 +1248,10 @@ class Product extends ProductProperties {
 					"(SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE parent = {$this->db->sqltext($this->productCategoryFilter)}) OR p2t.type_id = {$this->db->sqltext($this->productCategoryFilter)})";
 		}
 
+        //  we should sort by product_nr in the last
+        if(strpos($sort, 'p.product_nr') === false) {
+            $sort .= ", p.product_nr";
+        }
 		$query .= " AND {$filter} GROUP BY p.product_id {$sort}";
 
 		if (isset($pagination)) {
