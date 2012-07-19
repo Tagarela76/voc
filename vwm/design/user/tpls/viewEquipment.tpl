@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.equipment_nr}
+                    &nbsp;{$equipment.equipment_nr|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    <b>&nbsp;{$equipment.equip_desc}</b>
+                    <b>&nbsp;{$equipment.equip_desc|escape}</b>
                 </div>
             </td>
         </tr>
@@ -47,7 +47,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.permit}
+                    &nbsp;{$equipment.permit|escape}
                 </div>
             </td>
         </tr>
@@ -67,7 +67,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.daily}
+                    &nbsp;{$equipment.daily|escape}
                 </div>
             </td>
         </tr>
@@ -77,7 +77,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.dept_track}
+                    &nbsp;{$equipment.dept_track|escape}
                 </div>
             </td>
         </tr>
@@ -87,7 +87,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.facility_track}
+                    &nbsp;{$equipment.facility_track|escape}
                 </div>
             </td>
         </tr>
@@ -97,7 +97,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.status}
+                    &nbsp;{$equipment.status|escape}
                 </div>
             </td>
         </tr>
@@ -107,7 +107,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.model_number}
+                    &nbsp;{$equipment.model_number|escape}
                 </div>
             </td>
         </tr>
@@ -117,7 +117,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$equipment.serial_number}
+                    &nbsp;{$equipment.serial_number|escape}
                 </div>
             </td>
         </tr>
@@ -146,13 +146,13 @@
 	<tbody id="filterContent" >				
 			{section name=i loop=$equipmentFiltersList}		
 				<tr class="border_users_l border_users_b">
-					<td class="border_users_l">{$equipmentFiltersList[i]->name}</td>
-					<td>{$equipmentFiltersList[i]->height_size}</td>
-					<td>{$equipmentFiltersList[i]->width_size}</td>
-					<td>{$equipmentFiltersList[i]->length_size}</td>
+					<td class="border_users_l">{$equipmentFiltersList[i]->name|escape}</td>
+					<td>{$equipmentFiltersList[i]->height_size|escape}</td>
+					<td>{$equipmentFiltersList[i]->width_size|escape}</td>
+					<td>{$equipmentFiltersList[i]->length_size|escape}</td>
 					{assign var="filterType" value=$equipmentFiltersList[i]->getFilterType()}
-					<td>{$filterType->name}</td>
-					<td class="border_users_r">{$equipmentFiltersList[i]->qty}</td>
+					<td>{$filterType->name|escape}</td>
+					<td class="border_users_r">{$equipmentFiltersList[i]->qty|escape}</td>
 				</tr>										
 			{/section}																		
 	</tbody>
@@ -183,14 +183,14 @@
 		<tbody id="lightingContent" >				
 				{section name=i loop=$equipmentLightingsList}
                                         <tr class="border_users_l border_users_b">
-						<td class="border_users_l">{$equipmentLightingsList[i]->name}</td>
+						<td class="border_users_l">{$equipmentLightingsList[i]->name|escape}</td>
 						{assign var="bulbType" value=$equipmentLightingsList[i]->getBulbType()}
-						<td>{$bulbType->name}</td>
-						<td>{$equipmentLightingsList[i]->size}</td>
-						<td>{$equipmentLightingsList[i]->voltage}</td>
-						<td>{$equipmentLightingsList[i]->wattage}</td>
+						<td>{$bulbType->name|escape}</td>
+						<td>{$equipmentLightingsList[i]->size|escape}</td>
+						<td>{$equipmentLightingsList[i]->voltage|escape}</td>
+						<td>{$equipmentLightingsList[i]->wattage|escape}</td>
 						{assign var="color" value=$equipmentLightingsList[i]->getColor()}
-						<td class="border_users_r">{$color->name}</td>
+						<td class="border_users_r">{$color->name|escape}</td>
 					</tr>										
 				{/section}																		
 		</tbody>
