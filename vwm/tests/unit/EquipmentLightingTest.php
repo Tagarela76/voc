@@ -2,7 +2,7 @@
 
 use VWM\Framework\Test as Testing;
 
-class EquipmentLightingTest extends DbTestCase {
+class EquipmentLightingTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
 		'equipment_lighting'
