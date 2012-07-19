@@ -258,7 +258,7 @@ class validateCSV {
 			$data_tmp[37] = 0; // set place for discontinued product marker
 			$data_tmp[38] = $data[$headerKey['productPricing']] ; // product price(from manufacturer)
 			$data_tmp[39] = $data[$headerKey['unitType']] ; // unit type
-			$data_tmp[40] = $data[$headerKey['QTY']] ; // product quentity
+			$data_tmp[40] = $data[$headerKey['QTY']] ; // product quantity
 			
 			$data = $data_tmp;
 
@@ -734,7 +734,7 @@ class validateCSV {
 		//QTY
 		$data[40] = str_replace(",",".",$data[40]);
 		if ( !preg_match("/^[0-9.]*$/",$data[40]) || (substr_count($data[40],".") > 1) ){
-			$comments .= "	Quentity is undefined. Row " . $row . ".\n";
+			$comments .= "	Quantity is undefined. Row " . $row . ".\n";
 		}
 
 		//percent volatile by volume
