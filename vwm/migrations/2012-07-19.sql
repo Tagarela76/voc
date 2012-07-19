@@ -43,3 +43,10 @@ CREATE TABLE IF NOT EXISTS `equipment_lighting_color` (
   PRIMARY KEY (`equipment_lighting_color_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
+ALTER TABLE `equipment_filter` ADD FOREIGN KEY ( `equipment_id` ) REFERENCES `equipment` (
+`equipment_id`
+) ON DELETE CASCADE ON UPDATE RESTRICT ;
+
+ALTER TABLE `equipment_lighting` ADD FOREIGN KEY ( `equipment_id` ) REFERENCES `equipment` (
+`equipment_id`
+) ON DELETE CASCADE ON UPDATE RESTRICT ;
