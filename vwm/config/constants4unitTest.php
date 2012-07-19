@@ -2,10 +2,10 @@
 	//	DB CONSTANTS
 	define ('DB_TYPE', 'mysql');
 
-	define ('DB_HOST', '192.168.1.2');
-	define ('DB_NAME', 'voc_unit_test');	
-	define ('DB_USER', 'voc_root');
-	define ('DB_PASS', '');
+	define ('DB_HOST', 'localhost');
+	define ('DB_NAME', 'voc_test');	
+	define ('DB_USER', 'root');
+	define ('DB_PASS', 'zcfd15121510');
 
 	
 	//	DB TABLES
@@ -66,6 +66,13 @@
 	define ('TB_NOTIFY_TIME', 'notify_time');
 	define ('TB_LIMITES', 'limites');
 	define ('TB_LIMIT2USER', 'limit2user');
+	
+	// equipment tables
+	define ('TB_EQUIPMENT_FILTER', 'equipment_filter');
+	define ('TB_EQUIPMENT_FILTER_TYPE', 'equipment_filter_type');
+	define ('TB_EQUIPMENT_LIGHTING', 'equipment_lighting');
+	define ('TB_EQUIPMENT_LIGHTING_COLOR', 'equipment_lighting_color');
+	define ('TB_EQUIPMENT_LIGHTING_BULB_TYPE', 'equipment_lighting_bulb_type');
 	
 	//billing system constants
 	define ('TB_VPS_MODULE_BILLING','vps_module_billing');

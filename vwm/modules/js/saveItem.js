@@ -78,38 +78,6 @@ function saveEquipmentDetails()
 	checkboxes.each(function(i){
 		id = this.value; 
 		
-		// validation
-		var equipment_filter_error = false;
-		//checking
-		if($("#equipment_filter_name_"+id).val() == "") {
-			$("#error_equipment_filter_name .error_text").text("Type filter name!");
-			$("#error_equipment_filter_name ").css('display','inline');
-			equipment_filter_error = true;
-		} 	
-		if($("#equipment_height_size_"+id).val() == "") {
-			$("#error_equipment_height_size .error_text").text("Type Height Size!");
-			$("#error_equipment_height_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if($("#equipment_width_size_"+id).val() == "") {
-			$("#error_equipment_width_size .error_text").text("Type Width Size!");
-			$("#error_equipment_width_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if($("#equipment_length_size_"+id).val() == "") {
-			$("#error_equipment_length_size .error_text").text("Type Length Size!");
-			$("#error_equipment_length_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if($("#equipment_filter_quantity_"+id).val() == "") {
-			$("#error_equipment_filter_quantity .error_text").text("Type Quantity!");
-			$("#error_equipment_filter_quantity").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if (equipment_filter_error) {
-			return;
-		}
-		
 		equipment_filter_id += id + ",";;
 		equipment_filter_name+= $("#equipment_filter_name_"+id).val()+",";
 		equipment_height_size+= $("#equipment_height_size_"+id).val()+",";

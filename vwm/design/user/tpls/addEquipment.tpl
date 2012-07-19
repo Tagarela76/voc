@@ -390,13 +390,13 @@
 				{section name=i loop=$equipmentFiltersList}		
 					<tr id="filter_row_{$equipmentFiltersList[i]->equipment_filter_id}" class="border_users_l border_users_b">
 						<td  class=border_users_l   width=10% ><input type=checkbox id=check_filter_{$smarty.section.i.index} value="{$equipmentFiltersList[i]->equipment_filter_id}"></td>
-						<td> <input type='text' id='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->name}'>	
+						<td> <input type='text' id='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->name|escape}'>	
 						</td>
-						<td><input type='text' id='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->height_size}'>
+						<td><input type='text' id='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->height_size|escape}'>
 						</td>
-						<td> <input type='text' id='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->width_size}'>
+						<td> <input type='text' id='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->width_size|escape}'>
 						</td>	
-						<td> <input type='text' id='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->length_size}'>	
+						<td> <input type='text' id='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->length_size|escape}'>	
 						</td>
 						<td id='equipmentFilterType_td_{$equipmentFiltersList[i]->equipment_filter_id}'>
 							{*FILTER TYPE LIST*}	
@@ -410,7 +410,7 @@
 								{/if}
 							</select>	
 						</td>
-						<td><input type='text' id='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->qty}'></td>
+						<td><input type='text' id='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->qty|escape}'></td>
 					</tr>		
 				{/section}
 
@@ -452,7 +452,7 @@
 				{section name=i loop=$equipmentLightingsList}		
 					<tr id="lighting_row_{$equipmentLightingsList[i]->equipment_lighting_id}" class="border_users_l border_users_b">
 						<td  class=border_users_l   width=10% ><input type=checkbox id=check_lighting_{$smarty.section.i.index} value="{$equipmentLightingsList[i]->equipment_lighting_id}"></td>
-						<td> <input type='text' id='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->name}'></td>
+						<td> <input type='text' id='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->name|escape}'></td>
 						<td id='equipmentBulbType_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
 							{*FILTER TYPE LIST*}	
 							<select name="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
@@ -465,9 +465,9 @@
 								{/if}
 							</select>	
 						</td>
-						<td> <input type='text' id='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->size}'></td>
-						<td> <input type='text' id='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->voltage}'></td>
-						<td> <input type='text' id='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->wattage}'></td>
+						<td> <input type='text' id='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->size|escape}'></td>
+						<td> <input type='text' id='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->voltage|escape}'></td>
+						<td> <input type='text' id='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->wattage|escape}'></td>
 						<td id='equipmentLightingColor_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
 							{*FILTER TYPE LIST*}	
 							<select name="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
