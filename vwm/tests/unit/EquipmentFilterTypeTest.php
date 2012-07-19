@@ -1,6 +1,8 @@
 <?php
 
-class EquipmentFilterTypeTest extends DbTestCase {
+use VWM\Framework\Test as Testing;
+
+class EquipmentFilterTypeTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
 		'equipment_filter_type'

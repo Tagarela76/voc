@@ -1,5 +1,7 @@
 <?php
 
+use VWM\Framework\Test as Testing;
+
 class EquipmentLightingTest extends DbTestCase {
 
 	protected $fixtures = array(

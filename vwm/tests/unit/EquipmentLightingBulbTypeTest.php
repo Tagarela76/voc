@@ -1,6 +1,8 @@
 <?php
 
-class EquipmentLightingBulbTypeTest extends DbTestCase {
+use VWM\Framework\Test as Testing;
+
+class EquipmentLightingBulbTypeTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
 		'equipment_lighting_bulb_type'
