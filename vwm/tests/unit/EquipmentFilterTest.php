@@ -1,79 +1,53 @@
 <?php
 
-class MixManagerTest extends DbTestCase {
+class EquipmentFilterTest extends DbTestCase {
 
 	protected $fixtures = array(
-		'department', 'mix'
+		'equipment_filter'
 	);
 
-	public function testCountMixes() {
-		$mixManager = new MixManager($this->db);
-		$mixCount = $mixManager->countMixes();
+	public function testDeleteEquipmentFilter() {
+		$equipmentFilter= new EquipmentFilter($this->db, 3);
 
-		//	we did not set departmentID
-		$this->assertTrue($mixCount === false);
-
-		$mixManager->departmentID = 1;
-		$mixCount = $mixManager->countMixes();
-		$this->assertTrue($mixCount === 4);
-
-		//	now let's test filter
-		$filter = ' description LIKE \'%WO12%\' ';
-		$mixCount = $mixManager->countMixes($filter);
-		$this->assertTrue($mixCount === 2);
-
-		//	test search criteria
-		$mixManager->searchCriteria[] = '124';
-		$mixCount = $mixManager->countMixes();
-		$this->assertTrue($mixCount === 1);
+		// delete equipment filter
+		$equipmentFilter->delete();
+		
+		// get equipment filter that doesn't exist
+		$eqFilter = new EquipmentFilter($this->db, 3); 
+		$this->assertTrue(!is_null($eqFilter));
 	}
+	
+	public function testViewEquipmentFilter() {
+		$equipmentFilter = new EquipmentFilter($this->db, 3);
 
-	public function testCountMixesInFacility() {
-		$mixManager = new MixManager($this->db);
-		$mixCount = $mixManager->countMixesInFacility(1);
-		$this->assertTrue($mixCount === 5);
-
-		//	now let's test filter
-		$filter = ' description LIKE \'%WO12%\' ';
-		$mixCount = $mixManager->countMixesInFacility(1, $filter);
-		$this->assertTrue($mixCount === 3);
-
-		//	test search criteria
-		$mixManager->searchCriteria[] = 'WO';
-		$mixCount = $mixManager->countMixesInFacility(1);
-		$this->assertTrue($mixCount === 3);
+		$this->assertTrue($equipmentFilter->name == 'test3');
 	}
+	
+	public function testSaveEquipmentFilter() {
+		$equipmentFilter = new EquipmentFilter($this->db);
 
-	public function testGetMixList() {
-		$mixManager = new MixManager($this->db);
-		$mixList = $mixManager->getMixList();
-		//	we did not set departmentID
-		$this->assertTrue($mixList === false);
+		$equipmentFilter->equipment_filter_type_id =  '1';
+		$equipmentFilter->equipment_id = '3333';
+		$equipmentFilter->height_size = '33';
+		$equipmentFilter->length_size = '33';
+		$equipmentFilter->width_size = '33';
+		$equipmentFilter->name = 'test44';
+		$equipmentFilter->qty = '3';
 
-		$mixManager->departmentID = 666;
-		$mixList = $mixManager->getMixList();
-		//	no mixes for this department
-		$this->assertTrue($mixList === false);
-
-		$mixManager->departmentID = 1;
-		$mixList = $mixManager->getMixList();
-		$this->assertTrue(is_array($mixList));
-		$this->assertTrue(count($mixList) == 4);
-		$this->assertTrue($mixList[3] instanceof MixOptimized);
+		$equipmentFilter->save();
+		
+		$myTestEqFilter = Phactory::get(TB_EQUIPMENT_FILTER, array('equipment_filter_id'=>"2"));
+		$this->assertTrue($myTestEqFilter->name == 'test2');
+		
 	}
+	
+	public function testViewListEquipmentFilterTypes() {
+		$equipmentFilter = new EquipmentFilter($this->db);
 
-	public function testGetMixListInFacility() {
-		$mixManager = new MixManager($this->db);
-		$mixList = $mixManager->getMixListInFacility(1);
-		$this->assertTrue(is_array($mixList));
-		$this->assertTrue(count($mixList) == 5);
-		$this->assertTrue($mixList[3] instanceof MixOptimized);
+		$equipmentFilterTypesList = $equipmentFilter->getFilterTypesList();
 
-		//	test search criteria
-		$mixManager->searchCriteria[] = 'WO';
-		$mixList = $mixManager->getMixListInFacility(1);
-		$this->assertTrue(count($mixList) === 3);
-
+		$this->assertTrue(!is_null($equipmentFilterTypesList));
+		
 	}
-
+	
 }
