@@ -43,6 +43,24 @@
 			$xnyo->filter_post_var("facility_track", "text");
 			$xnyo->filter_post_var("department_id", "text");
 
+			$xnyo->filter_post_var("model_number", "text");
+			$xnyo->filter_post_var("serial_number", "text");
+                        
+                        $xnyo->filter_post_var("equipment_filter_id", "text");
+			$xnyo->filter_post_var("equipment_filter_name", "text");
+			$xnyo->filter_post_var("equipment_height_size", "text");
+			$xnyo->filter_post_var("equipment_width_size", "text");
+			$xnyo->filter_post_var("equipment_length_size", "text");
+			$xnyo->filter_post_var("equipment_filter_quantity", "text");
+			$xnyo->filter_post_var("equipment_filter_type", "text");
+			
+                        $xnyo->filter_post_var("equipment_lighting_id", "text");
+			$xnyo->filter_post_var("equipment_lighting_name", "text");
+			$xnyo->filter_post_var("equipment_lighting_size", "text");
+			$xnyo->filter_post_var("equipment_lighting_voltage", "text");
+			$xnyo->filter_post_var("equipment_lighting_wattage", "text");
+			$xnyo->filter_post_var("equipment_lighting_bulb_type", "text");
+			$xnyo->filter_post_var("equipment_lighting_color", "text");
 			// protecting from xss
 			foreach ($_POST as $key=>$value)
 			{
@@ -79,6 +97,8 @@
 				"daily"			=>	$_POST["daily"],
 				"dept_track"	=>	$deptTrack,
 				"facility_track"=>	$facilityTrack,
+				"model_number"=>	$_REQUEST["model_number"],
+				"serial_number"=>	$_REQUEST["serial_number"],
 				"creater_id"	=>	18
 			);
 
@@ -97,6 +117,62 @@
 				//	setter injection
 				$equipment->setTrashRecord(new Trash($db));
 				$equipment->setEquipmentDetails($regData);
+				
+				// add filters
+                                $equipment_filter_id = explode(',',$_REQUEST['equipment_filter_id']);
+				$equipment_filter_name = explode(',',$_REQUEST['equipment_filter_name']);
+				$equipment_height_size = explode(',',$_REQUEST['equipment_height_size']);
+				$equipment_width_size = explode(',',$_REQUEST['equipment_width_size']);
+				$equipment_length_size = explode(',',$_REQUEST['equipment_length_size']);
+				$equipment_filter_quantity = explode(',',$_REQUEST['equipment_filter_quantity']);
+				$equipment_filter_type = explode(',',$_REQUEST['equipment_filter_type']);
+					
+				$equipmentFilterCount = sizeof($equipment_filter_name) - 1; // delete last because empty element
+				for ($i=0; $i<$equipmentFilterCount; $i++) {
+        				$equipmentFilter = new EquipmentFilter($db, $equipment_filter_id[$i]);
+                                        if (isset($equipmentFilter->name)) {
+                                           $equipmentFilter->equipment_filter_id = $equipment_filter_id[$i];
+                                        } else {
+                                            $equipmentFilter->equipment_filter_id = null;
+                                        }
+				//	$equipmentFilter->equipment_filter_id = $equipmentFilter->getFiterIdByName($equipment_filter_name[$i]);
+					$equipmentFilter->equipment_id = $regData['equipment_id'];
+					$equipmentFilter->name =  $equipment_filter_name[$i];
+					$equipmentFilter->height_size =  $equipment_height_size[$i];
+					$equipmentFilter->width_size =  $equipment_width_size[$i];
+					$equipmentFilter->length_size  =  $equipment_length_size[$i];
+					$equipmentFilter->qty =  $equipment_filter_quantity[$i];
+					$equipmentFilter->equipment_filter_type_id = $equipment_filter_type[$i];
+					$equipmentFilter->save();
+				}
+				
+				// add lighting
+                                $equipment_lighting_id = explode(',',$_REQUEST['equipment_lighting_id']);
+				$equipment_lighting_name = explode(',',$_REQUEST['equipment_lighting_name']);
+				$equipment_lighting_size = explode(',',$_REQUEST['equipment_lighting_size']);
+				$equipment_lighting_voltage = explode(',',$_REQUEST['equipment_lighting_voltage']);
+				$equipment_lighting_wattage = explode(',',$_REQUEST['equipment_lighting_wattage']);
+				$equipment_lighting_bulb_type = explode(',',$_REQUEST['equipment_lighting_bulb_type']);
+				$equipment_lighting_color = explode(',',$_REQUEST['equipment_lighting_color']);
+
+				$equipmentLightingCount = sizeof($equipment_lighting_name) - 1; // delete last because empty element
+				for ($i=0; $i<$equipmentLightingCount; $i++) {
+					$equipmentLighting = new EquipmentLighting($db, $equipment_lighting_id[$i]);
+                                //        $equipmentLighting->equipment_lighting_id = $equipmentLighting->getLightingIdByName($equipment_lighting_name[$i]);
+				        if (isset($equipmentLighting->name)){
+                                            $equipmentLighting->equipment_lighting_id = $equipment_lighting_id[$i];
+                                        } else {
+                                            $equipmentLighting->equipment_lighting_id = null;
+                                        }
+                                        $equipmentLighting->equipment_id = $regData['equipment_id'];
+					$equipmentLighting->name =  $equipment_lighting_name[$i];
+					$equipmentLighting->size =  $equipment_lighting_size[$i];
+					$equipmentLighting->voltage =  $equipment_lighting_voltage[$i];
+					$equipmentLighting->wattage  =  $equipment_lighting_wattage[$i];
+					$equipmentLighting->bulb_type = $equipment_lighting_bulb_type[$i];
+					$equipmentLighting->color = $equipment_lighting_color[$i];
+					$equipmentLighting->save();
+				}
 			}
 
 			echo json_encode($validateStatus);
@@ -104,6 +180,7 @@
 
 
 		case "addItem":
+			
 			$xnyo->filter_post_var("department_id", "text");
 			$xnyo->filter_post_var("equip_desc", "text");
 			$xnyo->filter_post_var("selectInventoryID", "text");
@@ -112,7 +189,22 @@
 			$xnyo->filter_post_var("daily", "text");
 			$xnyo->filter_post_var("dept_track", "text");
 			$xnyo->filter_post_var("facility_track", "text");
-
+			
+			$xnyo->filter_post_var("model_number", "text");
+			$xnyo->filter_post_var("serial_number", "text");
+			$xnyo->filter_post_var("equipment_filter_name", "text");
+			$xnyo->filter_post_var("equipment_height_size", "text");
+			$xnyo->filter_post_var("equipment_width_size", "text");
+			$xnyo->filter_post_var("equipment_length_size", "text");
+			$xnyo->filter_post_var("equipment_filter_quantity", "text");
+			$xnyo->filter_post_var("equipment_filter_type", "text");
+			
+			$xnyo->filter_post_var("equipment_lighting_name", "text");
+			$xnyo->filter_post_var("equipment_lighting_size", "text");
+			$xnyo->filter_post_var("equipment_lighting_voltage", "text");
+			$xnyo->filter_post_var("equipment_lighting_wattage", "text");
+			$xnyo->filter_post_var("equipment_lighting_bulb_type", "text");
+			$xnyo->filter_post_var("equipment_lighting_color", "text");
 			// protecting from xss
 			foreach ($_POST as $key=>$value)
 			{
@@ -147,6 +239,8 @@
 				"daily"			=>	$_POST["daily"],
 				"dept_track"	=>	$deptTrack,
 				"facility_track"=>	$facilityTrack,
+				"model_number"=>	$_REQUEST["model_number"],
+				"serial_number"=>	$_REQUEST["serial_number"],
 				"creater_id"	=>	18
 			);
 
@@ -163,8 +257,49 @@
 
 				//	setter injection
 				$equipment->setTrashRecord(new Trash($db));
-				$equipment->addNewEquipment($equipmentData);
-
+				$equipmentId = $equipment->addNewEquipment($equipmentData);
+				// add filters
+				$equipment_filter_name = explode(',',$_REQUEST['equipment_filter_name']);
+				$equipment_height_size = explode(',',$_REQUEST['equipment_height_size']);
+				$equipment_width_size = explode(',',$_REQUEST['equipment_width_size']);
+				$equipment_length_size = explode(',',$_REQUEST['equipment_length_size']);
+				$equipment_filter_quantity = explode(',',$_REQUEST['equipment_filter_quantity']);
+				$equipment_filter_type = explode(',',$_REQUEST['equipment_filter_type']);
+				
+				$equipmentFilterCount = sizeof($equipment_filter_name) - 1; // delete last because empty element
+				for ($i=0; $i<$equipmentFilterCount; $i++) {
+					$equipmentFilter = new EquipmentFilter($db);
+					$equipmentFilter->equipment_id = $equipmentId;
+					$equipmentFilter->name =  $equipment_filter_name[$i];
+					$equipmentFilter->height_size =  $equipment_height_size[$i];
+					$equipmentFilter->width_size =  $equipment_width_size[$i];
+					$equipmentFilter->length_size  =  $equipment_length_size[$i];
+					$equipmentFilter->qty =  $equipment_filter_quantity[$i];
+					$equipmentFilter->equipment_filter_type_id = $equipment_filter_type[$i];
+					$equipmentFilter->save();
+				}
+				
+				// add lighting
+				$equipment_lighting_name = explode(',',$_REQUEST['equipment_lighting_name']);
+				$equipment_lighting_size = explode(',',$_REQUEST['equipment_lighting_size']);
+				$equipment_lighting_voltage = explode(',',$_REQUEST['equipment_lighting_voltage']);
+				$equipment_lighting_wattage = explode(',',$_REQUEST['equipment_lighting_wattage']);
+				$equipment_lighting_bulb_type = explode(',',$_REQUEST['equipment_lighting_bulb_type']);
+				$equipment_lighting_color = explode(',',$_REQUEST['equipment_lighting_color']);
+	
+				$equipmentLightingCount = sizeof($equipment_lighting_name) - 1; // delete last because empty element
+				for ($i=0; $i<$equipmentLightingCount; $i++) {
+					$equipmentLighting = new EquipmentLighting($db);
+					$equipmentLighting->equipment_id = $equipmentId;
+					$equipmentLighting->name =  $equipment_lighting_name[$i];
+					$equipmentLighting->size =  $equipment_lighting_size[$i];
+					$equipmentLighting->voltage =  $equipment_lighting_voltage[$i];
+					$equipmentLighting->wattage  =  $equipment_lighting_wattage[$i];
+					$equipmentLighting->bulb_type = $equipment_lighting_bulb_type[$i];
+					$equipmentLighting->color = $equipment_lighting_color[$i];
+					$equipmentLighting->save();
+				}
+				
 				//save to bridge
 				$company = new Company($db);
 				$companyID = $company->getCompanyIDbyDepartmentID($_POST['department_id']);

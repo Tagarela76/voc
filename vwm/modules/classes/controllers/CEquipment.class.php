@@ -122,7 +122,33 @@ class CEquipment extends Controller
 			$equipmentDetails["status"] = "Expired";
 		} else {
 			$equipmentDetails["status"] = "Not Expired";
-		}											
+		}	
+		/* get filter list*/
+		$equipmentFilters = array();
+		$equipmentFiltersList = $equipment->getEquipmentFiltersList($equipmentDetails['equipment_id']);	
+		foreach ($equipmentFiltersList as $equipmentFilterList) {
+			$equipmentFilterType = new EquipmentFilterType($this->db,$equipmentFilterList->equipment_filter_type_id);
+			$equipmentFilterList->setFilterType($equipmentFilterType);
+			$equipmentFilters[] = $equipmentFilterList;
+		}
+
+		$this->smarty->assign('equipmentFiltersList', $equipmentFilters);
+		$this->smarty->assign('equipmentFiltersListCount', sizeof($equipmentFilters));
+		
+		/* get lighting list*/
+		$equipmentLightings = array();
+		$equipmentLightingsList = $equipment->getEquipmentLightingList($equipmentDetails['equipment_id']);	 
+		foreach ($equipmentLightingsList as $equipmentLightingList) {
+			$equipmentBulbType = new EquipmentLightingBulbType($this->db,$equipmentLightingList->bulb_type);
+			$equipmentLightingList->setBulbType($equipmentBulbType);
+			$equipmentColor = new EquipmentLightingColor($this->db,$equipmentLightingList->color);
+			$equipmentLightingList->setColor($equipmentColor);
+			$equipmentLightings[] = $equipmentLightingList;
+		}
+		$this->smarty->assign('equipmentLightingsList', $equipmentLightings);
+		$this->smarty->assign('equipmentLightingsListCount', sizeof($equipmentLightings));
+		
+		/**/
 		$this->smarty->assign("equipment", $equipmentDetails);
 		$this->smarty->assign('backUrl','?action=browseCategory&category=department&id='.$this->getFromRequest('departmentID').'&bookmark=equipment');
 		$this->smarty->assign('tpl', 'tpls/viewEquipment.tpl');
@@ -175,6 +201,24 @@ class CEquipment extends Controller
 		$categoryDetails['expire'] = new TypeChain(null,'date',$this->db,$this->getFromRequest('departmentID'),'department');						
 		$this->smarty->assign('data', $categoryDetails);
 		
+		/* get filter type list*/
+		$equipmentFilter = new EquipmentFilter($this->db);
+		$equipmentFilterTypeList = $equipmentFilter->getFilterTypesList();		
+		$this->smarty->assign('equipmentFilterType', $equipmentFilterTypeList);
+		/**/
+		
+		/* get lighting bulb type list*/
+		$equipmentLighting = new EquipmentLighting($this->db);
+		$equipmentLightingBulbTypeList = $equipmentLighting->getLightingBulbTypeList();		
+		$this->smarty->assign('lightingBulbType', $equipmentLightingBulbTypeList);
+		/**/
+
+		/* get lighting color list*/
+		$equipmentLighting = new EquipmentLighting($this->db);
+		$equipmentLightingColorList = $equipmentLighting->getLightingColorList();		
+		$this->smarty->assign('lightingColor', $equipmentLightingColorList);
+		/**/
+	//	var_dump($equipmentLightingColorList); die();
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'), array('bookmark'=>'equipment'));
 		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
 		$this->setPermissionsNew('viewEquipment');
@@ -236,7 +280,48 @@ class CEquipment extends Controller
 			foreach ($result as $key=>$value) {																	
 				$this->smarty->assign($key,$value);
 			}
-		}																		
+		}	
+		/* get filter list*/
+		$equipmentFilters = array();
+		$equipmentFiltersList = $equipment->getEquipmentFiltersList($equipmentDetails['equipment_id']);	
+		foreach ($equipmentFiltersList as $equipmentFilterList) {
+			$equipmentFilterType = new EquipmentFilterType($this->db,$equipmentFilterList->equipment_filter_type_id);
+			$equipmentFilterList->setFilterType($equipmentFilterType);
+			$equipmentFilters[] = $equipmentFilterList;
+		}
+		$this->smarty->assign('equipmentFiltersList', $equipmentFilters);
+		$this->smarty->assign('equipmentFiltersListCount', sizeof($equipmentFilters));
+		
+		/* get lighting list*/
+		$equipmentLightings = array();
+		$equipmentLightingsList = $equipment->getEquipmentLightingList($equipmentDetails['equipment_id']);	 
+		foreach ($equipmentLightingsList as $equipmentLightingList) {
+			$equipmentBulbType = new EquipmentLightingBulbType($this->db,$equipmentLightingList->bulb_type);
+			$equipmentLightingList->setBulbType($equipmentBulbType);
+			$equipmentColor = new EquipmentLightingColor($this->db,$equipmentLightingList->color);
+			$equipmentLightingList->setColor($equipmentColor);
+			$equipmentLightings[] = $equipmentLightingList;
+		}
+		$this->smarty->assign('equipmentLightingsList', $equipmentLightings);
+		$this->smarty->assign('equipmentLightingsListCount', sizeof($equipmentLightings));
+		
+		/* get filter type list*/
+		$equipmentFilter = new EquipmentFilter($this->db);
+		$equipmentFilterTypeList = $equipmentFilter->getFilterTypesList();		
+		$this->smarty->assign('equipmentFilterType', $equipmentFilterTypeList);
+		/**/
+		
+		/* get lighting bulb type list*/
+		$equipmentLighting = new EquipmentLighting($this->db);
+		$equipmentLightingBulbTypeList = $equipmentLighting->getLightingBulbTypeList();		
+		$this->smarty->assign('lightingBulbType', $equipmentLightingBulbTypeList);
+		/**/
+
+		/* get lighting color list*/
+		$equipmentLighting = new EquipmentLighting($this->db);
+		$equipmentLightingColorList = $equipmentLighting->getLightingColorList();		
+		$this->smarty->assign('lightingColor', $equipmentLightingColorList);
+		/**/
 //		var_dump($equipmentDetails['expire']);
 		$this->smarty->assign('data', $equipmentDetails);						
 		

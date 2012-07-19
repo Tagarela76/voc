@@ -17,6 +17,7 @@
 			break;			
 		
 		case 'web':
+			define('USE_MEMCACHED', false);
 			define('ENVIRONMENT2LOAD','local');			//	LOCAL AREA
 		//	define('ENVIRONMENT2LOAD','work');			//	KTTSOFT AREA
 		//	define('ENVIRONMENT2LOAD','server');		//	DEDICATED SERVER LIVE AREA
@@ -34,7 +35,7 @@
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'developer');
+				define ('DB_PASS', 'zcfd15121510');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');			
@@ -241,6 +242,13 @@
 	define ('TB_USERS2REGS', 'users2regs');
 	define ('TB_DATE_FORMAT', 'date_format');
 	define ('TB_NOTIFY_CODE', 'notify_code');
+	
+	// equipment tables
+	define ('TB_EQUIPMENT_FILTER', 'equipment_filter');
+	define ('TB_EQUIPMENT_FILTER_TYPE', 'equipment_filter_type');
+	define ('TB_EQUIPMENT_LIGHTING', 'equipment_lighting');
+	define ('TB_EQUIPMENT_LIGHTING_COLOR', 'equipment_lighting_color');
+	define ('TB_EQUIPMENT_LIGHTING_BULB_TYPE', 'equipment_lighting_bulb_type');
 	
 	//billing system constants
 	define ('TB_VPS_MODULE_BILLING','vps_module_billing');
