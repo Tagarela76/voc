@@ -2280,6 +2280,86 @@ class Validation {
 
 		return $result;
 	}
+	
+	public function validateRegDataEquipmentProperties($data){
+
+		$result['summary']='true';
+		if (isset($data['equipment_filter_name'])) {
+			if ($data['equipment_filter_name'] != "") {
+				return true;
+			} else {
+				$result['equipment_filter_name']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_lighting_name'])) {
+			if ($data['equipment_lighting_name'] != "") {
+				return true;
+			} else {
+				$result['equipment_lighting_name']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_lighting_voltage'])) {
+			if ($data['equipment_lighting_voltage'] != "") {
+				return true;
+			} else {
+				$result['equipment_lighting_voltage']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_lighting_size'])) {
+			if ($data['equipment_lighting_size'] != "") {
+				return true;
+			} else {
+				$result['equipment_lighting_size']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_height_size'])) {
+			if ($data['equipment_lighting_size'] != "" || $this->noYes[Validate::number($data['equipment_lighting_size'], $parametrs)] == 'YES') {
+				return true;
+			} else {
+				$result['equipment_lighting_size']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_width_size'])) {
+			if ($data['equipment_width_size'] != "" || $this->noYes[Validate::number($data['equipment_width_size'], $parametrs)] == 'YES') {
+				return true;
+			} else {
+				$result['equipment_width_size']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_length_size'])) {
+			if ($data['equipment_length_size'] != "" || $this->noYes[Validate::number($data['equipment_length_size'], $parametrs)] == 'YES') {
+				return true;
+			} else {
+				$result['equipment_length_size']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_filter_quantity'])) {
+			if ($data['equipment_filter_quantity'] != "" || $this->noYes[Validate::number($data['equipment_filter_quantity'], $parametrs)] == 'YES') {
+				return true;
+			} else {
+				$result['equipment_filter_quantity']='failed';
+				$result['summary']='false';
+			}
+		}
+		if (isset($data['equipment_lighting_wattage'])) {
+			if ($data['equipment_lighting_wattage'] != "" || $this->noYes[Validate::number($data['equipment_lighting_wattage'], $parametrs)] == 'YES') {
+				return true;
+			} else {
+				$result['equipment_lighting_wattage']='failed';
+				$result['summary']='false';
+			}
+		}
+
+		return $result;
+
+	}
 
 }
 ?>
