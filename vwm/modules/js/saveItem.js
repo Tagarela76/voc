@@ -398,7 +398,7 @@ function removeAllChild(element) {
 		if(/^\d+$/.test(equipmentFilterQuantity)) {
 			$("#error_equipment_filter_quantity").css('display','none');
 		} else {
-			$("#error_equipment_filter_quantity .error_text").text("Quentity should be an integer!");
+			$("#error_equipment_filter_quantity .error_text").text("Quantity should be an integer!");
 			$("#error_equipment_filter_quantity").css('display','inline');
 			equipment_filter_error = true;
 		}
