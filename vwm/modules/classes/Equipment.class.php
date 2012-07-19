@@ -2,6 +2,9 @@
 
 class Equipment extends EquipmentProperties {
 
+	/**	 
+	 * @var db
+	 */
 	private $db;
 	private $trashRecord;
 	private $parentTrashRecord;
@@ -11,7 +14,65 @@ class Equipment extends EquipmentProperties {
 	}
 
 
-
+	
+	/**
+	 * get equipment filters List for equipment
+	 * @param int equipemnt id
+	 * @return array|bool array of EquipmentFilter or false on failure
+	 */
+	public function getEquipmentFiltersList($equipmentId) {
+		
+		$filters = array();
+		
+		$sql = "SELECT * FROM ". TB_EQUIPMENT_FILTER. "
+				WHERE equipment_id={$this->db->sqltext($equipmentId)}"; 
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		foreach ($rows as $row) {
+			$filter = new EquipmentFilter($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($filter, $key)) {
+					$filter->$key = $value;
+				}
+			}
+			$filters[] = $filter;
+		}
+		return $filters;
+	}
+	
+	/**
+	 * get equipment lighting list for equipment
+	 * @param int equipemnt id
+	 * @return array|bool array of EquipmentLighting or false on failure
+	 */
+	public function getEquipmentLightingList($equipmentId) {
+		
+		$lightings = array();
+		
+		$sql = "SELECT * FROM ". TB_EQUIPMENT_LIGHTING. "
+				WHERE equipment_id={$this->db->sqltext($equipmentId)}";  
+		$this->db->query($sql); 
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		foreach ($rows as $row) {
+			$lighting = new EquipmentLighting($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($lighting, $key)) {
+					$lighting->$key = $value;
+				}
+			}
+			$lightings[] = $lighting;
+		} 
+		return $lightings;
+	}
 
 	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection
 	public function setTrashRecord(iTrash $trashRecord) {
@@ -112,7 +173,7 @@ class Equipment extends EquipmentProperties {
 
 		//$this->db->select_db(DB_NAME);
 
-		$query = "INSERT INTO ".TB_EQUIPMENT." (department_id, equip_desc, inventory_id, permit, expire, daily, dept_track, facility_track, creater_id) VALUES (";
+		$query = "INSERT INTO ".TB_EQUIPMENT." (department_id, equip_desc, inventory_id, permit, expire, daily, dept_track, facility_track, model_number, serial_number, creater_id) VALUES (";
 
 		$query .= "'".$equipmentData["department_id"]."', ";
 		$query .= "'".$equipmentData["equip_desc"]."', ";
@@ -122,6 +183,8 @@ class Equipment extends EquipmentProperties {
 		$query .= "'".$equipmentData["daily"]."', ";
 		$query .= "'".$equipmentData["dept_track"]."', ";
 		$query .= "'".$equipmentData["facility_track"]."', ";
+		$query .= "'". $equipmentData["model_number"]."', ";
+		$query .= "'".$equipmentData["serial_number"]."', ";
 		$query .= "'".$equipmentData["creater_id"]."'";
 		$query .= ")";
 
@@ -185,6 +248,8 @@ class Equipment extends EquipmentProperties {
 		$query.="daily='".$equipmentData["daily"]."', ";
 		$query.="dept_track='".$equipmentData["dept_track"]."', ";
 		$query.="facility_track='".$equipmentData["facility_track"]."', ";
+		$query .= "model_number='". $equipmentData["model_number"]."', ";
+		$query .= "serial_number='".$equipmentData["serial_number"]."', ";
 		$query.="creater_id='".$equipmentData["creater_id"]."'";
 
 		$query.=" WHERE equipment_id=".$equipmentData['equipment_id'];

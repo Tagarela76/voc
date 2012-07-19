@@ -103,7 +103,264 @@
 			{if $show.inventory}
 				{include file="tpls:inventory/design/addEquipment.tpl" inventory=$inventoryList inventoryDet=$inventoryDet data=$data}
 			{/if}
-			
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					MODEL No.:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >	<input type='text' name='model_number' id='model_number' value='{$data.model_number}'"></div>
+				</td>
+			</tr>
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					SERIAL No.:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >	<input type='text' name='serial_number' id='serial_number' value='{$data.serial_number}'"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					{*ADD FILTER*}
+					<table class="users" cellpadding="0" cellspacing="0" align="center">
+						<tr class="users_header_orange">
+                                                        <td height="30" width="30%">
+                                                                <div class="users_header_orange_l"><div><span ><b>Add Filters</b></span></div></div>
+                                                        </td>
+                                                        <td><div class="users_header_orange_r"><div>&nbsp;</div></div>				
+                                                        </td>								
+                                                </tr>
+
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Name :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_filter_name' name='equipment_filter_name' value=''>
+								</div>		
+								{*ERORR*}
+									<div id="error_equipment_filter_name" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								height size :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_height_size' name='equipment_height_size' value=''>
+								</div>	
+								{*ERORR*}
+									<div id="error_equipment_height_size" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								width size :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_width_size' name='equipment_width_size' value=''>
+								</div>	
+								{*ERORR*}
+									<div id="error_equipment_width_size" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								length size :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_length_size' name='equipment_length_size' value=''>
+								</div>		
+								{*ERORR*}
+									<div id="error_equipment_length_size" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r">
+								Filter Type :
+							</td>
+							<td class="border_users_r border_users_b">
+								<div class="floatleft">	
+
+								{*FILTER TYPE LIST*}	
+								<select name="selectFilterType" id="selectFilterType" class="addInventory">
+									{if $equipmentFilterType}				
+										{section name=i loop=$equipmentFilterType}										
+												<option value="{$equipmentFilterType[i]->equipment_filter_type_id}"> {$equipmentFilterType[i]->name}</option>										
+										{/section}																		
+									{else}
+										<option value='0'> no filter types </option>
+									{/if}
+								</select>	
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="border_users_l border_users_b border_users_r">
+								Quantity :
+							</td>
+							<td class="border_users_r border_users_b">
+							<div class="floatleft" >
+								<input type='text' id="equipment_filter_quantity" name='equipment_filter_quantity' value='{$data.quantity}'>
+							{*ERORR*}
+							</div>
+								<div id="error_equipment_filter_quantity" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+								<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+							{*/ERORR*}
+
+							</td>
+						</tr>
+						<tr>
+							<td>
+							</td>
+							<td>
+								<div align="left" class="buttonpadd">									
+								<img id="addProductPreloader" src='images/ajax-loader.gif' height=16  style="display:none;float:left;">								
+								<input type='button' name='addProFilter' class="button" value='Add filter' onclick='addFilter2List();'>
+								</div>
+							</td>
+						</tr>
+					</table>
+					{*/ADD FILTER*}						
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					{*ADD LIGHTING*}
+					<table class="users" cellpadding="0" cellspacing="0" align="center">
+						<tr class="users_header_orange">
+                                                        <td height="30" width="30%">
+                                                                <div class="users_header_orange_l"><div><span ><b>Add Lightings</b></span></div></div>
+                                                        </td>
+                                                        <td><div class="users_header_orange_r"><div>&nbsp;</div></div>				
+                                                        </td>								
+                                                </tr>
+
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Name :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_lighting_name' name='equipment_lighting_name' value=''>
+								</div>	
+								{*ERORR*}
+									<div id="error_equipment_lighting_name" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r">
+								Bulb type :
+							</td>
+							<td class="border_users_r border_users_b">
+								<div class="floatleft">	
+
+								{*Bulb type*}	
+								<select name="selectBulbType" id="selectBulbType" class="addInventory">
+									{if $lightingBulbType}				
+										{section name=i loop=$lightingBulbType}										
+												<option value='{$lightingBulbType[i]->equipment_lighting_bulb_type_id}'> {$lightingBulbType[i]->name}</option>										
+										{/section}																			
+									{else}
+										<option value='0'> no Bulb Type </option>
+									{/if}
+								</select>	
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Size :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_lighting_size' name='equipment_lighting_size' value=''>
+								</div>	
+								{*ERORR*}
+									<div id="error_equipment_lighting_size" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Voltage :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_lighting_voltage' name='equipment_lighting_voltage' value=''>
+								</div>		
+								{*ERORR*}
+									<div id="error_equipment_lighting_voltage" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Wattage :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_lighting_wattage' name='equipment_lighting_wattage' value=''>
+								</div>	
+								{*ERORR*}
+									<div id="error_equipment_lighting_wattage" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+							</td>
+						</tr>
+
+						<tr>
+							<td class="border_users_l border_users_b border_users_r">
+								Color :
+							</td>
+							<td class="border_users_r border_users_b">
+								<div class="floatleft">	
+
+								{*Bulb type*}	
+								<select name="selectLightingColor" id="selectLightingColor" class="addInventory">
+									{if $lightingColor}				
+										{section name=i loop=$lightingColor}										
+												<option value='{$lightingColor[i]->equipment_lighting_color_id}'> {$lightingColor[i]->name}</option>										
+										{/section}																		
+									{else}
+										<option value='0'> no Color </option>
+									{/if}
+								</select>	
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+							</td>
+							<td>
+								<div align="left" class="buttonpadd">									
+								<img id="addProductPreloader" src='images/ajax-loader.gif' height=16  style="display:none;float:left;">								
+								<input type='button' name='addLighting' class="button" value='Add lighting' onclick='addLighting2List();'>
+								</div>
+							</td>
+						</tr>
+					</table>	
+					{*/ADD LIGHTING*}
+				</td>
+				
+			</tr>
             <tr>
              	 <td height="20" class="users_u_bottom">
                  </td>
@@ -112,7 +369,136 @@
             </tr>
 		
 		</table>
-	
+		</br>
+		
+		<div id="filterContentDiv" style="display: {if !$equipmentFiltersList} none {else} table {/if}; width: 90%;"> 
+		<table class="users" align="center" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr class="users_u_top_size users_top_lightgray">
+				<td  class="border_users_l"   width="10%" > Select</td>
+				<td>Name</td>
+				<td>height size</td>
+				<td>width size</td>
+				<td>length size</td>
+				<td>Filter Type</td>
+				<td class="border_users_r">Quantity</td>
+			</tr>		
+		</thead>
+
+		<tbody id="filterContent" >
+			{if $equipmentFiltersList}
+				{section name=i loop=$equipmentFiltersList}		
+					<tr id="filter_row_{$equipmentFiltersList[i]->equipment_filter_id}" class="border_users_l border_users_b">
+						<td  class=border_users_l   width=10% ><input type=checkbox id=check_filter_{$smarty.section.i.index} value="{$equipmentFiltersList[i]->equipment_filter_id}"></td>
+						<td> <input type='text' id='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_name_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->name}'>	
+						</td>
+						<td><input type='text' id='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->height_size}'>
+						</td>
+						<td> <input type='text' id='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->width_size}'>
+						</td>	
+						<td> <input type='text' id='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->length_size}'>	
+						</td>
+						<td id='equipmentFilterType_td_{$equipmentFiltersList[i]->equipment_filter_id}'>
+							{*FILTER TYPE LIST*}	
+							<select name="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}" id="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}" class="addInventory">
+								{if $equipmentFilterType}				
+									{section name=k loop=$equipmentFilterType}										
+											<option value="{$equipmentFilterType[k]->equipment_filter_type_id}" {if $equipmentFiltersList[i]->equipment_filter_type_id == $equipmentFilterType[k]->equipment_filter_type_id} SELECTED {/if}> {$equipmentFilterType[k]->name}</option>										
+									{/section}																		
+								{else}
+									<option value='0'> no filter types </option>
+								{/if}
+							</select>	
+						</td>
+						<td><input type='text' id='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_filter_quantity_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->qty}'></td>
+					</tr>		
+				{/section}
+
+			{/if}
+
+		</tbody>
+
+		<tfoot>
+			<tr class="">
+				<td class="users_u_bottom" height="20">
+                                    <a href="#" onclick="selectAllFilters(true); return false;">All</a>
+                                    <a href="#" onclick="selectAllFilters(false);return false;">None</a>
+                                </td>
+                                <td colspan="6" class="users_u_bottom_r">
+                                    <a href="#" onclick="clearSelectedFilters(); return false">Remove selected filters from the list</a>
+                                </td>
+			</tr>
+		</tfoot>
+
+	</table>
+	</div>
+	</br>
+	<div id="lightingContentDiv" style="display: {if !$equipmentLightingsList} none {else} table {/if}; width: 90%;"> 
+	<table class="users" align="center" cellspacing="0" cellpadding="0">
+	<thead>
+		<tr class="users_u_top_size users_top_lightgray">
+			<td  class="border_users_l"   width="10%" > Select</td>
+			<td>Name</td>
+			<td>Bulb type</td>
+			<td>Size</td>
+			<td>Voltage</td>
+			<td>Wattage</td>
+			<td class="border_users_r">Color</td>
+		</tr>		
+	</thead>
+
+	<tbody id="lightingContent" >
+		{if $equipmentLightingsList}
+				{section name=i loop=$equipmentLightingsList}		
+					<tr id="lighting_row_{$equipmentLightingsList[i]->equipment_lighting_id}" class="border_users_l border_users_b">
+						<td  class=border_users_l   width=10% ><input type=checkbox id=check_lighting_{$smarty.section.i.index} value="{$equipmentLightingsList[i]->equipment_lighting_id}"></td>
+						<td> <input type='text' id='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_name_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->name}'></td>
+						<td id='equipmentBulbType_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
+							{*FILTER TYPE LIST*}	
+							<select name="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
+								{if $lightingBulbType}				
+									{section name=k loop=$lightingBulbType}										
+											<option value="{$lightingBulbType[k]->equipment_lighting_bulb_type_id}" {if $equipmentLightingsList[i]->bulb_type == $lightingBulbType[k]->equipment_lighting_bulb_type_id} SELECTED {/if}> {$lightingBulbType[k]->name}</option>										
+									{/section}																		
+								{else}
+									<option value='0'> no bulb types </option>
+								{/if}
+							</select>	
+						</td>
+						<td> <input type='text' id='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_size_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->size}'></td>
+						<td> <input type='text' id='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_voltage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->voltage}'></td>
+						<td> <input type='text' id='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_wattage_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->wattage}'></td>
+						<td id='equipmentLightingColor_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
+							{*FILTER TYPE LIST*}	
+							<select name="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
+								{if $lightingColor}				
+									{section name=k loop=$lightingColor}										
+											<option value="{$lightingColor[k]->equipment_lighting_color_id}" {if $equipmentLightingsList[i]->color == $lightingColor[k]->equipment_lighting_color_id} SELECTED {/if}> {$lightingColor[k]->name}</option>										
+									{/section}																		
+								{else}
+									<option value='0'> no filter types </option>
+								{/if}
+							</select>	
+						</td>
+					</tr>		
+				{/section}	
+			{/if}
+	</tbody>
+
+	<tfoot>
+                <tr class="">
+                        <td class="users_u_bottom" height="20">
+                            <a href="#" onclick="selectAllLightings(true); return false;">All</a>
+                            <a href="#" onclick="selectAllLightings(false);return false;">None</a>
+                        </td>
+                        <td colspan="6" class="users_u_bottom_r">
+                            <a href="#" onclick="clearSelectedLightings(); return false">Remove selected lightings from the list</a>
+                        </td>
+                </tr>
+        </tfoot>
+
+</table>
+</div>
 	{*BUTTONS*}	
 	<div align="right" class="margin5">
 		<input type='button' name='cancel' class="button" value='Cancel' 
