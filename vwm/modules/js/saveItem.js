@@ -17,17 +17,23 @@ function saveDepartmentDetails()
 	
 	
 	$.ajax({
-      	url: "modules/ajax/saveDepartment.php",      		
-      	type: "POST",
-      	async: false,
-      	data: {"name":dep_name,"voc_limit":dep_voc_limit,"voc_annual_limit":dep_annual_limit,"action":dep_action,"id":id},      			
-      	dataType: "html",
-      	success: function (response) 
-      		{   
-      			jsonResponse=eval("("+response+")");		      																
-      			answer(jsonResponse);										
-      		}        		   			   	
-		});
+		url: "modules/ajax/saveDepartment.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"name":dep_name,
+			"voc_limit":dep_voc_limit,
+			"voc_annual_limit":dep_annual_limit,
+			"action":dep_action,
+			"id":id
+		},      			
+		dataType: "html",
+		success: function (response) 
+		{   
+			jsonResponse=eval("("+response+")");		      																
+			answer(jsonResponse);										
+		}        		   			   	
+	});
 }
 
 
@@ -42,7 +48,7 @@ function saveEquipmentDetails()
 	var action=document.addEquipment.action.value;
 	
 	var equipmentData="equip_desc="+equip_desc+"&permit="+permit+"&expire_date="+expire_date+"&daily="+daily+"&dept_track="+
-			dept_track+"&facility_track="+facility_track+"&action="+action;
+	dept_track+"&facility_track="+facility_track+"&action="+action;
 	
 	//	inventory is module
 	if(document.addEquipment.selectInventoryID !== undefined) {
@@ -66,7 +72,7 @@ function saveEquipmentDetails()
 	equipmentData += "&model_number="+model_number+"&serial_number="+serial_number;
 	
 	// prepare new filter data
-    var equipment_filter_id = "";
+	var equipment_filter_id = "";
 	var equipment_filter_type = "";
 	var equipment_filter_name = "";
 	var equipment_height_size = "";
@@ -78,7 +84,8 @@ function saveEquipmentDetails()
 	checkboxes.each(function(i){
 		id = this.value; 
 		
-		equipment_filter_id += id + ",";;
+		equipment_filter_id += id + ",";
+		;
 		equipment_filter_name+= $("#equipment_filter_name_"+id).val()+",";
 		equipment_height_size+= $("#equipment_height_size_"+id).val()+",";
 		equipment_width_size+= $("#equipment_width_size_"+id).val()+",";
@@ -93,9 +100,9 @@ function saveEquipmentDetails()
 	equipmentData += "&equipment_length_size="+equipment_length_size;
 	equipmentData += "&equipment_filter_quantity="+equipment_filter_quantity;
 	equipmentData += "&equipment_filter_type="+equipment_filter_type;
-    equipmentData += "&equipment_filter_id="+equipment_filter_id;
+	equipmentData += "&equipment_filter_id="+equipment_filter_id;
 	
-    var equipment_lighting_id = "";
+	var equipment_lighting_id = "";
 	var equipment_lighting_name = "";
 	var equipment_lighting_size = "";
 	var equipment_lighting_voltage = "";
@@ -122,20 +129,20 @@ function saveEquipmentDetails()
 	equipmentData += "&equipment_lighting_wattage="+equipment_lighting_wattage;
 	equipmentData += "&equipment_lighting_bulb_type="+equipment_lighting_bulb_type;
 	equipmentData += "&equipment_lighting_color="+equipment_lighting_color;
-        equipmentData += "&equipment_lighting_id="+equipment_lighting_id;
+	equipmentData += "&equipment_lighting_id="+equipment_lighting_id;
 	
 	$.ajax({
-      	url: "modules/ajax/saveEquipment.php",      		
-      	type: "POST",
-      	async: false,
-      	data: equipmentData,      			
-      	dataType: "html",
-      	success: function (response) 
-      		{   
-      			jsonResponse=eval("("+response+")");		      																
-      			answer(jsonResponse);										
-      		}        		   			   	
-		});
+		url: "modules/ajax/saveEquipment.php",      		
+		type: "POST",
+		async: false,
+		data: equipmentData,      			
+		dataType: "html",
+		success: function (response) 
+		{   
+			jsonResponse=eval("("+response+")");		      																
+			answer(jsonResponse);										
+		}        		   			   	
+	});
 }
 
 function saveFacilityDetails() 
@@ -173,18 +180,37 @@ function saveFacilityDetails()
 
 
 	$.ajax({
-      url: "modules/ajax/saveFacility.php",      		
-      type: "POST",
-      async: false,
-      data: {"epa":epa,"voc_limit":voc_limit,"voc_annual_limit":voc_annual_limit, "monthly_nox_limit":monthly_nox_limit,"name":fac_name,"address":address,"city":city,
-      		"county":county,"selectState":selectState,"textState":textState,"zip":zip,"country":country,"phone":phone,
-      		"fax":fax,"email":email,"contact":contact,"title":title,"jobber[]":jobber,"action":action,"id":id},      			
-      dataType: "html",
-      success: 	function (response) 
-     			{   
-      				jsonResponse=eval("("+response+")");
-					answer(jsonResponse);										
-      			}        		   			   	
+		url: "modules/ajax/saveFacility.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"epa":epa,
+			"voc_limit":voc_limit,
+			"voc_annual_limit":voc_annual_limit, 
+			"monthly_nox_limit":monthly_nox_limit,
+			"name":fac_name,
+			"address":address,
+			"city":city,
+			"county":county,
+			"selectState":selectState,
+			"textState":textState,
+			"zip":zip,
+			"country":country,
+			"phone":phone,
+			"fax":fax,
+			"email":email,
+			"contact":contact,
+			"title":title,
+			"jobber[]":jobber,
+			"action":action,
+			"id":id
+		},      			
+		dataType: "html",
+		success: 	function (response) 
+		{   
+			jsonResponse=eval("("+response+")");
+			answer(jsonResponse);										
+		}        		   			   	
 	});
 	 
 }
@@ -227,26 +253,26 @@ function answer(jsonResponse) {
 	document.getElementById('notifyContainer').appendChild(notify);
 	
 	for (var property in jsonResponse) {
-    	if (jsonResponse.hasOwnProperty(property)) {    		
-    		var errorElementName = "error_"+property;
+		if (jsonResponse.hasOwnProperty(property)) {    		
+			var errorElementName = "error_"+property;
     			
-    		//	show error labels 
-    		if (property != 'summary' && jsonResponse[property] == 'failed') {    				   				
-    			document.getElementById(errorElementName).style.display = "block";    				
+			//	show error labels 
+			if (property != 'summary' && jsonResponse[property] == 'failed') {    				   				
+				document.getElementById(errorElementName).style.display = "block";    				
     			
-    		//	item already exist	    				
-    		} else if (property != 'summary' && jsonResponse[property] == 'alredyExist') { 
-    			errorElementName = errorElementName+"_alredyExist";     				 			
-    			document.getElementById(errorElementName).style.display = "block";
+			//	item already exist	    				
+			} else if (property != 'summary' && jsonResponse[property] == 'alredyExist') { 
+				errorElementName = errorElementName+"_alredyExist";     				 			
+				document.getElementById(errorElementName).style.display = "block";
 
-    		//	hide error labels 
-    		} else if (property != 'summary' && jsonResponse[property] == 'success') {    				
-    			document.getElementById(errorElementName).style.display = "none";
-    			if (document.getElementById(errorElementName+"_alredyExist") != null) {
-    				document.getElementById(errorElementName+"_alredyExist").style.display = "none";
-    			}    			
-    		}       			
-    	}
+			//	hide error labels 
+			} else if (property != 'summary' && jsonResponse[property] == 'success') {    				
+				document.getElementById(errorElementName).style.display = "none";
+				if (document.getElementById(errorElementName+"_alredyExist") != null) {
+					document.getElementById(errorElementName+"_alredyExist").style.display = "none";
+				}    			
+			}       			
+		}
 	}
 }
 	
@@ -319,267 +345,304 @@ function generateNotify(text, color) {
 	
 function removeAllChild(element) {
 	if (element.hasChildNodes()) {
-   		while (element.childNodes.length >= 1) {
-   	    	element.removeChild(element.firstChild);       
-   		} 
+		while (element.childNodes.length >= 1) {
+			element.removeChild(element.firstChild);       
+		} 
 	}		
 } 
-	var filter_index = 0;
-	function addFilter2List() {
+var filter_index = 0;
+function addFilter2List() {
 
-		//filter_index = $("#count_equipment_filter").val() + filter_index;
-		var equipmentFilterName = $("#equipment_filter_name").val();
-		var equipmentHeightSize = $("#equipment_height_size").val();
-		var equipmentWidthSize = $("#equipment_width_size").val(); 
-		var equipmentLengthSize = $("#equipment_length_size").val();
-		var equipmentFilterType = $("#selectFilterType option:selected").val(); 
-		var equipmentFilterQuantity = $("#equipment_filter_quantity").val();
+	//filter_index = $("#count_equipment_filter").val() + filter_index;
+	var equipmentFilterName = $("#equipment_filter_name").val();
+	var equipmentHeightSize = $("#equipment_height_size").val();
+	var equipmentWidthSize = $("#equipment_width_size").val(); 
+	var equipmentLengthSize = $("#equipment_length_size").val();
+	var equipmentFilterType = $("#selectFilterType option:selected").val(); 
+	var equipmentFilterQuantity = $("#equipment_filter_quantity").val();
 		
-		var equipment_filter_error = false;
-		//checking
-		if(equipmentFilterName == "") {
-			$("#error_equipment_filter_name .error_text").text("Type filter name!");
-			$("#error_equipment_filter_name ").css('display','inline');
-			equipment_filter_error = true;
-		}  else {
-			$("#error_equipment_filter_name ").css('display','none');
+	var equipment_filter_error = false;
+	//checking
+	if(equipmentFilterName == "") {
+		$("#error_equipment_filter_name .error_text").text("Type filter name!");
+		$("#error_equipment_filter_name ").css('display','inline');
+		equipment_filter_error = true;
+	} else {
+		$("#error_equipment_filter_name ").css('display','none');
 			
-		}	
-		if(equipmentHeightSize == "") {
-			$("#error_equipment_height_size .error_text").text("Type Height Size!");
-			$("#error_equipment_height_size").css('display','inline');
-			equipment_filter_error = true;
-		} else {
-			$("#error_equipment_height_size").css('display','none');
+	}	
+	if(equipmentHeightSize == "") {
+		$("#error_equipment_height_size .error_text").text("Type Height Size!");
+		$("#error_equipment_height_size").css('display','inline');
+		equipment_filter_error = true;
+	} else {
+		$("#error_equipment_height_size").css('display','none');
 			
-		}
-		if(/^\d+$/.test(equipmentHeightSize)) {
-			$("#error_equipment_height_size").css('display','none');
-		} else {
-			$("#error_equipment_height_size .error_text").text("Height Size should be an integer!");
-			$("#error_equipment_height_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if(equipmentWidthSize == "") {
-			$("#error_equipment_width_size .error_text").text("Type Width Size!");
-			$("#error_equipment_width_size").css('display','inline');
-			equipment_filter_error = true;
-		} else {
-			$("#error_equipment_width_size").css('display','none');
-		}
-		if(/^\d+$/.test(equipmentWidthSize)) {
-			$("#error_equipment_width_size").css('display','none');
-		} else {
-			$("#error_equipment_width_size .error_text").text("Width Size should be an integer!");
-			$("#error_equipment_width_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if(equipmentLengthSize == "") {
-			$("#error_equipment_length_size .error_text").text("Type Length Size!");
-			$("#error_equipment_length_size").css('display','inline');
-			equipment_filter_error = true;
-		} else {
-			$("#error_equipment_length_size").css('display','none');
-		}
-		if(/^\d+$/.test(equipmentLengthSize)) {
-			$("#error_equipment_length_size").css('display','none');
-		} else {
-			$("#error_equipment_length_size .error_text").text("Length Size should be an integer!");
-			$("#error_equipment_length_size").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if(equipmentFilterQuantity == "") {
-			$("#error_equipment_filter_quantity .error_text").text("Type Quantity!");
-			$("#error_equipment_filter_quantity").css('display','inline');
-			equipment_filter_error = true;
-		} else {
-			$("#error_equipment_filter_quantity").css('display','none');
-		}
-		if(/^\d+$/.test(equipmentFilterQuantity)) {
-			$("#error_equipment_filter_quantity").css('display','none');
-		} else {
-			$("#error_equipment_filter_quantity .error_text").text("Quantity should be an integer!");
-			$("#error_equipment_filter_quantity").css('display','inline');
-			equipment_filter_error = true;
-		}
-		if (equipment_filter_error) {
-			return;
-		}
-
-		$('#filterContent').append("<tr id=filter_row_temp"+filter_index+" class=border_users_l border_users_b><td  class=border_users_l   width=10% >\n\
-                <input type=checkbox id='check_filter_temp"+filter_index+"' value=temp"+filter_index+"></td> \n\
-		<td><input type='text' id='equipment_filter_name_temp"+filter_index+"' name='equipment_filter_name_temp"+filter_index+"' value='" +equipmentFilterName+ "'></td>\n\
-		<td><input type='text' id='equipment_height_size_temp"+filter_index+"' name='equipment_height_size_temp"+filter_index+"' value='" +equipmentHeightSize+ "'>\n\
-		</td><td> <input type='text' id='equipment_width_size_temp"+filter_index+"' name='equipment_width_size_temp"+filter_index+"' value='" +equipmentWidthSize+ "'>\n\
-		</td> <td><input type='text' id='equipment_length_size_temp"+filter_index+"' name='equipment_length_size_temp"+filter_index+"' value='" +equipmentLengthSize+ "'>\n\
-		</td>\n\
-		<td id=equipmentFilterType_td_temp"+filter_index+"></td>\n\
-		<td class=border_users_r><input type='text' id='equipment_filter_quantity_temp"+filter_index+"' name='equipment_filter_quantity_temp"+filter_index+"' value='" +equipmentFilterQuantity+ "'></td></tr>");
-	
-		$("#selectFilterType").clone().prependTo("#equipmentFilterType_td_temp"+filter_index);
-		$("#equipmentFilterType_td_temp"+filter_index+ " select").attr("id", "selectFilterType_temp"+filter_index);
-		
-		$("#selectFilterType_temp"+filter_index+" option[value='"+equipmentFilterType+"']").attr('selected', 'selected');
-		// clear input fields
-		$("#equipment_filter_name").val("");
-		$("#equipment_height_size").val("");
-		$("#equipment_width_size").val("");
-		$("#equipment_length_size").val("");
-		$("#equipment_filter_quantity").val("");
-		
-		$('#filterContentDiv').css('display','table');
-		filter_index ++;
 	}
+	if(/^\d+$/.test(equipmentHeightSize)) {
+		$("#error_equipment_height_size").css('display','none');
+	} else {
+		$("#error_equipment_height_size .error_text").text("Height Size should be an integer!");
+		$("#error_equipment_height_size").css('display','inline');
+		equipment_filter_error = true;
+	}
+	if(equipmentWidthSize == "") {
+		$("#error_equipment_width_size .error_text").text("Type Width Size!");
+		$("#error_equipment_width_size").css('display','inline');
+		equipment_filter_error = true;
+	} else {
+		$("#error_equipment_width_size").css('display','none');
+	}
+	if(/^\d+$/.test(equipmentWidthSize)) {
+		$("#error_equipment_width_size").css('display','none');
+	} else {
+		$("#error_equipment_width_size .error_text").text("Width Size should be an integer!");
+		$("#error_equipment_width_size").css('display','inline');
+		equipment_filter_error = true;
+	}
+	if(equipmentLengthSize == "") {
+		$("#error_equipment_length_size .error_text").text("Type Length Size!");
+		$("#error_equipment_length_size").css('display','inline');
+		equipment_filter_error = true;
+	} else {
+		$("#error_equipment_length_size").css('display','none');
+	}
+	if(/^\d+$/.test(equipmentLengthSize)) {
+		$("#error_equipment_length_size").css('display','none');
+	} else {
+		$("#error_equipment_length_size .error_text").text("Length Size should be an integer!");
+		$("#error_equipment_length_size").css('display','inline');
+		equipment_filter_error = true;
+	}
+	if(equipmentFilterQuantity == "") {
+		$("#error_equipment_filter_quantity .error_text").text("Type Quantity!");
+		$("#error_equipment_filter_quantity").css('display','inline');
+		equipment_filter_error = true;
+	} else {
+		$("#error_equipment_filter_quantity").css('display','none');
+	}
+	if(/^\d+$/.test(equipmentFilterQuantity)) {
+		$("#error_equipment_filter_quantity").css('display','none');
+	} else {
+		$("#error_equipment_filter_quantity .error_text").text("Quantity should be an integer!");
+		$("#error_equipment_filter_quantity").css('display','inline');
+		equipment_filter_error = true;
+	}
+	if (equipment_filter_error) {
+		return;
+	}
+
+	$('#filterContent').append("<tr id=filter_row_temp"+filter_index+" class=border_users_l border_users_b><td  class=border_users_l   width=10% >\n\
+                <input type=checkbox id='check_filter_temp"+filter_index+"' value=temp"+filter_index+"></td> \n\
+		<td><input type='text' id='equipment_filter_name_temp"+filter_index+"' name='equipment_filter_name_temp"+filter_index+"' value='" +equipmentFilterName+ "'>\n\
+			<div id=error_eq_filter_name_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+			</div></td>\n\
+		<td><input type='text' id='equipment_height_size_temp"+filter_index+"' name='equipment_height_size_temp"+filter_index+"' value='" +equipmentHeightSize+ "'>\n\
+		<div id=error_eq_filter_height_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+			</div></td>\n\
+		<td> <input type='text' id='equipment_width_size_temp"+filter_index+"' name='equipment_width_size_temp"+filter_index+"' value='" +equipmentWidthSize+ "'>\n\
+		<div id=error_eq_filter_width_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+			</div></td>\n\
+		<td><input type='text' id='equipment_length_size_temp"+filter_index+"' name='equipment_length_size_temp"+filter_index+"' value='" +equipmentLengthSize+ "'>\n\
+		<div id=error_eq_filter_length_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+			</div></td>\n\
+		\n\
+		<td id=equipmentFilterType_td_temp"+filter_index+"></td>\n\
+		<td class=border_users_r><input type='text' id='equipment_filter_quantity_temp"+filter_index+"' name='equipment_filter_quantity_temp"+filter_index+"' value='" +equipmentFilterQuantity+ "'>\n\
+		<div id=error_eq_filter_quantity_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+			</div></td>\n\
+		\n\
+		\n\
+</tr>\n\
+");
+		
+	$("#selectFilterType").clone().prependTo("#equipmentFilterType_td_temp"+filter_index);
+	$("#equipmentFilterType_td_temp"+filter_index+ " select").attr("id", "selectFilterType_temp"+filter_index);
+		
+	$("#selectFilterType_temp"+filter_index+" option[value='"+equipmentFilterType+"']").attr('selected', 'selected');
+	// clear input fields
+	$("#equipment_filter_name").val("");
+	$("#equipment_height_size").val("");
+	$("#equipment_width_size").val("");
+	$("#equipment_length_size").val("");
+	$("#equipment_filter_quantity").val("");
+		
+	$('#filterContentDiv').css('display','table');
+	filter_index ++;
+}
 	
-	var lighting_index = 0;
-	function addLighting2List() {
+var lighting_index = 0;
+function addLighting2List() {
 		
-		var equipmentLightingName = $("#equipment_lighting_name").val();
-		var equipmentBulbType = $("#selectBulbType option:selected").val();
-		var equipmentLightingSize = $("#equipment_lighting_size").val(); 
-		var equipmentLightingVoltage = $("#equipment_lighting_voltage").val();
-		var equipmentLightingWattage = $("#equipment_lighting_wattage").val();
-		var equipmentLightingColor = $("#selectLightingColor option:selected").val();
+	var equipmentLightingName = $("#equipment_lighting_name").val();
+	var equipmentBulbType = $("#selectBulbType option:selected").val();
+	var equipmentLightingSize = $("#equipment_lighting_size").val(); 
+	var equipmentLightingVoltage = $("#equipment_lighting_voltage").val();
+	var equipmentLightingWattage = $("#equipment_lighting_wattage").val();
+	var equipmentLightingColor = $("#selectLightingColor option:selected").val();
 		
-		var equipment_lighting_error = false;
-		//checking
-		if(equipmentLightingName == "") {
-			$("#error_equipment_lighting_name .error_text").text("Type lighting name!");
-			$("#error_equipment_lighting_name ").css('display','inline');
-			equipment_lighting_error = true;
-		} else {
-			$("#error_equipment_lighting_name ").css('display','none');
-		} 	
-		if(equipmentLightingSize == "") {
-			$("#error_equipment_lighting_size .error_text").text("Type Lighting Size!");
-			$("#error_equipment_lighting_size").css('display','inline');
-			equipment_lighting_error = true;
-		} else {
-			$("#error_equipment_lighting_size").css('display','none');
-		}
+	var equipment_lighting_error = false;
+	//checking
+	if(equipmentLightingName == "") {
+		$("#error_equipment_lighting_name .error_text").text("Type lighting name!");
+		$("#error_equipment_lighting_name ").css('display','inline');
+		equipment_lighting_error = true;
+	} else {
+		$("#error_equipment_lighting_name ").css('display','none');
+	} 	
+	if(equipmentLightingSize == "") {
+		$("#error_equipment_lighting_size .error_text").text("Type Lighting Size!");
+		$("#error_equipment_lighting_size").css('display','inline');
+		equipment_lighting_error = true;
+	} else {
+		$("#error_equipment_lighting_size").css('display','none');
+	}
 		
-		if(equipmentLightingVoltage == "") {
-			$("#error_equipment_lighting_voltage .error_text").text("Type Lighting Voltage!");
-			$("#error_equipment_lighting_voltage").css('display','inline');
-			equipment_lighting_error = true;
-		} else {
-			$("#error_equipment_lighting_voltage").css('display','none');
-		}
-		if(equipmentLightingWattage == "") {
-			$("#error_equipment_lighting_wattage .error_text").text("Type Lighting Wattage!");
-			$("#error_equipment_lighting_wattage").css('display','inline');
-			equipment_lighting_error = true;
-		} else {
-			$("#error_equipment_lighting_wattage").css('display','none');
-		}
+	if(equipmentLightingVoltage == "") {
+		$("#error_equipment_lighting_voltage .error_text").text("Type Lighting Voltage!");
+		$("#error_equipment_lighting_voltage").css('display','inline');
+		equipment_lighting_error = true;
+	} else {
+		$("#error_equipment_lighting_voltage").css('display','none');
+	}
+	if(equipmentLightingWattage == "") {
+		$("#error_equipment_lighting_wattage .error_text").text("Type Lighting Wattage!");
+		$("#error_equipment_lighting_wattage").css('display','inline');
+		equipment_lighting_error = true;
+	} else {
+		$("#error_equipment_lighting_wattage").css('display','none');
+	}
 		
-		if(/^\d+$/.test(equipmentLightingWattage)) {
-			$("#error_equipment_lighting_wattage").css('display','none');
-		} else {
-			$("#error_equipment_lighting_wattage .error_text").text("Wattage should be an integer");
-			$("#error_equipment_lighting_wattage").css('display','inline');
-			equipment_lighting_error = true;
-		}
+	if(/^\d+$/.test(equipmentLightingWattage)) {
+		$("#error_equipment_lighting_wattage").css('display','none');
+	} else {
+		$("#error_equipment_lighting_wattage .error_text").text("Wattage should be an integer");
+		$("#error_equipment_lighting_wattage").css('display','inline');
+		equipment_lighting_error = true;
+	}
 		
-		if (equipment_lighting_error) {
-			return;
-		}
+	if (equipment_lighting_error) {
+		return;
+	}
 		
-		$('#lightingContent').append("<tr id=lighting_row_temp"+lighting_index+" class=border_users_l border_users_b><td  class=border_users_l  width=10% >\n\
+	$('#lightingContent').append("<tr id=lighting_row_temp"+lighting_index+" class=border_users_l border_users_b><td  class=border_users_l  width=10% >\n\
 <input type=checkbox id='check_lighting_temp"+lighting_index+"' value=temp"+lighting_index+"></td>\n\
- <td><input type='text' id='equipment_lighting_name_temp"+lighting_index+"' name='equipment_lighting_name_temp"+lighting_index+"' value='" +equipmentLightingName+ "'</td>\n\
+ <td><input type='text' id='equipment_lighting_name_temp"+lighting_index+"' name='equipment_lighting_name_temp"+lighting_index+"' value='" +equipmentLightingName+ "'>\n\
+<div id=error_eq_lighting_name_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+</div></td>\n\
  <td id=equipmentBulbType_td_temp"+lighting_index+"></td>\n\
- <td> <input type='text' id='equipment_lighting_size_temp"+lighting_index+"' name='equipment_lighting_size_temp"+lighting_index+"' value='" +equipmentLightingSize+ "'</td>\n\
- <td><input type='text' id='equipment_lighting_voltage_temp"+lighting_index+"' name='equipment_lighting_voltage_temp"+lighting_index+"' value='" +equipmentLightingVoltage+ "'</td>\n\
- <td> <input type='text' id='equipment_lighting_wattage_temp"+lighting_index+"' name='equipment_lighting_wattage_temp"+lighting_index+"' value='" +equipmentLightingWattage+ "'</td>\n\
+ <td> <input type='text' id='equipment_lighting_size_temp"+lighting_index+"' name='equipment_lighting_size_temp"+lighting_index+"' value='" +equipmentLightingSize+ "'>\n\
+<div id=error_eq_lighting_size_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+</div></td>\n\
+ <td><input type='text' id='equipment_lighting_voltage_temp"+lighting_index+"' name='equipment_lighting_voltage_temp"+lighting_index+"' value='" +equipmentLightingVoltage+ "'>\n\
+<div id=error_eq_lighting_voltage_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+</div></td>\n\
+ <td> <input type='text' id='equipment_lighting_wattage_temp"+lighting_index+"' name='equipment_lighting_wattage_temp"+lighting_index+"' value='" +equipmentLightingWattage+ "'>\n\
+<div id=error_eq_lighting_wattage_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+</div></td>\n\
  <td class=border_users_r id=equipmentLightingColor_td_temp"+lighting_index+"></td>\n\
 </tr>");
-		$("#selectBulbType").clone().prependTo("#equipmentBulbType_td_temp"+lighting_index);
-		$("#equipmentBulbType_td_temp"+lighting_index+ " select").attr("id", "selectBulbType_temp"+lighting_index);
+	$("#selectBulbType").clone().prependTo("#equipmentBulbType_td_temp"+lighting_index);
+	$("#equipmentBulbType_td_temp"+lighting_index+ " select").attr("id", "selectBulbType_temp"+lighting_index);
 		
-		$("#selectBulbType_temp"+lighting_index+" option[value='"+equipmentBulbType+"']").attr('selected', 'selected');
+	$("#selectBulbType_temp"+lighting_index+" option[value='"+equipmentBulbType+"']").attr('selected', 'selected');
 		
-		// lighting color
-		$("#selectLightingColor").clone().prependTo("#equipmentLightingColor_td_temp"+lighting_index);
-		$("#equipmentLightingColor_td_temp"+lighting_index+ " select").attr("id", "selectLightingColor_temp"+lighting_index);
+	// lighting color
+	$("#selectLightingColor").clone().prependTo("#equipmentLightingColor_td_temp"+lighting_index);
+	$("#equipmentLightingColor_td_temp"+lighting_index+ " select").attr("id", "selectLightingColor_temp"+lighting_index);
 		
-		$("#selectLightingColor_temp"+lighting_index+" option[value='"+equipmentLightingColor+"']").attr('selected', 'selected');
+	$("#selectLightingColor_temp"+lighting_index+" option[value='"+equipmentLightingColor+"']").attr('selected', 'selected');
 		
-		// clear input fields
-		$("#equipment_lighting_name").val("");
-		$("#equipment_lighting_size").val("");
-		$("#equipment_lighting_voltage").val("");
-		$("#equipment_lighting_wattage").val("");
+	// clear input fields
+	$("#equipment_lighting_name").val("");
+	$("#equipment_lighting_size").val("");
+	$("#equipment_lighting_voltage").val("");
+	$("#equipment_lighting_wattage").val("");
 
-		$('#lightingContentDiv').css('display','table');
-		lighting_index ++;
+	$('#lightingContentDiv').css('display','table');
+	lighting_index ++;
 
-	}
+}
         
-        function selectAllLightings(select) {
+function selectAllLightings(select) {
 
-		checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
-		checkboxes.each(function(i){
-			this.checked = select;
-		});
-	}
+	checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
+	checkboxes.each(function(i){
+		this.checked = select;
+	});
+}
         
-        function selectAllFilters(select) {
+function selectAllFilters(select) {
 
-		checkboxes = $("#filterContentDiv").find("input[type='checkbox']");
-		checkboxes.each(function(i){
-			this.checked = select;
-		});
-	}
+	checkboxes = $("#filterContentDiv").find("input[type='checkbox']");
+	checkboxes.each(function(i){
+		this.checked = select;
+	});
+}
         
-	function clearSelectedFilters() { 
+function clearSelectedFilters() { 
 
-		checkboxes = $("#filterContentDiv").find("input[type='checkbox']");
-		var rowsToRemove = new Array();
+	checkboxes = $("#filterContentDiv").find("input[type='checkbox']");
+	var rowsToRemove = new Array();
 
-		checkboxes.each(function(i){
-			id = this.value;
-			if(this.checked) {
-				rowsToRemove.push(id);
-			}
-		});
-
-		for ( keyVar in rowsToRemove ) {
-			id = rowsToRemove[keyVar];
-			$("#filter_row_" + id).remove();
+	checkboxes.each(function(i){
+		id = this.value;
+		if(this.checked) {
+			rowsToRemove.push(id);
 		}
+	});
+
+	for ( keyVar in rowsToRemove ) {
+		id = rowsToRemove[keyVar];
+		$("#filter_row_" + id).remove();
+	}
  
-                $.ajax({
-                    url: "modules/ajax/removeEquipmentProperties.php",      		
-                    type: "POST",
-                    async: false,
-                    data: {"property": "filter", "rowsToRemove":rowsToRemove},      			
-                    dataType: "html"        		   			   	
-                });
-	}
+	$.ajax({
+		url: "modules/ajax/removeEquipmentProperties.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"property": "filter", 
+			"rowsToRemove":rowsToRemove
+		},      			
+		dataType: "html"        		   			   	
+	});
+}
         
-        function clearSelectedLightings() {
+function clearSelectedLightings() {
 
-		checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
-		var rowsToRemove = new Array();
+	checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
+	var rowsToRemove = new Array();
 
-		checkboxes.each(function(i){
-			id = this.value;
-			if(this.checked) {
-				rowsToRemove.push(id);
-			}
-		});
-
-		for ( keyVar in rowsToRemove ) {
-			id = rowsToRemove[keyVar];
-			$("#lighting_row_" + id).remove();
+	checkboxes.each(function(i){
+		id = this.value;
+		if(this.checked) {
+			rowsToRemove.push(id);
 		}
+	});
 
-                $.ajax({
-                    url: "modules/ajax/removeEquipmentProperties.php",      		
-                    type: "POST",
-                    async: false,
-                    data: {"property": "lighting", "rowsToRemove":rowsToRemove},      			
-                    dataType: "html"        		   			   	
-                });
+	for ( keyVar in rowsToRemove ) {
+		id = rowsToRemove[keyVar];
+		$("#lighting_row_" + id).remove();
 	}
+
+	$.ajax({
+		url: "modules/ajax/removeEquipmentProperties.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"property": "lighting", 
+			"rowsToRemove":rowsToRemove
+		},      			
+		dataType: "html"        		   			   	
+	});
+}
