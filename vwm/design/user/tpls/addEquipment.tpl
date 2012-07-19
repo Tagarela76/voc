@@ -405,31 +405,24 @@
 								</td>
 								<td><input type='text' id='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_height_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->height_size|escape}'>
 									{*ERORR*}
-<<<<<<< HEAD
+
 									<div id="error_eq_filter_height_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-=======
-									<div id="error_eq_height_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
->>>>>>> a914ff65aac9c07f97ba1b6b8c777769cebe624b
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
 										{*/ERORR*}
 								</td>
 								<td> <input type='text' id='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_width_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->width_size|escape}'>
 									{*ERORR*}
-<<<<<<< HEAD
+
 									<div id="error_eq_filter_width_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-=======
-									<div id="error_eq_width_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
->>>>>>> a914ff65aac9c07f97ba1b6b8c777769cebe624b
+
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
 										{*/ERORR*}
 								</td>	
 								<td> <input type='text' id='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' name='equipment_length_size_{$equipmentFiltersList[i]->equipment_filter_id}' value='{$equipmentFiltersList[i]->length_size|escape}'>	
 									{*ERORR*}
-<<<<<<< HEAD
+
 									<div id="error_eq_filter_length_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-=======
-									<div id="error_eq_length_size_{$equipmentFiltersList[i]->equipment_filter_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
->>>>>>> a914ff65aac9c07f97ba1b6b8c777769cebe624b
+
 										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
 										{*/ERORR*}
 								</td>
