@@ -186,8 +186,10 @@ switch ($action) {
 					$validStatus = "false";
 				}
 			}
+
 			// result validate status
 			$validateStatus['summary'] = $validStatus;
+
 		}
 
 		echo json_encode($validateStatus);
@@ -207,6 +209,7 @@ switch ($action) {
 
 		$xnyo->filter_post_var("model_number", "text");
 		$xnyo->filter_post_var("serial_number", "text");
+
 		$xnyo->filter_post_var("equipment_filter_id", "text");
 		$xnyo->filter_post_var("equipment_filter_name", "text");
 		$xnyo->filter_post_var("equipment_height_size", "text");
@@ -273,6 +276,7 @@ switch ($action) {
 			$equipment->setTrashRecord(new Trash($db));
 			$equipmentId = $equipment->addNewEquipment($equipmentData);
 			// add filters
+
 			$equipment_filter_id = explode(',', $_REQUEST['equipment_filter_id']);
 			$equipment_filter_name = explode(',', $_REQUEST['equipment_filter_name']);
 			$equipment_height_size = explode(',', $_REQUEST['equipment_height_size']);
@@ -282,6 +286,7 @@ switch ($action) {
 			$equipment_filter_type = explode(',', $_REQUEST['equipment_filter_type']);
 
 			$equipmentFilterCount = sizeof($equipment_filter_id) - 1; // delete last because empty element
+
 			for ($i = 0; $i < $equipmentFilterCount; $i++) {
 				$equipmentFilter = new EquipmentFilter($db);
 				$equipmentFilter->equipment_id = $equipmentId;
@@ -291,6 +296,7 @@ switch ($action) {
 				$equipmentFilter->length_size = $equipment_length_size[$i];
 				$equipmentFilter->qty = $equipment_filter_quantity[$i];
 				$equipmentFilter->equipment_filter_type_id = $equipment_filter_type[$i];
+
 				$validateStatusEquipmentFilter = $validation->validateRegDataEquipmentFilter($equipmentFilter, $equipment_filter_id[$i]);
 				if ($validateStatusEquipmentFilter["summary"] == "true") {
 					$equipmentFilter->save();
@@ -308,6 +314,7 @@ switch ($action) {
 			$equipment_lighting_color = explode(',', $_REQUEST['equipment_lighting_color']);
 
 			$equipmentLightingCount = sizeof($equipment_lighting_id) - 1; // delete last because empty element
+
 			for ($i = 0; $i < $equipmentLightingCount; $i++) {
 				$equipmentLighting = new EquipmentLighting($db);
 				$equipmentLighting->equipment_id = $equipmentId;
@@ -317,11 +324,13 @@ switch ($action) {
 				$equipmentLighting->wattage = $equipment_lighting_wattage[$i];
 				$equipmentLighting->bulb_type = $equipment_lighting_bulb_type[$i];
 				$equipmentLighting->color = $equipment_lighting_color[$i];
+
 				$validateStatusEquipmentLighting = $validation->validateRegDataEquipmentLighting($equipmentLighting, $equipment_lighting_id[$i]);
 				if ($validateStatusEquipmentLighting["summary"] == "true") {
 					$equipmentLighting->save();
 				}
 				$validStatus = array_merge($validStatus, $validateStatusEquipmentLighting);
+
 			}
 
 			//save to bridge
@@ -335,7 +344,7 @@ switch ($action) {
 				'max_value' => $customerLimits['Source count']['max_value']
 			);
 			$voc2vps->setCustomerLimitByID($companyID, $limit);
-			
+
 			$validateStatus = "true";
 			foreach ($validStatus as $key => $valid) {
 				if ($valid == 'failed') {
@@ -344,6 +353,7 @@ switch ($action) {
 			}
 			// result validate status
 			$validStatus['summary'] = $validateStatus;
+
 		}
 
 		echo json_encode($validStatus);

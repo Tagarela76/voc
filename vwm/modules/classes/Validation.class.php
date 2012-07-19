@@ -2167,10 +2167,12 @@ class Validation {
 		}
 		if (isset($equipmentLighting->wattage)) {
 			if ($equipmentLighting->wattage == "" || $this->noYes[Validate::number($equipmentLighting->wattage, $parametrs)] == 'NO') {
+
 				$result['eq_lighting_wattage_' . $equipmentLightingId] = 'failed';
 				$result['summary'] = 'false';
 			} else {
 				$result['eq_lighting_wattage_' . $equipmentLightingId] = 'success';
+
 			}
 		}
 
@@ -2194,26 +2196,32 @@ class Validation {
 
 		if (isset($equipmentFilter->height_size)) {
 			if ($equipmentFilter->height_size == "" || $this->noYes[Validate::number($equipmentFilter->height_size, $parametrs)] == 'NO') {
+
 				$result['eq_filter_height_size_' . $equipmentFilterId] = 'failed';
 				$result['summary'] = 'false';
 			} else {
 				$result['eq_filter_height_size_' . $equipmentFilterId] = 'success';
+
 			}
 		}
 		if (isset($equipmentFilter->width_size)) {
 			if ($equipmentFilter->width_size == "" || $this->noYes[Validate::number($equipmentFilter->width_size, $parametrs)] == 'NO') {
+
 				$result['eq_filter_width_size_' . $equipmentFilterId] = 'failed';
 				$result['summary'] = 'false';
 			} else {
 				$result['eq_filter_width_size_' . $equipmentFilterId] = 'success';
+
 			}
 		}
 		if (isset($equipmentFilter->length_size)) {
 			if ($equipmentFilter->length_size == "" || $this->noYes[Validate::number($equipmentFilter->length_size, $parametrs)] == 'NO') {
+
 				$result['eq_filter_length_size_' . $equipmentFilterId] = 'failed';
 				$result['summary'] = 'false';
 			} else {
 				$result['eq_filter_length_size_' . $equipmentFilterId] = 'success';
+
 			}
 		}
 		if (isset($equipmentFilter->qty)) {
