@@ -35,7 +35,7 @@ class EquipmentLightingBulbType {
 	 */
 	public function save() {
 
-		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING_BULB_TYPE . "(name) VALUES ('" . $this->name . "')";
+		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING_BULB_TYPE . "(name) VALUES ('" . $this->db->sqltext($this->name) . "')";
 		$this->db->query($query);
 		
 	}
@@ -43,7 +43,7 @@ class EquipmentLightingBulbType {
 	public function delete() {
 		
 		$sql = "DELETE FROM ". TB_EQUIPMENT_LIGHTING_BULB_TYPE. "
-				 WHERE equipment_lighting_bulb_type_id=" . $this->equipment_lighting_bulb_type_id; 
+				 WHERE equipment_lighting_bulb_type_id=" . $this->db->sqltext($this->equipment_lighting_bulb_type_id); 
 		$this->db->query($sql);
 	}
 	
@@ -98,7 +98,7 @@ class EquipmentLightingBulbType {
 		}
 		$sql = "SELECT * 
 				FROM ". TB_EQUIPMENT_LIGHTING_BULB_TYPE. "
-				 WHERE equipment_lighting_bulb_type_id=" . $this->equipment_lighting_bulb_type_id . 
+				 WHERE equipment_lighting_bulb_type_id=" . $this->db->sqltext($this->equipment_lighting_bulb_type_id) . 
 				" LIMIT 1"; 
 		$this->db->query($sql);
 		

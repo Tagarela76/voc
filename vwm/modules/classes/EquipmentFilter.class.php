@@ -106,7 +106,7 @@ class EquipmentFilter {
 						qty=" . $this->db->sqltext($this->qty) . ",
 						width_size=" . $this->db->sqltext($this->width_size) . ",
 						length_size=" . $this->db->sqltext($this->length_size) . "	
-					WHERE equipment_filter_id= " . $this->equipment_filter_id;
+					WHERE equipment_filter_id= " . $this->db->sqltext($this->equipment_filter_id);
 		$this->db->query($query);
 
 		return $this->equipment_filter_id;
@@ -119,7 +119,7 @@ class EquipmentFilter {
 	public function delete() {
 
 		$sql = "DELETE FROM " . TB_EQUIPMENT_FILTER . "
-				 WHERE equipment_filter_id=" . $this->equipment_filter_id;
+				 WHERE equipment_filter_id=" . $this->db->sqltext($this->equipment_filter_id);
 		$this->db->query($sql);
 	}
 
@@ -202,7 +202,7 @@ class EquipmentFilter {
 		}
 		$sql = "SELECT * 
 				FROM " . TB_EQUIPMENT_FILTER . "
-				 WHERE equipment_filter_id=" . $this->equipment_filter_id .
+				 WHERE equipment_filter_id=" . $this->db->sqltext($this->equipment_filter_id) .
 				" LIMIT 1";
 		$this->db->query($sql);
 

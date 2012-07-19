@@ -35,7 +35,7 @@ class EquipmentLightingColor {
 	 */
 	public function save() {
 
-		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING_COLOR . "(name) VALUES ('" . $this->name . "')";
+		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING_COLOR . "(name) VALUES ('" . $this->db->sqltext($this->name) . "')";
 		$this->db->query($query);
 		
 	}
@@ -43,7 +43,7 @@ class EquipmentLightingColor {
 	public function delete() {
 		
 		$sql = "DELETE FROM ". TB_EQUIPMENT_LIGHTING_COLOR. "
-				 WHERE equipment_lighting_color_id=" . $this->equipment_lighting_color_id; 
+				 WHERE equipment_lighting_color_id=" . $this->db->sqltext($this->equipment_lighting_color_id); 
 		$this->db->query($sql);
 	}
 	
@@ -98,7 +98,7 @@ class EquipmentLightingColor {
 		}
 		$sql = "SELECT * 
 				FROM ". TB_EQUIPMENT_LIGHTING_COLOR. "
-				 WHERE equipment_lighting_color_id=" . $this->equipment_lighting_color_id . 
+				 WHERE equipment_lighting_color_id=" . $this->db->sqltext($this->equipment_lighting_color_id) . 
 				" LIMIT 1"; 
 		$this->db->query($sql);
 		

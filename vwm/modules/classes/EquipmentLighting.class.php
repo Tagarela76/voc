@@ -90,7 +90,7 @@ class EquipmentLighting {
 						voltage= '" . $this->db->sqltext($this->voltage) . "', 		 	 	 	 	 	 	
 						wattage= " . $this->db->sqltext($this->wattage) . ", 		 	 	 	 	 	 	
 						color= " . $this->db->sqltext($this->color) . "
-				  WHERE equipment_lighting_id= " . $this->equipment_lighting_id;
+				  WHERE equipment_lighting_id= " . $this->db->sqltext($this->equipment_lighting_id);
 		$this->db->query($query);
 		return $this->equipment_lighting_id;
 	}
@@ -177,7 +177,7 @@ class EquipmentLighting {
 		}
 		$sql = "SELECT * 
 				FROM " . TB_EQUIPMENT_LIGHTING . "
-				 WHERE equipment_lighting_id=" . $this->equipment_lighting_id .
+				 WHERE equipment_lighting_id=" . $this->db->sqltext($this->equipment_lighting_id) .
 				" LIMIT 1";
 		$this->db->query($sql);
 
@@ -286,7 +286,7 @@ class EquipmentLighting {
 	public function delete() {
 
 		$sql = "DELETE FROM " . TB_EQUIPMENT_LIGHTING . "
-				 WHERE equipment_lighting_id=" . $this->equipment_lighting_id;
+				 WHERE equipment_lighting_id=" . $this->db->sqltext($this->equipment_lighting_id);
 		$this->db->query($sql);
 	}
 
