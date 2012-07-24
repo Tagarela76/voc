@@ -134,7 +134,26 @@
                         </a>
                     </td>
                     {/if}
-                    
+						
+
+                    <td>
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder">
+						 {if $request.bookmark != "workOrder"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    Work Order&nbsp;
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark">
+                                <div class="activeBookmark_right">
+                                    Work Order&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+    
                     <td width="15px">
                     </td>
                  {* active bottom</tr><tr height="19">
@@ -164,7 +183,8 @@
 {if $request.bookmark  eq "wastestorage"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} 
 {if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if}
-{if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if} >
+{if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if}
+{if $request.bookmark  eq "workOrder"}  class="bookmark_bg" {/if} >	
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>

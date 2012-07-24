@@ -195,7 +195,7 @@
 								<div class="floatleft">	
 
 									{*FILTER TYPE LIST*}	
-									<select name="selectFilterType" id="selectFilterType" class="addInventory">
+									<select name="selectFilterType" id="selectFilterType">
 										{if $equipmentFilterType}				
 											{section name=i loop=$equipmentFilterType}										
 												<option value="{$equipmentFilterType[i]->equipment_filter_type_id}"> {$equipmentFilterType[i]->name}</option>										
@@ -271,7 +271,7 @@
 								<div class="floatleft">	
 
 									{*Bulb type*}	
-									<select name="selectBulbType" id="selectBulbType" class="addInventory">
+									<select name="selectBulbType" id="selectBulbType">
 										{if $lightingBulbType}				
 											{section name=i loop=$lightingBulbType}										
 												<option value='{$lightingBulbType[i]->equipment_lighting_bulb_type_id}'> {$lightingBulbType[i]->name}</option>										
@@ -334,7 +334,7 @@
 								<div class="floatleft">	
 
 									{*Bulb type*}	
-									<select name="selectLightingColor" id="selectLightingColor" class="addInventory">
+									<select name="selectLightingColor" id="selectLightingColor">
 										{if $lightingColor}				
 											{section name=i loop=$lightingColor}										
 												<option value='{$lightingColor[i]->equipment_lighting_color_id}'> {$lightingColor[i]->name}</option>										
@@ -428,7 +428,7 @@
 								</td>
 								<td id='equipmentFilterType_td_{$equipmentFiltersList[i]->equipment_filter_id}'>
 									{*FILTER TYPE LIST*}	
-									<select name="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}" id="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}" class="addInventory">
+									<select name="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}" id="selectFilterType_{$equipmentFiltersList[i]->equipment_filter_id}">
 										{if $equipmentFilterType}				
 											{section name=k loop=$equipmentFilterType}										
 												<option value="{$equipmentFilterType[k]->equipment_filter_type_id}" {if $equipmentFiltersList[i]->equipment_filter_type_id == $equipmentFilterType[k]->equipment_filter_type_id} SELECTED {/if}> {$equipmentFilterType[k]->name}</option>										
@@ -498,7 +498,7 @@
 								</td>
 								<td id='equipmentBulbType_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
 									{*FILTER TYPE LIST*}	
-									<select name="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
+									<select name="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectBulbType_{$equipmentLightingsList[i]->equipment_lighting_id}">
 										{if $lightingBulbType}				
 											{section name=k loop=$lightingBulbType}										
 												<option value="{$lightingBulbType[k]->equipment_lighting_bulb_type_id}" {if $equipmentLightingsList[i]->bulb_type == $lightingBulbType[k]->equipment_lighting_bulb_type_id} SELECTED {/if}> {$lightingBulbType[k]->name}</option>										
@@ -530,7 +530,7 @@
 								</td>
 								<td id='equipmentLightingColor_td_{$equipmentLightingsList[i]->equipment_lighting_id}'>
 									{*FILTER TYPE LIST*}	
-									<select name="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" class="addInventory">
+									<select name="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}" id="selectLightingColor_{$equipmentLightingsList[i]->equipment_lighting_id}">
 										{if $lightingColor}				
 											{section name=k loop=$lightingColor}										
 												<option value="{$lightingColor[k]->equipment_lighting_color_id}" {if $equipmentLightingsList[i]->color == $lightingColor[k]->equipment_lighting_color_id} SELECTED {/if}> {$lightingColor[k]->name}</option>										

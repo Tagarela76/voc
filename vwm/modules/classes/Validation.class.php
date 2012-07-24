@@ -238,6 +238,15 @@ class Validation {
 					$query = "SELECT * FROM `nox` WHERE description='" . $itemName . "' and nox_id!=" . $itemID . " " . $sql;
 				}
 				break;
+				
+			case 'workOrder':
+				if ($parrentID != 'none') {
+					$query = "SELECT * FROM " . TB_WORK_ORDER . " WHERE number='" . $itemName . "' and facility_id=" . $parrentID;
+				} else {
+					echo "Error: unsigned parametr <b>parrentID</b> <br>";
+					return false;
+				}
+				break;	
 		}
 
 
@@ -2231,6 +2240,50 @@ class Validation {
 				$result['summary'] = 'false';
 			} else {
 				$result['eq_filter_quantity_' . $equipmentFilterId] = 'success';
+			}
+		}
+
+		return $result;
+	}
+	
+		public function validateRegDataWorkOrder(WorkOrder $workOrder) {
+
+		$result = array();
+		$result['summary'] = 'true';
+
+		if (isset($workOrder->number)) {
+			if ($workOrder->number == '') {
+				$result['number'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['number'] = 'success';
+			}
+		}
+
+		if (isset($workOrder->description)) {
+			if ($workOrder->description == '') {
+				$result['description'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['description'] = 'success';
+			}
+		}
+		
+		if (isset($workOrder->customer_name)) {
+			if ($workOrder->customer_name == '') {
+				$result['customer_name'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['customer_name'] = 'success';
+			}
+		}
+		
+		if (isset($workOrder->status)) {
+			if ($workOrder->status == '') {
+				$result['status'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['status'] = 'success';
 			}
 		}
 

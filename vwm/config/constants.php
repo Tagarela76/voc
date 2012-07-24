@@ -30,11 +30,12 @@ switch(VERSION)
 		switch (ENVIRONMENT2LOAD) {
 			//	LOCAL AREA
 			case 'local':
+				define ('USE_MEMCACHED', false);
 				define ('DB_HOST', 'localhost');
 				define ('DB_NAME', 'voc');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'developer');
+				define ('DB_PASS', 'zcfd15121510');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');
@@ -285,6 +286,8 @@ define ('TB_EQUIPMENT_LIGHTING', 'equipment_lighting');
 define ('TB_EQUIPMENT_LIGHTING_COLOR', 'equipment_lighting_color');
 define ('TB_EQUIPMENT_LIGHTING_BULB_TYPE', 'equipment_lighting_bulb_type');
 
+// work order
+define ('TB_WORK_ORDER', 'work_order');
 
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');

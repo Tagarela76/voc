@@ -66,7 +66,8 @@
                                             		($request.bookmark=="nox" && $permissions.data.delete) ||
                                             		($request.bookmark=="mix" && $permissions.data.delete) ||
                                             		($request.bookmark=="logbook" && $permissions.data.delete) ||
-                                                            $permissions.deleteItem && $request.bookmark != "product"}
+													($request.bookmark=="workOrder" && $permissions.data.delete) ||
+                                                     $permissions.deleteItem && $request.bookmark != "product"}
 								{*($request.bookmark=="accessory" && $permissions.data.delete) ||*}
 								<div class="button_float_left">
 									<div class="button_alpha delete_button">

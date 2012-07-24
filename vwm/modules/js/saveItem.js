@@ -646,3 +646,42 @@ function clearSelectedLightings() {
 		dataType: "html"        		   			   	
 	});
 }
+
+function saveWorkOrderDetails() 
+{	
+	Popup.showModal('pleaseWait');	//	Show popup wait
+	
+	var work_order_number=$('#workOrderNumber').attr('value');
+	var work_order_description=$('#workOrderDescription').val();
+	var work_order_customer_name=$('#workOrderCustomerName').attr('value');
+	var work_order_action=$('input:hidden[name=action]').attr('value');
+	var work_order_status=$('#workOrderStatus').attr('value');
+	if (work_order_action == 'addItem') 
+	{		
+		var id=$('input:hidden[name=facility_id]').attr('value');
+	} 
+	if (work_order_action == 'edit') 
+	{		
+		var id=$('input:hidden[name=id]').attr('value');
+	} 
+	
+	
+	$.ajax({
+		url: "modules/ajax/saveWorkOrder.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"work_order_number":work_order_number,
+			"work_order_description":work_order_description,
+			"work_order_customer_name":work_order_customer_name,
+			"id":id,
+			"work_order_status":work_order_status
+		},      			
+		dataType: "html",
+		success: function (response) 
+		{   
+			jsonResponse=eval("("+response+")");		      																
+			answer(jsonResponse);										
+		}        		   			   	
+	});
+}

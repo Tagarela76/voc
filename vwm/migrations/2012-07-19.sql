@@ -5,11 +5,11 @@ CREATE TABLE IF NOT EXISTS `equipment_filter` (
   `equipment_filter_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `equipment_id` int(5) NOT NULL,
-  `height_size` decimal(5,3) DEFAULT NULL,
+  `height_size` int(5) DEFAULT NULL,
   `equipment_filter_type_id` int(11) NOT NULL,
   `qty` int(5) NOT NULL,
-  `width_size` decimal(5,3) DEFAULT NULL,
-  `length_size` decimal(5,3) DEFAULT NULL,
+  `width_size` int(5) DEFAULT NULL,
+  `length_size` int(5) DEFAULT NULL,
   PRIMARY KEY (`equipment_filter_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 

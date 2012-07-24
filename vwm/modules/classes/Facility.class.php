@@ -11,11 +11,34 @@ class Facility extends FacilityProperties {
 
 	//	Methods
 
-	function Facility($db) {
+	function __construct($db) {
 		$this->db=$db;
 	}
 
-
+	public function getWorkOrdersList($facilityId) {
+		
+		$workOrders = array();
+		
+		$sql = "SELECT * FROM ". TB_WORK_ORDER. "
+				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		foreach ($rows as $row) {
+			$workOrder = new WorkOrder($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($workOrder, $key)) {
+					$workOrder->$key = $value;
+				}
+			}
+			$workOrders[] = $workOrder;
+		}
+		return $workOrders;
+	}
 
 
 	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection
