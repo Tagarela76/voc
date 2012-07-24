@@ -840,9 +840,9 @@ class XML2PDF extends PDF_MC_Table
 			$this->Cell(50,5,$this->header['EQUIPMENT'],0,0,'L');
 
 			$this->SetFont('Arial','B',10);
-    		$this->Cell(35,5,'Responsible Person: ',0,0,'R');
+    		$this->Cell(75,5,'Responsible Person: ',0,0,'R');
     		$this->SetFont('Arial','',10);
-			$this->Cell(50,5,$this->header['RESPONSIBLEPERSON'],0,1,'L');
+			$this->Cell(90,5,$this->header['RESPONSIBLEPERSON'],0,1,'L');
 
 
 			$this->SetFont('Arial','B',10);
@@ -860,9 +860,9 @@ class XML2PDF extends PDF_MC_Table
 			$this->Cell(50,5,$this->header['PERMITNO'],0,0,'L');
 
 			$this->SetFont('Arial','B',10);
-    		$this->Cell(35,5,'Title: ',0,0,'R');
+    		$this->Cell(75,5,'Title: ',0,0,'R');
     		$this->SetFont('Arial','',10);
-			$this->Cell(50,5,$this->header['TITLEMANUAL'],0,1,'L');
+			$this->Cell(90,5,$this->header['TITLEMANUAL'],0,1,'L');
 
 			$this->SetFont('Arial','B',10);
     		$this->Cell(35,5,'City, State, Zip: ',0,0,'R');
