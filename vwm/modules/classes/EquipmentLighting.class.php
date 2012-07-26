@@ -49,6 +49,12 @@ class EquipmentLighting {
 	 * @var int 
 	 */
 	public $color;
+	
+	/**
+	 *
+	 * @var int 
+	 */
+	public $quantity;
 
 	/**
 	 * db connection
@@ -89,7 +95,8 @@ class EquipmentLighting {
 						size= '" . $this->db->sqltext($this->size) . "', 		 	 	 	 	 	 	
 						voltage= '" . $this->db->sqltext($this->voltage) . "', 		 	 	 	 	 	 	
 						wattage= " . $this->db->sqltext($this->wattage) . ", 		 	 	 	 	 	 	
-						color= " . $this->db->sqltext($this->color) . "
+						color= " . $this->db->sqltext($this->color) . ",
+						quantity= " . $this->db->sqltext($this->quantity) . "	
 				  WHERE equipment_lighting_id= " . $this->db->sqltext($this->equipment_lighting_id);
 		$this->db->query($query);
 		return $this->equipment_lighting_id;
@@ -100,7 +107,7 @@ class EquipmentLighting {
 	 */
 	public function addNewEquipmentLighting() {
 
-		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING . "(name, equipment_id, bulb_type, size, voltage, wattage, color)
+		$query = "INSERT INTO " . TB_EQUIPMENT_LIGHTING . "(name, equipment_id, bulb_type, size, voltage, wattage, color, quantity)
 					VALUES ( 
 					'" . $this->db->sqltext($this->name) . "'
 					, " . $this->db->sqltext($this->equipment_id) . "	
@@ -108,7 +115,8 @@ class EquipmentLighting {
 					, '" . $this->db->sqltext($this->size) . "'
 					, '" . $this->db->sqltext($this->voltage) . "'
 					, " . $this->db->sqltext($this->wattage) . "	
-					, " . $this->db->sqltext($this->color) . ")";
+					, " . $this->db->sqltext($this->color) . "	
+					, " . $this->db->sqltext($this->quantity) . ")";
 		$this->db->query($query);
 		$equipment_lighting_id = $this->db->getLastInsertedID();
 		$this->equipment_lighting_id = $equipment_lighting_id;

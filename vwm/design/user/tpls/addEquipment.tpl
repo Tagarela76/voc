@@ -147,7 +147,7 @@
 						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
-								height size :
+								Thickness size (inches) :
 							</td>
 							<td class="border_users_r border_users_b">								
 								<div class="floatleft">							
@@ -161,7 +161,7 @@
 						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
-								width size :
+								width size (inches) :
 							</td>
 							<td class="border_users_r border_users_b">								
 								<div class="floatleft">							
@@ -175,7 +175,7 @@
 						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
-								length size :
+								length size (inches) :
 							</td>
 							<td class="border_users_r border_users_b">								
 								<div class="floatleft">							
@@ -333,7 +333,7 @@
 							<td class="border_users_r border_users_b">
 								<div class="floatleft">	
 
-									{*Bulb type*}	
+									{*color*}	
 									<select name="selectLightingColor" id="selectLightingColor">
 										{if $lightingColor}				
 											{section name=i loop=$lightingColor}										
@@ -344,6 +344,20 @@
 										{/if}
 									</select>	
 								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="border_users_l border_users_b border_users_r" width="30%">
+								Quantity :
+							</td>
+							<td class="border_users_r border_users_b">								
+								<div class="floatleft">							
+									<input type='text' id='equipment_lighting_quantity' name='equipment_lighting_quantity' value=''>
+								</div>	
+								{*ERORR*}
+								<div id="error_equipment_lighting_quantity" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font class="error_text" style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+									{*/ERORR*}
 							</td>
 						</tr>
 						<tr>
@@ -378,12 +392,12 @@
 						<td  class="border_users_l"   width="10%" > Select</td>
 						<td>Name
 						</td>
-						<td>height size
+						<td>Thickness size (inches)
 						</td>
-						<td>width size
+						<td>width size (inches)
 
 						</td>
-						<td>length size
+						<td>length size (inches)
 						</td>
 						<td>Filter Type</td>
 						<td class="border_users_r">Quantity
@@ -481,7 +495,9 @@
 						</td>
 						<td>Wattage
 						</td>
-						<td class="border_users_r">Color</td>
+						<td>Color
+						</td>
+						<td class="border_users_r">Quentity</td>
 					</tr>		
 				</thead>
 
@@ -540,6 +556,14 @@
 										{/if}
 									</select>	
 								</td>
+								<td> <input type='text' id='equipment_lighting_quantity_{$equipmentLightingsList[i]->equipment_lighting_id}' name='equipment_lighting_quantity_{$equipmentLightingsList[i]->equipment_lighting_id}' value='{$equipmentLightingsList[i]->quantity|escape}'>
+									{*ERORR*}
+
+									<div id="error_eq_lighting_quantity_{$equipmentLightingsList[i]->equipment_lighting_id}" style="width:80px;margin:2px 0px 0px 5px; display:none;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+
+										<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+										{*/ERORR*}
+								</td>
 							</tr>		
 						{/section}	
 					{/if}
@@ -551,7 +575,7 @@
                             <a href="#" onclick="selectAllLightings(true); return false;">All</a>
                             <a href="#" onclick="selectAllLightings(false);return false;">None</a>
                         </td>
-                        <td colspan="6" class="users_u_bottom_r">
+                        <td colspan="7" class="users_u_bottom_r">
                             <a href="#" onclick="clearSelectedLightings(); return false">Remove selected lightings from the list</a>
                         </td>
 					</tr>

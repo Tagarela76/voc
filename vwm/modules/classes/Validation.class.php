@@ -2148,7 +2148,7 @@ class Validation {
 	public function validateRegDataEquipmentLighting(EquipmentLighting $equipmentLighting, $equipmentLightingId) {
 
 		$result['summary'] = 'true';
-		$parametrs = array('min' => 0, 'max' => 1000);
+		$parametrs = array('min' => 0, 'max' => 100000);
 
 		if (isset($equipmentLighting->name)) {
 			if ($equipmentLighting->name == "") {
@@ -2184,7 +2184,17 @@ class Validation {
 
 			}
 		}
+		if (isset($equipmentLighting->quantity)) {
+			if ($equipmentLighting->quantity == "" || $this->noYes[Validate::number($equipmentLighting->quantity, $parametrs)] == 'NO') {
 
+				$result['eq_lighting_quantity_' . $equipmentLightingId] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['eq_lighting_quantity_' . $equipmentLightingId] = 'success';
+
+			}
+		}
+		
 		return $result;
 	}
 

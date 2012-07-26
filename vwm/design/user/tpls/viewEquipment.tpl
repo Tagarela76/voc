@@ -135,10 +135,10 @@
 	<thead>
 		<tr class="users_top_yellowgreen users_u_top_size">
 			<td class="users_u_top_yellowgreen">Name</td>
-			<td>height size</td>
-			<td>width size</td>
-			<td>length size</td>
-			<td>Filter Type</td>
+			<td>Thickness size (inches)</td>
+			<td>width size (inches)</td>
+			<td>length size (inches)</td>
+			<td>Filter Type </td>
 			<td class="users_u_top_r_yellowgreen">Quantity</td>
 		</tr>		
 	</thead>
@@ -176,7 +176,8 @@
 				<td>Size</td>
 				<td>Voltage</td>
 				<td>Wattage</td>
-				<td class="users_u_top_r_yellowgreen">Color</td>
+				<td>Color</td>
+				<td class="users_u_top_r_yellowgreen">Quantity</td>
 			</tr>		
 		</thead>
 
@@ -191,6 +192,7 @@
 						<td>{$equipmentLightingsList[i]->wattage|escape}</td>
 						{assign var="color" value=$equipmentLightingsList[i]->getColor()}
 						<td class="border_users_r">{$color->name|escape}</td>
+						<td>{$equipmentLightingsList[i]->quantity|escape}</td>
 					</tr>										
 				{/section}																		
 		</tbody>

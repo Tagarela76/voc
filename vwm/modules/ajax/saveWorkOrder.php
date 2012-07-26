@@ -72,7 +72,20 @@
 			$mixOptimized->save();
 		}
 	}
-	
+
+/*	if ($action == 'edit') {
+		// get work order mix id
+		$mixOptimized = new MixOptimized($db);
+		$mixIDs = $mixOptimized->getMixIdByName($_POST["work_order_number"]); 
+		foreach ($mixIDs as $mixID) {
+			// add empty mix for each facility department
+			$mixOptimized = new MixOptimized($db, $mixID);
+			preg_match('/-.*(.*)/', $mixOptimized->description, $suffix);
+			$mixOptimized->description = $_POST["work_order_number"] . "-$suffix[0]"; var_dump($mixOptimized); die();
+			$mixOptimized->save();
+		}
+	}
+*/	
 	if ($validStatus['summary'] == 'true') {					
 
 		$workOrder->save();

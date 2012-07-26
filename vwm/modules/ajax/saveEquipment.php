@@ -62,6 +62,7 @@ switch ($action) {
 		$xnyo->filter_post_var("equipment_lighting_wattage", "text");
 		$xnyo->filter_post_var("equipment_lighting_bulb_type", "text");
 		$xnyo->filter_post_var("equipment_lighting_color", "text");
+		$xnyo->filter_post_var("equipment_lighting_quantity", "text");
 		// protecting from xss
 		foreach ($_POST as $key => $value) {
 			switch ($key) {
@@ -157,6 +158,7 @@ switch ($action) {
 			$equipment_lighting_wattage = explode(',', $_REQUEST['equipment_lighting_wattage']);
 			$equipment_lighting_bulb_type = explode(',', $_REQUEST['equipment_lighting_bulb_type']);
 			$equipment_lighting_color = explode(',', $_REQUEST['equipment_lighting_color']);
+			$equipment_lighting_quantity = explode(',', $_REQUEST['equipment_lighting_quantity']);
 
 			$equipmentLightingCount = sizeof($equipment_lighting_name) - 1; // delete last because empty element
 			for ($i = 0; $i < $equipmentLightingCount; $i++) {
@@ -174,6 +176,7 @@ switch ($action) {
 				$equipmentLighting->wattage = $equipment_lighting_wattage[$i];
 				$equipmentLighting->bulb_type = $equipment_lighting_bulb_type[$i];
 				$equipmentLighting->color = $equipment_lighting_color[$i];
+				$equipmentLighting->quantity = $equipment_lighting_quantity[$i];
 				$validateStatusEquipmentLighting = $validation->validateRegDataEquipmentLighting($equipmentLighting, $equipment_lighting_id[$i]);
 				if ($validateStatusEquipmentLighting["summary"] == "true") {
 					$equipmentLighting->save();
@@ -225,6 +228,7 @@ switch ($action) {
 		$xnyo->filter_post_var("equipment_lighting_wattage", "text");
 		$xnyo->filter_post_var("equipment_lighting_bulb_type", "text");
 		$xnyo->filter_post_var("equipment_lighting_color", "text");
+		$xnyo->filter_post_var("equipment_lighting_quantity", "text");
 		// protecting from xss
 		foreach ($_POST as $key => $value) {
 			switch ($key) {
@@ -312,7 +316,8 @@ switch ($action) {
 			$equipment_lighting_wattage = explode(',', $_REQUEST['equipment_lighting_wattage']);
 			$equipment_lighting_bulb_type = explode(',', $_REQUEST['equipment_lighting_bulb_type']);
 			$equipment_lighting_color = explode(',', $_REQUEST['equipment_lighting_color']);
-
+			$equipment_lighting_quantity = explode(',', $_REQUEST['equipment_lighting_quantity']);
+			
 			$equipmentLightingCount = sizeof($equipment_lighting_id) - 1; // delete last because empty element
 
 			for ($i = 0; $i < $equipmentLightingCount; $i++) {
@@ -324,6 +329,7 @@ switch ($action) {
 				$equipmentLighting->wattage = $equipment_lighting_wattage[$i];
 				$equipmentLighting->bulb_type = $equipment_lighting_bulb_type[$i];
 				$equipmentLighting->color = $equipment_lighting_color[$i];
+				$equipmentLighting->quantity = $equipment_lighting_quantity[$i];
 
 				$validateStatusEquipmentLighting = $validation->validateRegDataEquipmentLighting($equipmentLighting, $equipment_lighting_id[$i]);
 				if ($validateStatusEquipmentLighting["summary"] == "true") {

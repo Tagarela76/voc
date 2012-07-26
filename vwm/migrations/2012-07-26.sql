@@ -13,3 +13,7 @@ ALTER TABLE `work_order` ADD FOREIGN KEY ( `facility_id` ) REFERENCES `facility`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
 
 ALTER TABLE `mix` ADD `wo_id` INT( 11 ) NULL DEFAULT NULL
+
+ALTER TABLE `equipment_lighting` ADD `quantity` INT( 5 ) NULL DEFAULT NULL
+
+ALTER TABLE  `mix` ADD  `work_order_iteration` TINYINT( 4 ) NOT NULL DEFAULT  '0'

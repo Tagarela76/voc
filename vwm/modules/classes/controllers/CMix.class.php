@@ -522,7 +522,6 @@ class CMix extends Controller {
 					}
 
 					$mix->getHasChild(); 
-					$mix->getIsWorkOrder();
 				}
 
 				//save to cache
@@ -860,7 +859,7 @@ class CMix extends Controller {
 	}
 
 	private function actionAddItemAjax() {
-		$form = $_REQUEST;
+		$form = $_REQUEST; 
 //$debug = true;
 		if ($form['debug']) {
 			$debug = true;
@@ -1142,6 +1141,7 @@ class CMix extends Controller {
 		$optMix->iteration = $m->iteration;
 		$optMix->parent_id = (empty($m->parentID)) ? null : $m->parentID;
 		$optMix->wo_id = $m->wo_id;
+		$optMix->work_order_iteration = $m->work_order_iteration;
 
 		return $optMix;
 	}
@@ -1717,9 +1717,15 @@ class CMix extends Controller {
 			$data->description = $parentMix->generateNextIterationDescription();
 		}
 		
-		// this mix was added to WO ?
+		// this mix was added to WO , add suffix ?
 		$workOrderId = $this->getFromRequest('workOrderId');
-
+		if($workOrderId) {
+			$parentWorkOrder = new MixOptimized($this->db, $workOrderId); 
+			$woIteration = $parentWorkOrder->work_order_iteration + 1;
+			$data->description = $parentWorkOrder->generateNextWorkOrderIterationDescription();
+		}
+		
+		$this->smarty->assign('woIteration', $woIteration);
 		$this->smarty->assign('workOrderIteration', $workOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
 		$this->smarty->assign('workOrderId', $workOrderId);

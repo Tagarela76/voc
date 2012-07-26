@@ -109,6 +109,7 @@ function saveEquipmentDetails()
 	var equipment_lighting_wattage = "";
 	var equipment_lighting_bulb_type = "";
 	var equipment_lighting_color = "";
+	var equipment_lighting_quantity = "";
         
 	checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
 
@@ -121,6 +122,7 @@ function saveEquipmentDetails()
 		equipment_lighting_wattage += $("#equipment_lighting_wattage_"+id).val()+",";
 		equipment_lighting_bulb_type += $("#selectBulbType_"+id+" option:selected").val()+",";
 		equipment_lighting_color += $("#selectLightingColor_"+id+" option:selected").val()+",";
+		equipment_lighting_quantity += $("#equipment_lighting_quantity_"+id).val()+",";
 	});
 
 	equipmentData += "&equipment_lighting_name="+equipment_lighting_name;
@@ -130,6 +132,7 @@ function saveEquipmentDetails()
 	equipmentData += "&equipment_lighting_bulb_type="+equipment_lighting_bulb_type;
 	equipmentData += "&equipment_lighting_color="+equipment_lighting_color;
 	equipmentData += "&equipment_lighting_id="+equipment_lighting_id;
+	equipmentData += "&equipment_lighting_quantity="+equipment_lighting_quantity;
 	
 	$.ajax({
 		url: "modules/ajax/saveEquipment.php",      		
@@ -485,7 +488,8 @@ function addLighting2List() {
 	var equipmentLightingVoltage = $("#equipment_lighting_voltage").val();
 	var equipmentLightingWattage = $("#equipment_lighting_wattage").val();
 	var equipmentLightingColor = $("#selectLightingColor option:selected").val();
-		
+	var equipmentLightingQuantity = $("#equipment_lighting_quantity").val();
+	
 	var equipment_lighting_error = false;
 	//checking
 	if(equipmentLightingName == "") {
@@ -525,6 +529,22 @@ function addLighting2List() {
 		$("#error_equipment_lighting_wattage").css('display','inline');
 		equipment_lighting_error = true;
 	}
+	
+	if(equipmentLightingQuantity == "") {
+		$("#error_equipment_lighting_quantity .error_text").text("Type Lighting Quantity!");
+		$("#error_equipment_lighting_quantity").css('display','inline');
+		equipment_lighting_error = true;
+	} else {
+		$("#error_equipment_lighting_quantity").css('display','none');
+	}
+		
+	if(/^\d+$/.test(equipmentLightingQuantity)) {
+		$("#error_equipment_lighting_quantity").css('display','none');
+	} else {
+		$("#error_equipment_lighting_quantity .error_text").text("Quantity should be an integer");
+		$("#error_equipment_lighting_quantity").css('display','inline');
+		equipment_lighting_error = true;
+	}
 		
 	if (equipment_lighting_error) {
 		return;
@@ -550,6 +570,11 @@ function addLighting2List() {
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\
  <td class=border_users_r id=equipmentLightingColor_td_temp"+lighting_index+"></td>\n\
+\n\
+<td> <input type='text' id='equipment_lighting_quantity_temp"+lighting_index+"' name='equipment_lighting_quantity_temp"+lighting_index+"' value='" +equipmentLightingQuantity+ "'>\n\
+<div id=error_eq_lighting_quantity_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
+	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
+</div></td>\n\
 </tr>");
 	$("#selectBulbType").clone().prependTo("#equipmentBulbType_td_temp"+lighting_index);
 	$("#equipmentBulbType_td_temp"+lighting_index+ " select").attr("id", "selectBulbType_temp"+lighting_index);
@@ -567,7 +592,8 @@ function addLighting2List() {
 	$("#equipment_lighting_size").val("");
 	$("#equipment_lighting_voltage").val("");
 	$("#equipment_lighting_wattage").val("");
-
+	$("#equipment_lighting_quantity").val("");
+	
 	$('#lightingContentDiv').css('display','table');
 	lighting_index ++;
 
