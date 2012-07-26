@@ -38,6 +38,13 @@
 				</div>
 			</a>
         </td>
+		<td class="" width="10%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	
+				</div>
+			</a>
+        </td>
         <td class="" width="60%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
@@ -102,6 +109,14 @@
 			<div style="width:100%;">
 				{if !$mix->hasChild}
                     <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}" title="Add child job">add</a> &nbsp;
+				{/if}
+				&nbsp;
+			</div>
+        </td>
+		<td class="border_users_b border_users_r">
+			<div style="width:100%;">
+				{if $mix->isWorkOrder}
+                    <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&workOrderId={$mix->mix_id|escape:'url'}" title="Start">start</a> &nbsp;
 				{/if}
 				&nbsp;
 			</div>

@@ -995,11 +995,11 @@ class Controller {
         return $finalItems;
     }
 
-    protected function setListCategoriesLeftNew($category, $id, $params = null) {
+    protected function setListCategoriesLeftNew($category, $id, $params = null) { 
         $tail = '';
         if (!is_null($params)) {
-            foreach ($params as $key => $value) {
-                $tail .= "&$key=$value";
+            foreach ($params as $key => $value) { 
+                $tail .= "&$key=$value"; 
             }
         }
         switch ($category) {

@@ -195,8 +195,10 @@ function initRecycle() {
 		mixObj.setNotes($("#notes").val());
 
 		mixObj.setIteration($("#workOrderIteration").val());
-		mixObj.setParentID($("#mixParentID").val());
-
+		mixObj.setParentID($("#mixParentID").val()); 
+		if ($("#workOrderId").val() != '') {
+			mixObj.setWorkOrderId($("#workOrderId").val());
+		}
 		return mixObj;
 	}
 
@@ -228,7 +230,7 @@ function initRecycle() {
 			$("#recycleValidError").css("display","none");
 		}
 
-		mix = getMix();
+		mix = getMix(); 
 
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();

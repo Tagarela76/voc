@@ -521,7 +521,8 @@ class CMix extends Controller {
 						}
 					}
 
-					$mix->getHasChild();
+					$mix->getHasChild(); 
+					$mix->getIsWorkOrder();
 				}
 
 				//save to cache
@@ -1140,6 +1141,7 @@ class CMix extends Controller {
 		$optMix->unittypeClass = $m->selectUnittypeClass;
 		$optMix->iteration = $m->iteration;
 		$optMix->parent_id = (empty($m->parentID)) ? null : $m->parentID;
+		$optMix->wo_id = $m->wo_id;
 
 		return $optMix;
 	}
@@ -1714,9 +1716,13 @@ class CMix extends Controller {
 			$workOrderIteration = $parentMix->iteration + 1;
 			$data->description = $parentMix->generateNextIterationDescription();
 		}
+		
+		// this mix was added to WO ?
+		$workOrderId = $this->getFromRequest('workOrderId');
 
 		$this->smarty->assign('workOrderIteration', $workOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
+		$this->smarty->assign('workOrderId', $workOrderId);
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 	}

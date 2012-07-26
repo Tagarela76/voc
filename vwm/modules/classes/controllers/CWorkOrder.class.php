@@ -22,12 +22,15 @@ class CWorkOrder extends Controller
 		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));	
 		$this->smarty->assign('workOrder', $workOrder);
 		$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
-		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'));
+		$params = array("bookmark" => "workOrder");
+
+		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
 		$this->setPermissionsNew('viewWorkOrder');
-		$this->smarty->assign('backUrl', '?action=browseCategory&category=department&id=' . $this->getFromRequest('departmentID') . '&bookmark=mix');
+		$this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest('facilityID') . '&bookmark=workOrder');
+		$this->smarty->assign('deleteUrl', '?action=deleteItem&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
+		$this->smarty->assign('editUrl', '?action=edit&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
 		$this->smarty->assign('tpl', 'tpls/viewWorkOrder.tpl');
 		$this->smarty->display("tpls:index.tpl");
-	
 	}
 		
 	/**
@@ -47,10 +50,12 @@ class CWorkOrder extends Controller
 		$workOrder = new WorkOrder($this->db);
 		$facility = new Facility($this->db);
 		$workOrderList = $facility->getWorkOrdersList($facilityDetails['facility_id']);
-		for ($i = 0; $i<count($workOrderList); $i++) {
-			$url = "?action=viewDetails&category=workOrder&id=".$workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];
-			$workOrderList[$i]->url = $url;
-		}
+		if ($workOrderList) {
+			for ($i = 0; $i<count($workOrderList); $i++) {
+				$url = "?action=viewDetails&category=workOrder&id=".$workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];
+				$workOrderList[$i]->url = $url;
+			}
+		} 
 		$this->smarty->assign("childCategoryItems", $workOrderList);
 
 		//	set js scripts
@@ -78,7 +83,9 @@ class CWorkOrder extends Controller
 		$request['parent_category'] = 'facility';
 		$this->smarty->assign('request',$request);
 
-		$this->setListCategoriesLeftNew('facility', $this->getFromRequest("facilityID"));
+		$params = array("bookmark" => "workOrder");
+
+		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
 		$this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
 		$this->setPermissionsNew('viewFacility');
 
@@ -122,7 +129,9 @@ class CWorkOrder extends Controller
 		{
 			$this->smarty->assign("cancelUrl", "?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=workOrder");
 			//as ShowAddItem
-			$this->setListCategoriesLeftNew('facility',$this->getFromRequest('facilityID'));
+			$params = array("bookmark" => "workOrder");
+
+			$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
 			$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
 			$this->setPermissionsNew('viewFacility');
 		}
@@ -134,13 +143,42 @@ class CWorkOrder extends Controller
 
 		foreach($this->itemID as $ID) {
 			
-			$workOrder = new WorkOrder($this->db, $ID);
-			$facilityId = $workOrder->facility_id;
-			$workOrder->delete;
+			$workOrder = new WorkOrder($this->db, $ID); 
+			$facilityId = $workOrder->facility_id; 
+			$workOrder->delete();
 		}
 
 		if ($this->successDeleteInventories)
-			header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=workOrder&notify=6");
+			header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=workOrder&notify=48");
+	}
+	
+	protected function actionEdit() {
+			
+		//	Access control
+		if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
+			throw new Exception('deny');
+		}
+		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
+		$this->smarty->assign('data', $workOrder);
+
+		$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
+		$params = array("bookmark" => "workOrder");
+
+		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
+		$this->setPermissionsNew('viewWorkOrder');
+
+		//	set js scripts
+		$jsSources = array(
+			'modules/js/reg_country_state.js',
+			'modules/js/saveItem.js',
+			'modules/js/PopupWindow.js',
+			'modules/js/addJobberPopups.js',
+			'modules/js/checkBoxes.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
+		$this->smarty->display("tpls:index.tpl");
 	}
 
 }

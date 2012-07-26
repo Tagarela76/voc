@@ -26,6 +26,8 @@
 	if (!$user->isLoggedIn()) {
 		die();
 	}
+	$xnyo->filter_post_var('action', 'text');
+	$action = $_POST['action'];
 	
 	$xnyo->filter_post_var("id", "text");
 	$xnyo->filter_post_var("work_order_number", "text");
@@ -33,7 +35,11 @@
 	$xnyo->filter_post_var("work_order_customer_name", "text");
 	$xnyo->filter_post_var("work_order_status", "text");
 	$xnyo->filter_post_var("work_order_id", "text");
+	
 	$workOrderId = $_POST["work_order_id"]; // could be NULL (add action)
+	if ($workOrderId == '') {
+		$workOrderId = null;
+	}
 	$workOrder = new WorkOrder($db, $workOrderId);		
 	$workOrder->number = $_POST["work_order_number"];
 	$workOrder->facility_id = $_POST["id"];
@@ -44,11 +50,29 @@
 	$validation = new Validation($db);
 	$validStatus = $validation->validateRegDataWorkOrder($workOrder);
 
-	if (!$validation->isUniqueName("workOrder", $workOrder->number, $workOrder->facility_id)) {
-		$validStatus['summary'] = 'false';
-		$validStatus['name'] = 'alredyExist';
+	if ($action == 'addItem') {
+		if (!$validation->isUniqueName("workOrder", $workOrder->number, $workOrder->facility_id)) {
+			$validStatus['summary'] = 'false';
+			$validStatus['number'] = 'alredyExist';
+		}
+	}	
+
+	// add empty mix
+	if ($action == 'addItem') {
+		// get current facility departments
+		$facility = new Facility($db);
+		$departmentIds = $facility->getDepartmentList($_POST["id"]);
+		foreach ($departmentIds as $departmentId) {
+			// add empty mix for each facility department
+			$mixOptimized = new MixOptimized($db);
+			$mixOptimized->description = $_POST["work_order_number"];
+			$mixOptimized->wo_id = 0;
+			$mixOptimized->facility_id = $_POST["id"]; 
+			$mixOptimized->department_id = $departmentId;
+			$mixOptimized->save();
+		}
 	}
-//	var_dump($validStatus); die();	
+	
 	if ($validStatus['summary'] == 'true') {					
 
 		$workOrder->save();

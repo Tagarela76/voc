@@ -690,6 +690,24 @@ class Facility extends FacilityProperties {
 		$this->trashRecord = $tm->save2trash(TB_FACILITY, $facilityID, $CRUD, $this->parentTrashRecord);
 
 	}
+	
+	public function getDepartmentList($facilityId) {
+
+		$query = "SELECT department_id FROM ".TB_DEPARTMENT." WHERE facility_id = ". $facilityId;
+		$this->db->query($query);
+		//	sql should not return empty result
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+
+		$dataRows = $this->db->fetch_all_array();
+		$departmentIDs = array();
+		foreach ($dataRows as $dataRow) {
+			$departmentIDs[] = $dataRow['department_id'];
+		}
+
+		return $departmentIDs;
+	}
 }
 
 

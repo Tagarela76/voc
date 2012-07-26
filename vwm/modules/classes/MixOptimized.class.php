@@ -68,11 +68,25 @@ class MixOptimized extends Model {
 	public $debug;
 	
 	/**
+	 * work order id
+	 * @var int 
+	 */
+	public $wo_id;
+
+
+	/**
 	 * Mixes may have sub mixes, for example WO-1234 and WO-1234-01
 	 * This property says does mix have such submix
 	 * @var boolean
 	 */
 	public $hasChild = false;
+	
+	/**
+	 * Mixes can be an empty work order
+	 * This property says does mix is such empty work order
+	 * @var boolean
+	 */
+	public $isWorkOrder = false;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
@@ -397,16 +411,19 @@ class MixOptimized extends Model {
 		$mixID = $this->db->getLastInsertedID();
 
 		//	now we are saving mix products
-		if ($this->products && is_array($this->products) && count($this->products) > 0) {
-			$insertProductsQuery = $this->getInsertProductsQuery($mixID);
-			if (!$this->db->query($insertProductsQuery)) {
+		// we can save mix without do it if this mix is work order
+		if (!isset($this->wo_id)) {
+			if ($this->products && is_array($this->products) && count($this->products) > 0) {
+				$insertProductsQuery = $this->getInsertProductsQuery($mixID);
+				if (!$this->db->query($insertProductsQuery)) {
+					$this->db->rollbackTransaction();
+					return false;
+				}
+			} else {
+				//	we should not save mix without products
 				$this->db->rollbackTransaction();
 				return false;
 			}
-		} else {
-			//	we should not save mix without products
-			$this->db->rollbackTransaction();
-			return false;
 		}
 
 		$this->db->commitTransaction();
@@ -610,11 +627,12 @@ class MixOptimized extends Model {
 		$recycle_percent = isset($this->recycle_percent) ? "{$this->db->sqltext($this->recycle_percent)}" : "NULL";
 		$notes = !empty($this->notes) ? "'{$this->db->sqltext($this->notes)}'" : "NULL";
 		$parentID = ($this->parent_id !== null) ? $this->db->sqltext($this->parent_id) : "NULL";
+		$workOrderId = ($this->wo_id !== null) ? $this->db->sqltext($this->wo_id) : "NULL";
 
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, rule_id, " .
 					"apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id, last_update_time ) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time, wo_id ) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -630,8 +648,9 @@ class MixOptimized extends Model {
 						"{$recycle_percent}, " .
 						"{$this->db->sqltext($this->iteration)}, " .
 						"{$parentID}, " .
-						" NOW() " .
-						") ";
+						" NOW(), " .
+						" {$workOrderId} " .		
+						") "; 
 
 		return $query;
 	}
@@ -1413,6 +1432,22 @@ class MixOptimized extends Model {
 
 		$uniqueProductIDs = array_unique($productIDs);
 		return (count($productIDs) != count($uniqueProductIDs));
+	}
+	
+	/**
+	 * Check does mix is empry work order
+	 * @return boolean
+	 */
+	public function getIsWorkOrder() {
+		$sql = "SELECT * FROM " . TB_USAGE . " WHERE wo_id = " . $this->db->sqltext($this->wo_id);
+		$this->db->query($sql);
+		if ($this->db->num_rows() > 0) {
+			$this->isWorkOrder = true;
+		} else {
+			$this->isWorkOrder = false;
+		}
+
+		return $this->isWorkOrder;
 	}
 
 }

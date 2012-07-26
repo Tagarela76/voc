@@ -97,7 +97,8 @@
 		<div align="right">
 			<input type='button' name='cancel' class="button" value='Cancel' 
 				{if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder'"
-				{elseif $request.action eq "edit"} onClick="location.href='?action=browseCategory&category=department&id={$request.id}&bookmark=mix'"
+			
+				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=workOrder&id={$request.id}&facilityID={$data->facility_id}'"
 				{/if}
 			>
 			<input type='submit' name='save' class="button" value='Save' onClick="saveWorkOrderDetails();">						
@@ -109,8 +110,10 @@
 			<input type='hidden' name='facility_id' value='{$request.id}'>
 		{/if}			
 		{if $request.action eq "edit"}
-			<input type="hidden" name="id" value="{$request.id}">
+			<input type="hidden" name="id" value="{$data->facility_id|escape}">
 		{/if}
+		<input type="hidden" name="work_order_id" id="work_order_id" value="{$data->id|escape}">
+		
 		</form>
 						</td>
 			</tr>

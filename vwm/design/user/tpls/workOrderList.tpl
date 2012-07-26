@@ -38,7 +38,7 @@
 			</td>
 		</tr>
 
-{if $childCategoryItems|@count > 0}
+{if $childCategoryItems}
 	{foreach from=$childCategoryItems item=workOrder}
 		<tr class="hov_company" height="10px">
             <td class="border_users_l border_users_b">
@@ -88,7 +88,7 @@
 <tr>
 	<td class="users_u_bottom ">
 	</td>
-	<td colspan="3" bgcolor="" height="30" class="users_u_bottom_r">
+	<td colspan="4" bgcolor="" height="30" class="users_u_bottom_r">
 	</td>
 </tr>
 </table>
