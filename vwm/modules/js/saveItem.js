@@ -232,10 +232,10 @@ function answer(jsonResponse) {
 				location.href = '?action=browseCategory&category=facility&id='+document.addDepartment.facility_id.value+'&bookmark=department';
 			}
 		}
-		 		 
+			 
 		//	equipment 		
-		if (document.addEquipment != null) {			
-			if (document.addEquipment.action.value == 'addItem') {		
+		if (document.addEquipment != null) {		 	
+			if (document.addEquipment.action.value == 'addItem' || document.addEquipment.action.value == 'edit') {		
 				//	go to equipment list			
 				location.href = '?action=browseCategory&category=department&id='+document.addEquipment.department_id.value+'&bookmark=equipment';
 			}
