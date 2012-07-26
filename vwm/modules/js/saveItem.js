@@ -646,6 +646,7 @@ function clearSelectedFilters() {
         
 function clearSelectedLightings() {
 
+	var keyVar, checkboxes;
 	checkboxes = $("#lightingContentDiv").find("input[type='checkbox']");
 	var rowsToRemove = new Array();
 
@@ -655,7 +656,7 @@ function clearSelectedLightings() {
 			rowsToRemove.push(id);
 		}
 	});
-
+	
 	for ( keyVar in rowsToRemove ) {
 		id = rowsToRemove[keyVar];
 		$("#lighting_row_" + id).remove();
