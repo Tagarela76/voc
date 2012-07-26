@@ -2270,33 +2270,6 @@ class Validation {
 			}
 		}
 
-		if (isset($workOrder->description)) {
-			if ($workOrder->description == '') {
-				$result['description'] = 'failed';
-				$result['summary'] = 'false';
-			} else {
-				$result['description'] = 'success';
-			}
-		}
-		
-		if (isset($workOrder->customer_name)) {
-			if ($workOrder->customer_name == '') {
-				$result['customer_name'] = 'failed';
-				$result['summary'] = 'false';
-			} else {
-				$result['customer_name'] = 'success';
-			}
-		}
-		
-		if (isset($workOrder->status)) {
-			if ($workOrder->status == '') {
-				$result['status'] = 'failed';
-				$result['summary'] = 'false';
-			} else {
-				$result['status'] = 'success';
-			}
-		}
-
 		return $result;
 	}
 
