@@ -136,8 +136,8 @@
 		<tr class="users_top_yellowgreen users_u_top_size">
 			<td class="users_u_top_yellowgreen">Name</td>
 			<td>Thickness size (inches)</td>
-			<td>width size (inches)</td>
-			<td>length size (inches)</td>
+			<td>Width size (inches)</td>
+			<td>Length size (inches)</td>
 			<td>Filter Type </td>
 			<td class="users_u_top_r_yellowgreen">Quantity</td>
 		</tr>		

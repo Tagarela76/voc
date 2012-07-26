@@ -161,7 +161,7 @@
 						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
-								width size (inches) :
+								Width size (inches) :
 							</td>
 							<td class="border_users_r border_users_b">								
 								<div class="floatleft">							
@@ -175,7 +175,7 @@
 						</tr>
 						<tr>
 							<td class="border_users_l border_users_b border_users_r" width="30%">
-								length size (inches) :
+								Length size (inches) :
 							</td>
 							<td class="border_users_r border_users_b">								
 								<div class="floatleft">							
@@ -394,10 +394,10 @@
 						</td>
 						<td>Thickness size (inches)
 						</td>
-						<td>width size (inches)
+						<td>Width size (inches)
 
 						</td>
-						<td>length size (inches)
+						<td>Length size (inches)
 						</td>
 						<td>Filter Type</td>
 						<td class="border_users_r">Quantity
