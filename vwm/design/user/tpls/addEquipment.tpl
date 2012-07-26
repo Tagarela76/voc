@@ -497,7 +497,7 @@
 						</td>
 						<td>Color
 						</td>
-						<td class="border_users_r">Quentity</td>
+						<td class="border_users_r">Quantity</td>
 					</tr>		
 				</thead>
 
