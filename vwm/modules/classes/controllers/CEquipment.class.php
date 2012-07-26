@@ -229,7 +229,7 @@ class CEquipment extends Controller
 		$jsSources = array(								
 			'modules/js/getInventoryShortInfo.js',								
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-			'modules/js/saveItem.js',
+			'modules/js/saveItem.js?rev=july26',
 			'modules/js/PopupWindow.js'
 		);							
 		$this->smarty->assign('jsSources', $jsSources);
@@ -334,7 +334,7 @@ class CEquipment extends Controller
 			'modules/js/getInventoryShortInfo.js',								
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
 			'modules/js/PopupWindow.js',							
-			'modules/js/saveItem.js',								
+			'modules/js/saveItem.js?rev=july26',								
 		);
 		$this->smarty->assign('jsSources', $jsSources);							
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
