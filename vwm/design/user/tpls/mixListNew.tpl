@@ -115,7 +115,7 @@
         </td>
 		<td class="border_users_b border_users_r">
 			<div style="width:100%;">
-				{if $mix->wo_id == 0}
+				{if $mix->wo_id == '0'}
                     <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&workOrderId={$mix->mix_id|escape:'url'}" title="Start">start</a> &nbsp;
 				{/if}
 				&nbsp;
