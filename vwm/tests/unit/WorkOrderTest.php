@@ -19,8 +19,8 @@ class WorkOrderTest extends Testing\DbTestCase {
 		$workOrder = new WorkOrder($this->db);
 		$workOrder->number = '545-wr';
 		$workOrder->description = 'test ';
-		$workOrder->customerName = 'nick smith';
-		$workOrder->facilityId = '100';
+		$workOrder->customer_name = 'nick smith';
+		$workOrder->facility_id = '100';
 		$workOrder->status = 'new';
 		$workOrder->save();
 		

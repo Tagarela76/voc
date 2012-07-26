@@ -27,6 +27,7 @@ class EquipmentLightingTest extends Testing\DbTestCase {
 		$equipmentLighting->voltage = '0-50';
 		$equipmentLighting->wattage = '3';
 		$equipmentLighting->color = '2';
+		$equipmentLighting->quantity = '6';
 		
 		$equipmentLighting->save();
 
