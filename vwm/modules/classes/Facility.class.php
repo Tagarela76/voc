@@ -11,11 +11,34 @@ class Facility extends FacilityProperties {
 
 	//	Methods
 
-	function Facility($db) {
+	function __construct($db) {
 		$this->db=$db;
 	}
 
-
+	public function getWorkOrdersList($facilityId) {
+		
+		$workOrders = array();
+		
+		$sql = "SELECT * FROM ". TB_WORK_ORDER. "
+				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		foreach ($rows as $row) {
+			$workOrder = new WorkOrder($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($workOrder, $key)) {
+					$workOrder->$key = $value;
+				}
+			}
+			$workOrders[] = $workOrder;
+		}
+		return $workOrders;
+	}
 
 
 	//	setter injection http://wiki.agiledev.ru/doku.php?id=ooad:dependency_injection
@@ -666,6 +689,24 @@ class Facility extends FacilityProperties {
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_FACILITY, $facilityID, $CRUD, $this->parentTrashRecord);
 
+	}
+	
+	public function getDepartmentList($facilityId) {
+
+		$query = "SELECT department_id FROM ".TB_DEPARTMENT." WHERE facility_id = ". $facilityId;
+		$this->db->query($query);
+		//	sql should not return empty result
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+
+		$dataRows = $this->db->fetch_all_array();
+		$departmentIDs = array();
+		foreach ($dataRows as $dataRow) {
+			$departmentIDs[] = $dataRow['department_id'];
+		}
+
+		return $departmentIDs;
 	}
 }
 

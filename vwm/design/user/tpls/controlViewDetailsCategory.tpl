@@ -16,6 +16,7 @@
 									$request.category=="mix" 		&& $permissions.data.edit || 
 									$request.category=="nox" 		&& $permissions.data.edit && $request.departmentID || 
 									$request.category=="logbook" || 
+									$request.category=="workOrder" ||
 									($request.category=="wastestorage" && $data->active!=0)}	
 									{*$request.category=="accessory" 	&& $permissions.data.edit ||*}							
 									{if $editUrl}
@@ -30,7 +31,7 @@
 									$request.category=="facility" 	&& $permissions.facility.delete || 
 									$request.category=="department" && $permissions.department.delete || 
 									$request.category=="equipment" 	&& $permissions.equipment.delete || 
-									
+									$request.category=="workOrder" ||
 									 
 									$request.category=="mix" 		&& $permissions.data.delete
 								}

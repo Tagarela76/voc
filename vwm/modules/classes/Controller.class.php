@@ -995,11 +995,11 @@ class Controller {
         return $finalItems;
     }
 
-    protected function setListCategoriesLeftNew($category, $id, $params = null) {
+    protected function setListCategoriesLeftNew($category, $id, $params = null) { 
         $tail = '';
         if (!is_null($params)) {
-            foreach ($params as $key => $value) {
-                $tail .= "&$key=$value";
+            foreach ($params as $key => $value) { 
+                $tail .= "&$key=$value"; 
             }
         }
         switch ($category) {
@@ -1306,6 +1306,15 @@ class Controller {
                 $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
                 $permissions['company']['view'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
                 $permissions['facility']['view'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                break;
+			
+			case "viewWorkOrder":
+                $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
+                $permissions['company']['view'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
+                $permissions['workOrder']['view'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                $permissions['workOrder']['edit'] = $this->user->isHaveAccessTo('edit', 'workOrder') ? true : false;
+                $permissions['workOrder']['delete'] = $this->user->isHaveAccessTo('delete', 'workOrder') ? true : false;
                 break;
         }
         $this->smarty->assign('permissions', $permissions);
