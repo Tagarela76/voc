@@ -8,7 +8,7 @@
 	<php>
         <var name="DB_DSN" value="mysql:dbname=voc_test;host=localhost" />
         <var name="DB_USER" value="root" />
-        <var name="DB_PASSWD" value="zcfd15121510" />
+        <var name="DB_PASSWD" value="fghbjhysq" />
         <var name="DB_DBNAME" value="voc_test" />
     </php>
 

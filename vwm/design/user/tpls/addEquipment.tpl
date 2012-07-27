@@ -472,7 +472,7 @@
 							<a href="#" onclick="selectAllFilters(false);return false;">None</a>
 						</td>
 						<td colspan="6" class="users_u_bottom_r">
-							<a href="#" onclick="clearSelectedFilters(); return false">Remove selected filters from the list</a>
+							<a href="#" onclick="clearSelectedFilters(); return false;">Remove selected filters from the list</a>
 						</td>
 					</tr>
 				</tfoot>
@@ -576,7 +576,7 @@
                             <a href="#" onclick="selectAllLightings(false);return false;">None</a>
                         </td>
                         <td colspan="7" class="users_u_bottom_r">
-                            <a href="#" onclick="clearSelectedLightings(); return false">Remove selected lightings from the list</a>
+                            <a href="#" onclick="clearSelectedLightings(); return false;">Remove selected lightings from the list</a>
                         </td>
 					</tr>
 				</tfoot>

@@ -38,7 +38,7 @@
         </tr>
         
         {if $show.inventory}
-        	{include file="tpls:inventory/design/viewEquipment.tpl}
+        	{include file="tpls:inventory/design/viewEquipment.tpl"}
         {/if}
                 
         <tr>
