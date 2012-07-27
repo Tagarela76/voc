@@ -199,7 +199,7 @@ function initRecycle() {
 		if ($("#workOrderId").val() != '') {
 			mixObj.setWorkOrderId($("#workOrderId").val());
 		}
-		mixObj.setWOIteration($("#woIteration").val());
+
 		return mixObj;
 	}
 

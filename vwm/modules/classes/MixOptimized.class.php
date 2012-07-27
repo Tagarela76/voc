@@ -45,13 +45,6 @@ class MixOptimized extends Model {
 	 */
 	public $parent_id;
 
-	/**
-	 * Working Order iteration number. Default is 0
-	 * Common use case - append as suffix to {@link description}
-	 * @var int
-	 */
-	public $work_order_iteration = 0;
-
 	public $url;
 	public $rule;
 	public $facility_id;
@@ -319,25 +312,31 @@ class MixOptimized extends Model {
 		$updateMixQuery = $this->getUpdateMixQuery();
 		$deleteProductsQuery = $this->getDeleteProductsQuery();
 
-		if ($this->products && is_array($this->products) && count($this->products) > 0) {
-			$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);
-		} else {
-			//	no sense t save mix without products
-			$this->db->rollbackTransaction();
-			return false;
+		// we can update mix without do it if this mix is work order
+		if (!isset($this->wo_id) || $this->iteration != 0) {  
+			if ($this->products && is_array($this->products) && count($this->products) > 0) {
+				$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);
+			} else {
+				//	no sense t save mix without products
+				$this->db->rollbackTransaction();
+				return false;
+			}
 		}
 
 		if(!$this->db->query($updateMixQuery)) {
 			$this->db->rollbackTransaction();
 			return false;
 		}
-		if(!$this->db->query($deleteProductsQuery)) {
-			$this->db->rollbackTransaction();
-			return false;
-		}
-		if(!$this->db->query($insertProductsQuery)) {
-			$this->db->rollbackTransaction();
-			return false;
+		// we can update mix without do it if this mix is work order
+		if (!isset($this->wo_id) || $this->iteration != 0) { 
+			if(!$this->db->query($deleteProductsQuery)) {
+				$this->db->rollbackTransaction();
+				return false;
+			}
+			if(!$this->db->query($insertProductsQuery)) {
+				$this->db->rollbackTransaction();
+				return false;
+			}
 		}
 
 		$this->db->commitTransaction();
@@ -411,7 +410,7 @@ class MixOptimized extends Model {
 
 		//	now we are saving mix products
 		// we can save mix without do it if this mix is work order
-		if (!isset($this->wo_id) || $this->wo_id != 0) { 
+		if (!isset($this->wo_id) || $this->iteration != 0) { 
 			if ($this->products && is_array($this->products) && count($this->products) > 0) {
 				$insertProductsQuery = $this->getInsertProductsQuery($mixID);
 				if (!$this->db->query($insertProductsQuery)) {
@@ -423,13 +422,6 @@ class MixOptimized extends Model {
 				$this->db->rollbackTransaction();
 				return false;
 			}
-		}
-
-		// update work order iteration
-		$updateWOQuery = $this->workOrderIteration();
-		if(!$this->db->query($updateWOQuery)) {
-			$this->db->rollbackTransaction();
-			return false;
 		}
 		
 		$this->db->commitTransaction();
@@ -1385,26 +1377,6 @@ class MixOptimized extends Model {
 
 		return $description;
 	}
-	
-	/**
-	 * Generate description for next mix. For example, work order A has description
-	 * WO-1234. Child mix B should have description WO-1234-01, nex child mix C have description WO-1234-02
-	 * @return boolean|string
-	 */
-	public function generateNextWorkOrderIterationDescription() {
-		if(!$this->mix_id) {
-			return false;
-		}
-
-		$delimeter = "-";
-		$nextIteration = $this->work_order_iteration+1;
-
-		$description = $this->description;
-
-		$description .= $delimeter.sprintf("%02d",$nextIteration);
-
-		return $description;
-	}
 
 	//	Tracking System
 	private function save2trash($CRUD, $id) {
@@ -1458,29 +1430,6 @@ class MixOptimized extends Model {
 
 		$uniqueProductIDs = array_unique($productIDs);
 		return (count($productIDs) != count($uniqueProductIDs));
-	}
-	
-	/**
-	 * update work order iteration if new mix was added
-	 * @return string 
-	 */
-	private function workOrderIteration() {
-		$query = "UPDATE " . TB_USAGE . " SET ";
-		$query .= "work_order_iteration={$this->db->sqltext($this->work_order_iteration)} ";
-		$query .= " WHERE mix_id ={$this->db->sqltext($this->wo_id)}";  
-		return $query;
-	}
-	
-	public function getMixIdByName($name) {
-		$query = "SELECT mix_id FROM " . TB_USAGE .
-				 " WHERE description = '{$this->db->sqltext($name)}'";
-		$this->db->query($query); 
-		$mixIDs = array();
-		$rows = $this->db->fetch_array;
-		foreach ($rows as $row) {
-			$mixIDs[] = $row['mix_id'];
-		}
-		return $mixIDs;
 	}
 
 }

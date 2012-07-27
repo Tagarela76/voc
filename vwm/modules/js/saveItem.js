@@ -241,6 +241,15 @@ function answer(jsonResponse) {
 			}
 		} 
 		
+		//	work order 		
+		if (document.addWorkOrder != null) {		 	
+			if (document.addWorkOrder.action.value == 'addItem') {		
+				//	go to work order list	
+
+				location.href = '?action=browseCategory&category=facility&id='+document.addWorkOrder.facility_id.value+'&bookmark=workOrder';
+			}
+		}
+		
 		//	facility 		
 		if (document.addFacility != null) {			
 			if (document.addFacility.action.value == 'addItem') {		
@@ -441,21 +450,21 @@ function addFilter2List() {
 			<div id=error_eq_filter_name_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 			</div></td>\n\
-		<td><input type='text' id='equipment_height_size_temp"+filter_index+"' name='equipment_height_size_temp"+filter_index+"' value='" +equipmentHeightSize+ "'>\n\
+		<td><input type='text' size='4' id='equipment_height_size_temp"+filter_index+"' name='equipment_height_size_temp"+filter_index+"' value='" +equipmentHeightSize+ "'>\n\
 		<div id=error_eq_filter_height_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 			</div></td>\n\
-		<td> <input type='text' id='equipment_width_size_temp"+filter_index+"' name='equipment_width_size_temp"+filter_index+"' value='" +equipmentWidthSize+ "'>\n\
+		<td> <input type='text' size='4' id='equipment_width_size_temp"+filter_index+"' name='equipment_width_size_temp"+filter_index+"' value='" +equipmentWidthSize+ "'>\n\
 		<div id=error_eq_filter_width_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 			</div></td>\n\
-		<td><input type='text' id='equipment_length_size_temp"+filter_index+"' name='equipment_length_size_temp"+filter_index+"' value='" +equipmentLengthSize+ "'>\n\
+		<td><input type='text' size='4' id='equipment_length_size_temp"+filter_index+"' name='equipment_length_size_temp"+filter_index+"' value='" +equipmentLengthSize+ "'>\n\
 		<div id=error_eq_filter_length_size_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 			</div></td>\n\
 		\n\
 		<td id=equipmentFilterType_td_temp"+filter_index+"></td>\n\
-		<td class=border_users_r><input type='text' id='equipment_filter_quantity_temp"+filter_index+"' name='equipment_filter_quantity_temp"+filter_index+"' value='" +equipmentFilterQuantity+ "'>\n\
+		<td class=border_users_r><input type='text' size='4' id='equipment_filter_quantity_temp"+filter_index+"' name='equipment_filter_quantity_temp"+filter_index+"' value='" +equipmentFilterQuantity+ "'>\n\
 		<div id=error_eq_filter_quantity_temp"+filter_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 				<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 			</div></td>\n\
@@ -557,21 +566,21 @@ function addLighting2List() {
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\
  <td id=equipmentBulbType_td_temp"+lighting_index+"></td>\n\
- <td> <input type='text' id='equipment_lighting_size_temp"+lighting_index+"' name='equipment_lighting_size_temp"+lighting_index+"' value='" +equipmentLightingSize+ "'>\n\
+ <td> <input type='text' size='4' id='equipment_lighting_size_temp"+lighting_index+"' name='equipment_lighting_size_temp"+lighting_index+"' value='" +equipmentLightingSize+ "'>\n\
 <div id=error_eq_lighting_size_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\
- <td><input type='text' id='equipment_lighting_voltage_temp"+lighting_index+"' name='equipment_lighting_voltage_temp"+lighting_index+"' value='" +equipmentLightingVoltage+ "'>\n\
+ <td><input type='text' size='4' id='equipment_lighting_voltage_temp"+lighting_index+"' name='equipment_lighting_voltage_temp"+lighting_index+"' value='" +equipmentLightingVoltage+ "'>\n\
 <div id=error_eq_lighting_voltage_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\
- <td> <input type='text' id='equipment_lighting_wattage_temp"+lighting_index+"' name='equipment_lighting_wattage_temp"+lighting_index+"' value='" +equipmentLightingWattage+ "'>\n\
+ <td> <input type='text' size='4' id='equipment_lighting_wattage_temp"+lighting_index+"' name='equipment_lighting_wattage_temp"+lighting_index+"' value='" +equipmentLightingWattage+ "'>\n\
 <div id=error_eq_lighting_wattage_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\
  <td class=border_users_r id=equipmentLightingColor_td_temp"+lighting_index+"></td>\n\
 \n\
-<td> <input type='text' id='equipment_lighting_quantity_temp"+lighting_index+"' name='equipment_lighting_quantity_temp"+lighting_index+"' value='" +equipmentLightingQuantity+ "'>\n\
+<td> <input type='text' size='4' id='equipment_lighting_quantity_temp"+lighting_index+"' name='equipment_lighting_quantity_temp"+lighting_index+"' value='" +equipmentLightingQuantity+ "'>\n\
 <div id=error_eq_lighting_quantity_temp"+lighting_index+" style='width:80px;margin:2px 0px 0px 5px; display:none;' align=left>\n\
 	<img src='design/user/img/alert1.gif' height=16  style=float:left;><font style=float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;>Error!</font>\n\
 </div></td>\n\

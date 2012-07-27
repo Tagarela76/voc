@@ -1719,13 +1719,7 @@ class CMix extends Controller {
 		
 		// this mix was added to WO , add suffix ?
 		$workOrderId = $this->getFromRequest('workOrderId');
-		if($workOrderId) {
-			$parentWorkOrder = new MixOptimized($this->db, $workOrderId); 
-			$woIteration = $parentWorkOrder->work_order_iteration + 1;
-			$data->description = $parentWorkOrder->generateNextWorkOrderIterationDescription();
-		}
-		
-		$this->smarty->assign('woIteration', $woIteration);
+
 		$this->smarty->assign('workOrderIteration', $workOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
 		$this->smarty->assign('workOrderId', $workOrderId);

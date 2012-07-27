@@ -17,3 +17,21 @@ ALTER TABLE `mix` ADD `wo_id` INT( 11 ) NULL DEFAULT NULL
 ALTER TABLE `equipment_lighting` ADD `quantity` INT( 5 ) NULL DEFAULT NULL
 
 ALTER TABLE  `mix` ADD  `work_order_iteration` TINYINT( 4 ) NOT NULL DEFAULT  '0'
+
+INSERT INTO  `voc`.`notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '48',  'Work Order Deleted'
+);
+
+INSERT INTO  `voc`.`notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '49',  'Work Order may not be deleted. He is not empty'
+);
