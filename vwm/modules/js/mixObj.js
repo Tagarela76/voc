@@ -53,10 +53,6 @@ function CMix() {
 		this.wo_id = workOrderId;
 	}
 	
-	this.setWOIteration = function(woIteration) {
-		this.work_order_iteration = woIteration;
-	}
-	
 	//Convert Wastes to JSON format sting
 	this.toJson = function() {
 		var encoded = $.toJSON(this);

@@ -181,6 +181,30 @@ class WorkOrder {
 			}
 		}
 	}
+	
+		
+	public function getMixes() {
+		
+		$query = "SELECT * FROM " . TB_USAGE .
+				 " WHERE wo_id={$this->db->sqltext($this->id)}";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$mixes = array();
+		foreach ($rows as $row) {
+			$mix = new MixOptimized($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($mix, $key)) {
+					$mix->$key = $value;
+				}
+			}
+			$mixes[] = $mix;
+		}
+		return $mixes;
+	}
 
 }
 

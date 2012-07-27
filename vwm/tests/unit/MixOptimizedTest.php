@@ -18,7 +18,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$mix->description = "WO12-020220-UPDATED";
 		$mix->save(false);
 
-		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID));
+		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID)); 
 		$this->assertTrue($wo12Mix->description == $mix->description);
 
 		//	did we lost products?

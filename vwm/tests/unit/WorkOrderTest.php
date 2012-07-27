@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class WorkOrderTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		'work_order'
+		'work_order', TB_USAGE
 	);
 
 	public function testWorkOrder() {
@@ -34,6 +34,14 @@ class WorkOrderTest extends Testing\DbTestCase {
 		$workOrder->delete();
 		$deletedWorkOrder = Phactory::get(TB_WORK_ORDER, array('number'=>"test1"));
 		$this->assertTrue(is_null($deletedWorkOrder));
+	}
+	
+	public function testGetMixes() {
+		
+		$workOrder = new WorkOrder($this->db, '1');
+		$mixes = $workOrder->getMixes();
+		
+		$this->assertTrue($mixes[0] instanceof MixOptimized);
 	}
 	
 }

@@ -145,7 +145,19 @@ class CWorkOrder extends Controller
 			
 			$workOrder = new WorkOrder($this->db, $ID); 
 			$facilityId = $workOrder->facility_id; 
-			$workOrder->delete();
+			// get work order mix id, we check if work order already has any mixes
+			$mixOptimized = new MixOptimized($this->db); 
+			$mixIDs = $workOrder->getMixes(); 
+			if (count($mixIDs) < 2) {
+				// we can delete only empty work order
+				$workOrder->delete();
+				// delete empty mix
+				$mixOptimized = new MixOptimized($this->db, $woId);
+				$mixOptimized->delete();
+			} else {
+				header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=workOrder&notify=49");
+				die();
+			}
 		}
 
 		if ($this->successDeleteInventories)
