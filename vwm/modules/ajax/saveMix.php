@@ -90,6 +90,7 @@
 
 					$productObj = new Product($db);
 					$productDetails = $productObj->getProductDetails($productID);
+                    $productDetails['isPrimary'] = $_GET['isPrimary'];
 
 					echo json_encode($productDetails);
 					break;

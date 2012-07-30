@@ -647,19 +647,13 @@ function initRecycle() {
       		url: "modules/ajax/saveMix.php",
       		type: "GET",
       		async: true,
-      		data: {"action":"getProductInfo", "productID":productID},
+      		data: {"action":"getProductInfo", "productID":productID, "isPrimary":isPrimary},
       		dataType: "html",
       		success: function (r) {
-      			tr = $("<tr>").attr({
+
+                  tr = $("<tr>").attr({
       				id:"product_row_"+productID
       			});
-
-      			if(pfp == true) {
-      				if(isPrimary != true) {
-      					tr.css('background-color',"#D7D7D7");
-      				}
-
-      			}
 
       			td1 = $("<td>");
 
@@ -676,7 +670,7 @@ function initRecycle() {
 
 
       			var resp=eval("("+r+")");
-
+                resp.isPrimary = (resp.isPrimary == 1 || resp.isPrimary == "true" || resp.isPrimary == true) ? true : false;
   				var supplier 	= resp['supplier_id'];
   				var productNR 	= resp['product_nr'];
   				var descr 		= resp['name'];
@@ -684,6 +678,13 @@ function initRecycle() {
   				tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(supplier)));
 				tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(productNR)));
 				tr.append($("<td>").attr({"class":"border_users_r border_users_b"}).append($("<span>").text(descr)));
+
+                if(pfp == true) {
+                      if(resp.isPrimary != true) {
+                          tr.css('background-color',"#D7D7D7");
+                      }
+
+                }
 
 
 				if(editForm == false && 1==2) {
@@ -698,7 +699,7 @@ function initRecycle() {
 					txQ = $("<input>").attr("type","text").attr("id","product_" + productID + "_quantity").val(quantity).numeric();
 
 					if(isPFP == true) {
-						if(isPrimary == false) {
+						if(resp.isPrimary == false) {
 							txQ.attr("disabled","disabled");
 							txQ.attr("isPrimary","false");
 						} else {
@@ -768,7 +769,7 @@ function initRecycle() {
 						calculateVOC();
 					});
 
-					if(isPFP == true && isPrimary != true) {
+					if(isPFP == true && resp.isPrimary != true) {
 						elUnittypeClass.css("display",'none');
 						elUnittypeId.css("display",'none');
 					}
@@ -784,7 +785,12 @@ function initRecycle() {
 
 					tr.append(td);
 
-					$("#addedProducts").find("tbody").append( tr );
+                    if(isPFP == true && resp.isPrimary != true) {
+                        $("#addedProducts").find("tbody").append( tr );
+                    } else {
+                        $("#addedProducts").find("tbody").prepend( tr );
+                    }
+
 
 					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), companyId, companyEx);
 

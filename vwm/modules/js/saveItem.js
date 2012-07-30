@@ -633,13 +633,9 @@ function clearSelectedFilters() {
 		id = this.value;
 		if(this.checked) {
 			rowsToRemove.push(id);
+            $("#filter_row_" + id).remove();
 		}
 	});
-
-	for ( keyVar in rowsToRemove ) {
-		id = rowsToRemove[keyVar];
-		$("#filter_row_" + id).remove();
-	}
  
 	$.ajax({
 		url: "modules/ajax/removeEquipmentProperties.php",      		
@@ -660,16 +656,12 @@ function clearSelectedLightings() {
 	var rowsToRemove = new Array();
 
 	checkboxes.each(function(i){
-		id = this.value;
+		var id = this.value;
 		if(this.checked) {
 			rowsToRemove.push(id);
+            $("#lighting_row_" + id).remove();
 		}
 	});
-	
-	for ( keyVar in rowsToRemove ) {
-		id = rowsToRemove[keyVar];
-		$("#lighting_row_" + id).remove();
-	}
 
 	$.ajax({
 		url: "modules/ajax/removeEquipmentProperties.php",      		
