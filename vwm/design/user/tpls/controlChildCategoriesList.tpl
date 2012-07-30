@@ -109,6 +109,9 @@
 										<input type="hidden" name="action" value="unassign"/>
 									{/if}
 								</div>
+                                <div class="button_float_left">
+                                    <input class="button" type="button" value="Print Blank" onclick="location.href = document.location.href.replace('#','') + '&print=true'"/>
+                                </div>
 							{/if}
 						</div>
 						{if ($childCategory != "company" && $show.reports) || ($request.category == "company")}
@@ -137,6 +140,7 @@
 							</div>
 						{/if}
 						{/if}
+                    {*/EXPORT PAGE*}
 
 							{if ($request.category == "facility" and $request.bookmark == "department" || $request.bookmark == "product")}
 								<div class="button_float_left">
@@ -152,7 +156,7 @@
 								</div>
 							{/if}
 
-							{*/EXPORT PAGE*}
+
 
 
 							{*INDICATOR*}

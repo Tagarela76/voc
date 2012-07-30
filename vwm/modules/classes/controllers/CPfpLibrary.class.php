@@ -33,6 +33,86 @@ class CPfpLibrary extends Controller {
 				? $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory)
 				: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
 
+        if($this->getFromRequest('print') == true) {
+            //	EXPORT THIS PAGE
+            $exporter = new Exporter(Exporter::PDF);
+            $exporter->company = $companyDetails['name'];
+            $exporter->facility = $facilityDetails['name'];
+            $exporter->department = $departmentDetails['name'];
+            $exporter->title = "Mixes of department " . $departmentDetails['name'];
+            if ($this->getFromRequest('searchAction') == 'search') {
+                $exporter->search_term = $this->getFromRequest('q');
+            } else {
+                $exporter->field = $filterData['filterField'];
+                $exporter->condition = $filterData['filterCondition'];
+                $exporter->value = $filterData['filterValue'];
+            }
+            $widths = array(
+                'description' => '15',
+                'ratio' => '5',
+                'mix1' => '5',
+                'mix2' => '5',
+                'mix3' => '5',
+                'mix4' => '5',
+                'mix5' => '5',
+                'mix6' => '5',
+                'mix7' => '5',
+                'mix8' => '5',
+                'mix9' => '5',
+                'mix10' => '5',
+                'mix11' => '5',
+                'mix12' => '5',
+                'workOrder' => '10',
+                'date' => '10'
+            );
+            $header = array(
+                'description' => 'PFP Description',
+                'ratio' => 'Ratio',
+                'mix1' => 'MIX-1',
+                'mix2' => 'MIX-2',
+                'mix3' => 'MIX-3',
+                'mix4' => 'MIX-4',
+                'mix5' => 'MIX-5',
+                'mix6' => 'MIX-6',
+                'mix7' => 'MIX-7',
+                'mix8' => 'MIX-8',
+                'mix9' => 'MIX-9',
+                'mix10' => 'MIX-10',
+                'mix11' => 'MIX-11',
+                'mix12' => 'MIX-12',
+                'workOrder' => 'Work Order',
+                'date' => 'Date'
+            );
+
+            $goodList = array();
+            foreach ($pfps as $pfp) {
+                $tmp = array(
+                    'description' => $pfp->getDescription(),
+                    'ratio' => $pfp->getRatio(false),
+                    'mix1' => '',
+                    'mix2' => '',
+                    'mix3' => '',
+                    'mix4' => '',
+                    'mix5' => '',
+                    'mix6' => '',
+                    'mix7' => '',
+                    'mix8' => '',
+                    'mix9' => '',
+                    'mix10' => '',
+                    'mix11' => '',
+                    'mix12' => '',
+                    'workOrder' => '',
+                    'date' => '',
+                );
+                $goodList[] = $tmp;
+            }
+
+            $exporter->setColumnsWidth($widths);
+            $exporter->setThead($header);
+            $exporter->setTbody($goodList);
+            $exporter->export();
+            return;
+        }
 		//	get list of Industry Types
 		$productTypesObj = new ProductTypes($this->db);
 		$productTypeList = $productTypesObj->getTypesWithSubTypes();
