@@ -1,1 +1,1 @@
-ALTER TABLE  `mix` DROP  `work_order_iteration`
+ALTER TABLE  `mix` DROP  `work_order_iteration`;

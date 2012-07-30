@@ -728,15 +728,18 @@ function createSelectUnittypeClass(id) {
 
 <div class="padd7" style="display:none;" id="addProductsContainer">
 <table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" >
+    <thead>
+    <tr class="users_u_top_size users_top_lightgray">
+        <td  class="border_users_l"   width="10%" > Select</td>
+        <td>Supplier</td>
+        <td>Product NR</td>
+        <td>Description</td>
+        <td>Quantity</td>
+        <td class="border_users_r">Unit type</td>
+    </tr>
+    </thead>
 <tbody>
-	<tr class="users_u_top_size users_top_lightgray">
-		<td  class="border_users_l"   width="10%" > Select</td>
-		<td>Supplier</td>
-		<td>Product NR</td>
-		<td>Description</td>
-		<td>Quantity</td>
-		<td class="border_users_r">Unit type</td>
-	</tr>
+
 </tbody>
 <tfoot>
 	<tr class="">
