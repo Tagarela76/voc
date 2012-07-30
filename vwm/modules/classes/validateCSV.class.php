@@ -343,9 +343,11 @@ class validateCSV {
 							$unitType = "GRAM";
 							break;
 						case "OUNCES": 
-						case "ounces": 	
+						case "ounces": 
+						case "OZS": 
+						case "ozs": 
 							$unitType = "OZS";
-							break;					
+							break;			
 						default:
 							$unitType = "LBS";
 							break;	
@@ -727,7 +729,8 @@ class validateCSV {
 			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
 					$data[39] != "gallon" && $data[39] != "PINT" && $data[39] != "pint" 
 					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg" 
-					&& $data[39] != "ML" && $data[39] != "ml" && $data[39] != "GRAMS" && $data[39] != "grams" && $data[39] != "OUNCES" && $data[39] != "ounces"){
+					&& $data[39] != "ML" && $data[39] != "ml" && $data[39] != "GRAMS" && $data[39] != "grams" && $data[39] != "OUNCES" && $data[39] != "ounces"
+					 && $data[39] != "OZS" && $data[39] != "ozs"){
 				$comments .= "	Unit type is undefined. Row " . $row . ".\n";
 			}
 		}
