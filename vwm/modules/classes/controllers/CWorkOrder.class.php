@@ -23,8 +23,14 @@ class CWorkOrder extends Controller {
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "workOrder");
 
+		$mixList = array();
         // get child mixes 
-        $mixList = $workOrder->getMixes();
+        $mixes = $workOrder->getMixes();
+		foreach ($mixes as $mix) {
+			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
+			$mix->price = $mixOptimized->getMixPrice();
+			$mixList[] = $mix;
+		}
         
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewWorkOrder');

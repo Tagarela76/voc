@@ -1432,25 +1432,26 @@ class MixOptimized extends Model {
 		return (count($productIDs) != count($uniqueProductIDs));
 	}
 	
-/*	public function getMixPrice() {
+	public function getMixPrice() {
 		
 		$query="SELECT pp .price, p.product_pricing as price_by_manufacturer
 				FROM mix m, mixgroup mg, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE mg.product_id = p.product_id
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
-				AND m.mix_id = {$this->db->sqltext($this->mix_id)}"; 
+				AND mg.mix_id = m.mix_id
+				AND m.mix_id = {$this->db->sqltext($this->mix_id)}";  
 		$this->db->query($query);
 		$rows = $this->db->fetch_all_array();
 		$mixPrice = 0;
 		foreach ($rows as $row){
-			if (isset($row['price'])) {
+			if (isset($row['price']) && $row['price'] != '0.00') {
 				$mixPrice += $row['price'];   // we get price by supplier
 			} else {
 				$mixPrice += $row['price_by_manufacturer'];  // we get price by manufacturer 
 			}
 		}
 		return $mixPrice;
-	}*/
+	}
 
 }

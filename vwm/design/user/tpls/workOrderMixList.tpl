@@ -18,9 +18,14 @@
                     VOC
                 </div>
             </td>
-            <td class="users_u_top_r_yellowgreen" width="15%">
+            <td class="border_users_b" width="15%">
                     <div style='width:100%;  color:white;'>
                         Creation Date
+                    </div>
+            </td>
+			<td class="users_u_top_r_yellowgreen" width="15%">
+                    <div style='width:100%;  color:white;'>
+                        Price
                     </div>
             </td>
         </tr>
@@ -47,10 +52,15 @@
                 {$mix->creation_time} &nbsp;
             </div>
         </td>
+		<td class="border_users_b border_users_r">
+            <div style="width:100%;" >
+                {$mix->price} &nbsp;
+            </div>
+        </td>
     </tr>
     {/foreach}
     <tr>
-        <td colspan="4" class="border_users_l border_users_r">
+        <td colspan="5" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -58,7 +68,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="2" height="15" class="border_users">
+        <td colspan="3" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

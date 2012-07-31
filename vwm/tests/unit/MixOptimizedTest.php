@@ -6,7 +6,7 @@ use VWM\Framework\Test as Testing;
 class MixOptimizedTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP,
+		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP, 'price4product'
 	);
 
 
@@ -23,6 +23,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 
 		//	did we lost products?
 		$this->assertTrue(count($mix->products) == 2);
+		
 		$this->assertTrue($mix->products[0] instanceof MixProduct);
 		$this->assertTrue($mix->products[0]->product_nr == '470C0191');
 
@@ -103,6 +104,14 @@ class MixOptimizedTest extends Testing\DbTestCase {
 
 		$mix->products[] = $badMixProduct;
 		$this->assertTrue($mix->doesProductsHaveDuplications() === true);
+	}
+	
+	public function testGetMixPrice() {
+		$mixID = '1';
+		$mixOptimized = new MixOptimized($this->db, $mixID);
+		$mixPrice = $mixOptimized->getMixPrice();
+		$this->assertTrue(!is_null($mixPrice));
+		$this->assertTrue($mixPrice == 11);
 	}
 
 }
