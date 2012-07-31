@@ -10,6 +10,9 @@
     {/if}
 
 	<input type='hidden' id='sort'>
+    {*PAGINATION*}
+    {include file="tpls:tpls/pagination.tpl"}
+    {*/PAGINATION*}
     <table class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">
         <tr class="users_header_blue">
             <td width="60">
@@ -93,5 +96,7 @@
 </tr>
 </table>
 </div>
-
+{*PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
 </form>	

@@ -114,7 +114,23 @@
                     {/if}
 
 
-
+                    <td>
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder">
+						 {if $request.bookmark != "workOrder"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    Work Order&nbsp;
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark">
+                                <div class="activeBookmark_right">
+                                    Work Order&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>    
 				      
                     {if $permissions.data.view}
                     <td>
@@ -133,26 +149,7 @@
                             {/if}
                         </a>
                     </td>
-                    {/if}
-						
-
-                    <td>
-                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder">
-						 {if $request.bookmark != "workOrder"}
-                            <div class="deactiveBookmark">
-                                <div class="deactiveBookmark_right">
-                                    Work Order&nbsp;
-                                </div>
-                            </div>
-                            {else}
-                            <div class="activeBookmark">
-                                <div class="activeBookmark_right">
-                                    Work Order&nbsp;
-                                </div>
-                            </div>
-                            {/if}
-                        </a>
-                    </td>
+                    {/if}    
     
                     <td width="15px">
                     </td>

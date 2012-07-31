@@ -65,4 +65,5 @@
     </table>
     <div align="right">
     </div>    
-</div>
+</div>            
+{include file="tpls:tpls/workOrderMixList.tpl"}

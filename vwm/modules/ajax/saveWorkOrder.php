@@ -42,6 +42,7 @@
 	}
 	$workOrder = new WorkOrder($db, $workOrderId);	
 	// we should save old work order number for use it in mix update
+	$workOrderOldDesc = $workOrder->number;
 	$workOrder->number = $_POST["work_order_number"];
 	$workOrder->facility_id = $_POST["id"];
 	$workOrder->description = $_POST["work_order_description"];
@@ -85,11 +86,13 @@
 			foreach ($mixIDs as $mixID) {
 				// add empty mix for each facility department
 				$mixOptimized = new MixOptimized($db, $mixID->mix_id);
-				preg_match('/-(.*)/', $mixOptimized->description, $suffix); 
-				if($suffix) {
-					$mixOptimized->description = $_POST["work_order_number"] . "-$suffix[1]"; 
-					$mixOptimized->save();
-				}
+				preg_match("/$workOrderOldDesc(.*)/", $mixOptimized->description, $suffix);  
+				
+                $mixOptimized->description = $_POST["work_order_number"];
+                if(!empty($suffix[1]) ) {
+                    $mixOptimized->description .= $suffix[1]; 
+                }
+                $mixOptimized->save(); 
 			}
 		}
 	}

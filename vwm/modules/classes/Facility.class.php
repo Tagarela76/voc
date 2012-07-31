@@ -15,12 +15,15 @@ class Facility extends FacilityProperties {
 		$this->db=$db;
 	}
 
-	public function getWorkOrdersList($facilityId) {
+	public function getWorkOrdersList($facilityId, Pagination $pagination = null) {
 		
 		$workOrders = array();
 		
 		$sql = "SELECT * FROM ". TB_WORK_ORDER. "
 				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
+        if (isset($pagination)) {
+			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}        
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
 		
@@ -38,6 +41,23 @@ class Facility extends FacilityProperties {
 			$workOrders[] = $workOrder;
 		}
 		return $workOrders;
+	}
+
+    /**
+	 * Count work order in facility
+	 * @param int $facilityID
+	 * @return bool|int false on failure
+	 */
+	public function countWorkOrderInFacility($facilityID) {
+		$sql = "SELECT count(id) workOrderCount FROM ". TB_WORK_ORDER. "
+				WHERE facility_id={$this->db->sqltext($facilityID)}"; 
+
+		$this->db->query($sql);
+		if ($this->db->num_rows() > 0) {
+			return (int)$this->db->fetch(0)->workOrderCount;
+		} else {
+			return false;
+		}
 	}
 
 
