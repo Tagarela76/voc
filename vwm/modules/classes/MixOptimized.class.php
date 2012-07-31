@@ -248,7 +248,7 @@ class MixOptimized extends Model {
 	 * Add or Edit this mix
 	 *
 	 */
-	public function save($isMWS, $mix = null) {
+	public function save($isMWS = false, $mix = null) {
 
 		//check mix products for duplication
 		if($this->doesProductsHaveDuplications()) {

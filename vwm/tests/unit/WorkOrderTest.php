@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class WorkOrderTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		'work_order', TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP,
+		TB_FACILITY, TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP, TB_WORK_ORDER
 	);
 
 	public function testWorkOrder() {
@@ -20,7 +20,7 @@ class WorkOrderTest extends Testing\DbTestCase {
 		$workOrder->number = '545-wr';
 		$workOrder->description = 'test ';
 		$workOrder->customer_name = 'nick smith';
-		$workOrder->facility_id = '100';
+		$workOrder->facility_id = '2';
 		$workOrder->status = 'new';
 		$workOrder->save();
 		

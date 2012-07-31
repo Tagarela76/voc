@@ -28,14 +28,14 @@
 	}
 	$xnyo->filter_post_var('action', 'text');
 	$action = $_POST['action'];
-	
+
 	$xnyo->filter_post_var("id", "text");
 	$xnyo->filter_post_var("work_order_number", "text");
 	$xnyo->filter_post_var("work_order_description", "text");
 	$xnyo->filter_post_var("work_order_customer_name", "text");
 	$xnyo->filter_post_var("work_order_status", "text");
 	$xnyo->filter_post_var("work_order_id", "text");
-	
+
 	$workOrderId = $_POST["work_order_id"]; // could be NULL (add action)
 	if ($workOrderId == '') {
 		$workOrderId = null;
@@ -80,7 +80,6 @@
 
 		if ($action == 'edit') {
 			// get work order mix id
-			$mixOptimized = new MixOptimized($db);  
 			$mixIDs = $workOrder->getMixes(); 
 			// now we should update child work order mix (don't touch iteration suffix)
 			foreach ($mixIDs as $mixID) {

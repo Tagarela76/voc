@@ -27,6 +27,9 @@ class PFPTest extends Testing\DbTestCase {
 
         $ratio = $pfp->getRatio();
         $this->assertTrue($ratio == "<b>1</b>:3:4");
+
+        $ratio = $pfp->getRatio(false);
+        $this->assertTrue($ratio == "1:3:4");
     }
 
 }

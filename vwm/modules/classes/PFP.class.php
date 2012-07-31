@@ -107,10 +107,10 @@ class PFP
 		return $this->description;
 	}
 
-	public function getRatio() {
+	public function getRatio($htmlFormatting = true) {
 		$res = array();
         foreach ($this->products as $product) {
-            if($product->isPrimary()){
+            if($product->isPrimary() && $htmlFormatting){
                 $res[] = "<b>".$product->getRatio()."</b>";
             } else {
                 $res[] = $product->getRatio();
