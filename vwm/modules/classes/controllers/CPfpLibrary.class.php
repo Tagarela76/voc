@@ -48,39 +48,27 @@ class CPfpLibrary extends Controller {
                 $exporter->value = $filterData['filterValue'];
             }
             $widths = array(
-                'description' => '15',
-                'ratio' => '5',
+                'description' => '40',
+                'ratio' => '10',
                 'mix1' => '5',
                 'mix2' => '5',
                 'mix3' => '5',
                 'mix4' => '5',
                 'mix5' => '5',
                 'mix6' => '5',
-                'mix7' => '5',
-                'mix8' => '5',
-                'mix9' => '5',
-                'mix10' => '5',
-                'mix11' => '5',
-                'mix12' => '5',
                 'workOrder' => '10',
                 'date' => '10'
             );
             $header = array(
                 'description' => 'PFP Description',
                 'ratio' => 'Ratio',
-                'mix1' => 'MIX-1',
-                'mix2' => 'MIX-2',
-                'mix3' => 'MIX-3',
-                'mix4' => 'MIX-4',
-                'mix5' => 'MIX-5',
-                'mix6' => 'MIX-6',
-                'mix7' => 'MIX-7',
-                'mix8' => 'MIX-8',
-                'mix9' => 'MIX-9',
-                'mix10' => 'MIX-10',
-                'mix11' => 'MIX-11',
-                'mix12' => 'MIX-12',
-                'workOrder' => 'Work Order',
+                'mix1' => 'Parts Used',
+                'mix2' => 'Parts Used',
+                'mix3' => 'Parts Used',
+                'mix4' => 'Parts Used',
+                'mix5' => 'Parts Used',
+                'mix6' => 'Parts Used',
+                'workOrder' => 'Repair Order',
                 'date' => 'Date'
             );
 
@@ -95,12 +83,6 @@ class CPfpLibrary extends Controller {
                     'mix4' => '',
                     'mix5' => '',
                     'mix6' => '',
-                    'mix7' => '',
-                    'mix8' => '',
-                    'mix9' => '',
-                    'mix10' => '',
-                    'mix11' => '',
-                    'mix12' => '',
                     'workOrder' => '',
                     'date' => '',
                 );
