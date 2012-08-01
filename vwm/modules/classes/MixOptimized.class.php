@@ -1434,23 +1434,37 @@ class MixOptimized extends Model {
 	
 	public function getMixPrice() {
 		
-		$query="SELECT pp .price, p.product_pricing as price_by_manufacturer
-				FROM mix m, mixgroup mg, product p
+		$inventoryManager = new InventoryManager($this->db);
+		$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
+				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
-				WHERE mg.product_id = p.product_id
+				WHERE m.mix_id = {$this->db->sqltext($this->mix_id)}
+				AND mg.product_id = p.product_id
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
-				AND mg.mix_id = m.mix_id
-				AND m.mix_id = {$this->db->sqltext($this->mix_id)}";  
-		$this->db->query($query);
-		$rows = $this->db->fetch_all_array();
+				AND d.department_id = m.department_id
+				AND mg.mix_id = m.mix_id";
+				
+		$this->db->query($query);		
+		$resultData = $this->db->fetch_all();
 		$mixPrice = 0;
-		foreach ($rows as $row){
-			if (isset($row['price']) && $row['price'] != '0.00') {
-				$mixPrice += $row['price'];   // we get price by supplier
-			} else {
-				$mixPrice += $row['price_by_manufacturer'];  // we get price by manufacturer 
+		$price = 0;
+		foreach ($resultData as $data) {  
+			// if supllier doesn't set price we get manufacturer price
+			if ( is_null($data->price) || $data->price == '0.00') {
+				$data->price = $data->price_by_manufacturer;
+			} 
+			// if supllier doesn't set unit type we get manufacturer unit type
+			if ( is_null($data->unittype) ) {
+				$data->unittype = $data->unit_type_by_manufacturer;
+			}
+			$unittype2price = $inventoryManager->convertUnitTypeFromTo($data); 
+
+			if ($unittype2price){
+				$price += $data->quantity_lbs * ( $data->price / $unittype2price['usage'] ); // qty (always in lbsp * price for one product unit / price for one lbsp
 			}
 		}
+		$mixPrice = number_format($price, 2, '.', '');
+		
 		return $mixPrice;
 	}
 

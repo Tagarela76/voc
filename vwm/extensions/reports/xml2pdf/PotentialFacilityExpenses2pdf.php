@@ -266,6 +266,19 @@ class XML2PDF extends PDF_MC_Table {
 				$this->curMonth = $name;
 				$this->b = true;
 				break;
+			
+			case "WORKORDERNAME":
+
+				$name = $attribs["NAME"];
+
+				$this->Ln(5);
+				$this->SetFont('Arial', 'B', 15);
+				$this->Cell(180, 7, $name, 0, 0, 'L');
+				$this->Ln();
+				$this->SetFont('Arial', '', 12);
+				$this->b = true;
+				break;
+			
 			case "MIXNAME":
 				$name = $attribs["NAME"];
 				$productCount = $attribs["PRODUCTCOUNT"];
@@ -275,9 +288,6 @@ class XML2PDF extends PDF_MC_Table {
 				$this->SetAligns($this->aligns);
 				$this->SetFillColor(200, 200, 200, 200);
 
-	//			$this->Cell($this->widths[0], 21, $name, 1, 0, 'L', true);
-				// fundament for product  
-				//$this->rows[0] = $name;
 				$this->rows[0] = 'Work Order';
 				$this->rows[1] = 'Dep Name';
 				$this->rows[2] = 'Expenses ($)';

@@ -11,14 +11,14 @@
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr class="users_top_yellowgreen users_u_top_size">
             <td class="users_u_top_yellowgreen" width="37%" height="30">
-                <span>View work order</span>
+                <span>View repair order</span>
             </td>
             <td class="users_u_top_r_yellowgreen" width="300">
             </td>
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Work order number:
+                Repair order number:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Work order description:
+                Repair order description:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
@@ -48,7 +48,7 @@
         </tr>
 		<tr>
             <td class="border_users_l border_users_b" height="20">
-                Work Order Status:
+                Repair Order Status:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">

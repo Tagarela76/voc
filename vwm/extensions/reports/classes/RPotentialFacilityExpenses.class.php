@@ -42,14 +42,15 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 					'notes' => ""
 					
 				); 				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer, m.mix_id,m.wo_id
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id in (".$facilityString.")
 				AND mg.product_id = p.product_id
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id";
+				AND mg.mix_id = m.mix_id
+				AND m.wo_id IS NOT NULL";
 				break;
 			case "facility":
 				$facility = new Facility($this->db);    				
@@ -61,14 +62,15 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 					'notes' => ""
 				); 
 				
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer, m.mix_id,m.wo_id
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.facility_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id";
+				AND mg.mix_id = m.mix_id
+				AND m.wo_id IS NOT NULL";
 
 				break;
 			case "department":
@@ -85,14 +87,15 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 					'notes' => ""
 				); 
 			
-				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
+				$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer, m.mix_id,m.wo_id
 				FROM mix m, mixgroup mg, department d, product p
 				LEFT JOIN price4product pp ON(pp.product_id=p.product_id)
 				WHERE d.department_id = ".$this->categoryID."
 				AND mg.product_id = p.product_id
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
-				AND mg.mix_id = m.mix_id";
+				AND mg.mix_id = m.mix_id
+				AND m.wo_id IS NOT NULL"; 
 				break;
 	
 		}
@@ -152,7 +155,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("Potential Facility Expenses Report") 
+			$doc->createTextNode("Paint Job Costing Report") 
 		);
 		$page->appendChild( $title );
 		
@@ -246,60 +249,79 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 				$doc->createTextNode((string)$expensesByMonth['month'])
 			);
 			$monthTag->appendChild( $monthNameTag );
-			
-			//get product list by mix
-			foreach ($expensesByMonth['data'] as $mixKey => $productsInformation) { 
 				
-				$monthMixTag = $doc->createElement( "mixName" );
-				$monthTag->appendChild( $monthMixTag );
-				$monthNameAttribute = $doc->createAttribute( "name" );
-				$monthNameAttribute->appendChild(
-					$doc->createTextNode((string)$mixKey)
+			// get mixes list by work order
+			foreach ($expensesByMonth['data'] as $workOrderKey => $mixesList) {
+				$monthMixListTag = $doc->createElement( "workOrderName" );
+				$monthTag->appendChild( $monthMixListTag );
+				$monthMixListAttribute = $doc->createAttribute( "name" );
+				$monthMixListAttribute->appendChild(
+					$doc->createTextNode((string)$workOrderKey)
 				);
-				$monthMixTag->appendChild( $monthNameAttribute );
-                                $totalExpensesByMix = 0;
-				// get product detailed information
-				$productCount = 0;				
-				foreach ($productsInformation as $productInformation) {
-					if ($productInformation['depName'] != 'none'){
-						
-						$productsTag = $doc->createElement( "products" );
-						$monthMixTag->appendChild( $productsTag );
-						
-						$producDepNametTag = $doc->createElement( "depName" );
-						$producDepNametTag->appendChild(
-							$doc->createTextNode( html_entity_decode ($productInformation['depName']))
-						);
-						$productsTag->appendChild( $producDepNametTag );
-						
-						$producExpensestTag = $doc->createElement( "expenses" );
-						$producExpensestTag->appendChild(
-						$doc->createTextNode($productInformation['potentialExpenses'])
-						);
-						$productsTag->appendChild( $producExpensestTag );
-						
-						$producProductNameTag = $doc->createElement( "productName" );
-						$producProductNameTag->appendChild(
-						$doc->createTextNode($productInformation['productName'])
-						);
-						$productsTag->appendChild( $producProductNameTag );
-                        $totalExpensesByMix += $productInformation['potentialExpenses'];
-						$productCount++;
+				$monthMixListTag->appendChild( $monthMixListAttribute );
+				$mixCount = 0;	
+				//get product list by mix
+				foreach ($mixesList as $mixKey => $productsInformation) { 
+
+					$monthMixTag = $doc->createElement( "mixName" );
+					$monthMixListTag->appendChild( $monthMixTag );
+					$monthNameAttribute = $doc->createAttribute( "name" );
+					$monthNameAttribute->appendChild(
+						$doc->createTextNode((string)$mixKey)
+					);
+					$monthMixTag->appendChild( $monthNameAttribute );
+					$totalExpensesByMix = 0;
+					// get product detailed information
+					$productCount = 0;				
+					foreach ($productsInformation as $productInformation) {
+						if ($productInformation['depName'] != 'none'){
+
+							$productsTag = $doc->createElement( "products" );
+							$monthMixTag->appendChild( $productsTag );
+
+							$producDepNametTag = $doc->createElement( "depName" );
+							$producDepNametTag->appendChild(
+								$doc->createTextNode( html_entity_decode ($productInformation['depName']))
+							);
+							$productsTag->appendChild( $producDepNametTag );
+
+							$producExpensestTag = $doc->createElement( "expenses" );
+							$producExpensestTag->appendChild(
+							$doc->createTextNode($productInformation['potentialExpenses'])
+							);
+							$productsTag->appendChild( $producExpensestTag );
+
+							$producProductNameTag = $doc->createElement( "productName" );
+							$producProductNameTag->appendChild(
+							$doc->createTextNode($productInformation['productName'])
+							);
+							$productsTag->appendChild( $producProductNameTag );
+							$totalExpensesByMix += $productInformation['potentialExpenses'];
+							$productCount++;
+						}
 					}
+					$totalExpensesByMixTag = $doc->createElement( "totalExpensesByMix" );
+					$totalExpensesByMixTag->appendChild(
+					$doc->createTextNode($totalExpensesByMix)
+					);
+					$monthMixTag->appendChild( $totalExpensesByMixTag );
+
+					$productCountTag = $doc->createAttribute( "productCount" );
+					$productCountTag->appendChild(
+					$doc->createTextNode($productCount)
+					);
+					$monthMixTag->appendChild( $productCountTag );
+					
+					$mixCount += $productCount;
 				}
-				$totalExpensesByMixTag = $doc->createElement( "totalExpensesByMix" );
-				$totalExpensesByMixTag->appendChild(
-				$doc->createTextNode($totalExpensesByMix)
-				);
-				$monthMixTag->appendChild( $totalExpensesByMixTag );
 				
-				$productCountTag = $doc->createAttribute( "productCount" );
-				$productCountTag->appendChild(
-				$doc->createTextNode($productCount)
+				$mixCountTag = $doc->createAttribute( "mixCount" );
+				$mixCountTag->appendChild(
+					$doc->createTextNode($mixCount)
 				);
-				$monthMixTag->appendChild( $productCountTag );
-			//	var_dump($mixKey, $expensesByRule); die();
+				$monthMixListTag->appendChild( $mixCountTag );
 			}
+				
 			$totalTag = $doc->createElement( "total" );
 			$totalTag->appendChild(
 				$doc->createTextNode($expensesByMonth['total'])
@@ -323,7 +345,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 						'depName' => 'none',
 						'potentialExpenses' => 'none',
 						'mixName' => 'none',
-						'products' => 'none',
+						'productName' => 'none',
 		);
 	
 
@@ -374,6 +396,8 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			$res = array();
 			$mixArray = array();
 			$productList = array();
+			$workOrderList = array();
+			$workOrderIdsArray = array();
 			
 			$potentialExpenses = array();
 
@@ -408,6 +432,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 						'potentialExpenses' => number_format($price, 2, '.', ''),
 						'mixName' => $data->description,
 						'productName' => $data->product_nr,
+						'woId'	=>	$data->wo_id,
 					);
 
 					$results[] = $res; 
@@ -416,12 +441,22 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 				$res = $emptyData;
 				$results[] = $res;
 			} 
+			
+			// get mix name array
 			foreach ($results as $result) {
 				if (!in_array($result['mixName'], $mixArray)) {
 					$mixArray[] = $result['mixName'];
 				}
 			}
+			
+			// get work order id's array
+			foreach ($results as $result) {
+				if (!in_array($result['woId'], $workOrderIdsArray)) {
+					$workOrderIdsArray[] = $result['woId'];
+				}
+			}
 
+			// group products by mixes
 			foreach ($mixArray as $mix) {
 				foreach ($results as $result) {
 					if ($result['mixName'] == $mix) {
@@ -429,7 +464,17 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 					}
 				}
 			}
-
+	
+			// group mixes by work order		
+			foreach ($workOrderIdsArray as $woId) {
+				$workOrder = new WorkOrder($this->db, $woId);
+				foreach ($productList as $mixName => $result) { 
+						if ($result[0]['woId'] == $woId) {
+							$workOrderList[$workOrder->number][$mixName] = $result;
+						}
+				}
+			}
+//print_r($workOrderList);	
 			foreach($potentialExpenses as $sum){
 				$total += $sum;
 			}
@@ -438,7 +483,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
-				'data' => $productList,
+				'data' => $workOrderList,
 				'total' => $total
 			);
 		
@@ -450,12 +495,12 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			if ($dateBeginObj == $dateEndObj) {
 				break;
 			} 
-		}
+		} 	
 		$totalResults = array(
 			'total' => $fullTotalMix,
 			'data' => $resultByMonth
 		); 
-	
+//die();
 		return $totalResults;			
 	}
 		

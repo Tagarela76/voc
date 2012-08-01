@@ -82,7 +82,7 @@
 	{*BEGIN	EMPTY LIST*}
 	<tr>
 		<td colspan="4"class="border_users_l border_users_r" align="center">
-			No work orders in the list
+			No repair orders in the list
 		</td>
 	</tr>
 	{*END	EMPTY LIST*}

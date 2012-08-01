@@ -54,7 +54,7 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div style="width:100%;" >
-                {$mix->price} &nbsp;
+                $ {$mix->price} &nbsp;
             </div>
         </td>
     </tr>

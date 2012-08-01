@@ -111,7 +111,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$mixOptimized = new MixOptimized($this->db, $mixID);
 		$mixPrice = $mixOptimized->getMixPrice();
 		$this->assertTrue(!is_null($mixPrice));
-		$this->assertTrue($mixPrice == 11);
+		$this->assertTrue($mixPrice == 195.74);
 	}
 
 }
