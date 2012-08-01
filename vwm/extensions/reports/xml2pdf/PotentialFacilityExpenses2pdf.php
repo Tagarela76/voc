@@ -280,25 +280,36 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 			
 			case "MIXNAME":
+
 				$name = $attribs["NAME"];
-				$productCount = $attribs["PRODUCTCOUNT"];
-				$this->widths = array(45, 45, 45, 50);
+				$mixCount = $attribs["MIXCOUNT"];
+				$this->widths = array(45, 45, 45, 45, 45);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C');
 				$this->SetAligns($this->aligns);
 				$this->SetFillColor(200, 200, 200, 200);
 
 				$this->rows[0] = 'Work Order';
-				$this->rows[1] = 'Dep Name';
-				$this->rows[2] = 'Expenses ($)';
-				$this->rows[3] = 'Product Name';
+				$this->rows[1] = 'Mix';
+				$this->rows[2] = 'Dep Name';
+				$this->rows[3] = 'Expenses ($)';
+				$this->rows[4] = 'Product Name';
 				
-			//	$this->Cell($this->widths[0], 7*($productCount +1), $this->rows[0], 1, 0, 'L', true);
-				
-				for ($i = 0; $i < 4; $i++) {
+				for ($i = 0; $i < 5; $i++) {
 					$this->Cell($this->widths[$i], 7, $this->rows[$i], 1, 0, 'L', true);
 				}
 				$this->Ln();
+				$this->SetFont('Arial', '', 10);
+				$this->Cell($this->widths[0], (7*($mixCount) + 17), $name, 1, 0, 'L', true);				
+	
+				break;
+				
+			case "MIXNAME":
+				
+				$name = $attribs["NAME"];
+				$productCount = $attribs["PRODUCTCOUNT"];
+				
+			//	$this->Ln();
 				$this->SetFont('Arial', '', 10);
 				$this->Cell($this->widths[0], 7*($productCount), $name, 1, 0, 'L', false);
 				break;
@@ -327,7 +338,7 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 			case "YEAR":
 				break;
-
+				
 			case "PRODUCTS":
 				$this->SetFont('Arial', '', 10);
 				//	print row
@@ -336,7 +347,7 @@ class XML2PDF extends PDF_MC_Table {
 					$this->Cell($this->widths[$i], 7, $this->rows[$i], 1, 0, 'L', false);
 				}
 				$this->Ln();
-				$this->Cell(45);
+				$this->Cell(90);
 				$this->rows = array();
 				break;
 
@@ -363,13 +374,18 @@ class XML2PDF extends PDF_MC_Table {
 
 				$this->SetFont('Arial', '', 12);
 				$this->Ln(2);
-				$this->Cell(90);
+				$this->Cell(135);
 				$this->Cell($this->widths[0], 7, "Total for Mix:  ", 1, 0, 'C');
 				$this->Cell($this->widths[3], 7, "$" . $this->header['TOTALEXPENSESBYMIX'], 1, 0, 'C');
 				$this->Ln();
 				break;
 
 			case "MIXNAME":
+				$this->Ln();
+				$this->Cell(45);
+				break;
+			
+			case "WORKORDERNAME":
 				$this->Ln();
 				break;
 		}

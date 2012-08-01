@@ -116,7 +116,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 		
 		$pageOrientation = $doc->createAttribute("orientation");
 		$pageOrientation->appendChild(
-			$doc->createTextNode("0")
+			$doc->createTextNode("1")
 		);
 		$page->appendChild($pageOrientation);
 		
@@ -346,6 +346,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 						'potentialExpenses' => 'none',
 						'mixName' => 'none',
 						'productName' => 'none',
+
 		);
 	
 
