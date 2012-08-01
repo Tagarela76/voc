@@ -346,7 +346,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 						'potentialExpenses' => 'none',
 						'mixName' => 'none',
 						'productName' => 'none',
-						'woId'	=>	'none',
+
 		);
 	
 

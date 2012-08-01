@@ -268,6 +268,19 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 			
 			case "WORKORDERNAME":
+
+				$name = $attribs["NAME"];
+
+				$this->Ln(5);
+				$this->SetFont('Arial', 'B', 15);
+				$this->Cell(180, 7, $name, 0, 0, 'L');
+				$this->Ln();
+				$this->SetFont('Arial', '', 12);
+				$this->b = true;
+				break;
+			
+			case "MIXNAME":
+
 				$name = $attribs["NAME"];
 				$mixCount = $attribs["MIXCOUNT"];
 				$this->widths = array(45, 45, 45, 45, 45);
