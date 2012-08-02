@@ -14,7 +14,7 @@
         </tr>
         <tr>
             <td class="report_issue_center" align="center" style="vertical-align: middle;">
-                <h2>Dashboard</h2>
+                <h2>LKQ Dashboard</h2>
             </td>
         </tr>
         <tr>

@@ -11,22 +11,12 @@
 						</ul>
 					</div>
 				</div>
-				
-				<div align="left" width="100%"  class="{if $parent == 'forms'}left_m_active {else} left_m{/if}">
-					<div align="left" width="100%">
-						<ul class="link">
-							<li>
-								<a href="sales.php?action=browseCategory&category=forms&bookmark=userRequest" class="id_company">Forms</a>
-							</li>
-						</ul>
-					</div>
-				</div>
 
 				<div align="left" width="100%"  class="{if $parent == 'contracts'}left_m_active {else} left_m{/if}" >
 					<div align="left" width="100%">
 						<ul class="link">
 							<li>
-								<a href="sales.php?action=browseCategory&category=contracts" class="id_company">Contracts</a>
+								<a href="sales.php?action=browseCategory&category=contracts" class="id_company">Marketing</a>
 							</li>
 						</ul>
 					</div>
@@ -41,12 +31,22 @@
 						</ul>
 					</div>
 				</div>
-					
+				
+				<div align="left" width="100%"  class="{if $parent == 'forms'}left_m_active {else} left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+							<li>
+								<a href="sales.php?action=browseCategory&category=forms&bookmark=userRequest" class="id_company">New Customer Setup Form</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
 				<div align="left" width="100%"  class="{if $parent == 'salescontacts'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
 						<li>
-							<a href="sales.php?action=browseCategory&category=salescontacts&bookmark=contacts" class="id_company">Sales</a>
+							<a href="sales.php?action=browseCategory&category=salescontacts&bookmark=contacts" class="id_company">My Contacts</a>
 						</li>
 						</ul>
 					</div>
