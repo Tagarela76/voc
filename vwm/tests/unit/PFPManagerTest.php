@@ -25,5 +25,17 @@ class PFPManagerTest extends Testing\DbTestCase {
         $this->assertTrue($productsTwo[1]->isPrimary() === false);
 
     }
+	
+	public function testDeletePFP() {
+		$manager = new PFPManager($this->db);
+		$pfp = $manager->getPFP('1');
+		$this->assertTrue($pfp instanceof PFP);
+		
+		$manager->unassignPFPFromCompanies('1');
+		$manager->remove($pfp);
+		
+		$pfp = $manager->getPFP('1');
+		$this->assertTrue(is_null($pfp->getId()));
+	}
 
 }

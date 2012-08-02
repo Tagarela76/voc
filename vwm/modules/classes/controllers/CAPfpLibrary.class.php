@@ -346,35 +346,44 @@ class CAPfpLibrary extends Controller {
 		$manager = new PFPManager($this->db);
 		$idArray = is_array($this->getFromRequest("id")) ? $this->getFromRequest("id") : array($this->getFromRequest("id"));
 
-		$pfps = $manager->getList(null, null, $idArray);
+	//	$pfps = $manager->getList(null, null, $idArray);
 
 		$this->smarty->assign("cancelUrl", "admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=" . $this->getFromRequest('subBookmark') . "&letterpage=" . $this->getFromRequest('letterpage') . "&productCategory=" . $this->getFromRequest("productCategory") . "");
 
-		foreach ($pfps as $p) {
+	/*	foreach ($pfps as $p) {
 			$delete["id"] = $p->getId();
 			$delete["name"] = $p->getDescription();
 			$itemForDelete[] = $delete;
+		}*/
+		$itemForDelete = array();
+		foreach ($idArray as $id) {
+			$pfp = $manager->getPFP($id); 
+			$delete["id"] = $id;
+			$delete["name"] = $pfp->getDescription();
+			$itemForDelete[] = $delete;
 		}
-		//var_dump($itemForDelete); die();
+		
 		$this->smarty->assign("gobackAction", "browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
 
 	private function actionConfirmDelete() {
+		
+		$itemIDs = array();
 		$itemsCount = $this->getFromRequest('itemsCount');
 		for ($i = 0; $i < $itemsCount; $i++) {
 			$id = $this->getFromRequest('item_' . $i);
-			$itemID[] = $id;
+			$itemIDs[] = $id;
 		}
 
 		$manager = new PFPManager($this->db);
-		$pfpList = $manager->getList(null, null, $itemID);
-		$i = 0;
-		while ($itemID[$i]) {
-			$manager->unassignPFPFromCompanies($itemID[$i]);
-			$i++;
-		}
-		$manager->removeList($pfpList);
+
+		foreach ($itemIDs as $itemID) {
+			$manager->unassignPFPFromCompanies($itemID);
+			$pfp = $manager->getPFP($itemID);
+			$manager->remove($pfp);
+		}		
+		
 		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=" . $this->getFromRequest('subBookmark') . "&letterpage=" . $this->getFromRequest('letterpage') . "&productCategory=" . $this->getFromRequest("productCategory") . "");
 		die();
 	}

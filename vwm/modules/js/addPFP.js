@@ -107,13 +107,13 @@ function isValid() {
 
 	productCount = parseInt($("#productCount").val());
 
-	if(productCount < 2) {
+	if(productCount < 1) {
 		valid = false;
-		errors.push("Error! Products count less than 2!");
+		errors.push("Error! Products count less than 1!");
 		//products_error
 
 		$("#products_error").css("display",'inline').css("float",'right');
-		$("#products_error span").text("Error! Products count less than 2!");
+		$("#products_error span").text("Error! Products count less than 1!");
 	}
 
 	if($("input[name='pfp_primary']").filter(":checked").length == 0) {
@@ -212,8 +212,8 @@ function clearSelectedProducts() {
 	rowsToRemove.reverse();
 
 
-	productCount = $("#productCount").val();
-
+	var productCount = $("#productCount").val();
+	var productRemoveCount = rowsToRemove.length;
 	for ( keyVar in rowsToRemove ) {
 		num = rowsToRemove[keyVar];
 
@@ -225,7 +225,7 @@ function clearSelectedProducts() {
 			moveProductsRow(num, productCount);
 		}
 
-		productCount--;
+	//	productCount--;
 
 
 		//product_row_2
@@ -235,6 +235,8 @@ function clearSelectedProducts() {
 		$(target_id).attr('id',need_id);
 	}
 	if(productCount == -1) productCount = 0;
+	productCount = productCount - productRemoveCount;
+	
 	$("#productCount").val(productCount);
 }
 
