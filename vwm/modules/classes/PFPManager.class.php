@@ -799,6 +799,36 @@ class PFPManager {
 		return implode(', ', $tables);
 	}
 
+	public function isPFPsProductsAssign2Company($pfpId, $companyId) {
+		
+		//  get all pfp products
+		$query = "SELECT product_id FROM " . TB_PFP2PRODUCT . "
+				WHERE preformulated_products_id = {$this->db->sqltext($pfpId)}";
+		$this->db->query($query);
+		$pfpProducts = array();
+		$rows = $this->db->fetch_all_array();
+		foreach ($rows as $row) {
+			$pfpProducts[] = $row['product_id'];
+		}
+		// get all assign to company products
+		$query = "SELECT product_id FROM " . TB_PRODUCT2COMPANY . "
+				WHERE company_id = {$this->db->sqltext($companyId)}";		
+		$this->db->query($query);
+		$companyAssignProducts = array();
+		$rows = $this->db->fetch_all_array();
+		foreach ($rows as $row) {
+			$companyAssignProducts[] = $row['product_id'];
+		}
+
+		// check if all pfps products assign to company
+		$pfpProductsIsAssign = true; // flag
+		foreach ($pfpProducts as $pfpProduct) {
+			if  (!in_array($pfpProduct, $companyAssignProducts)) {
+				$pfpProductsIsAssign = false;
+			}
+		}
+		return $pfpProductsIsAssign; 
+	}
 }
 
 ?>

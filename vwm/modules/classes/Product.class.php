@@ -1314,6 +1314,54 @@ class Product extends ProductProperties {
 		array_push($tables, TB_PRODUCT . " p");
 		return implode(', ', $tables);
 	}
+	
+	/**
+	 * method for getting all assign pfps which contain this product
+	 * @param int $productId
+	 * @return array 
+	 */
+	public function getAssign2CompanyPFPListByProduct($productId) {
+		
+		$query = "SELECT preformulated_products_id FROM
+				" . TB_PFP2PRODUCT . " WHERE product_id = {$this->db->sqltext($productId)}
+				 AND preformulated_products_id IN (
+						SELECT pfp_id FROM " . TB_PFP2COMPANY . "
+						WHERE is_assigned = 1 
+						AND is_available = 1
+						AND company_id != 0)";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all();
+		$pfpList = array();
+		foreach ($rows as $row) {
+			$pfpList[] = $row->preformulated_products_id;
+		}
+			
+		return $pfpList;
+	}
+	
+	/**
+	 * method for getting all unassign pfps which contain this product
+	 * @param int $productId
+	 * @return array 
+	 */
+	public function getUnassign2CompanyPFPListByProduct($productId) {
+		
+		$query = "SELECT preformulated_products_id FROM
+				" . TB_PFP2PRODUCT . " WHERE product_id = {$this->db->sqltext($productId)}
+				AND preformulated_products_id NOT IN (
+						SELECT pfp_id FROM " . TB_PFP2COMPANY . "
+						WHERE is_assigned = 1 
+						AND is_available = 1
+						AND company_id != 0)";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all();
+		$pfpList = array();
+		foreach ($rows as $row) {
+			$pfpList[] = $row->preformulated_products_id;
+		}
+			
+		return $pfpList;
+	}
 
 }
 
