@@ -5,7 +5,16 @@ if [ ! -d "$DIRECTORY" ]; then
 	exit 0
 fi
 
-rsync -rzvp --exclude "*.tpl.php" --exclude ".svn" --exclude ".git" --exclude "vwm/migrations/" --exclude "vwm/tests/" --exclude "tmp/*" --exclude "config" --inplace ./vwm/* root@jon.vocwebmanager.com:/home/jonvo0/public_html/vocwebmanager.com/vwm/;
+rsync -rzvp \
+--exclude "*.tpl.php" \
+--exclude ".svn" \
+--exclude ".git" \
+--exclude "vwm/migrations/" \
+--exclude "vwm/tests/" \
+--exclude "tmp/*" \
+--exclude "config" \
+--exclude "vwm/modules/phpgacl/" \
+--inplace ./vwm/* root@jon.vocwebmanager.com:/home/jonvo0/public_html/vocwebmanager.com/vwm/;
 
 echo "Sync is done"
 exit 0
