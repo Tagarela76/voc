@@ -279,6 +279,8 @@ define('TB_NEW_PRODUCT_REQUEST','new_product_request');
 define('TB_USER_REQUEST', 'user_request');
 define('TB_COMPANY_SETUP_REQUEST', 'company_setup_request');
 
+define('TB_PRODUCT2COMPANY', 'product2company');
+
 // equipment tables
 define ('TB_EQUIPMENT_FILTER', 'equipment_filter');
 define ('TB_EQUIPMENT_FILTER_TYPE', 'equipment_filter_type');

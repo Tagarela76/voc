@@ -22,7 +22,8 @@ class CAProduct extends Controller {
 		$suppl = new BookmarksManager($this->db);
 		$manager = new PFPManager($this->db);
 		$paginationabc = new Paginationabc(1300);
-
+		$manager = new PFPManager($this->db);
+		
 		$paginationabc->url = "?action=browseCategory&category=product";
 		$this->smarty->assign("abctabs",$abc);
 		$this->smarty->assign('paginationabc', $paginationabc);
@@ -59,8 +60,30 @@ class CAProduct extends Controller {
 					$productID = $this->getFromRequest('item_'.$i);
 					if ($subaction == "Assign to company") {
 						$product->assignProduct2Company($productID, $companyID);
+						
+						/* assign pfp to company*/
+						
+						// get all unassign pfp list with this product
+						$pfpListByProduct = $product->getUnassign2CompanyPFPListByProduct($productID); 
+						foreach ($pfpListByProduct as $pfpId) {
+							// checking if this pfp's products assign to company
+							$isPFPsProductsAssign2Company = $manager->isPFPsProductsAssign2Company($pfpId, $companyID);
+							if ($isPFPsProductsAssign2Company) {
+								$manager->assignPFP2Company($pfpId, $companyID);
+							}
+							
+						}
+
 					} elseif ($subaction == "Unassign product(s)") {
 						$product->unassignProductFromCompany($productID, $companyID);
+					
+						/*unassign pfp*/
+						// get all assign pfp list with this product
+						$pfpListByProduct = $product->getAssign2CompanyPFPListByProduct($productID); 
+						foreach ($pfpListByProduct as $pfpId) {
+							$manager->unassignPFPFromCompany($pfpID, $companyID) ;
+						}
+						
 					} elseif ($subaction == "Assign to facility") {
 						$product->assignProduct2Facility($productID, $companyID, $facilityID);
 					} elseif ($subaction == "Unassign product(s) from facility") {

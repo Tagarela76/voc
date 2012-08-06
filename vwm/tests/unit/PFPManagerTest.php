@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class PFPManagerTest extends Testing\DbTestCase {
 
     protected $fixtures = array(
-        TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP, TB_PFP2PRODUCT, TB_PFP2COMPANY
+        TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP, TB_PFP2PRODUCT, TB_PFP2COMPANY, TB_PRODUCT2COMPANY
     );
 
 
@@ -36,6 +36,15 @@ class PFPManagerTest extends Testing\DbTestCase {
 		
 		$pfp = $manager->getPFP('1');
 		$this->assertTrue(is_null($pfp->getId()));
+	}
+	
+	public function testIsPFPsProductsAssign2Company() {
+		
+		$manager = new PFPManager($this->db);
+		$pfpId = '1';
+		$companyId = '1';
+		$isPFPsProductsIsAssign2Company = $manager->isPFPsProductsAssign2Company($pfpId, $companyId);
+		$this->assertTrue($isPFPsProductsIsAssign2Company == true);
 	}
 
 }
