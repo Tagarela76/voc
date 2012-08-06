@@ -64,12 +64,13 @@ class CAProduct extends Controller {
 						/* assign pfp to company*/
 						
 						// get all unassign pfp list with this product
-						$pfpListByProduct = $product->getUnassign2CompanyPFPListByProduct($productID); 
-						foreach ($pfpListByProduct as $pfpId) {
+						$pfpListByProduct = $product->getUnavailable2CompanyPFPListByProduct($productID, $companyID);
+
+						foreach ($pfpListByProduct as $pfpID) {
 							// checking if this pfp's products assign to company
-							$isPFPsProductsAssign2Company = $manager->isPFPsProductsAssign2Company($pfpId, $companyID);
+							$isPFPsProductsAssign2Company = $manager->isPFPsProductsAssign2Company($pfpID, $companyID);
 							if ($isPFPsProductsAssign2Company) {
-								$manager->assignPFP2Company($pfpId, $companyID);
+								$manager->availablePFP2Company($pfpID, $companyID);
 							}
 							
 						}
@@ -79,9 +80,9 @@ class CAProduct extends Controller {
 					
 						/*unassign pfp*/
 						// get all assign pfp list with this product
-						$pfpListByProduct = $product->getAssign2CompanyPFPListByProduct($productID); 
-						foreach ($pfpListByProduct as $pfpId) {
-							$manager->unassignPFPFromCompany($pfpID, $companyID) ;
+						$pfpListByProduct = $product->getAvailable2CompanyPFPListByProduct($productID, $companyID);
+						foreach ($pfpListByProduct as $pfpID) {
+							$manager->unavailablePFPFromCompany($pfpID, $companyID) ;
 						}
 						
 					} elseif ($subaction == "Assign to facility") {

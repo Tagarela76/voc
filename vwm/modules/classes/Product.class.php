@@ -1318,17 +1318,18 @@ class Product extends ProductProperties {
 	/**
 	 * method for getting all assign pfps which contain this product
 	 * @param int $productId
+     * @param int $companyId
 	 * @return array 
 	 */
-	public function getAssign2CompanyPFPListByProduct($productId) {
+	public function getAvailable2CompanyPFPListByProduct($productId, $companyId) {
 		
-		$query = "SELECT preformulated_products_id FROM
-				" . TB_PFP2PRODUCT . " WHERE product_id = {$this->db->sqltext($productId)}
-				 AND preformulated_products_id IN (
-						SELECT pfp_id FROM " . TB_PFP2COMPANY . "
-						WHERE is_assigned = 1 
-						AND is_available = 1
-						AND company_id != 0)";
+		$query = "SELECT preformulated_products_id " .
+		         " FROM " . TB_PFP2PRODUCT . " " .
+                 " WHERE product_id = {$this->db->sqltext($productId)} " .
+				 " AND preformulated_products_id IN ( " .
+						" SELECT pfp_id FROM " . TB_PFP2COMPANY . " " .
+						" WHERE is_available = 1 " .
+						" AND company_id = {$this->db->sqltext($companyId)})";
 		$this->db->query($query);
 		$rows = $this->db->fetch_all();
 		$pfpList = array();
@@ -1342,17 +1343,18 @@ class Product extends ProductProperties {
 	/**
 	 * method for getting all unassign pfps which contain this product
 	 * @param int $productId
+     * @param int $compantId
 	 * @return array 
 	 */
-	public function getUnassign2CompanyPFPListByProduct($productId) {
+	public function getUnavailable2CompanyPFPListByProduct($productId, $companyId) {
 		
-		$query = "SELECT preformulated_products_id FROM
-				" . TB_PFP2PRODUCT . " WHERE product_id = {$this->db->sqltext($productId)}
-				AND preformulated_products_id NOT IN (
-						SELECT pfp_id FROM " . TB_PFP2COMPANY . "
-						WHERE is_assigned = 1 
-						AND is_available = 1
-						AND company_id != 0)";
+		$query = "SELECT preformulated_products_id " .
+		        " FROM ". TB_PFP2PRODUCT . " " .
+                " WHERE product_id = {$this->db->sqltext($productId)} " .
+				" AND preformulated_products_id NOT IN ( " .
+						" SELECT pfp_id FROM " . TB_PFP2COMPANY . " " .
+						" WHERE is_available = 1 " .
+						" AND company_id = {$this->db->sqltext($companyId)})";
 		$this->db->query($query);
 		$rows = $this->db->fetch_all();
 		$pfpList = array();
