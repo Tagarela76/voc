@@ -6,6 +6,9 @@ class Controller {
 	 * @var Smarty
 	 */
     protected $smarty;
+    /**
+     * @var xnyo
+     */
     protected $xnyo;
     /**
      *

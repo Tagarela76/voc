@@ -17,6 +17,11 @@ class VOCApp {
 	private $date_format;
 	private $date_format_js;
 
+    /**
+     * @var User
+     */
+    private $user;
+
 	/**
 	 * @var VWM\Framework\Cache\Cache
 	 */
@@ -151,6 +156,22 @@ class VOCApp {
 			return $res;
 		}
 	}
+
+    /**
+     * @param \User $user
+     */
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return \User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
 }
 

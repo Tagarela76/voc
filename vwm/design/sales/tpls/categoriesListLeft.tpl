@@ -42,6 +42,26 @@
 					</div>
 				</div>
 
+				<div align="left" width="100%"  class="{if $parent == 'training'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+							<li>
+								<a href="sales.php?action=browseCategory&category=contracts" class="id_company">Training</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div align="left" width="100%"  class="{if $parent == 'liveDemo'}left_m_active{else}left_m{/if}">
+					<div align="left" width="100%">
+						<ul class="link">
+							<li>
+								<a href="index.php?action=browseCategory&category=facility&id=118&bookmark=department" class="id_company">Live Demo</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
 				<div align="left" width="100%"  class="{if $parent == 'salescontacts'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">

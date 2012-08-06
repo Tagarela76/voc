@@ -75,6 +75,7 @@ try {
 			}
 
 			$user = new User($db, $xnyo, $access, $auth);
+            VOCApp::get_instance()->setUser($user);
 
 
 			if (!($user->isLoggedIn()) && !($_POST["action"] == 'auth' || $_POST["action"] == "msdsUploaderMain")) {
@@ -235,6 +236,7 @@ try {
 
 		//$smarty->assign("action", $_GET["action"]);
 		$user = new User($db, $xnyo, $access, $auth);
+        VOCApp::get_instance()->setUser($user);
 
 		// Filter for free access to class
 		if (!$user->isLoggedIn() && $_GET["action"] != 'auth'

@@ -33,5 +33,12 @@ class CSCommon extends Controller {
 			$this->smarty->display("tpls:stats.tpl");	
 		}
 	}
+
+    private function actionRemoteAuth() {
+        //  set custom auth type
+        $this->xnyo->auth_type = 'vwm_token';
+        VOCApp::get_instance()->getUser()->auth->login(145,'9cd625db4c635d9596a0688e707bc202');
+        var_dump($this->xnyo->user);
+    }
 }
 ?>
