@@ -1,36 +1,45 @@
 <?php
 class CASalesdocs extends Controller {
-	
+
 	function CASalesdocs($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='salesdocs';
-		$this->parent_category='salesdocs';		
+		$this->parent_category='salesdocs';
 	}
-	
+
 	function runAction() {
 		$this->runCommon('admin');
-		$functionName='action'.ucfirst($this->action);	
-			
-		if (method_exists($this,$functionName))			
-			$this->$functionName();		
+		$functionName='action'.ucfirst($this->action);
+
+		if (method_exists($this,$functionName))
+			$this->$functionName();
 	}
-	
+
 	private function actionBrowseCategory() {
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		$mDocs = new $moduleMap['docs'];
 
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
+
 		$params = array(
 			'db' => $this->db,
 			'isSales' => 'yes',
-			'salesID' => '1'
+			'salesID' => $salesDocsCategory
 		);
 		$result = $mDocs->prepareView($params);
-		
+
 		foreach($result as $key => $data) {
 			$this->smarty->assign($key,$data);
 		}
-		
+
+		$docCategories = DocContainerItem::getSalesDocsCategories();
+		$this->smarty->assign('docCategories',$docCategories);
+
 		if ($result['InfoTree'] == 0){
 			$itemsCount = 0;
 		} else {
@@ -40,11 +49,18 @@ class CASalesdocs extends Controller {
 		$this->smarty->assign('tpl', 'tpls/salesdocs.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
+
 	private function actionAddItem()
 	{
+
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
+
 		$request= $this->getFromRequest();
-		$request['id'] = '1';
+		$request['id'] = $salesDocsCategory;
 		$request['parent_category'] = 'sales';
 
 		$ms = new ModuleSystem($this->db);
@@ -56,7 +72,7 @@ class CASalesdocs extends Controller {
 			$params = $this->getFromPost();
 			$params['db'] = $this->db;
 			$params['isSales'] = 'yes';
-			$params['salesID'] = '1';
+			$params['salesID'] = $salesDocsCategory;
 			$result = $mDocs->prepareAdd($params);
 
 			foreach($result as $key => $data)
@@ -74,14 +90,14 @@ class CASalesdocs extends Controller {
 		$params = array(
 						'db' => $this->db,
 						'isSales' => 'yes',
-						'salesID' => '1'
+						'salesID' => $salesDocsCategory
 						);
 		$result = $mDocs->prepareView($params);
 		foreach($result as $key => $data)
 		{
 			$this->smarty->assign($key,$data);
 		}
-		
+
 		//	set js scripts
 		$jsSources = array(
 							'modules/js/addDocItem.js',
@@ -91,16 +107,22 @@ class CASalesdocs extends Controller {
 		$this->smarty->assign('tpl','tpls/addDocItem.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
-	
+
 	private function actionDeleteItem()
 	{
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
+
 		$req_id=$this->getFromRequest('id');
 		if (!is_array($req_id))
 			$req_id=array($req_id);
-		
+
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
-		
+
 		$mDocs = new $moduleMap['docs'];
 		if ($this->getFromPost('step') == null)
 		{
@@ -111,7 +133,7 @@ class CASalesdocs extends Controller {
 			$params = array(
 							'db' => $this->db,
 							'isSales' => 'yes',
-							'salesID' => '1',
+							'salesID' => $salesDocsCategory,
 							'xnyo' => $this->xnyo
 							);
 			$result = $mDocs->prepareViewDelete($params);
@@ -123,7 +145,7 @@ class CASalesdocs extends Controller {
 		$params = array(
 						'db' => $this->db,
 						'isSales' => 'yes',
-						'salesID' => '1'
+						'salesID' => $salesDocsCategory
 						);
 		$result = $mDocs->prepareView($params);
 
@@ -140,40 +162,52 @@ class CASalesdocs extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
-	
+
 	private function actionConfirmDelete()
 	{
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
+
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
-	
+
 		$mDocs = new $moduleMap['docs'];
 		$params = array(
 							'db' => $this->db,
 							'isSales' => 'yes',
-							'salesID' => '1',
+							'salesID' => $salesDocsCategory,
 							'xnyo' => $this->xnyo
 						);
 		$successDeleteInventories = $mDocs->prepareDelete($params);	//$successDeleteInventories ?????????????
 
 		if ($successDeleteInventories){
-			header("Location: admin.php?action=browseCategory&category=salesdocs&notify=11");
-		}	
+			header("Location: admin.php?action=browseCategory&category=salesdocs&notify=11&salesDocsCategory=".  urlencode($salesDocsCategory));
+		}
 	}
-	
+
 	private function actionEdit()
 	{
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
+
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
-	
+
 		$mDocs = new $moduleMap['docs'];
 		$post =$this->getFromPost();
-		
+
 		if(!is_null($this->getFromPost('file')))
 		{
 			$params = $post;
 			$params['db'] = $this->db;
 			$params['isSales'] = 'yes';
-			$params['salesID'] = '1';
+			$params['salesID'] = $salesDocsCategory;
 			$result = $mDocs->prepareEdit($params);
 			foreach($result as $key => $data)
 			{
@@ -193,7 +227,7 @@ class CASalesdocs extends Controller {
 		$params = array(
 							'db' => $this->db,
 							'isSales' => 'yes',
-							'salesID' => '1'
+							'salesID' => $salesDocsCategory
 						);
 		$result = $mDocs->prepareView($params);
 

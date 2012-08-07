@@ -7,37 +7,42 @@ class CSContracts extends Controller
 		$this->category='contracts';
 		$this->parent_category='contracts';
 	}
-	
+
 	function runAction()
 	{
 		$this->runCommon('sales');
-		$functionName='action'.ucfirst($this->action);				
-		if (method_exists($this,$functionName))			
-			$this->$functionName();		
+		$functionName='action'.ucfirst($this->action);
+		if (method_exists($this,$functionName))
+			$this->$functionName();
 	}
-	
+
 	private function actionBrowseCategory()
 	{
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		$mDocs = new $moduleMap['docs'];
 
+		$salesDocsCategory = $this->getFromRequest('salesDocsCategory');
+		if($salesDocsCategory != DocContainerItem::MARKETING_CATEGORY
+				&& $salesDocsCategory != DocContainerItem::TRAINING_CATEGORY) {
+			throw new Exception('404');
+		}
 		$params = array(
 			'db' => $this->db,
 			'isSales' => 'yes',
-			'salesID' => '1'
+			'salesID' => $salesDocsCategory,
 		);
 		$result = $mDocs->prepareView($params);
-		
+
 		foreach($result as $key => $data) {
 			$this->smarty->assign($key,$data);
 		}
-		
+
 		$itemsCount = count($result['InfoTree']);
 		$this->smarty->assign('itemsCount', $itemsCount);
 		$this->smarty->assign('doNotShowControls', true);
 		$this->smarty->assign('tpl','tpls/contracts.tpl');
-		$this->smarty->display("tpls:index.tpl");		
-	}	
+		$this->smarty->display("tpls:index.tpl");
+	}
 }
 ?>

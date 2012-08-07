@@ -10,19 +10,19 @@
 	{/if}
 </div>
 
-	<form name="editDocItem" enctype="multipart/form-data" action="admin.php?action={$request.action}&category=salesdocs" method="POST">
+	<form name="editDocItem" enctype="multipart/form-data" action="admin.php?action={$request.action}&category=salesdocs&salesDocsCategory={$request.salesDocsCategory}" method="POST">
 <div class="padd7">
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top ">
 				&nbsp;
-				</td>	
+				</td>
 				<td class="users_u_top_r">
 					<span><b>Editing documents and folders</b></span>
-				</td>								
+				</td>
 			</tr>
 
-				<tr class="border_users_r border_users_l">			
+				<tr class="border_users_r border_users_l">
 					<td height="20" colspan="2">
 						Select file:
 					</td>
@@ -68,20 +68,20 @@
   								  				{/if}
    								 			{/if}
   								  	{/foreach}
-  								  	
+
    								 		{if $level gt 0}
     										{section name=level_iter loop=$level start=0}
     											</div>
     										{/section}
-    									{/if}  								  	
-								{else}	
-  								      {*BEGIN	EMPTY LIST*}        
+    									{/if}
+								{else}
+  								      {*BEGIN	EMPTY LIST*}
 
  								               No documents in the list
-      		
+
   								      {*END	EMPTY LIST*}
   								{/if}
-			     			</div>	
+			     			</div>
 			     			<div id="div_select" {if $info.item_type eq $doc_item}style="display:none;"{/if} class="category_documents" align="left">
 								{if $InfoTree neq 0}
 									{assign var=level value=0}
@@ -112,57 +112,57 @@
     										{section name=level_iter loop=$level start=0}
     											</div>
     										{/section}
-    									{/if}  								  	
-								{else}	
-  								      {*BEGIN	EMPTY LIST*}        
+    									{/if}
+								{else}
+  								      {*BEGIN	EMPTY LIST*}
 
  								               No documents in the list
-      		
+
   								      {*END	EMPTY LIST*}
   								{/if}
 			     			</div>
-			     				{*ERROR*}					
+			     				{*ERROR*}
 								<div id="error_description" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
-					</td>					
+							    {*/ERROR*}
+					</td>
 				</tr>
-	
-					
-				<tr class="border_users_b border_users_r">		
+
+
+				<tr class="border_users_b border_users_r">
 					<td class="border_users_l" height="20" width="15%">
 						Document name:
 					</td>
 					<td>
 						<div id="docNameDiv" align="left">
 							<input type='text' id='docName' name='name' value='{$info.name}'>
-						</div>					
+						</div>
 							{*ERROR*}
 								{if $request.action eq "addItem"}
-									{if $error neq null}					
-										<div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error! {$error}</span></div>					    						
+									{if $error neq null}
+										<div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error! {$error}</span></div>
 									{/if}
 								{/if}
 								<div id="error_name_alredyExist" class="error_img" style="display:none;"><span class="error_text">Entered name is alredy in use!</span></div>
-							{*/ERROR*}																
-													
-					</td>					
+							{*/ERROR*}
+
+					</td>
 				</tr>
-			
-			<tr class="border_users_b border_users_r">			
+
+			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
 					Document description:
 				</td>
 				<td>
 					<div id="docDescriptionDiv" align="left" >
 						<input type='text' id='docDescription' name='description' value='{$info.description}' {if $info.item_type eq $folder_item}style="display:none;"{/if}>
-					</div>							
-			     				{*ERROR*}					
+					</div>
+			     				{*ERROR*}
 								<div id="error_description" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
-				</td>					
+							    {*/ERROR*}
+				</td>
 			</tr>
 
-			<tr class="border_users_b border_users_r">			
+			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
 					Containing folder:
 				</td>
@@ -202,58 +202,58 @@
     										{section name=level_iter loop=$level start=0}
     											</div>
     										{/section}
-    									{/if}  								  	
-									{else}	
-  								      {*BEGIN	EMPTY LIST*}        
+    									{/if}
+									{else}
+  								      {*BEGIN	EMPTY LIST*}
 
  								               No documents in the list
-      		
+
   								      {*END	EMPTY LIST*}
   							{/if}
   								  	    <div id="folder">
     										<p><input id="r_0" type="radio" name="folder" value="none" {if $info.folder eq 'none'}checked{/if}>MAIN FOLDER(without folder)</p>
-   								 		</div>  							
-                        </div> 
+   								 		</div>
+                        </div>
                         	{*ERROR*}
-									{if $error neq null}					
-										<div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error! {$error}</span></div>					    						
+									{if $error neq null}
+										<div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error! {$error}</span></div>
 									{/if}
-							{*/ERROR*}	   						
-				</td>					
+							{*/ERROR*}
+				</td>
 			</tr>
-												
+
 			<tr class="border_users_l border_users_r">
 				<td colspan="2">&nbsp;
 								{*ERROR*}
-									{if $error neq null}					
-										<div id="error_name" class="error_img" ><span class="error_text">Error! {$error}</span></div>					    						
+									{if $error neq null}
+										<div id="error_name" class="error_img" ><span class="error_text">Error! {$error}</span></div>
 									{/if}
-								{*ERROR*}				
+								{*ERROR*}
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td height="20" class="users_u_bottom">&nbsp;</td>
 				<td height="20" class="users_u_bottom_r">&nbsp;</td>
 			</tr>
 		</table>
-				
-		
+
+
 		<table cellpadding="5" cellspacing="0" align="center" width="95%">
 			<tr>
 				<td>
 		{*BUTTONS*}
 		<div align="right">
-			<input type='button' name='cancel' class="button" value='Cancel' 
+			<input type='button' name='cancel' class="button" value='Cancel'
 				onClick="location.href='admin.php?action=browseCategory&category=salesdocs'">
-			<input type="submit" id='save' class="button" value="Save">				
+			<input type="submit" id='save' class="button" value="Save">
 		</div>
-		
-		
+
+
 		{*HIDDEN*}
 		<input type='hidden' name='MAX_FILE_SIZE' value="52430000">
-		<input type='hidden' name='action' value={$request.action}>	
-		<input type="hidden" name="id" value="{$request.id}">	
+		<input type='hidden' name='action' value={$request.action}>
+		<input type="hidden" name="id" value="{$request.id}">
 		</form>
 						</td>
 			</tr>
@@ -261,4 +261,4 @@
 </div>
 
 
-{include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}	
+{include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}

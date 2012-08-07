@@ -11,7 +11,7 @@
 					</ul>
 				</div>
 			</div>
-			
+
 			<!-- NEW PRDUCT TAB -->
 			<div align="left" width="100%"  class="{if $parent == 'product'}left_m_active{else}left_m{/if}">
 				<div align="left" width="100%">
@@ -22,7 +22,7 @@
 					</ul>
 				</div>
 			</div>
-				
+
 			<!-- NEW GOM TAB -->
 			<div align="left" width="100%"  class="{if $parent == 'accessory'}left_m_active{else}left_m{/if}">
 				<div align="left" width="100%">
@@ -32,20 +32,20 @@
 						</li>
 					</ul>
 				</div>
-			</div>				
+			</div>
 			<!-- NEW PFPLBRARY TAB -->
-				
+
 			<div align="left" width="100%"  class="{if $parent == 'pfps'}left_m_active{else}left_m{/if}">
 				<div align="left" width="100%">
 					<ul class="link">
 						<li>
-							
+
 							<a href="admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&letterpage=1a&productCategory=0" class="id_company">PFP Library</a>
 						</li>
 					</ul>
 				</div>
-			</div>	
-   
+			</div>
+
 					<div align="left" width="100%"  class="{if $parent == 'users'}left_m_active{else}left_m{/if}" >
 					   <div align="left" width="100%">
 					<ul class="link">
@@ -55,7 +55,7 @@
 					</ul>
 				</div>
 						</div>
-						
+
 				<div align="left" width="100%"  class="{if $parent == 'issue'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 					  <ul class="link">
@@ -63,7 +63,7 @@
 							<a href="admin.php?action=browseCategory&category=issue" class="id_company">Issues</a>
 						</li>
 					</ul>
-				</div>				
+				</div>
 			</div>
 				<div align="left" width="100%"  class="{if $parent == 'bulkUploader'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
@@ -74,7 +74,7 @@
 					</ul>
 					</div>
 				</div>
-				
+
 				<div align="left" width="100%"  class="{if $parent == 'vps'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -84,7 +84,7 @@
 						</ul>
 					</div>
 				</div>
-				
+
 				<div align="left" width="100%"  class="{if $parent == 'track'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -103,8 +103,8 @@
 						</li>
 						</ul>
 					</div>
-				</div>					
-				
+				</div>
+
 				<div align="left" width="100%"  class="{if $parent == 'modulars'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -114,7 +114,7 @@
 						</ul>
 					</div>
 				</div>
-				
+
 				{if $showReports neq 'false'}
 					<div align="left" width="100%"  class="{if $parent == 'reports'}left_m_active{else}left_m{/if}">
 						<div align="left" width="100%">
@@ -126,7 +126,7 @@
 						</div>
 					</div>
 				{/if}
-				
+
 				<div align="left" width="100%"  class="{if $parent == 'salescontacts'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -146,17 +146,17 @@
 						</ul>
 					</div>
 				</div>
-					
+
 				<div align="left" width="100%"  class="{if $parent == 'salesdocs'}left_m_active {else} left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
 						<li>
-							<a href="admin.php?action=browseCategory&category=salesdocs" class="id_company">Sales Documents</a>
+							<a href="admin.php?action=browseCategory&category=salesdocs&salesDocsCategory=1" class="id_company">Sales Documents</a>
 						</li>
 						</ul>
 					</div>
-				</div>	
-				
+				</div>
+
 			</td>
 		</tr>
 	</table>

@@ -63,11 +63,11 @@
 
 		</div>
 		{else}
-			<input type="button" class="button" value="Add" onclick="location.href='admin.php?action=addItem&category=salesdocs'">
+			<input type="button" class="button" value="Add" onclick="location.href='admin.php?action=addItem&category=salesdocs&salesDocsCategory={$request.salesDocsCategory}'">
 		{/if}
 
 		{if $request.category eq 'salesdocs' and $itemsCount gt 0}
-			<input type="button" class="button" name="action" value="Edit" onclick="location.href='admin.php?action=edit&category=salesdocs'">
+			<input type="button" class="button" name="action" value="Edit" onclick="location.href='admin.php?action=edit&category=salesdocs&salesDocsCategory={$request.salesDocsCategory}'">
 		{/if}
 		{if $itemsCount > 0 && $request.category neq 'logging'}
 			{if $request.category neq 'salesdocs'}
@@ -77,7 +77,7 @@
 				</div>
 				</div>
 			{else}
-				<input type="button" class="button" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs&itemsCount={$itemsCount}'">
+				<input type="button" class="button" value="Delete" onclick="location.href='admin.php?action=deleteItem&category=salesdocs&itemsCount={$itemsCount}&salesDocsCategory={$request.salesDocsCategory}'">
 			{/if}
 		{/if}
 

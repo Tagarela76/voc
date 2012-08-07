@@ -11,18 +11,18 @@
 </div>
 
 <div class="padd7">
-	<form name="addDocItem" enctype="multipart/form-data" action="admin.php?action={$request.action}&category=salesdocs" method="POST">
+	<form name="addDocItem" enctype="multipart/form-data" action="admin.php?action={$request.action}&category=salesdocs&salesDocsCategory={$request.salesDocsCategory}" method="POST">
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_u_top_size users_top">
 				<td class="users_u_top" width="30%">
 				<span><b>Adding for a new document or folder</b></span>
-				</td>	
+				</td>
 				<td class="users_u_top_r">
 					&nbsp;
-				</td>								
+				</td>
 			</tr>
 
-				<tr class="border_users_r border_users_l">			
+				<tr class="border_users_r border_users_l">
 					<td height="20" colspan="2">
 						Select file:
 					</td>
@@ -45,52 +45,52 @@
 							<div id="div_input" {if $info.item_type eq $folder_item}style="display:none;"{/if}>
 							<div>
                                 <input id="input" name="inputFile" type="file" onClick="fileSelected('upload')">
-							</div>	
-							{*ERROR*}	
-								{if $error eq 'path'}					
-									<div id="error_path" class="error_img" {*style="display:none;"*}><span id='err' class="error_text">Error! Empty file path!</span></div>					    						
+							</div>
+							{*ERROR*}
+								{if $error eq 'path'}
+									<div id="error_path" class="error_img" {*style="display:none;"*}><span id='err' class="error_text">Error! Empty file path!</span></div>
 								{/if}
 							{*/ERROR*}
-							</div>			    						
-					</td>					
+							</div>
+					</td>
 				</tr>
-	
-					
-				<tr class="border_users_b border_users_r">		
+
+
+				<tr class="border_users_b border_users_r">
 					<td class="border_users_l" height="20" width="15%">
 						Document name:
 					</td>
 					<td>
 						<div align="left">
 							<input type='text' id='docName' name='name' value='{$info.name}'>
-						</div>					
+						</div>
 							{*ERROR*}
 								{if $request.action eq "addItem"}
-									{if $error eq 'name'}					
-										<div id="error_name" class="error_img" {*style="display:none;"*}><span class="error_text">Error! Empty name!</span></div>					    						
+									{if $error eq 'name'}
+										<div id="error_name" class="error_img" {*style="display:none;"*}><span class="error_text">Error! Empty name!</span></div>
 									{/if}
 								{/if}
 								<div id="error_name_alredyExist" class="error_img" style="display:none;"><span class="error_text">Entered name is alredy in use!</span></div>
-							{*/ERROR*}																
-													
-					</td>					
+							{*/ERROR*}
+
+					</td>
 				</tr>
-			
-			<tr class="border_users_b border_users_r">			
+
+			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
 					Document description:
 				</td>
 				<td>
 					<div align="left">
 						<input type='text' id='docDescription' name='description' value='{$info.description}' {if $info.item_type eq $folder_item}style="display:none;"{/if}>
-					</div>							
-			     				{*ERROR*}					
+					</div>
+			     				{*ERROR*}
 								<div id="error_description" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
-				</td>					
+							    {*/ERROR*}
+				</td>
 			</tr>
 
-			<tr class="border_users_b border_users_r">			
+			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
 					Containing folder:
 				</td>
@@ -131,45 +131,45 @@
     											</div>
     										{/section}
     									{/if}
-									{else}	
-  								      {*BEGIN	EMPTY LIST*}        
+									{else}
+  								      {*BEGIN	EMPTY LIST*}
 
  								               No documents in the list
-      		
+
   								      {*END	EMPTY LIST*}
   							{/if}
   								  	    <div id="folder">
     										<p><input type="radio" name="folder" value="none" {if $info.folder eq 'none'}checked{/if}>MAIN FOLDER(without folder)</p>
    								 		</div>
-                        </div>    						
-				</td>					
+                        </div>
+				</td>
 			</tr>
-												
+
 			<tr class="border_users_l border_users_r">
 				<td colspan="2">&nbsp;</td>
 			</tr>
-			
+
 			<tr>
 				<td height="20" class="users_u_bottom">&nbsp;</td>
 				<td height="20" class="users_u_bottom_r">&nbsp;</td>
 			</tr>
 		</table>
-				
-		
+
+
 		<table cellpadding="5" cellspacing="0" align="center" width="95%">
 			<tr>
 				<td>
 		{*BUTTONS*}
 		<div align="right">
-			<input type='button' name='cancel' class="button" value='Cancel' 
-				onClick="location.href='admin.php?action=browseCategory&category=salesdocs'">
-			<input type="submit" id='upload' class="button" value="Upload" {if $info.item_type eq $doc_item}disabled{/if}>				
+			<input type='button' name='cancel' class="button" value='Cancel'
+				onClick="location.href='admin.php?action=browseCategory&category=salesdocs&salesDocsCategory={$request.salesDocsCategory}'">
+			<input type="submit" id='upload' class="button" value="Upload" {if $info.item_type eq $doc_item}disabled{/if}>
 		</div>
-		
-		
+
+
 		{*HIDDEN*}
 		<input type='hidden' name='MAX_FILE_SIZE' value="52430000">
-		<input type='hidden' name='action' value={$request.action}>		
+		<input type='hidden' name='action' value={$request.action}>
 		</form>
 						</td>
 			</tr>
@@ -177,4 +177,4 @@
 </div>
 
 
-{include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}	
+{include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}

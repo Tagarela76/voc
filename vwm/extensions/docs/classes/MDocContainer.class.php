@@ -4,7 +4,7 @@ class MDocContainer extends Module {
 
     function MDocs() {
     }
-    
+
     public function getNewObject(array $params) {
     	if ($params['type'] == DocContainerItem::DOC_ITEM) {
     		return new Doc($params['db']);
@@ -12,15 +12,15 @@ class MDocContainer extends Module {
     		return new Folder($params['db']);
     	} else {
     		return false;
-    	}	
+    	}
     }
-    
+
     /**
      * function prepareView($params)
      * View list of docs/folders
      * return prepared for smarty params
      * @param $params array of params: db and facilityID
-     */    
+     */
     function prepareView($params) {
 		if ($params['isSales'] == 'yes'){
 			$category = 'sales';
@@ -35,21 +35,21 @@ class MDocContainer extends Module {
 	    	"InfoTree" => $InfoTree,
 	    	"doc_item" => DocContainerItem::DOC_ITEM,
 	    	"folder_item" => DocContainerItem::FOLDER_ITEM
-	    ); 
+	    );
 	    return $result;
     }
-    
+
     /**
      * function prepareConstants($db)
      * return DocContainerItem constants: doc_item, folder_item
      * @param $db
-     */    
+     */
     function prepareConstants($db) {
 	    $folder = new Folder($db);
 	    $result = array(
 	    	"doc_item" => DocContainerItem::DOC_ITEM,
 	    	"folder_item" => DocContainerItem::FOLDER_ITEM
-	    ); 
+	    );
 	    return $result;
     }
     /**
@@ -66,7 +66,7 @@ class MDocContainer extends Module {
 			$category = 'facility';
 			$categoryID = $params['facilityID'];
 		}
-		
+
 		    if ($params['folder'] == "none") {
 			    $params['folder'] = $categoryID;
 			    $params['category'] = $category;
@@ -79,12 +79,12 @@ class MDocContainer extends Module {
 				'description' => Reform::HtmlEncode($params['description']),
 				'parent_id' => $params['folder'],
 				'parent_category' => $params['category']
-		    ); 
-		    
+		    );
+
 		    if ($params['item_type'] == DocContainerItem::DOC_ITEM) {
 		    	if ($_FILES["inputFile"]['tmp_name'] == '') {
 		    		$result['error'] = 'path';
-		    						    
+
 				    if ($params['category'] == $category) {
 				    	$params['folder'] = 'none';
 				    }
@@ -94,7 +94,7 @@ class MDocContainer extends Module {
 				    $doc->addNewDoc($info);
 				    //	redirect
 					if ($params['isSales'] == 'yes'){
-						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=12");
+						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=12&salesDocsCategory=".  urlencode($categoryID));
 					} else {
 						header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=12");
 					}
@@ -103,7 +103,7 @@ class MDocContainer extends Module {
 		    } else {
 			    if (trim($info['name'])=='') {
 				    $result['error'] = 'name';
-				    
+
 				    if ($params['category'] == $category) {
 				    	$params['folder'] = 'none';
 				    }
@@ -113,22 +113,22 @@ class MDocContainer extends Module {
 				    $folder->addNewFolder($info);
 				    //	redirect
 					if ($params['isSales'] == 'yes'){
-						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=14");
+						header("Location: admin.php?action=browseCategory&category=salesdocs&notify=14&salesDocsCategory=".  urlencode($categoryID));
 					} else {
 						header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=14");
-					}	
+					}
 				    die();
-			    }	
+			    }
 		    }
     	return $result;
     }
-    
+
     /**
      * function prepareEdit($params)
      * Edit docs/folders
      * return prepared for smarty params if needed
      * @param $params array of params: db and all post data(folder, file, name, description), facilityID
-     */    
+     */
     function prepareEdit($params) {
 		if ($params['isSales'] == 'yes'){
 			$category = 'sales';
@@ -137,7 +137,7 @@ class MDocContainer extends Module {
 			$category = 'facility';
 			$categoryID = $params['facilityID'];
 		}
-		
+
 	    $validFolder = true;
 	    if ($params['folder'] == "none") {
 		    $params['folder'] = $categoryID;
@@ -145,7 +145,7 @@ class MDocContainer extends Module {
 	    } else {
 		    $params['category'] = "folder";
 		    $result['folder_id'] = $params['folder'];
-		    
+
 		    $parent_id = $params['folder'];
 		    while ($parent_id != 0) {
 			    if ($parent_id == $params['file']) {
@@ -157,36 +157,36 @@ class MDocContainer extends Module {
 			    $doc = new Doc($params['db']);
 			    $parent_id = $doc->getParentId($parent_id);
 		    }
-	    } 
-	    
+	    }
+
 	    $info = array(
 		    'file' => $params['file'],
 			'name' => $params['name'],
 			'description' => $params['description'],
 			'parent_id' => $params['folder'],
 			'parent_category' => $params['category']
-	    ); 
-	    
+	    );
+
 	    if ($validFolder) {
 		    $doc = new Doc($params['db']);
 		    $doc->editDoc($info);
 		    //redirect
 			if ($params['isSales'] == 'yes'){
-				header("Location: admin.php?action=browseCategory&category=salesdocs&notify=15");
+				header("Location: admin.php?action=browseCategory&category=salesdocs&notify=15&salesDocsCategory=".  urlencode($categoryID));
 			} else {
 				header("Location: ?action=browseCategory&category=facility&id=".$params['facilityID']."&bookmark=docs&notify=15");
-			}	
+			}
 		    die();
 	    }
 	    return $result;
-    }    
-    
+    }
+
     /**
      * function prepareViewDelete($params)
      * View docs/folders to choose docs for delete
      * return prepared for smarty params
      * @param $params array of params: db, facilityID, xnyo
-     */    
+     */
     function prepareViewDelete($params) {
 	    if ($params['isSales'] == 'yes'){
 			$category = 'sales';
@@ -195,10 +195,10 @@ class MDocContainer extends Module {
 			$category = 'facility';
 			$categoryID = $params['facilityID'];
 		}
-		
+
 	    $doc = new Doc($params['db']);
 	    $id_list = $doc->getIdList($categoryID, $category);
-	    
+
 	    foreach($id_list as $id) {
 		    $params['xnyo']->filter_post_var("doc_".$id, "text");
 		    if ($_POST['doc_'.$id]!=null) {
@@ -210,7 +210,7 @@ class MDocContainer extends Module {
 				    }
 			    }
 		    }
-	    } 
+	    }
 	    if (count($id_delete)==0) {
 		    $result['empty'] = 'true';
 	    } else {
@@ -219,13 +219,13 @@ class MDocContainer extends Module {
 	    $result['step'] = 'confirm';
 	    return $result;
     }
-    
+
     /**
      * function prepareDelete($params)
      * Delete docs/folders
      * return true
      * @param $params array of params: db, facilityID, xnyo
-     */    
+     */
     function prepareDelete($params) {
 		if ($params['isSales'] == 'yes'){
 			$category = 'sales';
@@ -234,36 +234,36 @@ class MDocContainer extends Module {
 			$category = 'facility';
 			$categoryID = $params['facilityID'];
 		}
-		
+
 	    $doc = new Doc($params['db']);
 	    $id_list = $doc->getIdList($categoryID, $category);
-	    
+
 	    foreach($id_list as $id) {
 		    $params['xnyo']->filter_post_var("doc_".$id, "text");
 		    if ($_POST['doc_'.$id]!=null) {
 			    $info = array(
 				    'id' => $id,
 					'delete_type' =>$_POST['delete_type']
-			    ); 	
-			    $doc->deleteDocs($info);									
+			    );
+			    $doc->deleteDocs($info);
 		    }
-	    } 
+	    }
 	    return true;
     }
-    
+
     function prepareStorageAdd($params) {
     	$result = $this->prepareView($params);
     	$result['category'] = 'wastestorage';
     	return $result;
     }
-    
+
     function prepareStorageView($params) {
     	extract($params);
     	$doc = new Doc($db);
     	$info = $doc->getDocWithInfoById($id);
     	return array('doc' => $info);
     }
-    
+
     function prepareStorageBrowse($params) {
     	extract($params);
     	$doc = new Doc($db);

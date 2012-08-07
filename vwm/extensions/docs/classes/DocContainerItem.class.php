@@ -7,21 +7,24 @@ class DocContainerItem {
 	protected $parentId;
 	protected $parentCategory;
 	protected $db;
-	
+
 	const DOC_ITEM = 'file';
 	const FOLDER_ITEM = 'folder';
 
+	const MARKETING_CATEGORY = 1;
+	const TRAINING_CATEGORY = 2;
+
     function DocContainerItem() {
     }
-    
+
     function deleteDocs($info) {
-    	
+
     	//screening of quotation marks
 		foreach ($info as $key=>$value)
 		{
 			$info[$key]=mysql_real_escape_string($value);
 		}
-    	
+
     	//$this->db->select_db(DB_NAME);
     	$query = "SELECT `doc_container`.`parent_id`, `doc_container`.`parent_category` FROM `doc_container`".
 			" WHERE `doc_container`.`id` = '".$info['id']."' ";
@@ -29,7 +32,7 @@ class DocContainerItem {
 		if ($this->db->num_rows()==1) {
 			$data = $this->db->fetch(0);
 			$this->parent_id = $data->parent_id;
-			$this->parent_category = $data->parent_category;		
+			$this->parent_category = $data->parent_category;
 		}
     	$query = "DELETE FROM `doc_container` WHERE `doc_container`.`id` = '".$info['id']."'";
     	$this->db->query($query);
@@ -45,17 +48,17 @@ class DocContainerItem {
     	}
     	$this->db->query($query);
     }
-      
+
     function getAllChild($parent_Category, $parent_Id) {
-    	
+
     	$parent_Category=mysql_real_escape_string($parent_Category);
     	$parent_Id=mysql_real_escape_string($parent_Id);
-    	
-    	$query = "SELECT id, type ". 
+
+    	$query = "SELECT id, type ".
 			"FROM doc_container ".
 			"WHERE parent_category = '".$parent_Category."' ".
-			"AND  parent_id = ".$parent_Id." ";   
-		//$this->db->select_db(DB_NAME);	
+			"AND  parent_id = ".$parent_Id." ";
+		//$this->db->select_db(DB_NAME);
 		$this->db->query($query);
 		$result = array();
 		if ($this->db->num_rows()) {
@@ -74,26 +77,26 @@ class DocContainerItem {
     }
 
     function getFullInfoById($id) {
-    	
+
     	$id=mysql_real_escape_string($id);
-    	
+
    		$query = "SELECT id, name, type, parent_id, parent_category ".
 			"FROM doc_container ".
-			"WHERE id = ".$id." LIMIT 1"; 
+			"WHERE id = ".$id." LIMIT 1";
 		//$this->db->select_db(DB_NAME);
 		$this->db->query($query);
 		if ($this->db->num_rows()==1) {
 			$data = $this->db->fetch(0);
-			return $data;		
+			return $data;
 		} else {
 			return 0;
 		}
     }
-    
+
     function getNameById($id) {
-    	
+
     	$id=mysql_real_escape_string($id);
-    	
+
     	$query = "SELECT name ".
     		"FROM doc_container ".
     		"WHERE id = ".$id." LIMIT 1";
@@ -101,17 +104,17 @@ class DocContainerItem {
     	$this->db->query($query);
 		if ($this->db->num_rows()==1) {
 			$data = $this->db->fetch(0);
-			$this->name = $data->name;		
+			$this->name = $data->name;
 		} else {
 			return 0;
-		}       	
+		}
     }
-     
+
     function getIdList($parent_Id, $type = "folder") {
-    	
+
     	$parent_Id=mysql_real_escape_string($parent_Id);
     	$type=mysql_real_escape_string($type);
-    	
+
     	$query = "SELECT id ".
     		"FROM doc_container ".
     		"WHERE parent_id = ".$parent_Id;
@@ -134,18 +137,18 @@ class DocContainerItem {
     				foreach($sub_list as $list_item) {
     					$id_list []= $list_item;
     				}
-    			}    			
+    			}
     		}
     	} else {
     		return 0;
     	}
     	return $id_list;
     }
-    
+
     function getParentId($id) {
-    	
+
     	$id=mysql_real_escape_string($id);
-    	
+
     	$query = "SELECT parent_id, parent_category ".
     		"FROM doc_container ".
     		"WHERE id = '".$id."' LIMIT 1";
@@ -161,7 +164,14 @@ class DocContainerItem {
     				return $data->parent_id;
     			}
 
-    	} 
+    	}
     }
+
+	public static function getSalesDocsCategories() {
+		return array(
+			self::MARKETING_CATEGORY => 'Marketing',
+			self::TRAINING_CATEGORY => 'Training',
+		);
+	}
 }
 ?>

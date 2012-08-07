@@ -7,21 +7,31 @@
     {/if}
     {if $color eq "blue"}
     	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
-    {/if}   
-    
+    {/if}
+
     {literal}
 	<script language="JavaScript">
 		function showDir(id) {
 			visibility = document.getElementById(id).style.display;
 			if (visibility != "block") {
 				document.getElementById(id).style.display = "block";
-			} else {   
+			} else {
 				document.getElementById(id).style.display = "none";
 			}
 		}
 	</script>
 	{/literal}
 </div>
+
+<div class="padd7" align="center">
+	<select name="salesDocsCategory" onchange="$('#controlCategoriesList').submit();">
+	{foreach from=$docCategories key='docCategoryID' item='docCategoryName'}
+		<option value={$docCategoryID} {if $docCategoryID == $request.salesDocsCategory} selected {/if}>{$docCategoryName}</option>
+	{/foreach}
+	</select>
+	<input type="hidden" name="action" value="browseCategory"/>
+</div>
+
 <div class="padd7" align="center" style='background-color:white;'>
 	    {*shadow*}
     <div class="shadow_list_documents">
@@ -69,23 +79,23 @@
     		{section name=level_iter loop=$level start=0}
     			</div>
     		{/section}
-    	{/if}    
+    	{/if}
     	{if $category eq 'wastestorage'}
         	    <p>
                    	<input class="radio" type="radio" name="documentID" value="0" {if $data->document_id eq '0' || $data->document_id eq null}checked{/if}><i>No document</i>
                	</p>
-        {/if}	
-	{else}	
-        {*BEGIN	EMPTY LIST*}        
+        {/if}
+	{else}
+        {*BEGIN	EMPTY LIST*}
 
                 No documents in the list
-      		
+
         {*END	EMPTY LIST*}
-		
-    {/if}  
+
+    {/if}
 	        </td>
                 </tr>
-            </table>            {*shadow*} 
+            </table>            {*shadow*}
         </div>
     </div>
     {**}

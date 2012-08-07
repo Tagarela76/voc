@@ -12,11 +12,11 @@
 					</div>
 				</div>
 
-				<div align="left" width="100%"  class="{if $parent == 'contracts'}left_m_active {else} left_m{/if}" >
+				<div align="left" width="100%"  class="{if $request.salesDocsCategory == 1}left_m_active {else} left_m{/if}" >
 					<div align="left" width="100%">
 						<ul class="link">
 							<li>
-								<a href="sales.php?action=browseCategory&category=contracts" class="id_company">Marketing</a>
+								<a href="sales.php?action=browseCategory&category=contracts&salesDocsCategory=1" class="id_company">Marketing</a>
 							</li>
 						</ul>
 					</div>
@@ -31,7 +31,7 @@
 						</ul>
 					</div>
 				</div>
-				
+
 				<div align="left" width="100%"  class="{if $parent == 'forms'}left_m_active {else} left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -42,11 +42,11 @@
 					</div>
 				</div>
 
-				<div align="left" width="100%"  class="{if $parent == 'training'}left_m_active{else}left_m{/if}">
+				<div align="left" width="100%"  class="{if $request.salesDocsCategory == 2}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
 							<li>
-								<a href="sales.php?action=browseCategory&category=contracts" class="id_company">Training</a>
+								<a href="sales.php?action=browseCategory&category=contracts&salesDocsCategory=2" class="id_company">Training</a>
 							</li>
 						</ul>
 					</div>
@@ -71,7 +71,7 @@
 						</ul>
 					</div>
 				</div>
-<!-- CALENDAR					
+<!-- CALENDAR
 				<div align="left" width="100%"  class="{if $parent == 'calendar'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -80,7 +80,7 @@
 						</li>
 						</ul>
 					</div>
-				</div>		
+				</div>
 -->
 			</td>
 		</tr>
