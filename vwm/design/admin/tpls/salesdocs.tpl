@@ -31,7 +31,7 @@
 	</select>
 	<input type="hidden" name="action" value="browseCategory"/>
 </div>
-
+s
 <div class="padd7" align="center" style='background-color:white;'>
 	    {*shadow*}
     <div class="shadow_list_documents">

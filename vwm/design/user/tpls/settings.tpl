@@ -1,4 +1,4 @@
-{*shadow_table*} 
+{*shadow_table*}
 <table class="" cellspacing="0" cellpadding="0" align="center">
     <tr>
         <td valign="top" class="report_uploader_t_l">
@@ -13,8 +13,18 @@
         </td>
         <td valign="top" class="report_uploader_c">
             {*shadow_table*}
-			
+
             <table width="100%" cellpadding="5" cellspacing="0">
+				{if $permissions.company.view}
+				 <tr>
+                    <td>
+						<a style="color: black" href="#managePermission"><h2>Manage Permissions</h2></a>
+                    </td>
+                    <td>
+                        {*VOCApp::t('general', 'Here you can manage user permissions');*}
+                    </td>
+                </tr>
+				{/if}
                 <tr>
                     <td>
                         {if $permissions.company.view}{*<a style="color: black" href="?action=msdsUploader&step=main&itemID={$itemID}&id={$id}"><h2>MSDS Uploader</h2></a>*}
@@ -43,8 +53,8 @@
                     </td>
                 </tr>
             </table>
-			
-            {*/shadow_table*} 
+
+            {*/shadow_table*}
         </td>
         <td valign="top" class="report_uploader_r">
         </td>
@@ -58,7 +68,7 @@
         </td>
     </tr>
 </table>
-{*/shadow_table*} 
+{*/shadow_table*}
 {*JQUERY POPUP SETTINGS*}
 <link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
 
@@ -84,13 +94,13 @@
                         </td>
                         <td colspan="2" style="border-bottom:0px solid #fff">
                             <div>
-                                I am customizing this rule list as 
-								<span style="padding:0px 3px;"><input type="radio" name="role" value="user" checked></span>user 
+                                I am customizing this rule list as
+								<span style="padding:0px 3px;"><input type="radio" name="role" value="user" checked></span>user
 								<span style="padding:0px 3px;"><input type="radio" name="role" value="{$categoryName}"></span>{$categoryName}
                             </div>
                         </td>
                     </tr>
-                   
+
                     <tr class="table_popup_rule">
                         <td align="center">
                             Select
@@ -109,7 +119,7 @@
 								{section  name=j loop=$customizedRuleList}
 									{if $ruleList[i].rule_id  == $customizedRuleList[j].rule_id}
  										checked
-									{/if}	
+									{/if}
 								{/section}>
                         </td>
                         <td id="ruleName_{$smarty.section.i.index}">
@@ -119,23 +129,23 @@
                             {$ruleList[i].description}&nbsp;
                         </td>
                     </tr>
-                    {/section} 
+                    {/section}
                 </table>
 				<input id="userID" type="hidden" name="userID" value="{$userID}">
 				<input id="categoryName" type="hidden" name="categoryName" value="{$categoryName}">
 				{if $categoryName == 'department'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.departmentID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.departmentID}">
 				{elseif $categoryName == 'facility'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.facilityID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.facilityID}">
 				{elseif $categoryName == 'company'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}">
 				{/if}
             </form>
 
 </div>
 {*END OF NEW RULES POPUP*}
 
-{*SELECT_LIMITS_POPUP*} 
+{*SELECT_LIMITS_POPUP*}
 <div id="emailNotify" title="Choose Email Notifications" style="display:none;">
             <form>
                 <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center">
@@ -144,9 +154,9 @@
                             Select: <a onclick="CheckAll(this)" name="allNotifies" class="id_company1">All</a>
                             /<a onclick="unCheckAll(this)" name="allNotifies" class="id_company1">None</a>
                         </td>
-                        
+
                     </tr>
-                    
+
                     <tr class="table_popup_rule">
                         <td align="center" width="10%">
                             Select
@@ -165,7 +175,7 @@
 								{section  name=j loop=$notificationsListSelected}
 									{if $notificationsList[i].id  == $notificationsListSelected[j].id}
  										checked
-									{/if}	
+									{/if}
 								{/section}>
                         </td>
                         <td id="ruleName_{$smarty.section.i.index}">
@@ -175,16 +185,16 @@
                             &nbsp;
                         </td>
                     </tr>
-                    {/section} 
+                    {/section}
                 </table>
 				<input id="userID" type="hidden" name="userID" value="{$userID}">
 				<input id="categoryName" type="hidden" name="categoryName" value="{$categoryName}">
 				{if $categoryName == 'department'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.departmentID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.departmentID}">
 				{elseif $categoryName == 'facility'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.facilityID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.facilityID}">
 				{elseif $categoryName == 'company'}
-				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}"> 
+				<input id="categoryNameID" type="hidden" name="categoryNameID" value="{$cfd.companyID}">
 				{/if}
             </form>
 </div>
