@@ -1,5 +1,7 @@
 nbproject/
+.idea/
 msds/
+msds_deleted/
 voc_logs/
 /vwm/cache/
 /vwm/db_backup/
