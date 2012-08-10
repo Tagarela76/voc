@@ -14,6 +14,7 @@ rsync -rzvp \
 --exclude "tmp/*" \
 --exclude "config" \
 --exclude "vwm/modules/phpgacl/" \
+--exclude "documentation" \
 --inplace ./vwm/* root@jon.vocwebmanager.com:/home/jonvo0/public_html/vocwebmanager.com/vwm/;
 
 echo "Sync is done"
