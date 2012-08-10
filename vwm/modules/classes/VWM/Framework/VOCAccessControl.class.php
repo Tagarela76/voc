@@ -8,14 +8,14 @@ require_once(site_path.'modules/phpgacl/gacl_api.class.php');
 class VOCAccessControl {
 
 	/**
-	 * @var gacl_api
+	 * @var \gacl_api
 	 */
 	private $gaclApi;
 
 	const ARO = 'ARO';
 
 	public function __construct() {
-		$this->gaclApi = new gacl_api();
+		$this->gaclApi = new \gacl_api();
 	}
 
 	/**
@@ -47,7 +47,44 @@ class VOCAccessControl {
 		$aroGroupName = $aroGroupValue = $groupName;
 
 		return $this->gaclApi->get_group_id($aroGroupName, $aroGroupValue, self::ARO);
+	}
 
+	/**
+	 * @param string $groupName
+	 * @return array
+	 */
+	public function getGroupUsers($groupName) {
+		$users = $this->gaclApi->get_group_objects($this->getGroupIdByName($groupName));
+		return $users['users'];
+	}
+
+	/**
+	 * @param string $groupName
+	 * @return boolean
+	 */
+	public function removeAllUsersFromGroup($groupName) {
+		$groupId = $this->getGroupIdByName($groupName);
+		if(!$groupId) {
+			return false;
+		}
+		$users = $this->gaclApi->get_group_objects($groupId);
+		foreach ($users['users'] as $user) {
+			$this->gaclApi->del_group_object($groupId, 'users', $user);
+		}
+		return true;
+	}
+
+
+	public function getUserGroups($accessName) {
+		$aroId = $this->gaclApi->get_object_id('users', $accessName, self::ARO);
+		$groupIds = $this->gaclApi->get_object_groups($aroId);
+		$groups = array();
+		foreach ($groupIds as $groupId) {
+			$groupDetails = $this->gaclApi->get_group_data($groupId);
+			$groups[] = $groupDetails[2];
+		}
+
+		return $groups;
 	}
 }
 

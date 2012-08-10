@@ -1,3 +1,13 @@
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global settings object defined at settings.js
+		settings.companyId = {/literal} {$cfd.companyID} {literal};
+		settings.facilityId = {/literal} {$cfd.facilityID} {literal};
+	});
+</script>
+{/literal}
+
 {*shadow_table*}
 <table class="" cellspacing="0" cellpadding="0" align="center">
     <tr>
@@ -18,10 +28,12 @@
 				{if $permissions.company.view}
 				 <tr>
                     <td>
-						<a style="color: black" href="#managePermission"><h2>Manage Permissions</h2></a>
+						<a style="color: black" href="#managePermission" onclick="settings.managePermissions.openDialog()">
+							<h2>Manage Permissions</h2>
+						</a>
                     </td>
                     <td>
-                        {*VOCApp::t('general', 'Here you can manage user permissions');*}
+                        {php}echo VOCApp::t('general', 'Here you can manage user permissions');{/php}
                     </td>
                 </tr>
 				{/if}
@@ -199,3 +211,5 @@
             </form>
 </div>
 {*END OF POPUP LIMITS*}
+
+<div id="managePermissionsContainer" title="Manage User Permissions" style="display:none;">Loading ...</div>

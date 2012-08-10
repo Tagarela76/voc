@@ -452,7 +452,7 @@ class Controller {
         }
 
 		$request = $this->getFromRequest();
-        
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
         $this->noname($request, $this->user, $this->db, $this->smarty);
@@ -998,11 +998,11 @@ class Controller {
         return $finalItems;
     }
 
-    protected function setListCategoriesLeftNew($category, $id, $params = null) { 
+    protected function setListCategoriesLeftNew($category, $id, $params = null) {
         $tail = '';
         if (!is_null($params)) {
-            foreach ($params as $key => $value) { 
-                $tail .= "&$key=$value"; 
+            foreach ($params as $key => $value) {
+                $tail .= "&$key=$value";
             }
         }
         switch ($category) {
@@ -1029,9 +1029,29 @@ class Controller {
                 $this->smarty->assign("upCategoryName", LABEL_LEFT_FACILITIES_TITLE);
                 break;
             case "department":
+
+				$moreThanOneDepartmentAssigned = false;
+				$groups = VOCApp::get_instance()
+					->getAccessControl()
+					->getUserGroups($_SESSION['accessname']);
+				// standart is one for level (Department Level)
+				// and second for id (department_777)
+				if(count($groups) > 2) {
+					$moreThanOneDepartmentAssigned = true;
+					$departmentList = array();
+					foreach ($groups as $group) {
+						$groupArray = explode('_', $group);
+						if($groupArray[0] == 'department') {
+							$departmentList[] = array('id'=>$groupArray[1]);
+						}
+					}
+				}
                 $departments = new Department($this->db);
                 $departmentDetails = $departments->getDepartmentDetails($id);
-                $departmentList = $departments->getDepartmentListByFacility($departmentDetails['facility_id']);
+                $departmentList = (!$moreThanOneDepartmentAssigned)
+						? $departments->getDepartmentListByFacility($departmentDetails['facility_id'])
+						: $departmentList;
+				
                 for ($i = 0; $i < count($departmentList); $i++) {
                     $url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . (($tail == '') ? "&bookmark=mix" : $tail);
                     $departmentList[$i]['url'] = $url;
@@ -1178,7 +1198,7 @@ class Controller {
 
             case "department":
 
-                $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                $permissions['showOverCategory'] = true;//$this->user->isHaveAccessTo('view', 'facility') ? true : false;
                 $permissions['department']['view'] = $this->user->isHaveAccessTo('view', 'department') ? true : false;
                 $permissions['deleteCategory'] = $this->user->isHaveAccessTo('delete', 'department') ? true : false;
                 $permissions['viewCategory'] = $this->user->isHaveAccessTo('view', 'department') ? true : false;
@@ -1310,7 +1330,7 @@ class Controller {
                 $permissions['company']['view'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
                 $permissions['facility']['view'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
                 break;
-			
+
 			case "viewWorkOrder":
                 $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
                 $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
@@ -1478,7 +1498,7 @@ class Controller {
 		}
 
 	}
-	
+
 	 //	nox indicator
     protected function setNoxIndicator($noxLimit, $totalUsage) {
         $this->smarty->assign('noxLimit', $noxLimit);

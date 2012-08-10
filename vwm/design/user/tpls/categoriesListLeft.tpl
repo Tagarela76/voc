@@ -14,7 +14,7 @@
                         </ul>
                     </div>
                 </div>
-                {/section} 
+                {/section}
             </td>
         </tr>
     </table>

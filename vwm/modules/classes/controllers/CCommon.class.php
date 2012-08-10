@@ -62,8 +62,8 @@ class CCommon extends Controller
 		}
 
 	}
-	
-	private function actionCleanIndustriesTwo() { 
+
+	private function actionCleanIndustriesTwo() {
 		$sql = "SELECT it.`type`, count(it.`type`) cnt
 				FROM `industry_type` it
 				WHERE it.parent IS NOT NULL
@@ -90,12 +90,12 @@ class CCommon extends Controller
 					GROUP BY `parent`";
 			$this->db->query($sql);
 			$selectTypes = $this->db->fetch_all_array();
-			
+
 			foreach ($selectTypes as $selectType) {
 				$sql = "UPDATE `product2type` " .
 						"SET `type_id`= " . $selectType['id'] . "
 						WHERE type_id IN (
-							SELECT `id` 
+							SELECT `id`
 							FROM `industry_type`
 							WHERE `type` = '" . $typeWithProblems . "'
 						    AND `parent` = 	" . $selectType['parent'] . ")";
@@ -105,10 +105,10 @@ class CCommon extends Controller
 						FROM `industry_type`
 						WHERE `id`<>" . $selectType['id'] . "
 						AND `type` = '" . $typeWithProblems . "'
-						AND `parent` = 	" . $selectType['parent']; 
+						AND `parent` = 	" . $selectType['parent'];
 				$this->db->query($sql);
 			}
-	
+
 		}
 
 	}
@@ -857,6 +857,99 @@ jgypsyn@gyantgroup.com
 
 	private function actionLogout() {
 		$this->user->logout();
+	}
+
+	public function actionLoadManagePermissions() {
+		//	Access control
+		if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityId'))) {
+			throw new Exception('deny');
+		}
+
+		$facilityId = $this->getFromRequest('facilityId');
+		$department = new Department($this->db);
+		$departments = $department->getDepartmentListByFacility($facilityId);
+		if(!$departments) {
+			throw new Exception('404');
+		}
+
+		$allUsers = VOCApp::get_instance()
+					->getUser()
+					->getUserListByFacility($facilityId);
+
+		$departmentUsers = array();
+		foreach ($departments as $departmentDetails) {
+			 $assignedUsers = VOCApp::get_instance()
+					->getAccessControl()
+					->getGroupUsers('department_'.$departmentDetails['id']);
+			foreach ($assignedUsers as $assignedUser) {
+				$userId = VOCApp::get_instance()
+						->getUser()
+						->getUserIDbyAccessname($assignedUser);
+				$userDetails = VOCApp::get_instance()
+						->getUser()
+						->getUserDetails($userId);
+				$departmentUsers[$departmentDetails['id']][] = $userDetails;
+			}
+
+		}
+
+		$this->smarty->assign('allUsers', $allUsers);
+		$this->smarty->assign('departmentUsers', $departmentUsers);
+		$this->smarty->assign('departments', $departments);
+		echo $this->smarty->fetch('tpls/managePermissions.tpl');
+	}
+
+	public function actionSaveManagePermissions() {
+		$ajaxResponse = new AJAXResponse();
+
+		$department = new Department($this->db);
+		$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
+		//	Access control
+		if (!$this->user->checkAccess('facility', $departmentDetails['facility_id'])) {
+			$ajaxResponse->setSuccess(false);
+			$ajaxResponse->setMessage(VOCApp::t('general', 'You do not have permissions'));
+			$ajaxResponse->response();
+			die();
+		}
+
+		//	Access control
+		if (!$this->user->checkAccess('department', $departmentDetails['department_id'])) {
+			$ajaxResponse->setSuccess(false);
+			$ajaxResponse->setMessage(VOCApp::t('general', 'You do not have permissions'));
+			$ajaxResponse->response();
+			die();
+		}
+
+		$assignedUsers = $this->getFromRequest('assignedUsers');
+		$assignedUsersDetails = array();
+		foreach ($assignedUsers as $assignedUser) {
+			$userDetails = VOCApp::get_instance()
+					->getUser()
+					->getUserDetails($assignedUser);
+			if($userDetails['facility_id'] != $departmentDetails['facility_id']) {
+				var_dump($userDetails, $departmentDetails);
+				$ajaxResponse->setSuccess(false);
+				$ajaxResponse->setMessage(VOCApp::t('general', 'You do not have permissions'));
+				$ajaxResponse->response();
+				die();
+			}
+			$assignedUsersDetails[] = $userDetails;
+		}
+
+
+		$groupName = 'department_'.$departmentDetails['department_id'];
+		VOCApp::get_instance()
+				->getAccessControl()
+				->removeAllUsersFromGroup($groupName);
+
+		foreach ($assignedUsersDetails as $userDetails) {
+			VOCApp::get_instance()
+				->getAccessControl()
+				->addUserToGroup($userDetails['accessname'], $groupName);
+		}
+
+		$ajaxResponse->setMessage(VOCApp::t('general', 'Saved'));
+		$ajaxResponse->response();
 	}
 }
 ?>
