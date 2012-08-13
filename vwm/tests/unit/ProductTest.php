@@ -10,15 +10,15 @@ class ProductTest extends Testing\DbTestCase {
 
 	public function testGetPFPList() {
 		$product = new Product($this->db);
-		$pfpList = $product->getAvailable2CompanyPFPListByProduct('1');
+		$pfpList = $product->getAvailable2CompanyPFPListByProduct('1','1');
 		
 		$this->assertTrue(is_array($pfpList));
         $this->assertTrue(count($pfpList) == 1);
 		
-		$pfpList = $product->getUnavailable2CompanyPFPListByProduct('3');
+		$pfpList = $product->getUnavailable2CompanyPFPListByProduct('3', '1');
 		
 		$this->assertTrue(is_array($pfpList));
-        $this->assertTrue(count($pfpList) == 1);
+        $this->assertTrue(count($pfpList) == 0);
 	}
 	
 }
