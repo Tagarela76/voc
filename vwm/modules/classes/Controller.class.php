@@ -1030,27 +1030,31 @@ class Controller {
                 break;
             case "department":
 
+				$departments = new Department($this->db);
+
 				$moreThanOneDepartmentAssigned = false;
 				$groups = VOCApp::get_instance()
 					->getAccessControl()
 					->getUserGroups($_SESSION['accessname']);
 				// standart is one for level (Department Level)
 				// and second for id (department_777)
+				$departmentList = array();
 				if(count($groups) > 2) {
 					$moreThanOneDepartmentAssigned = true;
-					$departmentList = array();
 					foreach ($groups as $group) {
 						$groupArray = explode('_', $group);
 						if($groupArray[0] == 'department') {
-							$departmentList[] = array('id'=>$groupArray[1]);
+							$departmentDetails = $departments->getDepartmentDetails($groupArray[1]);
+							$departmentList[] = array(
+								'id'=> $departmentDetails['department_id'],
+								'name'=>$departmentDetails['name']
+							);
 						}
 					}
+				} elseif($this->xnyo->user['accesslevel_id'] != 2) {
+					$departmentDetails = $departments->getDepartmentDetails($id);
+					$departmentList = $departments->getDepartmentListByFacility($departmentDetails['facility_id']);
 				}
-                $departments = new Department($this->db);
-                $departmentDetails = $departments->getDepartmentDetails($id);
-                $departmentList = (!$moreThanOneDepartmentAssigned)
-						? $departments->getDepartmentListByFacility($departmentDetails['facility_id'])
-						: $departmentList;
 				
                 for ($i = 0; $i < count($departmentList); $i++) {
                     $url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . (($tail == '') ? "&bookmark=mix" : $tail);
