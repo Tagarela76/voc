@@ -1,6 +1,9 @@
 nbproject/
+.idea/
 msds/
+msds_deleted/
 voc_logs/
+documentation/html/
 /vwm/cache/
 /vwm/db_backup/
 /vwm/template_c/

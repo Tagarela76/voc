@@ -27,6 +27,11 @@ class VOCApp {
 	 */
 	private $_cache;
 
+	/**
+	 * @var VWM\Framework\VOCAccessControl
+	 */
+	private $_accessControl;
+
 	private function __construct() {
 
 	}
@@ -112,6 +117,15 @@ class VOCApp {
 		} else {
 			return false;
 		}
+	}
+
+
+	public function getAccessControl() {
+		if($this->_accessControl === null) {
+			$this->_accessControl = new VWM\Framework\VOCAccessControl;
+		}
+
+		return $this->_accessControl;
 
 	}
 
@@ -172,6 +186,16 @@ class VOCApp {
     {
         return $this->user;
     }
+
+	/**
+	 * Translate message (Not implemented yet)
+	 * @param string $category
+	 * @param string $message
+	 * @return string
+	 */
+	public static function t($category, $message) {
+		return $message;
+	}
 
 }
 

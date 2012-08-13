@@ -248,9 +248,12 @@ class NoxEmissionManager {
 
 	}
 
-
+	/**
+	 * Get list of burner manufacturers
+	 * @return array|boolean
+	 */
 	public function getBurnerManufacturerList() {
-		$sql = "SELECT * FROM burner_manufacturer";
+		$sql = "SELECT * FROM burner_manufacturer ORDER BY name";
 		$this->db->query($sql);
 
 		if($this->db->num_rows() > 0) {
