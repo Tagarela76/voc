@@ -1,14 +1,19 @@
 <div style="padding:7px;">
     <table align="center" cellpadding="0" cellspacing="0">        
 		<tr>
-			<td  colspan="2" style="padding:5px 5px 0 5px">
+			<td style="padding:5px 5px 0 5px">
 				<img src="../images/logoLarge.png" width="95px" height="75px"/>
+			</td>
+			<td style="padding:5px 5px 0 5px">
+				<div  name="printPage" id="printPage" style="display:block;">
+					<input type="button" onclick="printPage();" value="Print Page" style="font-size: 10px;"/>
+				</div>
 			</td>
 		</tr>
 		
         <tr>
             <td width="50%" valign="top" style="padding:0 2px 0 5px">
-                <table width="100%" cellpadding="0" cellspacing="0">
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 10px;">
                     <tr>
                         <td colspan="2" style="border-width:0px;" height="20px">
                             <b>Mix ID {$usage->mix_id}</b>
@@ -59,7 +64,7 @@
                 </table>
             </td>
             <td width="50%"style="padding:0 5px 0 2px" valign="top">
-                <table width="100%"cellpadding="0" cellspacing="0">        
+                <table width="100%"cellpadding="0" cellspacing="0" style="font-size: 10px;">        
 					<tr>
 						<td class="" colspan="2" height="20px">
 						</td>
@@ -99,7 +104,7 @@
         </tr>
         <tr>
             <td colspan="2" style="padding:5px 5px 0 5px">
-                <table width="100%"cellpadding="0" cellspacing="0">
+                <table width="100%"cellpadding="0" cellspacing="0" style="font-size: 10px;">
                     <tr>
                         <td height="30" width="300">
                             <b>Supplier</b>
@@ -149,7 +154,7 @@
 		
 		<tr>
 			<td  colspan="2" style="padding:5px 5px 0 5px">
-			<table width="100%"cellpadding="0" cellspacing="0">
+				<table width="100%"cellpadding="0" cellspacing="0" style="font-size: 10px;">
 				<tr height="30">
 					<td ><b>Case Number</b></td>
 					<td><b>Description</b></td>
@@ -166,7 +171,7 @@
 		
 		<tr>
 			<td width="50%" valign="top" style="padding:0 2px 0 5px">                
-			<table width="100%"cellpadding="0" cellspacing="0">
+			<table width="100%"cellpadding="0" cellspacing="0" style="font-size: 10px;">
 				<tr height="30">
 					<td ><b>Chemical Classification</b></td>
 					<td>{$chemicalClassification}</td>
@@ -175,7 +180,7 @@
 			</td>
 			
 			<td width="50%" valign="top" style="padding:0 2px 0 5px">                
-			<table width="100%"cellpadding="0" cellspacing="0">
+			<table width="100%"cellpadding="0" cellspacing="0" style="font-size: 10px;">
 				<tr height="30">
 					<td ><b>Health Hazards Requirements</b></td>
 					<td>{$healthHazardous}</td>
@@ -188,3 +193,15 @@
 		
     
 </div>
+				
+{literal}
+	<script type="text/javascript" src="modules/js/jquery-1.5.2.js"></script>
+	<script type="text/javascript">
+	
+		function printPage() {
+			$('#printPage').css("display", "none");
+			window.print();
+			$('#printPage').css("display", "block");
+		}
+	</script>
+{/literal}
