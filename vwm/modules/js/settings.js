@@ -64,7 +64,7 @@ function ManagePermissions() {
 	}
 
 	this.save = function() {
-		console.log('SAVE');
+		
 		var assignedUsers = [];
 		$('#departmentUsers_'+this.currentDepartmentId).children('option').each(function(){
 			assignedUsers.push($(this).val());
