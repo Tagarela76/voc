@@ -2,9 +2,7 @@
 	<tr align="right">
 		<td>
 			<a href="#" onclick="settings.manageAdditionalEmailAccounts.addNewEmailAccount();"> Add </a> 
-			{if $additionalEmailAccountsList|@is_array and $additionalEmailAccountsList|@count > 0}/
-				<a href="#" onclick="settings.manageAdditionalEmailAccounts.deleteSelectedEmailAccount();"> Delete </a> 
-			{/if}
+			<a href="#" onclick="settings.manageAdditionalEmailAccounts.deleteSelectedEmailAccount();"> Delete </a> 
 		</td>
 	</tr>
 	<tr>
