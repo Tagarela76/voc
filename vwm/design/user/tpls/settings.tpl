@@ -2,8 +2,9 @@
 <script type="text/javascript">
 	$(function() {
 		//	global settings object defined at settings.js
-		settings.companyId = {/literal} {$cfd.companyID} {literal};
+		settings.companyId = {/literal} {$cfd.companyID} {literal}; 
 		settings.facilityId = {/literal} {$cfd.facilityID} {literal};
+		
 	});
 </script>
 {/literal}
@@ -62,6 +63,16 @@
                     </td>
                     <td>
                         Add or remove notifications about limits you want to get at your email.
+                    </td>
+                </tr>
+				<tr>
+                    <td>
+						<a style="color: black" href="#manageAdditionalEmailAccounts" onclick="settings.manageAdditionalEmailAccounts.openDialog()">
+							<h2>Additional Email Accounts</h2>
+						</a>
+                    </td>
+                    <td>
+                        Add or remove additional email accounts.
                     </td>
                 </tr>
             </table>
@@ -213,3 +224,4 @@
 {*END OF POPUP LIMITS*}
 
 <div id="managePermissionsContainer" title="Manage User Permissions" style="display:none;">Loading ...</div>
+<div id="manageAdditionalEmailAccountsContainer" title="Manage Additional Email Accounts" style="display:none;">Loading ...</div>

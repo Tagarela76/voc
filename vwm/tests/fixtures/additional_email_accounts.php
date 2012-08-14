@@ -1,8 +1,8 @@
 <?php
 
 return array(
-    array('id' => '1', 'number' => 'test1', 'description' => 'lalala1', 'customer_name' => 'joh smith', 'facility_id' => '1', 'status' => 'new'),
-    array('id' => '2', 'number' => 'test2', 'description' => 'llalal2', 'customer_name' => 'emmi smith', 'facility_id' => '2', 'status' => 'new'),
-    array('id' => '3', 'number' => 'test3', 'description' => 'lalala3', 'customer_name' => 'tom smith', 'facility_id' => '1', 'status' => 'new'),
-    array('id' => '4', 'number' => 'test4', 'description' => 'lalal4', 'customer_name' => 'tom kruz', 'facility_id' => '2', 'status' => 'new')
+    array('id' => '1', 'username' => 'test1', 'email' => 'test1@mail.ru', 'company_id' => 125),
+    array('id' => '2', 'username' => 'test2', 'email' => 'test2@mail.ru', 'company_id' => 125),
+    array('id' => '3', 'username' => 'test3', 'email' => 'test3@mail.ru', 'company_id' => 125),
+    array('id' => '4', 'username' => 'test4', 'email' => 'test4@mail.ru', 'company_id' => 125)
 );

@@ -148,9 +148,134 @@ function ManagePermissions() {
 	}
 }
 
+function manageAdditionalEmailAccounts() {
+	this.divId = 'manageAdditionalEmailAccountsContainer';
+	this.divUserAccountListId = 'userAccountListContainer';
+	this.isLoaded = false;
 
+	this.iniDialog = function(divId) {
+		divId = typeof divId !== 'undefined' ? divId : this.divId;
+		if(divId != this.divId) {
+			this.divId = divId;
+		}
+
+		var that = this;
+		$("#"+divId).dialog({
+			width: 350,
+			height: 400,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog('close');
+					that.isLoaded = false;
+				}
+			}
+		});
+	}
+
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
+
+	this.loadContent = function() {
+		var that = this;
+		$.ajax({
+			url: "?action=loadManageAdditionalEmailAccounts",
+			data: {facilityId: settings.facilityId, companyId: settings.companyId},
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				$("#"+that.divId).html(response);
+				that.isLoaded = true;
+      		}
+		});
+	}
+
+	this.deleteSelectedEmailAccount = function() {
+		
+		var that = this;
+		var checkboxes = $("#"+that.divUserAccountListId).find("input[type='checkbox']");
+		var rowsToRemove = new Array();
+		var companyId = $('#companyId').val();
+		// clean
+		$('#emailAccountDeleteItemError').css("display", "none");
+		$('#emailAccountUserNameError').css("display", "none");
+		$('#emailAccountUserEmailError').css("display", "none");
+		$('#emailAccountUserIdError').css("display", "none");
+		
+		checkboxes.each(function(i){
+			var id = this.value;
+			if(this.checked) {
+				rowsToRemove.push(id);
+			}
+
+		});
+		if (rowsToRemove.length <1) {
+			$('#emailAccountDeleteItemError').css("display", "block");
+		} else {
+			$.ajax({
+				url: "?action=deleteItem&category=additionalEmailAccounts",
+				data: {id: rowsToRemove, companyId: companyId},
+				type: "GET",
+				dataType: "html",
+				success: function (response) {
+					$("#"+that.divUserAccountListId).html(response);
+				}
+			});
+		}		
+	}
+	
+	this.addNewEmailAccount = function() {
+		var that = this;
+		var isError = false;
+		// clean
+		$('#emailAccountDeleteItemError').css("display", "none");
+		$('#emailAccountUserNameError').css("display", "none");
+		$('#emailAccountUserEmailError').css("display", "none");
+		$('#emailAccountUserIdError').css("display", "none");
+		
+		var emailAccountUserName = $('#emailAccountUserName').val();
+		var emailAccountUserEmail = $('#emailAccountUserEmail').val();
+		var companyId = $('#companyId').val();
+		if (emailAccountUserName == "") {
+			$('#emailAccountUserNameError').css("display", "block");
+			isError = true;
+		} if (emailAccountUserEmail == "") {
+			$('#emailAccountUserEmailError').css("display", "block");
+			isError = true;
+		}
+		if (isError) {
+			return false;
+		}
+		
+		$.ajax({
+			url: "?action=addItem&category=additionalEmailAccounts",
+			data: {emailAccountUserName: emailAccountUserName, emailAccountUserEmail: emailAccountUserEmail, companyId: companyId},
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				if (response == "error") {
+					// enterred email already in use
+					$('#emailAccountUserIdError').css("display", "block");
+				} else {
+					$("#"+that.divUserAccountListId).html(response);
+				}
+			}
+		});
+	}
+}
+			
+		
 function Settings() {
 	this.managePermissions = new ManagePermissions();
+	this.manageAdditionalEmailAccounts = new manageAdditionalEmailAccounts();
 	this.companyId = false;
 	this.facilityId = false;
 }
@@ -163,4 +288,5 @@ $(function() {
 	//	ini global object
 	settings = new Settings();
 	settings.managePermissions.iniDialog();
+	settings.manageAdditionalEmailAccounts.iniDialog();
 });

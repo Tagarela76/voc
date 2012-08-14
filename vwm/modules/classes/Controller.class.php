@@ -795,6 +795,11 @@ class Controller {
         $customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $cfd['companyID'], $cfd['facilityID'], $cfd['departmentID']);
         $this->smarty->assign('ruleList', $ruleList);
         $this->smarty->assign('customizedRuleList', $customizedRuleList);
+		
+		// i need do this because js don't want work with empty value(company level)
+		if (!isset($cfd['facilityID'])) {
+			$cfd['facilityID'] = "false";
+		}
         $this->smarty->assign('cfd', $cfd);
         $this->smarty->assign('userID', $_SESSION['user_id']);
         $emailNotifications = new EmailNotifications($this->db);
@@ -1514,7 +1519,7 @@ class Controller {
         }
         $this->smarty->assign('pxNoxCount', $pxNoxCount); //	200px - indicator length
     }
-
+	
 }
 
 ?>

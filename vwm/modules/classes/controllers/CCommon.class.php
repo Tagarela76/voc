@@ -951,5 +951,19 @@ jgypsyn@gyantgroup.com
 		$ajaxResponse->setMessage(VOCApp::t('general', 'Saved'));
 		$ajaxResponse->response();
 	}
+	
+	public function actionLoadManageAdditionalEmailAccounts() {
+
+		//	Access control
+		if (!$this->user->isHaveAccessTo('view', 'company')) {
+			throw new Exception('deny');
+		}
+		
+		$additionalEmailAccounts = new AdditionalEmailAccounts($this->db);
+		$additionalEmailAccountsList = $additionalEmailAccounts->getAdditionalEmailAccountsByCompany($this->getFromRequest('companyId'));
+		$this->smarty->assign('companyId', $this->getFromRequest('companyId'));
+		$this->smarty->assign('additionalEmailAccountsList', $additionalEmailAccountsList);
+		echo $this->smarty->fetch('tpls/manageAdditionalEmailAccounts.tpl');
+	}
 }
 ?>

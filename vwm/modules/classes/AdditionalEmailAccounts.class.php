@@ -1,6 +1,6 @@
 <?php
 
-class WorkOrder {
+class AdditionalEmailAccounts {
 
 	/**
 	 *
@@ -12,31 +12,19 @@ class WorkOrder {
 	 *
 	 * @var string 
 	 */
-	public $number;
+	public $username;
 	
 	/**
 	 *
 	 * @var string 
 	 */
-	public $description;
+	public $email;
 	
 	/**
 	 *
-	 * @var string 
+	 * @var int 
 	 */
-	public $customer_name;
-
-	/**
-	 *
-	 * @var string 
-	 */
-	public $facility_id;
-
-	/**
-	 *
-	 * @var string 
-	 */
-	public $status;
+	public $company_id;
 	
 	/**
 	 * db connection
@@ -45,76 +33,72 @@ class WorkOrder {
 	private $db;
 
 
-	function __construct(db $db, $workOrderId = null) {
+	function __construct(db $db, $additionalEmailAccounts = null) {
 		$this->db = $db;
 
-		if (isset($workOrderId)) {
-			$this->id = $workOrderId;
+		if (isset($additionalEmailAccounts)) {
+			$this->id = $additionalEmailAccounts;
 			$this->_load();
 		}
 	}
 
 	/**
-	 * add work order
+	 * add an additional Email Account 
 	 * @return int 
 	 */
-	public function addWorkOrder() {
+	public function addAdditionalEmailAccount() {
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status) 
+		$query = "INSERT INTO " . TB_ADDITIONAL_EMAIL_ACCOUNTS . "(username, email, company_id) 
 				VALUES ( 
-				'" . $this->db->sqltext($this->number) . "'
-				, '" . $this->db->sqltext($this->description) . "'
-				, '" . $this->db->sqltext($this->customer_name) . "'
-				, '" . $this->db->sqltext($this->facility_id) . "'	
-				, '" . $this->db->sqltext($this->status) . "'	
+				'" . $this->db->sqltext($this->username) . "'
+				, '" . $this->db->sqltext($this->email) . "'	
+				, " . $this->db->sqltext($this->company_id) . "	
 				)";
 		$this->db->query($query); 
-		$work_order_id = $this->db->getLastInsertedID();
-		$this->id = $work_order_id;
-		return $work_order_id;
-	}
-
-	/**
-	 * update work order
-	 * @return int 
-	 */
-	public function updateWorkOrder() {
-
-		$query = "UPDATE " . TB_WORK_ORDER . "
-					set number='" . $this->db->sqltext($this->number) . "',
-						description='" . $this->db->sqltext($this->description) . "',
-						customer_name='" . $this->db->sqltext($this->customer_name) . "',	
-						facility_id='" . $this->db->sqltext($this->facility_id) . "',
-						status='" . $this->db->sqltext($this->status) . "'	
-					WHERE id= " . $this->db->sqltext($this->id);
-		$this->db->query($query);
-
-		return $this->id;
+		$additionalEmailAccountsId = $this->db->getLastInsertedID();
+		$this->id = $additionalEmailAccountsId;
+		return $additionalEmailAccountsId;
 	}
 
 	/**
 	 *
-	 * delete work order
+	 * delete an additional Email Account
 	 */
 	public function delete() {
 
-		$sql = "DELETE FROM " . TB_WORK_ORDER . "
+		$sql = "DELETE FROM " . TB_ADDITIONAL_EMAIL_ACCOUNTS . "
 				 WHERE id=" . $this->db->sqltext($this->id);
 		$this->db->query($sql);
 	}
 
 	/**
-	 * insert or update work order
+	 * insert a new additional Email Account (or return FALSE if this email account exist)
 	 * @return int 
 	 */
 	public function save() {
-
-		if (!isset($this->id)) {
-			$work_order_id = $this->addWorkOrder();
+		
+		// check if account with current email already exist in additioanl email account table
+		$sql = "SELECT * 
+				FROM " . TB_ADDITIONAL_EMAIL_ACCOUNTS . "
+				 WHERE email='" . $this->db->sqltext($this->email) .
+				"'";
+		$this->db->query($sql);
+		$emailAccount = $this->db->num_rows();
+		
+		// check if account with current email already exist in user table
+		$sql = "SELECT * 
+				FROM " . TB_USER . "
+				 WHERE email='" . $this->db->sqltext($this->email) .
+				"'";
+		$this->db->query($sql);
+		$emailAccount += $this->db->num_rows();
+		if ($emailAccount == 0) {
+			$additionalEmailAccountsId = $this->addAdditionalEmailAccount();
 		} else {
-			$work_order_id = $this->updateWorkOrder();
+			$additionalEmailAccountsId = false;
 		}
-		return $work_order_id;
+		
+		return $additionalEmailAccountsId;
 	}
 
 	/**
@@ -123,7 +107,6 @@ class WorkOrder {
 	 * @param string $name - property name. method call method get_%property_name%, if method does not exists - return property value;
 	 */
 	public function __get($name) {
-
 
 		if (method_exists($this, "get_" . $name)) {
 			$methodName = "get_" . $name;
@@ -159,13 +142,17 @@ class WorkOrder {
 		}
 	}
 
+	/**
+	 * load one additional email account
+	 * @return boolean 
+	 */
 	private function _load() {
 
 		if (!isset($this->id)) {
 			return false;
 		}
 		$sql = "SELECT * 
-				FROM " . TB_WORK_ORDER . "
+				FROM " . TB_ADDITIONAL_EMAIL_ACCOUNTS . "
 				 WHERE id='" . $this->db->sqltext($this->id) .
 				"' LIMIT 1";
 		$this->db->query($sql);
@@ -182,28 +169,32 @@ class WorkOrder {
 		}
 	}
 	
+	/**
+	 * method that returs all additional email accounts
+	 * @param int $companyId
+	 * @return boolean|\AdditionalEmailAccounts 
+	 */
+	public function getAdditionalEmailAccountsByCompany($companyId) {
 		
-	public function getMixes() {
-		
-		$query = "SELECT * FROM " . TB_USAGE .
-				 " WHERE wo_id={$this->db->sqltext($this->id)}";
+		$query = "SELECT * FROM " . TB_ADDITIONAL_EMAIL_ACCOUNTS . 
+				 " WHERE company_id={$this->db->sqltext($companyId)}";
 		$this->db->query($query);
 		$rows = $this->db->fetch_all_array();
 
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}
-		$mixes = array();
+		$additionalEmailAccounts = array();
 		foreach ($rows as $row) {
-			$mix = new MixOptimized($this->db);
+			$additionalEmailAccount = new AdditionalEmailAccounts($this->db);
 			foreach ($row as $key => $value) {
-				if (property_exists($mix, $key)) {
-					$mix->$key = $value;
+				if (property_exists($additionalEmailAccount, $key)) {
+					$additionalEmailAccount->$key = $value;
 				}
 			}
-			$mixes[] = $mix;
+			$additionalEmailAccounts[] = $additionalEmailAccount;
 		}
-		return $mixes;
+		return $additionalEmailAccounts;
 	}
 
 }

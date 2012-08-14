@@ -1,52 +1,73 @@
-<table class="popup_table" align="center" width="750px" cellspacing="0" cellpadding="0">
-	<tr>
-		<td class="control_list" style="border-bottom:0px solid #fff;padding-left:0px" colspan="3">
-			<select id="departmentSwitcher" onchange="settings.managePermissions.showDepartament(this);">
-				{foreach from=$departments item="department"}
-					<option value="{$department.id}">{$department.name|escape}</option>
-				{/foreach}
-			</select>
+<table class="popup_table" align="center" cellspacing="0" cellpadding="0">
+	<tr align="right">
+		<td>
+			<a href="#" onclick="settings.manageAdditionalEmailAccounts.addNewEmailAccount();"> Add </a> 
+			{if $additionalEmailAccountsList|@is_array and $additionalEmailAccountsList|@count > 0}/
+				<a href="#" onclick="settings.manageAdditionalEmailAccounts.deleteSelectedEmailAccount();"> Delete </a> 
+			{/if}
 		</td>
 	</tr>
-	<tr  class="table_popup_rule">
+	<tr>
 		<td>
-		{php} echo VOCAPP::t('general', 'All Users'){/php}
-	</td>
-	<td>
-	{php} echo VOCAPP::t('general', 'Controls'){/php}
-</td>
-<td>
-{php} echo VOCAPP::t('general', 'Department Users'){/php}
-</td>
-</tr>
+			<div class="error_img"  id="emailAccountDeleteItemError" style="display:none;"><span class="error_text" >Check at least one item!</span></div>
+		</td>
+		<td><input type='hidden' name='companyId' id='companyId' value='{$companyId}'/></td>
+	</tr>
 <tr>
 	<td>
-		<select multiple="multiple" id="allUsers">
-			{foreach from=$allUsers item="user"}
-				{if $user.accesslevel_id == 2}
-					<option value="{$user.user_id}">{$user.username}</option>
+		<div id="userAccountListContainer">
+			<table align="left" cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="control_list" colspan="3" style="border-bottom:0px solid #fff;padding-left:0px">
+						Select: <a onclick="CheckAll(this)" name="allEmailAccountsList" class="id_company1">All</a>
+						/<a onclick="unCheckAll(this)" name="allEmailAccountsList" class="id_company1">None</a>
+					</td>
+				</tr>
+				<tr class="table_popup_rule">
+					<td align="center" width="10%">
+						Select
+					</td>
+					<td>
+						Name
+					</td>
+					<td>
+						Email
+					</td>
+				</tr>
+				{if $additionalEmailAccountsList|@is_array and $additionalEmailAccountsList|@count > 0}
+				{foreach from=$additionalEmailAccountsList item="emailAccount"}
+					<tr>
+						<td>
+							<input type="checkbox" name="emailAccountUserId" id="emailAccountUserId" value="{$emailAccount->id}" />
+						</td>
+						<td>
+							{$emailAccount->username}
+						</td>
+						<td>
+							{$emailAccount->email}
+						</td>
+					</tr>
+				{/foreach}
 				{/if}
-			{/foreach}
-		</select>
-	</td>
-	<td colspan="2">
-		{foreach from=$departments item="department"}
-			<div id="departmentPermissions_{$department.id}" class="departmentPermissions" style="display:none;">
-				<div style="vertical-align: center;float:left;margin-right: 70px;">
-					<input type="button" class="button" value=">>" onclick="settings.managePermissions.moveFromAllToAssigned();"/><br/>
-					<input type="button" class="button" value="<<" onclick="settings.managePermissions.moveFromAssignedToAll();"/>
-				</div>
-				<div>
-					<select multiple="multiple" id="departmentUsers_{$department.id}">
-						{assign var="departmentId" value=$department.id}
-						{foreach from=$departmentUsers.$departmentId item="user"}
-							<option value="{$user.user_id}">{$user.username}</option>
-						{/foreach}
-					</select>
-				</div>
-			</div>
-
-		{/foreach}
+					<tr>
+						<td></td>
+						<td><input type='text' name='emailAccountUserName' id='emailAccountUserName' value=''/></td>
+						<td><input type='text' name='emailAccountUserEmail' id='emailAccountUserEmail' value=''/></td>
+					</tr>
+					<tr>
+						<td>
+							
+						</td>
+						<td>
+							<div class="error_img"  id="emailAccountUserIdError" style="display:none;"><span class="error_text" >Email is already in use!</span></div>
+							<div class="error_img"  id="emailAccountUserNameError" style="display:none;"><span class="error_text" >Fill name!</span></div>
+						</td>
+						<td>
+							<div class="error_img"  id="emailAccountUserEmailError" style="display:none;"><span class="error_text" >Fill email!!</span></div>
+						</td>
+					</tr>
+			</table>
+		</div>
 	</td>
 </tr>
 </table>
