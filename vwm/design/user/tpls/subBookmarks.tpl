@@ -57,3 +57,8 @@
 	{include file="tpls:tpls/subBookmarkPfpLibrary.tpl"}
 {/if}
 {*PFP*}
+{*PRODUCT & MSDS LIBRARY*}
+{if $request.bookmark == 'product'}
+	{include file="tpls:tpls/subBookmarkProductLibrary.tpl"}
+{/if}
+{*PFP*}
