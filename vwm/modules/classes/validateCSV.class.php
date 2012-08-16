@@ -259,6 +259,7 @@ class validateCSV {
 			$data_tmp[38] = $data[$headerKey['productPricing']] ; // product price(from manufacturer)
 			$data_tmp[39] = $data[$headerKey['unitType']] ; // unit type
 			$data_tmp[40] = $data[$headerKey['QTY']] ; // product quantity
+			$data_tmp[41] = $data[$headerKey['libraryTypes']] ; // product library type
 			
 			$data = $data_tmp;
 
@@ -385,7 +386,9 @@ class validateCSV {
 						"discontinued" => $data[37],
 						"productPricing" => $this->calculateProductPrice($data[38], $data[40]),
 						"unitType" => $unitType,
-						"QTY" => $data[40]
+						"QTY" => $data[40],
+						"libraryTypes" => $data[41]
+						
 					);
 				}
 
@@ -909,6 +912,8 @@ class validateCSV {
 		$possibleUnitType = array('UNIT TYPE');
 		$possibleQTY = array('QTY');
 		
+		$possibleLibraryTypes = array('LIBRARY TYPE');
+		
 		$columnIndex = array();
 
 		for ($i=0;$i<count($secondRowData);$i++){
@@ -1420,6 +1425,24 @@ class validateCSV {
 					}
 				}
 			}
+			
+			//library types mapping
+			if (!isset($key['libraryTypes'])){
+				if ( (strtoupper(trim($firstRowData[$i])) == 'LIBRARY') &&
+						strtoupper(trim($secondRowData[$i])) == 'TYPE' ) {
+					$key['libraryTypes'] = $i;
+					$columnIndex[$i] = TRUE;
+				}
+				foreach ($possibleLibraryTypes as $header){
+					if ( strtoupper(trim($firstRowData[$i])) == $header ){
+						$key['possibleLibraryTypes'] = $i;
+						$columnIndex[$i] = TRUE;
+					} elseif ( strtoupper(trim($secondRowData[$i])) == $header ){
+						$key['possibleLibraryTypes'] = $i;
+						$columnIndex[$i] = TRUE;
+					}
+				}
+			}
 
 
 		}
@@ -1428,7 +1451,7 @@ class validateCSV {
 								'rule','vocwx','voclx','case','description','mmhg','temp','weight',
 								'density','gavity','boilingRangeFrom','boilingRangeTo','class','irr',
 								'ohh','sens','oxy1','VOCPM', 'einecsElincs','substanceSymbol', 'substanceR',
-								'percentVolatileWeight', 'percentVolatileVolume', 'waste', 'productPricing', 'unitType', 'QTY');
+								'percentVolatileWeight', 'percentVolatileVolume', 'waste', 'productPricing', 'unitType', 'QTY', 'libraryTypes');
 		for ($i=0;$i<count($columnsArray);$i++){
 			if ( !isset($key[$columnsArray[$i]]) && !$columnIndex[$i]){
 				//$key[$columnsArray[$i]] = $i;

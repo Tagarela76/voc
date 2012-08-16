@@ -244,6 +244,8 @@ define ('TB_USERS2REGS', 'users2regs');
 define ('TB_DATE_FORMAT', 'date_format');
 define ('TB_NOTIFY_CODE', 'notify_code');
 define ('TB_ADDITIONAL_EMAIL_ACCOUNTS', 'additional_email_accounts');
+define ('TB_PRODUCT_LIBRARY_TYPE', 'product_library_type');
+define ('TB_PRODUCT2PRODUCT_LIBRARY_TYPE', 'product2product_library_type');
 
 //billing system constants
 define ('TB_VPS_MODULE_BILLING','vps_module_billing');

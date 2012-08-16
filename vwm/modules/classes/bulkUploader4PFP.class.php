@@ -25,6 +25,7 @@ class bulkUploader4PFP {
 	const PRODUCTNR_INDEX = 2;
 	const PRODUCTRATIO_INDEX = 4;
 	const PRODUCTUNITTYPE_INDEX = 5;
+	const PRODUCTNAME_INDEX = 3;
 
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
 		
@@ -59,7 +60,7 @@ class bulkUploader4PFP {
 			$productRATIOSTo = array();
 			$productRATIOSFromOriginal = array();
 			$productRATIOSToOriginal = array();
-			$description = '/ ';
+		//	$description = '/ ';
 
 			for ($i = 0; $i < count($products); $i++) {
 
@@ -82,7 +83,12 @@ class bulkUploader4PFP {
 								? $products[$i]['ratioRangeToOriginal']
 								: false;
 
-						$description .= $products[$i][self::PRODUCTNR_INDEX] . " / ";
+						if ($i == 0) {
+							$description .= $products[$i][self::PRODUCTNAME_INDEX] . " / " . $products[$i][self::PRODUCTNR_INDEX] . " / ";
+						} else {
+							$description .= $products[$i][self::PRODUCTNR_INDEX] . " / ";
+						}
+						
 					} else {
 						$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " has ratio less than 1 \n";
 					}

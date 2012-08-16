@@ -1,7 +1,7 @@
 <table class="popup_table" align="center" cellspacing="0" cellpadding="0">
 	<tr align="right">
 		<td>
-			<a href="#" onclick="settings.manageAdditionalEmailAccounts.addNewEmailAccount();"> Add </a> 
+			<a href="#" onclick="settings.manageAdditionalEmailAccounts.addNewEmailAccount();"> Add </a> /
 			<a href="#" onclick="settings.manageAdditionalEmailAccounts.deleteSelectedEmailAccount();"> Delete </a> 
 		</td>
 	</tr>

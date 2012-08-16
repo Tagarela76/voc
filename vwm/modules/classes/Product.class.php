@@ -51,7 +51,7 @@ class Product extends ProductProperties {
 		return $result;
 	}
 
-	public function getProductList($companyID = 0, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ') {
+	public function getProductList($companyID = 0, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier ', $libraryType = NULL) {
 		if (is_null($pagination)) {
 			//here we get product list for dropdown => we shouls sort it by product_nr too
 			if (strstr($sort, 'product_nr') == 0) {
@@ -62,7 +62,7 @@ class Product extends ProductProperties {
 		if($companyID) {
 			$this->organizationCriteria['companyID'] = $companyID;
 		}
-		$products = $this->_selectProductsByCompany(0, $pagination, $filter, $sort);
+		$products = $this->_selectProductsByCompany(0, $pagination, $filter, $sort, $libraryType);
 
 		if ($products) {
 			//	if asking without pagination we don't need MSDS links, cuz I think they need product list for dropdown
@@ -1097,12 +1097,23 @@ class Product extends ProductProperties {
 		$this->db->query($query);
 	}
 
-	public function getProductCount($supplierID = 0, $filter = ' TRUE ') {
-		$query = "SELECT count(*) AS cnt " .
-				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
-				"WHERE p.supplier_id = s.supplier_id " .
-				"AND coat.coat_id = p.coating_id " .
-				"AND {$filter} ";
+	public function getProductCount($supplierID = 0, $filter = ' TRUE ', $libraryType) {
+		
+		if (!is_null($libraryType)) {
+			$query = "SELECT count(*) AS cnt " .
+					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
+					"LEFT JOIN " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " p2lt ON(p2lt.product_id=p.product_id)" .
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND coat.coat_id = p.coating_id " .
+					"AND p2lt.product_library_type_id = {$this->db->sqltext($libraryType)} " .
+					"AND {$filter} ";
+		} else {
+			$query = "SELECT count(*) AS cnt " .
+					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND coat.coat_id = p.coating_id " .
+					"AND {$filter} ";
+		}
 
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
@@ -1133,7 +1144,7 @@ class Product extends ProductProperties {
 
 		$this->db->query($query);
 
-		$numRows = $this->db->num_rows();
+		$numRows = $this->db->num_rows(); 
 		if ($numRows == 1) {
 			return $this->db->fetch(0)->cnt;
 		} else {
@@ -1210,16 +1221,27 @@ class Product extends ProductProperties {
 	 * supplier_id, supplier, voclx, vocwx, percent_volatile_weight,
 	 * percent_volatile_volume
 	 */
-	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier, p.product_nr ') {
+	private function _selectProductsByCompany($supplierID, Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY s.supplier, p.product_nr ', $libraryType = NULL) {
 
-		$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
-					p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
-					p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_my_manufacturer " .
-				"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
-				"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
-
-				"WHERE p.supplier_id = s.supplier_id " .
-				"AND coat.coat_id = p.coating_id ";
+		if (!is_null($libraryType)) {
+			$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
+						p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
+						p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_my_manufacturer " .
+					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
+					"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
+					"LEFT JOIN " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " p2lt ON(p2lt.product_id=p.product_id)" .
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND coat.coat_id = p.coating_id " .
+					"AND p2lt.product_library_type_id = {$this->db->sqltext($libraryType)} ";
+		} else {
+			$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
+						p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
+						p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_my_manufacturer " .
+					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
+					"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
+					"WHERE p.supplier_id = s.supplier_id " .
+					"AND coat.coat_id = p.coating_id ";
+		}
 	
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
@@ -1364,7 +1386,71 @@ class Product extends ProductProperties {
 			
 		return $pfpList;
 	}
+	
+	/**
+	 * method for adding product some product library type
+	 * @param type array of int
+	 * @param type int
+	 */
+	public function addProductLibraryTypes($productLibraryTypes, $id) {
 
+		for ($i = 0; $i < count($productLibraryTypes); $i++) {
+			
+			$query = "INSERT INTO " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " (product_id, product_library_type_id) VALUES (";
+			$query.="'" . $this->db->sqltext($id) . "', ";
+			$query.="'" . $this->db->sqltext($productLibraryTypes[$i]['product_library_type_id']) . "'";
+			$query.=")";
+			$this->db->query($query);
+		}
+	}
+	
+	/**
+	 * delete all product library types for choice product
+	 * @param type int 
+	 */
+	public function deleteProductLibraryTypes($id) {
+
+		$query = "DELETE FROM " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " WHERE product_id = " . $this->db->sqltext($id);
+		$this->db->query($query);
+	}
+
+	/**
+	 * get all product's library types
+	 * @param type int
+	 * @return boolean|\ProductLibraryType 
+	 */
+	public function getProductLibraryTypes($productId) {
+		
+		$query = "SELECT product_library_type_id FROM " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE .
+				 " WHERE product_id={$this->db->sqltext($productId)}";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$productLibraryTypesIds = array();
+		foreach ($rows as $row) {
+			$productLibraryTypesIds[] = $row['product_library_type_id'];
+		}
+		$productLibraryTypesIds = explode(',', $productLibraryTypesIds);
+		$query = "SELECT * FROM " . TB_PRODUCT_LIBRARY_TYPE .
+				 " WHERE id IN({$this->db->sqltext($productLibraryTypesIds)})";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+		
+		$productLibraryTypes = array();
+		foreach ($rows as $row) {
+			$productLibraryType = new ProductLibraryType($this->db);
+			foreach ($productLibraryType as $key => $value) {
+				if (property_exists($productLibraryType, $key)) {
+					$productLibraryType->$key = $value;
+				}
+			}
+			$productLibraryTypes[] = $productLibraryType;
+		}
+		return $productLibraryTypes;
+	}
 }
 
 ?>

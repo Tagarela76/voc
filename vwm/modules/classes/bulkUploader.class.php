@@ -78,7 +78,7 @@ class bulkUploader {
 					$actionLog .= "	Product ".$products[$i]['productID']." already exists. Update items: NO.\n";
 				}
 
-			} //if isset($r->product_id)
+			}
 		}
 
 		$this->validationResult = "	Percent of errors is ".$percent."%.";
@@ -220,6 +220,33 @@ class bulkUploader {
 			for ($i=0;$i<count($product['component']);$i++){
 				$actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);
 			}
+			
+			// set product to library type
+			// format libraryTypes = > from string to array
+			$productLibraryTypes = array();
+			$libraryTypes = explode(',', $product['libraryTypes']); // we get array of library types
+			
+			foreach ($libraryTypes as $libraryType) {
+				switch (trim($libraryType)) {
+					case ProductLibraryType::PAINT_SHOP_PRODUCTS :
+						$productLibraryTypes[] = "1";
+					break;
+				
+					case ProductLibraryType::BODY_SHOP_PRODUCTS:
+						$productLibraryTypes[] = "2";
+					break;
+				
+					case ProductLibraryType::DETAILING_SHOP_PRODUCTS:
+						$productLibraryTypes[] = "3";
+					break;
+				}
+			}
+			// first we need delete all library types by this product
+			$productClass = new Product($this->db);
+			$productClass->deleteProductLibraryTypes($productID);
+			// then add new product library types
+			$productClass->addProductLibraryTypes($productLibraryTypes, $productID);
+			
 		} else {
 			$productID = 0;
 			$actionLog .= "	Error while adding product " . $product['productID'] . "\n";
@@ -329,18 +356,32 @@ class bulkUploader {
 			$this->productObj->assignProduct2Type($productID, $industryType['industryType'], $industryType['industrySubType']);
 		}
 
-		//	set product to chemical class link
-		$this->hazardousObj->setProduct2ChemicalClasses($productID, $chemicalClasses);
+		// set product to library type
+		// format libraryTypes = > from string to array
+		$productLibraryTypes = array();
+		$libraryTypes = explode(',', $product['libraryTypes']); // we get array of library types
 
-		//component part
-		//delete old data
-		$actionLog .= "			Deleting old components from product ".$product['productID']."\n";
-		$this->db->query("DELETE FROM components_group WHERE product_id = " . $productID);
+		foreach ($libraryTypes as $libraryType) {
+			switch (trim($libraryType)) {
+				case ProductLibraryType::PAINT_SHOP_PRODUCTS :
+					$productLibraryTypes[] = "1";
+				break;
 
-		//add new components
-		for ($i=0;$i<count($product['component']);$i++){
-			$actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);	//	$product['productID'] - name
+				case ProductLibraryType::BODY_SHOP_PRODUCTS:
+					$productLibraryTypes[] = "2";
+				break;
+
+				case ProductLibraryType::DETAILING_SHOP_PRODUCTS:
+					$productLibraryTypes[] = "3";
+				break;
+			}
 		}
+		// first we need delete all library types by this product
+		$productClass = new Product($this->db);
+		$productClass->deleteProductLibraryTypes($productID);
+		// then add new product library types
+		$productClass->addProductLibraryTypes($productLibraryTypes, $productID);
+		
 		return $actionLog;
 	}
 

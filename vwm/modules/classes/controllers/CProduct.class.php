@@ -67,7 +67,7 @@ class CProduct extends Controller {
 	 * bookmarkAccessory($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
-	protected function bookmarkDProduct($vars) {
+	protected function bookmarkDProduct($vars) { 
 		extract($vars);
 
 		$product = new Product($this->db);
@@ -84,8 +84,12 @@ class CProduct extends Controller {
 		// set organization criteria
 		$product->organizationCriteria['companyID'] = ($companyDetails['company_id']) ? $companyDetails['company_id'] : false;
 		$product->organizationCriteria['facilityID'] = ($facilityDetails['facility_id']) ? $facilityDetails['facility_id'] : false;
-
-		$productCount = $product->getProductCount();
+		
+		$libraryType = $this->getFromRequest('libraryType');
+		$productLibraryType = new ProductLibraryType($this->db);		
+		$productLibraryTypeID = $productLibraryType->mapping($libraryType);
+		
+		$productCount = $product->getProductCount(0, 'true', $productLibraryTypeID);
 
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
@@ -94,7 +98,8 @@ class CProduct extends Controller {
 		$pagination->url = $url;
 		$this->smarty->assign('pagination', $pagination);
 
-		$productList = $product->getProductList($companyDetails['company_id'], $pagination, $filterStr, $sortStr, false);
+		$productList = $product->getProductList($companyDetails['company_id'], $pagination, $filterStr, $sortStr, $productLibraryTypeID);
+		
 		$itemsCount = ($productList) ? count($productList) : 0;
 
 		for ($i = 0; $i < $itemsCount; $i++) {
