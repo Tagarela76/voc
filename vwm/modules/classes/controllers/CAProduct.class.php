@@ -349,7 +349,8 @@ class CAProduct extends Controller {
 				"product_instock"	=>	$this->getFromPost("stock"),
 				"product_limit"		=>	$this->getFromPost("limit"),
 				"product_amount"	=>	$this->getFromPost("amount"),
-				"product_stocktype"	=>	$this->getFromPost("selectUnittype")
+				"product_stocktype"	=>	$this->getFromPost("selectUnittype"),
+				"product_pricing"	=>	$this->getFromPost("product_pricing")
 
 			);
 
@@ -503,7 +504,7 @@ class CAProduct extends Controller {
 		//	END NO POST REQUEST
 
 		if ($this->getFromPost('save') == "Save")
-		{
+		{ 
 			$validStatus = $validation->validateRegDataProduct($productData);
 
 			//check for duplicate names
@@ -726,7 +727,8 @@ class CAProduct extends Controller {
 				"product_instock"	=>	$this->getFromPost("stock"),
 				"product_limit"		=>	$this->getFromPost("limit"),
 				"product_amount"	=>	$this->getFromPost("amount"),
-				"product_stocktype"	=>	$this->getFromPost("selectUnittype")
+				"product_stocktype"	=>	$this->getFromPost("selectUnittype"),
+				"product_pricing"	=>	$this->getFromPost("product_pricing")
 			);
 
 			//	process hazardous (chemical) classes

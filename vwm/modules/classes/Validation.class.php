@@ -1314,6 +1314,15 @@ class Validation {
 				$result['summary'] = 'false';
 			}
 		}
+		
+		if (isset($data['product_pricing'])) {
+			if ($this->check_price($data['product_pricing'])) {
+				$result['product_pricing'] = 'success';
+			} else {
+				$result['product_pricing'] = 'failed';
+				$result['summary'] = 'false';
+			}
+		}
 
 		return $result;
 	}
@@ -2271,6 +2280,15 @@ class Validation {
 		}
 
 		return $result;
+	}
+	
+	function check_price($comp_weight) {
+		$comp_weight = trim($comp_weight);
+		$parametrs = array('min' => 0, 'max' => 9999999999999, 'decimal' => ',.');
+		if ($this->noYes[Validate::number($comp_weight, $parametrs)] == 'YES') {
+			return true;
+		}
+		return false;
 	}
 
 }

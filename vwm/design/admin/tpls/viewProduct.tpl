@@ -261,6 +261,16 @@
 								</td>
 							</tr>
 						{/if}
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+							Price:
+							</td>
+							<td class="border_users_l border_users_r border_users_b">
+								<div align="left">
+									&nbsp;$ {$product.product_pricing}
+								</div>
+							</td>
+						</tr>
 							<tr>
 							<td class="border_users_l border_users_r" colspan="2" style="padding:5px 3px 0 3px">
 

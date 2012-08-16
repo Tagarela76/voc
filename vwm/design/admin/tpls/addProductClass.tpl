@@ -395,7 +395,24 @@
 							</div>
 							</td>
 						</tr>
-
+						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Price
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+								<div align="left" ><input type="text" name="product_pricing" value="{$data.product_pricing}"></div>
+								{if $validStatus.summary eq 'false'}
+								{if $validStatus.product_pricing eq 'failed'}
+								{*ERORR*}
+									<div style="width:80px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error!</font></div>
+								{*/ERORR*}
+								{/if}
+								{/if}
+							</td>
+						</tr>
+						
 						<tr class="users_u_top_size users_top_lightgray" >
 							<td>
 								Add new compound

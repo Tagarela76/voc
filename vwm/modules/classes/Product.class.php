@@ -317,7 +317,7 @@ class Product extends ProductProperties {
 
 		$query = "INSERT INTO " . TB_PRODUCT . " (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 				"specific_gravity, specific_gravity_unit_id, specialty_coating, aerosol, boiling_range_from, boiling_range_to, " .
-				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype) VALUES (";
+				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype, product_pricing) VALUES (";
 
 		$query.="'" . $productData["product_nr"] . "', ";
 		$query.="'" . $productData["name"] . "', ";
@@ -340,7 +340,7 @@ class Product extends ProductProperties {
 		$query.="'" . $productData["product_limit"] . "', ";
 		$query.="'" . $productData["product_amount"] . "', ";
 		$query.="'" . $productData["product_stocktype"] . "', ";
-
+		$query.="" . $productData["product_pricing"] . " ";
 
 		$query.=')';
 
@@ -453,7 +453,8 @@ class Product extends ProductProperties {
 		$query .= "product_instock = '" . $productData["product_instock"] . "', ";
 		$query .= "product_limit = '" . $productData["product_limit"] . "', ";
 		$query .= "product_amount = '" . $productData["product_amount"] . "', ";
-		$query .= "product_stocktype = '" . $productData["product_stocktype"] . "' ";
+		$query .= "product_stocktype = '" . $productData["product_stocktype"] . "', ";
+		$query .= "product_pricing = '" . $productData["product_pricing"] . "' ";
 
 		$query .= " WHERE product_id = " . $productData['product_id'];
 
