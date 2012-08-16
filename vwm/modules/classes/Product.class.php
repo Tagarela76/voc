@@ -250,11 +250,11 @@ class Product extends ProductProperties {
 			'product_instock' => $data->product_instock,
 			'product_limit' => $data->product_limit,
 			'product_amount' => $data->product_amount,
-			'discontinued' => $data->discontinued
+			'discontinued' => $data->discontinued,
+			'product_pricing' => $data->product_pricing
 		);
 		$hazardous = new Hazardous($this->db);
 		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
-
 
 		if (!$vanilla) {
 			$this->db->query("SELECT * FROM " . TB_SUPPLIER . " WHERE supplier_id = " . $data->supplier_id);
@@ -1392,15 +1392,14 @@ class Product extends ProductProperties {
 	 * @param type array of int
 	 * @param type int
 	 */
-	public function addProductLibraryTypes($productLibraryTypes, $id) {
-
-		for ($i = 0; $i < count($productLibraryTypes); $i++) {
+	public function addProductLibraryTypes($productLibraryTypes, $id) {		
+		foreach ($productLibraryTypes as $productLibraryType) {
 			
 			$query = "INSERT INTO " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " (product_id, product_library_type_id) VALUES (";
 			$query.="'" . $this->db->sqltext($id) . "', ";
-			$query.="'" . $this->db->sqltext($productLibraryTypes[$i]['product_library_type_id']) . "'";
-			$query.=")";
-			$this->db->query($query);
+			$query.="'" . $this->db->sqltext($productLibraryType) . "'";
+			$query.=")"; 
+			$this->db->query($query);			
 		}
 	}
 	
@@ -1433,7 +1432,7 @@ class Product extends ProductProperties {
 		foreach ($rows as $row) {
 			$productLibraryTypesIds[] = $row['product_library_type_id'];
 		}
-		$productLibraryTypesIds = explode(',', $productLibraryTypesIds);
+		$productLibraryTypesIds = implode(',', $productLibraryTypesIds); 
 		$query = "SELECT * FROM " . TB_PRODUCT_LIBRARY_TYPE .
 				 " WHERE id IN({$this->db->sqltext($productLibraryTypesIds)})";
 		$this->db->query($query);
