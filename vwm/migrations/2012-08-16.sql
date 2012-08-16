@@ -16,3 +16,8 @@ ALTER TABLE `product2product_library_type` ADD FOREIGN KEY ( `product_id` ) REFE
 ALTER TABLE `product2product_library_type` ADD FOREIGN KEY ( `product_library_type_id` ) REFERENCES `product_library_type` (
 `id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
+
+INSERT INTO `product_library_type` (`id`, `name`) VALUES
+(1, 'Paint Shop Products'),
+(2, 'Body Shop Products'),
+(3, 'Detailing Products');
