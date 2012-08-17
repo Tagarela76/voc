@@ -87,7 +87,7 @@
 					<div style="width:100%;">
 						{$category[i].price_by_manufacturer}
 						{if $category[i].unit_type_my_manufacturer != 0}
-							per {$category[i].unit_type_my_manufacturer}
+							per {$category[i].unit_type_name_my_manufacturer}
 						{/if}
 					</div >
 				</a>

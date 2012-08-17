@@ -23,6 +23,7 @@ class CAProduct extends Controller {
 		$manager = new PFPManager($this->db);
 		$paginationabc = new Paginationabc(1300);
 		$manager = new PFPManager($this->db);
+		$unitTypeClass = new Unittype($this->db);
 		
 		$paginationabc->url = "?action=browseCategory&category=product";
 		$this->smarty->assign("abctabs",$abc);
@@ -162,7 +163,10 @@ class CAProduct extends Controller {
 			}
 
 			$list[$i]['url']=$url;
-		}
+			if (!is_null($list[$i]["unit_type_my_manufacturer"])) {
+				$list[$i]['unit_type_name_my_manufacturer'] = $unitTypeClass->getDescriptionByID($list[$i]["unit_type_my_manufacturer"]);
+			}
+		} 
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign("category",$list);
