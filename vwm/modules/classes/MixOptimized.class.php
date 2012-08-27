@@ -1188,7 +1188,8 @@ class MixOptimized extends Model {
 
 		if ($this->db->num_rows() > 0) {
 			if (!$isMWS) {
-				return $this->db->fetch(0); // If module MWS disabled - get one waste.
+		//		return $this->db->fetch(0); // If module MWS disabled - get one waste.
+				return $this->db->fetch_all(); // we should return an array
 			} else {
 				return $this->db->fetch_all(); // Else get all wastes
 			}
