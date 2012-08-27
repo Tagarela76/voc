@@ -319,8 +319,10 @@ class validateCSV {
 						case "quart":	
 							$unitType = "qt";
 							break;
+						case "GALLONS":
 						case "GALLON": 
 						case "gallon": 	
+						case "gallons":
 							$unitType = "gal";
 							break;
 						case "PINT": 
