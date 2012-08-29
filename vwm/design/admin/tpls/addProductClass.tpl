@@ -404,8 +404,8 @@
 								<div align="left" ><input type="text" name="product_pricing" value="{$data.product_pricing}">
 								  &nbsp;  per &nbsp;
 									<select id="selectProductUnitType" name="selectProductUnitType" style="width:108px">
-										{section name=i loop=$unittype}
-											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $data.price_unit_type}selected='selected'{/if}>{$unittype[i].description}</option>
+										{section name=i loop=$productUnittype}
+											<option value='{$productUnittype[i].unittype_id}' {if $productUnittype[i].unittype_id eq $data.price_unit_type}selected='selected'{/if}>{$productUnittype[i].name}</option>
 										{/section}
 									</select>
 								</div>

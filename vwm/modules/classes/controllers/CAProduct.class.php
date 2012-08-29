@@ -495,7 +495,10 @@ class CAProduct extends Controller {
 				$unitTypeClass = $cUnitType->getUnittypeClass(1);
 			}
 			$unittypeList = $cUnitType->getUnittypeListDefault($unitTypeClass);
+			$productUnittypeList = $cUnitType->getUnittypeList();
 
+			$this->smarty->assign('productUnittype', $productUnittypeList);
+	
 			$this->smarty->assign('stockType', $initialInstock['product_stocktype']);
 			$this->smarty->assign('unitTypeClass', $unitTypeClass);
 			$this->smarty->assign('typeEx', $typeEx);
@@ -981,11 +984,13 @@ class CAProduct extends Controller {
 				$unitTypeClass = $cUnitType->getUnittypeClass(1);
 			}
 			$unittypeList = $cUnitType->getUnittypeListDefault($unitTypeClass);
-
+			$productUnittypeList = $cUnitType->getUnittypeList();
+			
 			$this->smarty->assign('stockType', $initialInstock['product_stocktype']);
 			$this->smarty->assign('unitTypeClass', $unitTypeClass);
 			$this->smarty->assign('typeEx', $typeEx);
 			$this->smarty->assign('unittype', $unittypeList);
+			$this->smarty->assign('productUnittype', $productUnittypeList);
 
 // UNITYPE END
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
