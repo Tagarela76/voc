@@ -47,7 +47,7 @@ class CPfpLibrary extends Controller {
                 $exporter->condition = $filterData['filterCondition'];
                 $exporter->value = $filterData['filterValue'];
             }
-            $widths = array(
+  /*          $widths = array(
                 'description' => '40',
                 'ratio' => '10',
                 'mix1' => '5',
@@ -70,8 +70,31 @@ class CPfpLibrary extends Controller {
                 'mix6' => 'Parts Used',
                 'workOrder' => 'Repair Order',
                 'date' => 'Date'
+            );*/
+			$widths = array(
+                'description' => '20',
+                'ratio' => '10',
+                'mix1' => '10',
+                'mix2' => '10',
+                'mix3' => '10',
+                'mix4' => '10',
+                'mix5' => '10',
+                'mix6' => '10',
+                'workOrder' => '5',
+                'date' => '5'
             );
-
+            $header = array(
+                'description' => 'PFP Description',
+                'ratio' => 'Ratio',
+                'mix1' => array('R/O', array('P/U', 'WASTE')),
+                'mix2' => array('R/O', array('P/U', 'WASTE')),
+                'mix3' => array('R/O', array('P/U', 'WASTE')),
+                'mix4' => array('R/O', array('P/U', 'WASTE')),
+                'mix5' => array('R/O', array('P/U', 'WASTE')),
+                'mix6' => array('R/O', array('P/U', 'WASTE')),
+                'workOrder' => 'Repair Order',
+                'date' => 'Date'
+            );
             $goodList = array();
             foreach ($pfps as $pfp) {
                 $tmp = array(

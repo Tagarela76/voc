@@ -229,8 +229,24 @@
 				//	save as DOM
 				$td = $this->xml->createElement('td');
 				$width = $this->xml->createAttribute("width");
-				$width->appendChild( $this->xml->createTextNode( self::protectString($this->columnWidths[$columnKey])."%" ) );
+				$width->appendChild( $this->xml->createTextNode( self::protectString($this->columnWidths[$columnKey])) );
 				$td->appendChild($width);
+				if (is_array($columnName)) {
+					foreach ($columnName as $column) {
+						if (!is_array($column)) {
+							$tdUp = $this->xml->createAttribute("tdUp");
+							$tdUp->appendChild( $this->xml->createTextNode( self::protectString($column)) );
+							$td->appendChild($tdUp);
+						} else {
+							foreach ($column as $key => $tdDownColumn) {
+								$tdDown[$key] = $this->xml->createAttribute("tdDown_" . $key);
+								$tdDown[$key]->appendChild( $this->xml->createTextNode( self::protectString($tdDownColumn)) );
+								$td->appendChild($tdDown[$key]);
+							}
+						}
+						
+					}
+				}
 				$td->appendChild( $this->xml->createTextNode( self::protectString($columnName) ) );
 				$tr->appendChild( $td );
 			}

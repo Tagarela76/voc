@@ -322,9 +322,21 @@ class XML2PDF extends PDF_MC_Table
 				$this->upperWidths = array();
 				break;
 			
-			case "TD":				
+			case "TD":		
+				$this->tdUp = null;
+				$this->tdDown = array();
+				
 				if (isset($attribs['WIDTH'])) {
 					$this->widths []= $attribs['WIDTH'];
+				}
+				if (isset($attribs['TDUP'])) {
+					$this->tdUp = $attribs['TDUP'];
+				}
+				if (isset($attribs['TDDOWN_0'])) {
+					$this->tdDown []= $attribs['TDDOWN_0'];
+				}
+				if (isset($attribs['TDDOWN_1'])) {
+					$this->tdDown []= $attribs['TDDOWN_1'];
 				}
 				break;
 				
@@ -355,7 +367,11 @@ class XML2PDF extends PDF_MC_Table
 				break;	
 			case "TD":
 				if ($this->tableFormat == 'head') {
-					$this->tdElem []= $this->header['TD'];
+					if (isset($this->tdUp)) {
+						$this->tdElem []= array($this->tdUp, $this->tdDown);
+					} else {
+						$this->tdElem []= $this->header['TD'];
+					}
 				} else {
 					$this->SetFont('Arial','',10);
 					$this->tdElem []= $this->header['TD'];
@@ -490,9 +506,9 @@ class XML2PDF extends PDF_MC_Table
 			$this->SetFont('Courier','I',10);
 			$this->MultiCell(0,5,$this->header['URL'],0,0,'R');
 			$this->Ln();
-                        $this->Image('images/gyantcompliance_large.jpg',20,10,40, 'jpg');
-                        $this->SetFont('Arial','B',10);
-                        $this->Cell(60);
+			$this->Image('images/gyantcompliance_large.jpg',20,10,40, 'jpg');
+			$this->SetFont('Arial','B',10);
+			$this->Cell(60);
 			$this->Cell(35,5,'Company: ',0,0,'L');
 			$this->SetFont('Arial','',10);
 			$this->Cell(115,5,$this->header['COMPANY'],0,0,'L');
@@ -539,11 +555,11 @@ class XML2PDF extends PDF_MC_Table
 				$this->Ln(1);
 			}
 			$this->SetFont('Arial','B',10);
-			$this->SetAligns($this->alignsC);
+			$this->SetAligns($this->alignsC); 
 			foreach ($this->trElem as $key => $trElement) {
 				$fieldsCount = count($trElement);
 				$this->SetWidths($this->upperWidths[$key]);
-				$this->Row($trElement,true);
+				$this->SpecificRow($trElement,true);
 			}
 			$this->SetAligns($this->aligns);			
     	}
