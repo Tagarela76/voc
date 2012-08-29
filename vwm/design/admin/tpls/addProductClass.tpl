@@ -401,7 +401,14 @@
 								Price
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" ><input type="text" name="product_pricing" value="{$data.product_pricing}"></div>
+								<div align="left" ><input type="text" name="product_pricing" value="{$data.product_pricing}">
+								  &nbsp;  per &nbsp;
+									<select id="selectProductUnitType" name="selectProductUnitType" style="width:108px">
+										{section name=i loop=$unittype}
+											<option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $data.price_unit_type}selected='selected'{/if}>{$unittype[i].description}</option>
+										{/section}
+									</select>
+								</div>
 								{if $validStatus.summary eq 'false'}
 								{if $validStatus.product_pricing eq 'failed'}
 								{*ERORR*}

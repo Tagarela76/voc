@@ -354,7 +354,8 @@ class CAProduct extends Controller {
 				"product_limit"		=>	$this->getFromPost("limit"),
 				"product_amount"	=>	$this->getFromPost("amount"),
 				"product_stocktype"	=>	$this->getFromPost("selectUnittype"),
-				"product_pricing"	=>	$this->getFromPost("product_pricing")
+				"product_pricing"	=>	$this->getFromPost("product_pricing"),
+				"product_unitType"	=>	$this->getFromPost("selectProductUnitType")
 
 			);
 
@@ -732,7 +733,8 @@ class CAProduct extends Controller {
 				"product_limit"		=>	$this->getFromPost("limit"),
 				"product_amount"	=>	$this->getFromPost("amount"),
 				"product_stocktype"	=>	$this->getFromPost("selectUnittype"),
-				"product_pricing"	=>	$this->getFromPost("product_pricing")
+				"product_pricing"	=>	$this->getFromPost("product_pricing"),
+				"product_unitType"	=>	$this->getFromPost("selectProductUnitType")
 			);
 
 			//	process hazardous (chemical) classes
@@ -818,7 +820,7 @@ class CAProduct extends Controller {
 				$product = new Product($this->db);
 
 				if ($validStatus['summary'] == 'true') {
-					$productData['resultTypesList'] = $resProductAllTypesList;
+					$productData['resultTypesList'] = $resProductAllTypesList; //var_dump($productData); die();
 					$product->addNewProduct($productData, $this->getFromRequest('companyID'));
 					header ('Location: admin.php?action=browseCategory&category=product&subBookmark='.$this->getFromRequest("subBookmark").'&letterpage='.$this->getFromRequest("letterpage"));
 					die();

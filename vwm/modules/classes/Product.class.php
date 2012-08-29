@@ -214,6 +214,8 @@ class Product extends ProductProperties {
 	}
 
 	public function getProductDetails($productID, $vanilla = false, $addNew = false) {
+		
+		$unitTypeClass = new Unittype($this->db);
 		settype($productID, "integer");
 
 		$this->db->query("SELECT * FROM " . TB_PRODUCT . " WHERE product_id = " . (int) $productID . " ORDER BY product_nr");
@@ -228,7 +230,8 @@ class Product extends ProductProperties {
 			$data->component_id = $data3->component_id;
 			$data->densityuse = "";
 		}
-
+		$unitType = $unitTypeClass->getDescriptionByID($data->price_unit_type);
+		
 		$product = array(
 			'product_id' => $data->product_id,
 			'product_nr' => $data->product_nr,
@@ -251,7 +254,9 @@ class Product extends ProductProperties {
 			'product_limit' => $data->product_limit,
 			'product_amount' => $data->product_amount,
 			'discontinued' => $data->discontinued,
-			'product_pricing' => $data->product_pricing
+			'product_pricing' => $data->product_pricing,
+			'price_unit_type' => $data->price_unit_type,
+			'unit_type' => $unitType
 		);
 		$hazardous = new Hazardous($this->db);
 		$product['chemicalClasses'] = $hazardous->getChemicalClassification($productID);
@@ -317,7 +322,7 @@ class Product extends ProductProperties {
 
 		$query = "INSERT INTO " . TB_PRODUCT . " (product_nr, name, voclx, vocwx, density, density_unit_id, coating_id, " .
 				"specific_gravity, specific_gravity_unit_id, specialty_coating, aerosol, boiling_range_from, boiling_range_to, " .
-				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype, product_pricing) VALUES (";
+				"supplier_id, percent_volatile_weight, percent_volatile_volume,product_instock,product_limit,product_amount,product_stocktype, product_pricing, price_unit_type) VALUES (";
 
 		$query.="'" . $productData["product_nr"] . "', ";
 		$query.="'" . $productData["name"] . "', ";
@@ -340,10 +345,10 @@ class Product extends ProductProperties {
 		$query.="'" . $productData["product_limit"] . "', ";
 		$query.="'" . $productData["product_amount"] . "', ";
 		$query.="'" . $productData["product_stocktype"] . "', ";
-		$query.="" . $productData["product_pricing"] . " ";
+		$query.="" . $productData["product_pricing"] . ", ";
+		$query .= "'" . $productData["product_unitType"] . "' ";
 
 		$query.=')';
-
 
 		$this->db->query($query);
 
@@ -409,7 +414,7 @@ class Product extends ProductProperties {
 		$hazardous->deleteProduct2ChemicalClassesLink($productID);
 	}
 
-	public function setProductDetails($productData) {
+	public function setProductDetails($productData) { 
 
 		//screening of quotation marks
 		foreach ($productData as $key => $value) {
@@ -454,8 +459,9 @@ class Product extends ProductProperties {
 		$query .= "product_limit = '" . $productData["product_limit"] . "', ";
 		$query .= "product_amount = '" . $productData["product_amount"] . "', ";
 		$query .= "product_stocktype = '" . $productData["product_stocktype"] . "', ";
-		$query .= "product_pricing = '" . $productData["product_pricing"] . "' ";
-
+		$query .= "product_pricing = '" . $productData["product_pricing"] . "', ";
+		$query .= "price_unit_type = '" . $productData["product_unitType"] . "' ";
+		
 		$query .= " WHERE product_id = " . $productData['product_id'];
 
 		$this->db->query($query);

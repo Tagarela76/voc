@@ -267,7 +267,7 @@
 							</td>
 							<td class="border_users_l border_users_r border_users_b">
 								<div align="left">
-									&nbsp;$ {$product.product_pricing}
+									&nbsp;$ {$product.product_pricing} &nbsp;  per &nbsp;{$product.unit_type}
 								</div>
 							</td>
 						</tr>
