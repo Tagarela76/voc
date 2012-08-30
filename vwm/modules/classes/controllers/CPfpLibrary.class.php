@@ -73,14 +73,14 @@ class CPfpLibrary extends Controller {
             );*/
 			$widths = array(
                 'description' => '20',
-                'ratio' => '10',
+                'ratio' => '5',
                 'mix1' => '10',
                 'mix2' => '10',
                 'mix3' => '10',
                 'mix4' => '10',
                 'mix5' => '10',
                 'mix6' => '10',
-                'workOrder' => '5',
+                'workOrder' => '10',
                 'date' => '5'
             );
             $header = array(
