@@ -374,7 +374,7 @@
 				//	table header doesn't set yet
 				foreach ($columnWidths as $columnKey=>$columnWidth) {
 					//	save to property array
-					$this->columnWidths[$columnKey] = $columnWidth;
+					$this->columnWidths[$columnKey] = $columnWidth."%";
 				}
 			}
 
