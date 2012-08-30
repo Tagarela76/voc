@@ -64,7 +64,7 @@ function ManagePermissions() {
 	}
 
 	this.save = function() {
-		
+	var that = this;	
 		var assignedUsers = [];
 		$('#departmentUsers_'+this.currentDepartmentId).children('option').each(function(){
 			assignedUsers.push($(this).val());
@@ -75,6 +75,9 @@ function ManagePermissions() {
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
+				$("#"+that.divId).dialog('close'); 
+				that.divId.isLoaded = false;
+				that.divId.allUsers = [];
       		}
 		});
 	}
