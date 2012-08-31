@@ -555,11 +555,11 @@ class XML2PDF extends PDF_MC_Table
 				$this->Ln(1);
 			}
 			$this->SetFont('Arial','B',10);
-			$this->SetAligns($this->alignsC); 
+			$this->SetAligns($this->aligns); 
 			foreach ($this->trElem as $key => $trElement) {
 				$fieldsCount = count($trElement);
 				$this->SetWidths($this->upperWidths[$key]);
-				$this->SpecificRow($trElement,true);
+				$this->SpecificRow($trElement,false);
 			}
 			$this->SetAligns($this->aligns);			
     	}
