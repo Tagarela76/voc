@@ -31,7 +31,7 @@ class PfpTypesTest extends Testing\DbTestCase {
     public function testGetPfpProductsByTypeId() {
 		
 		$pfpTypes = new PfpTypes($this->db, '1');
-		$pfpProducts = $pfpTypes->getPfpProductsByTypeId();
+		$pfpProducts = $pfpTypes->getPfpProducts();
 		$this->assertTrue(count($pfpProducts) == 2);
 	}
 	

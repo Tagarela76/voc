@@ -116,7 +116,7 @@ class CPfpTypes extends Controller {
     private function actionViewDetails() {
 
         $pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id'));    
-        $pfpProducts = $pfpTypes->getPfpProductsByTypeId();
+        $pfpProducts = $pfpTypes->getPfpProducts();
 
         $url = "?".$_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/","", $url);
@@ -124,7 +124,7 @@ class CPfpTypes extends Controller {
 		$pagination->url = $url; 
         $this->smarty->assign('pagination', $pagination);
  //  var_dump($pagination); die();     
-        $pfps = $pfpTypes->getPfpProductsByTypeId($pagination);
+        $pfps = $pfpTypes->getPfpProducts($pagination);
         $pfp = new PFPManager($this->db);
         $pfpList = $pfp->getUnAssignPFP2Type();
        //   var_dump($pfpList); die();  

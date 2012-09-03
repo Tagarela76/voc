@@ -40,8 +40,8 @@ class PFPTest extends Testing\DbTestCase {
         $pfpTypeid = 2;
         
         $manager->assignPFP2Type($pfpID, $pfpTypeid);
-        $pfpTypes = new PfpTypes($this->db);
-        $pfpTypesCount = $pfpTypes->getPfpProductsByTypeId('2');
+        $pfpTypes = new PfpTypes($this->db, '2');
+        $pfpTypesCount = $pfpTypes->getPfpProducts();
         $this->assertTrue(count($pfpTypesCount) == 2);
         
     }
@@ -52,8 +52,8 @@ class PFPTest extends Testing\DbTestCase {
         $pfpID = 4;
 
         $manager->unassignPFP2Type($pfpID);
-        $pfpTypes = new PfpTypes($this->db);
-        $pfpTypesCount = $pfpTypes->getPfpProductsByTypeId('4'); 
+        $pfpTypes = new PfpTypes($this->db, '4');
+        $pfpTypesCount = $pfpTypes->getPfpProducts(); 
         $this->assertTrue(!$pfpTypesCount);
         
     }

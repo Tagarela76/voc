@@ -144,7 +144,7 @@ class PfpTypes {
 	}
 	
 		
-	public function getPfpProductsByTypeId(Pagination $pagination = null) {
+	public function getPfpProducts(Pagination $pagination = null) {
 		
 		$query = "SELECT * FROM " . TB_PFP .
 				 " WHERE type_id ={$this->db->sqltext($this->id)}";
