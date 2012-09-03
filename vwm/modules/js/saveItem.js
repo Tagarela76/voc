@@ -250,6 +250,11 @@ function answer(jsonResponse) {
 			}
 		}
 		
+        //	pfp types		
+		if (document.addPfpType != null) {		 	
+            location.href = '?action=browseCategory&category=facility&id='+document.addPfpType.facility_id.value+'&bookmark=pfpTypes';
+		}
+        
 		//	facility 		
 		if (document.addFacility != null) {			
 			if (document.addFacility.action.value == 'addItem') {		
@@ -707,6 +712,28 @@ function saveWorkOrderDetails()
 			"work_order_status":work_order_status,
 			"action":work_order_action,
 			"work_order_id":work_order_id
+		},      			
+		dataType: "html",
+		success: function (response) 
+		{   
+			jsonResponse=eval("("+response+")");		      																
+			answer(jsonResponse);										
+		}        		   			   	
+	});
+}
+
+function savePfpTypesDetails() {	
+	Popup.showModal('pleaseWait');	//	Show popup wait
+	var pfpTypeName = $('#pfpTypeName').attr('value'); 
+    var id=$('input:hidden[name=facility_id]').attr('value');
+
+	$.ajax({
+		url: "modules/ajax/savePfpTypes.php",      		
+		type: "POST",
+		async: false,
+		data: {
+			"pfpTypeName":pfpTypeName,
+			"id":id
 		},      			
 		dataType: "html",
 		success: function (response) 

@@ -130,8 +130,28 @@
                             </div>
                             {/if}
                         </a>
-                    </td>    
-				      
+                    </td>   
+                    
+                    {if $permissions.data.view}
+				    <td>
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=pfpTypes">
+						 {if $request.bookmark != "pfpTypes"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    PFP types&nbsp;
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark">
+                                <div class="activeBookmark_right">
+                                    PFP types&nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>  
+                    {/if}
+                    
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=department">{if $request.bookmark != "department"}
@@ -181,7 +201,8 @@
 {if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} 
 {if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if}
-{if $request.bookmark  eq "workOrder"}  class="bookmark_bg" {/if} >	
+{if $request.bookmark  eq "workOrder"}  class="bookmark_bg" {/if}	
+{if $request.bookmark  eq "pfpTypes"}  class="bookmark_bg" {/if}  >
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 
         </td>

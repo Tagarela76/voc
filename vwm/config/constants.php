@@ -294,6 +294,8 @@ define ('TB_EQUIPMENT_LIGHTING_BULB_TYPE', 'equipment_lighting_bulb_type');
 // work order
 define ('TB_WORK_ORDER', 'work_order');
 
+define ('TB_PFP_TYPES', 'pfp_types');
+
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
 define ('SQL_DELIMITER',';');

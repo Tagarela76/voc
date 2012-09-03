@@ -6,6 +6,10 @@
                     <div class="control_panel_br">
                         <div class="control_panel_center padd7">
                         	<input type="button" class="button" value="<< Back" onclick="{if $backUrl}location.href='{$backUrl}';{else}history.go(-1);return true;{/if}">
+                            {if $request.category=="pfpTypes"}
+                                <input type="button" class="button" name="action" value="Unassign" onclick="unAssignPFP2Type()">
+                                <input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type()">
+                            {/if}    
                         	{if $request.category != "product"}
                             	{if $request.category=="company" 	&& $permissions.company.edit || 
 									$request.category=="facility" 	&& $permissions.facility.edit || 
@@ -77,24 +81,6 @@
 									{/if}
 								{/if}
                             {/if}
-                            {*if $categoryType!="product"}
-                            	{if $itemType=="company" && $permissions.company.edit || 
-									$itemType=="facility" && $permissions.facility.edit || 
-									$itemType=="department" && $permissions.department.edit || 
-									$itemType=="equipment" && $permissions.equipment.edit || 
-									$itemType=="inventory" && $permissions.data.edit || 
-									$itemType=="usage" && $permissions.data.edit}
-                            <input type="button" class="button" value="Edit" onclick="location.href='?action=showEdit&itemID={$itemType}&id={$id}'">
-								{/if}
-                            	{if $itemType=="company" && $permissions.company.delete || 
-								$itemType=="facility" && $permissions.facility.delete || 
-								$itemType=="department" && $permissions.department.delete || 
-								$itemType=="equipment" && $permissions.equipment.delete || 
-								$itemType=="inventory" && $permissions.data.delete || 
-								$itemType=="usage" && $permissions.data.delete}
-                            <input type="button" class="button" value="Delete" onclick="location.href='?action=deleteItem&itemID={$itemType}&itemsCount=1&item_0={$id}'">
-								{/if}
-                            {/if*}
                         </div>
                     </div>
                 </div>

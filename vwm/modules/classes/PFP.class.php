@@ -15,6 +15,8 @@ class PFP
 	private $last_update_time;
 
     private $products;
+    
+    private $type_id;
 
 	function __construct($PFPProductsArray) {
 		$this->products = $PFPProductsArray;
@@ -148,5 +150,13 @@ class PFP
 	public function getLastUpdateTime() {
 		return $this->last_update_time;
 	}
+    
+    public function getTypeId() {
+        return $this->type_id;
+    }
+    
+    public function setTypeId($type_id) {
+        $this->type_id = $type_id;
+    }
 }
 ?>

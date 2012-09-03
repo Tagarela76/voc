@@ -68,6 +68,7 @@
                                             		($request.bookmark=="mix") ||
                                             		($request.bookmark=="logbook") ||
 													($request.bookmark=="workOrder") ||
+													($request.bookmark=="pfpTypes") ||
                                                      $permissions.deleteItem && $request.bookmark != "product"}
 								{*($request.bookmark=="accessory" && $permissions.data.delete) ||*}
 								<div class="button_float_left">

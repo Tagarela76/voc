@@ -246,7 +246,17 @@ class Validation {
 					echo "Error: unsigned parametr <b>parrentID</b> <br>";
 					return false;
 				}
-				break;	
+				break;
+                
+            case 'pfpTypes':
+				if ($parrentID != 'none') {
+					$query = "SELECT * FROM " . TB_PFP_TYPES . " WHERE name='" . $itemName . "' and facility_id=" . $parrentID;
+				} else {
+					echo "Error: unsigned parametr <b>parrentID</b> <br>";
+					return false;
+				}
+				break;    
+                
 		}
 
 
@@ -2265,7 +2275,7 @@ class Validation {
 		return $result;
 	}
 	
-		public function validateRegDataWorkOrder(WorkOrder $workOrder) {
+	public function validateRegDataWorkOrder(WorkOrder $workOrder) {
 
 		$result = array();
 		$result['summary'] = 'true';
@@ -2279,6 +2289,30 @@ class Validation {
 			}
 		}
 
+		return $result;
+	}
+    
+    public function validateRegDataPfpType(PfpTypes $pfpTypes) {
+
+		$result = array();
+		$result['summary'] = 'true';
+
+		if (isset($pfpTypes->name)) {
+			if ($pfpTypes->name == '') {
+				$result['pfpType'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['pfpType'] = 'success';
+			}
+            $query = "SELECT * FROM " . TB_PFP_TYPES . " WHERE name='{$this->db->sqltext($pfpTypes->name)}' and facility_id={$this->db->sqltext($pfpTypes->facility_id)} ";
+            $this->db->query($query);
+            if ($this->db->num_rows() > 9) {
+                $result['pfpTypeCount'] = 'failed';
+				$result['summary'] = 'false';
+			} else {
+				$result['pfpTypeCount'] = 'success';
+			}
+		}
 		return $result;
 	}
 	

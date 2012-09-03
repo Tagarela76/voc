@@ -728,6 +728,50 @@ class Facility extends FacilityProperties {
 
 		return $departmentIDs;
 	}
+    
+    /**
+     * get pfp types for facility
+     * 
+     * @param int $facilityId
+     * @return boolean|PfpTypes 
+     */
+    public function getPfpTypes($facilityId) {
+		
+		$query = "SELECT * FROM " . TB_PFP_TYPES .
+				 " WHERE facility_id={$this->db->sqltext($facilityId)}";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$pfpTypes = array();
+		foreach ($rows as $row) {
+			$pfpType = new PfpTypes($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($pfpType, $key)) {
+					$pfpType->$key = $value;
+				}
+			}
+			$pfpTypes[] = $pfpType;
+		}
+		return $pfpTypes;
+	}
+    
+        
+    /**
+     * get pfp types count for facility
+     * @param int $companyId
+     * @return int 
+     */
+    public function getPfpTypesCount($facilityId) {
+
+        $query = "SELECT *  FROM " . TB_PFP_TYPES . "
+                  WHERE facility_id = {$this->db->sqltext($facilityId)}";
+		$this->db->query($query);
+		return $this->db->num_rows();
+	}
+    
 }
 
 

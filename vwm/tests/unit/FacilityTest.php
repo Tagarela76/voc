@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class FacilityTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER
+		TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_PFP_TYPES
 	);
 
 	public function testGetWorkOrdersList() {
@@ -24,5 +24,17 @@ class FacilityTest extends Testing\DbTestCase {
 
 		$this->assertTrue($workOrderCount == 2);
 	}
+    
+    public function testGetPfpTypesCount() {
+        $facility = new Facility($this->db);
+        $pfpTypesCount = $facility->getPfpTypesCount(1);
+        $this->assertTrue($pfpTypesCount == 3);
+    }
+    
+    public function testGetPfpTypes() {
+        $facility = new Facility($this->db);
+        $pfpTypes = $facility->getPfpTypes(1);
+        $this->assertTrue($pfpTypes[0] instanceof PfpTypes);
+    }
 	
 }

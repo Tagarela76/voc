@@ -149,8 +149,11 @@ class PFPManager {
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 
-	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
+	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0 , $pfpType = null) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
+        if (!is_null($pfpType)) {
+            $queryFilter .= "AND pfp.type_id = {$this->db->sqltext($pfpType)}";
+        }
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 
@@ -828,6 +831,28 @@ class PFPManager {
 			}
 		}
 		return $pfpProductsIsAssign; 
+	}
+    
+    public function assignPFP2Type($pfpID, $pfpTypeid) {
+        
+        $query = "UPDATE ".TB_PFP." SET type_id = {$this->db->sqltext($pfpTypeid)} WHERE id = {$this->db->sqltext($pfpID)}";
+        $this->db->query($query);
+	}
+    
+    public function unAssignPFP2Type($pfpID) {
+        
+        $query = "UPDATE ".TB_PFP." SET type_id = null WHERE id = {$this->db->sqltext($pfpID)}";
+        $this->db->query($query);
+	}
+    
+    public function getUnAssignPFP2Type() {
+        
+        $query = "SELECT * " .
+				"FROM ". TB_PFP .
+				" WHERE type_id = 'null' OR type_id IS NULL";
+        $this->db->query($query);
+        $rows = $this->db->fetch_all_array();
+        return $rows;
 	}
 }
 
