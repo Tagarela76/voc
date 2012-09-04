@@ -153,7 +153,7 @@ class PFPManager {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
         if (!is_null($pfpType)) {
             $queryFilter .= "AND pfp.type_id = {$this->db->sqltext($pfpType)}";
-        }
+        } 
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 
@@ -835,7 +835,7 @@ class PFPManager {
     
     public function assignPFP2Type($pfpID, $pfpTypeid) {
         
-        $query = "UPDATE ".TB_PFP." SET type_id = {$this->db->sqltext($pfpTypeid)} WHERE id = {$this->db->sqltext($pfpID)}";
+        $query = "UPDATE ".TB_PFP." SET type_id = {$this->db->sqltext($pfpTypeid)} WHERE id = {$this->db->sqltext($pfpID)}"; 
         $this->db->query($query);
 	}
     
@@ -844,15 +844,33 @@ class PFPManager {
         $query = "UPDATE ".TB_PFP." SET type_id = null WHERE id = {$this->db->sqltext($pfpID)}";
         $this->db->query($query);
 	}
-    
-    public function getUnAssignPFP2Type() {
-        
-        $query = "SELECT * " .
-				"FROM ". TB_PFP .
-				" WHERE type_id = 'null' OR type_id IS NULL";
-        $this->db->query($query);
-        $rows = $this->db->fetch_all_array();
-        return $rows;
+    public function getUnAssignPFP2Type($companyId, Pagination $pagination = null) {
+		
+		$query = "SELECT * FROM " . TB_PFP . " pfp" . 
+				 " LEFT JOIN " . TB_PFP2COMPANY . " pfpc" . 
+				 " ON pfp.id = pfpc.pfp_id 
+				  LEFT JOIN " . TB_COMPANY . " c" .
+				 " ON c.company_id = pfpc.company_id 
+				  WHERE (type_id = 'null' OR type_id IS NULL) AND pfpc.is_available = 1 AND c.company_id = {$this->db->sqltext($companyId)}";
+                 
+        if (isset($pagination)) {
+			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}    
+     
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$pfpProducts = array();
+		$pfpManager = new PFPManager($this->db);
+		foreach ($rows as $row) {
+			$pfp = $pfpManager->getPfp($row["id"]);
+			$pfpProducts[] = $pfp;
+		}
+		return $pfpProducts;
+		
 	}
 }
 

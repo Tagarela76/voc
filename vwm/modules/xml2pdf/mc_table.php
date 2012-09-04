@@ -127,9 +127,11 @@ function NbLines($w,$txt)
 				$x=$this->GetX();
 				$y=$this->GetY();
 				//Draw the border
+				$this->SetFont('Arial','B',8);
 				$this->Rect($x,$y,$w,$specHeight,($fill)?'DF':'D');
 				//Print the text
-				if (is_array($tdChild)) {											
+				if (is_array($tdChild)) {
+					$this->SetFont('Arial','B',10);
 					foreach ($tdChild as $j => $tdDown) {
 						if ($j == (count($tdChild) -1)) {
 							//	right cell														

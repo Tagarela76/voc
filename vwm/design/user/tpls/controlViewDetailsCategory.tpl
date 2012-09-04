@@ -5,11 +5,7 @@
                 <div class="control_panel_bl">
                     <div class="control_panel_br">
                         <div class="control_panel_center padd7">
-                        	<input type="button" class="button" value="<< Back" onclick="{if $backUrl}location.href='{$backUrl}';{else}history.go(-1);return true;{/if}">
-                            {if $request.category=="pfpTypes"}
-                                <input type="button" class="button" name="action" value="Unassign" onclick="unAssignPFP2Type()">
-                                <input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type()">
-                            {/if}    
+                        	<input type="button" class="button" value="<< Back" onclick="{if $backUrl}location.href='{$backUrl}';{else}history.go(-1);return true;{/if}"> 
                         	{if $request.category != "product"}
                             	{if $request.category=="company" 	&& $permissions.company.edit || 
 									$request.category=="facility" 	&& $permissions.facility.edit || 

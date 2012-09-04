@@ -73,14 +73,13 @@ class CPfpLibrary extends Controller {
             );*/
 			$widths = array(
                 'description' => '25',
-                'ratio' => '10',
-                'mix1' => '10',
-                'mix2' => '10',
-                'mix3' => '10',
-                'mix4' => '10',
-                'mix5' => '10',
-                'mix6' => '10',
-                'date' => '5'
+                'ratio' => '8',
+                'mix1' => '11',
+                'mix2' => '11',
+                'mix3' => '11',
+                'mix4' => '11',
+                'mix5' => '11',
+                'date' => '12'
             );
             $header = array(
                 'description' => 'PFP Description',
@@ -90,7 +89,6 @@ class CPfpLibrary extends Controller {
                 'mix3' => array('R/O', array('P/U', 'WASTE')),
                 'mix4' => array('R/O', array('P/U', 'WASTE')),
                 'mix5' => array('R/O', array('P/U', 'WASTE')),
-                'mix6' => array('R/O', array('P/U', 'WASTE')),
                 'date' => 'Date'
             );
             $goodList = array();
@@ -103,7 +101,6 @@ class CPfpLibrary extends Controller {
                     'mix3' => '',
                     'mix4' => '',
                     'mix5' => '',
-                    'mix6' => '',
                     'date' => '',
                 );
                 $goodList[] = $tmp;

@@ -31,7 +31,7 @@ class CPfpTypes extends Controller {
 		$pfpTypesList = $facility->getPfpTypes($facilityDetails['facility_id']);
         if ($pfpTypesList) {
             for ($i = 0; $i < count($pfpTypesList); $i++) {
-                $url = "?action=viewDetails&category=pfpTypes&id=" . $pfpTypesList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];
+                $url = "?action=viewDetails&category=pfpTypes&id=" . $pfpTypesList[$i]->id . "&facilityID=" . $facilityDetails['facility_id']  . "&pfpGroup=group";
                 $pfpTypesList[$i]->url = $url;
             }
         }
@@ -115,20 +115,38 @@ class CPfpTypes extends Controller {
     
     private function actionViewDetails() {
 
-        $pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id'));    
-        $pfpProducts = $pfpTypes->getPfpProducts();
+		$company = new Company($this->db);
+		$facility = new Facility($this->db);
+		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id')); 
+		$url = "?".$_SERVER["QUERY_STRING"];
+		$url = preg_replace("/\&page=\d*/","", $url);
+		// we have a two ways
+		$pfpGroup = $this->getFromRequest('pfpGroup');
+		if ($pfpGroup == 'all') {
+			$isAllPFP = true;
+		} else {
+			$isAllPFP = false;
+		}
+		$this->smarty->assign('isAllPFP', $isAllPFP);
+		$facilityDet = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+		$companyId = $facilityDet["company_id"]; 
+		if ($isAllPFP) {
+			// we show an all pfp's list
+			$pfp = new PFPManager($this->db);
+			$pfps = $pfp->getUnAssignPFP2Type($companyId);
+			$pagination = new Pagination(count($pfps));
+			$pagination->url = $url;
+			$pfps = $pfp->getUnAssignPFP2Type($companyId, $pagination);
+		} else {   
+			$pfpProducts = $pfpTypes->getPfpProducts();
 
-        $url = "?".$_SERVER["QUERY_STRING"];
-        $url = preg_replace("/\&page=\d*/","", $url);
-        $pagination = new Pagination(count($pfpProducts));
-		$pagination->url = $url; 
-        $this->smarty->assign('pagination', $pagination);
- //  var_dump($pagination); die();     
-        $pfps = $pfpTypes->getPfpProducts($pagination);
-        $pfp = new PFPManager($this->db);
-        $pfpList = $pfp->getUnAssignPFP2Type();
-       //   var_dump($pfpList); die();  
-        $this->smarty->assign('pfpList', $pfpList);
+			$url = "?".$_SERVER["QUERY_STRING"];
+			$url = preg_replace("/\&page=\d*/","", $url);
+			$pagination = new Pagination(count($pfpProducts));
+			$pagination->url = $url; 
+			$pfps = $pfpTypes->getPfpProducts($pagination);
+		} 
+		$this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('pfpTypes', $pfpTypes);
         $this->smarty->assign('pfps', $pfps);
         
@@ -165,13 +183,14 @@ class CPfpTypes extends Controller {
     }
     
     private function actionAssign() {
-
-        $pfpID = $this->getFromRequest('pfpID');
+		$pfpIDs = $this->getFromRequest('pfpIDs');
         $pfpTypeid = $this->getFromRequest('id');
         $facilityID = $this->getFromRequest('facilityID');
         $pfp = new PFPManager($this->db);
-        $pfp->assignPFP2Type($pfpID, $pfpTypeid);
-        $url = "?action=viewDetails&category=pfpTypes&id={$pfpTypeid}&facilityID={$facilityID}";
+		foreach ($pfpIDs as $pfpID) {
+			$pfp->assignPFP2Type($pfpID, $pfpTypeid);
+		}
+        $url = "?action=viewDetails&category=pfpTypes&id={$pfpTypeid}&facilityID={$facilityID}&pfpGroup=all";
         echo $url;
     }
     
@@ -184,7 +203,7 @@ class CPfpTypes extends Controller {
         foreach ($pfpIDs as $pfpID) {
             $pfp->unAssignPFP2Type($pfpID);
         }
-        $url = "?action=viewDetails&category=pfpTypes&id={$pfpTypeid}&facilityID={$facilityID}";
+        $url = "?action=viewDetails&category=pfpTypes&id={$pfpTypeid}&facilityID={$facilityID}&pfpGroup=group";
         echo $url;
     }
 

@@ -15,18 +15,49 @@
     </tr>
 </table>
 {/if}
-<div class="floatleft padd_left">
-    <select name="selectPfp" id="selectPfp">
-
-        {section name=i loop=$pfpList}
-            <option value='{$pfpList[i].id}'> {$pfpList[i].description}</option>
-        {/section}
-    </select>
-</div>
-	<br />
-<div>        
-    {$pfpTypes->name}
-</div>   
+<br />
+<table class="users" height="5" cellspacing="0" cellpadding="0" align="center">
+    <tr class="users_top" height="27px">
+        <td class="users_u_top" width="60px">
+			PFP Group Details
+        </td>
+        <td class="users_u_top_r" width="120px">
+        </td>
+    </tr>
+    <tr class="hov_company" height="10px">
+        <td class="border_users_b border_users_l border_users_r" >
+			Name:
+        </td>
+        <td class="border_users_b border_users_r">
+			{$pfpTypes->name}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="5" class="border_users_l border_users_r">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td class="users_u_bottom">
+        </td>
+        <td class="users_u_bottom_r">
+        </td>
+    </tr>
+</table>
+<br /><br /><br />
+{if $isAllPFP}
+	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type('assign')"> 
+{else}
+	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Unassign" onclick="assignPFP2Type('unassign')">
+{/if}	
+ 
+<div class="link_bookmark" style="float:right;">
+	{if $isAllPFP}
+		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group"> Group </a> <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all" class="active_link"> All </a>
+	{else}
+		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group" class="active_link"> Group </a>  <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all"> All </a>
+	{/if}	
+	 </div>
     <input type="hidden" id="pfptypeID" name="pfptypeID" value="{$pfpTypes->id}" />
     <input type="hidden" id="facilityID" name="facilityID" value="{$smarty.request.facilityID}" />
 {*PAGINATION*}
@@ -59,7 +90,7 @@
 				</div>
 			</a>
         </td>
-        <td class="" width="120px">
+        <td class="users_u_top_r" width="120px">
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
                 	Products count

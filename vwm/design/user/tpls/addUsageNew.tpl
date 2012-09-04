@@ -580,10 +580,16 @@ function createSelectUnittypeClass(id) {
 <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
     {if $pfps|count > 0}
         {if $pfpTypes|count > 0}
-            <div style="display: block; float: left; font-size: 16px;">
+            <div class="link_bookmark">
+			{if $selectedPfpType}
+				<a href="{$allUrl}" > all </a>
+			{else}
+				<a href="{$allUrl}" class="active_link"> all </a>
+			{/if}	
+			
             {foreach from=$pfpTypes item=pfpType}
-                {if $pfpType->id == $selectedPfpType}
-                    <a href="{$pfpType->url}" style="text-decoration: none"> {$pfpType->name} </a>
+                {if $pfpType->name == $selectedPfpType}
+                    <a href="{$pfpType->url}" class="active_link"> {$pfpType->name} </a>
                 {else}
                     <a href={$pfpType->url}> {$pfpType->name} </a> 
 

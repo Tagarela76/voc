@@ -1334,17 +1334,31 @@ class CMix extends Controller {
 
 		/** show modules * */
 		$company = new Company($this->db);
+		$facility = new Facility($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
-
+		
+		$selectedPfpType = $this->getFromRequest("selectedPfpType");
+		$this->smarty->assign('selectedPfpType', $selectedPfpType);
+		
 		$pfpmanager = new PFPManager($this->db);
-		$pfps = $pfpmanager->getListAssigned($companyID);
+		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);
 
 		$this->smarty->assign("pfps", $pfps);
 
 		$department = new Department($this->db);
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
 		$facilityID = $departmentDetails['facility_id'];
-
+		$pfpTypes = $facility->getPfpTypes($facilityID);
+		
+		if ($pfpTypes) {
+            for ($i = 0; $i < count($pfpTypes); $i++) {
+                $url = "?action=addItem&category=mix&departmentID=" . $departmentID  . "&selectedPfpType=" . $pfpTypes[$i]->name;
+                $pfpTypes[$i]->url = $url;
+            }
+        }
+		$allUrl = "?action=addItem&category=mix&departmentID=" . $departmentID;
+		$this->smarty->assign('allUrl', $allUrl);
+		$this->smarty->assign('pfpTypes', $pfpTypes);
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		foreach ($moduleMap as $key => $module) {
