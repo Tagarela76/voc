@@ -9,14 +9,14 @@ class PFP
      */
     private $db;
 
-	private $id;
-	private $description;
-	private $company_id;
+	public $id;
+	public $description;
+	public $company_id;
 	private $last_update_time;
 
     private $products;
     
-    private $type_id;
+    public $type_id;
 
 	function __construct($PFPProductsArray) {
 		$this->products = $PFPProductsArray;

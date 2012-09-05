@@ -97,6 +97,24 @@ function createSelectUnittypeClass(id) {
     return sel;
 }
 {/literal}
+	
+{literal}
+	var page = new AddMixPage();
+		
+	$(document).ready(function() {		
+		page.pfpManager.currentPfpType = {
+			"id":"{/literal}{$currentPfpType->id}{literal}",
+			"name":"{/literal}{$currentPfpType->name}{literal}",
+			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
+		};
+		page.pfpManager.pfpLists.push({	
+			"type":page.pfpManager.currentPfpType,
+			"pfps":{/literal}{$pfps}{literal}
+		});
+		
+		page.pfpManager.renderPfpList();			
+	});
+{/literal}
 </script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js"></script>
@@ -579,26 +597,30 @@ function createSelectUnittypeClass(id) {
 </div>
 <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
     {if $pfps|count > 0}
+		
         {if $pfpTypes|count > 0}
             <div class="link_bookmark">
 			{if $selectedPfpType}
-				<a href="{$allUrl}" > all </a>
+				<a href="{$allUrl}" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
 			{else}
-				<a href="{$allUrl}" class="active_link"> all </a>
+				<a href="{$allUrl}" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
 			{/if}	
 			
             {foreach from=$pfpTypes item=pfpType}
                 {if $pfpType->name == $selectedPfpType}
-                    <a href="{$pfpType->url}" class="active_link"> {$pfpType->name} </a>
+                    <a href="{$pfpType->url}" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
                 {else}
-                    <a href={$pfpType->url}> {$pfpType->name} </a> 
+                    <a href="{$pfpType->url}" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a> 
 
                 {/if}
                 
             {/foreach}    
             </div>
         {/if}    
-        <table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
+		
+		{include file="tpls:tpls/_briefPfpList.tpl"}
+		
+        {*<table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
             <tr id="title">
                 <td>Description</td>
                 <td>Products</td>
@@ -619,7 +641,7 @@ function createSelectUnittypeClass(id) {
                     </td>
                 </tr>
             {/foreach}
-        </table>
+        </table>*}
     {else}
         You do not have any preformulated products yet
     {/if}

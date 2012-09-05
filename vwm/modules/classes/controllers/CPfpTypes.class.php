@@ -207,6 +207,17 @@ class CPfpTypes extends Controller {
         echo $url;
     }
 
+	
+	protected function actionLoadBriefPfps() {
+		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('pfpTypeId')); 
+		
+		$response = new stdClass;
+		$response->type = $pfpTypes;
+		$response->pfps = $pfpTypes->getPfpProducts();
+				
+		echo json_encode($response);
+		die;
+	}
 }
 
 ?>

@@ -1,25 +1,130 @@
 
-$(document).ready(function() {
+// OOP VERSION
 
-	$("tr[name='pfp_row']").click(function(e){
+function AddMixPage() {
+	this.pfpManager = new PfpManager();
+	this.utils = new Utils();
+}
 
-		$("tr[name='pfp_details']").css("display","none");
-		$("tr[name='pfp_row']").attr('class','');
+function PfpType(id) {
+	this.id = id;
+	this.name = 'all';
+	this.facility_id = 0;
+}
+
+function PfpList(type, pfps) {
+	this.type = type;
+	this.pfps = pfps;
+}
+
+function Pfp() {
+	this.id;
+	this.description;
+	this.company_id;
+	this.type_id;	
+}
 
 
-		$("table[name='pfp_details_products']").remove();
-		id = $(this).attr('id');
-
-		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
-
-			$("#"+id+"_details").css("display","block");
-		} else {
-			$("#"+id+"_details").css("display","table-row");
+function PfpManager() {
+	this.defaultPfpType = new PfpType(0);
+	this.pfpLists = [];	
+	this.currentPfpType;
+	
+	this.getPfpsByType = function(pfpType) {
+		var that = this;
+		var returnPfpList = [];
+		
+		// check probably list is already loaded
+		for(key in this.pfpLists) {			
+			if(this.pfpLists[key].type.id == pfpType.id) {
+				// we found it				
+				return this.pfpLists[key].pfps;
+			}
 		}
+		
+		$.ajax({
+			url: "?action=loadBriefPfps&category=pfpTypes",
+			async: false,
+			data: {pfpTypeId: this.currentPfpType.id},
+			type: "GET",
+			dataType: "json",
+			success: function (pfpList) {				
+				that.pfpLists.push(pfpList);		
+				returnPfpList = pfpList.pfps;				
+      		}
+		});
+		
+		return returnPfpList;
+	}
+	
+	
+	this.renderPfpList = function() {
+		var pfps = this.getPfpsByType(this.currentPfpType);		
+		var html = '';
+		for (key in pfps) {
+			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'" name="pfp_row">';
+			html +=		'<td colspan="4">'+page.utils.escapeHTML(pfps[key].description)+'</td>';
+			html += '</tr>';
+			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'_details" name="pfp_details" style="display:none;">';
+			html +=		'<td colspan="4" style="text-align:center;">';
+			html +=			'<img src="images/ajax-loader.gif" class="preloader" />';
+			html +=		'</td>';
+			html +=	'</tr>';                                   
+		}						
+		
+		// update table
+		$('.pfpList tbody').html(html);	
+		
+		this.enableOnClickListener();
+	}
+	
+	this.openPfpGroup = function(pfpGroupId, linkElement) {
+		this.currentPfpType = {
+			'id':pfpGroupId,
+			'name':'',
+			'facility_id':0
+		};
+		this.renderPfpList();
+		
+		// reset active links
+		$('.active_link').removeClass('active_link');
+		
+		// activate new one
+		$(linkElement).addClass('active_link');
+	}
+	
+	//TODO: needs rewrite
+	this.enableOnClickListener = function() {
+		$("tr[name='pfp_row']").click(function(e){
+			$("tr[name='pfp_details']").css("display","none");
+			$("tr[name='pfp_row']").attr('class','');
 
-		$("#"+id+"_details .preloader").css("display","block");
-		loadPFPDetails(id);
-	});
+			$("table[name='pfp_details_products']").remove();
+			id = $(this).attr('id');
+			
+			if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
+				$("#"+id+"_details").css("display","block");
+			} else {
+				$("#"+id+"_details").css("display","table-row");
+			}
+
+			$("#"+id+"_details .preloader").css("display","block");
+			loadPFPDetails(id);
+		});
+	}
+}
+
+// TODO: move to separate js file
+function Utils() {
+	this.escapeHTML = function(html) {		
+		return html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+	}
+}
+
+// END OF OOP VERSION
+
+
+$(document).ready(function() {	
 
 		if(noMWS == true) {
 			initNoMWS();

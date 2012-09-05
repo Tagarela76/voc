@@ -1189,8 +1189,7 @@ class CMix extends Controller {
 		return empty($productConflitcs) ? true : $productConflitcs;
 	}
 
-	private function actionAddItem() {
-		//TODO: Баг в Internet Explorer список отображется не по порядку
+	private function actionAddItem() {		
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -1199,8 +1198,6 @@ class CMix extends Controller {
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
 		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
 		$this->setPermissionsNew('viewData');
-
-
 
 		if ($this->getFromPost('save')) {
 			$action = $this->getFromPost('save') == "Add product to list" ? "addItem" : "saveMix";
@@ -1341,9 +1338,14 @@ class CMix extends Controller {
 		$this->smarty->assign('selectedPfpType', $selectedPfpType);
 		
 		$pfpmanager = new PFPManager($this->db);
-		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);
-
-		$this->smarty->assign("pfps", $pfps);
+		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);		
+		$this->smarty->assign("pfps", json_encode($pfps));
+		
+		$currentPfpType = new PfpTypes($this->db);
+		$currentPfpType->id = 0;
+		$currentPfpType->name = 'all';
+		$currentPfpType->facility_id = 0;
+		$this->smarty->assign('currentPfpType', $currentPfpType);
 
 		$department = new Department($this->db);
 		$departmentDetails = $department->getDepartmentDetails($departmentID);
@@ -1450,7 +1452,7 @@ class CMix extends Controller {
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
 			'modules/js/mixObj.js?rev=jun22',
-			'modules/js/addUsage.js?rev=jun22',
+			'modules/js/addUsage.js?rev=sep05',
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);
 
