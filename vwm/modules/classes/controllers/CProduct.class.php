@@ -149,7 +149,7 @@ class CProduct extends Controller {
 			$exporter->setTbody($productList);
 			$exporter->export();
 			die();
-		} else {
+		} else {			
 			//	set js scripts
 			$jsSources = array(
 				'modules/js/checkBoxes.js',
