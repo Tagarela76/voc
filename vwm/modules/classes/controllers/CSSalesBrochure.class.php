@@ -19,20 +19,18 @@ class CWorkOrder extends Controller {
     private function actionViewDetails() {
 
         $workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
+        $this->smarty->assign('workOrder', $workOrder);
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "workOrder");
 
 		$mixList = array();
         // get child mixes 
-        $MixTotalPrice = 0;
         $mixes = $workOrder->getMixes();
 		foreach ($mixes as $mix) {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
-			$MixTotalPrice += $mix->price;
 			$mixList[] = $mix;
 		}
-		$workOrder->totalPrice = $MixTotalPrice;
         
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewWorkOrder');
@@ -41,7 +39,6 @@ class CWorkOrder extends Controller {
         $this->smarty->assign('deleteUrl', '?action=deleteItem&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('editUrl', '?action=edit&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('mixList', $mixList);
-		$this->smarty->assign('workOrder', $workOrder);
         //set js scripts
         $jsSources = array('modules/js/checkBoxes.js',
             'modules/js/autocomplete/jquery.autocomplete.js');
@@ -213,26 +210,6 @@ class CWorkOrder extends Controller {
         $this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
-
-	private function actionCreateLabel() {
-		
-		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
-		$mixList = array();
-        // get child mixes 
-		$MixTotalPrice = 0;
-        $mixes = $workOrder->getMixes();
-		foreach ($mixes as $mix) {
-			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
-			$mix->price = $mixOptimized->getMixPrice();
-			$MixTotalPrice += $mix->price;
-			$mixList[] = $mix;
-		}
-		$workOrder->totalPrice = $MixTotalPrice;
-        $this->smarty->assign('workOrder', $workOrder);
-        $this->smarty->assign('mixList', $mixList);
-
-		$this->smarty->display("tpls/workOrderLabel.tpl");
-	}
 
 }
 
