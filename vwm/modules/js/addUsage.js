@@ -17,6 +17,11 @@ function PfpList(type, pfps) {
 	this.pfps = pfps;
 }
 
+function PfpDetails() {
+	this.pfpId;
+	this.pfp;
+}
+
 function Pfp() {
 	this.id;
 	this.description;
@@ -29,6 +34,7 @@ function PfpManager() {
 	this.defaultPfpType = new PfpType(0);
 	this.pfpLists = [];	
 	this.currentPfpType;
+	this.pfpDetails = [];
 	
 	this.getPfpsByType = function(pfpType) {
 		var that = this;
@@ -95,12 +101,13 @@ function PfpManager() {
 	
 	//TODO: needs rewrite
 	this.enableOnClickListener = function() {
+		var that = this;
 		$("tr[name='pfp_row']").click(function(e){
-			$("tr[name='pfp_details']").css("display","none");
+			$("tr[name='pfp_details']").hide();
 			$("tr[name='pfp_row']").attr('class','');
 
 			$("table[name='pfp_details_products']").remove();
-			id = $(this).attr('id');
+			var id = $(this).attr('id');
 			
 			if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
 				$("#"+id+"_details").css("display","block");
@@ -110,14 +117,51 @@ function PfpManager() {
 
 			$("#"+id+"_details .preloader").css("display","block");
 			loadPFPDetails(id);
+			//	this is not ready yet
+			//this.renderPfpList(id);			
 		});
 	}
-}
-
-// TODO: move to separate js file
-function Utils() {
-	this.escapeHTML = function(html) {		
-		return html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+	
+	
+	this.getPpf = function(id) {
+		// check probably list is already loaded
+		for(key in this.pfpDetails) {			
+			if(this.pfpDetails[key].pfpId == id) {
+				// we found it				
+				return this.pfpDetails[key].pfp;
+			}
+		}		
+		var pfp;
+		var that = this;
+		
+		var urlData = {
+			"action" : "getPFPDetailsAjax", 
+			"category" : "mix", 
+			"departmentID": departmentID, 
+			"pfp_id" : id
+		};
+		$.ajax({
+			url:'index.php',
+			type: "GET",
+			async: false,
+			data: urlData,
+			dataType: "json",
+			success: function (response) {
+				that.pfpDetails.push({
+					"id":response.id,
+					"pfp":response.pfp	
+				});
+				pfp = response.pfp;  				
+  			}					
+		});
+				
+		return pfp;
+	}
+	
+	this.renderPfpDetails = function(id) {
+		var pfp = that.getPpf(id);					
+		$("#"+pfp.id+"_details .preloader").css("display","none");
+  		$("#"+pfp.id).attr('class','pfpListItemSelected');
 	}
 }
 
@@ -176,8 +220,8 @@ function loadPFPDetails(pfp_id) {
 		dataType: "html",
   		success: function (response)
   			{
-  				$("#"+id+"_details .preloader").css("display","none").after(response);
-  				$("#"+id).attr('class','pfpListItemSelected');
+  				$("#"+pfp_id+"_details .preloader").css("display","none").after(response);
+  				$("#"+pfp_id).attr('class','pfpListItemSelected');
   			}
 	});
 }

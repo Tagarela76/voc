@@ -174,6 +174,13 @@ class CMix extends Controller {
 	private function actionGetPFPDetailsAjax() {
 		$manager = new PFPManager($this->db);
 		$pfp = $manager->getPFP($this->getFromRequest("pfp_id"));
+		
+		//	uncomment this code when return JSON
+		/*$output = new stdClass();
+		$output->id = $pfp->id;
+		$output->pfp = $pfp;
+		echo json_encode($output);*/
+		
 		$this->smarty->assign("pfp", $pfp);
 		echo $this->smarty->fetch("tpls/pfpMini.tpl");
 		exit;
@@ -1452,7 +1459,8 @@ class CMix extends Controller {
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
 			'modules/js/mixObj.js?rev=jun22',
-			'modules/js/addUsage.js?rev=sep05',
+			'modules/js/addUsage.js?rev=sep06',
+			'modules/js/Utils.js?rev=sep06',
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);
 

@@ -49,12 +49,12 @@
 	<body>
 
 		{include file="tpls:tpls/notify/popupNotify.tpl"}
-
+		
 		<table width="100%" height="100%"  cellspacing="0" cellpadding="0" >
 			<tr>
 				{include file="tpls:logo.tpl"}
 				<td  valign="top">
-				{*table center*}
+				{*table center*}				
 					<table class="cell2"  cellspacing="0" cellpadding="0" height="100%" >
 						<tr>
 							<td  valign="top" align="center" >
