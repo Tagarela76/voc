@@ -48,7 +48,7 @@
 								{/if}	
 								
 								{if $request.category == "workOrder"}
-									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
+									<input type="button" name="createLabel" class="button" value="Print" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
 								{/if}
 																			
 								{if $request.category=="wastestorage"}

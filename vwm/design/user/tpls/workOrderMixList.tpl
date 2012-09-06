@@ -61,6 +61,7 @@
     {/foreach}
 	<tr class="hov_company"	height="10px">
         <td class="border_users_l border_users_b border_users_r" colspan="4">
+			<div></div>
         </td>
 		<td class="border_users_b border_users_r">
             <div>
