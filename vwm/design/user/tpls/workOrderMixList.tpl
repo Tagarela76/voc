@@ -59,6 +59,15 @@
         </td>
     </tr>
     {/foreach}
+	<tr class="hov_company"	height="10px">
+        <td class="border_users_l border_users_b border_users_r" colspan="4">
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
+                <b> Total: </b> $ {$workOrder->totalPrice|escape} &nbsp;
+            </div>
+        </td>
+    </tr>
     <tr>
         <td colspan="5" class="border_users_l border_users_r">
             &nbsp;

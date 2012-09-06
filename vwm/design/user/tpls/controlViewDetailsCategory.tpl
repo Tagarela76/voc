@@ -45,7 +45,11 @@
 								
 								{if $request.category == "mix" and $request.action !== 'viewPFPDetails'}
 									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>
-								{/if}											
+								{/if}	
+								
+								{if $request.category == "workOrder"}
+									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
+								{/if}
 																			
 								{if $request.category=="wastestorage"}
 									{if $deleteORrestore eq "delete"}
