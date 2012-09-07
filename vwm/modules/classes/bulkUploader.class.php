@@ -225,7 +225,7 @@ class bulkUploader {
 			// format libraryTypes = > from string to array
 			$productLibraryTypes = array();
 			$libraryTypes = explode(',', $product['libraryTypes']); // we get array of library types
-		
+
 			foreach ($libraryTypes as $libraryType) {
 				$libraryType = trim($libraryType); 
 				// prepare unit type
@@ -234,18 +234,20 @@ class bulkUploader {
 					case "paint shop":	
 					case "PAINT SUPPLIES":
 					case "paint supplies":	
-						$productTypeLibrary = "1";
+						$productLibraryTypes[] = "1";
 						break;
 					case "BODY SHOP":
 					case "body shop":	
-						$productTypeLibrary = "2";
+						$productLibraryTypes[] = "2";
 						break;	
 					case "DETAILING":
 					case "detailing":	
-						$productTypeLibrary = "3";
+						$productLibraryTypes[] = "3";
 						break;	
 				}
 			}
+			$productLibraryTypes = array_unique($productLibraryTypes);
+			
 			// first we need delete all library types by this product
 			$productClass = new Product($this->db);
 			$productClass->deleteProductLibraryTypes($productID);
