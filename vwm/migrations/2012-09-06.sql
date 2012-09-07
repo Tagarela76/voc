@@ -1,20 +1,6 @@
-CREATE TABLE  `pfp_types` (
+CREATE TABLE  `voc`.`sales_brochure` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`name` VARCHAR( 150 ) NOT NULL,
-`facility_id` INT( 11 ) NOT NULL
-) ENGINE = INNODB ;
-
-ALTER TABLE  `preformulated_products` ADD  `type_id` INT( 11 ) NULL DEFAULT NULL;
-
-ALTER TABLE `preformulated_products` ADD FOREIGN KEY ( `type_id` ) REFERENCES `pfp_types` (
-`id`
-) ON DELETE CASCADE ON UPDATE RESTRICT ;
-
-INSERT INTO  `notify_code` (
-`id` ,
-`code` ,
-`message`
-)
-VALUES (
-NULL ,  '50',  'PFP Type Deleted'
-);
+`sales_client_id` INT( 11 ) NOT NULL ,
+`title_up` VARCHAR( 100 ) NULL DEFAULT NULL ,
+`title_down` VARCHAR( 100 ) NULL DEFAULT NULL
+) ENGINE = INNODB;

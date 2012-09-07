@@ -296,6 +296,8 @@ define ('TB_WORK_ORDER', 'work_order');
 
 define ('TB_PFP_TYPES', 'pfp_types');
 
+define ('TB_SALES_BROCHURE', 'sales_brochure');
+
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
 define ('SQL_DELIMITER',';');

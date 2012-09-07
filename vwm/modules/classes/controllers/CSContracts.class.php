@@ -39,8 +39,15 @@ class CSContracts extends Controller
 		}
 
 		$itemsCount = count($result['InfoTree']);
+		$salesBrochure = new SalesBrochure($this->db, 1);
+
+		$jsSources = array();
+		array_push($jsSources, 'modules/js/brochureSettings.js');
+		$this->smarty->assign('jsSources', $jsSources);
+		
 		$this->smarty->assign('itemsCount', $itemsCount);
 		$this->smarty->assign('doNotShowControls', true);
+		$this->smarty->assign('salesBrochure', $salesBrochure);
 		$this->smarty->assign('tpl','tpls/contracts.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}

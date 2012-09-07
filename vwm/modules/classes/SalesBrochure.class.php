@@ -1,6 +1,6 @@
 <?php
 
-class WorkOrder {
+class SalesBrochure {
 
 	/**
 	 *
@@ -10,33 +10,21 @@ class WorkOrder {
 	
 	/**
 	 *
-	 * @var string 
+	 * @var int 
 	 */
-	public $number;
+	public $sales_client_id;
 	
 	/**
 	 *
 	 * @var string 
 	 */
-	public $description;
+	public $title_up;
 	
 	/**
 	 *
 	 * @var string 
 	 */
-	public $customer_name;
-
-	/**
-	 *
-	 * @var string 
-	 */
-	public $facility_id;
-
-	/**
-	 *
-	 * @var string 
-	 */
-	public $status;
+	public $title_down;
 	
 	/**
 	 * db connection
@@ -45,11 +33,11 @@ class WorkOrder {
 	private $db;
 
 
-	function __construct(db $db, $workOrderId = null) {
+	function __construct(db $db, $salesBrochureId = null) {
 		$this->db = $db;
 
-		if (isset($workOrderId)) {
-			$this->id = $workOrderId;
+		if (isset($salesBrochureId)) {
+			$this->id = $salesBrochureId;
 			$this->_load();
 		}
 	}
@@ -58,34 +46,30 @@ class WorkOrder {
 	 * add work order
 	 * @return int 
 	 */
-	public function addWorkOrder() {
+	public function addSalesBrochure() {
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status) 
+		$query = "INSERT INTO " . TB_SALES_BROCHURE . "(sales_client_id, title_up, title_down) 
 				VALUES ( 
-				'" . $this->db->sqltext($this->number) . "'
-				, '" . $this->db->sqltext($this->description) . "'
-				, '" . $this->db->sqltext($this->customer_name) . "'
-				, '" . $this->db->sqltext($this->facility_id) . "'	
-				, '" . $this->db->sqltext($this->status) . "'	
+				" . $this->db->sqltext($this->sales_client_id) . "
+				, '" . $this->db->sqltext($this->title_up) . "'
+				, '" . $this->db->sqltext($this->title_down) . "'
 				)";
 		$this->db->query($query); 
-		$work_order_id = $this->db->getLastInsertedID();
-		$this->id = $work_order_id;
-		return $work_order_id;
+		$salesBrochureId = $this->db->getLastInsertedID();
+		$this->id = $salesBrochureId;
+		return $salesBrochureId;
 	}
 
 	/**
 	 * update work order
 	 * @return int 
 	 */
-	public function updateWorkOrder() {
+	public function updateSalesBrochure() {
 
-		$query = "UPDATE " . TB_WORK_ORDER . "
-					set number='" . $this->db->sqltext($this->number) . "',
-						description='" . $this->db->sqltext($this->description) . "',
-						customer_name='" . $this->db->sqltext($this->customer_name) . "',	
-						facility_id='" . $this->db->sqltext($this->facility_id) . "',
-						status='" . $this->db->sqltext($this->status) . "'	
+		$query = "UPDATE " . TB_SALES_BROCHURE . "
+					set sales_client_id=" . $this->db->sqltext($this->sales_client_id) . ",
+						title_up='" . $this->db->sqltext($this->title_up) . "',
+						title_down='" . $this->db->sqltext($this->title_down) . "'
 					WHERE id= " . $this->db->sqltext($this->id);
 		$this->db->query($query);
 
@@ -98,7 +82,7 @@ class WorkOrder {
 	 */
 	public function delete() {
 
-		$sql = "DELETE FROM " . TB_WORK_ORDER . "
+		$sql = "DELETE FROM " . TB_SALES_BROCHURE . "
 				 WHERE id=" . $this->db->sqltext($this->id);
 		$this->db->query($sql);
 	}
@@ -110,11 +94,11 @@ class WorkOrder {
 	public function save() {
 
 		if (!isset($this->id)) {
-			$work_order_id = $this->addWorkOrder();
+			$salesBrochureId = $this->addSalesBrochure();
 		} else {
-			$work_order_id = $this->updateWorkOrder();
+			$salesBrochureId = $this->updateSalesBrochure();
 		}
-		return $work_order_id;
+		return $salesBrochureId;
 	}
 
 	/**
@@ -165,7 +149,7 @@ class WorkOrder {
 			return false;
 		}
 		$sql = "SELECT * 
-				FROM " . TB_WORK_ORDER . "
+				FROM " . TB_SALES_BROCHURE . "
 				 WHERE id='" . $this->db->sqltext($this->id) .
 				"' LIMIT 1";
 		$this->db->query($sql);
@@ -180,30 +164,6 @@ class WorkOrder {
 				$this->$key = $value;
 			}
 		}
-	}
-	
-		
-	public function getMixes() {
-		
-		$query = "SELECT * FROM " . TB_USAGE .
-				 " WHERE wo_id={$this->db->sqltext($this->id)}";
-		$this->db->query($query);
-		$rows = $this->db->fetch_all_array();
-
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$mixes = array();
-		foreach ($rows as $row) {
-			$mix = new MixOptimized($this->db);
-			foreach ($row as $key => $value) {
-				if (property_exists($mix, $key)) {
-					$mix->$key = $value;
-				}
-			}
-			$mixes[] = $mix;
-		}
-		return $mixes;
 	}
 
 }

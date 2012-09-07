@@ -1,3 +1,12 @@
+{literal}
+	<script type="text/javascript">
+		$(function() {
+			page = new Page();
+			page.titleUp = '{/literal} {$salesBrochure->title_up} {literal}';
+			page.titleDown = '{/literal} {$salesBrochure->title_down} {literal}';	
+		});
+	</script>
+{/literal}	
 <div class="padd7" align="center">
     {if $color eq "green"}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
@@ -96,6 +105,19 @@
         </div>
     </div>
     {**}
+	<input type="hidden" id="salesBrochureClientId" value="{$salesBrochure->sales_client_id}"/>
+	<div align="center" id="sales_brochure">
+		<div id="sales_brochure_title_up">
+			<p id="title_up">{$salesBrochure->title_up}</p>	
+		</div>
+
+		<div id="sales_brochure_title_down">
+			<p id="title_down">{$salesBrochure->title_down}</p>	
+		</div>	
+	</div>
+	<div id="brochure_control_button">
+			<input type="button" value="edit" onclick="page.salesBrochure.editMode()"/>
+	</div>	
 </div>
 {if $category neq 'wastestorage'}
 </form> {*close FORM tag opened at controlCategoriesList.tpl*}
