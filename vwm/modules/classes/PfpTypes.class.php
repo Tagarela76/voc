@@ -143,12 +143,17 @@ class PfpTypes {
 		}
 	}
 	
-		
+	
+	/**
+	 * Get list of PFP's of current type
+	 * @param Pagination $pagination
+	 * @return boolean|PFP[]
+	 */
 	public function getPfpProducts(Pagination $pagination = null) {
-		
-		$query = "SELECT * FROM " . TB_PFP .
-				 " WHERE type_id ={$this->db->sqltext($this->id)}";
-                 
+		$query = "SELECT * FROM ".TB_PFP. " pfp " .
+				"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
+				"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($this->id)}";
+				                
         if (isset($pagination)) {
 			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}    

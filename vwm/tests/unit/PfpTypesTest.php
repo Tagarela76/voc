@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class PfpTypesTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_PFP_TYPES, TB_PFP, TB_FACILITY
+		TB_PFP_TYPES, TB_PFP, TB_FACILITY, TB_PFP2PFP_TYPES
 	);
 
 	public function testAddPFPType() {
@@ -28,11 +28,12 @@ class PfpTypesTest extends Testing\DbTestCase {
 		$this->assertTrue(is_null($pfpTypesTest));
 	}
     
-    public function testGetPfpProductsByTypeId() {
-		
+    public function testGetPfpProducts() {		
 		$pfpTypes = new PfpTypes($this->db, '1');
 		$pfpProducts = $pfpTypes->getPfpProducts();
-		$this->assertTrue(count($pfpProducts) == 2);
+		
+		$this->assertEquals(count($pfpProducts), 1);		
+		$this->assertEquals($pfpProducts[0]->id, 1);
 	}
 	
 }

@@ -833,25 +833,46 @@ class PFPManager {
 		return $pfpProductsIsAssign; 
 	}
     
-    public function assignPFP2Type($pfpID, $pfpTypeid) {
-        
-        $query = "UPDATE ".TB_PFP." SET type_id = {$this->db->sqltext($pfpTypeid)} WHERE id = {$this->db->sqltext($pfpID)}"; 
-        $this->db->query($query);
+	/**
+	 * Assign PFP to the PFP Type
+	 * @param int $pfpID
+	 * @param int $pfpTypeID
+	 */
+    public function assignPFP2Type($pfpID, $pfpTypeID) {
+		$this->unAssignPFP2Type($pfpID, $pfpTypeID);		
+		
+		$sql = "INSERT INTO ".TB_PFP2PFP_TYPES." (pfp_id, pfp_type_id) VALUES " .
+				"({$this->db->sqltext($pfpID)}, {$this->db->sqltext($pfpTypeID)})";
+        $this->db->exec($sql);
 	}
     
-    public function unAssignPFP2Type($pfpID) {
-        
-        $query = "UPDATE ".TB_PFP." SET type_id = null WHERE id = {$this->db->sqltext($pfpID)}";
-        $this->db->query($query);
+	/**
+	 * Remove PFP from PFP type
+	 * @param int $pfpID
+	 * @param int $pfpTypeID
+	 */
+    public function unAssignPFP2Type($pfpID, $pfpTypeID) {
+		$sql = "DELETE FROM ".TB_PFP2PFP_TYPES ." " .
+				"WHERE pfp_id = {$this->db->sqltext($pfpID)} " .
+				"AND pfp_type_id = {$this->db->sqltext($pfpTypeID)}";
+		$this->db->exec($sql);
 	}
-    public function getUnAssignPFP2Type($companyId, Pagination $pagination = null) {
-		
-		$query = "SELECT * FROM " . TB_PFP . " pfp" . 
+	
+	
+    public function getUnAssignPFP2Type($companyId, $pfpTypeID, Pagination $pagination = null) {
+		$query = "SELECT * FROM " . TB_PFP . " pfp ". 
+				"JOIN " . TB_PFP2COMPANY . " pfp2c ON pfp.id = pfp2c.pfp_id " .
+				"LEFT JOIN " . TB_PFP2PFP_TYPES . " pfp2t ON pfp.id = pfp2t.pfp_id " .
+				"WHERE (pfp2t.pfp_type_id != {$this->db->sqltext($pfpTypeID)} OR pfp2t.pfp_type_id IS NULL) " .
+				"AND pfp2c.is_available = 1 " .
+				"AND pfp2c.company_id = {$this->db->sqltext($companyId)}";
+				
+		/*$query = "SELECT * FROM " . TB_PFP . " pfp" . 
 				 " LEFT JOIN " . TB_PFP2COMPANY . " pfpc" . 
 				 " ON pfp.id = pfpc.pfp_id 
 				  LEFT JOIN " . TB_COMPANY . " c" .
 				 " ON c.company_id = pfpc.company_id 
-				  WHERE (type_id = 'null' OR type_id IS NULL) AND pfpc.is_available = 1 AND c.company_id = {$this->db->sqltext($companyId)}";
+				  WHERE (type_id = 'null' OR type_id IS NULL) AND pfpc.is_available = 1 AND c.company_id = {$this->db->sqltext($companyId)}";*/
                  
         if (isset($pagination)) {
 			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";

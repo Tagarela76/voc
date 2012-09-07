@@ -6,7 +6,7 @@ class PFPManagerTest extends Testing\DbTestCase {
 
     protected $fixtures = array(
         TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP_TYPES, TB_PFP, TB_PFP2PRODUCT, 
-        TB_PFP2COMPANY, TB_PRODUCT2COMPANY
+        TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP2PFP_TYPES,
     );
 
 
@@ -46,6 +46,46 @@ class PFPManagerTest extends Testing\DbTestCase {
 		$companyId = '1';
 		$isPFPsProductsIsAssign2Company = $manager->isPFPsProductsAssign2Company($pfpId, $companyId);
 		$this->assertTrue($isPFPsProductsIsAssign2Company == true);
+	}
+	
+	
+	public function testAssignPFP2Type() {
+        
+        $manager = new PFPManager($this->db);
+        $pfpID = 4;
+        $pfpTypeid = 2;
+        
+        $manager->assignPFP2Type($pfpID, $pfpTypeid);
+        $sql = "SELECT * FROM ".TB_PFP2PFP_TYPES." " .
+				"WHERE pfp_id = {$pfpID} AND pfp_type_id = {$pfpTypeid}";
+		$this->db->query($sql);	
+		$this->assertEquals($this->db->num_rows(), 1);
+		$row = $this->db->fetch(0);
+		$this->assertEquals($row->pfp_id, $pfpID);
+		$this->assertEquals($row->pfp_type_id, $pfpTypeid);
+        
+    }
+    
+    public function testUnAssignPFP2Type() {
+        
+        $manager = new PFPManager($this->db);
+        $pfpID = 2;
+		$pfpTypeID = 2;
+
+        $manager->unassignPFP2Type($pfpID, $pfpTypeID);
+		$sql = "SELECT * FROM ".TB_PFP2PFP_TYPES." " .
+				"WHERE pfp_type_id = {$pfpTypeID}";
+		$this->db->query($sql);	
+		$this->assertEquals($this->db->num_rows(), 1);	//	was 2 before unassign
+		$row = $this->db->fetch(0);
+		$this->assertEquals($row->pfp_id, 1);
+		
+    }
+	
+	
+	public function testGetUnAssignPFP2Type() {
+		$manager = new PFPManager($this->db);
+		$manager->getUnAssignPFP2Type($companyId);
 	}
 
 }

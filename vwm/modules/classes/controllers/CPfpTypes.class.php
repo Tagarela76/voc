@@ -130,13 +130,14 @@ class CPfpTypes extends Controller {
 		$this->smarty->assign('isAllPFP', $isAllPFP);
 		$facilityDet = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyId = $facilityDet["company_id"]; 
+		// TODO: add count() for pagination
 		if ($isAllPFP) {
 			// we show an all pfp's list
 			$pfp = new PFPManager($this->db);
-			$pfps = $pfp->getUnAssignPFP2Type($companyId);
+			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'));
 			$pagination = new Pagination(count($pfps));
 			$pagination->url = $url;
-			$pfps = $pfp->getUnAssignPFP2Type($companyId, $pagination);
+			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'), $pagination);			
 		} else {   
 			$pfpProducts = $pfpTypes->getPfpProducts();
 
@@ -201,7 +202,7 @@ class CPfpTypes extends Controller {
         $facilityID = $this->getFromRequest('facilityID');
         $pfp = new PFPManager($this->db);
         foreach ($pfpIDs as $pfpID) {
-            $pfp->unAssignPFP2Type($pfpID);
+            $pfp->unAssignPFP2Type($pfpID, $pfpTypeid);
         }
         $url = "?action=viewDetails&category=pfpTypes&id={$pfpTypeid}&facilityID={$facilityID}&pfpGroup=group";
         echo $url;

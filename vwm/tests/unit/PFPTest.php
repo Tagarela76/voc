@@ -32,30 +32,5 @@ class PFPTest extends Testing\DbTestCase {
         $ratio = $pfp->getRatio(false);
         $this->assertTrue($ratio == "1:3:4");
     }
-    
-    public function testAssignPFP2Type() {
         
-        $manager = new PFPManager($this->db);
-        $pfpID = 4;
-        $pfpTypeid = 2;
-        
-        $manager->assignPFP2Type($pfpID, $pfpTypeid);
-        $pfpTypes = new PfpTypes($this->db, '2');
-        $pfpTypesCount = $pfpTypes->getPfpProducts();
-        $this->assertTrue(count($pfpTypesCount) == 2);
-        
-    }
-    
-    public function testUnassignPFP2Type() {
-        
-        $manager = new PFPManager($this->db);
-        $pfpID = 4;
-
-        $manager->unassignPFP2Type($pfpID);
-        $pfpTypes = new PfpTypes($this->db, '4');
-        $pfpTypesCount = $pfpTypes->getPfpProducts(); 
-        $this->assertTrue(!$pfpTypesCount);
-        
-    }
-
 }
