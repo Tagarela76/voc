@@ -3785,7 +3785,7 @@ div:hover.category_folder_hover{cursor:pointer;}
 	width: 500px;
 	height: 500px;
 	background-position:center center; 
-	background-image: url('../images/salesBrochure.png'); 
+	background-image: url('images/salesBrochure.png'); 
 	background-repeat: no-repeat;
 }
 
