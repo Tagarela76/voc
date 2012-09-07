@@ -225,22 +225,29 @@ class bulkUploader {
 			// format libraryTypes = > from string to array
 			$productLibraryTypes = array();
 			$libraryTypes = explode(',', $product['libraryTypes']); // we get array of library types
-			
+
 			foreach ($libraryTypes as $libraryType) {
-				switch (trim($libraryType)) {
-					case ProductLibraryType::PAINT_SHOP_PRODUCTS :
+				$libraryType = trim($libraryType); 
+				// prepare unit type
+				switch ($libraryType) {
+					case "PAINT SHOP":
+					case "paint shop":	
+					case "PAINT SUPPLIES":
+					case "paint supplies":	
 						$productLibraryTypes[] = "1";
-					break;
-				
-					case ProductLibraryType::BODY_SHOP_PRODUCTS:
+						break;
+					case "BODY SHOP":
+					case "body shop":	
 						$productLibraryTypes[] = "2";
-					break;
-				
-					case ProductLibraryType::DETAILING_SHOP_PRODUCTS:
+						break;	
+					case "DETAILING":
+					case "detailing":	
 						$productLibraryTypes[] = "3";
-					break;
+						break;	
 				}
 			}
+			$productLibraryTypes = array_unique($productLibraryTypes);
+			
 			// first we need delete all library types by this product
 			$productClass = new Product($this->db);
 			$productClass->deleteProductLibraryTypes($productID);
@@ -362,20 +369,27 @@ class bulkUploader {
 		$libraryTypes = explode(',', $product['libraryTypes']); // we get array of library types
 
 		foreach ($libraryTypes as $libraryType) {
-			switch (trim($libraryType)) {
-				case ProductLibraryType::PAINT_SHOP_PRODUCTS :
+			$libraryType = trim($libraryType); 
+			// prepare unit type
+			switch ($libraryType) {
+				case "PAINT SHOP":
+				case "paint shop":	
+				case "PAINT SUPPLIES":
+				case "paint supplies":	
 					$productLibraryTypes[] = "1";
-				break;
-
-				case ProductLibraryType::BODY_SHOP_PRODUCTS:
+					break;
+				case "BODY SHOP":
+				case "body shop":	
 					$productLibraryTypes[] = "2";
-				break;
-
-				case ProductLibraryType::DETAILING_SHOP_PRODUCTS:
+					break;	
+				case "DETAILING":
+				case "detailing":	
 					$productLibraryTypes[] = "3";
-				break;
+					break;	
 			}
 		}
+		$productLibraryTypes = array_unique($productLibraryTypes);
+		
 		// first we need delete all library types by this product
 		$productClass = new Product($this->db);
 		$productClass->deleteProductLibraryTypes($productID);

@@ -1235,10 +1235,10 @@ class Product extends ProductProperties {
 						p.vocwx, p.percent_volatile_weight, p.percent_volatile_volume, pp.price,
 						p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_my_manufacturer " .
 					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
-					"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
-					"LEFT JOIN " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " p2lt ON(p2lt.product_id=p.product_id)" .
-					"WHERE p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id " .
+					"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" . " " .
+					"LEFT JOIN " . TB_PRODUCT2PRODUCT_LIBRARY_TYPE . " p2lt ON(p2lt.product_id=p.product_id)" . " " .
+					"WHERE p.supplier_id = s.supplier_id " . " " .
+					"AND coat.coat_id = p.coating_id " . " " .
 					"AND p2lt.product_library_type_id = {$this->db->sqltext($libraryType)} ";
 		} else {
 			$query = "SELECT p.product_id, p.product_nr, p.name, coat.coat_desc coating, p.supplier_id, s.supplier, p.voclx,
