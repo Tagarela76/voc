@@ -357,6 +357,7 @@ class validateCSV {
 					}
 					$unitType = $unitTypeClass->getUnittypeByName($unitType);
 					$unitType = $unitType['unittype_id']; // get unit type id
+					
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
@@ -760,6 +761,22 @@ class validateCSV {
 			$waste = trim($waste);
 			if (strlen($waste)>20) {
 				$comments .= "	Waste value is too long. Row " . $row . ".\n";
+			}
+		}
+		
+		//product library type
+		$data[41] = trim($data[41]);
+		if ($data[41] != "") {
+			// isn't empty
+			$libraryTypes = explode(',', $data[41]); // we get array of library types
+			foreach ($libraryTypes as $libraryType) {
+				if ( trim($libraryType) != "PAINT SHOP" && trim($libraryType) != "paint shop" && trim($libraryType) != "PAINT SUPPLIES" && 
+						trim($libraryType) != "paint supplies" && trim($libraryType) != "BODY SHOP" && 
+						trim($libraryType) != "body shop"  && trim($libraryType) != "DETAILING" && 
+						trim($libraryType) != "detailing") {
+					$comments .= "	Product Library type is undefined. Row " . $row . ".\n";
+					break;
+				}
 			}
 		}
 
