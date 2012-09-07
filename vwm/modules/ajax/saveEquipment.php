@@ -2,7 +2,7 @@
 
 chdir('../..');
 
-require_once('modules/Reform.inc.php');
+require_once('modules/lib/Reform.inc.php');
 require('config/constants.php');
 require_once ('modules/xnyo/xnyo.class.php');
 

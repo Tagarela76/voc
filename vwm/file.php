@@ -21,7 +21,7 @@
 	//	Start Smarty templates engine
 	require ('modules/xnyo/smarty/startSmarty.php');
 	
-	require_once('modules/Reform.inc.php');
+	require_once('modules/lib/Reform.inc.php');
 	
 	$queryStr = $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 	

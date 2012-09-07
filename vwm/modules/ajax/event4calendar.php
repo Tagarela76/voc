@@ -3,7 +3,7 @@
 	
 	require('config/constants.php');
 	require_once ('modules/xnyo/xnyo.class.php');
-	require_once('modules/Reform.inc.php');
+	require_once('modules/lib/Reform.inc.php');
 		
 	$site_path = getcwd().DIRECTORY_SEPARATOR; 
 	define ('site_path', $site_path);

@@ -11,7 +11,7 @@ require_once('modules/classAutoloader.php');
 //http://www.php.net/manual/en/function.spl-autoload-register.php
 spl_autoload_register('__autoload');
 
-require_once('modules/Reform.inc.php');
+require_once('modules/lib/Reform.inc.php');
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');
 

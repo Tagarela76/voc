@@ -17,7 +17,7 @@ chdir('../..');
 	//	Start Smarty templates engine
 	require ('modules/xnyo/smarty/startSmarty.php');
 	
-	require_once('modules/Reform.inc.php');
+	require_once('modules/lib/Reform.inc.php');
 	
 	$db->select_db(DB_NAME);
 
