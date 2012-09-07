@@ -116,7 +116,7 @@
 		</div>	
 	</div>
 	<div id="brochure_control_button">
-			<input type="button" value="edit" onclick="page.salesBrochure.editMode()"/>
+			<input type="button" class="button" value="edit" onclick="page.salesBrochure.editMode()"/>
 	</div>	
 </div>
 {if $category neq 'wastestorage'}
