@@ -82,7 +82,9 @@
 		{/if}
 
 		{if $request.category eq "pfps"}
-			<input type="button" class="button" value="Give access to company" onclick="location.href='admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.subBookmark|escape:'url'}'"/>
+			{if !($request.subBookmark == "custom" ||  $request.subBookmark == "") }
+				<input type="button" class="button" value="Give access to company" onclick="location.href='admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.subBookmark|escape:'url'}'"/>
+			{/if}
 		{/if}
 
 

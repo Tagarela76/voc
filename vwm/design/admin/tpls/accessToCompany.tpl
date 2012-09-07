@@ -14,6 +14,7 @@
 
 
 <div class="padd7">
+	<h2>{$supplierDetails.supplier_desc|escape} PFP's</h2>
 <form method="POST" action="admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.supplier|escape:'url'}">
 	<table  class="users" height="140"  cellspacing="0" cellpadding="0" align="center">
 		<tr height="27" class="users_top_violet">

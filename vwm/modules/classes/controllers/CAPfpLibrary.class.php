@@ -392,6 +392,12 @@ class CAPfpLibrary extends Controller {
 	 * TODO: refactor needed
 	 */
 	protected function actionAccessToCompany() {
+		$supplierObj = new Supplier($this->db);
+		$supplierDetails = $supplierObj->getSupplierDetails($this->getFromRequest('supplier'));
+		if(!$supplierDetails) {
+			throw new Exception(404);
+		}
+		
 		if ($_POST['assign'] == "Assign") {
 			$industry_type = $_POST['industryType'];
 			$company_id = $_POST['company'];
@@ -477,7 +483,8 @@ class CAPfpLibrary extends Controller {
 		// get company list
 		$cCompany = new Company($this->db);
 		$company_list = $cCompany->getCompanyList();
-		$this->smarty->assign("companyList", $company_list);
+		$this->smarty->assign("companyList", $company_list);		
+		$this->smarty->assign("supplierDetails",$supplierDetails);
 
 		$jsSources = array('modules/js/checkBoxes.js');
 
