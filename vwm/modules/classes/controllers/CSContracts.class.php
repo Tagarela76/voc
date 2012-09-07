@@ -41,8 +41,10 @@ class CSContracts extends Controller
 		$itemsCount = count($result['InfoTree']);
 		$salesBrochure = new SalesBrochure($this->db, 1);
 
-		$jsSources = array();
-		array_push($jsSources, 'modules/js/brochureSettings.js');
+		$jsSources = array(
+			'modules/js/brochureSettings.js',
+			'modules/js/Utils.js',
+		);		
 		$this->smarty->assign('jsSources', $jsSources);
 		
 		$this->smarty->assign('itemsCount', $itemsCount);
