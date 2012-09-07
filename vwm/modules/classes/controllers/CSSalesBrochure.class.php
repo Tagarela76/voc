@@ -1,11 +1,10 @@
 <?php
 
-class CWorkOrder extends Controller {
+class CSSalesBrochure extends Controller {
 
-    function CWorkOrder($smarty, $xnyo, $db, $user, $action) {
+    function CSSalesBrochure($smarty, $xnyo, $db, $user, $action) {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
-        $this->category = 'WorkOrder';
-        $this->parent_category = 'facility';
+        $this->category = 'SalesBrochure';
     }
 
     function runAction() {
@@ -16,109 +15,15 @@ class CWorkOrder extends Controller {
             $this->$functionName();
     }
 
-    private function actionViewDetails() {
-
-        $workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
-        $this->smarty->assign('workOrder', $workOrder);
-        $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
-        $params = array("bookmark" => "workOrder");
-
-		$mixList = array();
-        // get child mixes 
-        $mixes = $workOrder->getMixes();
-		foreach ($mixes as $mix) {
-			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
-			$mix->price = $mixOptimized->getMixPrice();
-			$mixList[] = $mix;
-		}
-        
-        $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
-        $this->setPermissionsNew('viewWorkOrder');
-
-        $this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest('facilityID') . '&bookmark=workOrder');
-        $this->smarty->assign('deleteUrl', '?action=deleteItem&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
-        $this->smarty->assign('editUrl', '?action=edit&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
-        $this->smarty->assign('mixList', $mixList);
-        //set js scripts
-        $jsSources = array('modules/js/checkBoxes.js',
-            'modules/js/autocomplete/jquery.autocomplete.js');
-        $this->smarty->assign('jsSources', $jsSources);
-        //set tpl
-        $this->smarty->assign('tpl', 'tpls/viewWorkOrder.tpl');
-        $this->smarty->display("tpls:index.tpl");
-    }
-
-    /**
-     * bookmarkWorkOrder($vars)
-     * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
-     */
-    protected function bookmarkWorkOrder($vars) {
-
-        extract($vars);
-        if (is_null($facilityDetails['facility_id'])) {
-            throw new Exception('404');
-        }
-        $filterStr = $this->filterList('workOrder');
-        
-        $facility = new Facility($this->db);
-        
-        $workOrderCount = $facility->countWorkOrderInFacility($facilityDetails['facility_id']);
-        $url = "?".$_SERVER["QUERY_STRING"];
-        $url = preg_replace("/\&page=\d*/","", $url);
-        $pagination = new Pagination($workOrderCount);
-		$pagination->url = $url; 
-        $this->smarty->assign('pagination', $pagination);
-        
-        $workOrderList = $facility->getWorkOrdersList($facilityDetails['facility_id'],$pagination);
-        if ($workOrderList) {
-            for ($i = 0; $i < count($workOrderList); $i++) {
-                $url = "?action=viewDetails&category=workOrder&id=" . $workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];
-                $workOrderList[$i]->url = $url;
-            }
-        }
-        $this->smarty->assign("childCategoryItems", $workOrderList);
-
-        //	set js scripts
-        $jsSources = array(
-            'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-            'modules/js/checkBoxes.js');
-        $this->smarty->assign('jsSources', $jsSources);
-
-        $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
-        $this->smarty->assign('cssSources', $cssSources);
-
-        //	set tpl
-        $this->smarty->assign('tpl', 'tpls/workOrderList.tpl');
-    }
-
-    private function actionAddItem() {
-        //	Access control
-        if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
-            throw new Exception('deny');
-        }
+    private function actionUpdateItem() {
 
         $request = $this->getFromRequest();
-        $request["id"] = $request["facilityID"];
-        $request['parent_id'] = $request['facilityID'];
-        $request['parent_category'] = 'facility';
-        $this->smarty->assign('request', $request);
+		$salesBrochure = new SalesBrochure($this->db, "1");
+        $salesBrochure->title_up = $request["salesBrochureTitleUp"];
+        $salesBrochure->title_down = $request['salesBrochureTitleDown'];
+        $salesBrochure->sales_client_id = $request['salesBrochureClientId'];
+		$salesBrochure->save();
 
-        $params = array("bookmark" => "workOrder");
-
-        $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
-        $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
-        $this->setPermissionsNew('viewFacility');
-
-        //	set js scripts
-        $jsSources = array(
-            'modules/js/saveItem.js',
-            'modules/js/PopupWindow.js'
-        );
-        $this->smarty->assign('jsSources', $jsSources);
-
-        $this->smarty->assign('pleaseWaitReason', "Recalculating mixes at department.");
-        $this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
-        $this->smarty->display("tpls:index.tpl");
     }
 
     private function actionDeleteItem() {
@@ -210,6 +115,26 @@ class CWorkOrder extends Controller {
         $this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
+
+	private function actionCreateLabel() {
+		
+		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
+		$mixList = array();
+        // get child mixes 
+		$MixTotalPrice = 0;
+        $mixes = $workOrder->getMixes();
+		foreach ($mixes as $mix) {
+			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
+			$mix->price = $mixOptimized->getMixPrice();
+			$MixTotalPrice += $mix->price;
+			$mixList[] = $mix;
+		}
+		$workOrder->totalPrice = $MixTotalPrice;
+        $this->smarty->assign('workOrder', $workOrder);
+        $this->smarty->assign('mixList', $mixList);
+
+		$this->smarty->display("tpls/workOrderLabel.tpl");
+	}
 
 }
 

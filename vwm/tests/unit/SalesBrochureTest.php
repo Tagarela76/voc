@@ -2,46 +2,36 @@
 
 use VWM\Framework\Test as Testing;
 
-class WorkOrderTest extends Testing\DbTestCase {
+class SalesBrochureTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_FACILITY, TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP, TB_WORK_ORDER
+		TB_SALES_BROCHURE
 	);
 
-	public function testWorkOrder() {
-		$workOrder = new WorkOrder($this->db, 'test1');
-		$this->assertTrue($workOrder instanceof WorkOrder);
-		$this->assertTrue(!is_null($workOrder));
+	public function testInitSalesBrochure() {
+		
+		$salesBrochure = new SalesBrochure($this->db, '1');
+		$this->assertTrue($salesBrochure instanceof SalesBrochure);
 	}
 	
-	public function testAddWorkOrder() {
+	public function testAddSalesBrochure() {
 		
-		$workOrder = new WorkOrder($this->db);
-		$workOrder->number = '545-wr';
-		$workOrder->description = 'test ';
-		$workOrder->customer_name = 'nick smith';
-		$workOrder->facility_id = '2';
-		$workOrder->status = 'new';
-		$workOrder->save();
+		$salesBrochure = new SalesBrochure($this->db);
+		$salesBrochure->sales_client_id = '2';
+		$salesBrochure->title_up = 'test5';
+		$salesBrochure->title_down = 'test6';
+		$salesBrochure->save();
 		
-		$myTestWorkOrder = Phactory::get(TB_WORK_ORDER, array('description'=>"test"));
-		$this->assertTrue($myTestWorkOrder->number == '545-wr');
+		$mySalesBrochure = Phactory::get(TB_SALES_BROCHURE, array('sales_client_id'=>"2"));
+		$this->assertTrue($mySalesBrochure->title_up == 'test5');
 	}
 	
-	public function testDeleteWorkOrder() {
+	public function testDeleteSalesBrochure() {
 		
-		$workOrder = new WorkOrder($this->db, '1');
-		$workOrder->delete();
-		$deletedWorkOrder = Phactory::get(TB_WORK_ORDER, array('number'=>"test1"));
-		$this->assertTrue(is_null($deletedWorkOrder));
-	}
-	
-	public function testGetMixes() {
-		
-		$workOrder = new WorkOrder($this->db, '1');
-		$mixes = $workOrder->getMixes();
-		
-		$this->assertTrue($mixes[0] instanceof MixOptimized);
+		$salesBrochure = new SalesBrochure($this->db, '1');
+		$salesBrochure->delete();
+		$deletedSalesBrochure = Phactory::get(TB_SALES_BROCHURE, array('id'=>"1"));
+		$this->assertTrue(is_null($deletedSalesBrochure));
 	}
 	
 }
