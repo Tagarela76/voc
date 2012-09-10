@@ -1,0 +1,23 @@
+NoxBurner:  
+  getters:
+    uniqueSerial:
+      - "True": {message: "Serial should be unique"}
+  properties:
+    model:
+      - NotBlank: ~
+      - MaxLength: 200
+    serial:  
+      - NotBlank: ~
+      - MaxLength: 200
+    input:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    output:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    btu:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999

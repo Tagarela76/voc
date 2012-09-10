@@ -2,8 +2,12 @@
 function __autoload($class_name) {
 
     //  tweak for PHP 5.3 namespaces
-	$class_name = str_replace('\\', '/', $class_name);
-
+	$class_name = str_replace('\\', '/', $class_name);	
+	if(substr($class_name, 0, 7) =='Symfony') {		
+		require_once(site_path.'modules'.DIRSEP.'lib'.DIRSEP.$class_name.'.php');
+		return true;
+	}
+	
 	$filePath = site_path.'modules'.DIRSEP.'classes'.DIRSEP;
 	$controllersFilePath=$filePath.'controllers'.DIRSEP; 
 	$localizedFilePath = $filePath; 

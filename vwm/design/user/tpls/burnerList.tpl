@@ -100,54 +100,54 @@
     {section name=i loop=$childCategoryItems}
     <tr class="hov_accessory" height="10px">
         <td class="border_users_b border_users_r border_users_l">
-            <input type="checkbox" value="{$childCategoryItems[i].burner_id}" name="id[]">
+            <input type="checkbox" value="{$childCategoryItems[i].burner_id|escape}" name="id[]">
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].burner_id}
+                    {$childCategoryItems[i].burner_id|escape}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].model}
+                    {$childCategoryItems[i].model|escape}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].serial}
+                    {$childCategoryItems[i].serial|escape}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].manufacturer}
+                    {$childCategoryItems[i].manufacturer|escape}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].input}
+                    {$childCategoryItems[i].input|escape}
                 </div>
             </a>
         </td>
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].output}
+                    {$childCategoryItems[i].output|escape}
                 </div>
             </a>
         </td>		
         <td class="border_users_b border_users_r">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].btu}
+                    {$childCategoryItems[i].btu|escape}
                 </div>
             </a>
         </td>		

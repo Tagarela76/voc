@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->burner_id}
+                    &nbsp;{$burner->burner_id|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->model} 
+                    &nbsp;{$burner->model|escape} 
                 </div>
             </td>
         </tr>	
@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->serial}
+                    &nbsp;{$burner->serial|escape}
                 </div>
             </td>
         </tr>
@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$manufacturer.name}
+                    &nbsp;{$manufacturer.name|escape}
                 </div>
             </td>
         </tr>
@@ -63,7 +63,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->input}
+                    &nbsp;{$burner->input|escape}
                 </div>
             </td>
         </tr>
@@ -73,7 +73,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->output}
+                    &nbsp;{$burner->output|escape}
                 </div>
             </td>
         </tr>
@@ -83,7 +83,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burner->btu}
+                    &nbsp;{$burner->btu|escape}
                 </div>
             </td>
         </tr>

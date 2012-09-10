@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$burnerDetails.model} &gt; {$burnerDetails.serial}
+                    &nbsp;{$burnerDetails.model|escape} &gt; {$burnerDetails.serial|escape}
                 </div>
             </td>
         </tr>

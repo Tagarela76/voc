@@ -23,7 +23,7 @@ class Controller {
     protected $parentCategory;
     protected $filter;
     private $typeInformer;
-
+	
 
 	/**
 	 * List of blocks

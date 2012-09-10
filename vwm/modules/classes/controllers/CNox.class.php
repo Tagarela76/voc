@@ -1,5 +1,6 @@
 <?php
 
+
 class CNox extends Controller {
 
 	function Cnox($smarty, $xnyo, $db, $user, $action) {
@@ -115,7 +116,7 @@ class CNox extends Controller {
 		}
 	}
 
-	private function actionAddItem() {
+	private function actionAddItem() {			
 		$request = $this->getFromRequest();
 		$request['parent_category'] = 'department';
 
@@ -143,13 +144,8 @@ class CNox extends Controller {
 			$burnerManufacturerList = $noxManager->getBurnerManufacturerList();
 			$this->smarty->assign('burnerManufacturers',$burnerManufacturerList);
 		}
-
-		// protecting from xss
-		$post = $this->getFromPost();
-
-		foreach ($post as $key => $value) {
-			$post[$key] = Reform::HtmlEncode($value);
-		}
+		
+		$post = $this->getFromPost();		
 
 		if (count($post) > 0) {
 			$departmentID = $post['department_id'];
@@ -165,65 +161,22 @@ class CNox extends Controller {
 						'output' => $this->getFromPost('output'),
 						'btu' => $this->getFromPost('btu')
 					);
-
-					$validation = new Validation($this->db);
-					$validStatus = array(
-						'summary' => 'true',
-						'model' => 'failed',
-						'serial' => 'failed',
-						'manufacturer_id' => 'failed',
-						'input' => 'failed',
-						'output' => 'failed',
-						'btu' => 'failed'
-					);
-					if (!$validation->check_name($burnerDetails['model'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['model'] = 'accept';
-					}
-					if (!$validation->check_name($burnerDetails['serial'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['serial'] = 'accept';
-					}
-					if (!$validation->check_name($burnerDetails['manufacturer_id'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['manufacturer_id'] = 'accept';
-					}
-					if (!$validation->check_name($burnerDetails['input'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['input'] = 'accept';
-					}
-					if (!$validation->check_name($burnerDetails['output'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['output'] = 'accept';
-					}
-					if (!$validation->check_name($burnerDetails['btu'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['btu'] = 'accept';
-					}
-
-
-					if ($validStatus['summary'] == 'true') {
-						$noxBurner = new NoxBurner($this->db, $burnerDetails);
+					
+					$noxBurner = new NoxBurner($this->db, $burnerDetails);											
+					$violationList = $noxBurner->validate();
+					if(count($violationList) == 0) {
 						$noxBurner->save();
 						// redirect
 						header("Location: ?action=browseCategory&category=department&id=" . $departmentID . "&bookmark=nox&tab={$request['tab']}&notify=41");
-						die();
 					} else {
-
 						/* 	the modern style */
 						$notifyc = new Notify(null, $this->db);
 						$notify = $notifyc->getPopUpNotifyMessage(401);
 						$this->smarty->assign("notify", $notify);
 
-						$this->smarty->assign('validStatus', $validStatus);
+						$this->smarty->assign('violationList', $violationList);
 						$this->smarty->assign('data', $burnerDetails);
-					}
+					}																	
 					break;
 
 				case ('nox'):
