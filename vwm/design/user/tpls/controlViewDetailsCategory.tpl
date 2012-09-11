@@ -47,7 +47,7 @@
 									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>
 								{/if}	
 								
-								{if $request.category == "workOrder"}
+								{if $request.category == "workOrder" || $request.category == "pfpTypes"}
 									<input type="button" name="createLabel" class="button" value="Print" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
 								{/if}
 																			

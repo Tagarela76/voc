@@ -5,6 +5,11 @@ use Symfony\Component\Validator\Validation;
 
 
 abstract class Model {
+	
+	/**	 
+	 * @var db - xnyo databse
+	 */
+	protected $db;
 
 	protected $modelName = "";
 
@@ -44,14 +49,6 @@ abstract class Model {
 			$methodName = "set_" . $name;
 			$this->$methodName($value);
 		}		
-	}
-
-	protected function beforeSave() {
-		return true;
-	}
-
-	public function save() {
-		$this->beforeSave();
 	}
 
 	/** 	 	 

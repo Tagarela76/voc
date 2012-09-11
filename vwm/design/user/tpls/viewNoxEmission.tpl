@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->nox_id}
+                    &nbsp;{$noxEmission->nox_id|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->description} 
+                    &nbsp;{$noxEmission->description|escape} 
                 </div>
             </td>
         </tr>	
@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->start_time}
+                    &nbsp;{$noxEmission->start_time|escape}
                 </div>
             </td>
         </tr>
@@ -63,7 +63,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->end_time}
+                    &nbsp;{$noxEmission->end_time|escape}
                 </div>
             </td>
         </tr>
@@ -73,7 +73,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->gas_unit_used}
+                    &nbsp;{$noxEmission->gas_unit_used|escape}
                 </div>
             </td>
         </tr>
@@ -83,7 +83,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->note}
+                    &nbsp;{$noxEmission->note|escape}
                 </div>
             </td>
         </tr>
@@ -93,7 +93,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$noxEmission->nox}
+                    &nbsp;{$noxEmission->nox|escape}
                 </div>
             </td>
         </tr>

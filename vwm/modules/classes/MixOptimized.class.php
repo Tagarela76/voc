@@ -8,10 +8,6 @@ use VWM\Framework\Model as Model;
 
 class MixOptimized extends Model {
 
-	/**
-	 * @var db
-	 */
-	private $db;
 	public $valid = self::MIX_IS_VALID;
 	public $hoverMessage;
 

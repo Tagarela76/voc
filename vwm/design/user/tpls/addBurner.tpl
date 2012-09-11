@@ -156,16 +156,14 @@
 						Description
 					</td>
 					<td class="border_users_l border_users_b border_users_r">
-						<div align="left" style="float: left;">	<input type='text' name='description' value='{$data.description}'></div>												
-							{if $validStatus.summary eq 'false'}
-								{if $validStatus.description eq 'failed'}
-									{*ERROR*}					
-								<div class="error_img" style="float: left;"><span class="error_text">Error!</span></div>
-								{*/ERROR*}
-							{elseif $validStatus.description eq 'alreadyExist'}
-								<div class="error_img"><span class="error_text">Entered description is already in use!</span></div>
-							{/if}
-						{/if}
+						<div align="left" style="float: left;">	<input type='text' name='description' value='{$data.description|escape}'></div>												
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'description' || $violation->getPropertyPath() eq 'uniqueDescription'}							
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
 
 					</td>
 				</tr>
@@ -181,15 +179,7 @@
 									<option value="{$burners[i].burner_id}" {if $burners[i].burner_id == $data.burner_id}selected{/if}> {$burners[i].model|escape}&nbsp;>&nbsp;{$burners[i].serial|escape} </option>
 								{/section}	
 							</select>	
-						</div>												
-						{if $validStatus.summary eq 'false'}
-							{if $validStatus.burner_id eq 'failed'}
-								{*ERROR*}					
-								<div class="error_img"style="float: left;"><span class="error_text">Error!</span></div>
-								{*/ERROR*}
-							{/if}
-						{/if}
-
+						</div>																		
 					</td>
 				</tr>	
 
@@ -199,14 +189,14 @@
 						Start Time
 					</td>
 					<td class="border_users_l border_users_b border_users_r">
-						<div align="left" style="float: left;">	<input type='text' name="start_time" id="calendar1" class="calendarFocus" value='{$data.start_time}'></div>												
-							{if $validStatus.summary eq 'false'}
-								{if $validStatus.start_time eq 'failed'}
-									{*ERROR*}					
-								<div class="error_img"style="float: left;"><span class="error_text">Error!</span></div>
-								{*/ERROR*}
-							{/if}
-						{/if}
+						<div align="left" style="float: left;">	<input type='text' name="start_time" id="calendar1" class="calendarFocus" value='{$data.start_time|escape}'></div>												
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'start_time'}							
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
 
 					</td>
 				</tr>
@@ -216,14 +206,14 @@
 						End Time
 					</td>
 					<td class="border_users_l border_users_b border_users_r">
-						<div align="left" style="float: left;">	<input type='text' name="end_time" id="calendar2" class="calendarFocus" value='{$data.end_time}'></div>												
-							{if $validStatus.summary eq 'false'}
-								{if $validStatus.end_time eq 'failed'}
-									{*ERROR*}					
-								<div class="error_img"style="float: left;"><span class="error_text">Error!</span></div>
-								{*/ERROR*}
-							{/if}
-						{/if}
+						<div align="left" style="float: left;">	<input type='text' name="end_time" id="calendar2" class="calendarFocus" value='{$data.end_time|escape}'></div>												
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'end_time'}							
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
 
 					</td>
 				</tr>
@@ -232,15 +222,14 @@
 						Gas Unit Used
 					</td>
 					<td class="border_users_l border_users_b border_users_r">
-						<div align="left" style="float: left;">	<input type='text' name='gas_unit_used' id='gas_unit_used' value='{$data.gas_unit_used}'></div>												
-							{if $validStatus.summary eq 'false'}
-								{if $validStatus.gas_unit_used eq 'failed'}
-									{*ERROR*}					
-								<div class="error_img"style="float: left;"><span class="error_text">Error!</span></div>
-								{*/ERROR*}
-
-							{/if}
-						{/if}
+						<div align="left" style="float: left;">	<input type='text' name='gas_unit_used' id='gas_unit_used' value='{$data.gas_unit_used|escape}'></div>												
+								{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'gas_unit_used'}							
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
 
 					</td>
 				</tr>
@@ -253,8 +242,14 @@
 
 					</td>
 					<td class="border_users_l border_users_b border_users_r">
-						<div align="left"style="float: left;" >	<textarea name='note' id='note' >{$data.note}</textarea></div>												
-
+						<div align="left"style="float: left;" >	<textarea name='note' id='note' >{$data.note|escape}</textarea></div>												
+						{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'note'}							
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
 					</td>
 				</tr>	
 

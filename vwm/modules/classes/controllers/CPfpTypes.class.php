@@ -219,6 +219,16 @@ class CPfpTypes extends Controller {
 		echo json_encode($response);
 		die;
 	}
+	
+	private function actionCreateLabel() {
+		
+		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id')); 
+		$pfpProducts = $pfpTypes->getPfpProducts();
+        $this->smarty->assign('pfpTypes', $pfpTypes);
+		$this->smarty->assign('pfpProducts', $pfpProducts);
+//var_dump($pfpProducts); die();		
+		$this->smarty->display("tpls/pfpTypesLabel.tpl");
+	}
 }
 
 ?>

@@ -1,11 +1,9 @@
 <?php
 
-class NoxEmission {
+use VWM\Framework\Model;
 
-	/**
-	 * @var db - xnyo database object
-	 */
-	private $db;
+class NoxEmission extends Model {
+
 	private $nox_id;
 	private $department_id;
 	private $description;
@@ -26,6 +24,7 @@ class NoxEmission {
 
 	public function __construct(db $db, Array $array = null) {
 		$this->db = $db;
+		$this->modelName = 'NoxEmission';
 		if (isset($array)) {
 			$this->initByArray($array);
 		}
@@ -43,17 +42,25 @@ class NoxEmission {
 
 	public function save() {
 
+		if ($this->start_time instanceof DateTime) {
+			$this->start_time = $this->start_time->getTimestamp();
+		}
+
+		if ($this->end_time instanceof DateTime) {
+			$this->end_time = $this->end_time->getTimestamp();
+		}
+
 		if ($this->nox_id != NULL) {
-			$query = "UPDATE nox SET 
-								description = '" . $this->db->sqltext($this->description) . "',
-								department_id = " . $this->db->sqltext($this->department_id) . ",
-								start_time = " . $this->db->sqltext($this->start_time) . ",
-								end_time = " . $this->db->sqltext($this->end_time) . ",
-								burner_id = " . $this->db->sqltext($this->burner_id) . ",
-								note = '" . $this->db->sqltext($this->note) . "',									
-								gas_unit_used = " . $this->db->sqltext($this->gas_unit_used) . ",
-								nox = " . $this->db->sqltext($this->nox) . "
-								WHERE nox_id = {$this->nox_id}";
+			$query = "UPDATE nox SET " .
+						"description = '{$this->db->sqltext($this->description)}', " .
+						"department_id = {$this->db->sqltext($this->department_id)}, " .
+						"start_time = {$this->db->sqltext($this->start_time)}, " .
+						"end_time = {$this->db->sqltext($this->end_time)}, " .
+						"burner_id = {$this->db->sqltext($this->burner_id)}, " .
+						"note = '{$this->db->sqltext($this->note)}', " .
+						"gas_unit_used = {$this->db->sqltext($this->gas_unit_used)}, " .
+						"nox = {$this->db->sqltext($this->nox)} " . 
+						"WHERE nox_id = {$this->db->sqltext($this->nox_id)}";
 		} else {
 
 			$query = "INSERT INTO nox (department_id, description, gas_unit_used, start_time, end_time, burner_id, note, nox) VALUES ("
@@ -220,6 +227,14 @@ class NoxEmission {
 
 	public function set_nox($nox) {
 		$this->nox = $nox;
+	}
+	
+	public function isUniqueDescription() {
+		$sql = "SELECT nox_id FROM nox " .
+				"WHERE description = '{$this->db->sqltext($this->description)}' " .
+				"AND department_id = {$this->db->sqltext($this->department_id)}";
+		$this->db->query($sql);
+		return ($this->db->num_rows() == 0) ? true : false;
 	}
 
 }

@@ -190,77 +190,26 @@ class CNox extends Controller {
 						'burner_id' => $this->getFromPost('burner_id'),
 						'note' => $this->getFromPost('note')
 					);
-
-					$validation = new Validation($this->db);
-					$validStatus = array(
-						'summary' => 'true',
-						'description' => 'failed',
-						'gas_unit_used' => 'failed',
-						'start_time' => 'failed',
-						'end_time' => 'failed',
-						'burner_id' => 'failed'
-					);
-
-					if (!$validation->check_name($noxDetails['description'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						// check for duplicate names
-						if ($validStatus['summary'] == 'true' && !$validation->isUniqueName("nox", $noxDetails['description'], $departmentID)) {
-							$validStatus['summary'] = 'false';
-							$validStatus['description'] = 'alreadyExist';
-						} else {
-							$validStatus['description'] = 'accept';
-						}
+					
+					$nox = new NoxEmission($this->db, $noxDetails);
+					$nox->set_start_time(new DateTime($noxDetails['start_time']));
+					$nox->set_end_time(new DateTime($noxDetails['end_time']));
+					$totalNox = $noxManager->calculateNox($nox);
+					if ($totalNox) {
+						$nox->nox = $totalNox;
 					}
-
-
-					if (!$validation->check_name($noxDetails['gas_unit_used'])) {
-						//$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['gas_unit_used'] = 'accept';
-					}
-					if (!$validation->check_name($noxDetails['start_time'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['start_time'] = 'accept';
-					}
-					if (!$validation->check_name($noxDetails['end_time'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['end_time'] = 'accept';
-					}
-					if (!$validation->check_name($noxDetails['burner_id'])) {
-						$validStatus['summary'] = 'false';
-					} else {
-						$validStatus['burner_id'] = 'accept';
-					}
-
-					if ($validStatus['summary'] == 'true') {
-						$startTime = new DateTime($noxDetails['start_time']);
-						$endTime = new DateTime($noxDetails['end_time']);
-
-						$noxDetails['start_time'] = $startTime->getTimestamp();
-						$noxDetails['end_time'] = $endTime->getTimestamp();
-						$nox = new NoxEmission($this->db, $noxDetails);
-						$totalNox = $noxManager->calculateNox($nox);
-
-						if ($totalNox) {
-							$nox->nox = $totalNox;
-						}
+					$violationList = $nox->validate();
+					if(count($violationList) == 0) {								
 						$nox->save();
 						// redirect
 						header("Location: ?action=browseCategory&category=department&id=" . $departmentID . "&bookmark=nox&tab={$request['tab']}&notify=45");
-						die();
-					} else {
-
-						/* 	the modern style */
+					} else {						
 						$notifyc = new Notify(null, $this->db);
 						$notify = $notifyc->getPopUpNotifyMessage(401);
-						$this->smarty->assign("notify", $notify);
-
-						$this->smarty->assign('validStatus', $validStatus);
+						$this->smarty->assign("notify", $notify);						
+						$this->smarty->assign('violationList', $violationList);
 						$this->smarty->assign('data', $noxDetails);
-					}
+					}								
 					break;
 			}
 		}
@@ -595,24 +544,12 @@ class CNox extends Controller {
 		if (count($form) > 0) {
 			$noxEmissionDetails = $form;
 			$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
-
-			//	convert time to timestamp
-			$startTime = new TypeChain($noxEmissionDetails['start_time'], 'date', $this->db, $companyID, 'company');
-			$endTime = new TypeChain($noxEmissionDetails['end_time'], 'date', $this->db, $companyID, 'company');
-			$noxEmission->start_time = $noxEmissionDetails['start_time'] = $startTime->getTimestamp();
-			$noxEmission->end_time = $noxEmissionDetails['end_time'] = $endTime->getTimestamp();
-
-			$validation = new Validation($this->db);
-			$validStatus = $validation->validateNoxEmission($noxEmission);
-
-			if ($validStatus['summary'] == 'true') {
-
-				$totalNox = $manager->calculateNox($noxEmission);
-
-				if ($totalNox) {
-					$noxEmission->nox = $totalNox;
-				}
-
+			$totalNox = $manager->calculateNox($noxEmission);
+			if ($totalNox) {
+				$noxEmission->nox = $totalNox;
+			}
+			$violationList = $noxEmission->validate();
+			if(count($violationList) == 0) {
 				$noxEmission->save();
 
 				// redirect
@@ -623,9 +560,14 @@ class CNox extends Controller {
 				$notifyc = new Notify(null, $this->db);
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);
-
-				$this->smarty->assign('validStatus', $validStatus);
+				$this->smarty->assign('violationList', $violationList);
 			}
+			
+			//	convert time to timestamp
+			$startTime = new TypeChain($noxEmissionDetails['start_time'], 'date', $this->db, $companyID, 'company');
+			$endTime = new TypeChain($noxEmissionDetails['end_time'], 'date', $this->db, $companyID, 'company');
+			$noxEmission->start_time = $noxEmissionDetails['start_time'] = $startTime->getTimestamp();
+			$noxEmission->end_time = $noxEmissionDetails['end_time'] = $endTime->getTimestamp();	
 		}
 
 		$burnerList = $manager->getBurnerListByDepartment($request['departmentID']);

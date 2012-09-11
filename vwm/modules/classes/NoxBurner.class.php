@@ -3,11 +3,7 @@
 use VWM\Framework\Model;
 
 class NoxBurner extends Model {
-
-	/**
-	 * @var db - xnyo database object
-	 */
-	private $db;
+	
 	private $burner_id;
 	private $manufacturer_id;
 	private $serial;
