@@ -53,7 +53,7 @@ class bulkUploader4PFP {
 		$sqlFile = "db_backup/" . DB_NAME . "_" . date('Y_m_d_H_i_s') . ".sql";
 		$creatBackup = "mysqldump -h " . DB_HOST . " -u " . DB_USER . " --password=" . DB_PASS . " " . DB_NAME . " > " . $sqlFile;
 		//exec($creatBackup);
-
+		
 		foreach ($pfpArray as $products) {
 			$productIDS = array();
 			$productRATIOS = array();

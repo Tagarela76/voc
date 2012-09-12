@@ -38,11 +38,18 @@
 				</div>
 			</a>
         </td>
-        <td class="" width="40%">
+        <td class="" width="20%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
                 	Description
 					{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}
+				</div>
+			</a>
+        </td>
+		<td class="" width="20%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	R/O Description					
 				</div>
 			</a>
         </td>
@@ -124,6 +131,13 @@
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">
 					{assign var="workOrder" value=$mix->getWorkOrder()}
+                    {$workOrder->description|escape} &nbsp;
+                </div>
+            </a>
+        </td>
+		<td class="border_users_b border_users_r">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
+                <div style="width:100%;" align="left">					
                     {$workOrder->customer_name|escape} &nbsp;
                 </div>
             </a>
@@ -145,7 +159,7 @@
     </tr>
     {/foreach}
     <tr>
-        <td colspan="6" class="border_users_l border_users_r">
+        <td colspan="8" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -153,7 +167,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr class="">
-        <td colspan="6"class="border_users_l border_users_r" align="center">
+        <td colspan="8"class="border_users_l border_users_r" align="center">
             No mixes in the department
         </td>
     </tr>
@@ -162,7 +176,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="4" height="15" class="border_users">
+        <td colspan="6" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

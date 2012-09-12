@@ -125,7 +125,8 @@ class MixManager {
 	 * @return array|bool false on failure
 	 */
 	public function getMixListInFacility($facilityID, Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
-		$query = "SELECT m.*, wo.id, wo.customer_name " .
+		$woDescriptionField = 'woDescription';
+		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField} " .
 			" FROM ".TB_USAGE." m " .
 			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
 			" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
@@ -171,7 +172,7 @@ class MixManager {
 		$mixes = array();
 		foreach($rows as $row) {
 			$mix = new MixOptimized($this->db);			
-			foreach ($row as $key => $value) {
+			foreach ($row as $key => $value) {				
 				if (property_exists($mix, $key)) {
 					$mix->$key = $value;
 				}
@@ -179,6 +180,9 @@ class MixManager {
 			
 			if($mix->wo_id !== null) {
 				$workOrder = new WorkOrder($this->db);
+				//	overrite mix description just because both mix and work order
+				//	have field description
+				$row['description'] = $row['woDescription'];				
 				$workOrder->initByArray($row);
 				$mix->setWorkOrder($workOrder);
 			}
