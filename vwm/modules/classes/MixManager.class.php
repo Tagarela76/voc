@@ -125,9 +125,10 @@ class MixManager {
 	 * @return array|bool false on failure
 	 */
 	public function getMixListInFacility($facilityID, Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
-		$query = "SELECT m.* " .
+		$query = "SELECT m.*, wo.id, wo.customer_name " .
 			" FROM ".TB_USAGE." m " .
 			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+			" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
 			" WHERE d.facility_id = {$this->db->sqltext($facilityID)} " .
 			" AND {$filter} ";
 
@@ -169,11 +170,17 @@ class MixManager {
 		$rows = $this->db->fetch_all_array();
 		$mixes = array();
 		foreach($rows as $row) {
-			$mix = new MixOptimized($this->db);
+			$mix = new MixOptimized($this->db);			
 			foreach ($row as $key => $value) {
 				if (property_exists($mix, $key)) {
 					$mix->$key = $value;
 				}
+			}
+			
+			if($mix->wo_id !== null) {
+				$workOrder = new WorkOrder($this->db);
+				$workOrder->initByArray($row);
+				$mix->setWorkOrder($workOrder);
 			}
 			$mixes[] = $mix;
 		}

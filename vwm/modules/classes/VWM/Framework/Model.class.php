@@ -75,5 +75,20 @@ abstract class Model {
 		}
 		return $this->getValidator($modelName)->validate($this);
 	}
+	
+	
+	/**
+	 * Ini object by properties array in key=>value format
+	 * @param array $array
+	 */
+	public function initByArray($array) {
+		foreach ($array as $key => $value) {
+			try {
+				$this->$key = $value;
+			} catch (Exception $e) {
+				$this->errors[] = $e->getMessage();
+			}
+		}
+	}
 
 }

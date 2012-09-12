@@ -75,6 +75,12 @@ class MixOptimized extends Model {
 	 * @var boolean
 	 */
 	public $hasChild = false;
+	
+	
+	/**	 
+	 * @var WorkOrder
+	 */
+	private $workOrder = false;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
@@ -1463,6 +1469,29 @@ class MixOptimized extends Model {
 		$mixPrice = number_format($price, 2, '.', '');
 		
 		return $mixPrice;
+	}
+	
+	
+	/**
+	 * Get mix's Work Order
+	 * @return boolean|WorkOrder
+	 */
+	public function getWorkOrder() {
+		if(!$this->wo_id) {
+			//	this mix does not have a Work Order at all
+			return false;
+		}
+		
+		if(!$this->workOrder) {
+			$this->workOrder = new WorkOrder($this->db, $this->wo_id);			
+		}
+		
+		return $this->workOrder;
+	}
+	
+	
+	public function setWorkOrder(WorkOrder $workOrder) {
+		$this->workOrder = $workOrder;
 	}
 
 }

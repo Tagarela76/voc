@@ -38,11 +38,18 @@
 				</div>
 			</a>
         </td>
-        <td class="" width="60%">
+        <td class="" width="40%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
                 	Description
 					{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}
+				</div>
+			</a>
+        </td>
+		<td class="" width="20%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	Contact					
 				</div>
 			</a>
         </td>
@@ -61,7 +68,7 @@
 					{if $sort==7 || $sort==8}<img src="{if $sort==7}images/asc2.gif{/if}{if $sort==8}images/desc2.gif{/if}" alt=""/>{/if}
 				</div>
 			</a>
-        </td>
+        </td>		
     </tr>
 {if $childCategoryItems|@is_array and $childCategoryItems|@count > 0}
     {*BEGIN LIST*}
@@ -110,6 +117,14 @@
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">
                     {$mix->description|escape} &nbsp;
+                </div>
+            </a>
+        </td>
+		<td class="border_users_b border_users_r">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
+                <div style="width:100%;" align="left">
+					{assign var="workOrder" value=$mix->getWorkOrder()}
+                    {$workOrder->customer_name|escape} &nbsp;
                 </div>
             </a>
         </td>

@@ -6,7 +6,8 @@ use VWM\Framework\Test as Testing;
 class MixOptimizedTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_USAGE, TB_MIXGROUP, 'price4product'
+		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_WORK_ORDER, TB_USAGE, 
+		TB_MIXGROUP, 'price4product'
 	);
 
 
@@ -112,6 +113,21 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$mixPrice = $mixOptimized->getMixPrice();
 		$this->assertTrue(!is_null($mixPrice));
 		$this->assertTrue($mixPrice == 195.74);
+	}
+	
+	
+	public function testGetWorkOrder() {
+		$mixId = 1;
+		$mix = new MixOptimized($this->db, $mixId);
+		$wo = $mix->getWorkOrder();
+		$this->assertInstanceOf('WorkOrder', $wo);
+		$this->assertEquals('joh smith', $wo->customer_name);
+		
+		$mixIdWithoutWo = 7;
+		$mixWithoutWo = new MixOptimized($this->db, $mixIdWithoutWo);
+		$false = $mixWithoutWo->getWorkOrder();
+		$this->assertFalse($false);
+		
 	}
 
 }
