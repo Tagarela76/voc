@@ -126,7 +126,7 @@ class MixManager {
 	 */
 	public function getMixListInFacility($facilityID, Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
 		$woDescriptionField = 'woDescription';
-		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField} " .
+		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField}, wo.vin " .
 			" FROM ".TB_USAGE." m " .
 			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
 			" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .

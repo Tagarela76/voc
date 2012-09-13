@@ -28,17 +28,7 @@ class NoxEmission extends Model {
 		if (isset($array)) {
 			$this->initByArray($array);
 		}
-	}
-
-	private function initByArray($array) {
-		foreach ($array as $key => $value) {
-			try {
-				$this->__set($key, $value);
-			} catch (Exception $e) {
-				$this->errors[] = $e->getMessage();
-			}
-		}
-	}
+	}	
 
 	public function save() {
 

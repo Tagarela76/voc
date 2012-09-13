@@ -690,6 +690,7 @@ function saveWorkOrderDetails()
 	var work_order_action=$('input:hidden[name=action]').attr('value');
 	var work_order_status=$('#workOrderStatus').attr('value');
 	var work_order_id = $('#work_order_id').attr('value'); 
+	var work_order_vin=$('#workOrderVin').attr('value'); 
 	if (work_order_action == 'addItem') 
 	{		
 		var id=$('input:hidden[name=facility_id]').attr('value');
@@ -711,7 +712,8 @@ function saveWorkOrderDetails()
 			"id":id,
 			"work_order_status":work_order_status,
 			"action":work_order_action,
-			"work_order_id":work_order_id
+			"work_order_id":work_order_id,
+			"work_order_vin":work_order_vin
 		},      			
 		dataType: "html",
 		success: function (response) 

@@ -65,7 +65,7 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-                <b> Total: </b> $ {$workOrder->totalPrice|escape} &nbsp;
+                <b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
             </div>
         </td>
     </tr>

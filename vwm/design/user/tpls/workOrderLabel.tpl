@@ -39,6 +39,11 @@
 							<b>Repair Order Status:</b> {$workOrder->status|escape}
 						</td>
 					</tr>
+					<tr>
+						<td height="20">
+							<b>Repair Order VIN number:</b> {$workOrder->vin|escape}
+						</td>
+					</tr>
 				</table>
             </td>
         </tr>
@@ -90,7 +95,7 @@
 					<td colspan="4">
 					</td>
 					<td>
-						<b> Total: </b> $ {$workOrder->totalPrice|escape} &nbsp;
+						<b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
 					</td>
 				</tr>
 				</table>

@@ -78,6 +78,19 @@
 							    {*/ERROR*}						    						
 				</td>					
 			</tr>
+			<tr class="border_users_b border_users_r">			
+				<td height="20" class="border_users_l">
+					Repair Order VIN number:
+				</td>
+				<td>
+					<div align="left">
+						<input id='workOrderVin' type='text' name='workOrderVin' value='{$data->vin|escape}' maxlength="14">
+					</div>							
+			     				{*ERROR*}					
+								<div id="error_vin" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
+							    {*/ERROR*}						    						
+				</td>					
+			</tr>
 			
 			<tr class="border_users_l border_users_r">
 				<td colspan="2">&nbsp;</td>
@@ -90,7 +103,7 @@
 		</table>
 				
 		
-		<table cellpadding="5" cellspacing="0" align="center" width="95%">
+		<table cellpadding="6" cellspacing="0" align="center" width="95%">
 			<tr>
 				<td>
 		{*BUTTONS*}

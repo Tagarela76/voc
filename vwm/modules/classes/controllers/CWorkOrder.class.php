@@ -24,16 +24,15 @@ class CWorkOrder extends Controller {
 
 		$mixList = array();
         // get child mixes 
-        $MixTotalPrice = 0;
-        $mixes = $workOrder->getMixes();
+        $mixTotalPrice = 0;
+        $mixes = $workOrder->getMixes(); 
 		foreach ($mixes as $mix) {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
-			$MixTotalPrice += $mix->price;
+			$mixTotalPrice += $mix->price;
 			$mixList[] = $mix;
 		}
-		$workOrder->totalPrice = $MixTotalPrice;
-        
+   
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewWorkOrder');
 
@@ -42,6 +41,7 @@ class CWorkOrder extends Controller {
         $this->smarty->assign('editUrl', '?action=edit&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('mixList', $mixList);
 		$this->smarty->assign('workOrder', $workOrder);
+		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         //set js scripts
         $jsSources = array('modules/js/checkBoxes.js',
             'modules/js/autocomplete/jquery.autocomplete.js');
@@ -145,6 +145,7 @@ class CWorkOrder extends Controller {
                 $delete["customer_name"] = $workOrder->customer_name;
                 $delete["status"] = $workOrder->status;
                 $delete["facility_id"] = $workOrder->facility_id;
+				$delete["vin"] = $workOrder->vin;
                 $itemForDelete[] = $delete;
             }
         }
@@ -220,15 +221,16 @@ class CWorkOrder extends Controller {
 		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
 		$mixList = array();
         // get child mixes 
-		$MixTotalPrice = 0;
+		$mixTotalPrice = 0;
         $mixes = $workOrder->getMixes();
 		foreach ($mixes as $mix) {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
-			$MixTotalPrice += $mix->price;
+			$mixTotalPrice += $mix->price;
 			$mixList[] = $mix;
 		}
-		$workOrder->totalPrice = $MixTotalPrice;
+
+		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         $this->smarty->assign('workOrder', $workOrder);
         $this->smarty->assign('mixList', $mixList);
 

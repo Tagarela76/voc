@@ -463,7 +463,7 @@
 			$pageRightMargin = $doc->createAttribute("rightmargin");
 			$pageRightMargin->appendChild( $doc->createTextNode("20") );
 			$page->appendChild($pageRightMargin);
-
+			
 			$meta = $doc->createElement( "meta" );
 			$page->appendChild( $meta );
 

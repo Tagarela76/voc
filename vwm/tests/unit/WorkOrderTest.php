@@ -22,6 +22,7 @@ class WorkOrderTest extends Testing\DbTestCase {
 		$workOrder->customer_name = 'nick smith';
 		$workOrder->facility_id = '2';
 		$workOrder->status = 'new';
+		$workOrder->vin = 'new';
 		$workOrder->save();
 		
 		$myTestWorkOrder = Phactory::get(TB_WORK_ORDER, array('description'=>"test"));

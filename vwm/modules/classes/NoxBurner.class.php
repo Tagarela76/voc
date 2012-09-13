@@ -12,7 +12,7 @@ class NoxBurner extends Model {
 	private $department_id;
 	private $input;
 	private $output;
-
+	private $ratio;
 
 
 	public function __construct(db $db, Array $array = null) {
@@ -90,6 +90,9 @@ class NoxBurner extends Model {
 		return $this->output;
 	}
 	
+	public function get_ratio() {
+		return $this->ratio;
+	}
 
 	public function set_burner_id($value) {
 		try {
@@ -155,10 +158,47 @@ class NoxBurner extends Model {
 		}
 	}
 	
+	public function set_burner($value) {
+		try {
+			$this->ratio = $value;
+		} catch (Exception $e) {
+			
+		}
+	}
+	
 	public function isUniqueSerial() {
 		$sql = "SELECT burner_id FROM burner WHERE serial = '{$this->db->sqltext($this->serial)}'";
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
+	}
+	
+	public function setRatio2Burner($burnerId, $ratio) {
+
+		$query = "UPDATE burner SET " .
+					"ratio = {$this->db->sqltext($ratio)} " .
+					"WHERE burner_id = {$this->db->sqltext($burnerId)}"; 
+		$this->db->query($query);
+
+		if (mysql_error() == '') {
+			return true;
+		} else {
+			throw new Exception(mysql_error());
+		}
+	}
+	
+	public function getRatioCommonRatio4Department($departmentId) {
+
+		$query = "SELECT sum(ratio) as ratio
+					From burner
+					WHERE department_id = {$this->db->sqltext($departmentId)}"; 
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			$data = $this->db->fetch(0); 
+			return $data->ratio;
+		}
+		else
+			return false;
 	}
 }
 

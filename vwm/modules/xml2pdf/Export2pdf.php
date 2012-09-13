@@ -385,7 +385,7 @@ class XML2PDF extends PDF_MC_Table
 					$this->trElem []= $this->tdElem;
 					$fieldsCount = count($this->tdElem);
 					$this->fieldsCount = $fieldsCount;
-					$w = 280/$this->fieldsCount;
+					$w = 265/$this->fieldsCount;
 					
 					if (!isset($this->widths) || count($this->widths) != $this->fieldsCount) {
 						$this->widths = array();
@@ -396,7 +396,7 @@ class XML2PDF extends PDF_MC_Table
 						}
 					} else {
 						foreach($this->widths as $key => $width) {
-							$this->widths[$key] = substr($width,0,strpos($width,'%'))*280/100;
+							$this->widths[$key] = substr($width,0,strpos($width,'%'))*265/100;
 							$this->alignsC [$key]= 'C';
 							$this->aligns [$key]= 'L';
 						}
