@@ -1,0 +1,1 @@
+ALTER TABLE  `work_order` ADD  `vin` VARCHAR( 100 ) NULL DEFAULT NULL

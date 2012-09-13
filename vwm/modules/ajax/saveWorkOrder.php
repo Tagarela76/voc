@@ -35,7 +35,8 @@
 	$xnyo->filter_post_var("work_order_customer_name", "text");
 	$xnyo->filter_post_var("work_order_status", "text");
 	$xnyo->filter_post_var("work_order_id", "text");
-
+	$xnyo->filter_post_var("work_order_vin", "text");
+	
 	$workOrderId = $_POST["work_order_id"]; // could be NULL (add action)
 	if ($workOrderId == '') {
 		$workOrderId = null;
@@ -48,6 +49,7 @@
 	$workOrder->description = $_POST["work_order_description"];
 	$workOrder->customer_name = $_POST["work_order_customer_name"];
 	$workOrder->status = $_POST["work_order_status"];
+	$workOrder->vin = $_POST["work_order_vin"];
 
 	$validation = new Validation($db);
 	$validStatus = $validation->validateRegDataWorkOrder($workOrder);

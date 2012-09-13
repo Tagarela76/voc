@@ -35,8 +35,13 @@
 				</div>
 			</td>
 			<td>
+				<div class="users_header_blue">
+					Status
+				</div>
+			</td>
+			<td>
 				<div class="users_header_blue_r">
-					<div>Status</div>
+					<div>VIN number</div>
 				</div>
 			</td>
 		</tr>
@@ -68,10 +73,17 @@
 					</div>
 				</a>
 			</td>
-			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
+			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
 				<a {if $permissions.viewItem}href="{$workOrder->url}"{/if}>
 					<div style="width:100%;">
 						{$workOrder->status|escape}
+					</div>
+				</a>
+			</td>
+			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
+				<a {if $permissions.viewItem}href="{$workOrder->vin}"{/if}>
+					<div style="width:100%;">
+						{$workOrder->vin|escape}
 					</div>
 				</a>
 			</td>
@@ -81,7 +93,7 @@
 
 	{*BEGIN	EMPTY LIST*}
 	<tr>
-		<td colspan="4"class="border_users_l border_users_r" align="center">
+		<td colspan="5"class="border_users_l border_users_r" align="center">
 			No repair orders in the list
 		</td>
 	</tr>
@@ -91,7 +103,7 @@
 <tr>
 	<td class="users_u_bottom ">
 	</td>
-	<td colspan="4" bgcolor="" height="30" class="users_u_bottom_r">
+	<td colspan="5" bgcolor="" height="30" class="users_u_bottom_r">
 	</td>
 </tr>
 </table>

@@ -60,6 +60,13 @@
 				</div>
 			</a>
         </td>
+		<td class="" width="5%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	R/O VIN number				
+				</div>
+			</a>
+        </td>
         <td class="" width="10%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==5}6{else}5{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
@@ -142,6 +149,13 @@
                 </div>
             </a>
         </td>
+		<td class="border_users_b border_users_r">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
+                <div style="width:100%;" align="left">					
+                    {$workOrder->vin|escape} &nbsp;
+                </div>
+            </a>
+        </td>
         <td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
@@ -159,7 +173,7 @@
     </tr>
     {/foreach}
     <tr>
-        <td colspan="8" class="border_users_l border_users_r">
+        <td colspan="9" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -167,7 +181,7 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr class="">
-        <td colspan="8"class="border_users_l border_users_r" align="center">
+        <td colspan="9"class="border_users_l border_users_r" align="center">
             No mixes in the department
         </td>
     </tr>
@@ -176,7 +190,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="6" height="15" class="border_users">
+        <td colspan="7" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

@@ -40,6 +40,11 @@ class WorkOrder extends Model {
 	 */
 	public $status;
 	
+	/**
+	 *
+	 * @var string 
+	 */
+	public $vin;
 	
 	public $url;
 
@@ -59,13 +64,14 @@ class WorkOrder extends Model {
 	 */
 	public function addWorkOrder() {
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status) 
+		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin) 
 				VALUES ( 
 				'" . $this->db->sqltext($this->number) . "'
 				, '" . $this->db->sqltext($this->description) . "'
 				, '" . $this->db->sqltext($this->customer_name) . "'
 				, '" . $this->db->sqltext($this->facility_id) . "'	
 				, '" . $this->db->sqltext($this->status) . "'	
+				, '" . $this->db->sqltext($this->vin) . "'		
 				)";
 		$this->db->query($query); 
 		$work_order_id = $this->db->getLastInsertedID();
@@ -84,7 +90,8 @@ class WorkOrder extends Model {
 						description='" . $this->db->sqltext($this->description) . "',
 						customer_name='" . $this->db->sqltext($this->customer_name) . "',	
 						facility_id='" . $this->db->sqltext($this->facility_id) . "',
-						status='" . $this->db->sqltext($this->status) . "'	
+						status='" . $this->db->sqltext($this->status) . "', 	
+						vin='" . $this->db->sqltext($this->vin) . "'		
 					WHERE id= " . $this->db->sqltext($this->id);
 		$this->db->query($query);
 
