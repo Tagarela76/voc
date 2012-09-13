@@ -125,9 +125,11 @@ class MixManager {
 	 * @return array|bool false on failure
 	 */
 	public function getMixListInFacility($facilityID, Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
-		$query = "SELECT m.* " .
+		$woDescriptionField = 'woDescription';
+		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField} " .
 			" FROM ".TB_USAGE." m " .
 			" JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+			" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
 			" WHERE d.facility_id = {$this->db->sqltext($facilityID)} " .
 			" AND {$filter} ";
 
@@ -146,7 +148,7 @@ class MixManager {
 		if (isset($pagination)) {
 			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-
+echo $query;
 		return $this->_processListQuery($query);
 	}
 
@@ -169,11 +171,20 @@ class MixManager {
 		$rows = $this->db->fetch_all_array();
 		$mixes = array();
 		foreach($rows as $row) {
-			$mix = new MixOptimized($this->db);
-			foreach ($row as $key => $value) {
+			$mix = new MixOptimized($this->db);			
+			foreach ($row as $key => $value) {				
 				if (property_exists($mix, $key)) {
 					$mix->$key = $value;
 				}
+			}
+			
+			if($mix->wo_id !== null) {
+				$workOrder = new WorkOrder($this->db);
+				//	overrite mix description just because both mix and work order
+				//	have field description
+				$row['description'] = $row['woDescription'];				
+				$workOrder->initByArray($row);
+				$mix->setWorkOrder($workOrder);
 			}
 			$mixes[] = $mix;
 		}

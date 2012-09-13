@@ -420,8 +420,7 @@ class CMix extends Controller {
 		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
 	}
 
-	/**
-	 * TODO: completly rewrite
+	/**	 
 	 * bookmarkDMix($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
@@ -430,10 +429,7 @@ class CMix extends Controller {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
 		extract($vars);
-
-		/**
-		 * @departmentID int
-		 */
+		
 		if ($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {

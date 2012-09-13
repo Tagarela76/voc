@@ -4,7 +4,7 @@ use VWM\Framework\Test as Testing;
 class MixManagerTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		'department', 'mix'
+		TB_COMPANY, TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_USAGE
 	);
 
 	public function testCountMixes() {
@@ -69,6 +69,8 @@ class MixManagerTest extends Testing\DbTestCase {
 		$this->assertTrue(is_array($mixList));
 		$this->assertTrue(count($mixList) == 5);
 		$this->assertTrue($mixList[3] instanceof MixOptimized);
+		
+		$this->assertEquals($mixList[3]->getWorkOrder()->customer_name, "joh smith");
 
 		//	test search criteria
 		$mixManager->searchCriteria[] = 'WO';

@@ -220,15 +220,63 @@ class CPfpTypes extends Controller {
 		die;
 	}
 	
-	private function actionCreateLabel() {
+	
+	
+	private function actionCreateLabel() {		
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
+		$company = new Company($this->db);
+		$companyDetails = $company->getCompanyDetails($facilityDetails['company_id']);		
 		
-		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id')); 
-		$pfpProducts = $pfpTypes->getPfpProducts();
-        $this->smarty->assign('pfpTypes', $pfpTypes);
-		$this->smarty->assign('pfpProducts', $pfpProducts);
-//var_dump($pfpProducts); die();		
-		$this->smarty->display("tpls/pfpTypesLabel.tpl");
+		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id'));
+		$pfps = $pfpTypes->getPfpProducts();
+		
+		$exporter = new Exporter(Exporter::PDF);
+		$exporter->company = $companyDetails['name'];
+		$exporter->facility = $facilityDetails['name'];		
+		$exporter->title = "{$pfpTypes->name} mixes";
+
+		$widths = array(
+			'description' => '25',
+			'ratio' => '8',
+			'mix1' => '11',
+			'mix2' => '11',
+			'mix3' => '11',
+			'mix4' => '11',
+			'mix5' => '11',
+			'date' => '12'
+		);
+		$header = array(
+			'description' => 'PFP Description',
+			'ratio' => 'Ratio',
+			'mix1' => array('R/O', array('P/U', 'WASTE')),
+			'mix2' => array('R/O', array('P/U', 'WASTE')),
+			'mix3' => array('R/O', array('P/U', 'WASTE')),
+			'mix4' => array('R/O', array('P/U', 'WASTE')),
+			'mix5' => array('R/O', array('P/U', 'WASTE')),
+			'date' => 'Date'
+		);
+		$goodList = array();
+		foreach ($pfps as $pfp) {
+			$tmp = array(
+				'description' => $pfp->getDescription(),
+				'ratio' => $pfp->getRatio(false),
+				'mix1' => '',
+				'mix2' => '',
+				'mix3' => '',
+				'mix4' => '',
+				'mix5' => '',
+				'date' => '',
+			);
+			$goodList[] = $tmp;
+		}
+
+		$exporter->setColumnsWidth($widths);
+		$exporter->setThead($header);
+		$exporter->setTbody($goodList);
+		$exporter->export();
 	}
+
 }
 
 ?>

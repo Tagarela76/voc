@@ -44,4 +44,18 @@ class WorkOrderTest extends Testing\DbTestCase {
 		$this->assertTrue($mixes[0] instanceof MixOptimized);
 	}
 	
+	public function testInitByArray() {
+		$woId = 1;
+		
+		$workOrderOriginal = new WorkOrder($this->db, $woId);
+		
+		$sql = "SELECT * FROM ".TB_WORK_ORDER." WHERE id = {$woId}";
+		$this->db->query($sql);
+		$row = $this->db->fetch_array(0);
+		
+		$workOrderChecked = new WorkOrder($this->db);
+		$workOrderChecked->initByArray($row);
+		$this->assertEquals($workOrderOriginal, $workOrderChecked);
+	}
+	
 }

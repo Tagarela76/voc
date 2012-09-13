@@ -75,10 +75,11 @@ class CWorkOrder extends Controller {
         $workOrderList = $facility->getWorkOrdersList($facilityDetails['facility_id'],$pagination);
         if ($workOrderList) {
             for ($i = 0; $i < count($workOrderList); $i++) {
-                $url = "?action=viewDetails&category=workOrder&id=" . $workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];
+                $url = "?action=viewDetails&category=workOrder&id=" . $workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				
                 $workOrderList[$i]->url = $url;
             }
         }
+		
         $this->smarty->assign("childCategoryItems", $workOrderList);
 
         //	set js scripts

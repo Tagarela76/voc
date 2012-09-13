@@ -47,30 +47,7 @@ class CPfpLibrary extends Controller {
                 $exporter->condition = $filterData['filterCondition'];
                 $exporter->value = $filterData['filterValue'];
             }
-  /*          $widths = array(
-                'description' => '40',
-                'ratio' => '10',
-                'mix1' => '5',
-                'mix2' => '5',
-                'mix3' => '5',
-                'mix4' => '5',
-                'mix5' => '5',
-                'mix6' => '5',
-                'workOrder' => '10',
-                'date' => '10'
-            );
-            $header = array(
-                'description' => 'PFP Description',
-                'ratio' => 'Ratio',
-                'mix1' => 'Parts Used',
-                'mix2' => 'Parts Used',
-                'mix3' => 'Parts Used',
-                'mix4' => 'Parts Used',
-                'mix5' => 'Parts Used',
-                'mix6' => 'Parts Used',
-                'workOrder' => 'Repair Order',
-                'date' => 'Date'
-            );*/
+ 
 			$widths = array(
                 'description' => '25',
                 'ratio' => '8',
