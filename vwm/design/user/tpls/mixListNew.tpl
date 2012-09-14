@@ -192,7 +192,7 @@
     </tr>
     {/foreach}
     <tr>
-        <td colspan="9" class="border_users_l border_users_r">
+        <td colspan="10" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -200,16 +200,14 @@
 {else}
     {*BEGIN	EMPTY LIST*}
     <tr class="">
-        <td colspan="9"class="border_users_l border_users_r" align="center">
+        <td colspan="10"class="border_users_l border_users_r" align="center">
             No mixes in the department
         </td>
     </tr>
     {*END	EMPTY LIST*}
 {/if}
     <tr>
-        <td class="users_u_bottom">
-        </td>
-        <td colspan="7" height="15" class="border_users">
+        <td class="users_u_bottom" colspan="9" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>
