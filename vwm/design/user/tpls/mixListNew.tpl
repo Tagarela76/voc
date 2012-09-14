@@ -34,7 +34,7 @@
 		<td class="" width="12%">
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
-                	Coating					
+                	Product Name					
 				</div>
 			</a>
         </td>
@@ -132,7 +132,7 @@
                     {assign var="products" value=$mix->getProducts()}
 						{foreach from=$products item=item}
 							{if $item->is_primary}
-								{$item->coatDesc|escape} &nbsp;
+								{$item->name|escape} &nbsp;
 							{/if}
 						{/foreach}
 				</div>		
