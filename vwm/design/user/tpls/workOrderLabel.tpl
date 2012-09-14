@@ -55,10 +55,13 @@
 			<td valign="top" style="padding:0 2px 0 5px" colspan="2">
 				<table width="100%" align="center" cellpadding="0" cellspacing="0" style="font-size: 11px;">
 					<tr>
-						<td width="20%" height="30">
+						<td width="10%" height="30">
 							<b>Mix ID</b>
 						</td>
-						<td width="30%">
+						<td width="20%">
+							<b>Product Name</b>
+						</td>
+						<td width="20%">
 							<b>Description</b>
 						</td>
 						<td width="10%">
@@ -78,6 +81,14 @@
 						{$mix->mix_id|escape} &nbsp;
 					</td>
 					<td>
+						{assign var="products" value=$mix->getProducts()}
+						{foreach from=$products item=item}
+							{if $item->is_primary}
+								{$item->name|escape} &nbsp;
+							{/if}
+						{/foreach}
+					</td>
+					<td>
 						{$mix->description|escape} &nbsp;
 					</td>
 					<td>
@@ -92,7 +103,7 @@
 				</tr>
 				{/foreach}
 				<tr	height="10px">
-					<td colspan="4">
+					<td colspan="5">
 					</td>
 					<td>
 						<b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
@@ -102,7 +113,7 @@
 			</td>
 		</tr>
         <tr>
-            <td colspan="2" style="padding:5px 5px 0 5px">
+            <td colspan="3" style="padding:5px 5px 0 5px">
 
             </td>
         </tr>   

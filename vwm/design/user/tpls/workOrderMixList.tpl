@@ -8,7 +8,12 @@
                     Mix ID
                 </div>
             </td>
-            <td class="border_users_b" width="40%">
+			<td class="border_users_b" width="10%">
+                <div style='width:10%;  color:white;'>
+                    Product Name
+                </div>
+            </td>
+            <td class="border_users_b" width="30%">
                 <div style='width:40%;  color:white;'>
                     Description
                 </div>
@@ -37,6 +42,16 @@
                 {$mix->mix_id|escape} &nbsp;
             </div>
         </td>
+		<td class="border_users_b border_users_r">
+			<div>
+                {assign var="products" value=$mix->getProducts()}
+				{foreach from=$products item=item}
+					{if $item->is_primary}
+						{$item->name|escape} &nbsp;
+					{/if}
+				{/foreach}
+            </div>
+        </td>
         <td class="border_users_b border_users_r">
 			<div>
                 {$mix->description|escape} &nbsp;
@@ -60,7 +75,7 @@
     </tr>
     {/foreach}
 	<tr class="hov_company"	height="10px">
-        <td class="border_users_l border_users_b border_users_r" colspan="4">
+        <td class="border_users_l border_users_b border_users_r" colspan="5">
 			<div></div>
         </td>
 		<td class="border_users_b border_users_r">
@@ -70,7 +85,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="5" class="border_users_l border_users_r">
+        <td colspan="6" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -78,7 +93,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="3" height="15" class="border_users">
+        <td colspan="4" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>
