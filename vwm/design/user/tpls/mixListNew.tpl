@@ -52,14 +52,7 @@
 					{if $sort==3 || $sort==4}<img src="{if $sort==3}images/asc2.gif{/if}{if $sort==4}images/desc2.gif{/if}" alt=""/>{/if}
 				</div>
 			</a>
-        </td>
-		<td class="" width="15%">
-        	<a style='color:white;'>
-            	<div style='width:100%;  color:white;'>
-                	R/O Description					
-				</div>
-			</a>
-        </td>
+        </td>	
 		<td class="" width="13%">
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
