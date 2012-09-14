@@ -1,0 +1,26 @@
+NoxEmission:
+  getters:
+    uniqueDescription:
+      - "True": {message: "Description should be unique"}
+  properties:
+    description:
+      - NotBlank: ~
+      - MaxLength: 20
+    gas_unit_used:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    start_time:
+      - NotBlank: ~
+      - DateTime: ~
+    end_time:
+      - NotBlank: ~
+      - DateTime: ~
+    note:   
+      - NotBlank: ~
+    nox:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+      
+      

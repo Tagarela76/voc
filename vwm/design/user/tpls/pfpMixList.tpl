@@ -83,7 +83,7 @@
     <tr class="hov_company" height="10px">
 
         <td class="border_users_b border_users_l border_users_r" >
-			<input type="checkbox" value="{$pfp->getId()}" name="id[]">
+			<input type="checkbox" value="{$pfp->getId()|escape}" name="id[]">
         </td>
 
         <td class="border_users_b border_users_r" >
@@ -99,7 +99,7 @@
                     {assign var="pfpProducts" value=$pfp->getProducts()}
 						{foreach from=$pfpProducts item=item}
 							{if $item->isPrimary()}
-								{$item->supplier} &nbsp;
+								{$item->supplier|escape} &nbsp;
 							{/if}
 						{/foreach}
                 </div>
@@ -108,15 +108,15 @@
         <td class="border_users_b border_users_r">
             <a href="{$url}" class="id_company1" title="">
                 <div style="width:100%;" align="left">
-                    {$pfp->getDescription()} &nbsp;
+                    {$pfp->getDescription()|escape} &nbsp;
                 </div>
 				<div>
 					<table style="font-size: 10; color: #8B7765;">
                         {assign var="pfpProducts" value=$pfp->getProducts()}
 						{foreach from=$pfpProducts item=item}
 							<tr>
-								<td>{$item->product_nr}</td>
-								<td>{$item->name}</td>
+								<td>{$item->product_nr|escape}</td>
+								<td>{$item->name|escape}</td>
 							</tr>
 						{/foreach}
 					</table>
@@ -133,7 +133,7 @@
         <td class="border_users_b border_users_r">
             <a href="{$url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$pfp->getProductsCount()} &nbsp;
+                    {$pfp->getProductsCount()|escape} &nbsp;
                 </div>
             </a>
         </td>
