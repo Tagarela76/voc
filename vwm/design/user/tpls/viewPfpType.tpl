@@ -76,6 +76,13 @@
 				</div>
 			</a>
         </td>
+		<td class="" >
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	Manufacturers/Suppliers
+				</div>
+			</a>
+        </td>
         <td class="" >
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
@@ -113,6 +120,16 @@
         <td class="border_users_b border_users_r" >
             <div style="width:100%;">
                 {$pfp->getId()} &nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r" >
+            <div style="width:100%;">
+                {assign var="pfpProducts" value=$pfp->getProducts()}
+				{foreach from=$pfpProducts item=item}
+					{if $item->isPrimary()}
+						{$item->supplier|escape} &nbsp;
+					{/if}
+				{/foreach}
             </div>
         </td>
         <td class="border_users_b border_users_r">
