@@ -28,7 +28,7 @@ class NoxEmission extends Model {
 		if (isset($array)) {
 			$this->initByArray($array);
 		}
-	}	
+	}
 
 	public function save() {
 
@@ -222,7 +222,7 @@ class NoxEmission extends Model {
 	public function isUniqueDescription() {
 		$sql = "SELECT nox_id FROM nox " .
 				"WHERE description = '{$this->db->sqltext($this->description)}' " .
-				"AND department_id = {$this->db->sqltext($this->department_id)}";
+				"AND burner_id = {$this->db->sqltext($this->burner_id)}";
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
 	}

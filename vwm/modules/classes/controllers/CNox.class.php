@@ -121,7 +121,7 @@ class CNox extends Controller {
 		$request['parent_category'] = 'department';
 
 		//	Access control
-		if (!$this->user->checkAccess('department', $request["departmentID"])) {
+	 	if (!$this->user->checkAccess('department', $request["departmentID"])) {
 			throw new Exception('deny');
 		}
 
@@ -228,21 +228,34 @@ class CNox extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionEdit() {
+	private function actionEdit() { 
 		$request = $this->getFromRequest();
 
 		//	Access control
-		if (!$this->user->checkAccess('department', $request['departmentID'])) {
-			throw new Exception('deny');
-		}
+        if (!is_null($request['departmentID'])) {
+            if (!$this->user->checkAccess('department', $request['departmentID'])) {
+                throw new Exception('deny');
+            }
+        } else {
+            if (!$this->user->checkAccess('facility', $request['facilityID'])) {
+                throw new Exception('deny');
+            }
+        }
+		
 
 		//set permissions
-		$this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark' => 'accessory'));
-		$this->setNavigationUpNew('department', $request['departmentID']);
+        if (!is_null($request['departmentID'])) {
+            $this->setListCategoriesLeftNew('department', $request['departmentID'], array('bookmark' => 'accessory'));
+        	$this->setNavigationUpNew('department', $request['departmentID']);
+        } else {
+            $this->setListCategoriesLeftNew('facility', $request['facilityID'], array('bookmark' => 'burnerRatio'));
+        	$this->setNavigationUpNew('facility', $request['facilityID']);
+        }
+		
 		$this->setPermissionsNew('viewData');
 
 		if ($this->getFromRequest('tab')) {
-			$functionName = 'edit' . ucfirst($this->getFromRequest('tab'));
+			$functionName = 'edit' . ucfirst($this->getFromRequest('tab')); 
 			if (method_exists($this, $functionName)) {
 				$this->$functionName();
 			} else {
@@ -260,9 +273,12 @@ class CNox extends Controller {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=nox");
 		}
 		extract($vars);
+		$tab = $this->getFromRequest('tab');
 
 		if ($tab == "burner") {
 			$this->bookmarkDburner($vars);
+		} elseif($tab == "burnerRatio") {
+			$this->bookmarkDburnerRatio($vars);
 		} else {
 			$noxList = false;
 			$sortStr = $this->sortList('nox', 3);
@@ -590,6 +606,245 @@ class CNox extends Controller {
 
 		$this->smarty->assign('data', $noxEmissionDetails);
 		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);
+		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	/**
+	 * bookmarkDNox($vars)
+	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
+	 */
+	protected function bookmarkDburnerRatio($vars) {
+        
+		extract($vars);
+
+		$noxManager = new NoxEmissionManager($this->db);
+		$department = new Department($this->db);
+		$departmentList = $department->getDepartmentListByFacility($this->getFromRequest('id'));
+		$burnerList = array();
+		foreach ($departmentList as $departmentItem) {
+			$burnerList[$departmentItem['name']] = $noxManager->getBurnerListByDepartment($departmentItem['id']);
+		}
+		//	set js scripts
+		$jsSources = array(
+			'modules/js/checkBoxes.js',
+			'modules/js/autocomplete/jquery.autocomplete.js',
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+        
+        $totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($facilityDetails['facility_id'], "facility");
+
+        $this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);
+        // insert nox indicator bar into tpl
+        $this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
+        // insert nox log into tpl
+        $this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE);
+        $this->smarty->assign("childCategoryItems", $burnerList);
+            
+		//	set tpl
+		$this->smarty->assign('tpl', 'tpls/viewEditBurnerRatio.tpl');
+
+	}
+	private function editBurnerRatio() { 
+		
+		$request = $this->getFromRequest();
+		
+        //set permissions
+		$this->setListCategoriesLeftNew('facility', $request['facilityID'], array('bookmark' => 'nox'));
+		$this->setNavigationUpNew('facility', $request['facilityID']);
+		$this->setPermissionsNew('viewData');
+		
+        $noxManager = new NoxEmissionManager($this->db);
+        $department = new Department($this->db);
+		$departmentList = $department->getDepartmentListByFacility($request['facilityID']);
+		$burnerList = array();
+		foreach ($departmentList as $departmentItem) {
+			$burnerList[$departmentItem['name']] = $noxManager->getBurnerListByDepartment($departmentItem['id']);
+		}
+        
+		$form = $this->getFromPost();
+
+		if (count($form) > 0) {
+			$burners = $form;
+            $noxBurner = new NoxBurner($this->db);
+            $burners4save = array();
+            foreach ($burners as $key => $burner) {
+                if (preg_match('/ratio_(.*)/', $key, $burnerId)) {
+                    $burnerDetails["burner_id"] = $burnerId[1];
+                    $burnerDetails["ratio"] = $burner;
+                    $burners4save[] = $burnerDetails;
+                }
+            }
+			$error = false;
+			$this->db->beginTransaction();
+			$violationList = array(); 
+            foreach ($burners4save as $burner) {
+				$noxBurner = new NoxBurner($this->db);
+				$noxBurner->burner_id = $burner["burner_id"];
+				$noxBurner->ratio = $burner["ratio"];
+				$noxBurner->model = 'test4validation'; // test data (only for validate burner ratio)
+				$noxBurner->serial = 'test4validation'; // test data (only for validate burner ratio)
+				$noxBurner->input = 100; // test data (only for validate burner ratio)
+				$noxBurner->output = 80; // test data (only for validate burner ratio)
+				$noxBurner->btu = 1180; // test data (only for validate burner ratio)
+
+				$violation = $noxBurner->validate();
+				foreach ($violation as $violationData) {
+					if ($violationData->getPropertyPath() == "ratio") {
+						$violationList[$noxBurner->burner_id] = $violationData->getMessage();
+					}
+				}
+				if(count($violationList[$noxBurner->burner_id]) == 0) {
+					$noxBurner->setRatio2Burner($noxBurner->burner_id, $noxBurner->ratio);
+				} else {
+					$error = true;
+				}
+            }
+
+			if ($error) {
+				$this->db->rollbackTransaction();
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
+				$this->smarty->assign('violationList', $violationList); //print_r($violationList); die();
+			} else {
+				$this->db->commitTransaction();
+				// redirect
+				header("Location: ?action=browseCategory&category=facility&id=" . $request['facilityID'] . "&bookmark=nox&tab=burnerRatio");
+				die();
+			}
+		}
+
+		$jsSources = array(
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+
+        $this->smarty->assign("childCategoryItems", $burnerList);
+        
+		$this->smarty->assign('tpl', 'tpls/viewEditBurnerRatio.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+	
+	private function actionAddNoxEmissionsByFacLevel() {	
+		
+		$noxManager = new NoxEmissionManager($this->db);
+		$facility = new Facility($this->db);
+        $noxBurner = new NoxBurner($this->db);
+        
+		$request = $this->getFromRequest();
+		$request['parent_category'] = 'facility';
+
+		//	Access control
+	 	if (!$this->user->checkAccess('facility', $request["facilityID"])) {
+			throw new Exception('deny');
+		}
+
+		//set permissions
+		$this->setListCategoriesLeftNew('facility', $request['facilityID'], array('bookmark' => 'nox'));
+		$this->setNavigationUpNew('facility', $request['facilityID']);
+		$this->setPermissionsNew('viewData');
+
+		$noxManager = new NoxEmissionManager($this->db);
+		$company = new Company($this->db);
+		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest("departmentID"));
+		$this->smarty->assign('dataChain', new TypeChain(null, 'date', $this->db, $companyID, 'company'));
+
+		$post = $this->getFromPost();		
+
+		if (count($post) > 0) {
+			//nox form validation 
+			$nox = new NoxEmission($this->db);
+			$nox->department_id = 0;  // test data (only for client input data validation)
+			$nox->description = $this->getFromPost('description');
+			$nox->gas_unit_used = $this->getFromPost('gas_unit_used');
+			$nox->burner_id = 0; // test data (only for client input data validation)
+			$nox->note =  $this->getFromPost('note');
+			$nox->set_start_time(new DateTime($this->getFromPost('start_time')));
+			$nox->set_end_time(new DateTime($this->getFromPost('end_time'))); 
+			$totalNox = $noxManager->calculateNox($nox);
+			if ($totalNox) {
+				$nox->nox = $totalNox;
+			} 
+			// we should save nox data as array for return to form (if error)
+			$noxDetails = array(
+				'description' => $nox->description,
+				'gas_unit_used' => $nox->gas_unit_used,
+				'start_time' => $this->getFromPost('start_time'),
+				'end_time' => $this->getFromPost('end_time'),
+				'note' => $nox->note
+			);
+			$violationList = $nox->validate(); 
+			if(count($violationList) == 0) {								
+				// we create a few nox emissions (for every burner)
+				$facilityID = $request['facilityID'];
+				$facilityRatio = $noxBurner->getCommonRatio4Facility($facilityID);
+				$departmentList = $facility->getDepartmentList($facilityID);
+				$burnerList = array();
+				
+				$this->db->beginTransaction();
+				$error = false;
+				foreach ($departmentList as $departmentID) {                
+					
+					$burnerList = $noxManager->getBurnerListByDepartment($departmentID);               
+					foreach ($burnerList as $burner) {
+						$gasUnitUsed = $this->getFromPost('gas_unit_used') * ($burner['ratio'] / $facilityRatio);
+						$nox = new NoxEmission($this->db);
+						$nox->department_id = $departmentID;
+						$nox->description = $this->getFromPost('description');
+						$nox->gas_unit_used = $gasUnitUsed;
+						$nox->start_time = $this->getFromPost('start_time');
+						$nox->end_time = $this->getFromPost('end_time');
+						$nox->burner_id = $burner['burner_id'];
+						$nox->note =  $this->getFromPost('note');
+						$nox->set_start_time(new DateTime($this->getFromPost('start_time')));
+						$nox->set_end_time(new DateTime($this->getFromPost('end_time')));
+						$totalNox = $noxManager->calculateNox($nox);
+						if ($totalNox) {
+							$nox->nox = $totalNox;
+						} 
+						
+						// validation (for every nox emission wich we will create)
+						$violationList = $nox->validate();
+						if(count($violationList) == 0) {								
+							$nox->save();
+						} else {
+							throw new Exception("Error while validate form <br> $violationList");
+						}
+					}
+				}
+				if ($error) {
+					$this->db->rollbackTransaction();
+				} else {
+					$this->db->commitTransaction();
+					header("Location: ?action=browseCategory&category=facility&id=" . $facilityID . "&bookmark=nox&tab={$request['tab']}&notify=45");
+				}
+
+			} else {
+				$error = true;
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);						
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $noxDetails);
+			}								
+		}
+		$jsSources = array(
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+		$this->smarty->assign('request', $request);
+		$this->smarty->assign('sendFormAction', '?action=addNoxEmissionsByFacLevel&category=' . $request['category'] . '&facilityID=' . $request['facilityID'] . '&tab=' . $request['tab']);
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}

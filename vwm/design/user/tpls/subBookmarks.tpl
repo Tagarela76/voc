@@ -62,3 +62,9 @@
 	{include file="tpls:tpls/subBookmarkProductLibrary.tpl"}
 {/if}
 {*PFP*}
+
+{*NOX*}
+{if $request.bookmark == 'nox' and $request.category == 'facility'} 
+	{include file="tpls:tpls/subBookmarkNoxFacLevel.tpl"}
+{/if}
+{*NOX*}

@@ -158,7 +158,8 @@ class NoxBurner extends Model {
 		}
 	}
 	
-	public function set_burner($value) {
+
+	public function set_ratio($value) {
 		try {
 			$this->ratio = $value;
 		} catch (Exception $e) {
@@ -186,11 +187,14 @@ class NoxBurner extends Model {
 		}
 	}
 	
-	public function getRatioCommonRatio4Department($departmentId) {
+	public function getCommonRatio4Facility($facilityId) {
 
 		$query = "SELECT sum(ratio) as ratio
 					From burner
-					WHERE department_id = {$this->db->sqltext($departmentId)}"; 
+					WHERE department_id IN (
+						SELECT department_id
+						From " . TB_DEPARTMENT . " 
+						WHERE facility_id = {$this->db->sqltext($facilityId)})"; 						
 		$this->db->query($query);
 
 		if ($this->db->num_rows()) {

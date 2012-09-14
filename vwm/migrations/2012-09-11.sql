@@ -1,0 +1,1 @@
+ALTER TABLE  `burner` ADD  `ratio` INT( 11 ) NULL DEFAULT NULL

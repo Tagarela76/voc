@@ -12,7 +12,7 @@
 
 					<div class="controlCategoriesList" style="display:table;width:100%;">
 
-						<div style="display:table;" class="floatleft">
+						<div style="display:table;" class="floatleft"> 
 							{if $request.bookmark=="inventory" && $request.tab==Inventory::PAINT_MATERIAL && $request.category=="department"}
 								{if $permissions.data.add && $permissions.data.delete}
 									<div class="button_float_left">
@@ -33,21 +33,20 @@
 
                                                 && $request.bookmark != "product"}
 								{*($request.bookmark=="accessory" && $permissions.data.add) ||*}
-								{if $request.category == "facility" && $request.bookmark == "nox"}
-								{else}
+								
 								<div class="button_float_left">
 									<div class="button_alpha add_button">
-										{if $request.tab == "pfp"}
-
-											<input type="submit" name="action" value="addPFPItem" {if $vpsSaysNo}disabled{/if}>
+										{if $request.category == "facility" && $request.bookmark == "nox" && $request.tab == "nox" && $request.action == "browseCategory"} 
+											<input type="submit" name="action" value="addNoxEmissionsByFacLevel" {if $vpsSaysNo}disabled{/if}>
 										{else}
-											<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
-										{/if}
+											{if $request.tab == "pfp"}
+												<input type="submit" name="action" value="addPFPItem" {if $vpsSaysNo}disabled{/if}>
+											{else}
+												<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
+											{/if}
+										{/if}	
 									</div>
-
-
 								</div>
-								{/if}
 							{/if}
 
 							{if $request.bookmark == "regupdate"}
@@ -64,13 +63,12 @@
 								{if ($request.bookmark=="equipment") ||
                                             		($request.bookmark=="user") ||
                                             		($request.bookmark=="inventory") ||
-                                            		($request.bookmark=="nox") ||
+                                            		($request.bookmark=="nox" && $request.tab != "burnerRatio") ||
                                             		($request.bookmark=="mix") ||
                                             		($request.bookmark=="logbook") ||
 													($request.bookmark=="workOrder") ||
 													($request.bookmark=="pfpTypes") ||
-                                                     $permissions.deleteItem && $request.bookmark != "product"}
-								{*($request.bookmark=="accessory" && $permissions.data.delete) ||*}
+                                                     $permissions.deleteItem && $request.bookmark != "product" && $request.tab != "burnerRatio"}
 								<div class="button_float_left">
 									<div class="button_alpha delete_button">
 										{if $smarty.request.tab != 'pfp'}
@@ -116,6 +114,11 @@
                                 </div>
 							{/if}
 						</div>
+						{if $smarty.request.tab == 'burnerRatio'}
+							<div class="button_float_left">
+								<input type='button' id='edit' class='button' value='Edit' onclick="location.href='?action=edit&category=nox&facilityID={$request.id}&tab=burnerRatio'">
+							</div>
+						{/if}
 						{if ($childCategory != "company" && $show.reports) || ($request.category == "company")}
 							<div class="button_float_left">
 								<div class="button_alpha report_button">

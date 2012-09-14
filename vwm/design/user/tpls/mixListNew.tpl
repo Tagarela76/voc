@@ -31,6 +31,13 @@
 				</div>
 			</a>
         </td>
+		<td class="" width="12%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	Product Name					
+				</div>
+			</a>
+        </td>
 		<td class="" width="10%">
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
@@ -38,7 +45,7 @@
 				</div>
 			</a>
         </td>
-        <td class="" width="20%">
+        <td class="" width="15%">
         	<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
             	<div style='width:100%;  color:white;'>
                 	Description
@@ -46,7 +53,14 @@
 				</div>
 			</a>
         </td>
-		<td class="" width="20%">
+		<td class="" width="15%">
+        	<a style='color:white;'>
+            	<div style='width:100%;  color:white;'>
+                	R/O Description					
+				</div>
+			</a>
+        </td>
+		<td class="" width="13%">
         	<a style='color:white;'>
             	<div style='width:100%;  color:white;'>
                 	R/O Description					
@@ -117,6 +131,18 @@
                 <div style="width:100%;">
                     {$mix->mix_id} &nbsp;
                 </div>
+            </a>
+        </td>
+		<td class="border_users_b border_users_r">
+            <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
+                <div style="width:100%;">
+                    {assign var="products" value=$mix->getProducts()}
+						{foreach from=$products item=item}
+							{if $item->is_primary}
+								{$item->name|escape} &nbsp;
+							{/if}
+						{/foreach}
+				</div>		
             </a>
         </td>
 		<td class="border_users_b border_users_r" >
