@@ -21,3 +21,6 @@ NoxBurner:
       - NotBlank: ~
       - Min: 0
       - Max: 9999999999
+    ratio:
+      - Min: 0
+      - Max: 9999999999  

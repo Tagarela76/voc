@@ -192,10 +192,7 @@
 		</tr>
 	{/if}
     <tr>
-        <td height="25" class="users_u_bottom">
-            &nbsp;
-        </td>
-        <td class="border_users" colspan="7">
+        <td height="25" class="users_u_bottom" colspan="8">
         </td>
         <td class="users_u_bottom_r">
         </td>

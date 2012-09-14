@@ -30,16 +30,6 @@ class NoxEmission extends Model {
 		}
 	}
 
-	private function initByArray($array) {
-		foreach ($array as $key => $value) {
-			try {
-				$this->__set($key, $value);
-			} catch (Exception $e) {
-				$this->errors[] = $e->getMessage();
-			}
-		}
-	}
-
 	public function save() {
 
 		if ($this->start_time instanceof DateTime) {
@@ -232,7 +222,7 @@ class NoxEmission extends Model {
 	public function isUniqueDescription() {
 		$sql = "SELECT nox_id FROM nox " .
 				"WHERE description = '{$this->db->sqltext($this->description)}' " .
-				"AND department_id = {$this->db->sqltext($this->department_id)}";
+				"AND burner_id = {$this->db->sqltext($this->burner_id)}";
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
 	}

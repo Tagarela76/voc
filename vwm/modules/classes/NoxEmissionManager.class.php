@@ -314,5 +314,22 @@ class NoxEmissionManager {
 		return $row['total_usage'];
 
 	}
+	
+	public function getBurnerListByFacility($facilityId) {
+				
+		$query = "SELECT * 
+				  FROM burner WHERE department_id IN (
+							SELECT department_id 
+							FROM ".TB_DEPARTMENT." 
+							WHERE facility_id={$this->db->sqltext($facilityId)})";
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			$data = $this->db->fetch_all_array();
+			return $data;
+		}
+		else
+			return false;
+	}
 
 }

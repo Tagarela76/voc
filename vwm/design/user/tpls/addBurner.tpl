@@ -167,7 +167,7 @@
 
 					</td>
 				</tr>
-
+				{if $burners}
 				<tr>
 					<td class="border_users_l border_users_b" width="15%" height="20">
 						Burner
@@ -182,7 +182,7 @@
 						</div>																		
 					</td>
 				</tr>	
-
+				{/if}
 
 				<tr>
 					<td class="border_users_l border_users_b" width="15%" height="20">
@@ -268,6 +268,7 @@
 			<input type='button' name='cancel' class="button" value='Cancel' 
 				   {if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=department&id={$request.departmentID}&bookmark=nox&tab={$request.tab}'"
 				   {elseif $request.action eq "edit"} onClick="location.href='?action=browseCategory&category=department&id={$request.departmentID}&bookmark=nox&tab={$request.tab}'"
+				   {elseif $request.action eq "addNoxEmissionsByFacLevel"} onClick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=nox&tab={$request.tab}'"   
 				   {/if}
 				   >
 			<input type='submit' name='save' class="button" value='Save'>		
