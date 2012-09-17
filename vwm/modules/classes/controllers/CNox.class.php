@@ -191,15 +191,15 @@ class CNox extends Controller {
 						'note' => $this->getFromPost('note')
 					);
 					
-					$nox = new NoxEmission($this->db, $noxDetails);
-					$nox->set_start_time(new DateTime($noxDetails['start_time']));
-					$nox->set_end_time(new DateTime($noxDetails['end_time']));
-					$totalNox = $noxManager->calculateNox($nox);
-					if ($totalNox) {
-						$nox->nox = $totalNox;
-					}
+					$nox = new NoxEmission($this->db, $noxDetails);										
 					$violationList = $nox->validate();
-					if(count($violationList) == 0) {								
+					if(count($violationList) == 0) {				
+						$nox->set_start_time(new DateTime($noxDetails['start_time']));
+						$nox->set_end_time(new DateTime($noxDetails['end_time']));
+						$totalNox = $noxManager->calculateNox($nox);
+						if ($totalNox) {
+							$nox->nox = $totalNox;
+						}
 						$nox->save();
 						// redirect
 						header("Location: ?action=browseCategory&category=department&id=" . $departmentID . "&bookmark=nox&tab={$request['tab']}&notify=45");

@@ -18,8 +18,7 @@ NoxEmission:
       - DateTime: ~
     note:   
       - NotBlank: ~
-    nox:
-      - NotBlank: ~
+    nox:      
       - Min: 0
       - Max: 9999999999
       
