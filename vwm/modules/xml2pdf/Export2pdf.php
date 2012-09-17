@@ -215,7 +215,7 @@ class XML2PDF extends PDF_MC_Table
 					$this->SetTopMargin( $attribs["TOPMARGIN"] );
 				}
 				if( !empty($attribs["LEFTMARGIN"]) ) 
-				{
+				{					
 					$this->SetTopMargin( $attribs["LEFTMARGIN"] );
 				}
 				if( !empty($attribs["RIGHTMARGIN"]) ) 
@@ -381,11 +381,11 @@ class XML2PDF extends PDF_MC_Table
 				}
 				break;
 			case "TR":
-				if ($this->tableFormat == 'head') {
+				if ($this->tableFormat == 'head') {					
 					$this->trElem []= $this->tdElem;
 					$fieldsCount = count($this->tdElem);
 					$this->fieldsCount = $fieldsCount;
-					$w = 265/$this->fieldsCount;
+					$w = 255/$this->fieldsCount;
 					
 					if (!isset($this->widths) || count($this->widths) != $this->fieldsCount) {
 						$this->widths = array();
@@ -396,13 +396,14 @@ class XML2PDF extends PDF_MC_Table
 						}
 					} else {
 						foreach($this->widths as $key => $width) {
-							$this->widths[$key] = substr($width,0,strpos($width,'%'))*265/100;
+							$this->widths[$key] = substr($width,0,strpos($width,'%'))*255/100;
 							$this->alignsC [$key]= 'C';
 							$this->aligns [$key]= 'L';
 						}
 					}
 					$this->upperWidths []= $this->widths;
 				} else {
+					$this->setX($this->GetX()+15);
 					$this->Row($this->tdElem);
 				}
 				break;	
@@ -500,7 +501,7 @@ class XML2PDF extends PDF_MC_Table
 		$this->SetFont('Arial','',10);
 
     	if (isset($this->header['HEADER'])) 
-    	{
+    	{			
     		$this->SetFont('Arial','B',10);
 			//$this->Cell(0,10,'URL: ',0,0,'R');
 		/*	$this->SetFont('Courier','I',10);
@@ -557,6 +558,7 @@ class XML2PDF extends PDF_MC_Table
 			}
 			$this->SetFont('Arial','B',10);
 			$this->SetAligns($this->aligns); 
+			$this->setX($this->GetX()+15);
 			foreach ($this->trElem as $key => $trElement) {
 				$fieldsCount = count($trElement);
 				$this->SetWidths($this->upperWidths[$key]);

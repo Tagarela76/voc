@@ -161,7 +161,7 @@
     </tr>
     {/foreach}
     <tr>
-        <td colspan="5" class="border_users_l border_users_r">
+        <td colspan="6" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
@@ -178,7 +178,7 @@
     <tr>
         <td class="users_u_bottom">
         </td>
-        <td colspan="3" height="15" class="border_users">
+        <td colspan="4" height="15" class="border_users">
         </td>
         <td class="users_u_bottom_r">
         </td>

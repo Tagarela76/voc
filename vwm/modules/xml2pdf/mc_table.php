@@ -26,7 +26,7 @@ function Row($data,$fill=FALSE)
 		$nb=max($nb,$this->NbLines($this->widths[$i],$data[$i]));
 	$h=5*$nb;
 	//Issue a page break first if needed
-	$this->CheckPageBreak($h);
+	$this->CheckPageBreak($h);	
 	//Draw the cells of the row
 	for($i=0;$i<count($data);$i++)
 	{
