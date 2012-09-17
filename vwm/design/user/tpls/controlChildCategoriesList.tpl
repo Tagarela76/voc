@@ -33,20 +33,21 @@
 
                                                 && $request.bookmark != "product"}
 								{*($request.bookmark=="accessory" && $permissions.data.add) ||*}
-								
-								<div class="button_float_left">
-									<div class="button_alpha add_button">
-										{if $request.category == "facility" && $request.bookmark == "nox" && $request.tab == "nox" && $request.action == "browseCategory"} 
-											<input type="submit" name="action" value="addNoxEmissionsByFacLevel" {if $vpsSaysNo}disabled{/if}>
-										{else}
-											{if $request.tab == "pfp"}
-												<input type="submit" name="action" value="addPFPItem" {if $vpsSaysNo}disabled{/if}>
+								{if $request.tab != "burnerRatio"}
+									<div class="button_float_left">
+										<div class="button_alpha add_button">
+											{if $request.category == "facility" && $request.bookmark == "nox" && $request.tab == "nox" && $request.action == "browseCategory"} 
+												<input type="submit" name="action" value="addNoxEmissionsByFacLevel" {if $vpsSaysNo}disabled{/if}>
 											{else}
-												<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
-											{/if}
-										{/if}	
+												{if $request.tab == "pfp"}
+													<input type="submit" name="action" value="addPFPItem" {if $vpsSaysNo}disabled{/if}>
+												{else}
+													<input type="submit" name="action" value="addItem" {if $vpsSaysNo}disabled{/if}>
+												{/if}
+											{/if}	
+										</div>
 									</div>
-								</div>
+								{/if}	
 							{/if}
 
 							{if $request.bookmark == "regupdate"}
