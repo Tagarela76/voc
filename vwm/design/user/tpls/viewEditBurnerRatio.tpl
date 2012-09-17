@@ -44,7 +44,11 @@
 										{/if}										
 									{/foreach}
                                 {else}
-                                    {$burner.ratio|escape}
+									{if $burner.ratio == NULL || $burner.ratio == ''} 
+										<i> Not set </i>
+									{else}	
+										{$burner.ratio|escape}
+									{/if}	
                                 {/if}	
                             </td>
                         </tr>
