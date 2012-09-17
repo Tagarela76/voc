@@ -91,9 +91,7 @@
     </tr>
     {*END LIST*}
     <tr>
-        <td class="users_u_bottom">
-        </td>
-        <td colspan="4" height="15" class="border_users">
+        <td class="users_u_bottom" colspan="5" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>
