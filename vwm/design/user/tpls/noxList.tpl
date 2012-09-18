@@ -43,6 +43,17 @@
 				</a> 
 
         </td>
+		{if $request.category == "facility"}
+			<td class="">
+
+					<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
+						<div>						
+							Department Name			
+						</div>					
+					</a> 
+
+			</td>
+		{/if}
         <td class="">
     
 	            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==3}4{else}3{/if}"); $("#sortForm").submit();'>
@@ -123,6 +134,15 @@
                 </div>
             </a>
         </td>
+		{if $request.category == "facility"}
+			<td class="border_users_r border_users_b">
+				<a href="{$childCategoryItems[i].url}" class="id_accessory1">
+					<div>
+						{$childCategoryItems[i].department_name|escape}
+					</div>
+				</a>
+			</td>
+		{/if}	
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
@@ -176,7 +196,7 @@
 	        <td class="border_users_l">
 	            &nbsp;
 	        </td>
-			<td  class="" align="center" colspan="7">
+			<td  class="" align="center" colspan="8">
 	            No NOx Emissions
 	        </td>
 	        <td class="border_users_r">
@@ -186,13 +206,13 @@
 	    {*END	EMPTY LIST*}
 	{elseif $smarty.section.i.total <=7}
 		<tr height='{math equation="x - (y * 27)" x=200 y=$smarty.section.i.total}'>
-		<td class="border_users_l border_users_b border_users_r" colspan='9'>
+		<td class="border_users_l border_users_b border_users_r" colspan='10'>
 				&nbsp;
 			</td>						
 		</tr>
 	{/if}
     <tr>
-        <td height="25" class="users_u_bottom" colspan="8">
+        <td height="25" class="users_u_bottom" colspan="9">
         </td>
         <td class="users_u_bottom_r">
         </td>

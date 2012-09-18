@@ -80,7 +80,7 @@
 					<td class="border_users_l border_users_b border_users_r">
 						<div align="left" style="float: left;">	<input type='text' name='input' id='input' value='{$data.input|escape}'></div>												
 							{foreach from=$violationList item="violation"}
-								{if $violation->getPropertyPath() eq 'inout'}							
+								{if $violation->getPropertyPath() eq 'input'}							
 								{*ERROR*}					
 								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
 								{*/ERROR*}						    

@@ -16,8 +16,6 @@ NoxEmission:
     end_time:
       - NotBlank: ~
       - DateTime: ~
-    note:   
-      - NotBlank: ~
     nox:      
       - Min: 0
       - Max: 9999999999

@@ -284,7 +284,7 @@ class CNox extends Controller {
 			$sortStr = $this->sortList('nox', 3);
 
 			$noxManager = new NoxEmissionManager($this->db);
-
+			$department = new Department($this->db);
 			// autocomplete
 			//$accessory->accessoryAutocomplete($_GET['query'],$jobberIdList);
 			// search
@@ -343,7 +343,7 @@ class CNox extends Controller {
 			} else {
 
 				if ($noxList) {
-
+					
 					for ($i = 0; $i < count($noxList); $i++) {
 						$url = "?action=viewDetails&category=nox&id=" . $noxList[$i]['nox_id'] . "&".urlencode($this->getFromRequest('category'))."ID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
 						$noxList[$i]['url'] = $url;
@@ -352,6 +352,8 @@ class CNox extends Controller {
 
 						$noxList[$i]['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['start_time']);
 						$noxList[$i]['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['end_time']);
+						$departmentDetails = $department->getDepartmentDetails($noxList[$i]['department_id']);
+						$noxList[$i]['department_name'] = $departmentDetails["name"];
 					}
 
 					//	nox indicator
@@ -512,11 +514,8 @@ class CNox extends Controller {
 		if (count($form) > 0) {
 			$burnerDetails = $form;
 			$burner = new NoxBurner($this->db, $form);
-
-			$validation = new Validation($this->db);
-			$validStatus = $validation->validateNoxBurner($burner);
-
-			if ($validStatus['summary'] == 'true') {
+			$violationList = $burner->validate();	 
+			if(count($violationList) == 0) {
 				$burner->save();
 
 				// redirect
@@ -528,7 +527,8 @@ class CNox extends Controller {
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);
 
-				$this->smarty->assign('validStatus', $validStatus);
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $burnerDetails);
 			}
 		}
 
