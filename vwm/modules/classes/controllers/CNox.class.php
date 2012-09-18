@@ -408,7 +408,7 @@ class CNox extends Controller {
 			$burnerList = $noxManager->getBurnerListByDepartment($departmentID, $sortStr, $pagination);
 		}
 
-
+		
 		if (!is_null($this->getFromRequest('export'))) {
 			//	EXPORT THIS PAGE
 			$exporter = new Exporter(Exporter::PDF);

@@ -38,14 +38,15 @@ class NoxBurner extends Model {
 						"btu = {$this->db->sqltext($this->btu)} " .
 						"WHERE burner_id = {$this->db->sqltext($this->burner_id)}";
 		} else {
-			$query = "INSERT INTO burner VALUES (NULL,'"
-					. $this->db->sqltext($this->department_id) . "','"
-					. $this->db->sqltext($this->manufacturer_id) . "','"
-					. $this->db->sqltext($this->model) . "','"
-					. $this->db->sqltext($this->serial) . "','"
-					. $this->db->sqltext($this->input) . "','"
-					. $this->db->sqltext($this->output) . "','"
-					. $this->db->sqltext($this->btu) . "')";
+			$query = "INSERT INTO burner (department_id, manufacturer_id, model, " .
+					"serial, input, output, btu) VALUES ( " .
+					"{$this->db->sqltext($this->department_id)}, " .
+					"{$this->db->sqltext($this->manufacturer_id)}, " .
+					"'{$this->db->sqltext($this->model)}', " .
+					"'{$this->db->sqltext($this->serial)}', " .
+					"{$this->db->sqltext($this->input)}, " .
+					"{$this->db->sqltext($this->output)}, " .
+					"{$this->db->sqltext($this->btu)})";
 		}
 
 		$this->db->query($query);
