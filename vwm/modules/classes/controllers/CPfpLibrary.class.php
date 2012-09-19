@@ -27,11 +27,12 @@ class CPfpLibrary extends Controller {
 		// get pfp types (filter PFP by PFP Types)
 		$pfpTypes = $facility->getPfpTypes($facilityDetails['facility_id']);
 		$selectedPfpType = $this->getFromRequest('pfpType');
-		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all";
+		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
 		$this->smarty->assign('allUrl', $allUrl);
 		$this->smarty->assign("pfpTypes", $pfpTypes);
 		$this->smarty->assign("selectedPfpType", $selectedPfpType);
-
+		$this->smarty->assign("productCategory", $productCategory);
+		
 		// get Allowed or Assigned PFP
 		if ($this->getFromRequest('tab') == 'all') {
 			if (is_null($selectedPfpType)) {
