@@ -149,11 +149,8 @@ class PFPManager {
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 
-	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0 , $pfpType = null) {
+	public function getListAssigned($companyID = null, Pagination $pagination = null, $idArray = null, $industryType = 0, $supplierID = 0) {
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 AND pfp2c.company_id = {$this->db->sqltext($companyID)} ";
-        if (!is_null($pfpType)) {
-            $queryFilter .= "AND pfp.type_id = {$this->db->sqltext($pfpType)}";
-        } 
 		return $this->_getList($queryFilter, $companyID, $pagination, $idArray, $industryType, $supplierID);
 	}
 
@@ -859,14 +856,18 @@ class PFPManager {
 	}
 	
 	
-    public function getUnAssignPFP2Type($companyId, $pfpTypeID, Pagination $pagination = null) {
+    public function getUnAssignPFP2Type($companyId, $pfpTypeID, Pagination $pagination = null) { 
 		$query = "SELECT * FROM " . TB_PFP . " pfp ". 
 				"JOIN " . TB_PFP2COMPANY . " pfp2c ON pfp.id = pfp2c.pfp_id " .
 				"LEFT JOIN " . TB_PFP2PFP_TYPES . " pfp2t ON pfp.id = pfp2t.pfp_id " .
 				"WHERE (pfp2t.pfp_type_id != {$this->db->sqltext($pfpTypeID)} OR pfp2t.pfp_type_id IS NULL) " .
 				"AND pfp2c.is_available = 1 " .
-				"AND pfp2c.company_id = {$this->db->sqltext($companyId)}";
-				
+				"AND pfp2c.company_id = {$this->db->sqltext($companyId)} 
+				 AND pfp.id NOT IN (
+									SELECT id FROM ".TB_PFP. " pfp " .
+									"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
+									"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($pfpTypeID)})";
+			
 		/*$query = "SELECT * FROM " . TB_PFP . " pfp" . 
 				 " LEFT JOIN " . TB_PFP2COMPANY . " pfpc" . 
 				 " ON pfp.id = pfpc.pfp_id 

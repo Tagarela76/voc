@@ -601,16 +601,16 @@ function createSelectUnittypeClass(id) {
         {if $pfpTypes|count > 0}
             <div class="link_bookmark">
 			{if $selectedPfpType}
-				<a href="{$allUrl}" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
+				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
 			{else}
-				<a href="{$allUrl}" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
+				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
 			{/if}	
 			
             {foreach from=$pfpTypes item=pfpType}
                 {if $pfpType->name == $selectedPfpType}
-                    <a href="{$pfpType->url}" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
+                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
                 {else}
-                    <a href="{$pfpType->url}" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a> 
+                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a> 
 
                 {/if}
                 
@@ -619,29 +619,6 @@ function createSelectUnittypeClass(id) {
         {/if}    
 		
 		{include file="tpls:tpls/_briefPfpList.tpl"}
-		
-        {*<table style="width:100%;" class="pfpList" cellpadding="0" cellspacing="0">
-            <tr id="title">
-                <td>Description</td>
-                <td>Products</td>
-                <td>Ratio</td>
-                <td>Supplier</td>
-            </tr>
-
-            {foreach from=$pfps item=pfp}
-                <tr id="{$pfp->getId()}" name="pfp_row">
-                    <td>{$pfp->getDescription()}</td>
-                    <td>{$pfp->getProductsCount()}</td>
-                    <td>{$pfp->getRatio()}{if $pfp->isRangePFP} (with range){/if}</td>
-                    <td>Supplier</td>
-                </tr>
-                <tr id="{$pfp->getId()}_details" name="pfp_details" style="display:none;">
-                    <td colspan="4" style="text-align:center;"><img src="images/ajax-loader.gif" class="preloader" />
-
-                    </td>
-                </tr>
-            {/foreach}
-        </table>*}
     {else}
         You do not have any preformulated products yet
     {/if}

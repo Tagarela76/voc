@@ -33,12 +33,14 @@ class Controller {
 		self::INSERT_AFTER_SEARCH => array(),
 		self::INSERT_AFTER_VOC_GAUGE => array(),
 		self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE => array(),
+		self::INSERT_AFTER_INDUSTRY_TYPES => array(),
 	);
 
 
 	const INSERT_AFTER_SEARCH = 0;
 	const INSERT_AFTER_VOC_GAUGE = 1;
 	const INSERT_NOX_LOG_BEFORE_NOX_GAUGE = 2;
+	const INSERT_AFTER_INDUSTRY_TYPES = 3;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;

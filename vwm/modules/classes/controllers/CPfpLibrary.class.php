@@ -13,7 +13,7 @@ class CPfpLibrary extends Controller {
 		extract($vars);
 
 		$manager = new PFPManager($this->db);
-
+		$facility = new Facility($this->db);
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
 
 		$url = "?".$_SERVER["QUERY_STRING"];
@@ -24,15 +24,40 @@ class CPfpLibrary extends Controller {
 			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		}
+		// get pfp types (filter PFP by PFP Types)
+		$pfpTypes = $facility->getPfpTypes($facilityDetails['facility_id']);
+		$selectedPfpType = $this->getFromRequest('pfpType');
+		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all";
+		$this->smarty->assign('allUrl', $allUrl);
+		$this->smarty->assign("pfpTypes", $pfpTypes);
+		$this->smarty->assign("selectedPfpType", $selectedPfpType);
 
-		$pfpCount = ($this->getFromRequest('tab') == 'all') ? $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory) : $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
+		// get Allowed or Assigned PFP
+		if ($this->getFromRequest('tab') == 'all') {
+			if (is_null($selectedPfpType)) {
+				$pfpCount = $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory);
+			} else {
+				$pfpTypes = new PfpTypes($this->db, $selectedPfpType); 
+				$pfpCount = count($pfpTypes->getPfpProducts());
+			}
+		} else {
+			$pfpCount = $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
+		}
+		
 		$pagination = new Pagination((int) $pfpCount);
 		$pagination->url = $url;
-
-		$pfps = ($this->getFromRequest('tab') == 'all')
-				? $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory)
-				: $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
-
+		
+		if ($this->getFromRequest('tab') == 'all') {
+			if (is_null($selectedPfpType)) {
+				$pfps = $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory);
+			} else {
+				$pfpTypes = new PfpTypes($this->db, $selectedPfpType); 
+				$pfps = $pfpTypes->getPfpProducts($pagination);
+			}			
+		} else {
+			$pfps = $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
+		}
+		
         if($this->getFromRequest('print') == true) {
             //	EXPORT THIS PAGE
             $exporter = new Exporter(Exporter::PDF);
@@ -94,9 +119,15 @@ class CPfpLibrary extends Controller {
 		$productTypeList = $productTypesObj->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productTypeList);
 
+		
 		//	tell Smarty where to insert drop down list with industry types
 		$this->insertTplBlock('tpls/productTypesDropDown.tpl', self::INSERT_AFTER_SEARCH);
 
+		//	tell Smarty where to insert PFP Types Filter (if assign)
+		if ($this->getFromRequest('tab') == 'all') {
+			$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl', self::INSERT_AFTER_INDUSTRY_TYPES);
+		}
+		
 		//	set js assets
 		$jsSources = array  ('modules/js/checkBoxes.js',
                                      'modules/js/autocomplete/jquery.autocomplete.js');

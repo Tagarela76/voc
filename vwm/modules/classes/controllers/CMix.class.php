@@ -1355,14 +1355,6 @@ class CMix extends Controller {
 		$facilityID = $departmentDetails['facility_id'];
 		$pfpTypes = $facility->getPfpTypes($facilityID);
 		
-		if ($pfpTypes) {
-            for ($i = 0; $i < count($pfpTypes); $i++) {
-                $url = "?action=addItem&category=mix&departmentID=" . $departmentID  . "&selectedPfpType=" . $pfpTypes[$i]->name;
-                $pfpTypes[$i]->url = $url;
-            }
-        }
-		$allUrl = "?action=addItem&category=mix&departmentID=" . $departmentID;
-		$this->smarty->assign('allUrl', $allUrl);
 		$this->smarty->assign('pfpTypes', $pfpTypes);
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();

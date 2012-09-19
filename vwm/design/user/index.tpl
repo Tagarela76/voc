@@ -163,6 +163,16 @@
 														{/foreach}
 													{/if}
 													{*/INSERT_AFTER_SEARCH*}
+													
+													{*INSERT_AFTER_INDUSTRY_TYPES*}
+													{*Stupid Smarty does not support class constants*}
+													{*blocksToInsert.3 is equal to Controller::INSERT_AFTER_INDUSTRY_TYPES*}
+													{if $blocksToInsert.3|@count > 0}
+														{foreach from=$blocksToInsert.3 item="blockPath"}
+															{include file="tpls:$blockPath"}
+														{/foreach}
+													{/if}
+													{*/INSERT_AFTER_INDUSTRY_TYPES*}
 
 													</td>
 												</tr>

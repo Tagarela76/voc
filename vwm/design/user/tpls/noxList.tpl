@@ -146,7 +146,7 @@
         <td class="border_users_r border_users_b">
             <a href="{$childCategoryItems[i].url}" class="id_accessory1">
                 <div>
-                    {$childCategoryItems[i].burner.model|escape} > {$childCategoryItems[i].burner.serial|escape}
+                    {$childCategoryItems[i].burner.manufacturer_name|escape} > {$childCategoryItems[i].burner.model|escape}
                 </div>
             </a>
         </td>

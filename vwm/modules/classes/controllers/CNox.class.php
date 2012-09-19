@@ -348,6 +348,8 @@ class CNox extends Controller {
 						$url = "?action=viewDetails&category=nox&id=" . $noxList[$i]['nox_id'] . "&".urlencode($this->getFromRequest('category'))."ID=" . $this->getFromRequest('id') . "&tab=" . $this->getFromRequest('tab');
 						$noxList[$i]['url'] = $url;
 						$burnerDetails = $noxManager->getBurnerDetail($noxList[$i]['burner_id']);
+						$manufacturer = $noxManager->getBurnerManfucaturer($burnerDetails["manufacturer_id"]);
+						$burnerDetails["manufacturer_name"] = $manufacturer["name"];
 						$noxList[$i]['burner'] = $burnerDetails;
 
 						$noxList[$i]['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['start_time']);
