@@ -42,7 +42,7 @@
 
 {*MIX*}
 {if $request.bookmark == 'mix' and $request.category == 'department'}
-	{include file="tpls:tpls/subBookmarkMix.tpl"}
+	<!--{include file="tpls:tpls/subBookmarkMix.tpl"} -->
 {/if}
 {*MIX*}
 
