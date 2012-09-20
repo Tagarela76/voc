@@ -115,8 +115,8 @@
 
 
                     <td>
-                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder">
-						 {if $request.bookmark != "workOrder"}
+                        <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=repairOrder">
+						 {if $request.bookmark != "repairOrder"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
                                     Repair Order&nbsp;
@@ -201,7 +201,7 @@
 {if $request.bookmark  eq "regupdate"}  class="bookmark_bg_brown" {/if} 
 {if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if}
 {if $request.bookmark  eq "nox"}  class="bookmark_bg_violet" {/if}
-{if $request.bookmark  eq "workOrder"}  class="bookmark_bg" {/if}	
+{if $request.bookmark  eq "repairOrder"}  class="bookmark_bg" {/if}	
 {if $request.bookmark  eq "pfpTypes"}  class="bookmark_bg" {/if}  >
 	<div align="right"  class="link_bookmark">{include file="tpls:tpls/subBookmarks.tpl"}&nbsp;</div>
 

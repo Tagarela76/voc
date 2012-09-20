@@ -240,13 +240,17 @@ function answer(jsonResponse) {
 				location.href = '?action=browseCategory&category=department&id='+document.addEquipment.department_id.value+'&bookmark=equipment';
 			}
 		} 
-		
+	
 		//	work order 		
-		if (document.addWorkOrder != null) {		 	
-			if (document.addWorkOrder.action.value == 'addItem') {		
+		if (document.addRepairOrder != null) {
+			if (document.addRepairOrder.action.value == 'addItem') {		
 				//	go to work order list	
 
-				location.href = '?action=browseCategory&category=facility&id='+document.addWorkOrder.facility_id.value+'&bookmark=workOrder';
+				location.href = '?action=browseCategory&category=facility&id='+document.addRepairOrder.facility_id.value+'&bookmark=repairOrder';
+			}
+			if (document.addRepairOrder.action.value == 'edit') {		
+				//	go to work order details	
+				location.href = '?action=viewDetails&category=repairOrder&id='+document.addRepairOrder.work_order_id.value+'&facilityID='+document.addRepairOrder.id.value;
 			}
 		}
 		
@@ -680,17 +684,17 @@ function clearSelectedLightings() {
 	});
 }
 
-function saveWorkOrderDetails() 
+function saveRepairOrderDetails() 
 {	
 	Popup.showModal('pleaseWait');	//	Show popup wait
 	
-	var work_order_number=$('#workOrderNumber').attr('value');
-	var work_order_description=$('#workOrderDescription').val();
-	var work_order_customer_name=$('#workOrderCustomerName').attr('value');
+	var work_order_number=$('#repairOrderNumber').attr('value');
+	var work_order_description=$('#repairOrderDescription').val();
+	var work_order_customer_name=$('#repairOrderCustomerName').attr('value');
 	var work_order_action=$('input:hidden[name=action]').attr('value');
-	var work_order_status=$('#workOrderStatus').attr('value');
+	var work_order_status=$('#repairOrderStatus').attr('value');
 	var work_order_id = $('#work_order_id').attr('value'); 
-	var work_order_vin=$('#workOrderVin').attr('value'); 
+	var work_order_vin=$('#repairOrderVin').attr('value'); 
 	if (work_order_action == 'addItem') 
 	{		
 		var id=$('input:hidden[name=facility_id]').attr('value');
@@ -702,7 +706,7 @@ function saveWorkOrderDetails()
 	
 	
 	$.ajax({
-		url: "modules/ajax/saveWorkOrder.php",      		
+		url: "modules/ajax/saveRepairOrder.php",      		
 		type: "POST",
 		async: false,
 		data: {

@@ -17,7 +17,7 @@ class CPfpTypes extends Controller {
     }
     
 	/**
-     * bookmarkWorkOrder($vars)
+     * bookmarkRepairOrder($vars)
      * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
      */
     protected function bookmarkPfpTypes($vars) {
@@ -62,7 +62,7 @@ class CPfpTypes extends Controller {
         $request['parent_category'] = 'facility';
         $this->smarty->assign('request', $request);
 
-        $params = array("bookmark" => "workOrder");
+        $params = array("bookmark" => "repairOrder");
 
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));

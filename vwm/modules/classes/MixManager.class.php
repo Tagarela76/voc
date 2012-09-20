@@ -179,12 +179,12 @@ class MixManager {
 			}
 			
 			if($mix->wo_id !== null) {
-				$workOrder = new WorkOrder($this->db);
+				$repairOrder = new RepairOrder($this->db);
 				//	overrite mix description just because both mix and work order
 				//	have field description
 				$row['description'] = $row['woDescription'];				
-				$workOrder->initByArray($row);
-				$mix->setWorkOrder($workOrder);
+				$repairOrder->initByArray($row);
+				$mix->setRepairOrder($repairOrder);
 			}
 			$mixes[] = $mix;
 		}

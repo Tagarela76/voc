@@ -119,7 +119,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 	public function testGetWorkOrder() {
 		$mixId = 1;
 		$mix = new MixOptimized($this->db, $mixId);
-		$wo = $mix->getWorkOrder();
+		$wo = $mix->getRepairOrder();
 		$this->assertInstanceOf('WorkOrder', $wo);
 		$this->assertEquals('joh smith', $wo->customer_name);
 		

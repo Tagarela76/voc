@@ -16,7 +16,7 @@
 									$request.category=="mix" 		&& $permissions.data.edit || 
 									$request.category=="nox" 		&& $permissions.data.edit && $request.departmentID || 
 									$request.category=="logbook" || 
-									$request.category=="workOrder" ||
+									$request.category=="repairOrder" ||
 									($request.category=="wastestorage" && $data->active!=0)}	
 									{*$request.category=="accessory" 	&& $permissions.data.edit ||*}							
 									{if $editUrl}
@@ -31,7 +31,7 @@
 									$request.category=="facility" 	&& $permissions.facility.delete || 
 									$request.category=="department" && $permissions.department.delete || 
 									$request.category=="equipment" 	&& $permissions.equipment.delete || 
-									$request.category=="workOrder" ||
+									$request.category=="repairOrder" ||
 									 
 									$request.category=="mix" 		&& $permissions.data.delete
 								}
@@ -47,7 +47,7 @@
 									<input type="button" name="createLabel" class="button" value="Create Label" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}'"/>
 								{/if}	
 								
-								{if $request.category == "workOrder" || $request.category == "pfpTypes"}
+								{if $request.category == "repairOrder" || $request.category == "pfpTypes"}
 									<input type="button" name="createLabel" class="button" value="Print" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
 								{/if}
 																			

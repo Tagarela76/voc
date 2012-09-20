@@ -11,7 +11,7 @@
 </div>
 	
 <div class="padd7">
-	<form action='' name="addWorkOrder" onsubmit="return false;">
+	<form action='' name="addRepairOrder" onsubmit="return false;">
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_header_orange">
 				<td>
@@ -28,7 +28,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='workOrderNumber' type='text' name='name' value='{$data->number|escape}' maxlength="64">
+						<input id='repairOrderNumber' type='text' name='name' value='{$data->number|escape}' maxlength="64">
 					</div>					
 			     		{*ERROR*}					
 							<div id="error_number" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>					    						
@@ -44,7 +44,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<textarea id='workOrderDescription' name='workOrderDescription' cols="49" rows="5">{$data->description|escape}</textarea>
+						<textarea id='repairOrderDescription' name='repairOrderDescription' cols="49" rows="5">{$data->description|escape}</textarea>
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_description" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -58,7 +58,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='workOrderCustomerName' type='text' name='workOrderCustomerName' value='{$data->customer_name|escape}' maxlength="14">
+						<input id='repairOrderCustomerName' type='text' name='repairOrderCustomerName' value='{$data->customer_name|escape}' maxlength="14">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_customer_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -71,7 +71,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='workOrderStatus' type='text' name='workOrderStatus' value='{$data->status|escape}' maxlength="14">
+						<input id='repairOrderStatus' type='text' name='repairOrderStatus' value='{$data->status|escape}' maxlength="14">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_status" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -84,7 +84,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='workOrderVin' type='text' name='workOrderVin' value='{$data->vin|escape}' maxlength="14">
+						<input id='repairOrderVin' type='text' name='repairOrderVin' value='{$data->vin|escape}' maxlength="14">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_vin" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -109,12 +109,12 @@
 		{*BUTTONS*}
 		<div align="right">
 			<input type='button' name='cancel' class="button" value='Cancel' 
-				{if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=workOrder'"
+				{if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=repairOrder'"
 			
-				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=workOrder&id={$request.id}&facilityID={$data->facility_id}'"
+				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=repairOrder&id={$request.id}&facilityID={$data->facility_id}'"
 				{/if}
 			>
-			<input type='submit' name='save' class="button" value='Save' onClick="saveWorkOrderDetails();">						
+			<input type='submit' name='save' class="button" value='Save' onClick="saveRepairOrderDetails();">						
 		</div>
 		
 		{*HIDDEN*}

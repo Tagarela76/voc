@@ -8,21 +8,21 @@ class FacilityTest extends Testing\DbTestCase {
 		TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_PFP_TYPES
 	);
 
-	public function testGetWorkOrdersList() {
+	public function testGetRepairOrdersList() {
 		
 		$facility = new Facility($this->db);
-		$workOrder = $facility->getWorkOrdersList('1');
+		$repairOrder = $facility->getRepairOrdersList('1');
 		
-		$this->assertTrue($workOrder[0] instanceof WorkOrder);
-		$this->assertTrue(sizeof($workOrder) == 2);
+		$this->assertTrue($repairOrder[0] instanceof repairOrder);
+		$this->assertTrue(sizeof($repairOrder) == 2);
 	}
 	
-	public function testCountWorkOrderInFacility() {
+	public function testCountRepairOrderInFacility() {
 		
 		$facility = new Facility($this->db);
-		$workOrderCount = $facility->countWorkOrderInFacility('1');
+		$repairOrderCount = $facility->countRepairOrderInFacility('1');
 
-		$this->assertTrue($workOrderCount == 2);
+		$this->assertTrue($repairOrderCount == 2);
 	}
     
     public function testGetPfpTypesCount() {

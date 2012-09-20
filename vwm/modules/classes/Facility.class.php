@@ -8,19 +8,33 @@ class Facility extends FacilityProperties {
 	private $trashRecord;
 	private $parentTrashRecord;
 
-
+	public $searchCriteria = array();
 	//	Methods
-
+	
 	function __construct($db) {
 		$this->db=$db;
 	}
 
-	public function getWorkOrdersList($facilityId, Pagination $pagination = null) {
+	public function getRepairOrdersList($facilityId, Pagination $pagination = null) {
 		
-		$workOrders = array();
+		$repairOrders = array();
 		
 		$sql = "SELECT * FROM ". TB_WORK_ORDER. "
 				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
+	
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$sql .= " AND ( ";
+			foreach ($this->searchCriteria as $repairOrder) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($repairOrder) . "%')";
+			}
+			$sql .= implode(' OR ', $searchSql);
+			$sql .= ") ";
+		}
+		
         if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}        
@@ -32,15 +46,15 @@ class Facility extends FacilityProperties {
 		}
 		
 		foreach ($rows as $row) {
-			$workOrder = new WorkOrder($this->db);
+			$repairOrder = new RepairOrder($this->db);
 			foreach ($row as $key => $value) {
-				if (property_exists($workOrder, $key)) {
-					$workOrder->$key = $value;
+				if (property_exists($repairOrder, $key)) {
+					$repairOrder->$key = $value;
 				}
 			}
-			$workOrders[] = $workOrder;
+			$repairOrders[] = $repairOrder;
 		}
-		return $workOrders;
+		return $repairOrders;
 	}
 
     /**
@@ -48,13 +62,25 @@ class Facility extends FacilityProperties {
 	 * @param int $facilityID
 	 * @return bool|int false on failure
 	 */
-	public function countWorkOrderInFacility($facilityID) {
-		$sql = "SELECT count(id) workOrderCount FROM ". TB_WORK_ORDER. "
+	public function countRepairOrderInFacility($facilityID) {
+		$sql = "SELECT count(id) repairOrderCount FROM ". TB_WORK_ORDER. "
 				WHERE facility_id={$this->db->sqltext($facilityID)}"; 
 
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$sql .= " AND ( ";
+			foreach ($this->searchCriteria as $repairOrder) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($repairOrder) . "%')";
+			}
+			$sql .= implode(' OR ', $searchSql);
+			$sql .= ") ";
+		}		
 		$this->db->query($sql);
 		if ($this->db->num_rows() > 0) {
-			return (int)$this->db->fetch(0)->workOrderCount;
+			return (int)$this->db->fetch(0)->repairOrderCount;
 		} else {
 			return false;
 		}

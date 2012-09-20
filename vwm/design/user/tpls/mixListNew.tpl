@@ -141,7 +141,7 @@
 		<td class="border_users_b border_users_r" >
 			<div style="width:100%;">
 				{if !$mix->hasChild}
-                    <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}&workOrderId={$mix->wo_id|escape:'url'}" title="Add child job">add</a> &nbsp;
+                    <a href="?action=addItem&category=mix&departmentID={$request.id|escape:'url'}&parentMixID={$mix->mix_id|escape:'url'}&repairOrderId={$mix->wo_id|escape:'url'}" title="Add child job">add</a> &nbsp;
 				{/if}
 				&nbsp;
 			</div>
@@ -156,22 +156,22 @@
 		<td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">
-					{assign var="workOrder" value=$mix->getWorkOrder()}
-                    {$workOrder->description|escape} &nbsp;
+					{assign var="repairOrder" value=$mix->getRepairOrder()}
+                    {$repairOrder->description|escape} &nbsp;
                 </div>
             </a>
         </td>
 		<td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">					
-                    {$workOrder->customer_name|escape} &nbsp;
+                    {$repairOrder->customer_name|escape} &nbsp;
                 </div>
             </a>
         </td>
 		<td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;" align="left">					
-                    {$workOrder->vin|escape} &nbsp;
+                    {$repairOrder->vin|escape} &nbsp;
                 </div>
             </a>
         </td>

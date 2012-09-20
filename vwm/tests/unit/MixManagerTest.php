@@ -70,7 +70,7 @@ class MixManagerTest extends Testing\DbTestCase {
 		$this->assertTrue(count($mixList) == 5);
 		$this->assertTrue($mixList[3] instanceof MixOptimized);
 		
-		$this->assertEquals($mixList[3]->getWorkOrder()->customer_name, "joh smith");
+		$this->assertEquals($mixList[3]->getRepairOrder()->customer_name, "joh smith");
 
 		//	test search criteria
 		$mixManager->searchCriteria[] = 'WO';

@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$workOrder->number|escape}
+                    &nbsp; {$repairOrder->number|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$workOrder->description|escape}
+                    &nbsp; {$repairOrder->description|escape}
                 </div>
             </td>
         </tr>
@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$workOrder->customer_name|escape}
+                    &nbsp; {$repairOrder->customer_name|escape}
                 </div>
             </td>
         </tr>
@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$workOrder->status|escape}
+                    &nbsp; {$repairOrder->status|escape}
                 </div>
             </td>
         </tr>
@@ -62,7 +62,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$workOrder->vin|escape}
+                    &nbsp; {$repairOrder->vin|escape}
                 </div>
             </td>
         </tr>
@@ -76,4 +76,4 @@
     <div align="right">
     </div>    
 </div>            
-{include file="tpls:tpls/workOrderMixList.tpl"}
+{include file="tpls:tpls/repairOrderMixList.tpl"}

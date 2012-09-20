@@ -251,12 +251,12 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			$monthTag->appendChild( $monthNameTag );
 				
 			// get mixes list by work order
-			foreach ($expensesByMonth['data'] as $workOrderKey => $mixesList) {
-				$monthMixListTag = $doc->createElement( "workOrderName" );
+			foreach ($expensesByMonth['data'] as $repairOrderKey => $mixesList) {
+				$monthMixListTag = $doc->createElement( "repairOrderName" );
 				$monthTag->appendChild( $monthMixListTag );
 				$monthMixListAttribute = $doc->createAttribute( "name" );
 				$monthMixListAttribute->appendChild(
-					$doc->createTextNode((string)$workOrderKey)
+					$doc->createTextNode((string)$repairOrderKey)
 				);
 				$monthMixListTag->appendChild( $monthMixListAttribute );
 				$mixCount = 0;	
@@ -397,8 +397,8 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			$res = array();
 			$mixArray = array();
 			$productList = array();
-			$workOrderList = array();
-			$workOrderIdsArray = array();
+			$repairOrderList = array();
+			$repairOrderIdsArray = array();
 			
 			$potentialExpenses = array();
 
@@ -452,8 +452,8 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			
 			// get work order id's array
 			foreach ($results as $result) {
-				if (!in_array($result['woId'], $workOrderIdsArray)) {
-					$workOrderIdsArray[] = $result['woId'];
+				if (!in_array($result['woId'], $repairOrderIdsArray)) {
+					$repairOrderIdsArray[] = $result['woId'];
 				}
 			}
 
@@ -467,15 +467,15 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			}
 	
 			// group mixes by work order		
-			foreach ($workOrderIdsArray as $woId) {
-				$workOrder = new WorkOrder($this->db, $woId);
+			foreach ($repairOrderIdsArray as $woId) {
+				$repairOrder = new RepairOrder($this->db, $woId);
 				foreach ($productList as $mixName => $result) { 
 						if ($result[0]['woId'] == $woId) {
-							$workOrderList[$workOrder->number][$mixName] = $result;
+							$repairOrderList[$repairOrder->number][$mixName] = $result;
 						}
 				}
 			}
-//print_r($workOrderList);	
+//print_r($repairOrderList);	
 			foreach($potentialExpenses as $sum){
 				$total += $sum;
 			}
@@ -484,7 +484,7 @@ class RPotentialFacilityExpenses extends ReportCreator implements iReportCreator
 			$resultByMonth [] = array(
 				//'month' => date("M", strtotime($tmpDate)),
 				'month' => $dateBeginObj->format('F Y'),
-				'data' => $workOrderList,
+				'data' => $repairOrderList,
 				'total' => $total
 			);
 		

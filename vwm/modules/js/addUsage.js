@@ -343,10 +343,10 @@ function initRecycle() {
 		mixObj.selectUnittypeClass = $("#selectUnittypeClass option:selected").val();
 		mixObj.setNotes($("#notes").val());
 
-		mixObj.setIteration($("#workOrderIteration").val());
+		mixObj.setIteration($("#repairOrderIteration").val());
 		mixObj.setParentID($("#mixParentID").val()); 
-		if ($("#workOrderId").val() != '') {
-			mixObj.setWorkOrderId($("#workOrderId").val());
+		if ($("#repairOrderId").val() != '') {
+			mixObj.setRepairOrderId($("#repairOrderId").val());
 		}
 
 		return mixObj;

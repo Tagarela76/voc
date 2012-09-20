@@ -239,7 +239,7 @@ class Validation {
 				}
 				break;
 				
-			case 'workOrder':
+			case 'repairOrder':
 				if ($parrentID != 'none') {
 					$query = "SELECT * FROM " . TB_WORK_ORDER . " WHERE number='" . $itemName . "' and facility_id=" . $parrentID;
 				} else {
@@ -2275,13 +2275,13 @@ class Validation {
 		return $result;
 	}
 	
-	public function validateRegDataWorkOrder(WorkOrder $workOrder) {
+	public function validateRegDataRepairOrder(RepairOrder $repairOrder) {
 
 		$result = array();
 		$result['summary'] = 'true';
 
-		if (isset($workOrder->number)) {
-			if ($workOrder->number == '') {
+		if (isset($repairOrder->number)) {
+			if ($repairOrder->number == '') {
 				$result['number'] = 'failed';
 				$result['summary'] = 'false';
 			} else {

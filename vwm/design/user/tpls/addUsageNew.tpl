@@ -781,9 +781,9 @@ function createSelectUnittypeClass(id) {
     {/if}
 
     <input type='hidden' name='productCount' value='{$productCount}'>
-    <input id='workOrderIteration' type='hidden' name='workOrderIteration' value='{$workOrderIteration}'/>
+    <input id='repairOrderIteration' type='hidden' name='repairOrderIteration' value='{$repairOrderIteration}'/>
     <input id='mixParentID' type='hidden' name='mixParentID' value='{$mixParentID}'/>
-    <input id='workOrderId' type='hidden' name='workOrderId' value='{$workOrderId}'/>
+    <input id='repairOrderId' type='hidden' name='repairOrderId' value='{$repairOrderId}'/>
     <input id='woIteration' type='hidden' name='woIteration' value='{$woIteration}'/>
 
     {if $request.action eq "addItem"}

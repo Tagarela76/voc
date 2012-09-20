@@ -37,32 +37,32 @@
 	$xnyo->filter_post_var("work_order_id", "text");
 	$xnyo->filter_post_var("work_order_vin", "text");
 	
-	$workOrderId = $_POST["work_order_id"]; // could be NULL (add action)
-	if ($workOrderId == '') {
-		$workOrderId = null;
+	$repairOrderId = $_POST["work_order_id"]; // could be NULL (add action)
+	if ($repairOrderId == '') {
+		$repairOrderId = null;
 	}
-	$workOrder = new WorkOrder($db, $workOrderId);	
+	$repairOrder = new RepairOrder($db, $repairOrderId);	
 	// we should save old work order number for use it in mix update
-	$workOrderOldDesc = $workOrder->number;
-	$workOrder->number = $_POST["work_order_number"];
-	$workOrder->facility_id = $_POST["id"];
-	$workOrder->description = $_POST["work_order_description"];
-	$workOrder->customer_name = $_POST["work_order_customer_name"];
-	$workOrder->status = $_POST["work_order_status"];
-	$workOrder->vin = $_POST["work_order_vin"];
+	$repairOrderOldDesc = $repairOrder->number;
+	$repairOrder->number = $_POST["work_order_number"];
+	$repairOrder->facility_id = $_POST["id"];
+	$repairOrder->description = $_POST["work_order_description"];
+	$repairOrder->customer_name = $_POST["work_order_customer_name"];
+	$repairOrder->status = $_POST["work_order_status"];
+	$repairOrder->vin = $_POST["work_order_vin"];
 
 	$validation = new Validation($db);
-	$validStatus = $validation->validateRegDataWorkOrder($workOrder);
+	$validStatus = $validation->validateRegDataRepairOrder($repairOrder);
 
 	if ($action == 'addItem') {
-		if (!$validation->isUniqueName("workOrder", $workOrder->number, $workOrder->facility_id)) {
+		if (!$validation->isUniqueName("repairOrder", $repairOrder->number, $repairOrder->facility_id)) {
 			$validStatus['summary'] = 'false';
 			$validStatus['number'] = 'alredyExist';
 		}
 	}	
 	if ($validStatus['summary'] == 'true') {					
 
-		$workOrderId = $workOrder->save();
+		$repairOrderId = $repairOrder->save();
 		// add empty mix
 		if ($action == 'addItem') {
 			// get current facility departments
@@ -72,7 +72,7 @@
 				// add empty mix for each facility department
 				$mixOptimized = new MixOptimized($db);
 				$mixOptimized->description = $_POST["work_order_number"];
-				$mixOptimized->wo_id = $workOrderId;
+				$mixOptimized->wo_id = $repairOrderId;
 				$mixOptimized->iteration = 0;
 				$mixOptimized->facility_id = $_POST["id"]; 
 				$mixOptimized->department_id = $departmentIds[0];
@@ -82,12 +82,12 @@
 
 		if ($action == 'edit') {
 			// get work order mix id
-			$mixIDs = $workOrder->getMixes(); 
+			$mixIDs = $repairOrder->getMixes();  
 			// now we should update child work order mix (don't touch iteration suffix)
 			foreach ($mixIDs as $mixID) {
 				// add empty mix for each facility department
 				$mixOptimized = new MixOptimized($db, $mixID->mix_id);
-				preg_match("/$workOrderOldDesc(.*)/", $mixOptimized->description, $suffix);  
+				preg_match("/$repairOrderOldDesc(.*)/", $mixOptimized->description, $suffix);  
 				
                 $mixOptimized->description = $_POST["work_order_number"];
                 if(!empty($suffix[1]) ) {

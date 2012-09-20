@@ -2,7 +2,7 @@
 
 use VWM\Framework\Model;
 
-class WorkOrder extends Model {
+class RepairOrder extends Model {
 
 	/**
 	 *
@@ -48,12 +48,12 @@ class WorkOrder extends Model {
 	
 	public $url;
 
-	function __construct(db $db, $workOrderId = null) {
+	function __construct(db $db, $repairOrderId = null) {
 		$this->db = $db;
-		$this->modelName = 'WorkOrder';
+		$this->modelName = 'repairOrder';
 
-		if (isset($workOrderId)) {
-			$this->id = $workOrderId;
+		if (isset($repairOrderId)) {
+			$this->id = $repairOrderId;
 			$this->_load();
 		}
 	}
@@ -62,7 +62,7 @@ class WorkOrder extends Model {
 	 * add work order
 	 * @return int 
 	 */
-	public function addWorkOrder() {
+	public function addRepairOrder() {
 
 		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin) 
 				VALUES ( 
@@ -83,7 +83,7 @@ class WorkOrder extends Model {
 	 * update work order
 	 * @return int 
 	 */
-	public function updateWorkOrder() {
+	public function updateRepairOrder() {
 
 		$query = "UPDATE " . TB_WORK_ORDER . "
 					set number='" . $this->db->sqltext($this->number) . "',
@@ -116,9 +116,9 @@ class WorkOrder extends Model {
 	public function save() {
 
 		if (!isset($this->id)) {
-			$work_order_id = $this->addWorkOrder();
+			$work_order_id = $this->addRepairOrder();
 		} else {
-			$work_order_id = $this->updateWorkOrder();
+			$work_order_id = $this->updateRepairOrder();
 		}
 		return $work_order_id;
 	}
@@ -168,6 +168,53 @@ class WorkOrder extends Model {
 			$mixes[] = $mix;
 		}
 		return $mixes;
+	}
+	
+	public function searchAutocomplete($occurrence) {
+
+		$query = "SELECT number, description, customer_name, vin, LOCATE('".$occurrence."', number) occurrence1, LOCATE('".$occurrence."', description) occurrence2,
+				LOCATE('".$occurrence."', customer_name) occurrence3, LOCATE('".$occurrence."', vin) occurrence4  " .
+				"FROM " . TB_WORK_ORDER . 
+				" WHERE LOCATE('".$occurrence."', number)>0 OR 
+				 LOCATE('".$occurrence."', description)>0 OR 
+				 LOCATE('".$occurrence."', customer_name)>0 OR 
+				 LOCATE('".$occurrence."', vin)>0 
+				 LIMIT ".AUTOCOMPLETE_LIMIT;
+		$this->db->query($query);
+
+		if ($this->db->num_rows() > 0) {
+			$repairOrders = $this->db->fetch_all_array();
+
+			foreach ($repairOrders as $repairOrder) {
+				if($repairOrder['occurrence1'] != 0) {
+					$result = array (
+						"repairOrder"		=>	$repairOrder['number'],
+						"occurrence"	=>	$repairOrder['occurrence1']
+					);
+					$results[] = $result;
+				} elseif ($repairOrder['occurrence2'] != 0) {
+					$result = array (
+						"repairOrder"		=>	$repairOrder['description'],
+						"occurrence"	=>	$repairOrder['occurrence2']
+					);
+					$results[] = $result;
+				} elseif ($repairOrder['occurrence3'] != 0) {
+					$result = array (
+						"repairOrder"		=>	$repairOrder['name'],
+						"occurrence"	=>	$repairOrder['occurrence3']
+					);
+					$results[] = $result;
+				} elseif ($repairOrder['occurrence4'] != 0) {
+					$result = array (
+						"repairOrder"		=>	$repairOrder['vin'],
+						"occurrence"	=>	$repairOrder['occurrence4']
+					);
+					$results[] = $result;
+				}
+			}
+			return (isset($results)) ? $results : false;
+		} else
+			return false;
 	}
 
 }

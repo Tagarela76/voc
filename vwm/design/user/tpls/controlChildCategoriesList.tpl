@@ -67,7 +67,7 @@
                                             		($request.bookmark=="nox" && $request.tab != "burnerRatio") ||
                                             		($request.bookmark=="mix") ||
                                             		($request.bookmark=="logbook") ||
-													($request.bookmark=="workOrder") ||
+													($request.bookmark=="repairOrder") ||
 													($request.bookmark=="pfpTypes") ||
                                                      $permissions.deleteItem && $request.bookmark != "product" && $request.tab != "burnerRatio"}
 								<div class="button_float_left">

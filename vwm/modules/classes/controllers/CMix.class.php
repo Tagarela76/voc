@@ -1721,20 +1721,20 @@ class CMix extends Controller {
 		$data->recycle = $mix->recycle;
 
 		//	do I need to add work order suffix?
-		$workOrderIteration = 0;
+		$repairOrderIteration = 0;
 		$mixParentID = $this->getFromRequest('parentMixID');
 		if($mixParentID) {
 			$parentMix = new MixOptimized($this->db, $mixParentID);
-			$workOrderIteration = $parentMix->iteration + 1;
+			$repairOrderIteration = $parentMix->iteration + 1;
 			$data->description = $parentMix->generateNextIterationDescription();
 		}
 		
 		// this mix was added to WO , add suffix ?
-		$workOrderId = $this->getFromRequest('workOrderId');
+		$repairOrderId = $this->getFromRequest('repairOrderId');
 
-		$this->smarty->assign('workOrderIteration', $workOrderIteration);
+		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
-		$this->smarty->assign('workOrderId', $workOrderId);
+		$this->smarty->assign('repairOrderId', $repairOrderId);
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 	}
@@ -1787,7 +1787,7 @@ class CMix extends Controller {
 		$companyEx = $res['companyEx'];
 		$unitTypeEx = $res['unitTypeEx'];
 
-		$this->smarty->assign('workOrderIteration', $optMix->iteration);
+		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
 		$this->smarty->assign('data', $optMix);

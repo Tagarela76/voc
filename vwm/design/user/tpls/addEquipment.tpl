@@ -586,7 +586,7 @@
 		{*BUTTONS*}	
 		<div align="right" class="margin5">
 			<input type='button' name='cancel' class="button" value='Cancel' 
-				   {if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=department&id={$request.id}&bookmark=equipment'"
+				   {if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=department&id={$request.departmentID}&bookmark=equipment'"
 				   {elseif $request.action eq "edit"} onClick="location.href='?action=browseCategory&category=department&id={$data.department_id}&bookmark=equipment'"
 				   {/if}
 				   >

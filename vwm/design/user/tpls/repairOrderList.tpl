@@ -47,43 +47,43 @@
 		</tr>
 
 {if $childCategoryItems}
-	{foreach from=$childCategoryItems item=workOrder}
+	{foreach from=$childCategoryItems item=repairOrder}
 		<tr class="hov_company" height="10px">
             <td class="border_users_l border_users_b">
-                <input type="checkbox" value="{$workOrder->id}" name="id[]">
+                <input type="checkbox" value="{$repairOrder->id}" name="id[]">
             </td>
             <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$workOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
 					<div style="width:100%;">
-						{$workOrder->number}
+						{$repairOrder->number}
 					</div>
 				</a>
             </td>
             <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$workOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
 					<div style="width:100%;">
-						{$workOrder->description|escape}
+						{$repairOrder->description|escape}
 					</div>
 				</a>
             </td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$workOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
 					<div style="width:100%;">
-						{$workOrder->customer_name|escape}
+						{$repairOrder->customer_name|escape}
 					</div>
 				</a>
 			</td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$workOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
 					<div style="width:100%;">
-						{$workOrder->status|escape}
+						{$repairOrder->status|escape}
 					</div>
 				</a>
 			</td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
-				<a {if $permissions.viewItem}href="{$workOrder->vin}"{/if}>
+				<a {if $permissions.viewItem}href="{$repairOrder->vin}"{/if}>
 					<div style="width:100%;">
-						{$workOrder->vin|escape}
+						{$repairOrder->vin|escape}
 					</div>
 				</a>
 			</td>

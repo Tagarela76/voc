@@ -1,10 +1,10 @@
 <?php
 
-class CWorkOrder extends Controller {
+class CrepairOrder extends Controller {
 
-    function CWorkOrder($smarty, $xnyo, $db, $user, $action) {
+    function CrepairOrder($smarty, $xnyo, $db, $user, $action) {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
-        $this->category = 'WorkOrder';
+        $this->category = 'repairOrder';
         $this->parent_category = 'facility';
     }
 
@@ -18,14 +18,14 @@ class CWorkOrder extends Controller {
 
     private function actionViewDetails() {
 
-        $workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
+        $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
-        $params = array("bookmark" => "workOrder");
+        $params = array("bookmark" => "repairOrder");
 
 		$mixList = array();
         // get child mixes 
         $mixTotalPrice = 0;
-        $mixes = $workOrder->getMixes(); 
+        $mixes = $repairOrder->getMixes(); 
 		foreach ($mixes as $mix) {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
@@ -34,65 +34,70 @@ class CWorkOrder extends Controller {
 		}
    
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
-        $this->setPermissionsNew('viewWorkOrder');
+        $this->setPermissionsNew('viewRepairOrder');
 
-        $this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest('facilityID') . '&bookmark=workOrder');
-        $this->smarty->assign('deleteUrl', '?action=deleteItem&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
-        $this->smarty->assign('editUrl', '?action=edit&category=workOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
+        $this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest('facilityID') . '&bookmark=repairOrder');
+        $this->smarty->assign('deleteUrl', '?action=deleteItem&category=repairOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
+        $this->smarty->assign('editUrl', '?action=edit&category=repairOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('mixList', $mixList);
-		$this->smarty->assign('workOrder', $workOrder);
+		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         //set js scripts
         $jsSources = array('modules/js/checkBoxes.js',
             'modules/js/autocomplete/jquery.autocomplete.js');
         $this->smarty->assign('jsSources', $jsSources);
         //set tpl
-        $this->smarty->assign('tpl', 'tpls/viewWorkOrder.tpl');
+        $this->smarty->assign('tpl', 'tpls/viewRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
 
     /**
-     * bookmarkWorkOrder($vars)
+     * bookmarkRepairOrder($vars)
      * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
      */
-    protected function bookmarkWorkOrder($vars) {
+    protected function bookmarkRepairOrder($vars) {
 
         extract($vars);
         if (is_null($facilityDetails['facility_id'])) {
             throw new Exception('404');
         }
-        $filterStr = $this->filterList('workOrder');
-        
+            
         $facility = new Facility($this->db);
-        
-        $workOrderCount = $facility->countWorkOrderInFacility($facilityDetails['facility_id']);
+        //	set search criteria
+		if (!is_null($this->getFromRequest('q'))) {
+			$facility->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+		}
+
+        $repairOrderCount = $facility->countRepairOrderInFacility($facilityDetails['facility_id']);
         $url = "?".$_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/","", $url);
-        $pagination = new Pagination($workOrderCount);
+        $pagination = new Pagination($repairOrderCount);
 		$pagination->url = $url; 
         $this->smarty->assign('pagination', $pagination);
         
-        $workOrderList = $facility->getWorkOrdersList($facilityDetails['facility_id'],$pagination);
-        if ($workOrderList) {
-            for ($i = 0; $i < count($workOrderList); $i++) {
-                $url = "?action=viewDetails&category=workOrder&id=" . $workOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				
-                $workOrderList[$i]->url = $url;
+        $repairOrderList = $facility->getRepairOrdersList($facilityDetails['facility_id'],$pagination);
+        if ($repairOrderList) {
+            for ($i = 0; $i < count($repairOrderList); $i++) {
+                $url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				
+                $repairOrderList[$i]->url = $url;
             }
         }
 		
-        $this->smarty->assign("childCategoryItems", $workOrderList);
+        $this->smarty->assign("childCategoryItems", $repairOrderList);
 
         //	set js scripts
         $jsSources = array(
             'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-            'modules/js/checkBoxes.js');
+            'modules/js/checkBoxes.js',
+			'modules/js/autocomplete/jquery.autocomplete.js');
         $this->smarty->assign('jsSources', $jsSources);
 
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
         $this->smarty->assign('cssSources', $cssSources);
 
         //	set tpl
-        $this->smarty->assign('tpl', 'tpls/workOrderList.tpl');
+        $this->smarty->assign('tpl', 'tpls/repairOrderList.tpl');
     }
 
     private function actionAddItem() {
@@ -107,7 +112,7 @@ class CWorkOrder extends Controller {
         $request['parent_category'] = 'facility';
         $this->smarty->assign('request', $request);
 
-        $params = array("bookmark" => "workOrder");
+        $params = array("bookmark" => "repairOrder");
 
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
@@ -121,7 +126,7 @@ class CWorkOrder extends Controller {
         $this->smarty->assign('jsSources', $jsSources);
 
         $this->smarty->assign('pleaseWaitReason', "Recalculating mixes at department.");
-        $this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
+        $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
 
@@ -132,27 +137,27 @@ class CWorkOrder extends Controller {
             $req_id = array($req_id);
         $itemForDelete = array();
         if (!is_null($this->getFromRequest('id'))) {
-            foreach ($req_id as $workOrderID) {
+            foreach ($req_id as $repairOrderID) {
                 //	Access control
                 if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
                     throw new Exception('deny');
                 }
-                $workOrder = new WorkOrder($this->db, $workOrderID);
+                $repairOrder = new RepairOrder($this->db, $repairOrderID);
                 $delete = array();
-                $delete["id"] = $workOrder->id;
-                $delete["number"] = $workOrder->number;
-                $delete["description"] = $workOrder->description;
-                $delete["customer_name"] = $workOrder->customer_name;
-                $delete["status"] = $workOrder->status;
-                $delete["facility_id"] = $workOrder->facility_id;
-				$delete["vin"] = $workOrder->vin;
+                $delete["id"] = $repairOrder->id;
+                $delete["number"] = $repairOrder->number;
+                $delete["description"] = $repairOrder->description;
+                $delete["customer_name"] = $repairOrder->customer_name;
+                $delete["status"] = $repairOrder->status;
+                $delete["facility_id"] = $repairOrder->facility_id;
+				$delete["vin"] = $repairOrder->vin;
                 $itemForDelete[] = $delete;
             }
         }
         if (!is_null($this->getFromRequest('facilityID'))) {
-            $this->smarty->assign("cancelUrl", "?action=browseCategory&category=facility&id=" . $this->getFromRequest('facilityID') . "&bookmark=workOrder");
+            $this->smarty->assign("cancelUrl", "?action=browseCategory&category=facility&id=" . $this->getFromRequest('facilityID') . "&bookmark=repairOrder");
             //as ShowAddItem
-            $params = array("bookmark" => "workOrder");
+            $params = array("bookmark" => "repairOrder");
 
             $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
             $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
@@ -166,25 +171,25 @@ class CWorkOrder extends Controller {
 
         foreach ($this->itemID as $ID) {
 
-            $workOrder = new WorkOrder($this->db, $ID);
-            $facilityId = $workOrder->facility_id;
+            $repairOrder = new RepairOrder($this->db, $ID);
+            $facilityId = $repairOrder->facility_id;
             // get work order mix id, we check if work order already has any mixes
             $mixOptimized = new MixOptimized($this->db);
-            $mixIDs = $workOrder->getMixes();
+            $mixIDs = $repairOrder->getMixes();
             if (count($mixIDs) < 2) {
                 // we can delete only empty work order
-                $workOrder->delete();
+                $repairOrder->delete();
                 // delete empty mix
                 $mixOptimized = new MixOptimized($this->db, $woId);
                 $mixOptimized->delete();
             } else {
-                header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=workOrder&notify=49");
+                header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=repairOrder&notify=49");
                 die();
             }
         }
 
         if ($this->successDeleteInventories)
-            header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=workOrder&notify=48");
+            header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=repairOrder&notify=48");
     }
 
     protected function actionEdit() {
@@ -193,14 +198,14 @@ class CWorkOrder extends Controller {
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
         }
-        $workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
-        $this->smarty->assign('data', $workOrder);
+        $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
+        $this->smarty->assign('data', $repairOrder);
 
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
-        $params = array("bookmark" => "workOrder");
+        $params = array("bookmark" => "repairOrder");
 
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
-        $this->setPermissionsNew('viewWorkOrder');
+        $this->setPermissionsNew('viewRepairOrder');
 
         //	set js scripts
         $jsSources = array(
@@ -212,17 +217,17 @@ class CWorkOrder extends Controller {
         );
         $this->smarty->assign('jsSources', $jsSources);
 
-        $this->smarty->assign('tpl', 'tpls/addWorkOrder.tpl');
+        $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
 
 	private function actionCreateLabel() {
 		
-		$workOrder = new WorkOrder($this->db, $this->getFromRequest('id'));
+		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 		$mixList = array();
         // get child mixes 
 		$mixTotalPrice = 0;
-        $mixes = $workOrder->getMixes();
+        $mixes = $repairOrder->getMixes();
 		foreach ($mixes as $mix) {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
@@ -231,10 +236,10 @@ class CWorkOrder extends Controller {
 		}
 
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
-        $this->smarty->assign('workOrder', $workOrder);
+        $this->smarty->assign('repairOrder', $repairOrder);
         $this->smarty->assign('mixList', $mixList);
 
-		$this->smarty->display("tpls/workOrderLabel.tpl");
+		$this->smarty->display("tpls/repairOrderLabel.tpl");
 	}
 
 }

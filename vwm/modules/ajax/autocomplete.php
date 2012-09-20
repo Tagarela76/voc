@@ -157,6 +157,18 @@
 				echo json_encode($response);
 			}
 			break;
+			
+		case "repairOrder": 
+			$repairOrder = new RepairOrder($db);
+			$repairOrderList = $repairOrder->searchAutocomplete($_GET['query']); 
+			if($repairOrderList) {
+				foreach ($repairOrderList as $repairOrderSuggestion) {
+					$suggestions[] = $repairOrderSuggestion['repairOrder'];
+				}
+				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions); 
+				echo json_encode($response);
+			}
+			break;	
 	}
 
 

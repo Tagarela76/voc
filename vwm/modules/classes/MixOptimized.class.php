@@ -78,9 +78,9 @@ class MixOptimized extends Model {
 	
 	
 	/**	 
-	 * @var WorkOrder
+	 * @var RepairOrder
 	 */
-	private $workOrder = false;
+	private $repairOrder = false;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
@@ -287,7 +287,7 @@ class MixOptimized extends Model {
 	 * @param type $mix - not in use???
 	 * @return int|boolean mix id or false on failure
 	 */
-	private function updateMix($isMWS, $mix) {
+	private function updateMix($isMWS, $mix) { 
 		$this->db->beginTransaction();
 
 		//	save to trash_bin
@@ -329,15 +329,20 @@ class MixOptimized extends Model {
 			$this->db->rollbackTransaction();
 			return false;
 		}
+		if (!is_null($deleteProductsQuery)) {
+			if(!$this->db->query($deleteProductsQuery)) {
+				$this->db->rollbackTransaction();
+				return false;
+			}
+		}
+		  
+		if (!is_null($insertProductsQuery)) {
+			if(!$this->db->query($insertProductsQuery)) {
+				$this->db->rollbackTransaction();
+				return false;
+			}
+		}
 		
-		if(!$this->db->query($deleteProductsQuery)) {
-			$this->db->rollbackTransaction();
-			return false;
-		}
-		if(!$this->db->query($insertProductsQuery)) {
-			$this->db->rollbackTransaction();
-			return false;
-		}
 
 		$this->db->commitTransaction();
 		return $this->mix_id;
@@ -625,7 +630,7 @@ class MixOptimized extends Model {
 		$recycle_percent = isset($this->recycle_percent) ? "{$this->db->sqltext($this->recycle_percent)}" : "NULL";
 		$notes = !empty($this->notes) ? "'{$this->db->sqltext($this->notes)}'" : "NULL";
 		$parentID = ($this->parent_id !== null) ? $this->db->sqltext($this->parent_id) : "NULL";
-		$workOrderId = ($this->wo_id !== null) ? $this->db->sqltext($this->wo_id) : "NULL";
+		$repairOrderId = ($this->wo_id !== null) ? $this->db->sqltext($this->wo_id) : "NULL";
 
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, rule_id, " .
@@ -647,7 +652,7 @@ class MixOptimized extends Model {
 						"{$this->db->sqltext($this->iteration)}, " .
 						"{$parentID}, " .
 						" NOW(), " .
-						" {$workOrderId} " .		
+						" {$repairOrderId} " .		
 						") "; 
 
 		return $query;
@@ -1472,24 +1477,24 @@ class MixOptimized extends Model {
 	
 	/**
 	 * Get mix's Work Order
-	 * @return boolean|WorkOrder
+	 * @return boolean|RepairOrder
 	 */
-	public function getWorkOrder() {
+	public function getRepairOrder() {
 		if(!$this->wo_id) {
 			//	this mix does not have a Work Order at all
 			return false;
 		}
 		
-		if(!$this->workOrder) {
-			$this->workOrder = new WorkOrder($this->db, $this->wo_id);			
+		if(!$this->repairOrder) {
+			$this->repairOrder = new RepairOrder($this->db, $this->wo_id);			
 		}
 		
-		return $this->workOrder;
+		return $this->repairOrder;
 	}
 	
 	
-	public function setWorkOrder(WorkOrder $workOrder) {
-		$this->workOrder = $workOrder;
+	public function setRepairOrder(RepairOrder $repairOrder) {
+		$this->repairOrder = $repairOrder;
 	}
 
 }

@@ -49,8 +49,8 @@ function CMix() {
 		this.parentID = parentID;
 	}
 
-	this.setWorkOrderId = function(workOrderId) {
-		this.wo_id = workOrderId;
+	this.setRepairOrderId = function(repairOrderId) {
+		this.wo_id = repairOrderId;
 	}
 	
 	//Convert Wastes to JSON format sting
