@@ -35,14 +35,6 @@ class CProduct extends Controller {
 			throw new Exception('deny');
 		}
 
-
-
-
-		/* 		if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityID')))
-		  {
-		  throw new Exception('deny');
-		  }
-		 */
 		$product = new Product($this->db);
 		$productDetails = $product->getProductDetails($this->getFromRequest("id"));
 		$productDetails['density_unit'] = new Density($this->db, $productDetails['densityUnitID']);
@@ -89,7 +81,7 @@ class CProduct extends Controller {
 		$productLibraryType = new ProductLibraryType($this->db);		
 		$productLibraryTypeID = $productLibraryType->mapping($libraryType);
 		
-		$productCount = $product->getProductCount(0, 'true', $productLibraryTypeID);
+		$productCount = $product->getProductCount(0, $filterStr, $productLibraryTypeID);
 
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);

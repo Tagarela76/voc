@@ -172,13 +172,13 @@ class RepairOrder extends Model {
 	
 	public function searchAutocomplete($occurrence) {
 
-		$query = "SELECT number, description, customer_name, vin, LOCATE('".$occurrence."', number) occurrence1, LOCATE('".$occurrence."', description) occurrence2,
-				LOCATE('".$occurrence."', customer_name) occurrence3, LOCATE('".$occurrence."', vin) occurrence4  " .
+		$query = "SELECT number, description, customer_name, vin, LOCATE('{$this->db->sqltext($occurrence)}', number) occurrence1, LOCATE('{$this->db->sqltext($occurrence)}', description) occurrence2,
+				LOCATE('{$this->db->sqltext($occurrence)}', customer_name) occurrence3, LOCATE('{$this->db->sqltext($occurrence)}', vin) occurrence4  " .
 				"FROM " . TB_WORK_ORDER . 
-				" WHERE LOCATE('".$occurrence."', number)>0 OR 
-				 LOCATE('".$occurrence."', description)>0 OR 
-				 LOCATE('".$occurrence."', customer_name)>0 OR 
-				 LOCATE('".$occurrence."', vin)>0 
+				" WHERE LOCATE('{$this->db->sqltext($occurrence)}', number)>0 OR 
+				 LOCATE('{$this->db->sqltext($occurrence)}', description)>0 OR 
+				 LOCATE('{$this->db->sqltext($occurrence)}', customer_name)>0 OR 
+				 LOCATE('{$this->db->sqltext($occurrence)}', vin)>0 
 				 LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
 

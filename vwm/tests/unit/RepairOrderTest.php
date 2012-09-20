@@ -10,7 +10,7 @@ class RepairOrderTest extends Testing\DbTestCase {
 
 	public function testRepairOrder() {
 		$repairOrder = new RepairOrder($this->db, 'test1');
-		$this->assertTrue($repairOrder instanceof repairOrder);
+		$this->assertTrue($repairOrder instanceof RepairOrder);
 		$this->assertTrue(!is_null($repairOrder));
 	}
 	
