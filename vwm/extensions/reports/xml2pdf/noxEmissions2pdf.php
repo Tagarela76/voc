@@ -170,10 +170,10 @@ class XML2PDF extends PDF_MC_Table {
 					$this->SetTopMargin($attribs["TOPMARGIN"]);
 				}
 				if (!empty($attribs["LEFTMARGIN"])) {
-					$this->SetTopMargin($attribs["LEFTMARGIN"]);
+					$this->SetLeftMargin($attribs["LEFTMARGIN"]);
 				}
 				if (!empty($attribs["RIGHTMARGIN"])) {
-					$this->SetTopMargin($attribs["RIGHTMARGIN"]);
+					$this->SetRightMargin($attribs["RIGHTMARGIN"]);
 				}
 				$this->SetAutoPageBreak(true, 25);
 				break;
@@ -256,7 +256,7 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 		
 			case "DEPARTMENT":								
-				$this->widths = array(75, 45, 45, 45, 45, 30);
+				$this->widths = array(55, 45, 45, 45, 45, 20);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C', 'C', 'C', 'C');
 				$this->SetAligns($this->aligns);
