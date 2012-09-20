@@ -160,7 +160,8 @@
 			
 		case "repairOrder": 
 			$repairOrder = new RepairOrder($db);
-			$repairOrderList = $repairOrder->searchAutocomplete($_GET['query']); 
+			$facilityId = $_GET["facilityID"];
+			$repairOrderList = $repairOrder->searchAutocomplete($_GET['query'], $facilityId); 
 			if($repairOrderList) {
 				foreach ($repairOrderList as $repairOrderSuggestion) {
 					$suggestions[] = $repairOrderSuggestion['repairOrder'];

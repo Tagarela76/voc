@@ -170,12 +170,12 @@ class RepairOrder extends Model {
 		return $mixes;
 	}
 	
-	public function searchAutocomplete($occurrence) {
+	public function searchAutocomplete($occurrence, $facilityId) {
 
 		$query = "SELECT number, description, customer_name, vin, LOCATE('{$this->db->sqltext($occurrence)}', number) occurrence1, LOCATE('{$this->db->sqltext($occurrence)}', description) occurrence2,
 				LOCATE('{$this->db->sqltext($occurrence)}', customer_name) occurrence3, LOCATE('{$this->db->sqltext($occurrence)}', vin) occurrence4  " .
 				"FROM " . TB_WORK_ORDER . 
-				" WHERE LOCATE('{$this->db->sqltext($occurrence)}', number)>0 OR 
+				" WHERE facility_id={$this->db->sqltext($facilityId)} AND LOCATE('{$this->db->sqltext($occurrence)}', number)>0 OR 
 				 LOCATE('{$this->db->sqltext($occurrence)}', description)>0 OR 
 				 LOCATE('{$this->db->sqltext($occurrence)}', customer_name)>0 OR 
 				 LOCATE('{$this->db->sqltext($occurrence)}', vin)>0 
@@ -200,7 +200,7 @@ class RepairOrder extends Model {
 					$results[] = $result;
 				} elseif ($repairOrder['occurrence3'] != 0) {
 					$result = array (
-						"repairOrder"		=>	$repairOrder['name'],
+						"repairOrder"		=>	$repairOrder['customer_name'],
 						"occurrence"	=>	$repairOrder['occurrence3']
 					);
 					$results[] = $result;
