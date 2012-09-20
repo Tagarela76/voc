@@ -435,6 +435,10 @@ class Sort {
     			break;
     			case 14:$subQuery.=" btu DESC";
     			break;
+				case 15:$subQuery.=" end_time ASC";
+    			break;
+    			case 16:$subQuery.=" end_time DESC";
+    			break;
  
     			default:$subQuery="";
     			break;  

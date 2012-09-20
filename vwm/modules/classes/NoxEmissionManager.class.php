@@ -45,7 +45,7 @@ class NoxEmissionManager {
 	}
 
 	public function getNoxListByDepartment($departmentID, $sortStr = null, $pagination = null) {
-		$query = "SELECT * FROM nox WHERE department_id = {$departmentID} ";
+		$query = "SELECT * FROM nox WHERE department_id = {$this->db->sqltext($departmentID)} ";
 		if (isset($sortStr)) {
 			$query .= $sortStr;
 		}
@@ -67,7 +67,7 @@ class NoxEmissionManager {
 		$query = "SELECT nox.*
 					FROM nox, department d
 					WHERE d.department_id = nox.department_id
-					AND d.facility_id = " . mysql_escape_string($facilityID);
+					AND d.facility_id = {$this->db->sqltext($facilityID)}";
 
 		if (isset($sortStr)) {
 			$query .= $sortStr;
