@@ -281,7 +281,7 @@ class CNox extends Controller {
 			$this->bookmarkDburnerRatio($vars);
 		} else {
 			$noxList = false;
-			$sortStr = $this->sortList('nox', 3);
+			$sortStr = $this->sortList('nox', 16);
 
 			$noxManager = new NoxEmissionManager($this->db);
 			$department = new Department($this->db);
