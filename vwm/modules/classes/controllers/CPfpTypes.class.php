@@ -115,7 +115,9 @@ class CPfpTypes extends Controller {
     
     private function actionViewDetails() {
 
-		$company = new Company($this->db);
+		$request = $this->getFromRequest();
+		$this->smarty->assign('request', $request);
+		
 		$facility = new Facility($this->db);
 		$pfpTypes = new PfpTypes($this->db, $this->getFromRequest('id')); 
 		$url = "?".$_SERVER["QUERY_STRING"];
@@ -134,11 +136,21 @@ class CPfpTypes extends Controller {
 		if ($isAllPFP) {
 			// we show an all pfp's list
 			$pfp = new PFPManager($this->db);
+			//	set search criteria
+			if (!is_null($this->getFromRequest('q'))) {
+				$pfp->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+			}
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'));
 			$pagination = new Pagination(count($pfps));
 			$pagination->url = $url;
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'), $pagination);			
 		} else {   
+			//	set search criteria
+			if (!is_null($this->getFromRequest('q'))) {
+				$pfpTypes->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
+			}
 			$pfpProducts = $pfpTypes->getPfpProducts();
 
 			$url = "?".$_SERVER["QUERY_STRING"];

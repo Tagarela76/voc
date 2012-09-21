@@ -675,16 +675,31 @@ class PFPManager {
 	}
 
 
-	public function searchAutocomplete($occurrence) {
-		$occurrence = mysql_escape_string($occurrence);
+	public function searchAutocomplete($occurrence, $companyId = null, $pfpTypeId = null) {
+		$occurrence = $this->db->sqltext($occurrence);
 
-		$query = "SELECT pfp.description, p.name, LOCATE('".$occurrence."', pfp.description) occurrence1, LOCATE('".$occurrence."', p.name) occurrence2  " .
-				"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
-				"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
-					"LOCATE('".$occurrence."', pfp.description)>0 OR " .
-					"LOCATE('".$occurrence."', p.name)>0 " .
-				")" .
-				"LIMIT ".AUTOCOMPLETE_LIMIT;
+		if (!is_null($companyId)) {
+			$query = "SELECT pfp.description, LOCATE('".$occurrence."', pfp.description) occurrence1  " .
+				" FROM " . TB_PFP . " pfp ". 
+				"JOIN " . TB_PFP2COMPANY . " pfp2c ON pfp.id = pfp2c.pfp_id " .
+				"LEFT JOIN " . TB_PFP2PFP_TYPES . " pfp2t ON pfp.id = pfp2t.pfp_id " .
+				"WHERE pfp2c.is_available = 1 " .
+				"AND pfp2c.company_id = {$this->db->sqltext($companyId)}
+				 AND (LOCATE('".$occurrence."', pfp.description)>0)";
+				if (!is_null($pfpTypeId)) {
+					$query .= " AND pfp2t.pfp_type_id = {$this->db->sqltext($pfpTypeId)}";
+				}		
+				$query .= " LIMIT ".AUTOCOMPLETE_LIMIT;
+		} else {
+			$query = "SELECT pfp.description, p.name, LOCATE('".$occurrence."', pfp.description) occurrence1, LOCATE('".$occurrence."', p.name) occurrence2  " .
+					"FROM ".TB_PFP." pfp, ".TB_PRODUCT." p, ".TB_PFP2PRODUCT." pfp2p " .
+					"WHERE p.product_id = pfp2p.product_id AND pfp2p.preformulated_products_id = pfp.id AND (" .
+						"LOCATE('".$occurrence."', pfp.description)>0 OR " .
+						"LOCATE('".$occurrence."', p.name)>0 " .
+					")" .
+					" LIMIT ".AUTOCOMPLETE_LIMIT;
+		}
+
 		$this->db->query($query);
 
 		if ($this->db->num_rows() > 0) {
@@ -868,12 +883,15 @@ class PFPManager {
 									"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
 									"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($pfpTypeID)})";
 			
-		/*$query = "SELECT * FROM " . TB_PFP . " pfp" . 
-				 " LEFT JOIN " . TB_PFP2COMPANY . " pfpc" . 
-				 " ON pfp.id = pfpc.pfp_id 
-				  LEFT JOIN " . TB_COMPANY . " c" .
-				 " ON c.company_id = pfpc.company_id 
-				  WHERE (type_id = 'null' OR type_id IS NULL) AND pfpc.is_available = 1 AND c.company_id = {$this->db->sqltext($companyId)}";*/
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= " AND ( ";
+			foreach ($this->searchCriteria as $pfp) {
+				$searchSql[] = " description LIKE ('%" . $this->db->sqltext($pfp) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
                  
         if (isset($pagination)) {
 			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";

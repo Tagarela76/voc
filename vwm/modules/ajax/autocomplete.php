@@ -25,8 +25,10 @@
 	$xnyo->filter_get_var('category', 'text');
 	$xnyo->filter_get_var('field', 'text');
     $xnyo->filter_get_var('subBookmark', 'text');
+	$xnyo->filter_get_var('id', 'text');
+    $xnyo->filter_get_var('pfpTypes', 'text');
 
-	$request = $_GET;
+	$request = $_GET; 
 	switch ($request['category']) {
 		case "mix":
 			$mixObj = new Mix($db);
@@ -145,7 +147,7 @@
 			}
 			break;
 
-
+/*
 		case "pfpLibrary":
 			$pfpManager = new PFPManager($db);
 			$pfpList = $pfpManager->searchAutocomplete($_GET['query']);
@@ -157,7 +159,7 @@
 				echo json_encode($response);
 			}
 			break;
-			
+*/			
 		case "repairOrder": 
 			$repairOrder = new RepairOrder($db);
 			$facilityId = $_GET["facilityID"];
@@ -170,11 +172,26 @@
 				echo json_encode($response);
 			}
 			break;	
+		
+		case "pfpLibrary":
+		case "pfpTypes": 
+			$pfpManager = new PFPManager($db);
+			$facility = new Facility($db);
+			$facilityId = $_GET["facilityID"];
+			$facilityDet = $facility->getFacilityDetails($facilityId);
+			$companyId = $facilityDet["company_id"]; 
+			if ($_GET["pfpTypes"] == "group") {
+				$pfpTypeId = $_GET["id"];
+			}
+			$pfpList = $pfpManager->searchAutocomplete($_GET['query'], $companyId, $pfpTypeId);
+			if($pfpList) {
+				foreach ($pfpList as $pfpSuggestion) {
+					$suggestions[] = $pfpSuggestion['pfp'];
+				}
+				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+				echo json_encode($response);
+			}
+			break;		
 	}
-
-
-
-
-
 
 ?>

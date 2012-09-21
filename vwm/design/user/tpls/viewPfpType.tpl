@@ -45,19 +45,43 @@
     </tr>
 </table>
 <br /><br /><br />
+<div style="text-align: center;">
+	{*SEARCH*}
+		<link href="modules/js/autocomplete/styles.css" rel="stylesheet" type="text/css"/>
+		{literal}
+			<script>
+				var options, a;
+				jQuery(function(){
+					options = { serviceUrl:'modules/ajax/autocomplete.php',
+						minChars:2,
+						delimiter: /(,|;)\s*/,
+						params: { {/literal}
+						facilityID :'{$request.facilityID}{literal}',
+						id:'{/literal}{$request.id}{literal}',
+						category:'{/literal}{$request.category}{literal}',	
+						pfpTypes:'{/literal}{$request.pfpGroup}{literal}'},
+						deferRequestBy:300
+					};
+					a = $('#search').autocomplete(options);
+				});
+			</script>
+		{/literal}
+		{include file="tpls:tpls/search.tpl"}
+{*/SEARCH*}
+</div>
+
 {if $isAllPFP}
 	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type('assign')"> 
 {else}
 	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Unassign" onclick="assignPFP2Type('unassign')">
 {/if}	
- 
 <div class="link_bookmark" style="float:right;">
 	{if $isAllPFP}
 		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group"> Group </a> <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all" class="active_link"> All </a>
 	{else}
 		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group" class="active_link"> Group </a>  <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all"> All </a>
 	{/if}	
-	 </div>
+</div>
     <input type="hidden" id="pfptypeID" name="pfptypeID" value="{$pfpTypes->id}" />
     <input type="hidden" id="facilityID" name="facilityID" value="{$smarty.request.facilityID}" />
 {*PAGINATION*}

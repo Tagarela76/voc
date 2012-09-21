@@ -26,7 +26,8 @@ class PfpTypes {
 	 */
 	private $db;
 
-
+	public $searchCriteria = array();
+	
     const PFP_TYPES_LIMIT = 10;
     
 	function __construct(db $db, $pfpTypeId = null) {
@@ -153,9 +154,19 @@ class PfpTypes {
 		$query = "SELECT * FROM ".TB_PFP. " pfp " .
 				"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
 				"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($this->id)}";
-				                
+				
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= " AND ( ";
+			foreach ($this->searchCriteria as $pfp) {
+				$searchSql[] = " pfp.description LIKE ('%" . $this->db->sqltext($pfp) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}	
+	
         if (isset($pagination)) {
-			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}    
         
 		$this->db->query($query);
