@@ -154,7 +154,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		
 		$pageLeftMargin = $doc->createAttribute("leftmargin");
 		$pageLeftMargin->appendChild(
-			$doc->createTextNode("20")
+			$doc->createTextNode("25")
 		);
 		$page->appendChild($pageLeftMargin);
 		

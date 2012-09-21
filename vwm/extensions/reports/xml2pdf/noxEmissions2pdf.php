@@ -256,7 +256,7 @@ class XML2PDF extends PDF_MC_Table {
 				break;
 		
 			case "DEPARTMENT":								
-				$this->widths = array(55, 45, 45, 45, 45, 20);
+				$this->widths = array(55, 45, 40, 45, 45, 20);
 				$this->SetWidths($this->widths);
 				$this->aligns = array('C', 'C', 'C', 'C', 'C', 'C');
 				$this->SetAligns($this->aligns);
@@ -449,7 +449,7 @@ class XML2PDF extends PDF_MC_Table {
 
 				$this->SetFont('Arial', 'B', 10);
 				$this->Cell(20, 10, "Report by:", 0, 0, 'R');
-				$this->Line(200, 36, 250, 36);
+				$this->Line(215, 36, 250, 36);
 				$this->Ln(5);
 			} else {
 				$this->Cell(100, 10, "Facility Name:", 0, 0, 'R');
@@ -458,7 +458,7 @@ class XML2PDF extends PDF_MC_Table {
 
 				$this->SetFont('Arial', 'B', 10);
 				$this->Cell(20, 10, "Report by:", 0, 0, 'R');
-				$this->Line(200, 36, 250, 36);
+				$this->Line(215, 36, 250, 36);
 				$this->Ln(5);
 
 				$this->SetFont('Arial', 'B', 10);
@@ -479,7 +479,7 @@ class XML2PDF extends PDF_MC_Table {
 			if ($this->header['CATEGORY'] != "Department") {
 				$this->SetFont('Arial', 'B', 10);
 				$this->Cell(20, 10, "Signature:", 0, 0, 'R');
-				$this->Line(200, 41, 250, 41);
+				$this->Line(215, 41, 250, 41);
 				$this->Ln(5);
 			} else {
 				$this->SetFont('Arial', 'B', 10);
