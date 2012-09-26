@@ -323,6 +323,8 @@ class validateCSV {
 						case "GALLON": 
 						case "gallon": 	
 						case "gallons":
+						case "GAL":	
+						case "gal":	
 							$unitType = "gal";
 							break;
 						case "PINT": 
@@ -733,7 +735,7 @@ class validateCSV {
 		if ($data[39] != "") {
 			// isn't empty
 			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
-					$data[39] != "gallon" && $data[39] != "GALLONS" && $data[39] != "gallons" 
+					$data[39] != "gallon" && $data[39] != "GALLONS" && $data[39] != "gallons" && $data[39] != "GAL" && $data[39] != "gal"
 					&& $data[39] != "PINT" && $data[39] != "pint" 
 					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg" 
 					&& $data[39] != "ML" && $data[39] != "ml" && $data[39] != "GRAMS" && $data[39] != "grams" && $data[39] != "OUNCES" && $data[39] != "ounces"
