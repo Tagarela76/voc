@@ -1,3 +1,7 @@
-ALTER TABLE  `burner` CHANGE  `serial`  `serial` VARCHAR( 200 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL
-
-ALTER TABLE  `nox` CHANGE  `note`  `note` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL
+INSERT INTO  `limites` (
+`limit_id` ,
+`limit_name`
+)
+VALUES (
+NULL ,  'Bussiness licence'
+);
