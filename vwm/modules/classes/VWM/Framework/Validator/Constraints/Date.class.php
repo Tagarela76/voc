@@ -5,6 +5,8 @@ namespace VWM\Framework\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
+use VWM\Framework\Utils\DateTime;
+
 /**
  * Custom validator for VOC WEB MANAGER dates
  * 
@@ -25,7 +27,7 @@ class DateValidator extends ConstraintValidator {
 	 */
 	public function isValid($value, Constraint $constraint) {		
 		$format = \VOCApp::get_instance()->getDateFormat();
-		if(!\DateTime::createFromFormat($format, $value)) {
+		if(!DateTime::createFromFormat($format, $value)) {
 			$this->setMessage($constraint->message, 
 					array('%dateformat%'=>$format));
 			
