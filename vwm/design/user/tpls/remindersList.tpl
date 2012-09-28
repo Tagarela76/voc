@@ -5,8 +5,8 @@
     {if $color eq "orange"}
 		{include file="tpls:tpls/notify/orangeNotify.tpl" text=$message}
     {/if}
-    {if $color eq "blue"}
-		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
+    {if $color eq "green"}
+		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
     {/if}
 
 	<input type='hidden' id='sort'>
@@ -14,17 +14,17 @@
     {include file="tpls:tpls/pagination.tpl"}
     {*/PAGINATION*}
     <table class="users" width="100%" cellspacing="0" cellpadding="0" bgcolor="#EFEFEF">
-        <tr class="users_header_blue">
+        <tr class="users_header_green">
             <td width="60">
-                <div class="users_header_blue_l"><div><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></div></div>
+                <div class="users_header_green_l"><div><span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span></div></div>
             </td>
 			<td>
-				<div class="users_header_blue">
+				<div class="users_header_green">
 					Name
 				</div>
 			</td>
 			<td>
-				<div class="users_header_blue_r">
+				<div class="users_header_green_r">
 					<div>Date</div>
 				</div>
 			</td>

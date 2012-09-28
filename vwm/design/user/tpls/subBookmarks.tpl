@@ -68,3 +68,9 @@
 	{include file="tpls:tpls/subBookmarkNoxFacLevel.tpl"}
 {/if}
 {*NOX*}
+
+{*DOCS*}
+{if $request.bookmark == 'docs' || $request.bookmark == "reminders"} 
+	{include file="tpls:tpls/subBookmarkDocuments.tpl"}
+{/if}
+{*DOCS*}
