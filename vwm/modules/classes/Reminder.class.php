@@ -172,28 +172,40 @@ class Reminder extends Model {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return array
+	 */
 	public function getUsers() {
 		return $this->users;
 	}
+	
+	/**
+	 * 
+	 * @param type array
+	 */
+	public function setUsers($users) {
+		$this->users = $users;
+	}
 
+	/**
+	 * set user to remind
+	 * @param type int
+	 */
 	public function setRemind2User($userId) { 
 		
-        $sql = "SELECT * FROM " . TB_REMIND2USER . "
-				 WHERE user_id={$this->db->sqltext($userId)}
-                  AND reminders_id={$this->db->sqltext($this->id)}";
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-            $query = "INSERT INTO " . TB_REMIND2USER . "(user_id, reminders_id) 
-                    VALUES ({$this->db->sqltext($userId)}, {$this->db->sqltext($this->id)})";
-            $this->db->query($query);
-        }       
+		$query = "INSERT INTO " . TB_REMIND2USER . "(user_id, reminders_id) 
+				VALUES ({$this->db->sqltext($userId)}, {$this->db->sqltext($this->id)})";
+		$this->db->query($query);      
 	}
     
-    public function unSetRemind2User($userId) {
+	/**
+	 * unset all users from remind
+	 */
+    public function unSetRemind2User() {
 
 		$sql = "DELETE FROM " . TB_REMIND2USER . "
-				 WHERE user_id={$this->db->sqltext($userId)}
-                  AND reminders_id={$this->db->sqltext($this->id)}";
+				 WHERE reminders_id={$this->db->sqltext($this->id)}";
 		$this->db->query($sql);
 	}
 	
@@ -213,6 +225,11 @@ class Reminder extends Model {
 			$this->email->sendMail($from, $to, $theme, $message);
 		}
     }
+	
+	public function isAtLeastOneUserSelect() {
+
+		return (count($this->users) != 0) ? true : false;
+	}
 }
 
 ?>

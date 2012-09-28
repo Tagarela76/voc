@@ -1,4 +1,12 @@
-
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global settings object defined at settings.js
+		settings.facilityId = {/literal} {$data->facility_id} {literal};
+		settings.remindId = {/literal} {$data->id} {literal};
+	});
+</script>
+{/literal}
 <div id="notifyContainer">
 	{if $color eq "green"}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
@@ -41,7 +49,7 @@
 			</tr>
 
 			<tr>
-				<tr>
+			<tr>
 				<td class="border_users_l border_users_b" width="15%" height="20">
 					Date
 				</td>
@@ -54,6 +62,24 @@
 							{*/ERROR*}						    
 							{/if}
 						{/foreach}	
+				</td>
+			</tr>
+			<tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Users
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+						<div id="usersList">{$usersList|escape} </div>
+						<a href="#" onclick="settings.manageReminders.openDialog();">edit</a>
+						{foreach from=$violationList item="violation"}
+							{if $violation->getPropertyPath() eq 'atLeastOneUserSelect'}							
+							{*ERROR*}					
+							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+							{*/ERROR*}						    
+							{/if}
+						{/foreach}
+					</div>												
 				</td>
 			</tr>
 			<tr>
@@ -77,7 +103,7 @@
 
 
 		{*HIDDEN*}
-		<input type='hidden' name='action' value='{$request.action}'>	
+		<input type='hidden' name='action' id='action' value='{$request.action}'>	
 		{if $request.action eq "edit"}
 			<input type='hidden' id='id' name='id' value='{$data->id}'>
 		{/if}
@@ -85,7 +111,7 @@
 
 </form>
 </div>
-
+<div id="setRemind2UserContainer" title="set remind to user" style="display:none;">Loading ...</div>	
 {literal}
 	<script type="text/javascript">
 		$(document).ready(function(){      

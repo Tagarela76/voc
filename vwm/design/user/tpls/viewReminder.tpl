@@ -1,12 +1,4 @@
-{literal}
-<script type="text/javascript">
-	$(function() {
-		//	global settings object defined at settings.js
-		settings.facilityId = {/literal} {$reminder->facility_id} {literal};
-		settings.remindId = {/literal} {$reminder->id} {literal};
-	});
-</script>
-{/literal}
+
 {if $color eq "green"}
 {include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
@@ -45,6 +37,16 @@
                 </div>
             </td>
         </tr>
+		<tr>
+            <td class="border_users_l border_users_b" height="20">
+                Users:
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" id="usersList">
+                    &nbsp; {$usersList|escape}
+                </div>
+            </td>
+        </tr>
         <tr>
             <td height="20" class="users_u_bottom">
             </td>
@@ -52,17 +54,6 @@
             </td>
         </tr>
     </table>
-	<br />
-	<div style="font-size: 14px;" id="usersList">
-		{if $usersList} 
-			Users: {$usersList}
-		{/if}	
-	</div>
-	<br />
-	<div>
-		<input type="button" class="button" value="Set" name="setRemind2User" onclick="settings.manageReminders.openDialog();" />
-	</div>
     <div align="right">
     </div>    
 </div> 
-<div id="setRemind2UserContainer" title="set remind to user" style="display:none;">Loading ...</div>	

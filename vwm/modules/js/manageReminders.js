@@ -53,23 +53,18 @@ function manageReminders() {
 	
 	this.set = function() {
 		var that = this;
-		var checkboxes = $("#"+that.divUsersListId).find("input[type='checkbox']");
+		var checkboxes = $("#"+that.divId).find("input[type='checkbox']"); 
 		var rowsToSet = new Array();
-        var rowsToUnSet = new Array();
-		var remindId = $('#remindId').val();
-		
+	
 		checkboxes.each(function(i){
 			var id = this.value;
 			if(this.checked) {
 				rowsToSet.push(id);
-			} else {
-                rowsToUnSet.push(id);
-            }
-
+			}
 		});
 		$.ajax({
-			url: "?action=manageRemindToUser&category=reminder",
-			data: {rowsToSet: rowsToSet, rowsToUnSet: rowsToUnSet, remindId: remindId},
+			url: "?action=setRemindToUser&category=reminder",
+			data: {rowsToSet: rowsToSet},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
