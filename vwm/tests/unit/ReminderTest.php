@@ -99,9 +99,9 @@ class ReminderTest extends Testing\DbTestCase {
         $users = $reminder->getUsers();
         $this->assertTrue(count($users) == 2);
         
-        $reminder->setUnRemind2User('1');   
+        $reminder->unSetRemind2User();   
         $users = $reminder->getUsers();
-        $this->assertTrue(count($users) == 1);
+        $this->assertTrue(count($users) == 0);
 	}
 	
 	public function testGetReminders() {
