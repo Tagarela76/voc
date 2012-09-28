@@ -148,7 +148,7 @@ class Reminders extends Model {
 				 WHERE name = '{$this->db->sqltext($this->name)}' " .
 				"AND facility_id = {$this->db->sqltext($this->facility_id)}";
 		$this->db->query($sql);
-		return ($this->db->num_rows() == 0 || isset($this->id)) ? true : false;
+		return ($this->db->num_rows() == 0) ? true : false;
 	}
 	
 	/**

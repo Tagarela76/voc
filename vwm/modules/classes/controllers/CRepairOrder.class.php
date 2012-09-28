@@ -1,8 +1,8 @@
 <?php
 
-class CrepairOrder extends Controller {
+class CRepairOrder extends Controller {
 
-    function CrepairOrder($smarty, $xnyo, $db, $user, $action) {
+    function CRepairOrder($smarty, $xnyo, $db, $user, $action) {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
         $this->category = 'repairOrder';
         $this->parent_category = 'facility';
@@ -125,7 +125,7 @@ class CrepairOrder extends Controller {
         );
         $this->smarty->assign('jsSources', $jsSources);
 
-        $this->smarty->assign('pleaseWaitReason', "Recalculating mixes at department.");
+        $this->smarty->assign('pleaseWaitReason', "Recalculating repair orders at facility.");
         $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }

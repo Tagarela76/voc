@@ -1,7 +1,7 @@
 Reminders:
   getters:
     uniqueName:
-      - "True": {message: "Name should be unique"}
+      - "True": {message: "Name should be unique", groups: [add]}
   properties:
     name:
       - NotBlank: ~

@@ -93,6 +93,7 @@ class CReminders extends Controller {
 			$reminders->name = $post['name'];
 			$reminders->date = new DateTime($post['date']);
 			$reminders->facility_id = $facilityID; 
+			$reminders->setValidationGroup("add");
 			$violationList = $reminders->validate(); 
 			if(count($violationList) == 0) {		
 				$dataChain = new TypeChain($post['date'], 'date', $this->db, $companyID, 'company'); 

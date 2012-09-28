@@ -12,6 +12,8 @@ abstract class Model {
 	protected $db;
 
 	protected $modelName = "";
+	
+	protected $validationGroup = "Default";
 
 	/** 	 
 	 * @var \Symfony\Component\Validator\Validator;
@@ -73,7 +75,7 @@ abstract class Model {
 		if (!$modelName) {
 			$modelName = $this->modelName;
 		}
-		return $this->getValidator($modelName)->validate($this);
+		return $this->getValidator($modelName)->validate($this, array($this->validationGroup));
 	}
 	
 	
@@ -89,6 +91,14 @@ abstract class Model {
 				$this->errors[] = $e->getMessage();
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param type string
+	 */
+	public function setValidationGroup($validationGroup) {
+		$this->validationGroup = $validationGroup;
 	}
 
 }
