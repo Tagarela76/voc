@@ -70,7 +70,11 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style="float: left;">	
-						<div id="usersList">{$usersList|escape} </div>
+						<div id="usersList">{$usersList|escape} 
+							{foreach from=$user_id item="user"}
+								<input type='hidden' name='user_id[]' value="{$user}" />
+							{/foreach}	
+						</div>
 						<a href="#" onclick="settings.manageReminders.openDialog();">edit</a>
 						{foreach from=$violationList item="violation"}
 							{if $violation->getPropertyPath() eq 'atLeastOneUserSelect'}							

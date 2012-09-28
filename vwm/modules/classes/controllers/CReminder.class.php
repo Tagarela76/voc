@@ -81,11 +81,14 @@ class CReminder extends Controller {
 		$facilityId = $request['facilityID'];
 		$usersList = $user->getUserListByFacility($facilityId);
 		$usersName = array();
+		$user_id = array();
 		foreach ($usersList as $user) {
 			$usersName[] = $user["username"];
-		}
+			$user_id[] = $user["user_id"];
+		} 
 		$usersList = implode(",", $usersName);
 		$this->smarty->assign('usersList', $usersList);
+		$this->smarty->assign('user_id', $user_id);
 		
 		if (count($post) > 0) {
 			$user = new User($this->db);
@@ -126,11 +129,14 @@ class CReminder extends Controller {
 				$this->smarty->assign("notify", $notify);						
 				$this->smarty->assign('violationList', $violationList);
 				$usersName = array();
+				$user_id = array();
 				foreach ($reminder->users as $user) {
 					$usersName[] = $user["username"];
+					$user_id[] = $user["user_id"];
 				}
-				$usersList = implode(",", $usersName);			
+				$usersList = implode(",", $usersName);	
 				$this->smarty->assign('usersList', $usersList); 
+				$this->smarty->assign('user_id', $user_id); 
 				$this->smarty->assign('data', $post);
 			}																	
 		}
@@ -309,13 +315,14 @@ class CReminder extends Controller {
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);						
 				$this->smarty->assign('violationList', $violationList);
-				
+				$user_id = array();
 				foreach ($reminder->users as $user) {
 					$usersName[] = $user["username"];
+					$user_id[] = $user["user_id"];
 				}
 				$usersList = implode(",", $usersName);
 				$this->smarty->assign('usersList', $usersList);
-				
+				$this->smarty->assign('user_id', $user_id);
 				$this->smarty->assign('data', $post);
 			}																	
 		}
@@ -349,11 +356,14 @@ class CReminder extends Controller {
 		
 		$usersList = $reminder->getUsers();
 		$usersName = array();
+		$user_id = array();
 		foreach ($usersList as $user) {
 			$usersName[] = $user["username"];
+			$user_id[] = $user["user_id"];
 		}
 		$usersList = implode(",", $usersName);
 		$this->smarty->assign('usersList', $usersList);
+		$this->smarty->assign('user_id', $user_id);
 		$this->smarty->assign('data', $reminder);
 		$this->smarty->assign('tpl', 'tpls/addReminder.tpl');
 		$this->smarty->display("tpls:index.tpl");
