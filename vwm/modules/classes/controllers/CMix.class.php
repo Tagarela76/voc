@@ -10,14 +10,7 @@ class CMix extends Controller {
 		$this->parent_category = 'department';
 	}
 
-	function runAction() {
-		$this->runCommon();
-		$functionName = 'action' . ucfirst($this->action);
-		if (method_exists($this, $functionName))
-			$this->$functionName();
-	}
-
-	private function actionConfirmDelete() {
+	protected function actionConfirmDelete() {
 		foreach ($this->itemID as $ID) {
 			$mix = new MixOptimized($this->db, $ID);
 			$mix->delete();
@@ -25,7 +18,7 @@ class CMix extends Controller {
 		header("Location: ?action=browseCategory&category=department&id=" . $mix->department_id . "&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));
 	}
 
-	private function actionDeleteItem() {
+	protected function actionDeleteItem() {
 		$req_id = $this->getFromRequest('id');
 		if (!is_array($req_id))
 			$req_id = array($req_id);
@@ -49,7 +42,7 @@ class CMix extends Controller {
 		$this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
 	}
 
-	private function actionViewDetails() {
+	protected function actionViewDetails() {
 		$usage = new Mix($this->db);
 
 
@@ -110,7 +103,7 @@ class CMix extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionAddPFPItem() {
+	protected function actionAddPFPItem() {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -137,7 +130,7 @@ class CMix extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionConfirmAddPFP() {
+	protected function actionConfirmAddPFP() {
 		$formGet = $this->getFromRequest();
 		$form = $this->getFromPost();
 		$pfp_primary_product_id = $form['pfp_primary'];
@@ -171,7 +164,7 @@ class CMix extends Controller {
 		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
 	}
 
-	private function actionGetPFPDetailsAjax() {
+	protected function actionGetPFPDetailsAjax() {
 		$manager = new PFPManager($this->db);
 		$pfp = $manager->getPFP($this->getFromRequest("pfp_id"));
 		
@@ -186,7 +179,7 @@ class CMix extends Controller {
 		exit;
 	}
 
-	private function actionViewPFPDetails() {
+	protected function actionViewPFPDetails() {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -205,7 +198,7 @@ class CMix extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	/* private function actionGetPFPProductInfo() {
+	/* protected function actionGetPFPProductInfo() {
 	  $id = $this->getFromRequest("id");
 	  $pfpProduct = new PFPProduct($this->db,$id);
 	  if($this->getFromRequest("json")) {
@@ -216,7 +209,7 @@ class CMix extends Controller {
 	  exit;
 	  } */
 
-	private function actionEditPFP() {
+	protected function actionEditPFP() {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -261,7 +254,7 @@ class CMix extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionConfirmEditPFP() {
+	protected function actionConfirmEditPFP() {
 		$formGet = $this->getFromRequest();
 		$form = $this->getFromPost();
 
@@ -326,7 +319,7 @@ class CMix extends Controller {
 		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
 	}
 
-	private function actionConfirmDeletePFP() {
+	protected function actionConfirmDeletePFP() {
 
 		if (!$this->user->checkAccess('department', $this->getFromPost('departmentID'))) {
 			throw new Exception('deny');
@@ -358,7 +351,7 @@ class CMix extends Controller {
 		header("Location: ?action=browseCategory&category=department&id=$departmentID&bookmark=mix&tab=pfp");
 	}
 
-	private function actionDeletePFPItem() {
+	protected function actionDeletePFPItem() {
 		//var_dump($_GET);
 
 		$departmentID = $this->getFromRequest("departmentID");
@@ -392,7 +385,7 @@ class CMix extends Controller {
 		$this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, "pfp");
 	}
 
-	private function actionIsPFPUnique() {
+	protected function actionIsPFPUnique() {
 		$form = $this->getFromRequest();
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($form['departmentID']);
@@ -590,7 +583,7 @@ class CMix extends Controller {
 		}
 	}
 
-	private function actionCalculateVOCAjax() {
+	protected function actionCalculateVOCAjax() {
 		if ($_REQUEST['debug']) {
 			$debug = true;
 		}
@@ -709,7 +702,7 @@ class CMix extends Controller {
 		exit;
 	}
 
-	private function actionEditItemAjax() {
+	protected function actionEditItemAjax() {
 //$debug = true;
 		if ($_REQUEST['debug']) {
 			$debug = true;
@@ -861,7 +854,7 @@ class CMix extends Controller {
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug, $productsOldVal);
 	}
 
-	private function actionAddItemAjax() {
+	protected function actionAddItemAjax() {
 		$form = $_REQUEST; 
 //$debug = true;
 		if ($form['debug']) {
@@ -1000,7 +993,7 @@ class CMix extends Controller {
 		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
 	}
 
-	private function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null) {
+	protected function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null) {
 //$debug =true;
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
@@ -1101,7 +1094,7 @@ class CMix extends Controller {
 		exit;
 	}
 
-	private function buildProducts($ps) {
+	protected function buildProducts($ps) {
 
 		$products = array();
 		foreach ($ps as $p) {
@@ -1126,7 +1119,7 @@ class CMix extends Controller {
 		return $products;
 	}
 
-	private function buildMix($m) {
+	protected function buildMix($m) {
 
 		$optMix = new MixOptimized($this->db);
 
@@ -1149,7 +1142,7 @@ class CMix extends Controller {
 		return $optMix;
 	}
 
-	private function updateMixByForm(MixOptimized $basemix, $formMix) {
+	protected function updateMixByForm(MixOptimized $basemix, $formMix) {
 
 
 
@@ -1165,7 +1158,7 @@ class CMix extends Controller {
 		$basemix->unittypeClass = $formMix->selectUnittypeClass;
 	}
 
-	private function validateInputMix($m) {
+	protected function validateInputMix($m) {
 
 		if (empty($m['description']) or empty($m['creation_time'])) {
 			return false;
@@ -1174,7 +1167,7 @@ class CMix extends Controller {
 		return true;
 	}
 
-	private function validateProducts2($products) {
+	protected function validateProducts2($products) {
 
 		$validation = new Validation($this->db);
 		$productConflitcs = array();
@@ -1192,7 +1185,7 @@ class CMix extends Controller {
 		return empty($productConflitcs) ? true : $productConflitcs;
 	}
 
-	private function actionAddItem() {		
+	protected function actionAddItem() {		
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -1211,7 +1204,7 @@ class CMix extends Controller {
 		$this->addEdit($action, $this->getFromRequest('departmentID'));
 	}
 
-	private function actionEdit() {
+	protected function actionEdit() {
 
 		$mix = new Mix($this->db);
 		$departmentID = $mix->getMixDepartment($this->getFromRequest('id'));
@@ -1233,7 +1226,7 @@ class CMix extends Controller {
 		$this->addEdit($action, $departmentID);
 	}
 
-	private function actionCreateLabel() {
+	protected function actionCreateLabel() {
 		$usage = new Mix($this->db);
 		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
 		$mixID = $this->getFromRequest('id');
@@ -1324,7 +1317,7 @@ class CMix extends Controller {
 		$this->smarty->display("tpls/mixLabel.tpl");
 	}
 
-	private function addEdit($action, $departmentID) {
+	protected function addEdit($action, $departmentID) {
 		$form = $this->getFromPost();
 
 		/** protecting from xss * */
@@ -1478,7 +1471,7 @@ class CMix extends Controller {
 	 * @param unknown_type $isMWS
 	 * @param unknown_type $optMix = null. If not null - edit mix. Is null - add new mix
 	 */
-	private function confirmSaveMix($form, $storagesFailed, $isMWS, $optMix = null, $checkIsUnique = true) {
+	protected function confirmSaveMix($form, $storagesFailed, $isMWS, $optMix = null, $checkIsUnique = true) {
 
 		// valide reg data
 		$mix = $this->getMixByPOSTData($form);
@@ -1631,7 +1624,7 @@ class CMix extends Controller {
 		$this->smarty->assign('validStatus', $validationRes);
 	}
 
-	private function prepareDataForValidation($mix) {
+	protected function prepareDataForValidation($mix) {
 
 		$data = Array(
 			'voc' => $mix->voc,
@@ -1648,7 +1641,7 @@ class CMix extends Controller {
 	 * Prepares everything when showing add mix page
 	 * @param int $departmentID
 	 */
-	private function showAdd($departmentID) {
+	protected function showAdd($departmentID) {
 
 		$request = $this->getFromRequest();
 		$request['id'] = $departmentID;
@@ -1739,7 +1732,7 @@ class CMix extends Controller {
 		$this->smarty->assign('unittype', $unittypeListDefault);
 	}
 
-	private function getClearDataForAddItem() {
+	protected function getClearDataForAddItem() {
 		$data->voc = '0.00';
 		$data->voclx = '0.00';
 		$data->vocwx = '0.00';
@@ -1754,7 +1747,7 @@ class CMix extends Controller {
 	 * @param MixOptimized $optMix
 	 * @param boolean $isMWS
 	 */
-	private function showEdit(MixOptimized $optMix, $isMWS) {
+	protected function showEdit(MixOptimized $optMix, $isMWS) {
 		$optMix->setTrashRecord(new Trash($this->db));
 		//	Get rule list
 		$rule = new Rule($this->db);
@@ -1804,7 +1797,7 @@ class CMix extends Controller {
 		$this->smarty->assign('companyID', $optMix->company->company_id);
 	}
 
-	private function editMix_AddProduct($form, $optMix) {
+	protected function editMix_AddProduct($form, $optMix) {
 
 		$this->confirmAdd($form);
 
@@ -1825,7 +1818,7 @@ class CMix extends Controller {
 		$this->smarty->assign('companyID', $optMix->company->company_id);
 	}
 
-	private function confirmAdd($form, $isMWS) {
+	protected function confirmAdd($form, $isMWS) {
 		$optMix = $this->getMixByPOSTData($form);
 
 		if ($isMWS) {
@@ -1886,7 +1879,7 @@ class CMix extends Controller {
 		$this->smarty->assign('productsAdded', $products);
 	}
 
-	private function getSingleWasteFromPost($form) {
+	protected function getSingleWasteFromPost($form) {
 		$waste['value'] = $form['wasteValue'];
 		$waste['unittypeClass'] = $form['selectWasteUnittypeClass'];
 		$waste['unittypeID'] = $form['selectWasteUnittype'];
@@ -1895,7 +1888,7 @@ class CMix extends Controller {
 		return $waste;
 	}
 
-	private function getWastesFromPost($form) {
+	protected function getWastesFromPost($form) {
 
 		$wasteCount = $_POST['wasteStreamCount'];
 		$wastes = Array();
@@ -1932,7 +1925,7 @@ class CMix extends Controller {
 		return $wastes;
 	}
 
-	private function prepare4MixAdd($isForm, $facilityID, $companyID) {
+	protected function prepare4MixAdd($isForm, $facilityID, $companyID) {
 		$mWasteStreams = new MWasteStreams();
 		$params = array(
 			'db' => $this->db,
@@ -1971,7 +1964,7 @@ class CMix extends Controller {
 		exit;
 	}
 
-	private function validateProductByForm($form) {
+	protected function validateProductByForm($form) {
 
 		$validation = new Validation($this->db);
 
@@ -1987,7 +1980,7 @@ class CMix extends Controller {
 		return $validStatus;
 	}
 
-	private function validateProducts($products) {
+	protected function validateProducts($products) {
 
 		$validation = new Validation($this->db);
 		$count = count($products);
@@ -2012,7 +2005,7 @@ class CMix extends Controller {
 		return $validSummary;
 	}
 
-	private function getProductsByPOST() {
+	protected function getProductsByPOST() {
 
 		if ($_POST['addingProductsArr']) {
 
@@ -2054,7 +2047,7 @@ class CMix extends Controller {
 		}
 	}
 
-	private function getMixByPOSTData($form) {
+	protected function getMixByPOSTData($form) {
 		$optMix = new MixOptimized($this->db);
 
 		$optMix->department_id = $form['department_id'];
@@ -2075,7 +2068,7 @@ class CMix extends Controller {
 		return $optMix;
 	}
 
-	private function getDefaultTypesAndUnitTypes($companyID) {
+	protected function getDefaultTypesAndUnitTypes($companyID) {
 
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
@@ -2124,7 +2117,7 @@ class CMix extends Controller {
 		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
 	}
 
-	private function getDefaultApMethod($companyID) {
+	protected function getDefaultApMethod($companyID) {
 
 		$apmethodObject = new Apmethod($this->db);
 		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
@@ -2136,12 +2129,12 @@ class CMix extends Controller {
 	 * @param integer $companyID
 	 * @param array $excludedProducts - array of product id to exclude (for smarty in addPFP.tpl)
 	 */
-	private function getProductsListGrouped($companyID, $excludedProducts = false) {
+	protected function getProductsListGrouped($companyID, $excludedProducts = false) {
 		$product = new Product($this->db);
 		return $product->getFormatedProductList($companyID, $excludedProducts);
 	}
 
-	private function getUnitTypeList($companyID) {
+	protected function getUnitTypeList($companyID) {
 		$unittype = new Unittype($this->db);
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
@@ -2153,7 +2146,7 @@ class CMix extends Controller {
 		return $unittypeList;
 	}
 
-	private function prepareShowWasteForSmarty($isForm, $facilityID, $companyID, $mixID) {//shows that we can access madule Waste Streams
+	protected function prepareShowWasteForSmarty($isForm, $facilityID, $companyID, $mixID) {//shows that we can access madule Waste Streams
 		$mWasteStreams = new MWasteStreams();
 		$params = array(
 			'db' => $this->db,
@@ -2168,7 +2161,7 @@ class CMix extends Controller {
 		return $result;
 	}
 
-	private function isModuleWasteStream($companyID) {
+	protected function isModuleWasteStream($companyID) {
 
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();

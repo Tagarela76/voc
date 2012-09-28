@@ -11,14 +11,7 @@ class CProduct extends Controller {
 		$this->parent_category = 'department';
 	}
 
-	function runAction() {
-		$this->runCommon();
-		$functionName = 'action' . ucfirst($this->action);
-		if (method_exists($this, $functionName))
-			$this->$functionName();
-	}
-
-	private function actionViewDetails() {
+	protected function actionViewDetails() {
 		//  from what level this code is called?
 		if ($this->getFromRequest('departmentID') !== null) {
 			$level = 'department';

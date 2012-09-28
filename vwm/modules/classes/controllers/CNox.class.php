@@ -9,14 +9,7 @@ class CNox extends Controller {
 		$this->parent_category = 'department';
 	}
 
-	function runAction() {
-		$this->runCommon();
-		$functionName = 'action' . ucfirst($this->action);
-		if (method_exists($this, $functionName))
-			$this->$functionName();
-	}
-
-	private function actionConfirmDelete() {
+	protected function actionConfirmDelete() {
 		$NOx = new NoxEmissionManager($this->db);
 		foreach ($this->itemID as $id) {
 			$NOxDetails = $NOx->getNoxEmissionDetails($id);
@@ -35,7 +28,7 @@ class CNox extends Controller {
 		}
 	}
 
-	private function actionDeleteItem() {
+	protected function actionDeleteItem() {
 		$req_id=$this->getFromRequest('id');
 		!is_array($req_id) ? $req_id = array($req_id) : "";
 		$NOx = new NoxEmissionManager($this->db);
@@ -72,7 +65,7 @@ class CNox extends Controller {
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 	}
 
-	private function actionViewDetails() {
+	protected function actionViewDetails() {
 		$parentCategory = '';
 		$parentCategoryID = 0;
 
@@ -116,7 +109,7 @@ class CNox extends Controller {
 		}
 	}
 
-	private function actionAddItem() {			
+	protected function actionAddItem() {			
 		$request = $this->getFromRequest();
 		$request['parent_category'] = 'department';
 
@@ -228,7 +221,7 @@ class CNox extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionEdit() { 
+	protected function actionEdit() { 
 		$request = $this->getFromRequest();
 
 		//	Access control
@@ -463,7 +456,7 @@ class CNox extends Controller {
 		}
 	}
 
-	private function viewDetailsBurner() {
+	protected function viewDetailsBurner() {
 
 		$manager = new NoxEmissionManager($this->db);
 		$burnerDetails = $manager->getBurnerDetail($this->getFromRequest("id"));
@@ -480,7 +473,7 @@ class CNox extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function viewDetailsNox() {
+	protected function viewDetailsNox() {
 
 		$manager = new NoxEmissionManager($this->db);
 		$noxEmissionDetails = $manager->getNoxEmissionDetails($this->getFromRequest('id'));
@@ -504,7 +497,7 @@ class CNox extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function editBurner() {
+	protected function editBurner() {
 		$manager = new NoxEmissionManager($this->db);
 		$burnerDetails = $manager->getBurnerDetail($this->getFromRequest("id"));
 		if (!$burnerDetails) {
@@ -544,7 +537,7 @@ class CNox extends Controller {
 	}
 
 
-	private function editNox() {
+	protected function editNox() {
 		$request = $this->getFromRequest();
 
 		$company = new Company($this->db);
@@ -647,7 +640,7 @@ class CNox extends Controller {
 		$this->smarty->assign('tpl', 'tpls/viewEditBurnerRatio.tpl');
 
 	}
-	private function editBurnerRatio() { 
+	protected function editBurnerRatio() { 
 		
 		$request = $this->getFromRequest();
 		
@@ -733,7 +726,7 @@ class CNox extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
-	private function actionAddNoxEmissionsByFacLevel() {	
+	protected function actionAddNoxEmissionsByFacLevel() {	
 		
 		$noxManager = new NoxEmissionManager($this->db);
 		$facility = new Facility($this->db);

@@ -7,15 +7,7 @@ class CRoot extends Controller
 		$this->category='root';				
 	}
 	
-	function runAction()
-	{
-		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
-		if (method_exists($this,$functionName))			
-			$this->$functionName();		
-	}
-	
-	private function actionBrowseCategory()
+	protected function actionBrowseCategory()
 	{
 		$companies = new Company($this->db);
 		$companyList = $companies->getCompanyList();

@@ -7,16 +7,8 @@ class CAdditionalEmailAccounts extends Controller {
         $this->category = 'AdditionalEmailAccounts';
         $this->parent_category = 'facility';
     }
-
-    function runAction() {
-
-        $this->runCommon();
-        $functionName = 'action' . ucfirst($this->action);
-        if (method_exists($this, $functionName))
-            $this->$functionName();
-    }
 	
-    private function actionDeleteItem() {
+    protected function actionDeleteItem() {
 		//	Access control
 		if (!$this->user->isHaveAccessTo('view', 'company')) {
 			throw new Exception('deny');
@@ -42,7 +34,7 @@ class CAdditionalEmailAccounts extends Controller {
 		
     }
 	
-    private function actionAddItem() {
+    protected function actionAddItem() {
 		//	Access control
 		if (!$this->user->isHaveAccessTo('view', 'company')) {
 			throw new Exception('deny');

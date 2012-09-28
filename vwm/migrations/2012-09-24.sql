@@ -1,4 +1,4 @@
-CREATE TABLE  `reminders` (
+CREATE TABLE  `reminder` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 `name` VARCHAR( 200 ) NOT NULL,
 `date` INT( 15 ) NOT NULL ,
@@ -44,13 +44,13 @@ NULL ,  'Discover'
 
 CREATE TABLE  `remind2user` (
 `user_id` INT( 11 ) NOT NULL ,
-`reminders_id` INT( 11 ) NOT NULL
+`reminder_id` INT( 11 ) NOT NULL
 ) ENGINE = INNODB ;
 
 ALTER TABLE `remind2user` ADD FOREIGN KEY ( `user_id` ) REFERENCES `user` (
 `user_id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
 
-ALTER TABLE `remind2user` ADD FOREIGN KEY ( `reminders_id` ) REFERENCES `reminders` (
+ALTER TABLE `remind2user` ADD FOREIGN KEY ( `reminder_id` ) REFERENCES `reminder` (
 `id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;

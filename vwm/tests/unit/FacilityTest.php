@@ -42,7 +42,7 @@ class FacilityTest extends Testing\DbTestCase {
 		$facility = new Facility($this->db);
 		$reminders = $facility->getRemindersList('1');
 		
-		$this->assertTrue($reminders[0] instanceof Reminders);
+		$this->assertTrue($reminders[0] instanceof Reminder);
 		$this->assertTrue(sizeof($reminders) == 3);
 	}
 	

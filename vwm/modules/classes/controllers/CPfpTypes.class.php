@@ -8,14 +8,6 @@ class CPfpTypes extends Controller {
         $this->parent_category = 'company';
     }
 
-    function runAction() {
-
-        $this->runCommon();
-        $functionName = 'action' . ucfirst($this->action);
-        if (method_exists($this, $functionName))
-            $this->$functionName();
-    }
-    
 	/**
      * bookmarkRepairOrder($vars)
      * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
@@ -50,7 +42,7 @@ class CPfpTypes extends Controller {
 		$this->smarty->assign('tpl', 'tpls/pfpTypesList.tpl');
     }
 
-    private function actionAddItem() {
+    protected function actionAddItem() {
         //	Access control
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
@@ -80,7 +72,7 @@ class CPfpTypes extends Controller {
         $this->smarty->display("tpls:index.tpl");
     }
 	
-    private function actionDeleteItem() {
+    protected function actionDeleteItem() {
 
         $req_id = $this->getFromRequest('id');
         if (!is_array($req_id))
@@ -113,7 +105,7 @@ class CPfpTypes extends Controller {
         $this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
     }
     
-    private function actionViewDetails() {
+    protected function actionViewDetails() {
 
 		$request = $this->getFromRequest();
 		$this->smarty->assign('request', $request);
@@ -182,7 +174,7 @@ class CPfpTypes extends Controller {
         $this->smarty->display("tpls:index.tpl");
     }
     
-	private function actionConfirmDelete() {
+	protected function actionConfirmDelete() {
 
         foreach ($this->itemID as $ID) {
 
@@ -195,7 +187,7 @@ class CPfpTypes extends Controller {
             header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=pfpTypes&notify=50");
     }
     
-    private function actionAssign() {
+    protected function actionAssign() {
 		$pfpIDs = $this->getFromRequest('pfpIDs');
         $pfpTypeid = $this->getFromRequest('id');
         $facilityID = $this->getFromRequest('facilityID');
@@ -207,7 +199,7 @@ class CPfpTypes extends Controller {
         echo $url;
     }
     
-    private function actionUnassign() {
+    protected function actionUnassign() {
 
         $pfpIDs = $this->getFromRequest('pfpIDs');
         $pfpTypeid = $this->getFromRequest('id');
@@ -234,7 +226,7 @@ class CPfpTypes extends Controller {
 	
 	
 	
-	private function actionCreateLabel() {		
+	protected function actionCreateLabel() {		
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$company = new Company($this->db);

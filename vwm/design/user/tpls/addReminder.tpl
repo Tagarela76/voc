@@ -13,7 +13,7 @@
 
 <div style="padding:7px;">
 
-	<form id="addReminders" name="addReminders" action='{$sendFormAction}' method="post">		
+	<form id="addReminder" name="addReminder" action='{$sendFormAction}' method="post">		
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
 			<tr class="users_header_orange">
 				<td height="30" width="30%">
@@ -68,8 +68,8 @@
 		{*BUTTONS*}	
 		<div align="right" class="margin5">
 			<input type='button' name='cancel' class="button" value='Cancel' 
-				   {if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=reminders'"
-				   {elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=reminders&id={$request.id}&facilityID={$request.facilityID}'"  
+				   {if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.id}&bookmark=reminder'"
+				   {elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=reminder&id={$request.id}&facilityID={$request.facilityID}'"  
 				   {/if}
 				   >
 			<input type='submit' name='save' class="button" value='Save'>		
@@ -90,7 +90,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){      
 			//	set calendar
-			$('#reminderDate').datetimepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});												
+			$('#reminderDate').datepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});												
 		});
 	</script>
 {/literal}

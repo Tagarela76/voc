@@ -197,6 +197,9 @@ class VOCApp {
 		return $message;
 	}
 
+	public function setDateFormat($dataFormat) {
+		$this->date_format = $dataFormat;
+	}
 }
 
 ?>

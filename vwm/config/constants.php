@@ -298,6 +298,9 @@ define ('TB_PFP_TYPES', 'pfp_types');
 
 define ('TB_SALES_BROCHURE', 'sales_brochure');
 
+define ('TB_REMINDER', 'reminder');
+define ('TB_REMIND2USER', 'remind2user');
+
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
 define ('SQL_DELIMITER',';');
@@ -403,6 +406,7 @@ define ('DEFAULT_REGION', 	'us');
 define ('AUTH_SENDER', 'authentification');
 define ('BACKUP_SENDER', 'backup');
 define ('VPS_SENDER', 'vps');
+define ('REMIND_SENDER', 'noReply');
 
 //	REGUPDATES
 define ('XML_FILE_REVIEWED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml');

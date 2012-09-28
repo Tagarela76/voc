@@ -1351,13 +1351,13 @@ class Controller {
                 $permissions['repairOrder']['delete'] = $this->user->isHaveAccessTo('delete', 'repairOrder') ? true : false;
                 break;
 			
-			case "viewReminders":
+			case "viewReminder":
                 $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
                 $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
                 $permissions['company']['view'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
-                $permissions['reminders']['view'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
-                $permissions['reminders']['edit'] = $this->user->isHaveAccessTo('edit', 'reminders') ? true : false;
-                $permissions['reminders']['delete'] = $this->user->isHaveAccessTo('delete', 'reminders') ? true : false;
+                $permissions['reminder']['view'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
+                $permissions['reminder']['edit'] = $this->user->isHaveAccessTo('edit', 'reminder') ? true : false;
+                $permissions['reminder']['delete'] = $this->user->isHaveAccessTo('delete', 'reminder') ? true : false;
                 break;
         }
         $this->smarty->assign('permissions', $permissions);

@@ -8,15 +8,7 @@ class CAccessory extends Controller
 		$this->parent_category='department';			
 	}		
 	
-	function runAction()
-	{
-		$this->runCommon();
-		$functionName='action'.ucfirst($this->action);				
-		if (method_exists($this,$functionName))			
-			$this->$functionName();		
-	}
-	
-	private function actionConfirmDelete()
+	protected function actionConfirmDelete()
 	{		
 		$accessory = new Accessory($this->db); // viewDetails.tpl
 								
@@ -34,7 +26,7 @@ class CAccessory extends Controller
 			header("Location: ?action=browseCategory&category=department&id=".$this->getFromPost('departmentID')."&bookmark=accessory&notify=40");			
 	}
 	
-	private function actionDeleteItem()
+	protected function actionDeleteItem()
 	{
 		$req_id=$this->getFromRequest('id');
 		if (!is_array($req_id))
@@ -67,7 +59,7 @@ class CAccessory extends Controller
 		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
 	}	
 	
-	private function actionViewDetails()
+	protected function actionViewDetails()
 	{
 		//	Access control
 		if (!$this->user->checkAccess('department', $this->getFromRequest('departmentID'))) {						
@@ -110,7 +102,7 @@ class CAccessory extends Controller
 		$this->smarty->display("tpls:index.tpl");	
 	}
 	
-	private function actionAddItem() 
+	protected function actionAddItem() 
 	{ 
 		$request=$this->getFromRequest();
 		$request['id'] = $request['departmentID'];	
@@ -203,7 +195,7 @@ class CAccessory extends Controller
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
-	private function actionEdit() 
+	protected function actionEdit() 
 	{
 		$request=$this->getFromRequest();
 		$accessory = new Accessory($this->db);
@@ -378,7 +370,7 @@ class CAccessory extends Controller
 }
 	
 	
-	private function actionAddUsage() {
+	protected function actionAddUsage() {
 		ini_set('html_errors', 'off');
 		$ajaxResponse = new AJAXResponse();
 		$form = $this->getFromPost('AccessoryUsage');
