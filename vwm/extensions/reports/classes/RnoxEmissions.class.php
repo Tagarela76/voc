@@ -61,7 +61,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 					"WHERE nox.department_id = d.department_id " .					
 					"AND d.facility_id IN (" . $facilityString . ") " .
 					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
-					" ";		
+					" ORDER BY nox.start_time DESC";		
 				break;
 				
 			case "facility":				
@@ -76,7 +76,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 					"WHERE nox.department_id = d.department_id " .
 					"AND d.facility_id = " . $this->categoryID . " " .
 					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
-					" ";		
+					" ORDER BY nox.start_time DESC";		
 																
 				break;
 				
@@ -95,7 +95,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 					"FROM nox " .
 					"WHERE nox.department_id = " . $this->categoryID . " " .
 					"AND nox.end_time >= ".$dateBeginObj->getTimestamp()." AND nox.end_time <= ".$dateEndObj->getTimestamp()." " .
-					" ";															
+					" ORDER BY nox.start_time DESC";															
 				break;
 		}
 		$noxEmissions = $this->group($query);																					
@@ -103,7 +103,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 	}
 	
 	
-	private function group($query) {			
+	private function group($query) {	
 		$this->db->query($query);						
 		if ($this->db->num_rows()) {
 			// do smth
