@@ -40,7 +40,7 @@ function manageReminders() {
 	this.loadContent = function() {
 		var that = this;
 		$.ajax({
-			url: "?action=loadUsers&category=reminders",
+			url: "?action=loadUsers&category=reminder",
 			data: {facilityId: settings.facilityId, remindId: settings.remindId},
 			type: "GET",
 			dataType: "html",
@@ -68,7 +68,7 @@ function manageReminders() {
 
 		});
 		$.ajax({
-			url: "?action=manageRemindToUser&category=reminders",
+			url: "?action=manageRemindToUser&category=reminder",
 			data: {rowsToSet: rowsToSet, rowsToUnSet: rowsToUnSet, remindId: remindId},
 			type: "GET",
 			dataType: "html",

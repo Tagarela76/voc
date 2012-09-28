@@ -1,7 +1,7 @@
 <td>
     <a href="?action=browseCategory&category=facility&id={$request.id}&bookmark=docs">
     	
-		{if $request.bookmark != "docs" && $request.bookmark != "reminders"}
+		{if $request.bookmark != "docs" && $request.bookmark != "reminder"}
 		
         <div class="deactiveBookmark">
             <div class="deactiveBookmark_right">

@@ -8,15 +8,7 @@ class CRepairOrder extends Controller {
         $this->parent_category = 'facility';
     }
 
-    function runAction() {
-
-        $this->runCommon();
-        $functionName = 'action' . ucfirst($this->action);
-        if (method_exists($this, $functionName))
-            $this->$functionName();
-    }
-
-    private function actionViewDetails() {
+    protected function actionViewDetails() {
 
         $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
@@ -100,7 +92,7 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('tpl', 'tpls/repairOrderList.tpl');
     }
 
-    private function actionAddItem() {
+    protected function actionAddItem() {
         //	Access control
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
@@ -130,7 +122,7 @@ class CRepairOrder extends Controller {
         $this->smarty->display("tpls:index.tpl");
     }
 
-    private function actionDeleteItem() {
+    protected function actionDeleteItem() {
 
         $req_id = $this->getFromRequest('id');
         if (!is_array($req_id))
@@ -167,7 +159,7 @@ class CRepairOrder extends Controller {
         $this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
     }
 
-    private function actionConfirmDelete() {
+    protected function actionConfirmDelete() {
 
         foreach ($this->itemID as $ID) {
 
@@ -221,7 +213,7 @@ class CRepairOrder extends Controller {
         $this->smarty->display("tpls:index.tpl");
     }
 
-	private function actionCreateLabel() {
+	protected function actionCreateLabel() {
 		
 		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 		$mixList = array();

@@ -2,8 +2,8 @@
 <script type="text/javascript">
 	$(function() {
 		//	global settings object defined at settings.js
-		settings.facilityId = {/literal} {$reminders->facility_id} {literal};
-		settings.remindId = {/literal} {$reminders->id} {literal};
+		settings.facilityId = {/literal} {$reminder->facility_id} {literal};
+		settings.remindId = {/literal} {$reminder->id} {literal};
 	});
 </script>
 {/literal}
@@ -31,7 +31,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$reminders->name|escape}
+                    &nbsp; {$reminder->name|escape}
                 </div>
             </td>
         </tr>
@@ -41,7 +41,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$reminders->date|escape}
+                    &nbsp; {$reminder->date|escape}
                 </div>
             </td>
         </tr>

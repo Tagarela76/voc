@@ -8,15 +8,7 @@ class CDepartment extends Controller {
 		$this->parent_category = 'facility';
 	}
 
-	function runAction() {
-
-		$this->runCommon();
-		$functionName = 'action' . ucfirst($this->action);
-		if (method_exists($this, $functionName))
-			$this->$functionName();
-	}
-
-	private function actionConfirmDelete() {
+	protected function actionConfirmDelete() {
 		$department = new Department($this->db);
 		$departmentDet = $department->getDepartmentDetails($this->itemID[0]);
 
@@ -39,7 +31,7 @@ class CDepartment extends Controller {
 			header("Location: ?action=browseCategory&category=facility&id=" . $facilityDetails['facility_id'] . "&bookmark=department&notify=7");
 	}
 
-	private function actionDeleteItem() {
+	protected function actionDeleteItem() {
 		$req_id = $this->getFromRequest('id');
 		if (!is_array($req_id))
 			$req_id = array($req_id);
@@ -79,7 +71,7 @@ class CDepartment extends Controller {
 		$this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
 	}
 
-	private function actionViewDetails() {
+	protected function actionViewDetails() {
 		if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
 			throw new Exception('deny');
 		}
@@ -96,7 +88,7 @@ class CDepartment extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionBrowseCategory() {
+	protected function actionBrowseCategory() {
 		$departments = new Department($this->db);
 		$departmentDetails = $departments->getDepartmentDetails($this->getFromRequest('id'));
 
@@ -140,7 +132,7 @@ class CDepartment extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionAddItem() {
+	protected function actionAddItem() {
 		//	Access control
 		if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
 			throw new Exception('deny');
@@ -169,7 +161,7 @@ class CDepartment extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-	private function actionEdit() {
+	protected function actionEdit() {
 		if (!$this->user->checkAccess($this->category, $this->getFromRequest('id'))) {
 			throw new Exception('deny');
 		}

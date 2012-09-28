@@ -70,7 +70,7 @@
 {*NOX*}
 
 {*DOCS*}
-{if $request.bookmark == 'docs' || $request.bookmark == "reminders"} 
+{if $request.bookmark == 'docs' || $request.bookmark == "reminder"} 
 	{include file="tpls:tpls/subBookmarkDocuments.tpl"}
 {/if}
 {*DOCS*}

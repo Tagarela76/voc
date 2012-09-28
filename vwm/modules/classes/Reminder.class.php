@@ -2,7 +2,7 @@
 
 use VWM\Framework\Model;
 
-class Reminders extends Model {
+class Reminder extends Model {
 
 	/**
 	 *
@@ -49,7 +49,7 @@ class Reminders extends Model {
 
 	function __construct(db $db, $id = null, EMail $email = null) {
 		$this->db = $db;
-		$this->modelName = 'Reminders';
+		$this->modelName = 'Reminder';
 		if (isset($id)) {
 			$this->id = $id;
 			$this->_load();
@@ -68,7 +68,7 @@ class Reminders extends Model {
 			return false;
 		}
 		$sql = "SELECT * ".
-				"FROM " . TB_REMINDERS . " ".
+				"FROM " . TB_REMINDER . " ".
 				"WHERE id={$this->db->sqltext($this->id)} " . 
 				"LIMIT 1";
 		$this->db->query($sql);
@@ -105,7 +105,7 @@ class Reminders extends Model {
 	 */
 	public function add() {
 
-		$query = "INSERT INTO " . TB_REMINDERS . "(name, date, facility_id) 
+		$query = "INSERT INTO " . TB_REMINDER . "(name, date, facility_id) 
 				VALUES ( 
 				'{$this->db->sqltext($this->name)}'
 				, {$this->db->sqltext($this->date)}
@@ -123,7 +123,7 @@ class Reminders extends Model {
 	 */
 	public function update() {
 
-		$query = "UPDATE " . TB_REMINDERS . "
+		$query = "UPDATE " . TB_REMINDER . "
 					set name='{$this->db->sqltext($this->name)}',
 						date={$this->db->sqltext($this->date)},
 						facility_id={$this->db->sqltext($this->facility_id)}			
@@ -138,13 +138,13 @@ class Reminders extends Model {
 	 */
 	public function delete() {
 
-		$sql = "DELETE FROM " . TB_REMINDERS . "
+		$sql = "DELETE FROM " . TB_REMINDER . "
 				 WHERE id={$this->db->sqltext($this->id)}";
 		$this->db->query($sql);
 	}
 	
 	public function isUniqueName() {
-		$sql = "SELECT id FROM " . TB_REMINDERS . "
+		$sql = "SELECT id FROM " . TB_REMINDER . "
 				 WHERE name = '{$this->db->sqltext($this->name)}' " .
 				"AND facility_id = {$this->db->sqltext($this->facility_id)}";
 		$this->db->query($sql);
@@ -205,7 +205,7 @@ class Reminders extends Model {
 			$to[] = $user["email"];
 		}
   	 	
-    	$from = AUTH_SENDER."@".DOMAIN;
+    	$from = REMIND_SENDER."@".DOMAIN;
     	$theme = "Notification ";
 		$message = $this->name;
 
@@ -213,30 +213,6 @@ class Reminders extends Model {
 			$this->email->sendMail($from, $to, $theme, $message);
 		}
     }
-	
-	public function getReminders() {
-
-		$reminders = array();
-		$sql = "SELECT * ".
-				"FROM " . TB_REMINDERS;
-		$this->db->query($sql);
-
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$rows = $this->db->fetch_all_array();
-
-		foreach ($rows as $row) {
-			$reminder = new Reminders($this->db);
-			foreach ($row as $key => $value) {
-				if (property_exists($reminder, $key)) {
-					$reminder->$key = $value;
-				}
-			}
-			$reminders[] = $reminder;
-		}
-		return $reminders;
-	}
 }
 
 ?>

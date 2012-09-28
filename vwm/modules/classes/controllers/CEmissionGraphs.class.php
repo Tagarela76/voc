@@ -7,13 +7,6 @@ class CEmissionGraphs extends Controller {
 		$this->category = 'logbook';
 	}
 
-	function runAction() {
-		$this->runCommon();
-		$functionName = 'action' . ucfirst($this->action);
-		if (method_exists($this, $functionName))
-			$this->$functionName();
-	}
-
 	protected function bookmarkEmissionGraphs($vars) {
 		extract($vars);
 		$facility->initializeByID($this->getFromRequest('id'));
@@ -29,7 +22,7 @@ class CEmissionGraphs extends Controller {
 		$this->setGraphs('company', $this->getFromRequest('id'));
 	}
 
-	private function setGraphs($category, $id) {
+	protected function setGraphs($category, $id) {
 		
 		if (!$_POST){
 			$_SESSION['DED'] = '';
@@ -153,7 +146,7 @@ class CEmissionGraphs extends Controller {
 		$this->smarty->assign('tpl', 'tpls/graph.tpl');
 	}
 
-	private function performDataForGraph($array) {
+	protected function performDataForGraph($array) {
 		$dataForGraph = array();
 		$i = 0;
 		foreach ($array as $equip => $data) {

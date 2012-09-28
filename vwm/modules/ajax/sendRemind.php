@@ -22,10 +22,10 @@
 	
 	$currentTime = new DateTime('now');
 	
-	$reminders = new Reminders($db); 
-	$reminderList = $reminders->getReminders();  
+	$reminderManager = new Reminder($db); 
+	$reminderList = $reminderManager->getReminders();  
 	foreach ($reminderList as $reminder) {
-		$remind = new Reminders($db, $reminder->id, $email);
+		$remind = new Reminder($db, $reminder->id, $email);
 
 		$remindersTime = new DateTime();
 		$remindersTime->setDate(date("Y", $remind->date), date("m", $remind->date), date("d", $remind->date));

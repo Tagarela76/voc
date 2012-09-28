@@ -802,13 +802,13 @@ class Facility extends FacilityProperties {
 	 *
 	 * @param int $facilityId
 	 * @param Pagination $pagination
-	 * @return boolean|\Reminders 
+	 * @return boolean|\Reminder
 	 */
 	public function getRemindersList($facilityId, Pagination $pagination = null) {
 		
 		$reminders = array();
 		
-		$sql = "SELECT * FROM ". TB_REMINDERS. "
+		$sql = "SELECT * FROM ". TB_REMINDER. "
 				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
 	
         if (isset($pagination)) {
@@ -822,7 +822,7 @@ class Facility extends FacilityProperties {
 		}
 		
 		foreach ($rows as $row) {
-			$reminder = new Reminders($this->db);
+			$reminder = new Reminder($this->db);
 			foreach ($row as $key => $value) {
 				if (property_exists($reminder, $key)) {
 					$reminder->$key = $value;
@@ -839,7 +839,7 @@ class Facility extends FacilityProperties {
 	 * @return boolean 
 	 */
 	public function countRemindersInFacility($facilityID) {
-		$sql = "SELECT count(id) remindersCount FROM ". TB_REMINDERS. "
+		$sql = "SELECT count(id) remindersCount FROM ". TB_REMINDER. "
 				WHERE facility_id={$this->db->sqltext($facilityID)}"; 
 
 		$this->db->query($sql);
