@@ -2,6 +2,8 @@ Reminder:
   getters:
     uniqueName:
       - "True": {message: "Name should be unique", groups: [add]}
+    atLeastOneUserSelect:
+      - "True": {message: "You should select at least one user", groups: [add,Default]}  
   properties:
     name: 
       - NotBlank: { groups: [add,Default] }

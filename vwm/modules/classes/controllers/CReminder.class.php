@@ -45,7 +45,7 @@ class CReminder extends Controller {
         $jsSources = array(
             'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
             'modules/js/checkBoxes.js',
-			'modules/js/autocomplete/jq,uery.autocomplete.js');
+			'modules/js/autocomplete/jquery.autocomplete.js');
         $this->smarty->assign('jsSources', $jsSources);
 
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
@@ -60,7 +60,7 @@ class CReminder extends Controller {
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
         }
-
+		$user = new User($this->db);
         $request = $this->getFromRequest();
         $request["id"] = $request["facilityID"];
         $request['parent_id'] = $request['facilityID'];
@@ -77,15 +77,35 @@ class CReminder extends Controller {
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails["company_id"];
 		$this->smarty->assign('dataChain', new TypeChain(null, 'date', $this->db, $companyID, 'company'));
-		$post = $this->getFromPost();		
-
+		$post = $this->getFromPost();
+		$facilityId = $request['facilityID'];
+		$usersList = $user->getUserListByFacility($facilityId);
+		$usersName = array();
+		foreach ($usersList as $user) {
+			$usersName[] = $user["username"];
+		}
+		$usersList = implode(",", $usersName);
+		$this->smarty->assign('usersList', $usersList);
+		
 		if (count($post) > 0) {
+			$user = new User($this->db);
 			$facilityID = $post['facility_id'];
 			$reminder = new Reminder($this->db);
 			$reminder->name = $post['name'];
 			$reminder->date = $post['date'];
 			$reminder->facility_id = $facilityID; 
+			$userList = $post['user_id'];
+			$reminderUsers = array();
+			$reminderUser = array();
+			foreach ($userList as $userId) {
+				$userDetails = $user->getUserDetails($userId);
+				$reminderUser["user_id"] = $userId;
+				$reminderUser["username"] = $userDetails["username"];
+				$reminderUser["email"] = $userDetails["email"];
+				$reminderUsers[] = $reminderUser;
+			}
 			$reminder->setValidationGroup("add");
+			$reminder->setUsers($reminderUsers);
 			VOCApp::get_instance()->setCustomerID($companyID);
 			VOCApp::get_instance()->setDateFormat(NULL);
 
@@ -94,6 +114,10 @@ class CReminder extends Controller {
 				$dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company'); 
 				$reminder->date = $dataChain->getTimestamp(); 
 				$reminder->save();
+				// set remind to users
+				foreach ($userList as $userId) {
+					$reminder->setRemind2User($userId);
+				}
 				// redirect
 				header("Location: ?action=browseCategory&category=facility&id=" . $facilityID . "&bookmark=reminder&notify=51");
 			} else {						
@@ -101,20 +125,42 @@ class CReminder extends Controller {
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);						
 				$this->smarty->assign('violationList', $violationList);
+				$usersName = array();
+				foreach ($reminder->users as $user) {
+					$usersName[] = $user["username"];
+				}
+				$usersList = implode(",", $usersName);			
+				$this->smarty->assign('usersList', $usersList); 
 				$this->smarty->assign('data', $post);
 			}																	
 		}
         //	set js scripts
 		$jsSources = array(
-			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js',
-			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js'
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+			"modules/js/manageReminders.js"
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources', $cssSources);
-		$this->smarty->assign('request', $request);
+		$post = new stdClass();
+		$post->facility_id = $facilityId;
+		$post->id = 0;
+		
+		$this->smarty->assign('data', $post);
+		$this->smarty->assign('request', $request);		
 		$this->smarty->assign('sendFormAction', '?action=addItem&category=' . $request['category'] . '&facilityID=' . $request['facilityID']);
 		$this->smarty->assign('pleaseWaitReason', "Recalculating reminders at Facility.");
 		$this->smarty->assign('tpl', 'tpls/addReminder.tpl');
@@ -137,7 +183,7 @@ class CReminder extends Controller {
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyID = $facilityDetails["company_id"];
-		$dataChain = new TypeChain(date("y-m-d", $reminders->date), 'date', $this->db, $companyID, 'company');
+		$dataChain = new TypeChain(date("y-m-d", $reminder->date), 'date', $this->db, $companyID, 'company');
 		$reminder->date = $dataChain->formatOutput();
 		$usersList = $reminder->getUsers();
 		$usersName = array();
@@ -149,16 +195,7 @@ class CReminder extends Controller {
 		$this->smarty->assign("usersList", $usersList);
         //set js scripts
         $jsSources = array( "modules/js/checkBoxes.js",
-						    "modules/js/autocomplete/jquery.autocomplete.js",
-						    "modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
-							"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
-						    "modules/js/manageReminders.js");
+						    "modules/js/autocomplete/jquery.autocomplete.js");
         $this->smarty->assign('jsSources', $jsSources);
 		
 		$cssSources = array("modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css",
@@ -239,13 +276,32 @@ class CReminder extends Controller {
 			$reminder = new Reminder($this->db, $post['id']);
 			$reminder->name = $post['name'];
 			$reminder->date = $post['date'];
+			$userList = $post['user_id'];
+			$reminderUsers = array();
+			$reminderUser = array();
+			$user = new User($this->db);
+			foreach ($userList as $userId) {
+				$userDetails = $user->getUserDetails($userId);
+				$reminderUser["user_id"] = $userId;
+				$reminderUser["username"] = $userDetails["username"];
+				$reminderUser["email"] = $userDetails["email"];
+				$reminderUsers[] = $reminderUser;
+			}
+			$reminder->setUsers($reminderUsers);
+			
 			VOCApp::get_instance()->setCustomerID($companyID);
-			VOCApp::get_instance()->setDateFormat(NULL);
+			VOCApp::get_instance()->setDateFormat(NULL); 
 			$violationList = $reminder->validate(); 
 			if(count($violationList) == 0) { 
 				$dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');   
 				$reminder->date = $dataChain->getTimestamp(); 
-				$reminder->save();
+				$reminder->save(); 
+				// unset all users from remind
+				$reminder->unSetRemind2User();
+				// set remind to users
+				foreach ($userList as $userId) {
+					$reminder->setRemind2User($userId);
+				}
 				// redirect
 				header("Location: ?action=viewDetails&category=reminder&id=" . $reminder->id . "&facilityID=" . $facilityID . "&notify=53");
 			} else {						
@@ -253,14 +309,31 @@ class CReminder extends Controller {
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);						
 				$this->smarty->assign('violationList', $violationList);
+				
+				foreach ($reminder->users as $user) {
+					$usersName[] = $user["username"];
+				}
+				$usersList = implode(",", $usersName);
+				$this->smarty->assign('usersList', $usersList);
+				
 				$this->smarty->assign('data', $post);
 			}																	
 		}
-
 		$jsSources = array(
+			"modules/js/checkBoxes.js",
+			"modules/js/autocomplete/jquery.autocomplete.js",
 			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
 			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js",
-			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js"
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+			"modules/js/manageReminders.js"
 		);
 
 		$this->smarty->assign('jsSources', $jsSources);
@@ -273,7 +346,14 @@ class CReminder extends Controller {
 		$this->smarty->assign('dataChain', $dataChain);
 		$dataChain->setValue(date("y-m-d", $reminder->date));
 		$reminder->date = $dataChain->formatOutput();
-
+		
+		$usersList = $reminder->getUsers();
+		$usersName = array();
+		foreach ($usersList as $user) {
+			$usersName[] = $user["username"];
+		}
+		$usersList = implode(",", $usersName);
+		$this->smarty->assign('usersList', $usersList);
 		$this->smarty->assign('data', $reminder);
 		$this->smarty->assign('tpl', 'tpls/addReminder.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -287,12 +367,18 @@ class CReminder extends Controller {
 		$facilityId = $this->getFromRequest('facilityId');
 		$remindId = $this->getFromRequest('remindId');
 		$reminder = new Reminder($this->db, $remindId);
-		$reminder2user = $reminder->getUsers();
+		
+		$user = new User($this->db);
+		$users = $user->getUserListByFacility($facilityId);
+		if ($remindId == 0) {
+			$reminder2user = $users;
+		} else {
+			$reminder2user = $reminder->getUsers();
+		}
 		foreach ($reminder2user as $user) {
 			$reminderUsers[] = $user["user_id"];
 		}
-		$user = new User($this->db);
-		$users = $user->getUserListByFacility($facilityId);
+		
 		foreach ($users as $user) {
 			$userItem['id'] = $user["user_id"];
 			$userItem['name'] = $user["username"];
@@ -303,39 +389,26 @@ class CReminder extends Controller {
 			}
 			$usersList[] = $userItem;
 		}
-//	var_dump($usersList); die();
+
         $this->smarty->assign('remindId', $remindId);
 		$this->smarty->assign('facilityId', $facilityId);
 		$this->smarty->assign('usersList', $usersList);
 		echo $this->smarty->fetch('tpls/manageReminders.tpl');
     }
     
-    protected function actionManageRemindToUser() {
+    protected function actionSetRemindToUser() {
 
-		$remindId = $this->getFromRequest('remindId');
         $rowsToSet = $this->getFromRequest('rowsToSet');
-        $rowsToUnSet = $this->getFromRequest('rowsToUnSet');
-     
-		$reminder = new Reminder($this->db, $remindId);
-		foreach ($rowsToUnSet as $row) {
-			$reminder->unSetRemind2User($row);
-		}
-        foreach ($rowsToSet as $row) {
-			$reminder->setRemind2User($row);
-		}
-		// init for new result
-		$reminder = new Reminder($this->db, $remindId); 
-		
-		$usersList = $reminder->users;
+		$response = "";
+		$user = new User($this->db);
 		$usersName = array();
-		foreach ($usersList as $user) {
-			$usersName[] = $user["username"];
+		foreach ($rowsToSet as $id) {
+			$accessName = $user->getAccessnameByID($id);
+			$usersName[] = $user->getUsernamebyAccessname($accessName);
+			$response .= "<input type='hidden' name='user_id[]' value='$id' />";
 		}
-		$usersList = implode(",", $usersName);
-		
-		if (count($reminder->users) != 0) {
-			$response = "Users: " . $usersList;
-		}
+		$response .= implode(",", $usersName);
+
 		echo $response;
 				
     }
