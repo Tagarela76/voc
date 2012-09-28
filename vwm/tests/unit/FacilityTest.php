@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class FacilityTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_PFP_TYPES, TB_REMINDERS
+		TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_PFP_TYPES, TB_REMINDER
 	);
 
 	public function testGetRepairOrdersList() {
