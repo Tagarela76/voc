@@ -1,0 +1,11 @@
+Reminders:
+  getters:
+    uniqueName:
+      - "True": {message: "Name should be unique"}
+  properties:
+    name:
+      - NotBlank: ~
+      - MaxLength: 200
+    date:
+      - NotBlank: ~
+      - DateTime: ~

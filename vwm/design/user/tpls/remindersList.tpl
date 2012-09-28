@@ -20,70 +20,33 @@
             </td>
 			<td>
 				<div class="users_header_blue">
-					Number
-				</div>
-			</td>
-
-			<td>
-				<div class="users_header_blue">
-					Description
-				</div>
-			</td>
-			<td>
-				<div class="users_header_blue">
-					Customer Name
-				</div>
-			</td>
-			<td>
-				<div class="users_header_blue">
-					Status
+					Name
 				</div>
 			</td>
 			<td>
 				<div class="users_header_blue_r">
-					<div>VIN number</div>
+					<div>Date</div>
 				</div>
 			</td>
 		</tr>
 
 {if $childCategoryItems}
-	{foreach from=$childCategoryItems item=repairOrder}
+	{foreach from=$childCategoryItems item=reminder}
 		<tr class="hov_company" height="10px">
             <td class="border_users_l border_users_b">
-                <input type="checkbox" value="{$repairOrder->id}" name="id[]">
+                <input type="checkbox" value="{$reminder->id}" name="id[]">
             </td>
             <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$reminder->url}"{/if}>
 					<div style="width:100%;">
-						{$repairOrder->number}
+						{$reminder->name}
 					</div>
 				</a>
             </td>
-            <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
-					<div style="width:100%;">
-						{$repairOrder->description|escape}
-					</div>
-				</a>
-            </td>
-			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
-					<div style="width:100%;">
-						{$repairOrder->customer_name|escape}
-					</div>
-				</a>
-			</td>
-			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
-					<div style="width:100%;">
-						{$repairOrder->status|escape}
-					</div>
-				</a>
-			</td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a {if $permissions.viewItem}href="{$reminder->url}"{/if}>
 					<div style="width:100%;">
-						{$repairOrder->vin|escape}
+						{$reminder->date|escape}
 					</div>
 				</a>
 			</td>
@@ -93,8 +56,8 @@
 
 	{*BEGIN	EMPTY LIST*}
 	<tr>
-		<td colspan="5"class="border_users_l border_users_r" align="center">
-			No repair orders in the list
+		<td colspan="3"class="border_users_l border_users_r" align="center">
+			No reminders in the list
 		</td>
 	</tr>
 	{*END	EMPTY LIST*}
@@ -103,7 +66,7 @@
 <tr>
 	<td class="users_u_bottom ">
 	</td>
-	<td colspan="5" bgcolor="" height="30" class="users_u_bottom_r">
+	<td colspan="3" bgcolor="" height="30" class="users_u_bottom_r">
 	</td>
 </tr>
 </table>

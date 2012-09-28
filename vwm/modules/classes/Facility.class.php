@@ -797,7 +797,58 @@ class Facility extends FacilityProperties {
 		$this->db->query($query);
 		return $this->db->num_rows();
 	}
+	
+	/**
+	 *
+	 * @param int $facilityId
+	 * @param Pagination $pagination
+	 * @return boolean|\Reminders 
+	 */
+	public function getRemindersList($facilityId, Pagination $pagination = null) {
+		
+		$reminders = array();
+		
+		$sql = "SELECT * FROM ". TB_REMINDERS. "
+				WHERE facility_id={$this->db->sqltext($facilityId)}"; 
+	
+        if (isset($pagination)) {
+			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}        
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		foreach ($rows as $row) {
+			$reminder = new Reminders($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($reminder, $key)) {
+					$reminder->$key = $value;
+				}
+			}
+			$reminders[] = $reminder;
+		}
+		return $reminders;
+	}
     
+	/**
+	 *
+	 * @param int $facilityID
+	 * @return boolean 
+	 */
+	public function countRemindersInFacility($facilityID) {
+		$sql = "SELECT count(id) remindersCount FROM ". TB_REMINDERS. "
+				WHERE facility_id={$this->db->sqltext($facilityID)}"; 
+
+		$this->db->query($sql);
+		if ($this->db->num_rows() > 0) {
+			return (int)$this->db->fetch(0)->remindersCount;
+		} else {
+			return false;
+		}
+	}
 }
 
 
