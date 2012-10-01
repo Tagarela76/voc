@@ -39,9 +39,16 @@ function manageReminders() {
 
 	this.loadContent = function() {
 		var that = this;
+		var userListInput = $("#usersList").find("input[type='hidden']"); 
+		var remindUsers = new Array();
+	
+		userListInput.each(function(i){ 
+			var id = this.value;
+			remindUsers.push(id);
+		}); 
 		$.ajax({
 			url: "?action=loadUsers&category=reminder",
-			data: {facilityId: settings.facilityId, remindId: settings.remindId},
+			data: {facilityId: reminderPage.facilityId, remindId: reminderPage.remindId, remindUsers: remindUsers},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -77,18 +84,18 @@ function manageReminders() {
 }
 			
 		
-function Settings() {
+function ReminderPage() {
 	this.manageReminders = new manageReminders();
 	this.facilityId = false;
 	this.remindId = false;
 }
 
 
-//	global settings object
-var settings;
+//	global reminderPage object
+var reminderPage;
 
 $(function() {
 	//	ini global object
-	settings = new Settings();
-	settings.manageReminders.iniDialog();
+	reminderPage = new ReminderPage();
+	reminderPage.manageReminders.iniDialog();
 });

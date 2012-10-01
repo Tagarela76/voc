@@ -1,9 +1,9 @@
 {literal}
 <script type="text/javascript">
 	$(function() {
-		//	global settings object defined at settings.js
-		settings.facilityId = {/literal} {$data->facility_id} {literal};
-		settings.remindId = {/literal} {$data->id} {literal};
+		//	global reminderPage object defined at manageReminders.js
+		reminderPage.facilityId = {/literal} {$data->facility_id} {literal};
+		reminderPage.remindId = {/literal} {$data->id} {literal};
 	});
 </script>
 {/literal}
@@ -72,10 +72,10 @@
 					<div align="left" style="float: left;">	
 						<div id="usersList">{$usersList|escape} 
 							{foreach from=$user_id item="user"}
-								<input type='hidden' name='user_id[]' value="{$user}" />
+								<input type='hidden' name='user_id[]' id='user_id[]' value="{$user}" />
 							{/foreach}	
 						</div>
-						<a href="#" onclick="settings.manageReminders.openDialog();">edit</a>
+						<a href="#" onclick="reminderPage.manageReminders.openDialog();">edit</a>
 						{foreach from=$violationList item="violation"}
 							{if $violation->getPropertyPath() eq 'atLeastOneUserSelect'}							
 							{*ERROR*}					

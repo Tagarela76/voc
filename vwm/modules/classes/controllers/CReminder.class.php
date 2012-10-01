@@ -258,7 +258,6 @@ class CReminder extends Controller {
     }
 	
 	protected function actionEdit() {
-		//var_dump(VOCApp::get_instance()->getCustomerID()); die();
 		//	Access control
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
@@ -348,10 +347,16 @@ class CReminder extends Controller {
 		$cssSources = array("modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css",
 							);
 		$this->smarty->assign('cssSources', $cssSources);
-
+		// i should set time independ of edit or view . So i check if post is empty - it is view and i get date as timestap. so i must format date
 		$dataChain = new TypeChain(null, 'date', $this->db, $companyID, 'company');
-		$this->smarty->assign('dataChain', $dataChain);
-		$dataChain->setValue(date("y-m-d", $reminder->date));
+		if (count($post) > 0) {
+			// edit
+			$dataChain->setValue($reminder->date);
+		} else {
+			// view
+			$dataChain->setValue(date("y-m-d", $reminder->date));
+		}		
+		$this->smarty->assign('dataChain', $dataChain);		
 		$reminder->date = $dataChain->formatOutput();
 		
 		$usersList = $reminder->getUsers();
@@ -373,22 +378,13 @@ class CReminder extends Controller {
 
 		$usersList = array();
 		$userItem = array();
-		$reminderUsers = array();
+
 		$facilityId = $this->getFromRequest('facilityId');
 		$remindId = $this->getFromRequest('remindId');
-		$reminder = new Reminder($this->db, $remindId);
-		
+		$reminderUsers = $this->getFromRequest('remindUsers');
 		$user = new User($this->db);
 		$users = $user->getUserListByFacility($facilityId);
-		if ($remindId == 0) {
-			$reminder2user = $users;
-		} else {
-			$reminder2user = $reminder->getUsers();
-		}
-		foreach ($reminder2user as $user) {
-			$reminderUsers[] = $user["user_id"];
-		}
-		
+
 		foreach ($users as $user) {
 			$userItem['id'] = $user["user_id"];
 			$userItem['name'] = $user["username"];
@@ -415,7 +411,7 @@ class CReminder extends Controller {
 		foreach ($rowsToSet as $id) {
 			$accessName = $user->getAccessnameByID($id);
 			$usersName[] = $user->getUsernamebyAccessname($accessName);
-			$response .= "<input type='hidden' name='user_id[]' value='$id' />";
+			$response .= "<input type='hidden' name='user_id[]' id='user_id[]' value='$id' />";
 		}
 		$response .= implode(",", $usersName);
 
