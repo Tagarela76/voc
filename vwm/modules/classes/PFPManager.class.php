@@ -881,7 +881,7 @@ class PFPManager {
 				 AND pfp.id NOT IN (
 									SELECT id FROM ".TB_PFP. " pfp " .
 									"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
-									"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($pfpTypeID)})";
+									"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($pfpTypeID)})"; 
 			
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
@@ -892,11 +892,13 @@ class PFPManager {
 			$query .= implode(' OR ', $searchSql);
 			$query .= ") ";
 		}
-                 
+		
+        $query .= " GROUP BY pfp.id";  
+		
         if (isset($pagination)) {
 			$query .= " ORDER BY description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}    
-     
+		} 
+
 		$this->db->query($query);
 		$rows = $this->db->fetch_all_array();
 
@@ -905,10 +907,10 @@ class PFPManager {
 		}
 		$pfpProducts = array();
 		$pfpManager = new PFPManager($this->db);
-		foreach ($rows as $row) {
+		foreach ($rows as $row) { 
 			$pfp = $pfpManager->getPfp($row["id"]);
 			$pfpProducts[] = $pfp;
-		}
+		} 
 		return $pfpProducts;
 		
 	}

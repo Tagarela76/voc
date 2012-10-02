@@ -58,7 +58,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='repairOrderCustomerName' type='text' name='repairOrderCustomerName' value='{$data->customer_name|escape}' maxlength="14">
+						<input id='repairOrderCustomerName' type='text' name='repairOrderCustomerName' value='{$data->customer_name|escape}' maxlength="30">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_customer_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -71,7 +71,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='repairOrderStatus' type='text' name='repairOrderStatus' value='{$data->status|escape}' maxlength="14">
+						<input id='repairOrderStatus' type='text' name='repairOrderStatus' value='{$data->status|escape}' maxlength="30">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_status" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
@@ -84,7 +84,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='repairOrderVin' type='text' name='repairOrderVin' value='{$data->vin|escape}' maxlength="14">
+						<input id='repairOrderVin' type='text' name='repairOrderVin' value='{$data->vin|escape}' maxlength="30">
 					</div>							
 			     				{*ERROR*}					
 								<div id="error_vin" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
