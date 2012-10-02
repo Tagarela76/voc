@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Validation;
 abstract class Model {
 	
 	/**	 
-	 * @var db - xnyo databse
+	 * @var \db - xnyo databse
 	 */
 	protected $db;
 
