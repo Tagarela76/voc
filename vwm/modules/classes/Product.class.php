@@ -1177,11 +1177,33 @@ class Product extends ProductProperties {
 				$this->db->query($query);
 				//$resultType = $this->db->fetch(0);
 				if ($this->db->num_rows() > 0) {
-					$resultID = $this->productType->createNewSubType($industryType, $industrySubType);
-					$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
-				} else {
-					$resultID = $this->productType->createNewType($industryType, $industrySubType);
-					$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
+					$industryTypeId = $this->db->fetch(0);
+
+					$industryTypeClass = new IndustryType($this->db);
+					$industryTypeClass->type = $industrySubType;
+					$industryTypeClass->parent = $industryTypeId;
+					$resultID = $industryTypeClass->add();
+					// set product to new industry type(sub type)
+					$industryTypeClass = new IndustryType($this->db, $resultID);
+					$industryTypeClass->setProductToIndustryType($productID);
+				//	$resultID = $this->productType->createNewSubType($industryType, $industrySubType);
+				//	$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
+				} else {	
+					// add industry type
+					$industryTypeClass = new IndustryType($this->db);
+					$industryTypeClass->type = $industryType;
+					$industryTypeId = $industryTypeClass->add();
+					
+					// add sub industry type
+					$industryTypeClass->type = $industrySubType;
+					$industryTypeClass->parent = $industryTypeId;
+					$resultID = $industryTypeClass->add();
+				 
+					// set product to new industry type(sub type)
+					$industryTypeClass = new IndustryType($this->db, $resultID);
+					$industryTypeClass->setProductToIndustryType($productID);
+				//	$resultID = $this->productType->createNewType($industryType, $industrySubType);
+				//	$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
 				}
 			}
 		} else {
@@ -1191,9 +1213,21 @@ class Product extends ProductProperties {
 				$resultType = $this->db->fetch(0);
 				$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultType->id . ")");
 			} else {
-				// create new Type
-				$resultID = $this->productType->createNewType($industryType, $industrySubType);
-				$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
+				// add industry type
+					$industryTypeClass = new IndustryType($this->db);
+					$industryTypeClass->type = $industryType;
+					$industryTypeId = $industryTypeClass->add();
+					
+					// add sub industry type
+					$industryTypeClass->type = $industrySubType;
+					$industryTypeClass->parent = $industryTypeId;
+					$resultID = $industryTypeClass->add();
+				 
+					// set product to new industry type(sub type)
+					$industryTypeClass = new IndustryType($this->db, $resultID);
+					$industryTypeClass->setProductToIndustryType($productID);
+				//	$resultID = $this->productType->createNewType($industryType, $industrySubType);
+				//	$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultID . ")");
 			}
 		}
 	}

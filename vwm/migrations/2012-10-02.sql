@@ -1,56 +1,29 @@
-CREATE TABLE  `reminder` (
-`id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`name` VARCHAR( 200 ) NOT NULL,
-`date` INT( 15 ) NOT NULL ,
-`facility_id` INT( 11 ) NOT NULL
-) ENGINE = INNODB ;
+ALTER TABLE  `product2type` CHANGE  `product_id`  `product_id` INT( 11 ) NOT NULL ,
+CHANGE  `type_id`  `industry_type_id` INT( 11 ) NOT NULL
 
-INSERT INTO  `notify_code` (
-`id` ,
-`code` ,
-`message`
-)
-VALUES (
-NULL ,  '51',  'Reminder Added'
-);
+RENAME TABLE  `product2type` TO  `product2industry_type` ;
+ALTER TABLE  `product2industry_type` ENGINE = INNODB
 
-INSERT INTO  `notify_code` (
-`id` ,
-`code` ,
-`message`
-)
-VALUES (
-NULL ,  '52',  'Reminder Deleted'
-);
+ALTER TABLE  `industry_type` ENGINE = INNODB
 
-INSERT INTO  `notify_code` (
-`id` ,
-`code` ,
-`message`
-)
-VALUES (
-NULL ,  '53',  'Reminder Edited'
-);
-
-INSERT INTO  `burner_manufacturer` (
-`id` ,
-`name`
-)
-VALUES (
-NULL ,  'Spray Bake'
-), (
-NULL ,  'Discover'
-);
-
-CREATE TABLE  `remind2user` (
-`user_id` INT( 11 ) NOT NULL ,
-`reminders_id` INT( 11 ) NOT NULL
-) ENGINE = INNODB ;
-
-ALTER TABLE `remind2user` ADD FOREIGN KEY ( `user_id` ) REFERENCES `user` (
-`user_id`
+ALTER TABLE `product2industry_type` ADD FOREIGN KEY ( `product_id` ) REFERENCES `product` (
+`product_id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
 
-ALTER TABLE `remind2user` ADD FOREIGN KEY ( `reminders_id` ) REFERENCES `reminder` (
+ALTER TABLE `product2industry_type` ADD FOREIGN KEY ( `industry_type_id` ) REFERENCES `industry_type` (
 `id`
+) ON DELETE CASCADE ON UPDATE RESTRICT ;
+
+CREATE TABLE  `company2industry_type` (
+`id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`company_id` INT( 11 ) NOT NULL ,
+`industry_type_id` INT( 11 ) NOT NULL
+) ENGINE = INNODB;
+
+ALTER TABLE `company2industry_type` ADD FOREIGN KEY ( `industry_type_id` ) REFERENCES `industry_type` (
+`id`
+) ON DELETE CASCADE ON UPDATE RESTRICT ;
+
+ALTER TABLE `company2industry_type` ADD FOREIGN KEY ( `company_id` ) REFERENCES `company` (
+`company_id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
