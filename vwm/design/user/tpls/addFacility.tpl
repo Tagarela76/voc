@@ -9,29 +9,23 @@
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
 </div>
-{*JQUERY POPUP SETTINGS*}
-<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
 
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
-<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
-{*END OF SETTINGS*}
 <div class="padd7">
-	<form name="addFacility">
+	<form name="addFacility" id="addEditFacilityForm">
 
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			
-			<tr class="users_u_top_size users_top">
-				<td class="users_u_top">
-					<span >{if $request.action eq "addItem"}Adding for a new facility{else}Editing facility{/if}</span>
+			<tr class="users_header_orange">
+				<td>
+					<div class="users_header_orange_l">
+						<div><b>{if $request.action eq "addItem"}Add facility{else}Edit facility{/if}</b></div>						
+					</div>										
+				</td>						
+				<td>
+					<div class="users_header_orange_r">
+						<div>&nbsp;</div>
+					</div>
 				</td>
-				<td class="users_u_top_r" width="300">
-				</td>				
 			</tr>
 
 			<tr>
@@ -91,6 +85,18 @@
 								{*ERROR*}		
 								  <div id="error_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>							
 								  <div id="error_name_alredyExist" class="error_img" style="display:none;"><span class="error_text">Such facility is already exist!</span></div>
+								{*ERROR*}								
+							</td>
+			</tr>
+			
+			<tr>
+	            <td class="border_users_l border_users_b us_gray" height="20">
+					Your Facility ID:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" class="floatleft"><input type='text' name='client_facility_id' value='{$data.client_facility_id|escape}'></div>
+								{*ERROR*}		
+								  <div id="error_client_facility_id" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>															  
 								{*ERROR*}								
 							</td>
 			</tr>
@@ -386,3 +392,17 @@ Note: Different jobbers can't supply the same products!
 </div>
 
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}		
+
+
+{*JQUERY POPUP SETTINGS*}
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
+<script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
+{*END OF SETTINGS*}

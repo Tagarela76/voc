@@ -51,9 +51,16 @@ class Facility extends Model {
 
 	protected $last_update_time;		
 	
-	public function __construct(\db $db) {
+	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = "Facility";
+		
+		if($id !== null) {
+			$this->setFacilityId($id);
+			if(!$this->_load()) {
+				throw new Exception('404');
+			}
+		}
 	}
 	
 	public function getFacilityId() {
@@ -329,6 +336,25 @@ class Facility extends Model {
 			return false;
 		}
 	}		
+	
+	
+	private function _load() {
+		if(!$this->getFacilityId()) {
+			throw new \Exception('Facility ID should be set before calling this method');
+		}
+		
+		$sql = "SELECT * FROM ".TB_FACILITY." " .
+				"WHERE facility_id = {$this->db->sqltext($this->getFacilityId())}";
+		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		$row = $this->db->fetch_array(0);
+		$this->initByArray($row);
+		
+		return true;
+	}
 }
 
 ?>

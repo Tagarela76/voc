@@ -1,6 +1,7 @@
 <?php
 
-use VWM\Hierarchy\Facility;
+namespace VWM\Hierarchy;
+
 use VWM\Framework\Test\DbTestCase;
 
 class FacilityTest extends DbTestCase {
@@ -30,8 +31,7 @@ class FacilityTest extends DbTestCase {
 		$facility->setTitle('Mr');
 		$facility->setVocAnnualLimit('9999.00');
 		$facility->setVocLimit('677.00');
-		$facility->setZip('55555');
-		$facility->setClientFacilityId('MYID');
+		$facility->setZip('55555');		
 				
 		$expectedId = 3;
 
@@ -75,7 +75,7 @@ class FacilityTest extends DbTestCase {
 				"AND client_facility_id = '{$newClientFacilityId}'";
 		$this->db->query($sql);
 		$this->assertEquals(1, $this->db->num_rows());
-		
+	
 	}
 
 }

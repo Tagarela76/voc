@@ -13,7 +13,7 @@ abstract class Model {
 
 	protected $modelName = "";
 	
-	protected $validationGroup = "Default";
+	protected $validationGroup;
 
 	/** 	 
 	 * @var \Symfony\Component\Validator\Validator;
@@ -75,7 +75,15 @@ abstract class Model {
 		if (!$modelName) {
 			$modelName = $this->modelName;
 		}
-		return $this->getValidator($modelName)->validate($this, array($this->validationGroup));
+		
+		if($this->validationGroup) {
+			return $this->getValidator($modelName)->validate(
+				$this, 
+				array($this->validationGroup));
+		} else {			
+			return $this->getValidator($modelName)->validate($this);
+		}
+		
 	}
 	
 	
