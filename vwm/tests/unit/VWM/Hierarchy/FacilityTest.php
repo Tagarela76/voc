@@ -14,26 +14,68 @@ class FacilityTest extends DbTestCase {
 		$facility->setAddress('Zaporizhske Drive, 009');
 		$facility->setCity('Dnipro');
 		$facility->setClientFacilityId('RB003');
-		$facility->setCompanyId(1);
+		$facility->setCompanyId('1');
 		$facility->setContact('Semen');
-		$facility->setCountry(2);
+		$facility->setCountry('2');
 		$facility->setCounty('region');
-		$facility->setCreaterId(1);
+		$facility->setCreaterId('1');
 		$facility->setEmail('denis.foo@blah.com');			
 		$facility->setEpa('124A');
 		$facility->setFax('99-999');
-		$facility->setGcgId(1);
-		$facility->setMonthlyNoxLimit(60);
+		$facility->setGcgId('1');
+		$facility->setMonthlyNoxLimit('60.00');
 		$facility->setName('Zoo Facility');
 		$facility->setPhone('555-55-55');
 		$facility->setState('Nevada');
 		$facility->setTitle('Mr');
-		$facility->setVocAnnualLimit(9999);
-		$facility->setVocLimit(677);
+		$facility->setVocAnnualLimit('9999.00');
+		$facility->setVocLimit('677.00');
 		$facility->setZip('55555');
-		
+		$facility->setClientFacilityId('MYID');
+				
+		$expectedId = 3;
+
 		$result = $facility->save();
-		$this->assertEquals(3, $result);	// last id
+		$this->assertEquals($expectedId, $result);	// last id
+		
+		$sql = "SELECT * FROM ".TB_FACILITY." WHERE facility_id = {$expectedId}";
+		$this->db->query($sql);
+		$row = $this->db->fetch_array(0);
+		$facilityActual = new Facility($this->db);
+		$facilityActual->initByArray($row);
+		$this->assertEquals($facility, $facilityActual);
+		
+		
+		//	now test do not set client facility id
+		$facilityWithoutClientId = clone $facility;
+		$facilityWithoutClientId->setFacilityId('');
+		$facilityWithoutClientId->setClientFacilityId('');		
+		
+		$newExpectedId = 4;
+		
+		$resultWithoutId = $facilityWithoutClientId->save();
+		$this->assertEquals($newExpectedId, $resultWithoutId);
+		
+		$sql = "SELECT * FROM ".TB_FACILITY." WHERE facility_id = {$newExpectedId}";
+		$this->db->query($sql);
+		$row = $this->db->fetch_array(0);
+		$facilityWithoutClientIdActual = new Facility($this->db);
+		$facilityWithoutClientIdActual->initByArray($row);
+		$this->assertEquals($facilityWithoutClientId, $facilityWithoutClientIdActual);			
+		
+		
+		//	now check update
+		$newClientFacilityId = 'NEWONE';
+		$facilityWithoutClientId->setClientFacilityId($newClientFacilityId);
+		$id = $facilityWithoutClientId->save();
+		$this->assertEquals($facilityWithoutClientId->getFacilityId(), $id);
+		
+		$sql = "SELECT client_facility_id FROM ".TB_FACILITY." " .
+				"WHERE facility_id = {$newExpectedId} " .
+				"AND client_facility_id = '{$newClientFacilityId}'";
+		$this->db->query($sql);
+		$this->assertEquals(1, $this->db->num_rows());
+		
 	}
 
 }

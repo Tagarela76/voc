@@ -236,7 +236,9 @@ class Facility extends Model {
 	 * Saves facility into database
 	 * @return int|bool object id or false on failure
 	 */
-	public function save() {
+	public function save() {		
+		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+		
 		if($this->getFacilityId()) {
 			return $this->_update();
 		} else {
@@ -245,10 +247,18 @@ class Facility extends Model {
 	}
 	
 	private function _insert() {
+		$clientFacilityId = ($this->getClientFacilityId()) 
+				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
+				: "NULL";						
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: "NULL";
+		
 		$sql = "INSERT INTO ".TB_FACILITY." (" .
 				"epa, company_id, name, address, city, zip, county, state, " .
 				"country, phone, fax, email, contact, title, creater_id, " .
-				"voc_limit, voc_annual_limit, gcg_id, monthly_nox_limit " .
+				"voc_limit, voc_annual_limit, gcg_id, monthly_nox_limit, " .
+				"client_facility_id, last_update_time " .
 				") VALUES ( ".
 				"'{$this->db->sqltext($this->getEpa())}', " .
 				"{$this->db->sqltext($this->getCompanyId())}, " .
@@ -268,7 +278,9 @@ class Facility extends Model {
 				"{$this->db->sqltext($this->getVocLimit())}, " .
 				"{$this->db->sqltext($this->getVocAnnualLimit())}, " .
 				"{$this->db->sqltext($this->getGcgId())}, " .				
-				"{$this->db->sqltext($this->getMonthlyNoxLimit())} " .
+				"{$this->db->sqltext($this->getMonthlyNoxLimit())}, " .
+				"{$clientFacilityId}, " .
+				"{$lastUpdateTime} " .
 				")";
 		$r = $this->db->exec($sql);
 		if($r) {
@@ -282,8 +294,41 @@ class Facility extends Model {
 	}
 	
 	private function _update() {
+		$clientFacilityId = ($this->getClientFacilityId()) 
+				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
+				: "NULL";						
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: "NULL";
+				
+		$sql = "UPDATE ".TB_FACILITY." SET " .
+				"epa='{$this->db->sqltext($this->getEpa())}', " .
+				"voc_limit={$this->db->sqltext($this->getVocLimit())}, " .
+				"voc_annual_limit={$this->db->sqltext($this->getVocAnnualLimit())}, " .
+				"name='{$this->db->sqltext($this->getName())}', " .				
+				"address='{$this->db->sqltext($this->getAddress())}', "	.
+				"city='{$this->db->sqltext($this->getCity())}', " .
+				"zip='{$this->db->sqltext($this->getZip())}', " .
+				"county='{$this->db->sqltext($this->getCounty())}', " .
+				"state='{$this->db->sqltext($this->getState())}', " .
+				"country={$this->db->sqltext($this->getCountry())}, " .
+				"phone='{$this->db->sqltext($this->getPhone())}', " .
+				"fax='{$this->db->sqltext($this->getFax())}', " .
+				"email='{$this->db->sqltext($this->getEmail())}', " .
+				"contact='{$this->db->sqltext($this->getContact())}', " .
+				"monthly_nox_limit={$this->db->sqltext($this->getMonthlyNoxLimit())}, " .
+				"title='{$this->db->sqltext($this->getTitle())}', "	.
+				"client_facility_id={$clientFacilityId}, " .
+				"last_update_time={$lastUpdateTime} " .
+				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";	
 		
-	}
+		$r = $this->db->exec($sql);
+		if($r) {			
+			return $this->getFacilityId();
+		} else {
+			return false;
+		}
+	}		
 }
 
 ?>
