@@ -12,7 +12,9 @@
 	{if $color eq "blue2" && $itemsCount == 0}
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
-
+{*PAGINATION*}
+    {include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
 <div class="padd7" align="center">	
 	<table class="users" width="100%" cellspacing="0" cellpadding="0">
 		<thead>
@@ -33,29 +35,17 @@
 	
 		<tbody>			 
 {if $allTypes|@count > 0}						 
-		 
-{*BEGIN LIST*}						 
-{*section name=i loop=$category}												
-		<tr class="hov_company">
-			<td class="border_users_l border_users_b">
- 				<input type="checkbox"  value="{$category[i].product_id}" name="item_{$smarty.section.i.index}">
- 			</td>
- 			
- 			<td class="border_users_b border_users_l">
- 				<a href="{$category[i].url}" ><div style="width:100%;">{$category[i].product_id}</div ></a>
-			</td>
-		</tr>
-{/section*}				
+			
 {foreach from=$allTypes item=type key=i}
 	<tr class="hov_company">
 		<td class="border_users_l border_users_b">
-			<input type="checkbox"  value="{$type.id}" name="item_{$i}">
+			<input type="checkbox"  value="{$type->id}" name="item_{$i}">
 		</td>
 		<td class="border_users_b border_users_l">
-			<a href="{$type.url}"><div style="width:100%;">{$type.id}</div></a>
+			<a href="{$type->url}"><div style="width:100%;">{$type->id}</div></a>
 		</td>
 		<td class="border_users_b border_users_l border_users_r">
-           	<a href="{$type.url}"><div style="width:100%;">{$type.type}</div></a>
+           	<a href="{$type->url}"><div style="width:100%;">{$type->type}</div></a>
 		</td>
 	</tr>
 {/foreach}

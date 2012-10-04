@@ -1,0 +1,8 @@
+IndustryType:
+  getters:
+    uniqueName:
+      - "True": {message: "Name should be unique", groups: [add]}
+  properties:
+    name: 
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 200, groups: [add,Default] }

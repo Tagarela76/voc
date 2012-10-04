@@ -1,204 +1,149 @@
 <?php
-class ProductTypes {
+
+use VWM\Framework\Model;
+
+class IndustryType extends Model {
+
+	/**
+	 *
+	 * @var int 
+	 */
+	public $id;
 	
 	/**
-     *
-     * @var db
-     */
-    private $db;
+	 *
+	 * @var string 
+	 */
+	public $type;
 	
-	private $industryType;
-	private $industrySubType;
+	/**
+	 *
+	 * @var int 
+	 */
+	public $parent = NULL;
 	
-	public function __construct(db $db) {
-        $this->db = $db;
-    }
+	/**
+	 *
+	 * @var string 
+	 */
+	public $url;
 	
-	public function createNewType($industryType, $industrySubType = ''){
-		$this->industryType = $industryType;
-		$this->industrySubType = $industrySubType;
-		$query = "INSERT INTO ".TB_INDUSTRY_TYPE." (type, parent) VALUES ('".$industryType."', NULL)";
-		$this->db->query($query);
-		if ($industrySubType !== ''){
-			return $this->createNewSubType($industryType, $industrySubType);
-		} else {
-			return $this->db->getLastInsertedID();
-		}
-	}
-	
-	public function createNewSubType($industryType, $industrySubType){
-		$this->industryType = $industryType;
-		$this->industrySubType = $industrySubType;
-		$query = "SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE UCASE(type) = UCASE('".$industryType."') AND parent is NULL";
-		$this->db->query($query);
-		if ($this->db->num_rows() > 0){
-			$resultSubType = $this->db->fetch(0);
-			$query = "INSERT INTO ".TB_INDUSTRY_TYPE." (type, parent) VALUES ('".$industrySubType."', ".$resultSubType->id.")";
-			$this->db->query($query);
-			return $this->db->getLastInsertedID();
-		}
+	/**
+	 *
+	 * @var array
+	 */
+	private $subIndustryTypes = array();
+
+	function __construct(db $db, $id = NULL) {
 		
+		$this->db = $db;
+		$this->modelName = 'industryType';
+
+		if (isset($id)) {
+			$this->id = $id;
+			$this->_load();
+		}
+		$this->loadSubIndustryTypes();
 	}
 	
-	public function getAllTypes(){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent is NULL";
-		$this->db->query($query);
-		if ($this->db->num_rows() > 0){
-			$allTypes = $this->db->fetch_all_array();
-			
-			return $allTypes;
-		}
-	}
-	
-	public function getAllSubTypes(){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent is not NULL ORDER BY parent";
-		$this->db->query($query);
-		if ($this->db->num_rows() > 0){
-			$allSubTypes = $this->db->fetch_all_array();
-			$allTypes = $this->getAllTypes();
-			for ($i=0; $i<count($allSubTypes); $i++){
-				for ($j=0; $j<count($allTypes); $j++){
-					if ($allSubTypes[$i]['parent'] == $allTypes[$j]['id']){
-						$allSubTypes[$i]['parentType'] = $allTypes[$j]['type'];
-					}
-				}
-			}
-			
-		return $allSubTypes;
-		}
-	}
+	private function _load() {
 
+		if (!isset($this->id)) {
+			return false;
+		}
+		$sql = "SELECT * ".
+				"FROM ".TB_INDUSTRY_TYPE." ".
+				"WHERE id={$this->db->sqltext($this->id)} " . 
+				"LIMIT 1";
+		$this->db->query($sql);
 
-	public function getTypeAndSubTypeByProductID($productID){
-		$query = "SELECT it.type, it.parent, it.id FROM ".TB_INDUSTRY_TYPE." it, ".TB_PRODUCT2TYPE." p2t ".
-				 " WHERE p2t.product_id = ".$productID." AND it.id = p2t.type_id";
-		$this->db->query($query);
-		if ($this->db->num_rows() > 0){
-			$result = $this->db->fetch_all_array();
-			foreach ($result as $key){
-				if ($key['parent'] == null){
-					$productType[$key['id']]['industryType'] = $key['type'];
-					$productType[$key['id']]['industrySubType'] = '';
-				} else {
-					$query = "SELECT type FROM ".TB_INDUSTRY_TYPE.
-							 " WHERE id = ".$key['parent']." AND parent is NULL";
-					$this->db->query($query);
-					$resultType = $this->db->fetch_array(0);
-					$productType[$key['id']]['industryType'] = $resultType['type'];
-					$productType[$key['id']]['industrySubType'] = $key['type'];
-				}
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$rows = $this->db->fetch(0);
+
+		foreach ($rows as $key => $value) {
+			if (property_exists($this, $key)) {
+				$this->$key = $value;
 			}
 		}
-		
-		return $productType;
-	}
-
-	public function getProductsByType($typeID){
-		$query = "SELECT product_id FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$typeID." ORDER BY product_id ASC";
-		$this->db->query($query);
-		$productsbyType = $this->db->fetch_all_array();
-		return $productsbyType;
-	}	
-	
-	public function setTypeAndSubTypeByProductID($productID, $types){
-		
-	}
-
-	public function getTypeDetails($typeID){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE.
-				 " WHERE id = ".$typeID;
-		$this->db->query($query);
-		$result = $this->db->fetch_array(0);
-		
-		return $result;
 	}
 	
-	public function getSubTypeDetails($subTypeID){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE id = ".$subTypeID." AND parent is not NULL";
-		$this->db->query($query);
-		if ($this->db->num_rows() > 0){
-			$allSubTypes = $this->db->fetch_all_array();
-			$allTypes = $this->getAllTypes();
-			for ($i=0; $i<count($allSubTypes); $i++){
-				for ($j=0; $j<count($allTypes); $j++){
-					if ($allSubTypes[$i]['parent'] == $allTypes[$j]['id']){
-						$allSubTypes[$i]['parentType'] = $allTypes[$j]['type'];
-					}
-				}
-			}
-			
-		return $allSubTypes;
-		}
-	}
+	/**
+	 * Add or Update industry type
+	 * @return int
+	 */
+	public function save() {
 
-	public function validateBeforeSaveType($data){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE.
-				 " WHERE UCASE(type) = UCASE('".$data['industryType_desc']."') AND parent is NULL";
-		$this->db->query($query);
-		if (($this->db->num_rows() > 0) || ($data['industryType_desc'] == '')){
-			$valid['summary'] = 'false';
-			$valid['industryType_desc'] = 'alredyExist';
+		if (!isset($this->id)) {
+			$id = $this->add();
 		} else {
-			$valid['summary'] = 'true';
+			$id = $this->update();
 		}
-		
-		return $valid;
+		return $id;
 	}
 	
-	public function validateBeforeSaveSubType($data){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE.
-				 " WHERE UCASE(type) = UCASE('".$data['industrySubType_desc']."') AND parent = ".$data['industrySubType_parentID'];
-		$this->db->query($query);
-		if (($this->db->num_rows() > 0) || ($data['industrySubType_desc'] == '')){
-			$valid['summary'] = 'false';
-			$valid['industrySubType_desc'] = 'alredyExist';
-		} else {
-			$valid['summary'] = 'true';
-		}
-		
-		return $valid;
-	}
-	
-	public function setType($data){
-		$query = "UPDATE ".TB_INDUSTRY_TYPE.
-				 " SET type = '".$data['industryType_desc']."', parent = NULL ".
-				 " WHERE id = ".$data['industryType_id'];
-		$this->db->query($query);
-	}
-	
-	public function setSubType($data){
-		$query = "UPDATE ".TB_INDUSTRY_TYPE.
-				 " SET type = '".$data['industrySubType_desc']."', parent = ".$data['industrySubType_parentID'].
-				 " WHERE id = ".$data['industrySubType_id'];
-		$this->db->query($query);
-	}
+	/**
+	 * add new industry type
+	 * if parent is not null we add sub industry type
+	 * @return int
+	 */
+	public function add() {
 
+		$parent = (isset($this->parent)) ? $this->parent : "NULL";
+		$query = "INSERT INTO " . TB_INDUSTRY_TYPE . " (type, parent) VALUES ( " .
+				"'{$this->db->sqltext($this->type)}', " .
+				"{$this->db->sqltext($parent)}" . 	
+				")";
 
-	public function deleteType($industryTypeID){
-		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE id = ".$industryTypeID);
-		$this->db->query("SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$industryTypeID);
-		$typeID = $this->db->fetch_all_array();
-		foreach ($typeID as $key){
-			$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$key['id']);
-		}
-		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$industryTypeID);
-		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$industryTypeID);
+		$this->db->query($query); 
+		$id = $this->db->getLastInsertedID();
+		$this->id = $id;
+		return $id;
 	}
 	
-	public function deleteSubType($industrySubTypeID){
-		$this->db->query("DELETE FROM ".TB_INDUSTRY_TYPE." WHERE id = ".$industrySubTypeID);
-		$this->db->query("DELETE FROM ".TB_PRODUCT2TYPE." WHERE type_id = ".$industrySubTypeID);
-	}
+	/**
+	 * update industry type
+	 * @return int
+	 */
+	public function update() {
 
-	public function getSubTypesByTypeID($typeID){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent = ".$typeID;
+		$parent = (isset($this->parent)) ? $this->parent : "NULL";
+		$query = "UPDATE " . TB_INDUSTRY_TYPE .
+				 " set type='{$this->db->sqltext($this->type)}'," .
+				 " parent={$this->db->sqltext($parent)}" .	
+				 " WHERE id= " . $this->db->sqltext($this->id);
 		$this->db->query($query);
-		$result = $this->db->fetch_all_array();
-		
-		return $result;
+
+		return $this->id;
 	}
 	
-	public function getTypesWithSubTypes(){
+	/**
+	 *  Delete industry type
+	 */
+	public function delete() {
+
+		$sql = "DELETE FROM " . TB_INDUSTRY_TYPE . 
+			   " WHERE id=" . $this->db->sqltext($this->id);
+		$this->db->query($sql);
+	}
+	
+	/**
+	 * get products id
+	 * @return array 
+	 */
+	public function getProducts() {
+		$query = "SELECT product_id " . 
+				 " FROM " . TB_PRODUCT2INDUSTRY_TYPE . 
+				 " WHERE industry_type_id={$this->db->sqltext($this->id)} " .
+				 " ORDER BY product_id ASC";
+		$this->db->query($query);
+		$products = $this->db->fetch_all_array();
+		return $products;
+	}
+	
+	// TODO : I must change this function but i don't know how - ask Denis
+	public function getTypesWithSubTypes() { 
 		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent is NULL";
 		$this->db->query($query);
 		$types = $this->db->fetch_all();
@@ -216,29 +161,84 @@ class ProductTypes {
 		return $result;
 	}
 	
-	public function searchType($querySearch){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent IS null AND UCASE(type) LIKE UCASE('%".$querySearch."%')";
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getCompanies() {
+		$query = "SELECT * " .
+				"FROM " . TB_COMPANY . " c " .
+				"LEFT JOIN " . TB_COMPANY2INDUSTRY_TYPE . " c2it ON(c2it.company_id=c.company_id) " .
+				"WHERE c2it.industry_type_id={$this->db->sqltext($this->id)}";
 		$this->db->query($query);
-		$typesArray = $this->db->fetch_all_array();
-		
-		return $typesArray;
+		$rows = $this->db->fetch_all_array();
+		return $rows;
 	}
 	
-	public function searchSubType($querySearch){
-		$query = "SELECT * FROM ".TB_INDUSTRY_TYPE." WHERE parent IS NOT null AND UCASE(type) LIKE UCASE('%".$querySearch."%')";
-		$this->db->query($query);
-		$subTypesArray = $this->db->fetch_all_array();
+	/**
+	 * add company to industry type
+	 * @param type int
+	 */
+	public function setCompanyToIndustryType($companyId) {
 		
-		$allTypes = $this->getAllTypes();
-		for ($i=0; $i<count($subTypesArray); $i++){
-			for ($j=0; $j<count($allTypes); $j++){
-				if ($subTypesArray[$i]['parent'] == $allTypes[$j]['id']){
-					$subTypesArray[$i]['parentType'] = $allTypes[$j]['type'];
+		$query = "INSERT INTO " . TB_COMPANY2INDUSTRY_TYPE . " (company_id, industry_type_id) VALUES ( " .
+				"{$this->db->sqltext($companyId)}, " .
+				"{$this->db->sqltext($this->id)}" . 	
+				")";
+
+		$this->db->query($query);
+	}
+	
+	/**
+	 * delete all dependences
+	 */
+	public function unSetCompanyFromIndustryType() {
+		$sql = "DELETE FROM " . TB_COMPANY2INDUSTRY_TYPE .
+			   " WHERE industry_type_id={$this->db->sqltext($this->id)}";
+		$this->db->query($sql);
+	}
+	
+	public function setProductToIndustryType($productId) {
+		
+		$query = "INSERT INTO " . TB_PRODUCT2INDUSTRY_TYPE . " (product_id, industry_type_id) VALUES ( " .
+				"{$this->db->sqltext($productId)}, " .
+				"{$this->db->sqltext($this->id)}" . 	
+				")";
+
+		$this->db->query($query);
+	}
+	
+	/**
+	 * load sub types
+	 * @return boolean
+	 */
+	private function loadSubIndustryTypes(){
+		$query = "SELECT * " .
+				 " FROM " . TB_INDUSTRY_TYPE . 
+				 " WHERE parent = {$this->db->sqltext($this->id)}";
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$subIndustryTypes = array();
+		foreach ($rows as $row) {
+			$subIndustryType = new IndustryType($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($subIndustryType, $key)) {
+					$subIndustryType->$key = $value;
 				}
 			}
+			$subIndustryTypes[] = $subIndustryType;
 		}
-		
-		return $subTypesArray;
+		$this->subIndustryTypes = $subIndustryTypes;
+	}
+
+	public function getSubIndustryTypes() {
+		return $this->subIndustryTypes;		
 	}
 }
+
 ?>
