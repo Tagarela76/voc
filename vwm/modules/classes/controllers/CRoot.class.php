@@ -9,8 +9,14 @@ class CRoot extends Controller
 	
 	protected function actionBrowseCategory()
 	{
+        $industryType = new IndustryType($this->db);
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);
+        
 		$companies = new Company($this->db);
-		$companyList = $companies->getCompanyList();
+        
+        $productCategory = $this->getFromRequest('productCategory');
+		$companyList = $companies->getCompanyList($productCategory);
 		
 		foreach ($companyList as $key=>$company) 
 		{

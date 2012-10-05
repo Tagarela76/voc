@@ -23,9 +23,18 @@ class Company {
 	
 	
 	
-	public function getCompanyList() {
-		//$this->db->select_db(DB_NAME);
-		$this->db->query("SELECT * FROM ".TB_COMPANY." ORDER BY name");
+	public function getCompanyList($productCategory = NULL) {
+        
+        if (isset($productCategory) && $productCategory!= 0) {
+			$sql = "SELECT * ".
+					"FROM " . TB_COMPANY . " c" .
+					" LEFT JOIN " . TB_COMPANY2INDUSTRY_TYPE . " c2it ON c2it.company_id = c.company_id " .
+					"WHERE c2it.industry_type_id={$this->db->sqltext($productCategory)}";
+			$this->db->query($sql);
+		} else {
+            $this->db->query("SELECT * FROM ".TB_COMPANY." ORDER BY name");
+        }
+		
 		if ($this->db->num_rows()) {
 			for ($i=0; $i < $this->db->num_rows(); $i++) {
 				$data=$this->db->fetch($i);
@@ -91,24 +100,7 @@ class Company {
 		
 		$this->db->query("SELECT LAST_INSERT_ID() id");
 		$company_id = $this->db->fetch(0)->id;
-		
-//		//add new Company in Bridge
-//		$query = "SELECT company_id FROM ".TB_COMPANY." order by company_id DESC Limit 1";
-//		$this->db->query($query);
-//		$data = $this->db->fetch(0);
-//		
-//		if (isset($data->company_id)) {
-//			
-//		$company_id = (int)$data->company_id;	 
-//		$companyDetails = $this->getCompanyDetails($company_id, true);				
-//		$companyDetails['period_end_date'] = $companyDetails['trial_end_date'];
-//		$companyDetails['deadline_counter'] = "NULL";
-//		$companyDetails['status'] = 'off';
-//		$bridge->addNewCustomer($company_id, $companyDetails);
-//		 
-//		}
-//		//end of Bridge	
-		
+
 		//----------------------------------------------------------------
 		//GACL
 		//----------------------------------------------------------------
@@ -192,7 +184,7 @@ class Company {
 		$query.="title='".$companyData['title']."', ";
 		$query.="voc_unittype_id=".(int)$companyData['voc_unittype_id'];
 		$query.=" WHERE company_id=".$companyData['company_id'];
-		
+
 		$this->db->query($query);
 		
 //		//save details of Company in Bridge
@@ -396,41 +388,16 @@ class Company {
 		
 		$tm = new TrackManager($this->db);
 		$this->trashRecord = $tm->save2trash(TB_COMPANY, $companyID, $CRUD, $this->parentTrashRecord);
-		
-
-		//	DEPRECATED July 16, 2010
-//		$companyID=mysql_real_escape_string($companyID);		
-//		
-//		if (isset($this->trashRecord)) {	
-//			$query = "SELECT * FROM ".TB_COMPANY." WHERE company_id = ".$companyID;
-//			$this->db->query($query);
-//			$dataRows = $this->db->fetch_all();
-//			
-//			foreach ($dataRows as $dataRow) {
-//				$companyRecords = TrackingSystem::properties2array($dataRow);		
-//				$this->trashRecord->setTable(TB_COMPANY);		
-//				$this->trashRecord->setData(json_encode($companyRecords[0]));
-//				$this->trashRecord->setUserID($_SESSION['user_id']);
-//				$this->trashRecord->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//				$this->trashRecord->setDate(time());	//	current time
-//				$this->trashRecord->save();	
-//			}			
-//
-////			//	load and save dependencies
-//			if ($CRUD != 'D') {
-//				if (false !== ($dependencies = $this->trashRecord->getDependencies(TrackingSystem::HIDDEN_DEPENDENCIES))) {				
-//					foreach ($dependencies as $dependency) {
-//						$parentID = ($dependency->getParentObj() !== null) ? $dependency->getParentObj()->getID() : null;
-//						$dependency->setUserID($_SESSION['user_id']);
-//						$dependency->setCRUD($CRUD);		//	C - Create, U - update, D - delete
-//						$dependency->setDate(time());	//	current time					
-//						$dependency->setReferrer($parentID);
-//						$dependency->save();												
-//					}
-//				}		
-//			}			
-//		}		
 
 	}			
+    
+    public function getIndustryTypes($companyId) {
+		$sql = "SELECT * " . 
+               " FROM " . TB_COMPANY2INDUSTRY_TYPE .
+			   " WHERE company_id={$this->db->sqltext($companyId)}";
+		$this->db->query($sql);
+        $companyIds = $this->db->fetch_all_array(); 
+        return $companyIds;
+	}
 }
 ?>

@@ -24,7 +24,7 @@
 				1.	Industry Sub-Category ID :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left" >&nbsp;{$typeDetails.id}</div>
+				<div align="left" >&nbsp;{$typeDetails->id}</div>
 			</td>
 		</tr>
 
@@ -33,7 +33,7 @@
 				2.	Industry Sub-Category :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left" >	&nbsp;{$typeDetails.type}</div>
+				<div align="left" >	&nbsp;{$typeDetails->type}</div>
 			</td>
 		</tr>
 		
@@ -42,7 +42,7 @@
 				3.	Industry Type :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left" >	&nbsp;{$typeDetails.parentType}</div>
+				<div align="left" >	&nbsp;{$parentIndustryTypes->type}</div>
 			</td>
 		</tr>
 		

@@ -27,3 +27,39 @@ ALTER TABLE `company2industry_type` ADD FOREIGN KEY ( `industry_type_id` ) REFER
 ALTER TABLE `company2industry_type` ADD FOREIGN KEY ( `company_id` ) REFERENCES `company` (
 `company_id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
+
+INSERT INTO  `notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '54',  'Industry type Edited'
+);
+
+INSERT INTO  `notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '55',  'Industry type Added'
+);
+
+INSERT INTO  `notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '56',  'Sub Industry type Edited'
+);
+
+INSERT INTO  `notify_code` (
+`id` ,
+`code` ,
+`message`
+)
+VALUES (
+NULL ,  '57',  'Sub Industry type Added'
+);

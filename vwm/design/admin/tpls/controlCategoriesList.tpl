@@ -35,7 +35,7 @@
 		{if $request.category neq "salesdocs"}
 		<div style="float:left; width:80px">
 
-			{if $request.category=="users"}
+			{if ($request.category == "users" || $request.category == "company")}
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem">
 				</div>

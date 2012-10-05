@@ -1167,9 +1167,9 @@ class Product extends ProductProperties {
 			$this->db->query($query);
 			if ($this->db->num_rows() > 0) {
 				$resultSubType = $this->db->fetch(0);
-				$this->db->query("SELECT * FROM " . TB_PRODUCT2TYPE . " WHERE product_id = " . $productID . " AND type_id = " . $resultSubType->id);
+				$this->db->query("SELECT * FROM " . TB_PRODUCT2INDUSTRY_TYPE . " WHERE product_id = " . $productID . " AND industry_type_id = " . $resultSubType->id);
 				if ($this->db->num_rows() == 0) {
-					$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultSubType->id . ")");
+					$this->db->query("INSERT INTO " . TB_PRODUCT2INDUSTRY_TYPE . " (product_id, industry_type_id) VALUES (" . $productID . ", " . $resultSubType->id . ")");
 				}
 			} else {
 				//create new Type or SubType
@@ -1211,7 +1211,7 @@ class Product extends ProductProperties {
 			$this->db->query($query);
 			if ($this->db->num_rows() > 0) {
 				$resultType = $this->db->fetch(0);
-				$this->db->query("INSERT INTO " . TB_PRODUCT2TYPE . " (product_id, type_id) VALUES (" . $productID . ", " . $resultType->id . ")");
+				$this->db->query("INSERT INTO " . TB_PRODUCT2INDUSTRY_TYPE . " (product_id, industry_type_id) VALUES (" . $productID . ", " . $resultType->id . ")");
 			} else {
 				// add industry type
 					$industryTypeClass = new IndustryType($this->db);
@@ -1248,7 +1248,7 @@ class Product extends ProductProperties {
 	}
 
 	public function unassignProductFromType($productID) {
-		$this->db->query("DELETE FROM " . TB_PRODUCT2TYPE . " WHERE product_id = " . $productID);
+		$this->db->query("DELETE FROM " . TB_PRODUCT2INDUSTRY_TYPE . " WHERE product_id = " . $productID);
 	}
 
 
@@ -1370,7 +1370,7 @@ class Product extends ProductProperties {
 		}
 
 		if ($this->productCategoryFilter != 0) {
-			array_push($tables, TB_PRODUCT2TYPE . " p2t");
+			array_push($tables, TB_PRODUCT2INDUSTRY_TYPE . " p2t");
 		}
 
 		//	product table should be always the last

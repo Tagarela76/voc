@@ -105,6 +105,7 @@ class CAPfpLibrary extends Controller {
 		$manager = new PFPManager($this->db);
 		$pmanager = new Product($this->db);
 		$type = new ProductTypes($this->db);
+        $industryType = new IndustryType($this->db);
 		$companyListPFP = $manager->getCompaniesByPfpID($this->getFromRequest('id'));
 		$id = $this->getFromRequest("id");
 		$pfp = $manager->getPFP($id);
@@ -121,7 +122,7 @@ class CAPfpLibrary extends Controller {
 		}
 
 		/* SORT PRODUCT BY TYPES */
-		if ($this->getFromRequest('productCategory') != 0) {
+/*		if ($this->getFromRequest('productCategory') != 0) {  / TODO I don't know WTF???????????????
 			$SubTypes = $type->getSubTypesByTypeID($this->getFromRequest('productCategory'));
 			$ProductsByType = $type->getProductsByType($this->getFromRequest('productCategory'));
 			if (isset($SubTypes)) {
@@ -139,8 +140,8 @@ class CAPfpLibrary extends Controller {
 			}
 			$pfpproduct = $productspfp;
 		}
-
-		//$productsListGrouped = $this->getProductsListGrouped($companyID,$productsIDArray);
+*/
+	//	var_dump($pfpproduct); die();
 		$this->smarty->assign('products', $pfpproduct);
 
 		$this->smarty->assign('companyList', $companyList);
@@ -235,7 +236,7 @@ class CAPfpLibrary extends Controller {
 		}
 
 		/* SORT PRODUCT BY TYPES */
-		if ($this->getFromRequest('productCategory') != 0) {
+/*		if ($this->getFromRequest('productCategory') != 0) { TODO WTF?????????????
 			$SubTypes = $type->getSubTypesByTypeID($this->getFromRequest('productCategory'));
 			$ProductsByType = $type->getProductsByType($this->getFromRequest('productCategory'));
 			if (isset($SubTypes)) {
@@ -252,7 +253,7 @@ class CAPfpLibrary extends Controller {
 				}
 			}
 			$pfpproduct = $productspfp;
-		}
+		}*/
 		//var_dump('SubTypes',$SubTypes,'ProductsByType',$ProductsByType,count($productspfp),count($pfpproduct));
 		/* SORT PRODUCT BY TYPES */
 
@@ -408,15 +409,15 @@ class CAPfpLibrary extends Controller {
 					: '';
 
 			// $query - get all PFPs where primary product belongs to $industry_type
-			$query = "SELECT pfp.id, pfp.description FROM " . TB_PFP . " pfp, " . TB_PFP2PRODUCT . " p2p, " . TB_PRODUCT . " p, " . TB_PRODUCT2TYPE . " p2t" .
+			$query = "SELECT pfp.id, pfp.description FROM " . TB_PFP . " pfp, " . TB_PFP2PRODUCT . " p2p, " . TB_PRODUCT . " p, " . TB_PRODUCT2INDUSTRY_TYPE . " p2t" .
 					" WHERE p2p.preformulated_products_id = pfp.id " .
 					" AND p2p.product_id = p.product_id " .
 					" AND p.product_id = p2t.product_id " .
 					" AND p2p.isPrimary = 1 " .
 					$filterBySupplier.
-					" AND (p2t.type_id IN " .
+					" AND (p2t.industry_type_id IN " .
 					" (SELECT id FROM " . TB_INDUSTRY_TYPE .
-					" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.type_id = {$this->db->sqltext($industry_type)})";
+					" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.industry_type_id = {$this->db->sqltext($industry_type)})";
 			$query .= " GROUP BY pfp.id";
 
 			$this->db->query($query);
@@ -456,15 +457,15 @@ class CAPfpLibrary extends Controller {
 					: '';
 
 			// $query - get all PFPs where primary product belongs to $industry_type
-			$query = "SELECT pfp.id, pfp.description FROM " . TB_PFP . " pfp, " . TB_PFP2PRODUCT . " p2p, " . TB_PRODUCT . " p, " . TB_PRODUCT2TYPE . " p2t" .
+			$query = "SELECT pfp.id, pfp.description FROM " . TB_PFP . " pfp, " . TB_PFP2PRODUCT . " p2p, " . TB_PRODUCT . " p, " . TB_PRODUCT2INDUSTRY_TYPE . " p2t" .
 					" WHERE p2p.preformulated_products_id = pfp.id " .
 					" AND p2p.product_id = p.product_id " .
 					" AND p.product_id = p2t.product_id " .
 					" AND p2p.isPrimary = 1 " .
 					$filterBySupplier.
-					" AND (p2t.type_id IN " .
+					" AND (p2t.industry_type_id IN " .
 					" (SELECT id FROM " . TB_INDUSTRY_TYPE .
-					" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.type_id = {$this->db->sqltext($industry_type)})";
+					" WHERE parent = {$this->db->sqltext($industry_type)}) OR p2t.industry_type_id = {$this->db->sqltext($industry_type)})";
 			$query .= " GROUP BY pfp.id";
 			$this->db->query($query);
 			$pfp_list = $this->db->fetch_all_array();
@@ -476,9 +477,9 @@ class CAPfpLibrary extends Controller {
 			header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary");
 		}
 		// get all industry types and sub-types
-		$cTypes = new ProductTypes(($this->db));
-		$type_list = $cTypes->getTypesWithSubTypes();
-		$this->smarty->assign("typesList", $type_list);
+		$industryType = new IndustryType($this->db);
+		$industryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("typesList", $industryTypeList);
 
 		// get company list
 		$cCompany = new Company($this->db);

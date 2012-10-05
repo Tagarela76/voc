@@ -73,8 +73,8 @@ class PFPManager {
 
 		if ($industryType != 0) {
 			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
-			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
-					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.industry_type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.industry_type_id = {$this->db->sqltext($industryType)})";
 		}
 
 		if ($supplierID != 0 ){
@@ -179,8 +179,8 @@ class PFPManager {
 
 		if ($industryType != 0) {
 			//$query .= " AND p.product_id = p2t.product_id AND p2t.type_id = {$this->db->sqltext($industryType)}";
-			$query .= " AND p.product_id = p2t.product_id AND (p2t.type_id IN ".
-					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.type_id = {$this->db->sqltext($industryType)})";
+			$query .= " AND p.product_id = p2t.product_id AND (p2t.industry_type_id IN ".
+					"(SELECT id FROM ".TB_INDUSTRY_TYPE." WHERE parent = {$this->db->sqltext($industryType)}) OR p2t.industry_type_id = {$this->db->sqltext($industryType)})";
 		}
 
 		if ($supplierID != 0 ){
@@ -804,7 +804,7 @@ class PFPManager {
 			array_push($tables, TB_PFP2COMPANY." pfp2c");
 		}
 		if ($industryType != 0) {
-			array_push($tables, TB_PRODUCT2TYPE." p2t ");
+			array_push($tables, TB_PRODUCT2INDUSTRY_TYPE." p2t ");
 		}
 
 		if ($supplierID != 0) {

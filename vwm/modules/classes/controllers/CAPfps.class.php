@@ -22,9 +22,9 @@ class CAPfps extends Controller {
 		$bookmarksList = $manager->getBookmarksListSupplier();
 		$this->smarty->assign("bookmarks", $bookmarksList);
 		
-		$productTypesObj = new ProductTypes($this->db);		 
-		$productTypeList = $productTypesObj->getTypesWithSubTypes();
-		$this->smarty->assign("productTypeList", $productTypeList);
+        $industryType = new IndustryType($this->db);	 
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);
 
 		/*		 * * calculating the length of the menu !!!!!!!!!!!!!!!NEED REWRITE!!!!!!!!!!
 		  $bmcount = $manager->getCountSupplier();

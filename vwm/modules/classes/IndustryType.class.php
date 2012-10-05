@@ -33,11 +33,17 @@ class IndustryType extends Model {
 	 * @var array
 	 */
 	private $subIndustryTypes = array();
+    
+    /**
+     *
+     * @var string 
+     */
+    public $parentIndustryType;
 
-	function __construct(db $db, $id = NULL) {
+    function __construct(db $db, $id = NULL) {
 		
 		$this->db = $db;
-		$this->modelName = 'industryType';
+		$this->modelName = 'IndustryType';
 
 		if (isset($id)) {
 			$this->id = $id;
@@ -236,8 +242,48 @@ class IndustryType extends Model {
 		$this->subIndustryTypes = $subIndustryTypes;
 	}
 
+    /**
+     *
+     * @return array 
+     */
 	public function getSubIndustryTypes() {
 		return $this->subIndustryTypes;		
+	}
+    
+    /**
+     * check if industry type unique
+     * @return boolean 
+     */
+    public function isUniqueName() {
+		$sql = "SELECT id FROM " . TB_INDUSTRY_TYPE . "
+				 WHERE type = '{$this->db->sqltext($this->type)}' ";
+		$this->db->query($sql);
+		return ($this->db->num_rows() == 0) ? true : false;
+	}
+    
+    // TODO : I must change this function but i don't know how - ask Denis
+    public function getTypeAndSubTypeByProductID($productID){
+		$query = "SELECT it.type, it.parent, it.id FROM ".TB_INDUSTRY_TYPE." it, ".TB_PRODUCT2INDUSTRY_TYPE." p2t ".
+				 " WHERE p2t.product_id = ".$productID." AND it.id = p2t.industry_type_id";
+		$this->db->query($query);
+		if ($this->db->num_rows() > 0){
+			$result = $this->db->fetch_all_array();
+			foreach ($result as $key){
+				if ($key['parent'] == null){
+					$productType[$key['id']]['industryType'] = $key['type'];
+					$productType[$key['id']]['industrySubType'] = '';
+				} else {
+					$query = "SELECT type FROM ".TB_INDUSTRY_TYPE.
+							 " WHERE id = ".$key['parent']." AND parent is NULL";
+					$this->db->query($query);
+					$resultType = $this->db->fetch_array(0);
+					$productType[$key['id']]['industryType'] = $resultType['type'];
+					$productType[$key['id']]['industrySubType'] = $key['type'];
+				}
+			}
+		}
+		
+		return $productType;
 	}
 }
 

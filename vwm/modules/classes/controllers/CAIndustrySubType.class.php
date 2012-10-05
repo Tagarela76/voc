@@ -26,121 +26,120 @@ class CAIndustrySubType extends Controller {
 	protected function bookmarkIndustrySubType($vars) {
 		extract($vars);
 		
-		$productTypes = new ProductTypes($this->db);
+        $industryTypeManager = new IndustryTypeManager($this->db);
+		
+		// get industry types count
 		if (!is_null($this->getFromRequest('q'))){
-			$allSubTypes = $productTypes->searchSubType($this->getFromRequest('q'));
+			$itemsCount = $industryTypeManager->searchSubTypeResultsCount($this->getFromRequest('q'));
 		} else {
-			$allSubTypes = $productTypes->getAllSubTypes();
+			$itemsCount = $industryTypeManager->getSubIndustryTypesCount();
 		}
+		// Pagination
+		$url = "?".$_SERVER["QUERY_STRING"];
+        $url = preg_replace("/\&page=\d*/","", $url);
+        $pagination = new Pagination($itemsCount);
+		$pagination->url = $url; 
+		$this->smarty->assign('pagination', $pagination);
+		
+		if (!is_null($this->getFromRequest('q'))){
+			$allTypes = $industryTypeManager->searchSubType($this->getFromRequest('q'), $pagination);
+		} else {
+			$allTypes = $industryTypeManager->getSubIndustryTypes($pagination);
+		}
+
 		$i = 0;
-		foreach ($allSubTypes as $item){
-			$allSubTypes[$i]['url'] = 'admin.php?action=viewDetails&category=industrySubType&id='.$item['id'];
+		foreach ($allTypes as $item){
+			$allTypes[$i]->url = 'admin.php?action=viewDetails&category=industrySubType&id='.$item->id;
+            $parenIndustryTypes = new IndustryType($this->db, $allTypes[$i]->parent);
+            $allTypes[$i]->parentIndustryType = $parenIndustryTypes->type;
 			$i++;
 		}
-		$itemsCount = count($allSubTypes);
-		
+
 		$this->smarty->assign('itemsCount', $itemsCount);
-		$this->smarty->assign('allSubTypes', $allSubTypes);
+		$this->smarty->assign('subIndustryTypes', $allTypes);
 		$this->smarty->assign('tpl', 'tpls/industrySubTypeClass.tpl');
 	}
 	
 	private function actionViewDetails() {
-		$productTypes = new ProductTypes($this->db);
-		$typeDetails = $productTypes->getSubTypeDetails($this->getFromRequest('id'));
-		$typeDetailsList['id'] = $this->getFromRequest('id');
-		$typeDetailsList['type'] = $typeDetails[0]['type'];
-		$typeDetailsList['parentType'] = $typeDetails[0]['parentType'];
-		
-		$this->smarty->assign('typeDetails', $typeDetailsList);
+
+        $subIndustryType = new IndustryType($this->db, $this->getFromRequest('id')); 
+        $industryType = new IndustryType($this->db, $subIndustryType->parent); 
+
+		$this->smarty->assign('typeDetails', $subIndustryType);
+		$this->smarty->assign('parentIndustryTypes', $industryType);
 		$this->smarty->assign('tpl', 'tpls/viewIndustrySubType.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionEdit() {
-		$id = $this->getFromRequest('id');
-		$productTypes = new ProductTypes($this->db);
+
+		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
+        $industryTypeTypeManager = new IndustryTypeManager($this->db);
+        $industryTypes = $industryTypeTypeManager->getIndustryTypes();
+        $this->smarty->assign("industryTypes",$industryTypes);
+		$post  = $this->getFromPost();
 		if ($this->getFromPost('save') == 'Save') {	
-			$data = array(
-				"industrySubType_id"	=>	$id,
-				"industrySubType_desc"	=>	$_POST["industrySubType_desc"],
-				"industrySubType_parentID" => $_POST["industrySubType_parent"],
-				"industrySubType_parent" => $productTypes->getAllTypes()
-			);
-			$validStatus = $productTypes->validateBeforeSaveSubType($data);	
-			if ($validStatus["summary"] == "true") {
-				$productTypes->setSubType($data);
-				header ('Location: admin.php?action=viewDetails&category=industrySubType&id='.$id);
-				die();											
-			}
-		} else {									
-			$tmpData = $productTypes->getSubTypeDetails($id);
-			$data = array (
-				"industrySubType_id"	=>	$id,
-				"industrySubType_desc"	=>	$tmpData[0]['type'],
-				"industrySubType_parentID" => $tmpData[0]['parent'],
-				"industrySubType_parent" => $productTypes->getAllTypes()
-			);
-		}								
-		
-		//	IF ERRORS OR NO POST REQUEST	
-		if ($validStatus["summary"] == "false") 
-		{	
-			//$notify=new Notify($smarty);
-			//$notify->formErrors();
-			$title=new Titles($this->smarty);
-			$title->titleEditItemAdmin($this->getFromRequest('category'));
-		}
-		
-		$this->smarty->assign('validStatus', $validStatus);
-		$this->smarty->assign('data', $data);
+			$industryType->type = $post["industrySubType"];
+            $industryType->parent = $post["industrySubTypeParent"];
+            //var_dump($industryType); die();
+			$violationList = $industryType->validate(); 
+			if(count($violationList) == 0) {		
+				$industryType->save();
+				// redirect
+				header("Location: ?action=viewDetails&category=industrySubType&id=" . $this->getFromRequest('id') . "&&notify=56");
+			} else {						
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);						
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $post);
+			}	
+		} else {
+            $this->smarty->assign('data', $industryType);
+        }						
 		$this->smarty->assign('tpl','tpls/addIndustrySubTypeClass.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionAddItem() {
-		$id = $this->getFromRequest('id');
-		$productTypes = new ProductTypes($this->db);
-		if ($this->getFromPost('save') == 'Save') {	
-			$data = array(
-				"industrySubType_id"	=>	$id,
-				"industrySubType_desc"	=>	$_POST["industrySubType_desc"],
-				"industrySubType_parentID" => $_POST["industrySubType_parent"],
-				"industrySubType_parent" => $productTypes->getAllTypes()
-			);
-			$validStatus = $productTypes->validateBeforeSaveSubType($data);	
-			if ($validStatus["summary"] == "true") {
-				$indType = $productTypes->getTypeDetails($data['industrySubType_parentID']);
-				$productTypes->createNewSubType($indType['type'], $data['industrySubType_desc']);
-				header ('Location: admin.php?action=browseCategory&category=tables&bookmark=industrySubType');
-				die();											
-			}
-		} else {
-			$data = array (
-				"industrySubType_parent" => $productTypes->getAllTypes()
-			);
-			//$notify=new Notify($smarty);
-			//$notify->formErrors();
-			$title=new Titles($this->smarty);
-			$title->titleEditItemAdmin($this->getFromRequest('category'));
-		}
-		
-		$this->smarty->assign('validStatus', $validStatus);
-		$this->smarty->assign('data', $data);
-		$this->smarty->assign('tpl','tpls/addIndustrySubTypeClass.tpl');
+        
+        $industryType = new IndustryType($this->db);
+        $industryTypeTypeManager = new IndustryTypeManager($this->db);
+        $industryTypes = $industryTypeTypeManager->getIndustryTypes();
+        $this->smarty->assign("industryTypes",$industryTypes);
+        $post = $this->getFromPost();
+        if ($this->getFromPost('save') == 'Save'){
+            $industryType->type = $post["industrySubType"];
+            $industryType->parent = $post["industrySubTypeParent"];
+            $industryType->setValidationGroup("add");
+            $violationList = $industryType->validate(); 
+            if(count($violationList) == 0) {		
+                $industryType->save();
+                // redirect
+                header("Location: ?action=browseCategory&category=tables&bookmark=industrySubType&notify=57");
+            } else {						
+                $notifyc = new Notify(null, $this->db);
+                $notify = $notifyc->getPopUpNotifyMessage(401);
+                $this->smarty->assign("notify", $notify);						
+                $this->smarty->assign('violationList', $violationList);
+                $this->smarty->assign('data', $post);
+            }
+        }
+		$this->smarty->assign("currentOperation","addItem");
+		$this->smarty->assign('tpl', 'tpls/addIndustrySubTypeClass.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionDeleteItem() {
 		$itemsCount = $this->getFromRequest('itemsCount');
 		$itemForDelete = array();
-		$productTypes = new ProductTypes($this->db);
+
 		for ($i=0; $i<$itemsCount; $i++) {
 			if (!is_null($this->getFromRequest('item_'.$i))) {
 				$item = array();
-				$productSubTypeDetails = $productTypes->getSubTypeDetails($this->getFromRequest('item_'.$i));
-				$item["id"]	= $productSubTypeDetails[0]['id'];
-				$item["name"] = $productSubTypeDetails[0]['type'];
-				$item['parentName'] = $productSubTypeDetails[0]['parentType'];
+                $industrytype = new IndustryType($this->db, $this->getFromRequest('item_'.$i));
+				$item["id"]	= $industrytype->id;
+				$item["name"] = $industrytype->type;
 				$itemForDelete[] = $item;
 			}
 		}
@@ -150,10 +149,10 @@ class CAIndustrySubType extends Controller {
 	
 	private function actionConfirmDelete() {
 		$itemsCount = $this->getFromRequest('itemsCount');
-		$productTypes = new ProductTypes($this->db);
+
 		for ($i=0; $i<$itemsCount; $i++) {
-			$id = $this->getFromRequest('item_'.$i);
-			$productTypes->deleteSubType($id);
+			$industrytype = new IndustryType($this->db, $this->getFromRequest('item_'.$i));
+            $industrytype->delete();
 		}
 		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category'));
 		die();

@@ -181,20 +181,39 @@ class IndustryTypeManager extends Model {
 		}  
 		$this->db->query($sql);
 		
-		$subTypesArray = $this->db->fetch_all_array();
-		
-		$allTypes = $this->getAllTypes();
-		for ($i=0; $i<count($subTypesArray); $i++){
-			for ($j=0; $j<count($allTypes); $j++){
-				if ($subTypesArray[$i]['parent'] == $allTypes[$j]['id']){
-					$subTypesArray[$i]['parentType'] = $allTypes[$j]['type'];
+		$rows = $this->db->fetch_all_array();
+
+		foreach ($rows as $row) {
+			$industryType = new IndustryType($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($industryType, $key)) {
+					$industryType->$key = $value;
 				}
 			}
+			$industryTypes[] = $industryType;
 		}
-		
-		return $subTypesArray;
+		return $industryTypes;
 	}
 	
+    /**
+     *
+     * @param string $querySearch
+     * @return boolean 
+     */
+    public function searchSubTypeResultsCount($querySearch) {
+
+		$sql = "SELECT * " .
+				 " FROM " . TB_INDUSTRY_TYPE . 
+				 " WHERE parent IS NOT null AND UCASE(type) LIKE UCASE('%".$querySearch."%')";
+		$this->db->query($sql);
+
+		if ($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return $this->db->num_rows();
+		}
+	}
+    
 	/**
 	 * 
 	 * @param type int
@@ -223,6 +242,44 @@ class IndustryTypeManager extends Model {
 			$industryTypes[] = $industryType;
 		}
 		return $industryTypes;		
+	}
+    
+
+	public function getIndustrytypesByCompanyId($companyId) {
+		$query = "SELECT * " .
+				"FROM " . TB_INDUSTRY_TYPE . " it " .
+				"LEFT JOIN " . TB_COMPANY2INDUSTRY_TYPE . " c2it ON(c2it.industry_type_id=it.id) " .
+				"WHERE c2it.company_id={$this->db->sqltext($companyId)}"; 
+		$this->db->query($query);
+		$rows = $this->db->fetch_all_array();
+		return $rows;
+	}
+	
+	/**
+	 * add company to industry type
+	 * @param type int
+	 */
+	public function setCompanyToIndustryType($companyId, $industrytype) {
+		
+		$query = "INSERT INTO " . TB_COMPANY2INDUSTRY_TYPE . " (company_id, industry_type_id) VALUES ( " .
+				"{$this->db->sqltext($companyId)}, " .
+				"{$this->db->sqltext($industrytype)}" . 	
+				")";
+
+		$this->db->query($query);
+	}
+    
+    /**
+	 * add company to industry type
+	 * @param type int
+	 */
+	public function unSetCompanyToIndustryType($companyId) {
+		
+		$query = "DELETE " .
+                 " FROM " . TB_COMPANY2INDUSTRY_TYPE .
+                 " WHERE company_id={$this->db->sqltext($companyId)}";
+
+		$this->db->query($query);
 	}
 
 

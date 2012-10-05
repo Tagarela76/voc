@@ -23,15 +23,15 @@
 				Industry Sub-Category:
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left"><input type='text' name='industrySubType_desc' value='{$data.industrySubType_desc}' size="40%"/></div>
+				<div align="left"><input type='text' name='industrySubType' value='{$data->type}' size="40%"/></div>
 							
-					{if $validStatus.summary eq 'false'}
-						{if $validStatus.industrySubType_desc eq 'alredyExist'}
-							<div style="width:220px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-								<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Entered name is alredy in use!</font>
-							</div>
-						{/if}
-					{/if}								
+					{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'type' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}									
 			</td>
 		</tr>
 		<tr height="10px">
@@ -40,9 +40,9 @@
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
 				<div align="left">
-					<select name='industrySubType_parent'>
-						{foreach from=$data.industrySubType_parent item=parent}
-							<option value="{$parent.id}" {if $parent.id eq $data.industrySubType_parentID} selected {/if}>{$parent.type}</option>
+					<select name='industrySubTypeParent'>
+						{foreach from=$industryTypes item=parent}
+							<option value="{$parent->id}" {if $parent->id eq $data->parent} selected {/if}>{$parent->type}</option>
 						{/foreach}	
 					</select>
 				</div>
@@ -65,12 +65,5 @@
 			{if $request.action=='addItem'} onclick='location.href="admin.php?action=browseCategory&category=tables&bookmark=industrySubType"'{/if}/>
 		<span style="padding-right:50">&nbsp;</span>
 		</div>
-		{*  <input type='hidden' name='itemID' value='apmethod'>
-		<input type='hidden' name='categoryID' value='class'>
-		<input type='hidden' name='action' value={$currentOperation}>
-		
-		{if $currentOperation eq "updateItem"}
-			<input type="hidden" name="id" value="{$ID}">
-		{/if}*}
 		</form>
 </div>	

@@ -115,9 +115,9 @@ class CAProduct extends Controller {
 
 		$this->smarty->assign('facilityList', $facilityList);
 
-		$productTypesObj = new ProductTypes($this->db);
-		$productTypeList = $productTypesObj->getTypesWithSubTypes();
-		$this->smarty->assign("productTypeList", $productTypeList);
+		$industryType = new IndustryType($this->db);
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);
 
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
 		$product->productCategoryFilter = $productCategory;
@@ -285,9 +285,9 @@ class CAProduct extends Controller {
 		$inventoryManager = new InventoryManager($this->db);
 		$initialInstock = $inventoryManager->getInitialInStockValues($this->getFromRequest('id'));
 		$stockTypeDetails = $cUnitType->getUnittypeDetails($initialInstock['product_stocktype']);
-		//
-		$cProductTypes = new ProductTypes($this->db);
-		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+
+        $industrytype = new IndustryType($this->db);
+		$productIndustryTypes = $industrytype->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
 
 		$msdsLink = $product->checkForAvailableMSDS($productDetails['product_id']);
 		$techSheetLink = $product->checkForAvailableTechSheet($productDetails['product_id']);
@@ -307,7 +307,7 @@ class CAProduct extends Controller {
 
 		$this->smarty->assign('page', $this->getFromRequest('page'));
 		$this->smarty->assign('letterpage', $this->getFromRequest('letterpage'));
-		$this->smarty->assign('productTypes', $productType);
+		$this->smarty->assign('productIndustryTypes', $productIndustryTypes);
 		$this->smarty->assign('densityDetails', $densityDetailsTrue);
 		$this->smarty->assign("product", $productDetails);
 		$this->smarty->assign("stock", $stockTypeDetails);
@@ -318,12 +318,14 @@ class CAProduct extends Controller {
 	}
 
 	private function actionEdit() {
-		$cProductTypes = new ProductTypes($this->db);
-		$productTypesList = $cProductTypes->getTypesWithSubTypes();
-		$this->smarty->assign('productTypeList', $productTypesList);
+        
+        $industryType = new IndustryType($this->db);
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);
 		$this->smarty->assign('page', $this->getFromRequest('page'));
-		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
-		$this->smarty->assign('productTypes', $productType);
+        
+		$productIndustryType = $industryType->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		$this->smarty->assign('productTypes', $productIndustryType);
 
 		$product = new Product($this->db);
 		$id = $this->getFromRequest('id');
@@ -376,14 +378,15 @@ class CAProduct extends Controller {
 			$productData['chemicalClasses'] = $chemicalClasses;
 
 			// process industry types
-			$prodTypeList = $cProductTypes->getAllTypes();
-			$prodSubTypeList = $cProductTypes->getAllSubTypes();
-			$prodTypeAndSubTypeList = array_merge_recursive($prodTypeList, $prodSubTypeList);
+            $industryTypemanager = new IndustryTypeManager($this->db);
+            $industryTypes = $industryTypemanager->getIndustryTypes();
+            $industrySubTypes = $industryTypemanager->getSubIndustryTypes();
+			$prodTypeAndSubTypeList = array_merge_recursive($industryTypes, $industrySubTypes);
 
 			for ($i=0; $i<count($prodTypeAndSubTypeList); $i++){
 				if (!is_null($this->getFromPost('typesClass_'.$i))){
 					foreach ($prodTypeAndSubTypeList as $item) {
-						if ($this->getFromPost('typesClass_'.$i) == $item['id']){
+						if ($this->getFromPost('typesClass_'.$i) == $item->id){
 							$productAllTypesList[] = $item;
 						}
 					}
@@ -391,12 +394,13 @@ class CAProduct extends Controller {
 			}
 			$j = 0;
 			foreach ($productAllTypesList as $prod){
-				if ($prod['parent'] == null){
-					$resProductAllTypesList[$j]['type'] = $prod['type'];
+				if ($prod->parent == null){
+					$resProductAllTypesList[$j]['type'] = $prod->type;
 					$resProductAllTypesList[$j]['subType'] = '';
 				} else {
-					$resProductAllTypesList[$j]['type'] = $prod['parentType'];
-					$resProductAllTypesList[$j]['subType'] = $prod['type'];
+                    $parentType = new IndustryType($this->db, $prod->parent);
+					$resProductAllTypesList[$j]['type'] = $parentType->type;
+					$resProductAllTypesList[$j]['subType'] = $prod->type;
 				}
 				$j++;
 			}
@@ -468,11 +472,11 @@ class CAProduct extends Controller {
 			$chemicalClassesList = $hazardous->getChemicalClassesList();
 			$this->smarty->assign("chemicalClassesList",$chemicalClassesList);
 
-			$productTypesList = $cProductTypes->getTypesWithSubTypes();
-			$this->smarty->assign('productTypeList', $productTypesList);
+			$productIndustryTypesList = $industryType->getTypesWithSubTypes();
+			$this->smarty->assign('productTypeList', $productIndustryTypesList);
 
-			$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
-			$this->smarty->assign('productTypes', $productType);
+			$productIndustryType = $industryType->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+			$this->smarty->assign('productTypes', $productIndustryType);
 
 			//density
 			$cDensity = new Density($this->db);
@@ -956,12 +960,13 @@ class CAProduct extends Controller {
 		$chemicalClassesList = $hazardous->getChemicalClassesList();
 		$this->smarty->assign("chemicalClassesList", $chemicalClassesList);
 
-		$cProductTypes = new ProductTypes($this->db);
-		$productTypesList = $cProductTypes->getTypesWithSubTypes();
-		$this->smarty->assign('productTypeList', $productTypesList);
+        
+		$industrytype = new IndustryType($this->db);
+		$productIndustryTypesList = $industrytype->getTypesWithSubTypes();
+		$this->smarty->assign('productTypeList', $productIndustryTypesList);
 
-		$productType = $cProductTypes->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
-		$this->smarty->assign('productTypes', $productType);
+		$productIndustryType = $industrytype->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		$this->smarty->assign('productTypes', $productIndustryType);
 
 		//density
 		$cDensity = new Density($this->db);

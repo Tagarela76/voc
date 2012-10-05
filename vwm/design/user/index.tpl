@@ -151,8 +151,13 @@
 															{/literal}
 															{include file="tpls:tpls/search.tpl"}
 														{/if}
-													{*/SEARCH*}
-
+                                                                                                        {*/SEARCH*}
+                                                    {if $request.category == "root"}
+                                                         <div>
+                                                            {include file="tpls:tpls/companyToIndustryTypesDropDown.tpl"}
+                                                        </div>
+                                                        <br />
+                                                    {/if}    
 
 													{*INSERT_AFTER_SEARCH*}
 													{*Stupid Smarty does not support class constants*}
