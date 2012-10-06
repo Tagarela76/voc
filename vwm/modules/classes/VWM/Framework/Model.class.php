@@ -14,12 +14,12 @@ abstract class Model {
 	protected $modelName = "";
 	
 	protected $validationGroup;
-
-	/** 	 
+	
+	/**
 	 * @var \Symfony\Component\Validator\Validator;
 	 */
 	private $validator;
-
+	
 	/**
 	 * 
 	 * Overvrite get property if property is not exists or private.
@@ -108,5 +108,11 @@ abstract class Model {
 	public function setValidationGroup($validationGroup) {
 		$this->validationGroup = $validationGroup;
 	}
-
+	
+	/**
+	 * Saves model to database
+	 * Should be implemented by children
+	 */
+	public function save() {		
+	}	
 }
