@@ -4,8 +4,8 @@ namespace VWM\GeneralInterfaces;
 
 
 interface ITrackable {
-	public function increaseQty();
-	public function decreaseQty();
+	public function increaseQty($byQty = 1);
+	public function decreaseQty($byQty = 1);
 }
 
 ?>
