@@ -9,6 +9,7 @@ use VWM\Framework\Model;
  */
 abstract class GeneralProduct extends Model {
 	
+	protected $id;
 	protected $name;
 	protected $product_instock;
 	protected $product_limit;
@@ -27,12 +28,20 @@ abstract class GeneralProduct extends Model {
 	 */
 	protected $cribContext;
 	
-	/**	 
-	 * @var \VWM\Entity\Product\BinContext
+	/**
+	 *
+	 * @var array key => value, where key is bin_id
 	 */
-	protected $binContext;
+	protected $binContext = array();
 
-
+	public function getId() {	
+		return $id;
+	}
+	
+	public function setId($id) {		
+		$this->id = $id;
+	}
+	
 	public function getName() {
 		return $this->name;
 	}
@@ -106,11 +115,19 @@ abstract class GeneralProduct extends Model {
 	}
 
 	/**	 
-	 * @return VWM\Entity\Product\BinContext
-	 * TODO: finish me
+	 * @return VWM\Entity\Product\BinContext|boolean
 	 */
 	public function getBinContext($binId) {
-		return $this->binContext;
+		if(!$this->binContext[$binId]) {
+			$binContext = new BinContext($this->db);
+			if(!$binContext->load($this->getId(), $binId)) {
+				return false;
+			}
+		
+			$this->binContext[$binId] = $binContext;	
+		}		
+		
+		return $this->binContext[$binId];
 	}
 
 

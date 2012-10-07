@@ -32,9 +32,10 @@ class PaintProduct extends GeneralProduct {
 
 	const TABLE_NAME = 'product';
 
-	public function __construct(\db $db) {
+	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = 'PaintProduct';
+		//TODO:
 	}
 	
 	public function getId() {
@@ -42,6 +43,7 @@ class PaintProduct extends GeneralProduct {
 	}
 	
 	public function setId($id) {
+		$this->id = $id;
 		$this->product_id = $id;
 	}
 
