@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Cribs;
+namespace VWM\Entity\Crib;
 
 use VWM\Framework\Test\DbTestCase;
 
@@ -51,7 +51,7 @@ class BinTest extends DbTestCase {
 		$binId = 1;
 		$bin = new Bin($this->db, $binId);
 		$crib = $bin->getCrib();
-		$this->assertInstanceOf('\VWM\Cribs\Crib', $crib);	
+		$this->assertInstanceOf('\VWM\Entity\Crib\Crib', $crib);	
 		
 		$expectedCrib = new Crib($this->db, 1);
 		$this->assertEquals($expectedCrib, $crib);

@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Cribs;
+namespace VWM\Entity\Crib;
 
 use VWM\Framework\Model;
 
@@ -12,7 +12,7 @@ class Crib extends Model {
 
 	/**
 	 * Crib's bins
-	 * @var Bin[]
+	 * @var \VWM\Entity\Crib\Bin[]
 	 */
 	protected $bins;
 	
@@ -57,7 +57,7 @@ class Crib extends Model {
 
 	/**
 	 * Crib's bins
-	 * @return Bin[]
+	 * @return \VWM\Entity\Crib\Bin[]
 	 */
 	public function getBins() {
 		

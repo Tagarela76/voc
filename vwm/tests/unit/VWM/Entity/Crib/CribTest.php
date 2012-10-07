@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Cribs;
+namespace VWM\Entity\Crib;
 
 use VWM\Framework\Test\DbTestCase;
 
