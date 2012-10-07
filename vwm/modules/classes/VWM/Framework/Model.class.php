@@ -14,11 +14,22 @@ abstract class Model {
 	protected $modelName = "";
 	
 	protected $validationGroup;
-	
+		
+	protected $last_update_time;	
+
 	/**
 	 * @var \Symfony\Component\Validator\Validator;
 	 */
 	private $validator;
+	
+	
+	public function getLastUpdateTime() {
+		return $this->last_update_time;
+	}
+
+	public function setLastUpdateTime($lastUpdateTime) {
+		$this->last_update_time = $lastUpdateTime;
+	}
 	
 	/**
 	 * 
@@ -110,9 +121,29 @@ abstract class Model {
 	}
 	
 	/**
-	 * Saves model to database
+	 * Saves model to database	 
+	 */
+	public function save() {	
+		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+		
+		if($this->getId()) {
+			return $this->_update();
+		} else {
+			return $this->_insert();
+		}
+	}
+	
+	/**
 	 * Should be implemented by children
 	 */
-	public function save() {		
-	}	
+	protected function _insert() {
+		throw new \Exception("Insert should be implemented by child");
+	}
+	
+	/**
+	 * Should be implemented by children
+	 */
+	protected function _update() {
+		throw new \Exception("Update should be implemented by child");
+	}
 }
