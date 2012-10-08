@@ -3,9 +3,19 @@
 namespace VWM\Entity\Product;
 
 use VWM\Framework\Test\DbTestCase;
+use VWM\Entity\Crib\Bin;
 
 class PaintProductTest extends DbTestCase {
 	
+	protected $fixtures = array(
+		TB_FACILITY,
+		TB_SUPPLIER,
+		TB_PRODUCT,
+		Bin::TABLE_NAME,
+		BinContext::TABLE_NAME,
+	);
+
+
 	public function testSave() {
 		$paintProduct = new PaintProduct($this->db);
 		$paintProduct->setAerosol('no');

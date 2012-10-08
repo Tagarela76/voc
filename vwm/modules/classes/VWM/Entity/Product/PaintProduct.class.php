@@ -35,7 +35,12 @@ class PaintProduct extends GeneralProduct {
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = 'PaintProduct';
-		//TODO:
+		if($id !== null) {
+			$this->setId($id);
+			if(!$this->_load()) {
+				throw new \Exception('404');
+			}
+		}
 	}
 	
 	public function getId() {
@@ -205,6 +210,24 @@ class PaintProduct extends GeneralProduct {
 	
 	protected function _update() {
 		
+	}
+	
+	protected function _load() {
+		if(!$this->getId()) {
+			throw new \Exception('Paint Product ID should be set before calling this method');
+		}
+		
+		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
+				"WHERE product_id = {$this->db->sqltext($this->getId())}";
+		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		$row = $this->db->fetch_array(0);
+		$this->initByArray($row);
+		
+		return true;
 	}
 
 }
