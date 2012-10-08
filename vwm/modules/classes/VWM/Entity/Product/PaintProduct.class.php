@@ -206,10 +206,87 @@ class PaintProduct extends GeneralProduct {
 
 	protected function _insert() {
 		
+		$sql = "INSERT INTO ". TB_PRODUCT." (name, product_instock, " .
+				"product_limit, product_amount, product_stocktype, " .
+				"product_pricing, price_unit_type, product_nr, voclx, vocwx, " .
+				"density, density_unit_id, coating_id, paint_chemical, " .
+				"specialty_coating, aerosol, specific_gravity, " .
+				"specific_gravity_unit_id, boiling_range_from, " .
+				"boiling_range_to, flash_point, supplier_id, " .
+				"percent_volatile_weight, percent_volatile_volume, " .
+				"closed, discontinued) VALUES ( "  .
+				"'{$this->db->sqltext($this->getName())}', " .
+				"{$this->db->sqltext($this->getProductInstock())}, " .
+				"{$this->db->sqltext($this->getProductLimit())}, " .
+				"{$this->db->sqltext($this->getProductAmount())}, " .
+				"{$this->db->sqltext($this->getProductStocktype())}, " .
+				"'{$this->db->sqltext($this->getProductPricing())}', " .
+				"{$this->db->sqltext($this->getPriceUnitType())}, " .
+				"'{$this->db->sqltext($this->getProductNr())}', " .
+				"{$this->db->sqltext($this->getVoclx())}, " .
+				"{$this->db->sqltext($this->getVocwx())}, " .
+				"{$this->db->sqltext($this->getDensity())}, " .
+				"{$this->db->sqltext($this->getDensityUnitId())}, " .
+				"{$this->db->sqltext($this->getCoatingId())}, " .
+				"'{$this->db->sqltext($this->getPaintChemical())}', " .
+				"'{$this->db->sqltext($this->getSpecialtyCoating())}', " .
+				"'{$this->db->sqltext($this->getAerosol())}', " .
+				"{$this->db->sqltext($this->getSpecificGravity())}, " .
+				"{$this->db->sqltext($this->getSpecificGravityUnitId())}, " .
+				"{$this->db->sqltext($this->getBoilingRangeFrom())}, " .
+				"{$this->db->sqltext($this->getBoilingRangeTo())}, " .
+				"'{$this->db->sqltext($this->getFlashPoint())}', " .
+				"{$this->db->sqltext($this->getSupplierId())}, " .
+				"{$this->db->sqltext($this->getPercentVolatileWeight())}, " .
+				"{$this->db->sqltext($this->getPercentVolatileVolume())}, " .
+				"'{$this->db->sqltext($this->getClosed())}', " .
+				"{$this->db->sqltext($this->getDiscontinued())} " .
+				")";
+				
+		if(!$this->db->exec($sql)) {
+			return false;
+		}
+		
+		$this->setId($this->db->getLastInsertedID());
+		
+		return $this->getId();
 	}
 	
 	protected function _update() {
 		
+		$sql = "UPDATE ".TB_PRODUCT." SET " .
+				"name = '{$this->db->sqltext($this->getName())}', " .
+				"product_instock = {$this->db->sqltext($this->getProductInstock())}, " .
+				"product_limit = {$this->db->sqltext($this->getProductLimit())}, " .
+				"product_amount = {$this->db->sqltext($this->getProductAmount())}, " .		
+				"product_stocktype = {$this->db->sqltext($this->getProductStocktype())}, " .
+				"product_pricing = '{$this->db->sqltext($this->getProductPricing())}', " .
+				"price_unit_type = {$this->db->sqltext($this->getPriceUnitType())}, " .
+				"product_nr = '{$this->db->sqltext($this->getProductNr())}', " .
+				"voclx = {$this->db->sqltext($this->getVoclx())}, " .
+				"vocwx = {$this->db->sqltext($this->getVocwx())}, " .
+				"density = {$this->db->sqltext($this->getDensity())}, " .
+				"density_unit_id = {$this->db->sqltext($this->getDensityUnitId())}, " .
+				"coating_id = {$this->db->sqltext($this->getCoatingId())}, " .
+				"paint_chemical = '{$this->db->sqltext($this->getPaintChemical())}', " .
+				"specialty_coating = '{$this->db->sqltext($this->getSpecialtyCoating())}', " .
+				"aerosol = '{$this->db->sqltext($this->getAerosol())}', " .
+				"specific_gravity = {$this->db->sqltext($this->getSpecificGravity())}, " .
+				"specific_gravity_unit_id = {$this->db->sqltext($this->getSpecificGravityUnitId())}, " .
+				"boiling_range_from = {$this->db->sqltext($this->getBoilingRangeFrom())}, " .
+				"boiling_range_to = {$this->db->sqltext($this->getBoilingRangeTo())}, " .
+				"flash_point = '{$this->db->sqltext($this->getFlashPoint())}', " .
+				"supplier_id = {$this->db->sqltext($this->getSupplierId())}, " .
+				"percent_volatile_weight = {$this->db->sqltext($this->getPercentVolatileWeight())}, " .
+				"percent_volatile_volume = {$this->db->sqltext($this->getPercentVolatileVolume())}, " .
+				"closed = '{$this->db->sqltext($this->getClosed())}', " . 
+				"discontinued = {$this->db->sqltext($this->getDiscontinued())} " .
+				"WHERE product_id = {$this->db->sqltext($this->getId())}";
+		if(!$this->db->exec($sql)) {
+			return false;
+		}				
+		
+		return $this->getId();
 	}
 	
 	protected function _load() {

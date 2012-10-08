@@ -35,7 +35,7 @@ abstract class GeneralProduct extends Model {
 	protected $binContext = array();
 
 	public function getId() {	
-		return $id;
+		return $this->id;
 	}
 	
 	public function setId($id) {		

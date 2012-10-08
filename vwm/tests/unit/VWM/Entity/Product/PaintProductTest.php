@@ -28,8 +28,8 @@ class PaintProductTest extends DbTestCase {
 		$paintProduct->setDiscontinued('0');
 		$paintProduct->setFlashPoint('0');
 		$paintProduct->setName('SUPER TEST');
-		$paintProduct->setPercentVolatileVolume('54.4');
-		$paintProduct->setPercentVolatileWeight('64.34');
+		$paintProduct->setPercentVolatileVolume('54.400');
+		$paintProduct->setPercentVolatileWeight('64.340');
 		$paintProduct->setPriceUnitType('1');
 		$paintProduct->setProductAmount('25');
 		$paintProduct->setProductInstock('50');
@@ -44,7 +44,31 @@ class PaintProductTest extends DbTestCase {
 		$paintProduct->setVoclx('7.45');
 		$paintProduct->setVocwx('7.64');
 		
-		$r = $paintProduct->save();		
+		$r = $paintProduct->save();	
+
+		$expectedId = 5;
+		$this->assertEquals($expectedId, $r);
+		
+		$sql = "SELECT * FROM ". TB_PRODUCT ." WHERE product_id = {$expectedId}";
+		$this->db->query($sql);
+		$this->assertEquals(1, $this->db->num_rows());
+		
+		$row = $this->db->fetch_array(0);
+		$expectedProduct = new PaintProduct($this->db);
+		$expectedProduct->initByArray($row);
+		$this->assertInstanceOf('\VWM\Entity\Product\PaintProduct', $expectedProduct);
+		$this->assertEquals($expectedProduct, $paintProduct);
+		
+		//UPDATE
+		$paintProduct->setName("NEW NAME");
+		$paintProduct->save();
+		
+		$sql = "SELECT * FROM ".  TB_PRODUCT." WHERE product_id = {$expectedId}";
+		$this->db->query($sql);
+		$row = $this->db->fetch_array(0);
+		$expectedUpdatedProduct = new PaintProduct($this->db);
+		$expectedUpdatedProduct->initByArray($row);
+		$this->assertEquals($expectedUpdatedProduct, $paintProduct);
 	}
 	
 	public function testGetFacilityContext() {				
@@ -71,6 +95,7 @@ class PaintProductTest extends DbTestCase {
 		$this->assertInstanceOf('VWM\Entity\Product\BinContext', $binContext);
 		$this->assertEquals(60, $binContext->getCurrentQty());
 	}
+	
 }
 
 ?>
