@@ -25,6 +25,7 @@ abstract class Mapper {
 	 * @return array key => value
 	 */
 	public function getMap() {		
+		throw new \Exception("GetMap should be implemented by children");
 	}
 	
 	/**
@@ -39,10 +40,22 @@ abstract class Mapper {
 		
 		//	read first two lines - they are the header
 		$header = $this->_getTableHeader();
-		
 		// now let's do actual mapping
+		$columnIndex = array();
+		$key = array();
 		for ($i=0;$i<count($header[1]);$i++) {
-			//
+			$columnIndex[$i] = FALSE;
+			$mapping = $this->getMap();
+			foreach ($mapping as $mapKey => $mapHeader) {
+				if (!isset($key[$mapKey])) { 
+					if( ($header[1][$i] != "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader) && in_array(strtoupper(trim($header[1][$i])), $mapHeader)) || 
+							($header[1][$i] == "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader))) {
+						$key[$mapKey] = $i;
+						$columnIndex[$i] = TRUE;
+					}
+				}
+			}
+			
 		}
 	}
 	
