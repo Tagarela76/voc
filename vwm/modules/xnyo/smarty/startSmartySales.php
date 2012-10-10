@@ -14,5 +14,5 @@
 	
 	//	Register tpl resource for Smarty
 	require ('modules/smartyTemplateSource.php');
-	register_resource_tpls(&$smarty,'sales');
+	register_resource_tpls($smarty,'sales');
 ?>
