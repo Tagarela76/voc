@@ -3781,8 +3781,7 @@ div:hover.category_folder_hover{cursor:pointer;}
 }
 
 
-#sales_brochure {
-	width: 500px;
+#sales_brochure {	
 	height: 500px;
 	background-position:center center; 
 	background-image: url('images/salesBrochure.png'); 
@@ -3797,9 +3796,10 @@ div:hover.category_folder_hover{cursor:pointer;}
 }
 #sales_brochure_title_up p {
 	position: relative;
-	color: #000;
+	color: #a614c4;
 	font-weight: bold;
 	font-size: 28px;
+	font-family: helvetica,Sans;
 }
 
 #sales_brochure_title_down {
@@ -3810,9 +3810,10 @@ div:hover.category_folder_hover{cursor:pointer;}
 }
 
 #sales_brochure_title_down p {
-	color: #000;
+	color: #a614c4;
 	font-weight: bold; 
 	font-size: 28px;
+	font-family: helvetica,Sans;
 }
 
 #brochure_control_button {
