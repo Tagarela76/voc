@@ -11,6 +11,7 @@ abstract class GeneralProduct extends Model {
 	
 	protected $id;
 	protected $name;
+	protected $product_nr;
 	protected $product_instock;
 	protected $product_limit;
 	protected $product_amount;//TODO: what is product amount? How much we should order?
@@ -48,6 +49,14 @@ abstract class GeneralProduct extends Model {
 
 	public function setName($name) {
 		$this->name = $name;
+	}
+	
+	public function getProductNr() {
+		return $this->product_nr;
+	}
+
+	public function setProductNr($product_nr) {
+		$this->product_nr = $product_nr;
 	}
 
 	public function getProductInstock() {

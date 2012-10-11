@@ -1,0 +1,22 @@
+Gom:
+  getters:
+    uniqueName:
+      - "True": {message: "Name should be unique", groups: [add]} 
+  properties:
+    name: 
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 100, groups: [add,Default] }
+    product_nr:
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 100, groups: [add,Default] }
+    jobber_id:
+      - NotBlank: { groups: [add,Default] }
+    supplier_id:
+      - NotBlank: { groups: [add,Default] }  
+    code:
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 32, groups: [add,Default] }  
+    product_instock:
+      - NotBlank: { groups: [add,Default] }
+    product_limit:
+      - NotBlank: { groups: [add,Default] }   

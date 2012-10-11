@@ -37,18 +37,30 @@ class GomUploaderEntityBuilder {
 			// formulate gom object
 			$gom = new \VWM\Entity\Product\Gom($this->db);
 			$gomName = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productNr = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$jobberId = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$supplierId = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$code = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productInstock = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productLimit = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productAmount = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productStocktype = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$productPricing = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			$priceUnitType = $data[$this->mapper->mappedData['productOrPartNumbers']];
+			
 			var_dump($gomName); die();
-			$gom->setName("gom-test");
-			$gom->setJobberId("1");
-			$gom->setVendorId("1");
-			$gom->setCode("code");
-			$gom->setProductInstock("2");
-			$gom->setProductLimit("20");
-			$gom->setProductAmount("2");
-			$gom->setProductStocktype("2");
-			$gom->setProductPricing("2.00");
-			$gom->setPriceUnitType("1");
-			$data_tmp[0] = $data[$headerKey['productID']];
+			$gom->setName($gomName);
+			$gom->setProductNr($productNr);
+			$gom->setJobberId($jobberId);
+			$gom->setSupplierId($supplierId);
+			$gom->setCode($code);
+			$gom->setProductInstock($productInstock);
+			$gom->setProductLimit($productLimit);
+			$gom->setProductAmount($productAmount);
+			$gom->setProductStocktype($productStocktype);
+			$gom->setProductPricing($productPricing);
+			$gom->setPriceUnitType($priceUnitType);
+
 			var_dump($data); die();
 		}
 	}

@@ -11,7 +11,7 @@ class GomTest extends DbTestCase {
 		TB_FACILITY,
 		TB_SUPPLIER,
 		TB_PRODUCT,
-		TB_ACCESSORY,
+		TB_GOM,
 		Bin::TABLE_NAME,
 		BinContext::TABLE_NAME,
 	);
@@ -21,8 +21,9 @@ class GomTest extends DbTestCase {
 				
 		$gom = new Gom($this->db);
 		$gom->setName("gom-test");
+		$gom->setProductNr("__gom-test");
 		$gom->setJobberId("1");
-		$gom->setVendorId("1");
+		$gom->setSupplierId("1");
 		$gom->setCode("code");
 		$gom->setProductInstock("2");
 		$gom->setProductLimit("20");

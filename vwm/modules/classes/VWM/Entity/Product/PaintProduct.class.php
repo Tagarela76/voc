@@ -8,7 +8,6 @@ namespace VWM\Entity\Product;
 class PaintProduct extends GeneralProduct {
 	
 	protected $product_id;	// TODO: rename to id
-	protected $product_nr;
 	protected $voclx;
 	protected $vocwx;
 	protected $density;
@@ -50,14 +49,6 @@ class PaintProduct extends GeneralProduct {
 	public function setId($id) {
 		$this->id = $id;
 		$this->product_id = $id;
-	}
-
-	public function getProductNr() {
-		return $this->product_nr;
-	}
-
-	public function setProductNr($product_nr) {
-		$this->product_nr = $product_nr;
 	}
 
 	public function getVoclx() {

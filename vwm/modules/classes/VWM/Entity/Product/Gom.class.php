@@ -4,8 +4,7 @@ namespace VWM\Entity\Product;
 
 class Gom extends GeneralProduct {
 	
-	protected $jobber_id;
-	protected $vendor_id;
+	protected $supplier_id;
 	protected $code;
 	
 	public function __construct(\db $db, $id = null) {
@@ -27,11 +26,11 @@ class Gom extends GeneralProduct {
 		$this->id = $id;
 	}
 	
-	public function getVendorId() {
+	public function getSupplierId() {
 		return $this->vendor_id;
 	}
 	
-	public function setVendorId($vendorId) {
+	public function setSupplierId($vendorId) {
 		$this->vendor_id = $vendorId;
 	}
 	
@@ -56,7 +55,7 @@ class Gom extends GeneralProduct {
 			throw new \Exception('GOM ID should be set before calling this method');
 		}
 		
-		$sql = "SELECT * FROM ".TB_ACCESSORY." " .
+		$sql = "SELECT * FROM ".TB_GOM." " .
 				"WHERE id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
 		if($this->db->num_rows() == 0) {
@@ -71,13 +70,14 @@ class Gom extends GeneralProduct {
 	
 		protected function _insert() {
 		
-		$sql = "INSERT INTO ". TB_ACCESSORY." (name, jobber_id, " .
-				"vendor_id, code, product_instock, " .
+		$sql = "INSERT INTO ". TB_GOM." (name, product_nr, jobber_id, " .
+				"supplier_id, code, product_instock, " .
 				"product_limit, product_amount, product_stocktype, " .
 				"product_pricing, price_unit_type) VALUES ( "  .
 				"'{$this->db->sqltext($this->getName())}', " .
+				"'{$this->db->sqltext($this->getProductNr())}', " .		
 				"{$this->db->sqltext($this->getJobberId())}, " .
-				"{$this->db->sqltext($this->getVendorId())}, " .
+				"{$this->db->sqltext($this->getSupplierId())}, " .
 				"'{$this->db->sqltext($this->getCode())}', " .
 				"{$this->db->sqltext($this->getProductInstock())}, " .
 				"{$this->db->sqltext($this->getProductLimit())}, " .
@@ -98,10 +98,11 @@ class Gom extends GeneralProduct {
 	
 	protected function _update() {
 		
-		$sql = "UPDATE ". TB_ACCESSORY ." SET " .
+		$sql = "UPDATE ". TB_GOM ." SET " .
 				"name = '{$this->db->sqltext($this->getName())}', " .
+				"product_nr = '{$this->db->sqltext($this->getProductNr())}', " .		
 				"jobber_id = {$this->db->sqltext($this->getJobberId())}, " .
-				"vendor_id = {$this->db->sqltext($this->getVendorId())}, " .
+				"supplier_id = {$this->db->sqltext($this->getSupplierId())}, " .
 				"code = '{$this->db->sqltext($this->getCode())}', " .		
 				"product_instock = {$this->db->sqltext($this->getProductInstock())}, " .
 				"product_limit = {$this->db->sqltext($this->getProductLimit())}, " .
