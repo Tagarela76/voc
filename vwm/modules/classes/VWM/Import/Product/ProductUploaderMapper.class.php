@@ -1,6 +1,8 @@
 <?php
 
-class ProductBulkUploaderMapper extends \VWM\Import\Mapper{
+namespace VWM\Import\Product;
+
+class ProductUploaderMapper extends \VWM\Import\Mapper{
 	
 	// add possible headers here
 	
@@ -49,9 +51,8 @@ class ProductBulkUploaderMapper extends \VWM\Import\Mapper{
 	
 	private $db;
 	
-	function __construct(DB $db) {
-		
-		$this->db = $db;
+	function __construct() {
+
 	}
 	
 	public function getMap() {
