@@ -703,17 +703,16 @@ class CMix extends Controller {
 	}
 
 	protected function actionEditItemAjax() {
-//$debug = true;
+
 		if ($_REQUEST['debug']) {
 			$debug = true;
 		}
-
 
 		if ($debug) {
 			var_dump($_REQUEST);
 		}
 
-		$form = $_REQUEST;
+		$form = $_REQUEST;		
 
 		if (!isset($form['id'])) {
 			echo json_encode(array('mix_error' => 'No mix ID!!'));
@@ -724,7 +723,6 @@ class CMix extends Controller {
 		$productsOldVal = $mix->products;
 
 		if ($debug) {
-
 			var_dump('!!!!!!!!!', $mix);
 		}
 
@@ -810,8 +808,8 @@ class CMix extends Controller {
 				//echo "<p>Waste stream validation failed</p>";
 			}
 		}
-
-		if (!isset($form['mix']) or !$this->validateInputMix($form['mix'])) {
+		
+		if (!isset($form['mix']) || !$this->validateInputMix($form['mix'])) {
 			echo json_encode(array('mix_error' => 'Mix error!'));
 			exit;
 		}
@@ -1158,9 +1156,9 @@ class CMix extends Controller {
 		$basemix->unittypeClass = $formMix->selectUnittypeClass;
 	}
 
-	protected function validateInputMix($m) {
-
-		if (empty($m['description']) or empty($m['creation_time'])) {
+	protected function validateInputMix($m) {				
+		$m = json_decode($m);				
+		if (empty($m->description) || empty($m->creationTime)) {
 			return false;
 		}
 
