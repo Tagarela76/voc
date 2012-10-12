@@ -137,6 +137,20 @@ class Crib extends Model {
 		$this->initByArray($row);
 		return true;
 	}
+	
+	/**
+	 * Method that check if exist crib with this serial number
+	 */
+	public function check() {
+
+		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
+				"WHERE serial_number = '{$this->db->sqltext($this->getSerialNumber())}'";
+		$this->db->query($sql);
+		if($this->db->num_rows() != 0) {
+			$row = $this->db->fetch_array(0);
+			$this->setId($row["id"]);
+		}
+	}
 }
 
 ?>

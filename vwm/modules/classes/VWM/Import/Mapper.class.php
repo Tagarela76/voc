@@ -35,11 +35,9 @@ abstract class Mapper {
 		for ($i=0;$i<count($header[1]);$i++) {
 			$mapping = $this->getMap();
 			foreach ($mapping as $mapKey => $mapHeader) {
-				if (!isset($mappedData[$mapKey])) { 
-					if( ($header[1][$i] != "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader) && in_array(strtoupper(trim($header[1][$i])), $mapHeader)) || 
-							($header[1][$i] == "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader))) {
-						$mappedData[$mapKey] = $i;
-					}
+				if( ($header[1][$i] != "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader) && in_array(strtoupper(trim($header[1][$i])), $mapHeader)) || 
+						($header[1][$i] == "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader))) {
+					$mappedData[$mapKey][] = $i;
 				}
 			}
 			

@@ -1,7 +1,4 @@
-Gom:
-  getters:
-    uniqueName:
-      - "True": {message: "Name should be unique", groups: [add]} 
+VWM\Entity\Product\Gom:
   properties:
     name: 
       - NotBlank: { groups: [add,Default] }
@@ -9,14 +6,14 @@ Gom:
     product_nr:
       - NotBlank: { groups: [add,Default] }
       - MaxLength: { limit: 100, groups: [add,Default] }
-    jobber_id:
-      - NotBlank: { groups: [add,Default] }
     supplier_id:
       - NotBlank: { groups: [add,Default] }  
-    code:
+    product_pricing:
+      - NotBlank: { groups: [add,Default] } 
+    add_toxic_compounds:
+      - NotBlank: { groups: [add,Default] } 
+    msds_sheet:
+      - NotBlank: { groups: [add,Default] } 
+    package_size:
       - NotBlank: { groups: [add,Default] }
-      - MaxLength: { limit: 32, groups: [add,Default] }  
-    product_instock:
-      - NotBlank: { groups: [add,Default] }
-    product_limit:
-      - NotBlank: { groups: [add,Default] }   
+      - MaxLength: { limit: 50, groups: [add,Default] }

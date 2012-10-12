@@ -18,6 +18,7 @@ class GomUploaderMapper extends \VWM\Import\Mapper{
 	public $maximumPArtsInCribUnit = array('MAXIMUM PARTS IN CRIB UNIT');
 	public $gyantCribDefaultReorder = array('GYANT CRIB DEFAULT REORDER');
 	public $productPricing = array('PRODUCT PRICING');
+	public $itemLocation = array('ITEM LOCATION');
 	public $addToxicCompounds = array('ADD TOXIC COMPOUNDS');
 	public $msdsSheet = array('MSDS SHEET');
 
@@ -42,6 +43,7 @@ class GomUploaderMapper extends \VWM\Import\Mapper{
 			"maximumPArtsInCribUnit" => $this->maximumPArtsInCribUnit ,
 			"gyantCribDefaultReorder" => $this->gyantCribDefaultReorder ,
 			"productPricing" => $this->productPricing,
+			"itemLocation" => $this->itemLocation,
 			"addToxicCompounds" => $this->addToxicCompounds,
 			"msdsSheet" => $this->msdsSheet,
 		);

@@ -12,12 +12,8 @@ abstract class GeneralProduct extends Model {
 	protected $id;
 	protected $name;
 	protected $product_nr;
-	protected $product_instock;
-	protected $product_limit;
-	protected $product_amount;//TODO: what is product amount? How much we should order?
-	protected $product_stocktype;//TODO: what is this?
 	protected $product_pricing;
-	protected $price_unit_type;
+
 	
 	/**	 
 	 * @var \VWM\Entity\Product\FacilityContext
@@ -59,52 +55,12 @@ abstract class GeneralProduct extends Model {
 		$this->product_nr = $product_nr;
 	}
 
-	public function getProductInstock() {
-		return $this->product_instock;
-	}
-
-	public function setProductInstock($product_instock) {
-		$this->product_instock = $product_instock;
-	}
-
-	public function getProductLimit() {
-		return $this->product_limit;
-	}
-
-	public function setProductLimit($product_limit) {
-		$this->product_limit = $product_limit;
-	}
-
-	public function getProductAmount() {
-		return $this->product_amount;
-	}
-
-	public function setProductAmount($product_amount) {
-		$this->product_amount = $product_amount;
-	}
-
-	public function getProductStocktype() {
-		return $this->product_stocktype;
-	}
-
-	public function setProductStocktype($product_stocktype) {
-		$this->product_stocktype = $product_stocktype;
-	}
-
 	public function getProductPricing() {
 		return $this->product_pricing;
 	}
 
 	public function setProductPricing($product_pricing) {
 		$this->product_pricing = $product_pricing;
-	}
-
-	public function getPriceUnitType() {
-		return $this->price_unit_type;
-	}
-
-	public function setPriceUnitType($price_unit_type) {
-		$this->price_unit_type = $price_unit_type;
 	}
 
 	/**	 

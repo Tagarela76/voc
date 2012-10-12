@@ -69,7 +69,13 @@ abstract class Model {
 	 * @return \Symfony\Component\Validator\Validator
 	 */
 	protected function getValidator($name) {
-		$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;
+		//	we prefer absolute path
+		if(defined('site_path')) {
+			$path = site_path . "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+		} else {
+			$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+		}
+		
 		if ($this->validator === null) {
 			$this->validator = Validation::createValidatorBuilder()
 					->addYamlMapping($path . $name . '.yml')

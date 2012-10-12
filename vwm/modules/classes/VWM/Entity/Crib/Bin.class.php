@@ -12,6 +12,7 @@ class Bin extends Model {
 	protected $size;
 	protected $type;
 	protected $capacity;	
+	protected $name;
 
 	/**
 	 * Crib to whom this bin assigned
@@ -81,6 +82,14 @@ class Bin extends Model {
 		$this->capacity = $capacity;
 	}		
 	
+	public function getName() {
+		return $this->name;
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+	}
+
 	/**
 	 * Crib to whom this bin assigned
 	 * @var \VWM\Entity\Crib\Crib|false
@@ -132,14 +141,15 @@ class Bin extends Model {
 	
 	
 	protected function _insert() {
-		$sql = "INSERT INTO ".self::TABLE_NAME." (crib_id, number, size, " .
-				"type, capacity, last_update_time ) VALUES ( "  .
+		$sql = "INSERT INTO ".self::TABLE_NAME." (crib_id, size, " .
+				"capacity, last_update_time, name ) VALUES ( "  .
 				"{$this->db->sqltext($this->getCribId())}, " .
 				"{$this->db->sqltext($this->getNumber())}, " .
 				"{$this->db->sqltext($this->getSize())}, " .
 				"{$this->db->sqltext($this->getType())}, " .
 				"{$this->db->sqltext($this->getCapacity())}, " .
-				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
+				"'{$this->db->sqltext($this->getLastUpdateTime())}', " .
+				"'{$this->db->sqltext($this->getName())}'" .		
 				")";
 				
 		if(!$this->db->exec($sql)) {
@@ -154,17 +164,30 @@ class Bin extends Model {
 	protected function _update() {
 		$sql = "UPDATE ".self::TABLE_NAME." SET " .
 				"crib_id={$this->db->sqltext($this->getCribId())}, " .
-				"number={$this->db->sqltext($this->getNumber())}, " .
 				"size={$this->db->sqltext($this->getSize())}, " .
-				"type={$this->db->sqltext($this->getType())}, " .
 				"capacity={$this->db->sqltext($this->getCapacity())}, " .
-				"last_update_time='{$this->db->sqltext($this->getLastUpdateTime())}' " .
+				"last_update_time='{$this->db->sqltext($this->getLastUpdateTime())}', " .
+				"name='{$this->db->sqltext($this->getName())}' " .		
 				"WHERE id = {$this->db->sqltext($this->getId())}";					
 		if(!$this->db->exec($sql)) {
 			return false;
 		}				
 		
 		return $this->getId();
+	}
+	
+	/**
+	 * Method that check if exist bin with this name
+	 */
+	public function check() {
+
+		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
+				"WHERE name = '{$this->db->sqltext($this->getName())}'";
+		$this->db->query($sql);
+		if($this->db->num_rows() != 0) {
+			$row = $this->db->fetch_array(0);
+			$this->setId($row["id"]);
+		}
 	}
 
 }

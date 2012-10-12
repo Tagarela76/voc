@@ -1,6 +1,6 @@
 <?php
 
 return array(
-	array('name' => 'test1','product_nr' => '_test1','jobber_id' => '1','supplier_id' => '1','code' => 'code-1','product_instock' => '2','product_limit' => '5','product_amount' => '74','product_stocktype' => '1','product_pricing' => '3.00','price_unit_type' => '1'),
-	array('name' => 'test2','product_nr' => '_test1','jobber_id' => '1','supplier_id' => '1','code' => 'code-1','product_instock' => '2','product_limit' => '5','product_amount' => '70','product_stocktype' => '2','product_pricing' => '7.00','price_unit_type' => '1')
+	array('name' => 'test1','product_nr' => '_test1','supplier_id' => '1','product_pricing' => '3.00','add_toxic_compounds' => '1','msds_sheet' => '1', 'last_update_time' => NULL),
+	array('name' => 'test2','product_nr' => '_test1','supplier_id' => '1','product_pricing' => '7.00','add_toxic_compounds' => '1','msds_sheet' => '1', 'last_update_time' => NULL)
 );

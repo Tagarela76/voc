@@ -26,7 +26,12 @@ class PaintProduct extends GeneralProduct {
 	protected $percent_volatile_volume;	
 	protected $closed; // TODO: replace all yes/no values to boolean in the DB
 	protected $discontinued;
-	
+	protected $product_instock;
+	protected $product_limit;
+	protected $product_amount;//TODO: what is product amount? How much we should order?
+	protected $product_stocktype;//TODO: what is this?
+	protected $product_pricing;
+	protected $price_unit_type;
 
 
 	const TABLE_NAME = 'product';
@@ -193,6 +198,46 @@ class PaintProduct extends GeneralProduct {
 
 	public function setDiscontinued($discontinued) {
 		$this->discontinued = $discontinued;
+	}
+	
+	public function getProductInstock() {
+		return $this->product_instock;
+	}
+
+	public function setProductInstock($product_instock) {
+		$this->product_instock = $product_instock;
+	}
+
+	public function getProductLimit() {
+		return $this->product_limit;
+	}
+
+	public function setProductLimit($product_limit) {
+		$this->product_limit = $product_limit;
+	}
+
+	public function getProductAmount() {
+		return $this->product_amount;
+	}
+
+	public function setProductAmount($product_amount) {
+		$this->product_amount = $product_amount;
+	}
+
+	public function getProductStocktype() {
+		return $this->product_stocktype;
+	}
+
+	public function setProductStocktype($product_stocktype) {
+		$this->product_stocktype = $product_stocktype;
+	}
+	
+	public function getPriceUnitType() {
+		return $this->price_unit_type;
+	}
+
+	public function setPriceUnitType($price_unit_type) {
+		$this->price_unit_type = $price_unit_type;
 	}
 
 	protected function _insert() {
