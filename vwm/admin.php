@@ -85,13 +85,13 @@ try {
 
 		if (isset($_GET['category']) || isset($_POST['itemID'])) {
 			$className = "CA" . ucfirst($_GET['category']);
-
+			
 			if (class_exists($className)) {
 				$controllerObj = new $className($smarty, $xnyo, $db, $user, $action);
 				$controllerObj->runAction();
 			}
 			else
-				throw new Exception('404');
+				throw new Exception('404');	
 		} elseif ($_GET["action"] == 'vps') {
 			$smarty->assign('parent', 'vps');
 			require ('vps_admin.php');

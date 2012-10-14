@@ -2,6 +2,8 @@
 
 namespace VWM\Import\Gom;
 
+//TODO: rename to GomWithBinsUploader and apply the same rule for all
+// namespace
 class GomUploaderEntityBuilder {
 	
 	/**
@@ -59,11 +61,14 @@ class GomUploaderEntityBuilder {
 		$this->bins = $bins;
 	}
 
+	//TODO: remove dependency from GomUploaderMapper
 	function __construct(\db $db, GomUploaderMapper $mapper) {
 		$this->db = $db;
 		$this->mapper = $mapper;
 	}
 	
+	//TODO: use namespaces "use"
+	//TODO: skip first 2-3 rows because they are heading
 	public function buildEntities($pathToCsv) {
 		$csvHelper = new \VWM\Import\CsvHelper(); 
 		$csvHelper->openCsvFile($pathToCsv); 

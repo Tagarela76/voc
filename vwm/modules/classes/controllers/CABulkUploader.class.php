@@ -1,5 +1,8 @@
 <?php
 
+use VWM\Import\Gom\GomUploaderMapper;
+use VWM\Import\Gom\GomUploaderEntityBuilder;
+
 class CABulkUploader extends Controller {
 
 	function CABulkUploader($smarty, $xnyo, $db, $user, $action) {
@@ -190,8 +193,43 @@ class CABulkUploader extends Controller {
 			}
 		}
 	}
+	
+	
+	protected function actionBrowseCategoryGomWithBins() {		
+		
+		//	form submitted
+		if($this->getFromPost() && $_FILES) {
+			//	path to the uploaded file
+			$tmpName = $_FILES['inputFile']['tmp_name'];
+			
+			//	real file name
+			$realFileName = basename($_FILES['inputFile']['name']);
+			
+			$mapper = new GomUploaderMapper();
+			$mapper->doMapping($tmpName);
+			
+			$eb = new GomUploaderEntityBuilder($this->db, $mapper);
+			$eb->buildEntities($tmpName);
+			
+			$goms = $eb->getGoms();
+			$cribs = $eb->getCribs();
+			$bins = $eb->getBins();
+			
+			////....
+		}		
+				
+		$title = new Titles($this->smarty);
+		$title->titleBulkUploaderSettings();
 
-	// GET RATIO FOR PRODUCTS IN PFP
+		$this->smarty->assign('uploaderName', 
+				VOCApp::get_instance()->t('general', 'GOM with Bins'));
+				
+		$this->smarty->assign('doNotShowControls', true);		
+		$this->smarty->assign('tpl', 'tpls/bulkUploaderNew.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+
+			// GET RATIO FOR PRODUCTS IN PFP
 	private function rate($ar) {
 
 		if (count($ar) > 1) {

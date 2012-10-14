@@ -5,6 +5,10 @@ namespace VWM\Import;
 abstract class Mapper {
 	
 	/**
+	 * TODO: make protected and add getter
+	 * TODO: remove zero index, like mappedData['gyantCribUnitId'][0] -> 
+	 *		mappedData['gyantCribUnitId']
+	 * 
 	 * data after mappig
 	 * "column name" = > "value"
 	 * @var array
@@ -20,6 +24,8 @@ abstract class Mapper {
 	}
 	
 	/**
+	 * TODO: fit 80 symbols
+	 * 
 	 * Maps CSV columns to real properties
 	 * @param string $pathToCsv
 	 * @return array of objects

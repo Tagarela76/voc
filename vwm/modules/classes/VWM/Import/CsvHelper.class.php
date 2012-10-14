@@ -27,7 +27,7 @@ class CsvHelper {
 		
 		$fileResourse = fopen($pathToCsv, "r");
 		if(!$fileResourse) {
-			throw new Exception("Unable to read file ".$pathToCsv);
+			throw new \Exception("Unable to read file ".$pathToCsv);
 		}
 		
 		$this->setCsvFileResourse($fileResourse);		

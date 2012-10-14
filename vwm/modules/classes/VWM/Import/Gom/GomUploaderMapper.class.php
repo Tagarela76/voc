@@ -22,8 +22,10 @@ class GomUploaderMapper extends \VWM\Import\Mapper{
 	public $addToxicCompounds = array('ADD TOXIC COMPOUNDS');
 	public $msdsSheet = array('MSDS SHEET');
 
+	//TODO: why?
 	private $db;
 	
+	//TODO: why?
 	function __construct() {
 
 	}

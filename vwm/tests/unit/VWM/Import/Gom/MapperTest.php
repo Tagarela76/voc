@@ -17,8 +17,9 @@ class MapperTest extends Testing\DbTestCase {
 
 	public function testMapper() {
 
+		//TODO:	oh shit....		
 		$pathToCsv = "/home/developer/Desktop/example.csv";
-		$mapper = new GomUploaderMapper($this->db);
+		$mapper = new GomUploaderMapper($this->db);//TODO: Why DB?
 		$mapper->doMapping($pathToCsv);
 		// we should check if mappedData is array and consist 14 items
 		$this->assertEquals(15, count($mapper->mappedData));
