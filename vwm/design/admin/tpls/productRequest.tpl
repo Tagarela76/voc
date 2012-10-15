@@ -21,13 +21,15 @@
 	<tr class="hov_company">
 		{assign var='requestDate' value=$productRequest->getDate()}
 		<td class="border_users_l border_users_b"><input type="checkbox" value="{$productRequest->requestID}" name="item_{$productRequest->requestID}"/></td>
-		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getProductID()}</div></a></td>
-		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getSupplier()}</div></a></td>
-		<td class="border_users_l border_users_b"><a href="{$productRequest->getURL()}"><div style="width:100%;">{$productRequest->getDescription()}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$productRequest->url}"><div style="width:100%;">{$productRequest->getProductID()}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$productRequest->url}"><div style="width:100%;">{$productRequest->getSupplier()}</div></a></td>
+		<td class="border_users_l border_users_b"><a href="{$productRequest->url}"><div style="width:100%;">{$productRequest->getDescription()}</div></a></td>
 		<td class="border_users_l border_users_b"><div style="width:100%;">{$requestDate->format($smarty.const.DEFAULT_DATE_FORMAT)}</div></td>
-		<td class="border_users_l border_users_b"><div style="width:100%;">{$productRequest->getUserName()}</div></td>
-        <td class="border_users_l border_users_b"><div style="width:100%;">{if $productRequest->getMsdsName() <> NULL}<a href="{$productRequest->getMsdsName()}">VIEW</a>{/if}</div></td>
-		<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$productRequest->getURL()}">{$productRequest->getStatus()}</a></div></td>
+		{assign var='user' value=$productRequest->getUser()}
+		<td class="border_users_l border_users_b"><div style="width:100%;">{$user->username}</div></td>
+		{assign var=msds value=$productRequest->getMsds()}
+        <td class="border_users_l border_users_b"><div style="width:100%;">{if $msds->name != NULL}<a href="{$msds->name}">VIEW</a>{/if}</div></td>
+		<td class="border_users_l border_users_b border_users_r"><div style="width:100%;"><a href="{$productRequest->url}">{$productRequest->getStatusOptionName($productRequest->getStatus())}</a></div></td>
 	</tr>
 	{/foreach}
 	{else}

@@ -1,203 +1,244 @@
 <?php
-class NewProductRequest {
-    /**
-     *
-     * @var db
-     */
-    private $db;
-    
-    private $product_id;
-    private $supplier;
-    private $name;
-    private $description;
-    /**
-     *
-     * @var DateTime
-     */
-    private $date;
-    private $user_id;
-    private $user_name;
-	private $user_name_id;
-    private $status;
-    private $msds_id;
-    private $msds_name;
-	private $url;
 
+use VWM\Framework\Model;
+use VWM\Framework\Utils\DateTime;
 
-	const STATUS_NEW = 'new';
+class NewProductRequest extends Model {    
     
-    public function __construct(db $db) {
-        $this->db = $db;
-        $this->setDate(new DateTime());
-        $this->user_id = $_SESSION['user_id'];
-        $this->status = self::STATUS_NEW;
-    }
-
-    public function setProductId($product_id){
-        $this->product_id = $product_id;
-    }
-
-    public function setDate(DateTime $date) {
-        $this->date = $date;
-    }
-    
-    public function setSupplier($supplier) {
-        $this->supplier = $supplier;
-    }
-    
-    public function setName($name) {
-        $this->name = $name; 
-    }
-
-
-    public function setDescription($description) {
-        $this->description = $description;
-    }
-    
-    public function setStatus($status) {
-        $this->status = $status;        
-    }
-    
-    public function setMsdsId($msds_id){
-        $this->msds_id = $msds_id;
-    }
-    
-    public function setMsdsName($msds_name){
-        $this->msds_name = $msds_name;
-    }
-    
-    public function setUserName($user_name){
-        $this->user_name = $user_name;
-    }
+	protected $id;
+	protected $supplier;
+    protected $product_id;    
+    protected $name;
+    protected $description;
+	protected $msds_id;
+	protected $date;
+	protected $last_update_time;
+	protected $user_id;
+	protected $status;
 	
-	public function setURL($url){
-        $this->url = $url;
-    }
+	protected $user;
+	protected $msds;
 	
-	public function getURL() {
-		return $this->url;
-    }
+	public $url;
 
-    public function getProductID() {
+	const STATUS_NEW = 0;
+	const STATUS_ACCEPT = 1;
+	
+	public function __construct(\db $db, $id = NULL) {
+		$this->db = $db;
+		$this->modelName = 'NewProductRequest';
+		
+		if($id !== NULL) {
+			$this->setId($id);
+			if(!$this->_load()) {
+				throw new Exception('404');
+			}
+		}
+	}
+
+	public function getId() {
+		return $this->id;
+	}
+
+	public function setId($id) {
+		$this->id = $id;
+	}
+
+	public function getSupplier() {
+		return $this->supplier;
+	}
+
+	public function setSupplier($supplier) {
+		$this->supplier = $supplier;
+	}
+
+	public function getProductId() {
 		return $this->product_id;
-    }
+	}
 
-    public function getSupplier() {
-		return $this->supplier;		
-    }
+	public function setProductId($product_id) {
+		$this->product_id = $product_id;
+	}
 
-    public function getName() {
+	public function getName() {
 		return $this->name;
-    }
-	
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+	}
+
+	public function getDescription() {
+		return $this->description;
+	}
+
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+
+	public function getMsdsId() {
+		return $this->msds_id;
+	}
+
+	public function setMsdsId($msds_id) {
+		$this->msds_id = $msds_id;
+	}
+
+	public function getDate() {
+		return $this->date;
+	}	
+
+	public function setDate($date) {
+		$this->date = $date;
+	}
+		
+	public function getLastUpdateTime() {
+		return $this->last_update_time;
+	}
+
+	public function setLastUpdateTime($last_update_time) {
+		$this->last_update_time = $last_update_time;
+	}
+
+	public function getUserId() {
+		return $this->user_id;
+	}
+
+	public function setUserId($user_id) {
+		$this->user_id = $user_id;
+	}
+
 	public function getStatus() {
 		return $this->status;
-    }
+	}
 
-    public function getDescription() {
-	   return $this->description;
-    }
+	public function setStatus($status) {
+		$this->status = $status;
+	}
+	
+	/**
+	 * TODO: finish me
+	 * @return 
+	 */
+	public function getUser() {
+		return $this->user;
+	}
+	public function setUser($user) {
+		$this->user = $user;
+	}
 
-    public function getDate() {
-		return $this->date;
-    }
+	/**
+	 * TODO: finish me
+	 * @return 
+	 */
+	public function getMsds() {
+		return $this->msds;
+	}
+	
+	public function setMsds($msds) {
+		$this->msds = $msds;
+	}
+	
+	
+	public function getStatusOptions() {
+		return array(
+			self::STATUS_NEW => 'New',
+			self::STATUS_ACCEPT => 'Accept',			
+		);
+	}
+	
+	public function getStatusOptionName($id) {
+		$options = $this->getStatusOptions();
+		foreach ($options as $key => $name) {
+			if($key == $id) {
+				return $name;
+			}
+		}
+	}
 
-    public function getUserID() {
-		return $this->user_id;    
-    }
-    
-    public function getMsdsName(){
-		return $this->msds_name;
-    }
-    
-    public function getUserName(){
-		return $this->user_name;
-    }
-
-
-
-
-
-
-
-    public function validate($product) {
-        $result["summary"] = "true";
+	public function save() {
+		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
 		
-		$result["productSupplier"] = "failed";
-		if (isset($product["productSupplier"])) {
-			$product["productSupplier"] = trim($product["productSupplier"]);
-			$supplierLength = strlen($product["productSupplier"]);
-			
-			if ($supplierLength > 0 && $supplierLength < 120) {
-				$result["productSupplier"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
+		if($this->getId()) {
+			return $this->_update();
 		} else {
-			$result["summary"] = "false";
+			$now = new DateTime();
+			$this->setDate($now->getTimestamp());
+			return $this->_insert();
+		}
+	}	
+	
+	private function _insert() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: 'NULL';
+		
+		$query = "INSERT INTO ".TB_NEW_PRODUCT_REQUEST." (supplier, " .
+				 "product_id, name, description, msds_id, date, user_id, " .
+				 "status, last_update_time) VALUES ( " .
+                "'{$this->db->sqltext($this->getSupplier())}', " .
+                "'{$this->db->sqltext($this->getProductId())}', " .
+                "'{$this->db->sqltext($this->getName())}', " .
+                "'{$this->db->sqltext($this->getDescription())}', " .
+                "{$this->db->sqltext($this->getMsdsId())}, " .
+                "{$this->db->sqltext($this->getDate())}, " .
+                "{$this->db->sqltext($this->getUserId())}, " .
+                "{$this->db->sqltext($this->getStatus())}, " .
+				"{$lastUpdateTime}) ";
+				
+        if($this->db->exec($query)) {
+			$this->setId($this->db->getLastInsertedID());
+			return $this->getId();
+		} else {
+			return false;
+		}		
+	}
+	
+	private function _update() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: 'NULL';
+				
+		$sql = "UPDATE ".TB_NEW_PRODUCT_REQUEST." SET " .
+				"supplier = '{$this->db->sqltext($this->getSupplier())}', " .
+				"product_id = '{$this->db->sqltext($this->getProductId())}', " .
+				"name = '{$this->db->sqltext($this->getName())}', " .
+				"description = '{$this->db->sqltext($this->getDescription())}', " .
+				"msds_id = {$this->db->sqltext($this->getMsdsId())}, " .
+				"date = {$this->db->sqltext($this->getDate())}, " .
+				"user_id = {$this->db->sqltext($this->getUserId())}, " .
+				"status = {$this->db->sqltext($this->getStatus())}, " .
+				"last_update_time = {$lastUpdateTime} " .
+			"WHERE id = {$this->db->sqltext($this->getId())}";
+		
+		if($this->db->exec($sql)) {			
+			return $this->getId();
+		} else {
+			return false;
+		}	
+	}
+
+	
+	private function _load() {
+		if(!$this->getId()) {
+			throw new \Exception('ID should be set before calling this method');
+		}
+				
+		$sql = "SELECT * FROM ".TB_NEW_PRODUCT_REQUEST." " .
+				"WHERE id = {$this->db->sqltext($this->getId())}";
+		$this->db->query($sql);
+				
+		if($this->db->num_rows() == 0) {
+			return false;
 		}
 		
-		$result["productId"] = "failed";
-		if (isset($product["productId"])) {
-			$product["productId"] = trim($product["productId"]);
-			$idLength = strlen($product["productId"]);
-			
-			if ($idLength > 0 && $idLength < 20) {
-				$result["productId"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
+		$row = $this->db->fetch_array(0);
+		$this->initByArray($row);
 		
-                $result["productName"] = "failed";
-		if (isset($product["productName"])) {
-			$product["productName"] = trim($product["productName"]);
-			$nameLength = strlen($product["productName"]);
-			
-			if ($nameLength > 0 && $nameLength < 120) {
-				$result["productName"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-                
-                $result["productDescription"] = "failed";
-		if (isset($product["productDescription"])) {
-			$product["productDescription"] = trim($product["productDescription"]);
-			$descriptionLength = strlen($product["productDescription"]);
-			
-			if ($descriptionLength > 0 && $descriptionLength < 120) {
-				$result["productDescription"] = "success";
-			} else {
-				$result["summary"] = "false";
-			}
-		} else {
-			$result["summary"] = "false";
-		}
-		return $result;
-    }
-    
-    /*public function getErrors() {
-        return $this->errors;
-    }*/
+		return true;
+	}
 
 
-    public function save() {
-        $query = "INSERT INTO ".TB_NEW_PRODUCT_REQUEST." (supplier, product_id, name, description, msds_id, date, user_id, status) VALUES (
-                '".mysql_escape_string($this->supplier)."',
-                '".mysql_escape_string($this->product_id)."',
-                '".mysql_escape_string($this->name)."',
-                '".mysql_escape_string($this->description)."',
-                '".mysql_escape_string($this->msds_id)."',    
-                '".mysql_escape_string($this->date->getTimestamp())."',
-                '".mysql_escape_string($this->user_id)."',
-                '".mysql_escape_string($this->status)."')";
-        $this->db->exec($query);
-    }
    
 }
 

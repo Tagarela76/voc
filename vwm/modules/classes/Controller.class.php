@@ -473,7 +473,60 @@ class Controller {
     protected function actionAddNewProduct() {
         //  if form were submitted
         if ($this->getFromPost('productAction') == 'Submit') {
-            $prRequest = new NewProductRequest($this->db);
+			
+			$productRequest = new NewProductRequest($this->db);	
+			$productRequest->setSupplier($this->getFromPost('productSupplier'));
+			$productRequest->setProductId($this->getFromPost('productId'));
+			$productRequest->setName($this->getFromPost('productName'));
+			$productRequest->setDescription($this->getFromPost('productDescription'));			
+			$productRequest->setUserId($_SESSION['user_id']);
+			$productRequest->setMsdsId(0);
+			$productRequest->setStatus(NewProductRequest::STATUS_NEW);
+			
+			$violationList = $productRequest->validate();
+			if(count($violationList) == 0) {
+				if(!$productRequest->save()) {
+					throw new Exception('Failed to save request. This should not happen');
+				}
+				
+				//TODO: needs complete rewrite
+				if ($_FILES) {
+					$strangeRequest = array('category' => $this->getFromRequest('category'),
+						'id' => $this->getFromRequest('id'));
+					$sSave = $this->noname($strangeRequest);
+					$msds = new MSDS($this->db);
+					$msRes = $msds->upload('basic');
+					$save["companyID"] = $sSave['companyID'];
+					$save["facilityID"] = $sSave['facilityID'];
+					$save["departmentID"] = $sSave['departmentID'];
+					$save['msds'] = $msRes['msdsResult'];
+					$msds->addSheets($save);
+					$msdsId = $this->db->getLastInsertedID();					
+				} else {
+					$msdsId = 0;
+				}
+				
+				$productRequest->setMsdsId($msdsId);
+				$productRequest->save();
+				
+				$manager = new NewProductRequestManager($this->db);
+				$manager->setEmailService(new EMail());			
+				$manager->sendNewEmailNotification($productRequest);
+				
+				header("Location:" . $this->getFromPost('productReferer') . 
+						"&message=".  urlencode('New Product Submitted')."&color=green");
+                die();
+			} else {				
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('productRequest', $productRequest);
+			}
+								
+						
+			
+            /*$prRequest = new NewProductRequest($this->db);
             $prRequest->setSupplier($this->getFromPost('productSupplier'));
             $prRequest->setProductId($this->getFromPost('productId'));
             $prRequest->setName($this->getFromPost('productName'));
@@ -513,9 +566,8 @@ class Controller {
                 $this->smarty->assign('productName', $productReq['productName']);
                 $this->smarty->assign('productDescription', $productReq['productDescription']);
                 $this->smarty->assign('productReferer', $productReq['productReferer']);
-            }
+            }*/
         }
-
         $request = $this->getFromRequest();
 
         $title = new TitlesNew($this->smarty, $this->db);
@@ -525,9 +577,12 @@ class Controller {
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
-        if (!$this->getFromPost('productAction') == 'Submit') {
-            $this->smarty->assign("productReferer", $_SERVER["HTTP_REFERER"]);
-        }
+		$referer = ($this->getFromPost('productReferer')) 
+				? $this->getFromPost('productReferer')
+				: $_SERVER["HTTP_REFERER"];        
+		
+        $this->smarty->assign("productReferer", $referer);
+        
         $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
         $this->smarty->display("tpls:index.tpl");
     }

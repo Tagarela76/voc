@@ -24,43 +24,29 @@
                             Manufacturer/Supplier:
                         </td>
                         <td width=330px>
-                            <input type="text" name="productSupplier" value="{$productSupplier}" {*class="reportIssue"*} size=33px>
-                        </td>
-                        <td>
-                            {if $validStatus.summary eq 'false'}
-                            {if $validStatus.productSupplier eq 'failed'}
-                            {*ERORR*}
-                            <div style="width:55px;margin:2px 0px 0px 2px;" align="left">
-                                <img src='design/user/img/alert1.gif' height=16 style="float:left;">
-                                <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 0px;">
-                                    {*Error!*}
-                                </font>
-                            </div>
-                            {*/ERORR*}
-                            {/if}
-                            {/if}
-                        </td>
-                    </tr>
+                            <input type="text" name="productSupplier" value="{$productRequest->supplier}" {*class="reportIssue"*} size=33px>
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'supplier'}
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}								                           
+                        </td>                        
+                    </tr>					
                     <tr>
                         <td>
                             Product ID/Number:
                         </td>
                         <td width=330px>
-                            <input type="text" name="productId" value="{$productId}" {*class="reportIssue"*} size=33px>
-                        </td>
-                        <td>
-                            {if $validStatus.summary eq 'false'}
-                            {if $validStatus.productId eq 'failed'}
-                            {*ERORR*}
-                            <div style="width:55px;margin:2px 0px 0px 2px;" align="left">
-                                <img src='design/user/img/alert1.gif' height=16 style="float:left;">
-                                <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 0px;">
-                                    {*Error!*}
-                                </font>
-                            </div>
-                            {*/ERORR*}
-                            {/if}
-                            {/if}
+                            <input type="text" name="productId" value="{$productRequest->product_id}" {*class="reportIssue"*} size=33px>
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'product_id'}
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}								                           
                         </td>
                     </tr>
                     <tr>
@@ -68,43 +54,29 @@
                             Product Name:
                         </td>
                         <td width=330px>
-                            <input type="text" name="productName" value="{$productName}" {*class="reportIssue"*} size=33px>
-                        </td>
-                        <td>
-                            {if $validStatus.summary eq 'false'}
-                            {if $validStatus.productName eq 'failed'}
-                            {*ERORR*}
-                            <div style="width:55px;margin:2px 0px 0px 2px;" align="left">
-                                <img src='design/user/img/alert1.gif' height=16 style="float:left;">
-                                <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 0px;">
-                                    {*Error!*}
-                                </font>
-                            </div>
-                            {*/ERORR*}
-                            {/if}
-                            {/if}
-                        </td>
+                            <input type="text" name="productName" value="{$productRequest->name}" {*class="reportIssue"*} size=33px>
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'name'}
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
+                        </td>                        
                     </tr>
                     <tr>
                         <td>
                             Product Description:
                         </td>
                         <td width=330px>
-                            <input type="text" name="productDescription" value="{$productDescription}" {*class="reportIssue"*} size=33px>
-                        </td>
-                        <td>
-                            {if $validStatus.summary eq 'false'}
-                            {if $validStatus.productDescription eq 'failed'}
-                            {*ERORR*}
-                            <div style="width:55px;margin:2px 0px 0px 2px;" align="left">
-                                <img src='design/user/img/alert1.gif' height=16 style="float:left;">
-                                <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 0px;">
-                                    {*Error!*}
-                                </font>
-                            </div>
-                            {*/ERORR*}
-                            {/if}
-                            {/if}
+                            <input type="text" name="productDescription" value="{$productRequest->description}" {*class="reportIssue"*} size=33px>
+							{foreach from=$violationList item="violation"}
+								{if $violation->getPropertyPath() eq 'description'}
+								{*ERROR*}					
+								<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+								{*/ERROR*}						    
+								{/if}
+							{/foreach}	
                         </td>
                     </tr>
                     <tr>
