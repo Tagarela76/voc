@@ -74,6 +74,19 @@
                             </div>
                         </td>
                     </tr>
+					<tr>
+                        <td class="" height="20">
+                            Spent time:
+                        </td>
+                        <td class="">
+                            <div align="left">
+                                &nbsp; 
+								{if $usage->spent_time}
+									{$usage->spent_time} min								
+								{/if}
+                            </div>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="" height="20">
                             Permit expiration date:

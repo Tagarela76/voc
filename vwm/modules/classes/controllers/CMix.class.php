@@ -1120,7 +1120,7 @@ class CMix extends Controller {
 	protected function buildMix($m) {
 
 		$optMix = new MixOptimized($this->db);
-
+		
 		$optMix->department_id = $_REQUEST['departmentID'];
 		$optMix->equipment_id = $m->equipment;
 		$optMix->description = $m->description;
@@ -1128,6 +1128,7 @@ class CMix extends Controller {
 		$optMix->rule_id = $m->rule;
 		$optMix->exempt_rule = $m->excemptRule;
 		$optMix->creation_time = $m->creationTime;
+		$optMix->spent_time = $m->spent_time;
 		$optMix->apmethod_id = $m->APMethod;
 		$optMix->notes = $m->notes;
 		$optMix->valid = true;
@@ -1150,6 +1151,7 @@ class CMix extends Controller {
 		$basemix->rule_id = $formMix->rule;
 		$basemix->exempt_rule = $formMix->excemptRule;
 		$basemix->creation_time = $formMix->creationTime;
+		$basemix->spent_time = $formMix->spent_time;
 		$basemix->notes = $formMix->notes;
 		$basemix->apmethod_id = $formMix->APMethod;
 		$basemix->valid = true;

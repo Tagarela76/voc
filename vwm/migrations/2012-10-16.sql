@@ -1,0 +1,1 @@
+ALTER TABLE `mix` ADD `spent_time` SMALLINT NULL DEFAULT NULL AFTER `creation_time`;

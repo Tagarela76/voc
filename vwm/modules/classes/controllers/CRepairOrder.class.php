@@ -22,22 +22,21 @@ class CRepairOrder extends Controller {
 			$mixOptimized = new MixOptimized($this->db, $mix->mix_id);
 			$mix->price = $mixOptimized->getMixPrice();
 			$mixTotalPrice += $mix->price;
+			$mixTotalSpentTime += $mix->spent_time;
 			$mixList[] = $mix;
 		}
    
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
-
+		
         $this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest('facilityID') . '&bookmark=repairOrder');
         $this->smarty->assign('deleteUrl', '?action=deleteItem&category=repairOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('editUrl', '?action=edit&category=repairOrder&id=' . $this->getFromRequest('id') . '&facilityID=' . $this->getFromRequest("facilityID"));
         $this->smarty->assign('mixList', $mixList);
 		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
-        //set js scripts
-        $jsSources = array('modules/js/checkBoxes.js',
-            'modules/js/autocomplete/jquery.autocomplete.js');
-        $this->smarty->assign('jsSources', $jsSources);
+		$this->smarty->assign('mixTotalSpentTime', $mixTotalSpentTime);
+                
         //set tpl
         $this->smarty->assign('tpl', 'tpls/viewRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");

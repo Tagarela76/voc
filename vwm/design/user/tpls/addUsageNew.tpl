@@ -191,6 +191,28 @@ function createSelectUnittypeClass(id) {
                     {/literal}
                 </td>
             </tr>
+			
+			<tr>
+                <td class="border_users_l border_users_b border_users_r" height="20">
+                   Spent Time in minutes:  (not necessary)
+                </td>
+                <td class="border_users_r border_users_b">
+                    <div align="left" >
+						<input type="text" name="spent_time" id="spentTime" value="{$data->spent_time}">
+                        <div id="spent_timeError" style="display:none;" class="error_img"><span class="error_text">Error!</span></div>
+                        {if $validStatus.summary eq 'false'}
+                            {if $validStatus.spent_time eq 'failed'}
+                                {*ERORR*}
+                                <div class="error_img"><span class="error_text">Please enter only digits</span></div>
+                                {*/ERORR*}
+                            {/if}
+                        {/if}
+                    </div>     
+					<script type="text/javascript">
+                            $("#spentTime").numeric();
+					</script>
+                </td>
+            </tr>
 
             <tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">

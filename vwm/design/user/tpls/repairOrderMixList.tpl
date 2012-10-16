@@ -13,19 +13,24 @@
                     Product Name
                 </div>
             </td>
-            <td class="border_users_b" width="30%">
+            <td class="border_users_b" width="20%">
                 <div style='width:40%;  color:white;'>
                     Description
                 </div>
             </td>
-            <td class="border_users_b" width="10%">
-                <div style='width:10%;  color:white;'>
+            <td class="border_users_b" width="15%">
+                <div style='color:white;'>
                     VOC
                 </div>
             </td>
-            <td class="border_users_b" width="20%">
-                    <div style='width:20%;  color:white;'>
+            <td class="border_users_b" width="15%">
+                    <div style='color:white;'>
                         Creation Date
+                    </div>
+            </td>
+			<td class="border_users_b" width="15%">
+                    <div style='color:white;'>
+                        Time Spent (min)
                     </div>
             </td>
 			<td class="users_u_top_r_yellowgreen" width="20%">
@@ -69,6 +74,11 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
+                {$mix->spent_time|escape} &nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
                 $ {$mix->price|escape} &nbsp;
             </div>
         </td>
@@ -80,18 +90,26 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
+				{if $mixTotalSpentTime}
+                <b> Total: </b>{$mixTotalSpentTime|escape} min
+				{/if}
+				&nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
                 <b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
             </div>
         </td>
     </tr>
     <tr>
-        <td colspan="6" class="border_users_l border_users_r">
+        <td colspan="7" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
     {*END LIST*}
     <tr>
-        <td class="users_u_bottom" colspan="5" height="15">
+        <td class="users_u_bottom" colspan="6" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>

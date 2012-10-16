@@ -19,12 +19,17 @@ function CMix() {
 	this.setMixDate = function(date) {
 		this.creationTime = date;
 	}
+	
+	this.setSpentTime = function(spentTime) {
+		this.spent_time = spentTime;
+	}
 
 	this.setAPMethod = function(m) {
 
 		if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
 			//do nothing
-			//IE does not correct understand undefined and this.APMethod will be exist with value 'undefined', that PHP make crazy :D
+			//IE does not correct understand undefined and this.APMethod will 
+			//be exist with value 'undefined', that PHP make crazy :D
 			//
 			this.APMethod = m;
 		} else {

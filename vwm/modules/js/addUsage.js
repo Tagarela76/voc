@@ -336,6 +336,7 @@ function initRecycle() {
 		mixObj.setDescription($("#mixDescription").val());
 		mixObj.setExcemptRule($("#exemptRule").val());
 		mixObj.setMixDate($("#calendar1").val());
+		mixObj.setSpentTime($("#spentTime").val());
 
 		mixObj.setAPMethod($("#selectAPMethod option:selected").val());
 		mixObj.setEquipment($("#selectEquipment option:selected").val());

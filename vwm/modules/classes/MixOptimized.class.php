@@ -26,7 +26,7 @@ class MixOptimized extends Model {
 	public $waste_percent;
 	public $recycle_percent;
 	public $notes;
-
+		
 	/**
 	 * Working Order iteration number. Default is 0
 	 * Common use case - append as suffix to {@link description}
@@ -40,7 +40,14 @@ class MixOptimized extends Model {
 	 * @var int
 	 */
 	public $parent_id;
+	
+	/**
+	 * Time spent on mix in minutes
+	 * @var int 
+	 */
+	public $spent_time;
 
+	
 	public $url;
 	public $rule;
 	public $facility_id;
@@ -363,6 +370,10 @@ class MixOptimized extends Model {
 	 * @return string
 	 */
 	private function getUpdateMixQuery() {
+		$spentTime = (!empty($this->spent_time)) 
+				? $this->db->sqltext($this->spent_time) 
+				: "NULL";
+		
 		$query = "UPDATE " . TB_USAGE . " SET ";
 		$query .= "equipment_id={$this->db->sqltext($this->equipment_id)}, ";
 		$query .= "apmethod_id=" . ((empty($this->apmethod_id)) ? "NULL" : "{$this->db->sqltext($this->apmethod_id)}") . ", ";
@@ -376,6 +387,7 @@ class MixOptimized extends Model {
 		$query .= "exempt_rule = ". ((empty($this->exempt_rule)) ? "NULL" : "'{$this->db->sqltext($this->exempt_rule)}'") . ", ";
 		$query .= "notes = ". ((empty($this->notes)) ? "NULL" : "'{$this->db->sqltext($this->notes)}'") . ", ";
 		$query .= "creation_time = {$this->db->sqltext($this->creation_time)}, ";
+		$query .= "spent_time = {$spentTime}, ";
 		$query .= "iteration = {$this->db->sqltext($this->iteration)}, ";
 		$query .= "parent_id = " . ((empty($this->parent_id)) ? "NULL" : $this->db->sqltext($this->parent_id)) . ", ";
 		$query .= "last_update_time = NOW() ";
@@ -622,19 +634,39 @@ class MixOptimized extends Model {
 		$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
 		$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
 
-		$creation_time = isset($this->creation_time) ? $this->creation_time : time();
+		$creation_time = isset($this->creation_time) 
+				? $this->db->sqltext($this->creation_time) 
+				: time();
+		
+		$spentTime = (!empty($this->spent_time)) 
+				? $this->db->sqltext($this->spent_time) 
+				: "NULL";
 
-		$apmethod_id = isset($this->apmethod_id) ? "{$this->db->sqltext($this->apmethod_id)}" : "NULL";
-		$exempt_rule = !empty($this->exempt_rule) ? "'{$this->db->sqltext($this->exempt_rule)}'" : "NULL";
-		$waste_percent = isset($this->waste_percent) ? "{$this->db->sqltext($this->waste_percent)}" : "NULL";
-		$recycle_percent = isset($this->recycle_percent) ? "{$this->db->sqltext($this->recycle_percent)}" : "NULL";
-		$notes = !empty($this->notes) ? "'{$this->db->sqltext($this->notes)}'" : "NULL";
-		$parentID = ($this->parent_id !== null) ? $this->db->sqltext($this->parent_id) : "NULL";
-		$repairOrderId = ($this->wo_id !== null) ? $this->db->sqltext($this->wo_id) : "NULL";
+		$apmethod_id = isset($this->apmethod_id) 
+				? "{$this->db->sqltext($this->apmethod_id)}" 
+				: "NULL";
+		$exempt_rule = !empty($this->exempt_rule) 
+				? "'{$this->db->sqltext($this->exempt_rule)}'" 
+				: "NULL";
+		$waste_percent = isset($this->waste_percent) 
+				? "{$this->db->sqltext($this->waste_percent)}" 
+				: "NULL";
+		$recycle_percent = isset($this->recycle_percent) 
+				? "{$this->db->sqltext($this->recycle_percent)}" 
+				: "NULL";
+		$notes = !empty($this->notes) 
+				? "'{$this->db->sqltext($this->notes)}'" 
+				: "NULL";
+		$parentID = ($this->parent_id !== null) 
+				? $this->db->sqltext($this->parent_id) 
+				: "NULL";
+		$repairOrderId = ($this->wo_id !== null) 
+				? $this->db->sqltext($this->wo_id) 
+				: "NULL";
 
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
-					"description, voc, voclx, vocwx, creation_time, rule_id, " .
-					"apmethod_id, exempt_rule, notes, waste_percent, " .
+					"description, voc, voclx, vocwx, creation_time, spent_time, " .
+					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
 					"recycle_percent, iteration, parent_id, last_update_time, wo_id ) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
@@ -642,7 +674,8 @@ class MixOptimized extends Model {
 						"{$this->db->sqltext($this->voc)}, " .
 						"{$this->db->sqltext($this->voclx)}, " .
 						"{$this->db->sqltext($this->vocwx)}, " .
-						"{$this->db->sqltext($creation_time)}, " .
+						"{$creation_time}, " .
+						"{$spentTime}, " .
 						"{$this->db->sqltext($this->rule_id)}, " .
 						"{$apmethod_id}, " .
 						"{$exempt_rule}, " .

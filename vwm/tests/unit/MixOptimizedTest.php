@@ -17,10 +17,12 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$mix = new MixOptimized($this->db, $mixID);
 
 		$mix->description = "WO12-020220-UPDATED";
+		$mix->spent_time = 120;
 		$mix->save(false);
 
 		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID)); 
 		$this->assertTrue($wo12Mix->description == $mix->description);
+		$this->assertEquals($mix->spent_time, $wo12Mix->spent_time);
 
 		//	did we lost products?
 		$this->assertTrue(count($mix->products) == 2);
@@ -43,6 +45,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$newMix->valid = true;
 		$newMix->iteration = 0;
 		$newMix->parent_id = null;
+		$newMix->spent_time = 45;
 		$newMix->isMWS = false;
 
 		$unittype = new Unittype($this->db);
@@ -75,6 +78,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 
 		$myTestMix = Phactory::get(TB_USAGE, array('mix_id'=>$newMix->mix_id));
 		$this->assertTrue($myTestMix->last_update_time == date(MYSQL_DATE_FORMAT. " H:i:s"));
+		$this->assertEquals($myTestMix->spent_time, $newMix->spent_time);
 
 		//	did we lost products?
 		$this->assertTrue(count($newMix->products) == 2);
