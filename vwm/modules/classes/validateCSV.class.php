@@ -772,10 +772,16 @@ class validateCSV {
 			// isn't empty
 			$libraryTypes = explode(',', $data[41]); // we get array of library types
 			foreach ($libraryTypes as $libraryType) {
-				if ( trim($libraryType) != "PAINT SHOP" && trim($libraryType) != "paint shop" && trim($libraryType) != "PAINT SUPPLIES" && 
-						trim($libraryType) != "paint supplies" && trim($libraryType) != "BODY SHOP" && 
-						trim($libraryType) != "body shop"  && trim($libraryType) != "DETAILING" && 
-						trim($libraryType) != "detailing") {
+				if ( trim($libraryType) != "PAINT SHOP" && 
+						trim($libraryType) != "paint shop" && 
+						trim($libraryType) != "PAINT SUPPLIES" && 
+						trim($libraryType) != "paint supplies" && 
+						trim($libraryType) != "BODY SHOP" && 
+						trim($libraryType) != "body shop"  && 
+						trim($libraryType) != "DETAILING" && 
+						trim($libraryType) != "detailing" && 
+						trim($libraryType) != "PAINT PRODUCTS" && 
+						trim($libraryType) != "paint products") {
 					$comments .= "	Product Library type is undefined. Row " . $row . ".\n";
 					break;
 				}
