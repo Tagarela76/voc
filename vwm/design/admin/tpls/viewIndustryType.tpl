@@ -24,7 +24,7 @@
 				1.	Industry Type ID :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left" >&nbsp;{$typeDetails.id}</div>
+				<div align="left" >&nbsp;{$typeDetails->id}</div>
 			</td>
 		</tr>
 
@@ -33,7 +33,7 @@
 				2.	Industry Type :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
-				<div align="left" >	&nbsp;{$typeDetails.type}</div>
+				<div align="left" >	&nbsp;{$typeDetails->type}</div>
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 					<tr class="users_top_lightgray">
 						<td class="users_u_top_lightgray" height="25px">Industry Sub-Categories</td>
 						<td class="users_u_top_r_lightgray" >&nbsp;</td></tr>
-					{if $typeDetails.subTypes|@count gt 0}
+					{if $subIndustryTypes|@count gt 0}
 						<tr bgcolor="#e3e3e3">
 							<td  class="border_users_l border_users_b" height="20" width="50%">
 								Industry Sub-Category ID
@@ -54,13 +54,13 @@
 							</td>
 						</tr>
 
-						{foreach from=$typeDetails.subTypes item=subType}
+						{foreach from=$subIndustryTypes item=subType}
 							<tr class="">
 								<td  class="border_users_l border_users_b" height="20" width="50%">
-									<div align="left">&nbsp;{$subType.id}</div>
+									<div align="left">&nbsp;{$subType->id}</div>
 								</td>
 								<td class="border_users_l border_users_r border_users_b">
-									<div align="left">&nbsp;{$subType.type}</div>
+									<div align="left">&nbsp;{$subType->type}</div>
 
 								</td>
 							</tr>

@@ -54,8 +54,11 @@
                                                                                                 {include file="tpls:tpls/subBookmarks.tpl"}
                                                                                         {/if}
 
-											{if $request.category == 'product' && $request.action == 'browseCategory'}
+											{if ($request.category == 'product') && $request.action == 'browseCategory'}
 													{include file="tpls:tpls/productTypesDropDown.tpl"}
+											{/if}
+                                            {if ($request.category == 'company') && $request.action == 'browseCategory'}
+													{include file="tpls:tpls/companyToIndustryTypesDropDown.tpl"}
 											{/if}
 											{*SORT*}
 												{if $request.bookmark == 'coat'||

@@ -299,6 +299,9 @@ define ('TB_PFP_TYPES', 'pfp_types');
 define ('TB_SALES_BROCHURE', 'sales_brochure');
 define ('TB_REMINDER', 'reminder');
 define ('TB_REMIND2USER', 'remind2user');
+
+define('TB_PRODUCT2INDUSTRY_TYPE', 'product2industry_type');
+define('TB_COMPANY2INDUSTRY_TYPE', 'company2industry_type');
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
 define ('SQL_DELIMITER',';');

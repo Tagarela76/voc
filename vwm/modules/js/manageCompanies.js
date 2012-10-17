@@ -1,6 +1,5 @@
-function manageReminders() {
-	this.divId = 'setRemind2UserContainer';
-	this.divUsersListId = 'usersListContainer';
+function manageCompanies() {
+	this.divId = 'setCompanyToIndustryTypeContainer';
 	this.isLoaded = false;
 
 	this.iniDialog = function(divId) {
@@ -39,16 +38,9 @@ function manageReminders() {
 
 	this.loadContent = function() {
 		var that = this;
-		var userListInput = $("#usersList").find("input[type='hidden']"); 
-		var remindUsers = new Array();
-	
-		userListInput.each(function(i){ 
-			var id = this.value;
-			remindUsers.push(id);
-		}); 
 		$.ajax({
-			url: "?action=loadUsers&category=reminder",
-			data: {facilityId: reminderPage.facilityId, remindId: reminderPage.remindId, remindUsers: remindUsers},
+			url: "?action=loadIndustryTypes&category=company",
+			data: {companyId: companyPage.companyId},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -70,12 +62,12 @@ function manageReminders() {
 			}
 		});
 		$.ajax({
-			url: "?action=setRemindToUser&category=reminder",
+			url: "?action=setCompanyToIndustryType&category=company",
 			data: {rowsToSet: rowsToSet},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
-				$("#usersList").html(response);
+				$("#industryTypesList").html(response);
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
 			}
@@ -84,18 +76,17 @@ function manageReminders() {
 }
 			
 		
-function ReminderPage() {
-	this.manageReminders = new manageReminders();
-	this.facilityId = false;
-	this.remindId = false;
+function CompanyPage() {
+	this.manageCompanies = new manageCompanies();
+	this.companyId = false;
 }
 
 
 //	global reminderPage object
-var reminderPage;
+var companyPage;
 
 $(function() {
 	//	ini global object
-	reminderPage = new ReminderPage();
-	reminderPage.manageReminders.iniDialog();
+	companyPage = new CompanyPage();
+	companyPage.manageCompanies.iniDialog();
 });

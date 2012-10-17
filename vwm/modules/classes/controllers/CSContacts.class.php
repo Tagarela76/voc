@@ -28,12 +28,6 @@ class CSContacts extends Controller {
 				$sub = $this->getFromRequest("bookmark");
 			}
 		}
-
-/*	
-		if (!isset($sub) || $sub == '') {
-			$sub = $this->getFromRequest("bookmark");
-		}	
- */	 
 	
 		$sub = strtolower($sub);
 		$sub = htmlentities($sub);

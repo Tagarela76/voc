@@ -25,95 +25,94 @@ class CAIndustryType extends Controller {
 	
 	protected function bookmarkIndustryType($vars) {
 		extract($vars);
+
+		$industryTypeManager = new IndustryTypeManager($this->db);
 		
-		$productTypes = new ProductTypes($this->db);
+		// get industry types count
 		if (!is_null($this->getFromRequest('q'))){
-			$allTypes = $productTypes->searchType($this->getFromRequest('q'));
+			$itemsCount = $industryTypeManager->searchTypeResultsCount($this->getFromRequest('q'));
 		} else {
-			$allTypes = $productTypes->getAllTypes();
+			$itemsCount = $industryTypeManager->getIndustryTypesCount();
 		}
+		// Pagination
+		$url = "?".$_SERVER["QUERY_STRING"];
+        $url = preg_replace("/\&page=\d*/","", $url);
+        $pagination = new Pagination($itemsCount);
+		$pagination->url = $url; 
+		$this->smarty->assign('pagination', $pagination);
+		
+		if (!is_null($this->getFromRequest('q'))){
+			$allTypes = $industryTypeManager->searchType($this->getFromRequest('q'), $pagination);
+		} else {
+			$allTypes = $industryTypeManager->getIndustryTypes($pagination);
+		}
+
 		$i = 0;
 		foreach ($allTypes as $item){
-			$allTypes[$i]['url'] = 'admin.php?action=viewDetails&category=industryType&id='.$item['id'];
+			$allTypes[$i]->url = 'admin.php?action=viewDetails&category=industryType&id='.$item->id;
 			$i++;
 		}
-		$itemsCount = count($allTypes);
-		
+
 		$this->smarty->assign('itemsCount', $itemsCount);
 		$this->smarty->assign('allTypes', $allTypes);
 		$this->smarty->assign('tpl', 'tpls/industryTypeClass.tpl');
 	}
 	
 	private function actionViewDetails() {
-		$productTypes = new ProductTypes($this->db);
-		$typeDetails = $productTypes->getTypeDetails($this->getFromRequest('id'));
-		$typeDetailsList['id'] = $this->getFromRequest('id');
-		$typeDetailsList['type'] = $typeDetails['type'];
-		$typeDetailsList['subTypes'] = $productTypes->getSubTypesByTypeID($this->getFromRequest('id'));
 		
-		$this->smarty->assign('typeDetails', $typeDetailsList);
+		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
+		$subIndustryTypes = $industryType->getSubIndustryTypes();
+		$this->smarty->assign('typeDetails', $industryType);
+		$this->smarty->assign('subIndustryTypes', $subIndustryTypes);
 		$this->smarty->assign('tpl', 'tpls/viewIndustryType.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionEdit() {
-		$id = $this->getFromRequest('id');
-		$productTypes = new ProductTypes($this->db);
+
+		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
+		$post  = $this->getFromPost();
 		if ($this->getFromPost('save') == 'Save') {	
-			$data = array(
-				"industryType_id"	=>	$id,
-				"industryType_desc"	=>	$_POST["industryType_desc"]
-			);	
-			$validStatus = $productTypes->validateBeforeSaveType($data);	
-			if ($validStatus["summary"] == "true") {
-				$productTypes->setType($data);
-				header ('Location: admin.php?action=viewDetails&category=industryType&id='.$id);
-				die();											
-			}
-		} else {									
-			$tmpData = $productTypes->getTypeDetails($id);
-			$data = array (
-				"industryType_id"	=>	$id,
-				"industryType_desc"	=>	$tmpData['type']
-			);
-		}								
-		
-		//	IF ERRORS OR NO POST REQUEST	
-		if ($validStatus["summary"] == "false") 
-		{	
-			//$notify=new Notify($smarty);
-			//$notify->formErrors();
-			$title=new Titles($this->smarty);
-			$title->titleEditItemAdmin($this->getFromRequest('category'));
-		}
-		
-		$this->smarty->assign('validStatus', $validStatus);
-		$this->smarty->assign('data', $data);
+			$industryType->type = $post["industryType_desc"];
+			$violationList = $industryType->validate(); 
+			if(count($violationList) == 0) {		
+				$industryType->save();
+				// redirect
+				header("Location: ?action=viewDetails&category=industryType&id=" . $this->getFromRequest('id') . "&&notify=54");
+			} else {						
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);						
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $post);
+			}	
+		} else {
+            $this->smarty->assign('data', $industryType);
+        }						
 		$this->smarty->assign('tpl','tpls/addIndustryTypeClass.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 	
 	private function actionAddItem() {
-		$productTypes = new ProductTypes($this->db);
-		if ($this->getFromPost('save') == 'Save'){
-			$data = array(
-				"industryType_desc"	=>	$_POST["industryType_desc"]
-			);	
-			$validStatus = $productTypes->validateBeforeSaveType($data);	
-			if ($validStatus["summary"] == "true") {
-				$productTypes->createNewType($data['industryType_desc']);
-				header ('Location: admin.php?action=browseCategory&category=tables&bookmark=industryType');
-				die();											
-			}
-		} else {
-			//$notify=new Notify($smarty);
-			//$notify->formErrors();
-			$title=new Titles($this->smarty);
-			$title->titleEditItemAdmin($this->getFromRequest('category'));
-		}
-		
-		$this->smarty->assign('data', $data);
-		$this->smarty->assign('validStatus', $validStatus);
+        
+        $industryType = new IndustryType($this->db);
+        $post = $this->getFromPost();
+        if ($this->getFromPost('save') == 'Save'){
+            $industryType->type = $post["industryType_desc"];
+            $industryType->setValidationGroup("add");
+            $violationList = $industryType->validate(); 
+            if(count($violationList) == 0) {		
+                $industryType->save();
+                // redirect
+                header("Location: ?action=browseCategory&category=tables&bookmark=industryType&notify=55");
+            } else {						
+                $notifyc = new Notify(null, $this->db);
+                $notify = $notifyc->getPopUpNotifyMessage(401);
+                $this->smarty->assign("notify", $notify);						
+                $this->smarty->assign('violationList', $violationList);
+                $this->smarty->assign('data', $post);
+            }
+        }
 		$this->smarty->assign("currentOperation","addItem");
 		$this->smarty->assign('tpl', 'tpls/addIndustryTypeClass.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -122,13 +121,13 @@ class CAIndustryType extends Controller {
 	private function actionDeleteItem() {
 		$itemsCount = $this->getFromRequest('itemsCount');
 		$itemForDelete = array();
-		$productTypes = new ProductTypes($this->db);
+
 		for ($i=0; $i<$itemsCount; $i++) {
 			if (!is_null($this->getFromRequest('item_'.$i))) {
 				$item = array();
-				$productTypeDetails = $productTypes->getTypeDetails($this->getFromRequest('item_'.$i));
-				$item["id"]	= $productTypeDetails['id'];
-				$item["name"] = $productTypeDetails['type'];
+                $industrytype = new IndustryType($this->db, $this->getFromRequest('item_'.$i));
+				$item["id"]	= $industrytype->id;
+				$item["name"] = $industrytype->type;
 				$itemForDelete[] = $item;
 			}
 		}
@@ -138,10 +137,10 @@ class CAIndustryType extends Controller {
 	
 	private function actionConfirmDelete() {
 		$itemsCount = $this->getFromRequest('itemsCount');
-		$productTypes = new ProductTypes($this->db);
+
 		for ($i=0; $i<$itemsCount; $i++) {
-			$id = $this->getFromRequest('item_'.$i);
-			$productTypes->deleteType($id);
+			$industrytype = new IndustryType($this->db, $this->getFromRequest('item_'.$i));
+            $industrytype->delete();
 		}
 		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category'));
 		die();

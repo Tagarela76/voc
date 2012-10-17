@@ -207,7 +207,7 @@ class Facility extends FacilityProperties {
 			//	Set Country
 			$facilityDetails["country"] = $reg->getCountry($facilityDetails['country']);
 		}
-
+		
 		return $facilityDetails;
 	}
 

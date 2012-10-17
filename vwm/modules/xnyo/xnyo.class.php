@@ -1130,7 +1130,7 @@ class Xnyo
 	 * This is the output buffer callback function used above to feed the cache system +
 	 * allow the debug console and destructor functions to work.
 	**/
-	public function output_buffer_handler ($buffer)
+	public function output_buffer_handler (&$buffer)
 	{
 		global $input;
 
@@ -1140,7 +1140,7 @@ class Xnyo
 			$func = $this->destructor;
 	
 			// call the destructor with the output as the argument
-			$func(&$buffer);
+			$func($buffer);
 		}
 		
 		// wtf? dont know how this can error, but i guess if the input plugin is not loaded, load it

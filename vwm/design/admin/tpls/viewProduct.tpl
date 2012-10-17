@@ -203,10 +203,10 @@
 							</td>
 							<td class="border_users_l border_users_r border_users_b">
 							<div align="left" >
-								{if $productTypes|@count > 0}
-									{foreach from=$productTypes item=category key=k name=foo}
+								{if $productIndustryTypes|@count > 0}
+									{foreach from=$productIndustryTypes item=category key=k name=foo}
 										{if $category.industrySubType neq ''}
-											{if $smarty.foreach.foo.index < $productTypes|@count-1}
+											{if $smarty.foreach.foo.index < $productIndustryTypes|@count-1}
 												&nbsp;{$category.industryType} / {$category.industrySubType},
 											{else}
 												&nbsp;{$category.industryType} / {$category.industrySubType}

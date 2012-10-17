@@ -177,7 +177,7 @@ class ModuleSystem {
 
      //bool $status;
     private function editAcls($module, $status, $company_id)
-    {
+    {		
     	$gacl_api = new gacl_api();
     	$acoArray = array('access'=>array($module));
 		$aro_group_company=$gacl_api->get_group_id ("company_".$company_id);
@@ -200,7 +200,11 @@ class ModuleSystem {
 			$facilityGroup = array($aro_group_facility);
 
 			$facility_acl_id=$gacl_api->search_acl('access', $module, false, false, "facility_".$fac->facility_id, false, false, false, false);
-			$gacl_api->edit_acl($facility_acl_id[0],$acoArray,NULL,$facilityGroup,NULL,NULL,$status,1,NULL,'');
+			if(count($facility_acl_id) == 0) {				
+				$gacl_api->add_acl($acoArray,NULL,$facilityGroup,NULL,NULL,$status,1,NULL,'');
+			} else {
+				$gacl_api->edit_acl($facility_acl_id[0],$acoArray,NULL,$facilityGroup,NULL,NULL,$status,1,NULL,'');
+			}						
 
 			$query = "SELECT * FROM ".TB_DEPARTMENT." WHERE facility_id = ".$fac->facility_id;
 			$this->db->query($query);
@@ -231,7 +235,7 @@ class ModuleSystem {
     	$companyID = mysql_escape_string($companyID);
 
     	//	check acls
-    	$aclSearchResult = $this->searchModule2company($module, $companyID);
+    	$aclSearchResult = $this->searchModule2company($module, $companyID);		
 
     	if (count($aclSearchResult) > 0) {
     		//	we have ACL's for company!

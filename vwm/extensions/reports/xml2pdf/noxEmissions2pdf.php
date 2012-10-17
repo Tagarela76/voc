@@ -516,11 +516,11 @@ class XML2PDF extends PDF_MC_Table {
 			$this->Cell(70, 10, $this->header['FAX']);
 			$this->Ln(5);
 
-			$this->SetFont('Arial', 'B', 10);
+			/*$this->SetFont('Arial', 'B', 10);
 			$this->Cell(100, 10, "Facility ID:", 0, 0, 'R');
 			$this->SetFont('Arial', '', 10);
 			$this->Cell(70, 10, $this->header['FACILITYID']);
-			$this->Ln(5);
+			$this->Ln(5);*/
 
 			$this->SetFont('Arial', 'B', 10);
 			$this->Cell(100, 10, "Notes:", 0, 0, 'R');

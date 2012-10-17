@@ -154,7 +154,7 @@ function saveFacilityDetails()
 	var voc_limit=document.addFacility.voc_limit.value;
 	var monthly_nox_limit=document.addFacility.monthly_nox_limit.value;
 	var voc_annual_limit=document.addFacility.voc_annual_limit.value;
-	var fac_name=document.addFacility.name.value;
+	var fac_name=$('#addEditFacilityForm input[name="name"]').val();
 	var address=document.addFacility.address.value;
 	var city=document.addFacility.city.value;
 	var county=document.addFacility.county.value;
@@ -167,6 +167,7 @@ function saveFacilityDetails()
 	var email=document.addFacility.email.value;
 	var contact=document.addFacility.contact.value;
 	var title=document.addFacility.title.value;
+	var client_facility_id = $('#addEditFacilityForm input[name="client_facility_id"]').val();
 	var action=document.addFacility.action.value;
 		
 	if (action == 'addItem') {		
@@ -181,7 +182,8 @@ function saveFacilityDetails()
 		jobber[i]= jobberList[i].value;
 	}
 
-
+	$(".error_img").hide();
+	
 	$.ajax({
 		url: "modules/ajax/saveFacility.php",      		
 		type: "POST",
@@ -204,6 +206,7 @@ function saveFacilityDetails()
 			"email":email,
 			"contact":contact,
 			"title":title,
+			"client_facility_id":client_facility_id,
 			"jobber[]":jobber,
 			"action":action,
 			"id":id

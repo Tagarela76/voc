@@ -116,11 +116,10 @@ class CPfpLibrary extends Controller {
             return;
         }
 		//	get list of Industry Types
-		$productTypesObj = new ProductTypes($this->db);
-		$productTypeList = $productTypesObj->getTypesWithSubTypes();
-		$this->smarty->assign("productTypeList", $productTypeList);
+		$industryType = new IndustryType($this->db);
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);
 
-		
 		//	tell Smarty where to insert drop down list with industry types
 		$this->insertTplBlock('tpls/productTypesDropDown.tpl', self::INSERT_AFTER_SEARCH);
 

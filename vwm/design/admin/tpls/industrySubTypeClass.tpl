@@ -41,22 +41,22 @@
 						 
 {*BEGIN LIST*}						 
 {*section name=i loop=$category*}
-{foreach from=$allSubTypes item=subType key=i}	
+{foreach from=$subIndustryTypes item=subIndustryType key=i}	
 		<tr class="hov_company">
 			<td class="border_users_l border_users_b">
- 				<input type="checkbox"  value="{$subType.id}" name="item_{$i}">
+ 				<input type="checkbox"  value="{$subIndustryType->id}" name="item_{$i}">
  			</td>
 			
 			<td class="border_users_b border_users_l">
-				<a href="{$subType.url}"><div style="width:100%;">{$subType.id}</div ></a>
+				<a href="{$subIndustryType->url}"><div style="width:100%;">{$subIndustryType->id}</div ></a>
 			</td>
  			
  			<td class="border_users_b border_users_l">
- 				<a href="{$subType.url}" ><div style="width:100%;">{$subType.type}</div ></a>
+ 				<a href="{$subIndustryType->url}" ><div style="width:100%;">{$subIndustryType->type}</div ></a>
 			</td>
 			
 			<td class="border_users_b border_users_l border_users_r">
-             	<a href="{$subType.url}"><div style="width:100%;">{$subType.parentType}</div ></a>
+             	<a href="{$subIndustryType->url}"><div style="width:100%;">{$subIndustryType->parentIndustryType}</div ></a>
 			</td>
 		</tr>
 {/foreach}		

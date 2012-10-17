@@ -1,0 +1,68 @@
+VWM\Hierarchy\Facility:
+  properties:
+    company_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    name:
+      - NotBlank: ~
+      - MaxLength: 96
+    epa:
+      - NotBlank: ~
+      - MaxLength: 75
+    address:
+      - NotBlank: ~
+      - MaxLength: 196
+    city:
+      - NotBlank: ~
+      - MaxLength: 196
+    zip:
+      - NotBlank: ~
+      - MaxLength: 48
+    county:
+      - NotBlank: ~
+      - MaxLength: 96
+    state:
+      - NotBlank: ~
+      - MaxLength: 96
+    country:
+      - NotBlank: ~
+      - Min: 1
+      - Max: 500      
+    phone:
+      - NotBlank: ~
+      - MaxLength: 32
+    fax:
+      - NotBlank: ~
+      - MaxLength: 32
+    email:
+      - NotBlank: ~
+      - Email: ~
+    contact:
+      - NotBlank: ~
+      - MaxLength: 96
+    title:
+      - NotBlank: ~
+      - MaxLength: 96
+    creater_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    voc_limit:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    voc_annual_limit:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999      
+    gcg_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    monthly_nox_limit:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999                  
+    client_facility_id:
+      - MaxLength: 64
