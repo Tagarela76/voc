@@ -234,6 +234,8 @@ class bulkUploader {
 					case "paint shop":	
 					case "PAINT SUPPLIES":
 					case "paint supplies":	
+					case "PAINT PRODUCTS":	
+					case "paint products":		
 						$productLibraryTypes[] = "1";
 						break;
 					case "BODY SHOP":
@@ -376,6 +378,8 @@ class bulkUploader {
 				case "paint shop":	
 				case "PAINT SUPPLIES":
 				case "paint supplies":	
+				case "PAINT PRODUCTS":	
+				case "paint products":	
 					$productLibraryTypes[] = "1";
 					break;
 				case "BODY SHOP":
