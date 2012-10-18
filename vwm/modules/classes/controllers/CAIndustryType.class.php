@@ -1,5 +1,8 @@
 <?php
 
+use VWM\Label\LabelManager;
+use VWM\Label\CompanyLevelLabel;
+
 class CAIndustryType extends Controller {
 	
 	function CAIndustryType($smarty,$xnyo,$db,$user,$action) {
@@ -62,6 +65,10 @@ class CAIndustryType extends Controller {
 		
 		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
 		$subIndustryTypes = $industryType->getSubIndustryTypes();
+		// get industry type label list
+		$labelSystem = new LabelManager($this->db, $this->getFromRequest('id'));
+		$labelList = $labelSystem->getLabelList();	
+		$this->smarty->assign('industryLabelList', $labelList);
 		$this->smarty->assign('typeDetails', $industryType);
 		$this->smarty->assign('subIndustryTypes', $subIndustryTypes);
 		$this->smarty->assign('tpl', 'tpls/viewIndustryType.tpl');
@@ -72,13 +79,27 @@ class CAIndustryType extends Controller {
 
 		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
 		$post  = $this->getFromPost();
+		// get industry type label list
+		$labelManager = new LabelManager($this->db, $this->getFromRequest('id'));
+		$labelList = $labelManager->getLabelList();	
+		$this->smarty->assign('industryLabelList', $labelList);
 		if ($this->getFromPost('save') == 'Save') {	
-			$industryType->type = $post["industryType_desc"];
+			$industryType->type = $post["type"];
 			$violationList = $industryType->validate(); 
 			if(count($violationList) == 0) {		
 				$industryType->save();
-				// redirect
-				header("Location: ?action=viewDetails&category=industryType&id=" . $this->getFromRequest('id') . "&&notify=54");
+				if ($post["repair_order"] == "") {					
+					$notifyc = new Notify(null, $this->db);
+					$notify = $notifyc->getPopUpNotifyMessage(401);
+					$this->smarty->assign("repairOrderError", 'true');
+					$this->smarty->assign("notify", $notify);						
+					$this->smarty->assign('data', $industryType);
+				} else {
+					// save repair_order label
+					$labelManager->saveRepairOrderLabel($post["repair_order"]);
+					// redirect
+					header("Location: ?action=viewDetails&category=industryType&id=" . $this->getFromRequest('id') . "&&notify=54");
+				}
 			} else {						
 				$notifyc = new Notify(null, $this->db);
 				$notify = $notifyc->getPopUpNotifyMessage(401);
@@ -88,7 +109,8 @@ class CAIndustryType extends Controller {
 			}	
 		} else {
             $this->smarty->assign('data', $industryType);
-        }						
+        }		
+		$this->smarty->assign("currentOperation","edit");
 		$this->smarty->assign('tpl','tpls/addIndustryTypeClass.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -98,7 +120,7 @@ class CAIndustryType extends Controller {
         $industryType = new IndustryType($this->db);
         $post = $this->getFromPost();
         if ($this->getFromPost('save') == 'Save'){
-            $industryType->type = $post["industryType_desc"];
+            $industryType->type = $post["type"];
             $industryType->setValidationGroup("add");
             $violationList = $industryType->validate(); 
             if(count($violationList) == 0) {		

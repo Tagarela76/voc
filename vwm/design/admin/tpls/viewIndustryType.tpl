@@ -86,3 +86,32 @@
 			</td>
 		</tr>
 	</table>
+	<!-- Label List -->
+	<table class="users"  align="center" cellpadding="0" cellspacing="0">
+		<tr class="users_top_yellowgreen" >
+			<td class="users_u_top_yellowgreen" width="27%" height="30" >
+				<span >Label ID</span>
+			</td>
+			<td class="users_u_top_r_yellowgreen" width="300">
+				<span >Label Text</span>
+			</td>
+		</tr>
+		{foreach from=$industryLabelList item=industryLabel}
+			<tr>
+				<td class="border_users_l border_users_b" height="20">
+					{$industryLabel.label_id}
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" >&nbsp;{$industryLabel.label_text}</div>
+				</td>
+			</tr>
+		{/foreach}
+		<tr>
+			<td height="20" class="users_u_bottom">
+				&nbsp;
+			</td>
+			<td height="20" class="users_u_bottom_r">
+				&nbsp;
+			</td>
+		</tr>
+	</table>

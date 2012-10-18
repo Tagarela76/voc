@@ -11,14 +11,14 @@
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr class="users_top_yellowgreen users_u_top_size">
             <td class="users_u_top_yellowgreen" width="37%" height="30">
-                <span>View repair order</span>
+                <span>View {$repairOrderLabel}</span>
             </td>
             <td class="users_u_top_r_yellowgreen" width="300">
             </td>
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Repair order number:
+                {$repairOrderLabel} number:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
-                Repair order description:
+                {$repairOrderLabel} description:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
@@ -48,7 +48,7 @@
         </tr>
 		<tr>
             <td class="border_users_l border_users_b" height="20">
-                Repair Order Status:
+                {$repairOrderLabel} Status:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
@@ -58,7 +58,7 @@
         </tr>
 		<tr>
             <td class="border_users_l border_users_b" height="20">
-                Repair Order VIN number:
+                {$repairOrderLabel} VIN number:
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">

@@ -119,13 +119,13 @@
 						 {if $request.bookmark != "repairOrder"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
-                                    Repair Order&nbsp;
+                                    {$repairOrderLabel}&nbsp;
                                 </div>
                             </div>
                             {else}
                             <div class="activeBookmark">
                                 <div class="activeBookmark_right">
-                                    Repair Order&nbsp;
+                                    {$repairOrderLabel}&nbsp;
                                 </div>
                             </div>
                             {/if}

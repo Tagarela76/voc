@@ -15,7 +15,7 @@
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_header_orange">
 				<td>
-					<div class="users_header_orange_l"><div><b>{if $request.action eq "addItem"}Adding for a new repair order{else}Editing repair order{/if}</b></div></div>
+					<div class="users_header_orange_l"><div><b>{if $request.action eq "addItem"}Adding for a new {$repairOrderLabel}{else}Editing {$repairOrderLabel}{/if}</b></div></div>
 				</td>
 				<td>
 					<div class="users_header_orange_r"><div>&nbsp;</div></div>
@@ -24,7 +24,7 @@
 			
 			<tr class="border_users_b border_users_r">		
 				<td class="border_users_l" height="20" width="15%">
-					Repair order number:
+					{$repairOrderLabel} number:
 				</td>
 				<td>
 					<div align="left">
@@ -40,7 +40,7 @@
 			
 			<tr class="border_users_b border_users_r">			
 				<td height="20" class="border_users_l">
-					Repair order description:
+					{$repairOrderLabel} description:
 				</td>
 				<td>
 					<div align="left">
@@ -67,7 +67,7 @@
 			</tr>
 			<tr class="border_users_b border_users_r">			
 				<td height="20" class="border_users_l">
-					Repair Order Status:
+					{$repairOrderLabel} Status:
 				</td>
 				<td>
 					<div align="left">
@@ -80,7 +80,7 @@
 			</tr>
 			<tr class="border_users_b border_users_r">			
 				<td height="20" class="border_users_l">
-					Repair Order VIN number:
+					{$repairOrderLabel} VIN number:
 				</td>
 				<td>
 					<div align="left">

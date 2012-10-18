@@ -1,5 +1,7 @@
 <?php
 
+use VWM\Label\CompanyLevelLabel;
+
 class Controller {
 
 	/**
@@ -992,6 +994,16 @@ class Controller {
         if (!empty($this->request['tab'])) {
             $paramsForListLeft ['tab'] = $this->getFromRequest('tab');
         }
+		
+		// set label List (repair order)
+		if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
+			$facility = new Facility($this->db);
+			$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
+			$companyId = $facilityDetails["company_id"];
+			$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+			$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+			$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+		}
     }
 
     private function actionBrowseCategoryACommon() {

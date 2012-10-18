@@ -1,4 +1,5 @@
 <?php
+use VWM\Label\CompanyLevelLabel;
 
 class CRepairOrder extends Controller {
 
@@ -25,7 +26,13 @@ class CRepairOrder extends Controller {
 			$mixTotalSpentTime += $mix->spent_time;
 			$mixList[] = $mix;
 		}
-   
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
+		$companyId = $facilityDetails["company_id"];
+		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+		
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
 		
@@ -108,6 +115,13 @@ class CRepairOrder extends Controller {
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
         $this->setPermissionsNew('viewFacility');
+
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
+		$companyId = $facilityDetails["company_id"];
+		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
         //	set js scripts
         $jsSources = array(
@@ -198,6 +212,13 @@ class CRepairOrder extends Controller {
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
 
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
+		$companyId = $facilityDetails["company_id"];
+		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+		
         //	set js scripts
         $jsSources = array(
             'modules/js/reg_country_state.js',
@@ -226,6 +247,13 @@ class CRepairOrder extends Controller {
 			$mixList[] = $mix;
 		}
 
+		$facility = new Facility($this->db);
+		$facilityDetails = $facility->getFacilityDetails($repairOrder->facility_id);
+		$companyId = $facilityDetails["company_id"];
+		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+		
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         $this->smarty->assign('repairOrder', $repairOrder);
         $this->smarty->assign('mixList', $mixList);

@@ -16,17 +16,17 @@
                 <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
 					<tr>
 						<td colspan="2" style="border-width:0px;" height="20px">
-							<b>Repair Order ID</b> {$repairOrder->id}
+							<b>{$repairOrderLabel} ID</b> {$repairOrder->id}
 						</td>
 					</tr>
 					<tr>
 						<td height="20">
-							<b>Repair order number:</b> {$repairOrder->number|escape}
+							<b>{$repairOrderLabel} number:</b> {$repairOrder->number|escape}
 						</td>
 					</tr>
 					<tr>
 						<td height="20">
-							<b>Repair order description:</b> {$repairOrder->description|escape}
+							<b>{$repairOrderLabel} description:</b> {$repairOrder->description|escape}
 						</td>
 					</tr>
 					<tr>
@@ -36,12 +36,12 @@
 					</tr>
 					<tr>
 						<td height="20">
-							<b>Repair Order Status:</b> {$repairOrder->status|escape}
+							<b>{$repairOrderLabel} Status:</b> {$repairOrder->status|escape}
 						</td>
 					</tr>
 					<tr>
 						<td height="20">
-							<b>Repair Order VIN number:</b> {$repairOrder->vin|escape}
+							<b>{$repairOrderLabel} VIN number:</b> {$repairOrder->vin|escape}
 						</td>
 					</tr>
 				</table>

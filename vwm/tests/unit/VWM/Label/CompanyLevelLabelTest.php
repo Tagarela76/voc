@@ -22,6 +22,25 @@ class CompanyLevelLabelTest extends DbTestCase {
 		
 		$this->assertEquals('Repair Order EEE', $label);
 	}
+	
+	public function testSaveRepairOrderLabel() {
+		$industryType = 1;
+		$companyId = 1;
+		$labelText = "Work Order Label";
+		$labelSystem = new LabelManager($this->db, $industryType);
+		$labelSystem->saveRepairOrderLabel($labelText);
+		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
+		$newLabel = $labelCompanySystem->getRepairOrderLabel();
+		$this->assertEquals($labelText, $newLabel);
+	}
+	
+	public function testGetLabelList() {
+		$industryType = 1;
+		$labelSystem = new LabelManager($this->db, $industryType);
+		$labelList = $labelSystem->getLabelList();
+		$this->assertTrue(is_array($labelList));
+		$this->assertEquals(1, count($labelList));
+	}
 }
 
 ?>

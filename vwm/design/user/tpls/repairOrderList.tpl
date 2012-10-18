@@ -94,7 +94,7 @@
 	{*BEGIN	EMPTY LIST*}
 	<tr>
 		<td colspan="5"class="border_users_l border_users_r" align="center">
-			No repair orders in the list
+			No {$repairOrderLabel} in the list
 		</td>
 	</tr>
 	{*END	EMPTY LIST*}
