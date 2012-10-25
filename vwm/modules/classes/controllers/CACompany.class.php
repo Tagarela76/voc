@@ -2,10 +2,10 @@
 
 class CACompany extends Controller {
 
-	function CAProduct($smarty,$xnyo,$db,$user,$action) {
+	function __construct($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='company';
-		$this->parent_category='company';
+		$this->parent_category='root';
 	}
 
 	function runAction() {
