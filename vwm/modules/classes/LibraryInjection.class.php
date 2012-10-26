@@ -32,7 +32,7 @@ class LibraryInjection {
 		} else {
 			$cssSources = array_merge($templateCssSources, $toolTipCssScripts);
 		}
-		 var_dump($cssSources); die();
+		
 		$this->smarty->assign('cssSources', $cssSources);
 	}
 }
