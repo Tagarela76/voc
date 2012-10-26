@@ -846,8 +846,7 @@ function createSelectUnittypeClass(id) {
 				delay: 30,
 				showURL: false,
 				fixPNG: true,
-				showBody: " - ",
-				extraClass: "pretty fancy",
+				extraClass: "mixSaveButton",
 				top: -35,
 				left: -40
 			});
