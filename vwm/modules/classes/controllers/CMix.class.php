@@ -1448,15 +1448,12 @@ class CMix extends Controller {
 			'modules/js/mixObj.js?rev=jun22',
 			'modules/js/addUsage.js?rev=sep06',
 			'modules/js/Utils.js?rev=sep06',
-			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
-			'modules/lib/jquery-tooltip/js/jquery.bgiframe.js',
-			'modules/lib/jquery-tooltip/js/jquery.dimensions.js',
-			'modules/lib/jquery-tooltip/js/jquery.tooltip.js');
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);
 
 		$cssSources = array(
 			'modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css',
-			'modules/lib/jquery-tooltip/css/jquery.tooltip.css');
+			);
 		$this->smarty->assign('cssSources', $cssSources);
 
 		if ($action == "EditAddItem") {
@@ -1468,6 +1465,10 @@ class CMix extends Controller {
 		if ($_GET['debug']) {
 			$this->smarty->assign('debug', true);
 		}
+		// i want to add tooltip plugin
+		$libraryInjection = new LibraryInjection($this->smarty);
+		$libraryInjection->injectToolTip(); 
+		
 		// for displaying voc unit type
 		$unittype = new Unittype($this->db);
 		$companyDetails = $company->getCompanyDetails($companyID);
