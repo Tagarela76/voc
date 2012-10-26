@@ -1465,9 +1465,13 @@ class CMix extends Controller {
 		if ($_GET['debug']) {
 			$this->smarty->assign('debug', true);
 		}
+		
 		// i want to add tooltip plugin
 		$libraryInjection = new LibraryInjection($this->smarty);
 		$libraryInjection->injectToolTip(); 
+		
+		//TODO: inject libraries like this
+		// $this->getLibraryInjection()->injectToolTip();
 		
 		// for displaying voc unit type
 		$unittype = new Unittype($this->db);
