@@ -36,7 +36,7 @@
 </div>
 </td>
 
-<td>
+<td width="390">
 	<div class="users_header_blue_r">
 		<div>Gauge</div>
 	</div>
