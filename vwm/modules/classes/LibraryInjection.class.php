@@ -12,10 +12,10 @@ class LibraryInjection {
 		// js including
 		// I should to get jsSources & cssSources variables and added tooltip scripts
 		$templateJsSources = $this->smarty->get_template_vars('jsSources');  
-		$toolTipJsScripts = array(
-			'modules/lib/jquery-tooltip/js/jquery.bgiframe.js',
-			'modules/lib/jquery-tooltip/js/jquery.dimensions.js',
-			'modules/lib/jquery-tooltip/js/jquery.tooltip.js');
+		$toolTipJsScripts = array( 
+			'modules/js/jquery-tooltip/js/jquery.bgiframe.js',
+			'modules/js/jquery-tooltip/js/jquery.dimensions.js',
+			'modules/js/jquery-tooltip/js/jquery.tooltip.js');
 		if (is_null($templateJsSources)) {
 			$jsSources = $toolTipJsScripts;
 		} else {
@@ -26,7 +26,7 @@ class LibraryInjection {
 		// css including
 		$templateCssSources = $this->smarty->get_template_vars('cssSources');
 		$toolTipCssScripts = array(
-			'modules/lib/jquery-tooltip/css/jquery.tooltip.css');
+			'modules/js/jquery-tooltip/css/jquery.tooltip.css');
 		if (is_null($templateCssSources)) {
 			$cssSources = $toolTipCssScripts;
 		} else {
