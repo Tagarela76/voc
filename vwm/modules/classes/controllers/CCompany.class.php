@@ -162,6 +162,12 @@ if ($checkResult['shouldPay']) {
 		//$notify = $notify->getPopUpNotifyMessage(null,array("backgroundColor"=>"Yellow", "fontSize" => "14px"),"The payment period is coming to end in -2 days. Please, go to VOC Payment System pay for the next period.");
 		//$this->smarty->assign("notify",$notify);
 		//	set tpl
+		//	
+		// for displaying voc unit type
+		$unittype = new Unittype($this->db);
+		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+		$this->smarty->assign('vocUnitType', $vocUnitType);
+		
 		$this->smarty->assign('tpl', 'tpls/company.tpl');
 		$this->smarty->display("tpls:index.tpl");
 

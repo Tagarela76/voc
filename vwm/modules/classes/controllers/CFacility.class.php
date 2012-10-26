@@ -120,6 +120,11 @@ class CFacility extends Controller {
 		$facility->initializeByID($this->getFromRequest('id'));
 		$this->setIndicator($facilityDetails['voc_limit'], $facility->getCurrentUsage()); //
 
+		// for displaying voc unit type
+		$unittype = new Unittype($this->db);
+		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+		$this->smarty->assign('vocUnitType', $vocUnitType);
+		
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 

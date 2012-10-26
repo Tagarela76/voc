@@ -119,7 +119,11 @@ class CDepartment extends Controller {
 
 		$this->setIndicator($departmentDetails['voc_limit'], $usage);
 
-
+		// for displaying voc unit type
+		$unittype = new Unittype($this->db);
+		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+		$this->smarty->assign('vocUnitType', $vocUnitType);
+		
 		$vars = array(
 			'departmentDetails' => $departmentDetails,
 			'facilityDetails' => $facilityDetails,
