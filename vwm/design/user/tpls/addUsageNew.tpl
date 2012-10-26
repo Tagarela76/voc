@@ -194,7 +194,7 @@ function createSelectUnittypeClass(id) {
 			
 			<tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">
-                   Spent Time in minutes:  (not necessary)
+                   Spent Spray in minutes:  (not necessary)
                 </td>
                 <td class="border_users_r border_users_b">
                     <div align="left" >
@@ -664,7 +664,14 @@ function createSelectUnittypeClass(id) {
             VOC:
         </td>
         <td class="border_users_r border_users_b">
-            <div align="left" id="VOC">{$data->voc}</div>
+			<div>
+				<div style="float: left;">
+					<div id="VOC">{$data->voc}</div>
+				</div>
+				<div style="float: left;">
+					&nbsp; {$vocUnitType}
+				</div>	
+			</div>	
             <input type="hidden" name="voc" value="{$data->voc}">
         </td>
     </tr>
@@ -752,9 +759,9 @@ function createSelectUnittypeClass(id) {
 <div align="right" class="buttonpadd">
 <!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
     {if $request.action eq "edit"}
-        <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()"/>
+        <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish"/>
     {else}
-        <input type='button' id="btnSave" name='save' class="button" value='Total' onclick="addMix()"/>
+        <input type='button' id="btnSave" name='save' class="button" value='Finish' onclick="addMix()" title="Press Finish"/>
     {/if}
 
 </div>
@@ -828,6 +835,23 @@ function createSelectUnittypeClass(id) {
         //		for(i=0; i<count; i++) {
         //			window.document.onload = getUnittypes(document.getElementById('selectUnittypeClass_'+i), document.getElementById('company').value, document.getElementById('companyEx').value);
         //		}
-        </script>
+        </script>		
     {/literal}
 {/if}
+{literal}
+	<script type="text/javascript">
+		$(function() {
+			$('#btnSave').tooltip({
+				track: true,
+				delay: 30,
+				showURL: false,
+				fixPNG: true,
+				showBody: " - ",
+				extraClass: "pretty fancy",
+				top: -35,
+				left: -40
+			});
+		});
+		
+	</script>
+{/literal}		

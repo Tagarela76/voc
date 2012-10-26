@@ -571,7 +571,13 @@ class CMix extends Controller {
 				die();
 				return ;
 			}
-
+			// for displaying voc unit type
+			$company = new Company($this->db);
+			$companyID = $company->getCompanyIDbyDepartmentID($departmentDetails['department_id']);
+			$unittype = new Unittype($this->db);
+			$companyDetails = $company->getCompanyDetails($companyID);
+			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+			$this->smarty->assign('vocUnitType', $vocUnitType);
 			$this->smarty->assign('childCategoryItems', $mixList);
 			//set js scripts
 			$jsSources = array('modules/js/checkBoxes.js',
@@ -1442,10 +1448,15 @@ class CMix extends Controller {
 			'modules/js/mixObj.js?rev=jun22',
 			'modules/js/addUsage.js?rev=sep06',
 			'modules/js/Utils.js?rev=sep06',
-			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/lib/jquery-tooltip/js/jquery.bgiframe.js',
+			'modules/lib/jquery-tooltip/js/jquery.dimensions.js',
+			'modules/lib/jquery-tooltip/js/jquery.tooltip.js');
 		$this->smarty->assign('jsSources', $jsSources);
 
-		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$cssSources = array(
+			'modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css',
+			'modules/lib/jquery-tooltip/css/jquery.tooltip.css');
 		$this->smarty->assign('cssSources', $cssSources);
 
 		if ($action == "EditAddItem") {
@@ -1457,7 +1468,11 @@ class CMix extends Controller {
 		if ($_GET['debug']) {
 			$this->smarty->assign('debug', true);
 		}
-
+		// for displaying voc unit type
+		$unittype = new Unittype($this->db);
+		$companyDetails = $company->getCompanyDetails($companyID);
+		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+		$this->smarty->assign('vocUnitType', $vocUnitType);
 		$this->smarty->assign('sendFormAction', '?action=' . $action . '&category=' . $this->category . (($action == 'addItem') ? '&departmentID=' . $departmentID : '&id=' . $this->getFromRequest('id')));
 		$this->smarty->assign('tpl', 'tpls/addUsageNew.tpl');
 		$this->smarty->display("tpls:index.tpl");

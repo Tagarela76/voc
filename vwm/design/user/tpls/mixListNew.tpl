@@ -178,7 +178,7 @@
         <td class="border_users_b border_users_r">
             <a href="{$mix->url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$mix->voc} &nbsp;
+                    {$mix->voc} &nbsp; {$vocUnitType}
                 </div>
             </a>
         </td>
