@@ -58,7 +58,7 @@
 						</a>
 					</td>
 
-					<td class="border_users_r" style="width:250px;">
+					<td class="border_users_r" style="width:390px;">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
 								{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$facility.gauge.currentUsage
