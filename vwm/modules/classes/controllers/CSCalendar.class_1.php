@@ -1,7 +1,5 @@
 <?php
 
-use VWM\Calendar\Calendar;
-
 class CSCalendar extends Controller {
 	
 	function CSCalendar($smarty,$xnyo,$db,$user,$action) {
@@ -18,11 +16,6 @@ class CSCalendar extends Controller {
 	}
 	
 	protected function actionBrowseCategory($vars) {
-		$phpCalendar = new Calendar(); 
-		$phpCalendar->setSmarty($this->smarty); 
-		 echo $phpCalendar->getCalendar();
-		 die('y');
-		 
 		extract($vars);
 		$calendarManager = new CalendarManager($this->db);
 		$user = new User($this->db);

@@ -1,0 +1,15 @@
+VWM\Calendar\CalendarEvent:
+  properties:
+    title:
+      - NotBlank: ~
+      - MaxLength: 100
+    description:
+      - NotBlank: ~
+      - MaxLength: 250
+    event_date:
+      - NotBlank: ~
+      - Max: 15
+    author_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 11                      
