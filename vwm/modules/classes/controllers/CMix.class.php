@@ -1,6 +1,7 @@
 <?php
 
 use VWM\Framework\Cache\DbCacheDependency;
+use VWM\Label\CompanyLevelLabel;
 
 class CMix extends Controller {
 
@@ -1440,6 +1441,7 @@ class CMix extends Controller {
 		}
 
 		$jsSources = array(
+			//TODO: why? tooltip will be injected with special object
 			'modules/js/jquery.simpletip-1.3.1.pack.js',
 			'modules/js/flot/jquery.flot.js',
 			'modules/js/mixValidator.js?rev=jun22',
@@ -1473,12 +1475,18 @@ class CMix extends Controller {
 		//TODO: inject libraries like this
 		// $this->getLibraryInjection()->injectToolTip();
 		
+		// Repair order or Working Order
+		$companyLevelLabel = new CompanyLevelLabel($this->db, $companyID);
+		$this->smarty->assign('repairOrderLabel', 
+				$companyLevelLabel->getRepairOrderLabel());
+		
 		// for displaying voc unit type
 		$unittype = new Unittype($this->db);
 		$companyDetails = $company->getCompanyDetails($companyID);
 		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
 		$this->smarty->assign('vocUnitType', $vocUnitType);
-		$this->smarty->assign('sendFormAction', '?action=' . $action . '&category=' . $this->category . (($action == 'addItem') ? '&departmentID=' . $departmentID : '&id=' . $this->getFromRequest('id')));
+		$this->smarty->assign('sendFormAction', 
+				'?action=' . $action . '&category=' . $this->category . (($action == 'addItem') ? '&departmentID=' . $departmentID : '&id=' . $this->getFromRequest('id')));
 		$this->smarty->assign('tpl', 'tpls/addUsageNew.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
