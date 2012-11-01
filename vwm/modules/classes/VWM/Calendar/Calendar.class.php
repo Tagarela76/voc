@@ -35,24 +35,48 @@ class Calendar extends PHPCalendar {
 
 	public function getCalendar() {
 		parent::getCalendar();
-		
-		$dayAsInt = 0;
-		$classesForCurrentDays = array();
-        foreach ($this->calArray as $dayAsStr) { 
+
+		$userCalendarEvents = $this->getCalendarEventManager()->getUserCalendarEvents();		
+		// this piece i cannot add in tpl(((
+        $dayAsInt = 0;
+		$pieceOfCalendar = ''; 
+        foreach ($this->calArray as $dayAsStr) {			
             $dayAsInt++;
+            // Highlight today
             $currentDay = date('n/' . $dayAsInt . '/Y', $this->timestamp);
             $class = '';
             if ($currentDay == date('n/j/Y')) { 
                 $class = 'class="today"'; 
             } else {
                 $class = '';
-            }
-			$classesForCurrentDay["class"] = $class;
-			$classesForCurrentDay["currentDays"] = $currentDay;
-			$classesForCurrentDays[] = $classesForCurrentDay;
-        }
+            } 
+			// collect events
+			$calendarEvents = '';
+			foreach ($userCalendarEvents  as $userCalendarEvent) {
+				if ($userCalendarEvent->event_date == strtotime($currentDay)) {
+					$calendarEvents .= "<a href='#event_" . $userCalendarEvent->id . "' " .
+							"title='" . $userCalendarEvent->title . "'" .
+							"onclick='calendarPage.calendarUpdateEvent.openDialog(".$userCalendarEvent->id .");' >" . 
+							$userCalendarEvent->title . 
+							"</a><br>";
+					$calendarEvents .= "<span style='display: none;' ". 
+							"id=event_" . $userCalendarEvent->id . 
+							"><p>$userCalendarEvent->title</p>" .
+							"<p>$userCalendarEvent->description</p></span>";
+				}
+			}
+            // Set the actual calendar squares, hyperlinked to their timestamps
+            $pieceOfCalendar .= 
+                '<td><div ' . $class . '>' . $dayAsInt . '<br>' . $calendarEvents .
+				'<input type="button" value="+" ' .
+				'onclick="calendarPage.calendarAddEvent.openDialog('.strtotime($currentDay).');" /></div></td>';
 
-		$this->smarty->assign("classesForCurrentDays",$classesForCurrentDays);
+            // Our calendar has Saturday as the last day of the week,
+            // so we'll wrap to a newline after every SAT
+            if ($dayAsInt != $this->daysInMonth && $dayAsStr == 'Sat') {
+                $pieceOfCalendar .= '</tr><tr>';
+            }
+        }
 		
 		$this->smarty->assign("navButtonBackward",$this->getNavButton('backward'));
 		$this->smarty->assign("currentMonthName",$this->getCurrentMonthName());
@@ -60,10 +84,20 @@ class Calendar extends PHPCalendar {
 		$this->smarty->assign("navButtonForward",$this->getNavButton('forward'));
 		$this->smarty->assign("days",$this->days);
 		$this->smarty->assign("dayMonthBegan",$this->dayMonthBegan);
-		$this->smarty->assign("daysInMonth",$this->daysInMonth);
-		$result = $this->smarty->fetch("tpls/calendar.tpl");
-		echo $result;
+		$this->smarty->assign("pieceOfCalendar",$pieceOfCalendar);
+		
+		$result = $this->smarty->fetch("tpls/phpCalendar.tpl");
+		return $result;
 	}
+	
+	protected function getNavButton($direction) {
+        $when = $direction == 'forward' ? '+1 month' : '-1 month';
+
+        return '<a class="cal-nav-buttons" href="?action=browseCategory&category=calendar&timestamp=' .
+            $this->getFirstOfMonth(
+                strtotime($when, $this->timestamp)) . '">' . 
+                date("M", strtotime($when, $this->timestamp)) . '</a>';
+    }
 }
 
 ?>

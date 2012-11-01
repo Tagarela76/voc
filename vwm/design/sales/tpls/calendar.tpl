@@ -1,39 +1,33 @@
-<!-- Start the opening div that the calendar is contained within-->
-<div id="cal-content">
-	<!-- Set the navigation buttons and the current month/year heading-->
-	{$navButtonBackward} 
-	<span id="cal-date-heading">
-		{$currentMonthName} , {$year}
-	</span>
-	{$navButtonForward}
-	<!-- Start the HTML table that the calendar squares are in -->
-	<table id="calendar" cellspacing="2">
-		<!-- Generate the day names at top of the calendar-->
-		<tr class="days_header">
-			{foreach from=$days item=day}
-				<td>{strtoupper(substr($day, 0, 3))}</td>';
-			{/foreach}	
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global calendarPage object defined at calendarSettings.js
+		calendarPage.userId = {/literal} {$userId} {literal};
+	});
+</script>
+{/literal}
+<div class="padd7" align="center">
+	{$phpCalendarTpl}
+</div>
 
-		</tr>
-
-		<!-- Print empty calendar squares for days the first day doesn't start on -->
-		<tr>
-			{if $dayMonthBegan < 7}
-				{for $i=0 to $dayMonthBegan}
-				<td>&nbsp;</td>
-				{/for}
-			{/if}	
-			<!-- Loop through all the days -->
-			{assign var=dayAsInt value=0}
-			{foreach from=$classesForCurrentDays item=classesForCurrentDay key=dayAsInt}
-				<!-- Set the actual calendar squares, hyperlinked to their timestamps -->
-				<td><a href="?timestamp={strtotime($classesForCurrentDay.currentDay)}" {$classesForCurrentDay.class} > {$dayAsInt} </a></td>
-
-				<!-- Our calendar has Saturday as the last day of the week,
-				 so we'll wrap to a newline after every SAT -->
-				{if $dayAsInt != $daysInMonth && $dayAsStr == 'Sat'}
-				</tr><tr>
-				{/if}
-			{/foreach}
-			<!-- Close up the table and div for the calendar-->
-		</tr> </table> </div>';
+<div id="addCalendarEventContainer" title="add calendar event" style="display:none;">Loading ...</div>
+<div id="updateCalendarEventContainer" title="update calendar event" style="display:none;">Loading ...</div>
+{literal}
+	<script type="text/javascript">
+		$(function() {
+			$('a').tooltip({
+				track: true,
+				delay: 30,
+				showURL: false,
+				fixPNG: true,
+				extraClass: "mixSaveButton",
+				top: -35,
+				left: -40,
+				 bodyHandler: function() { 
+					return $($(this).attr("href")).html(); 
+				} 
+			});
+		});
+		
+	</script>
+{/literal}	

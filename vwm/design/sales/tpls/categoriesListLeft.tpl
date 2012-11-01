@@ -71,7 +71,7 @@
 						</ul>
 					</div>
 				</div>
-<!-- CALENDAR
+
 				<div align="left" width="100%"  class="{if $parent == 'calendar'}left_m_active{else}left_m{/if}">
 					<div align="left" width="100%">
 						<ul class="link">
@@ -81,7 +81,7 @@
 						</ul>
 					</div>
 				</div>
--->
+
 			</td>
 		</tr>
 	</table>

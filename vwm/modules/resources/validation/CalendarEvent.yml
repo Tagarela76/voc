@@ -8,8 +8,5 @@ VWM\Calendar\CalendarEvent:
       - MaxLength: 250
     event_date:
       - NotBlank: ~
-      - Max: 15
     author_id:
-      - NotBlank: ~
-      - Min: 0
-      - Max: 11                      
+      - NotBlank: ~                  

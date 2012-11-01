@@ -1,6 +1,8 @@
 <?php
 
 use VWM\Calendar\Calendar;
+use VWM\Calendar\CalendarEvent;
+use \VWM\Calendar\CalendarEventManager;
 
 class CSCalendar extends Controller {
 	
@@ -17,50 +19,53 @@ class CSCalendar extends Controller {
 			$this->$functionName();		
 	}
 	
-	protected function actionBrowseCategory($vars) {
+	protected function actionBrowseCategory() {
+		
+		$user = new User($this->db);
+		$userId = $user->getLoggedUserID();	
+		$this->smarty->assign('userId', $userId);
+
 		$phpCalendar = new Calendar(); 
 		$phpCalendar->setSmarty($this->smarty); 
-		 echo $phpCalendar->getCalendar();
-		 die('y');
-		 
-		extract($vars);
-		$calendarManager = new CalendarManager($this->db);
-		$user = new User($this->db);
-		$userID = $user->getLoggedUserID();
-
-		$week = array("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday");
-		$year = date('Y') ;
-		$month = date("m");
-		$day = date('j');
-		$firstday = date("w", mktime(12,0,0,$month,1,$year));
-		$nr = date("t",mktime(12,0,0,$month,1,$year));
-		$nr++;
-		$firstday++;		
-
-		for($i=1;$i<$nr;$i++){
-			$result = $calendarManager->getEvents($i, $month, $year,$userID);
-			if ($result){
-				$events[$i] = $result;
-			}
-		}
-
-		$categoryList = $calendarManager->getCategory();
-
-		//	set js scripts
-		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js','modules/js/addEventPopups.js', 'extensions/calendar/js/coda.js');
-		$this->smarty->assign('jsSources', $jsSources);
-
-		$this->smarty->assign('week', $week);
-		$this->smarty->assign('firstday', $firstday);
-		$this->smarty->assign('nr', $nr);
-		$this->smarty->assign('month', $month);
-		$this->smarty->assign('day', $day);
-		$this->smarty->assign('year', $year);		
-	
-		$this->smarty->assign('events', $events);	
-		$this->smarty->assign('categoryList', $categoryList);	
 		
-		$this->smarty->assign('doNotShowControls', true);
+		$calendarEventManager = new CalendarEventManager($this->db);
+		$userCalendarEvents = $calendarEventManager->getAllEventsByUser($userId);
+		$calendarEventManager->setUserCalendarEvents($userCalendarEvents);
+
+		$phpCalendar->setCalendarEventManager($calendarEventManager); 
+		
+		$phpCalendarTpl = $phpCalendar->getCalendar(); 
+
+		$this->smarty->assign('phpCalendarTpl', $phpCalendarTpl);	
+		
+		//	set js scripts
+		$jsSources = array(
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+			"modules/js/calendarSettings.js"
+		);
+
+		$this->smarty->assign('jsSources', $jsSources);
+		$cssSources = array(
+			'modules/js/phpcalendar.css',
+			'modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+
+		// inject tooltip
+		$libraryInjection = new LibraryInjection($this->smarty);
+		$libraryInjection->injectToolTip(); 
+		
 		$this->smarty->assign('tpl', 'tpls/calendar.tpl');
 		$this->smarty->display("tpls:index.tpl");
 		
@@ -68,30 +73,45 @@ class CSCalendar extends Controller {
 	}
 	
 
-	private function actionViewDetails() {
+	protected function actionOpenEventWindow() {
 
-	}
-	
-	private function actionEdit() {
+		$action = $this->getFromRequest('calendarAction');	
+		if ($action == 'add') {
+			$timestamp = $this->getFromRequest('timestamp');
+			$this->smarty->assign('timestamp', $timestamp);
+		} else {
+			$eventId = $this->getFromRequest('eventId');
+			$calendarEvent = new CalendarEvent($this->db, $eventId);
+			$this->smarty->assign('data', $calendarEvent);
+			$this->smarty->assign('timestamp', $calendarEvent->getEventDate());
+		}
+		echo $this->smarty->fetch('tpls/addCalendarEvent.tpl');
+    }
+
+    protected function actionAddUpdateEvent() {
+
+		$calendarEvent = new CalendarEvent($this->db, $this->getFromRequest('eventId'));
+		$calendarEvent->setTitle($this->getFromRequest('title'));
+		$calendarEvent->setDescription($this->getFromRequest('description'));
+		$calendarEvent->setEventDate($this->getFromRequest('timestamp'));
+		$calendarEvent->setAuthorId($this->getFromRequest('userId'));
 		
-
-	}
+		$violationList = $calendarEvent->validate();	
+			if(count($violationList) == 0) {  
+				$calendarEvent->save();
+				$result = '';
+			} else {											
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $calendarEvent);
+				$result = $this->smarty->fetch("tpls/addCalendarEvent.tpl");
+			}
+		echo $result;	
+				
+    }
 	
-	private function actionAddItem() {		
-		
+	protected function actionDeleteEvent() {
 
-	}
-	
-	private function actionDeleteItem() {
-
-	}
-	
-	private function actionConfirmDelete() {
-
-	}
-
-        
-
-	
-	
+		$calendarEvent = new CalendarEvent($this->db, $this->getFromRequest('eventId'));
+		$calendarEvent->delete();		
+    }
 }

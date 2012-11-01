@@ -12,6 +12,20 @@ class CalendarEventManager {
 	 */
 	private $db;
 	
+	/**
+	 *
+	 * @var array of CalendarEvent
+	 */
+	protected $userCalendarEvents;
+	
+	public function getUserCalendarEvents() {
+		return $this->userCalendarEvents;
+	}
+
+	public function setUserCalendarEvents($userCalendarEvents) {
+		$this->userCalendarEvents = $userCalendarEvents;
+	}
+
 	public function __construct(\db $db) {
 		$this->db = $db;
 	}
@@ -22,7 +36,7 @@ class CalendarEventManager {
 				"FROM " . TB_CALENDAR . " ".
 				"WHERE author_id={$this->db->sqltext($userId)}";
 		$this->db->query($sql);
-		$rows = $this->db->fetch_all_array();
+		$rows = $this->db->fetch_all_array();	
 
 		if ($this->db->num_rows() == 0) {
 			return false;
@@ -30,11 +44,12 @@ class CalendarEventManager {
 		$calendarEvents = array();
 		foreach ($rows as $row) {
 			$calendarEvent = new CalendarEvent($this->db);
-			foreach ($row as $key => $value) {
-				if (property_exists($calendarEvent, $key)) {
-					$calendarEvent->$key = $value;
-				}
-			}
+			$calendarEvent->setId($row['id']);
+			$calendarEvent->setTitle($row['title']);
+			$calendarEvent->setDescription($row['description']);
+			$calendarEvent->setAuthorId($row['author_id']);
+			$calendarEvent->setEventDate($row['event_date']);
+
 			$calendarEvents[] = $calendarEvent;
 		}
 		return $calendarEvents;

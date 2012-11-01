@@ -121,7 +121,7 @@
 									{/if}
 
 										{if !$doNotShowControls}
-											{if $request.action == 'browseCategory'}
+											{if $request.action == 'browseCategory' && $request.category != 'calendar'}
 												{include file="tpls:tpls/controlCategoriesList.tpl"}
 											{elseif $request.action == 'viewDetails'}
 												{include file="tpls:tpls/controlViewDetailsCategory.tpl"}
