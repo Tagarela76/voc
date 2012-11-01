@@ -10,8 +10,8 @@
 	{$phpCalendarTpl}
 </div>
 
-<div id="addCalendarEventContainer" title="add calendar event" style="display:none;">Loading ...</div>
-<div id="updateCalendarEventContainer" title="update calendar event" style="display:none;">Loading ...</div>
+<div id="addCalendarEventContainer" title="Add Calendar Event" style="display:none;">Loading ...</div>
+<div id="updateCalendarEventContainer" title="Update Calendar Event" style="display:none;">Loading ...</div>
 {literal}
 	<script type="text/javascript">
 		$(function() {

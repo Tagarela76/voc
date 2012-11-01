@@ -1,8 +1,9 @@
-<!--Start the opening div that the calendar is contained within-->
 <div id="cal-content">
-	{$navButtonBackward} 
-	<!--Set the navigation buttons and the current month/year heading -->
-    <span id="cal-date-heading">{$currentMonthName}, {$year}</span>{$navButtonForward}
+	<h1 class="titleinfo">{$currentMonthName}, {$year}</h1>
+	<div>				
+		{$navButtonBackward} 	{$navButtonForward}
+	</div>
+	
 	<!-- Start the HTML table that the calendar squares are in -->
 	<table id="calendar" cellspacing="2">
 		<!-- Generate the day names at top of the calendar. -->
@@ -15,7 +16,7 @@
 		<tr>
 			{if $dayMonthBegan < 7}
 				{section name=i start=0 loop=$dayMonthBegan}
-					<td width=100>&nbsp;</td>
+					<td><div>&nbsp;</div></td>
 				{/section}
 			{/if}
 			

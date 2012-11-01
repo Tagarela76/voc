@@ -68,8 +68,9 @@ class Calendar extends PHPCalendar {
             // Set the actual calendar squares, hyperlinked to their timestamps
             $pieceOfCalendar .= 
                 '<td><div ' . $class . '>' . $dayAsInt . '<br>' . $calendarEvents .
-				'<input type="button" value="+" ' .
-				'onclick="calendarPage.calendarAddEvent.openDialog('.strtotime($currentDay).');" /></div></td>';
+				'<span class="addEvent" onclick="calendarPage.calendarAddEvent.openDialog('.strtotime($currentDay).');">'.
+				'<img src="images/add.png" />'.
+				'</span></div></td>';
 
             // Our calendar has Saturday as the last day of the week,
             // so we'll wrap to a newline after every SAT

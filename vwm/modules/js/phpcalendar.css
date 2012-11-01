@@ -1,9 +1,3 @@
-/* 
- * Liquid Layout Style Sheet for PHPCalendar 
- * Author: Ryan Kulla <rkulla AT gmail>
- */
-
-
 /* The navigation buttons and current month/year heading */
 #cal-date-heading {
     font-size: 13pt;
@@ -11,77 +5,105 @@
     margin: 0 0 5px 0;
     padding-bottom: 3px;
     line-height: normal;
-    color: #060;
+	text-align: center;
 }
 
 
 /* The div we encompass all the calendar stuff in */
 #cal-content {
     margin-top: 25px;
-    padding: 0 10px 0 10px;
-    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-    text-align: justify;
-    line-height: 25px;
-    font-size: 10pt;
-    color: #06253d;
+    padding: 0 10px 0 10px;	    
 }
 
 
 /* Just the calendar */
-#calendar {
-    background-color: #FFF;
-    font-size: 8pt;
-
-    margin: 2px;
-    border: 1px solid #000; /* Table border */
-    width: 50%; /* Table width */
+#calendar {        
+    margin: 2px; 
+	border-collapse: collapse;
+	width: 100%;
+	border-top: 1px solid #FCFCFF;
+	border-right: 1px solid #FCFCFF;	
 }
 
 
 /* Table cellpadding */
 #calendar td {
     padding: 0; 
+	width: 10%
 }
 
 
 /* The boxes where the day names go */
-.days_header td {
-    background-color: #06253D;
-    color: #FFF;
+.days_header td {    
     text-align: center;
+	font-size: 1.5em;
 }
 
 
 .cal-nav-buttons, .cal-nav-buttons:visited {
-    color: #0000FF;
+    
 }
 
 
 /* The individual calendar day boxes */
 #calendar div,#calendar div.today {
-    background-color: #d5e1eb;
-    border: 1px solid #6f97ba;
+    background-color: #ABC3D4;
+	
+    border-top: 1px solid #FCFCFF;
+	border-right: 1px solid #FCFCFF;
+	border-bottom: 1px solid #ABC3D4;
+	border-left: 1px solid #ABC3D4;
+	
+	padding: 5px;
+	
     font-weight: bold;
     color: #06253d;
     text-align: left;
     display: block;
     height: 100px;
     text-decoration: none;
-    font-size: 13pt;
+    font-size: 13pt;	
+	
+	background-image: linear-gradient(bottom, rgb(238,240,232) 25%, rgb(225,237,237) 94%);
+	background-image: -o-linear-gradient(bottom, rgb(238,240,232) 25%, rgb(225,237,237) 94%);
+	background-image: -moz-linear-gradient(bottom, rgb(238,240,232) 25%, rgb(225,237,237) 94%);
+	background-image: -webkit-linear-gradient(bottom, rgb(238,240,232) 25%, rgb(225,237,237) 94%);
+	background-image: -ms-linear-gradient(bottom, rgb(238,240,232) 25%, rgb(225,237,237) 94%);
+
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.25, rgb(238,240,232)),
+		color-stop(0.94, rgb(225,237,237))
+	);
+	
+	position: relative;
+}
+
+.addEvent {
+	position: absolute;
+	bottom: 0px;
+	right:0px;
 }
 
 
 /* The calendar box just for today */
 #calendar div.today {
-    background-color: #fb5;
-    border: 1px solid;
+    background-color: #6c6c6c;    
+	background-image: none;
+	box-shadow: inset 0 0 10px #000000;
+	color: #fff;	
+}
+
+#calendar div.today a {
+	color: #fff;	
 }
 
 
 /* The effect of hovering over calendar boxes */
 #calendar div:hover {
-    background-color: #fb5;
-    color: #600;
+        
     border: 1px dashed #06253D;
 }
 /* The individual calendar day boxes */
@@ -97,11 +119,4 @@
     text-align: left;
     font-size: 8pt;
 	background-color: #d5e1eb;
-}
-
-#calendar div.today input {
-    color: #000;
-    float: right;
-    font-size: 8pt;
-	background-color: #fb5;
 }
