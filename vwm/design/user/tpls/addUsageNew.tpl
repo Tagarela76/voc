@@ -759,9 +759,9 @@ function createSelectUnittypeClass(id) {
 <div align="right" class="buttonpadd">
 <!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
     {if $request.action eq "edit"}
-        <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish"/>
+        <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
     {else}
-        <input type='button' id="btnSave" name='save' class="button" value='Finish' onclick="addMix()" title="Press Finish"/>
+        <input type='button' id="btnSave" name='save' class="button" value='Finish' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
     {/if}
 
 </div>
@@ -847,8 +847,8 @@ function createSelectUnittypeClass(id) {
 				showURL: false,
 				fixPNG: true,
 				extraClass: "mixSaveButton",
-				top: -35,
-				left: -40
+				top: -55,
+				left: -150
 			});
 		});
 		
