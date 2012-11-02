@@ -1,7 +1,12 @@
 <div id="cal-content">
 	<h1 class="titleinfo">{$currentMonthName}, {$year}</h1>
 	<div>				
-		{$navButtonBackward} 	{$navButtonForward}
+		<a class="cal-nav-buttons" 
+		   href="?action=browseCategory&category=calendar&timestamp={$navButtonBackwardTimestamp}">
+			{$navButtonBackwardDate}</a>
+		<a class="cal-nav-buttons"
+		   href="?action=browseCategory&category=calendar&timestamp={$navButtonForwardTimestamp}">
+			{$navButtonForwardDate}</a>
 	</div>
 	
 	<!-- Start the HTML table that the calendar squares are in -->

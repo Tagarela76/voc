@@ -68,7 +68,7 @@ function calendarAddEvent() {
 				if (response == '') {
 					$("#"+that.divId).dialog('close'); 
 				    that.divId.isLoaded = false;
-					window.location.href="?action=browseCategory&category=calendar";
+					window.location.href="?action=browseCategory&category=calendar&timestamp="+timestamp;
 				}
 			}
 		});
@@ -145,12 +145,12 @@ function calendarUpdateEvent() {
 			data: {eventId: eventId, userId: calendarPage.userId, timestamp: timestamp, title: title, description: description},
 			type: "GET",
 			dataType: "html",
-			success: function (response) { 
+			success: function (response) {
 				$("#"+that.addEventDiv).html(response);
 				if (response == '') {
 					$("#"+that.divId).dialog('close'); 
 				    that.divId.isLoaded = false;
-					window.location.href="?action=browseCategory&category=calendar";
+					window.location.href="?action=browseCategory&category=calendar&timestamp="+timestamp;
 				}
 			}
 		});
@@ -159,14 +159,17 @@ function calendarUpdateEvent() {
 	this.deleteEvent = function() {
 		var that = this;
 		var eventId = $("#eventId").val();
-
+		var timestamp = $("#timestamp").val();
+		
 		$.ajax({
 			url: "?action=deleteEvent&category=calendar",
 			data: {eventId: eventId},
 			type: "GET",
 			dataType: "html",
 			success: function () { 
-				window.location.href="?action=browseCategory&category=calendar";
+				$("#"+that.divId).dialog('close'); 
+				that.divId.isLoaded = false;
+				window.location.href="?action=browseCategory&category=calendar&timestamp="+timestamp;
 			}
 		});
 	}

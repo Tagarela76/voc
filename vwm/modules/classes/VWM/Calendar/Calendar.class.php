@@ -79,10 +79,12 @@ class Calendar extends PHPCalendar {
             }
         }
 		
-		$this->smarty->assign("navButtonBackward",$this->getNavButton('backward'));
+		$this->smarty->assign("navButtonBackwardTimestamp",$this->getNavButtonTimestamp('backward'));
+		$this->smarty->assign("navButtonBackwardDate",$this->getNavButtonDate('backward'));
 		$this->smarty->assign("currentMonthName",$this->getCurrentMonthName());
 		$this->smarty->assign("year",$this->year);
-		$this->smarty->assign("navButtonForward",$this->getNavButton('forward'));
+		$this->smarty->assign("navButtonForwardTimestamp",$this->getNavButtonTimestamp('forward'));
+		$this->smarty->assign("navButtonForwardDate",$this->getNavButtonDate('forward'));
 		$this->smarty->assign("days",$this->days);
 		$this->smarty->assign("dayMonthBegan",$this->dayMonthBegan);
 		$this->smarty->assign("pieceOfCalendar",$pieceOfCalendar);
@@ -90,15 +92,19 @@ class Calendar extends PHPCalendar {
 		$result = $this->smarty->fetch("tpls/phpCalendar.tpl");
 		return $result;
 	}
-	
-	protected function getNavButton($direction) {
-        $when = $direction == 'forward' ? '+1 month' : '-1 month';
 
-        return '<a class="cal-nav-buttons" href="?action=browseCategory&category=calendar&timestamp=' .
-            $this->getFirstOfMonth(
-                strtotime($when, $this->timestamp)) . '">' . 
-                date("M", strtotime($when, $this->timestamp)) . '</a>';
-    }
+	protected function getNavButtonTimestamp($direction) {
+		$when = $direction == 'forward' ? '+1 month' : '-1 month';
+		$timestamp = $this->getFirstOfMonth(strtotime($when, $this->timestamp));
+		return $timestamp;
+                date("M", strtotime($when, $this->timestamp));
+	}
+	
+	protected function getNavButtonDate($direction) {
+		$when = $direction == 'forward' ? '+1 month' : '-1 month';
+		$date = date("M", strtotime($when, $this->timestamp));
+		return $date;      
+	}
 }
 
 ?>

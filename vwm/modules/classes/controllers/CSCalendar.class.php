@@ -103,7 +103,7 @@ class CSCalendar extends Controller {
 			} else {											
 				$this->smarty->assign('violationList', $violationList);
 				$this->smarty->assign('data', $calendarEvent);
-				$result = $this->smarty->fetch("tpls/addCalendarEvent.tpl");
+				$result = $this->smarty->fetch("tpls/calendarEventOpenDialog.tpl");
 			}
 		echo $result;	
 				
