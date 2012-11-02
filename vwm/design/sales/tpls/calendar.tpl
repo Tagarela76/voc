@@ -21,8 +21,8 @@
 				showURL: false,
 				fixPNG: true,
 				extraClass: "mixSaveButton",
-				top: -35,
-				left: -40,
+				top: 5,
+				left: 5,
 				 bodyHandler: function() { 
 					return $($(this).attr("href")).html(); 
 				} 

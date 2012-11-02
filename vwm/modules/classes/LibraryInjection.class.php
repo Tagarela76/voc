@@ -14,7 +14,7 @@ class LibraryInjection {
 		$templateJsSources = $this->smarty->get_template_vars('jsSources');  
 		$toolTipJsScripts = array( 
 			'modules/js/jquery-tooltip/js/jquery.bgiframe.js',
-			'modules/js/jquery-tooltip/js/jquery.dimensions.js',
+			/*'modules/js/jquery-tooltip/js/jquery.dimensions.js',*/
 			'modules/js/jquery-tooltip/js/jquery.tooltip.js');
 		if (is_null($templateJsSources)) {
 			$jsSources = $toolTipJsScripts;
