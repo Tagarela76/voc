@@ -31,5 +31,5 @@ INSERT INTO  `browse_category_entity` (
 `default_value`
 )
 VALUES (
-NULL ,  'browse_category_mix',  'Product Name,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date'
+NULL ,  'Mix Browse Category Columns',  'Product Name,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date'
 );

@@ -8,7 +8,7 @@ class BrowseCategoryEntity {
 		$this->db = $db;
 	}
 	
-	const BROWSE_CATEGORY_MIX = "browse_category_mix";
+	const BROWSE_CATEGORY_MIX = "Mix Browse Category Columns";
 	
 	public function getBrowseCategoryMix() {
 		
