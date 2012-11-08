@@ -96,7 +96,7 @@
 	{else}
 		{*BEGIN	EMPTY LIST*}
 		<tr class="">
-			<td colspan="{$columnCount+1}"class="border_users_l border_users_r" align="center">
+			<td colspan="{$columnCount+2}"class="border_users_l border_users_r" align="center">
 				No mixes in the department
 			</td>
 		</tr>
