@@ -1,3 +1,11 @@
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global object
+		industryTypePage.industryTypeId = {/literal} {$request.id} {literal};
+	});
+</script>
+{/literal}
 {if $color eq "green"}
 	{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
@@ -32,6 +40,21 @@
 							{*/ERROR*}						    
                         {/if}
                     {/foreach}								
+				</td>
+			</tr>
+			<tr height="10px">
+				<td class="border_users_l border_users_b" height="20">
+					{$browseCategoryMix->name}:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+					<div id="browse_category_mix">{$columnsSettingsMixValue|escape} 
+						{foreach from=$columnsSettingsMixValueArray item="browseCategoryMixValue"}
+							<input type='hidden' name='browseCategoryMix_id[]' id='browseCategoryMix_id[]' value="{$browseCategoryMixValue}" />
+						{/foreach}	
+					</div>
+					<a href="#" onclick="industryTypePage.manageDisplayColumnsMix.openDialog();">edit</a>
+				</div>
 				</td>
 			</tr>
 			<tr>
@@ -89,3 +112,4 @@
 </div>
 </form>
 </div>	
+<div id="displayColumnsSettingsMixContainer" title="Mix Display Columns Settings" style="display:none;">Loading ...</div>	

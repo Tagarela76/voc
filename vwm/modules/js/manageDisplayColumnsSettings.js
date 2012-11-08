@@ -1,5 +1,5 @@
-function manageCompanies() {
-	this.divId = 'setCompanyToIndustryTypeContainer';
+function manageDisplayColumnsMix() {
+	this.divId = 'displayColumnsSettingsMixContainer';
 	this.isLoaded = false;
 
 	this.iniDialog = function(divId) {
@@ -21,8 +21,8 @@ function manageCompanies() {
 					$(this).dialog('close');
 					that.isLoaded = false;
 				},
-				'Set': function() {
-					that.set();
+				'Save': function() {
+					that.save();
 				}
 			}
 		});
@@ -39,8 +39,8 @@ function manageCompanies() {
 	this.loadContent = function() {
 		var that = this;
 		$.ajax({
-			url: "?action=loadIndustryTypes&category=company",
-			data: {companyId: companyPage.companyId},
+			url: "?action=loadDisplayColumnsSettings&category=industryType&entity=mix",
+			data: {industryTypeId: industryTypePage.industryTypeId},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -50,24 +50,24 @@ function manageCompanies() {
 		});
 	}
 	
-	this.set = function() {
+	this.save = function() {
 		var that = this;
 		var checkboxes = $("#"+that.divId).find("input[type='checkbox']"); 
-		var rowsToSet = new Array();
+		var rowsToSave = new Array();
 	
 		checkboxes.each(function(i){
 			var id = this.value;
 			if(this.checked) {
-				rowsToSet.push(id);
+				rowsToSave.push(id);
 			}
-		});
+		}); 
 		$.ajax({
-			url: "?action=setCompanyToIndustryType&category=company",
-			data: {rowsToSet: rowsToSet},
+			url: "?action=saveDisplayColumnsSettings&category=industryType&entity=mix",
+			data: {rowsToSave: rowsToSave, industryTypeId: industryTypePage.industryTypeId},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
-				$("#industryTypesList").html(response);
+				$("#browse_category_mix").html(response);
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
 			}
@@ -76,17 +76,17 @@ function manageCompanies() {
 }
 			
 		
-function CompanyPage() {
-	this.manageCompanies = new manageCompanies();
-	this.companyId = false;
+function IndustryTypePage() {
+	this.manageDisplayColumnsMix = new manageDisplayColumnsMix();
+	this.industryTypeId = false;
 }
 
 
 //	global object
-var companyPage;
+var industryTypePage;
 
 $(function() {
 	//	ini global object
-	companyPage = new CompanyPage();
-	companyPage.manageCompanies.iniDialog();
+	industryTypePage = new IndustryTypePage();
+	industryTypePage.manageDisplayColumnsMix.iniDialog();
 });

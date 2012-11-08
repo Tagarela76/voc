@@ -2,6 +2,8 @@
 
 use VWM\Framework\Cache\DbCacheDependency;
 use VWM\Label\CompanyLevelLabel;
+use VWM\ManageColumns\BrowseCategoryEntity;
+use VWM\ManageColumns\DisplayColumnsSettings;
 
 class CMix extends Controller {
 
@@ -45,10 +47,7 @@ class CMix extends Controller {
 
 	protected function actionViewDetails() {
 		$usage = new Mix($this->db);
-
-
-
-		$usageDetails = $usage->getMixDetails($this->getFromRequest('id'));
+		//$usageDetails = $usage->getMixDetails($this->getFromRequest('id')); No usage
 		$mixID = $this->getFromRequest('id');
 		$mixOptimized = new MixOptimized($this->db, $mixID);
 		//	Access control
@@ -56,7 +55,6 @@ class CMix extends Controller {
 			throw new Exception('deny');
 		}
 		$mixOptimized->getRule();
-
 
 		$this->smarty->assign("usage", $mixOptimized);
 		$apMethodObject = new Apmethod($this->db);
@@ -572,11 +570,88 @@ class CMix extends Controller {
 				die();
 				return ;
 			}
-			// for displaying voc unit type
+			// I need get company's industry type 
+			$companyId = $companyDetails["company_id"];
 			$company = new Company($this->db);
-			$companyID = $company->getCompanyIDbyDepartmentID($departmentDetails['department_id']);
+			$companyIndustryTypes = $company->getIndustryTypes($companyId);
+			// we need only one industry Type. get first item
+			$industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+			// we should get browse category entity for mix
+			$browseCategoryEntity = new BrowseCategoryEntity($this->db);
+			$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
+			// get display columns settings for mix
+			$displayColumnsSettings = new DisplayColumnsSettings($this->db, $industryTypeId);
+			$displayColumn = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name);
+			$mixColumnDefault = explode(",", $browseCategoryMix->default_value);
+			if (!is_null($displayColumn->value)) {
+				$mixColumn4Display = explode(",", $displayColumn->value);
+			} else {
+				// get deafult settings
+				$mixColumn4Display = $mixColumnDefault;
+			}
+			$mixFormatObjList = array();
+			foreach ($mixList as $mix) {
+				// create new mix object
+				$productName = "";
+				$products = $mix->getProducts();
+				foreach ($products as $item) {
+					if ($item->is_primary) {
+						$productName = $item->name;
+					}
+				}
+				$repairOrder = $mix->getRepairOrder();
+				$widths = array();
+
+				if (in_array($mixColumnDefault[0], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[0]"] = $productName; 
+					$widths[] = "12%";
+				}
+				if (in_array($mixColumnDefault[1], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[1]"] = (!$mix->hasChild)? 
+					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') . 
+						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
+							title='Add child job'>add</a> &nbsp" : "";
+					$widths[] = "10%";
+				}
+				if (in_array($mixColumnDefault[2], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[2]"] = $mix->description;
+					$widths[] = "15%";
+				}
+				if (in_array($mixColumnDefault[3], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[3]"] = $repairOrder->description;
+					$widths[] = "15%";
+				}
+				if (in_array($mixColumnDefault[4], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[4]"] = $repairOrder->customer_name;
+					$widths[] = "13%";
+				}
+				if (in_array($mixColumnDefault[5], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[5]"] = $repairOrder->vin;
+					$widths[] = "20%";
+				}
+				if (in_array($mixColumnDefault[6], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[6]"] = $mix->voc;
+					$widths[] = "5%";
+				}
+				if (in_array($mixColumnDefault[7], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[7]"] = $mix->creation_time; 
+					$widths[] = "15%";
+				}
+				$mixObjList["mixObject"] = $mixFormatObj;
+				$mixObjList["valid"] = $mix->valid; 
+				$mixObjList["url"] = $mix->url; // it is fix value (always display
+				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
+				$mixFormatObjList[] = $mixObjList;
+			} 
+			$this->smarty->assign('widths', $widths);
+			$this->smarty->assign('columnCount', count($mixColumn4Display));
+			$this->smarty->assign('mixColumn4Display', $mixColumn4Display);
+			$this->smarty->assign('mixFormatObjList', $mixFormatObjList);
+			
+			//var_dump($widths); die();
+		//	 die('o');
+			// for displaying voc unit type
 			$unittype = new Unittype($this->db);
-			$companyDetails = $company->getCompanyDetails($companyID);
 			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
 			$this->smarty->assign('vocUnitType', $vocUnitType);
 			$this->smarty->assign('childCategoryItems', $mixList);

@@ -27,13 +27,20 @@
 				<div align="left" >&nbsp;{$typeDetails->id}</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
 				2.	Industry Type :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
 				<div align="left" >	&nbsp;{$typeDetails->type}</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="border_users_l border_users_b" height="20">
+				3.	{$browseCategoryMix->name} :
+			</td>
+			<td class="border_users_l border_users_b border_users_r">
+				<div align="left" >	&nbsp;{$columnsSettingsMixValue}</div>
 			</td>
 		</tr>
 		<tr>

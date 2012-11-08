@@ -2,6 +2,8 @@
 
 use VWM\Label\LabelManager;
 use VWM\Label\CompanyLevelLabel;
+use VWM\ManageColumns\BrowseCategoryEntity;
+use VWM\ManageColumns\DisplayColumnsSettings;
 
 class CAIndustryType extends Controller {
 	
@@ -26,7 +28,7 @@ class CAIndustryType extends Controller {
 	
 	
 	
-	protected function bookmarkIndustryType($vars) {
+	protected function bookmarkIndustryType($vars) { 
 		extract($vars);
 
 		$industryTypeManager = new IndustryTypeManager($this->db);
@@ -69,6 +71,19 @@ class CAIndustryType extends Controller {
 		$labelSystem = new LabelManager($this->db, $this->getFromRequest('id'));
 		$labelList = $labelSystem->getLabelList();	
 		$this->smarty->assign('industryLabelList', $labelList);
+		// get browse category list
+		$browseCategoryEntity = new BrowseCategoryEntity($this->db);
+		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
+		$displayColumnsSettings = new DisplayColumnsSettings($this->db, $this->getFromRequest('id'));
+		$columnsSettingsMixValue = '';
+		$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name); 
+		if ($columnsSettingsMix) {
+			 $columnsSettingsMixValue = $columnsSettingsMix->getValue();
+		} else {
+			$columnsSettingsMixValue = $browseCategoryMix->default_value;
+		} 
+		$this->smarty->assign('browseCategoryMix', $browseCategoryMix);
+		$this->smarty->assign('columnsSettingsMixValue', $columnsSettingsMixValue);
 		$this->smarty->assign('typeDetails', $industryType);
 		$this->smarty->assign('subIndustryTypes', $subIndustryTypes);
 		$this->smarty->assign('tpl', 'tpls/viewIndustryType.tpl');
@@ -83,7 +98,56 @@ class CAIndustryType extends Controller {
 		$labelManager = new LabelManager($this->db, $this->getFromRequest('id'));
 		$labelList = $labelManager->getLabelList();	
 		$this->smarty->assign('industryLabelList', $labelList);
-		if ($this->getFromPost('save') == 'Save') {	
+
+		// get browse category list
+		$browseCategoryEntity = new BrowseCategoryEntity($this->db);
+		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
+		$displayColumnsSettings = new DisplayColumnsSettings($this->db, $this->getFromRequest('id'));
+		$columnsSettingsMixValue = '';
+		$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name); 
+		if ($columnsSettingsMix) {
+			 $columnsSettingsMixValue = $columnsSettingsMix->getValue();
+		} else {
+			$columnsSettingsMixValue = $browseCategoryMix->default_value;
+		} 
+		$columnsSettingsMixValueArray = explode(',', $columnsSettingsMixValue);
+		$this->smarty->assign('browseCategoryMix', $browseCategoryMix);
+		$this->smarty->assign('columnsSettingsMixValue', $columnsSettingsMixValue);
+		$this->smarty->assign('columnsSettingsMixValueArray', $columnsSettingsMixValueArray);
+
+		//	set js scripts
+		$jsSources = array(
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+            'modules/js/manageDisplayColumnsSettings.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+		
+		if ($this->getFromPost('save') == 'Save') {
+			// save display columns settings for mix entity
+			$value = $this->getFromPost('browseCategoryMix_id');
+			$columnsDisplayValue = implode(",", $value);
+			// we should knew - insert/update. So i get columns settings and set display columns settings id
+			$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name);
+			if ($columnsSettingsMix) {
+				// update
+				$displayColumnsSettings->setId($columnsSettingsMix->getId());
+			}
+			$displayColumnsSettings->setBrowseCategoryEntityId($browseCategoryMix->id);
+			$displayColumnsSettings->setValue($columnsDisplayValue); 
+			$displayColumnsSettings->save();
+				
 			$industryType->type = $post["type"];
 			$violationList = $industryType->validate(); 
 			if(count($violationList) == 0) {		
@@ -119,12 +183,49 @@ class CAIndustryType extends Controller {
         
         $industryType = new IndustryType($this->db);
         $post = $this->getFromPost();
+		// get browse category list
+		$browseCategoryEntity = new BrowseCategoryEntity($this->db);
+		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
+		$columnsSettingsMixValue = $browseCategoryMix->default_value;
+		$columnsSettingsMixValueArray = explode(',', $columnsSettingsMixValue);
+		$this->smarty->assign('browseCategoryMix', $browseCategoryMix);
+		$this->smarty->assign('columnsSettingsMixValue', $columnsSettingsMixValue);
+		$this->smarty->assign('columnsSettingsMixValueArray', $columnsSettingsMixValueArray);
+
+		//	set js scripts
+		$jsSources = array(
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+            'modules/js/manageDisplayColumnsSettings.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+		
         if ($this->getFromPost('save') == 'Save'){
+
             $industryType->type = $post["type"];
             $industryType->setValidationGroup("add");
             $violationList = $industryType->validate(); 
             if(count($violationList) == 0) {		
-                $industryType->save();
+                $industryTypeId = $industryType->save();
+				// save display columns settings for mix entity
+				$displayColumnsSettings = new DisplayColumnsSettings($this->db, $industryTypeId);
+				$value = $this->getFromPost('browseCategoryMix_id');
+				$columnsDisplayValue = implode(",", $value);
+				// insert
+				$displayColumnsSettings->setBrowseCategoryEntityId($browseCategoryMix->id);
+				$displayColumnsSettings->setValue($columnsDisplayValue); 
+				$displayColumnsSettings->save(); 
                 // redirect
                 header("Location: ?action=browseCategory&category=tables&bookmark=industryType&notify=55");
             } else {						
@@ -167,5 +268,49 @@ class CAIndustryType extends Controller {
 		header ('Location: admin.php?action=browseCategory&category=tables&bookmark='.$this->getFromRequest('category'));
 		die();
 	}
+	
+	protected function actionLoadDisplayColumnsSettings() {
+
+		$entity = $this->getFromRequest('entity');		
+        // get browse category list
+		switch ($entity) {
+			case "mix" :
+				$browseCategoryEntity = new BrowseCategoryEntity($this->db);
+				$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
+				$mixColumnsDisplayDefault = explode(',', $browseCategoryMix->default_value);
+				if ($this->getFromRequest('industryTypeId') != 'false') {
+					$displayColumnsSettings = new DisplayColumnsSettings($this->db, $this->getFromRequest('industryTypeId'));					
+					$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name); 
+					if ($columnsSettingsMix) {
+						 $columnsSettingsMixValue = $columnsSettingsMix->getValue();
+				    } else {
+					    $columnsSettingsMixValue = $browseCategoryMix->default_value;
+				    }
+					$mixColumnsDisplay = explode(',', $columnsSettingsMixValue);
+				} else {
+					$mixColumnsDisplay = $mixColumnsDisplayDefault;
+				} 
+				$this->smarty->assign('columnsDefaultDisplay', $mixColumnsDisplayDefault);
+				$this->smarty->assign('columnsDisplay', $mixColumnsDisplay);
+			break;	
+		}
+		echo $this->smarty->fetch('tpls/manageColumnsDisplaySettings.tpl');
+    }
+    
+	protected function actionSaveDisplayColumnsSettings() {
+
+		$entity = $this->getFromRequest('entity');		
+		$rowsToSave = $this->getFromRequest('rowsToSave');
+        // get browse category list
+		switch ($entity) {
+			case "mix" :
+				$response = implode(",", $rowsToSave);
+				foreach ($rowsToSave as $value) {
+					$response .= "<input type='hidden' name='browseCategoryMix_id[]' id='browseCategoryMix_id[]' value='$value' />";
+				}
+			break;	
+		} 
+		echo $response;
+    }
 }
 ?>

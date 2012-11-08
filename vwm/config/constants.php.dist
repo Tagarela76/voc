@@ -301,6 +301,8 @@ define('TB_COMPANY2INDUSTRY_TYPE', 'company2industry_type');
 
 // Calendar table in sale interface
 define ('TB_CALENDAR', 'calendar');
+define ('TB_BROWSE_CATEGORY_ENTITY', 'browse_category_entity');
+define ('TB_DISPLAY_COLUMNS_SETTINGS', 'display_columns_settings');
 
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
