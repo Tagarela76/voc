@@ -1,6 +1,7 @@
 CREATE TABLE  `browse_category_entity` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 `name` VARCHAR( 150 ) NOT NULL,
+`name4display` VARCHAR( 150 ) NOT NULL,
 `default_value` VARCHAR( 300 ) NOT NULL
 ) ENGINE = INNODB;
 
@@ -28,8 +29,9 @@ ALTER TABLE  `display_columns_settings` ADD UNIQUE (
 INSERT INTO  `browse_category_entity` (
 `id` ,
 `name` ,
+`name4display` ,
 `default_value`
 )
 VALUES (
-NULL ,  'browse_category_mix',  'Product Name,Add Job,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date'
+NULL ,  'browse_category_mix', 'Mix Browse Category Columns', 'Product Name,Add Job,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date'
 );

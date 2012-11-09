@@ -37,7 +37,7 @@
 		</tr>
 		<tr>
 			<td class="border_users_l border_users_b" height="20">
-				3.	{$browseCategoryMix->name} :
+				3.	{$browseCategoryMix->name4display} :
 			</td>
 			<td class="border_users_l border_users_b border_users_r">
 				<div align="left" >	&nbsp;{$columnsSettingsMixValue}</div>
