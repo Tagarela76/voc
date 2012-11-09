@@ -44,7 +44,7 @@
 			</tr>
 			<tr height="10px">
 				<td class="border_users_l border_users_b" height="20">
-					{$browseCategoryMix->name}:
+					{$browseCategoryMix->name4display}:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style="float: left;">	
