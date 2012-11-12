@@ -1,0 +1,10 @@
+Crib:
+  properties:
+    serial_number: 
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 200, groups: [add,Default] }
+    facility_id:
+      - NotBlank: { groups: [add,Default] }
+      - Int: { limit: 11, groups: [add,Default] }
+    last_update_time:
+      - DataTime: { groups: [add,Default] }

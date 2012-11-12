@@ -965,5 +965,6 @@ jgypsyn@gyantgroup.com
 		$this->smarty->assign('additionalEmailAccountsList', $additionalEmailAccountsList);
 		echo $this->smarty->fetch('tpls/manageAdditionalEmailAccounts.tpl');
 	}
+	
 }
 ?>

@@ -417,4 +417,6 @@ define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFil
 
 define ('MYSQL_DATE_FORMAT', 'Y-m-d');
 define ('MYSQL_DATETIME_FORMAT', 'Y-m-d H:i:s');
+
+define ('TB_GOM', 'gom');
 ?>

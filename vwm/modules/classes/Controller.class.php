@@ -140,14 +140,14 @@ class Controller {
         } elseif ($controllerType == 'vps') {
             $functionName = 'action' . ucfirst($this->action) . 'VCommon';
         }
-		*/
+		*/	   
         if (method_exists($this, $functionName))
             $this->$functionName();
     }
 
 
-	public function runAction() {
-		$this->runCommon();
+	public function runAction() {		
+		$this->runCommon();		
 		$functionName = 'action'.ucfirst($this->action);
 		if (method_exists($this,$functionName)) {
 			$this->$functionName();
@@ -981,7 +981,7 @@ class Controller {
 
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $this->request);
-
+		
         //	Access control
 		if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
             throw new Exception('deny');

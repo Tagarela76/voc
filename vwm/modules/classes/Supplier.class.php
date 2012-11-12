@@ -4,7 +4,7 @@ class Supplier {
 
 	private $db;
 
-    function Supplier($db) {
+    function __construct($db) {
     	$this->db=$db;
     }
 
@@ -101,6 +101,24 @@ class Supplier {
 
 		return $error;
 	}
+	
+	/**
+	 * 
+	 * @param string $name
+	 * @return boolean| int
+	 */
+	public function getSupplierIdByName($name) {
+	    $query = "SELECT supplier_id " .
+				 "FROM " . TB_SUPPLIER . " " .
+				 "WHERE supplier='{$this->db->sqltext($name)}'";
+	    $this->db->query($query);
+	    if ($this->db->num_rows() != 0) {
+	    	$data = $this->db->fetch_array(0);	
+		    return $data["supplier_id"];
+	    } else {
+			return false;
+		}
+    }
 
 
 }

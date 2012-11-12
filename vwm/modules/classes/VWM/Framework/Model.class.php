@@ -14,12 +14,23 @@ abstract class Model {
 	protected $modelName = "";
 	
 	protected $validationGroup;
+		
+	protected $last_update_time;	
 
-	/** 	 
+	/**
 	 * @var \Symfony\Component\Validator\Validator;
 	 */
 	private $validator;
+	
+	
+	public function getLastUpdateTime() {
+		return $this->last_update_time;
+	}
 
+	public function setLastUpdateTime($lastUpdateTime) {
+		$this->last_update_time = $lastUpdateTime;
+	}
+	
 	/**
 	 * 
 	 * Overvrite get property if property is not exists or private.
@@ -58,7 +69,13 @@ abstract class Model {
 	 * @return \Symfony\Component\Validator\Validator
 	 */
 	protected function getValidator($name) {
-		$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;
+		//	we prefer absolute path
+		if(defined('site_path')) {
+			$path = site_path . "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+		} else {
+			$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+		}
+		
 		if ($this->validator === null) {
 			$this->validator = Validation::createValidatorBuilder()
 					->addYamlMapping($path . $name . '.yml')
@@ -108,5 +125,31 @@ abstract class Model {
 	public function setValidationGroup($validationGroup) {
 		$this->validationGroup = $validationGroup;
 	}
-
+	
+	/**
+	 * Saves model to database	 
+	 */
+	public function save() {	
+		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+		
+		if($this->getId()) {
+			return $this->_update();
+		} else {
+			return $this->_insert();
+		}
+	}
+	
+	/**
+	 * Should be implemented by children
+	 */
+	protected function _insert() {
+		throw new \Exception("Insert should be implemented by child");
+	}
+	
+	/**
+	 * Should be implemented by children
+	 */
+	protected function _update() {
+		throw new \Exception("Update should be implemented by child");
+	}
 }

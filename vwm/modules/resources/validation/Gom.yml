@@ -1,0 +1,19 @@
+VWM\Entity\Product\Gom:
+  properties:
+    name: 
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 100, groups: [add,Default] }
+    product_nr:
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 100, groups: [add,Default] }
+    supplier_id:
+      - NotBlank: { groups: [add,Default] }  
+    product_pricing:
+      - NotBlank: { groups: [add,Default] } 
+    add_toxic_compounds:
+      - NotBlank: { groups: [add,Default] } 
+    msds_sheet:
+      - NotBlank: { groups: [add,Default] } 
+    package_size:
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 50, groups: [add,Default] }

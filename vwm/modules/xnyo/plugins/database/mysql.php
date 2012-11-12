@@ -954,7 +954,7 @@ class db {
 	{
 	
 		// just return it
-		$this->error = @mysql_error($this->_resource['db_select']);
+		$this->error = @mysql_error($this->_resources['db_select']);
 		return $this->error;
 	}
 	

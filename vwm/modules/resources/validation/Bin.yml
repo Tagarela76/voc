@@ -1,0 +1,15 @@
+Bin:
+  properties:
+    crib_id: 
+      - NotBlank: { groups: [add,Default] }
+      - Int: { limit: 11, groups: [add,Default] }
+    size:
+      - NotBlank: { groups: [add,Default] }
+      - TyniInt: { limit: 4, groups: [add,Default] } 
+    capacity:
+      - TyniInt: { limit: 4, groups: [add,Default] } 
+    last_update_time:
+      - DataTime: { groups: [add,Default] }
+    name:
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 100, groups: [add,Default] } 
