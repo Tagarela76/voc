@@ -122,6 +122,7 @@ class CalendarEvent extends Model {
 	
 	/**
 	 * INSERT OR UPDATE EVENT
+	 * TODO: completly remove as it is the same as parent
 	 * @return int
 	 */
 	public function save() {		
@@ -138,7 +139,7 @@ class CalendarEvent extends Model {
 	 * Insert new event
 	 * @return boolean
 	 */
-	private function _insert() {
+	protected function _insert() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
@@ -167,7 +168,7 @@ class CalendarEvent extends Model {
 	 * Update event
 	 * @return boolean
 	 */
-	private function _update() {				
+	protected function _update() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";

@@ -1,0 +1,9 @@
+<?php
+
+return array(
+  array('user_id' => '1','username' => 'admin','accessname' => 'admin','password' => '3890967a490b25dddf7b821a9ac6b220','phone' => '000','mobile' => '000','email' => 'admin@admin.admin','accesslevel_id' => '3','company_id' => NULL,'facility_id' => NULL,'department_id' => NULL,'grace' => '14','creater_id' => '0','terms_conditions' => '0'),
+  array('user_id' => '2','username' => 'Department','accessname' => 'department','password' => '459d9fca17e3a950deae755d13578292','phone' => 'department','mobile' => 'department','email' => 'department@department.department','accesslevel_id' => '2','company_id' => '105','facility_id' => '66','department_id' => '212','grace' => '14','creater_id' => '0','terms_conditions' => '0'),
+  array('user_id' => '3','username' => 'Facility','accessname' => 'facility','password' => 'eaaa42a1464aa2b40a3ecfd68e2105d7','phone' => 'facility','mobile' => 'facility','email' => 'facility@facility.facility','accesslevel_id' => '1','company_id' => '105','facility_id' => '66','department_id' => '0','grace' => '14','creater_id' => '0','terms_conditions' => '0'),
+  array('user_id' => '4','username' => 'Company','accessname' => 'company','password' => '93c731f1c3a84ef05cd54d044c379eaa','phone' => 'company','mobile' => 'company','email' => 'company@company.company','accesslevel_id' => '0','company_id' => '105','facility_id' => '0','department_id' => '0','grace' => '14','creater_id' => '0','terms_conditions' => '0'),
+  array('user_id' => '5','username' => 'salesuser','accessname' => 'salesuser','password' => '098f6bcd4621d373cade4e832627b4f6','phone' => 'test','mobile' => 'test','email' => 'test@example.com','accesslevel_id' => '4','company_id' => NULL,'facility_id' => NULL,'department_id' => NULL,'grace' => '14','creater_id' => '0','terms_conditions' => '0'),
+);

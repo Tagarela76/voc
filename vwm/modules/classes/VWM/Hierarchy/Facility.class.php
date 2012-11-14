@@ -253,7 +253,7 @@ class Facility extends Model {
 		}
 	}
 	
-	private function _insert() {
+	protected function _insert() {
 		$clientFacilityId = ($this->getClientFacilityId()) 
 				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
 				: "NULL";						
@@ -300,7 +300,7 @@ class Facility extends Model {
 		
 	}
 	
-	private function _update() {
+	protected function _update() {
 		$clientFacilityId = ($this->getClientFacilityId()) 
 				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
 				: "NULL";						

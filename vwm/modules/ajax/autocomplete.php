@@ -1,197 +1,197 @@
 <?php
-	chdir('../..');
 
-	require('config/constants.php');
-	require_once ('modules/xnyo/xnyo.class.php');
+chdir('../..');
 
-	$site_path = getcwd().DIRECTORY_SEPARATOR;
-	define ('site_path', $site_path);
+require('config/constants.php');
+require_once ('modules/xnyo/xnyo.class.php');
 
-	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
+$site_path = getcwd() . DIRECTORY_SEPARATOR;
+define('site_path', $site_path);
 
-	$xnyo = new Xnyo();
-	$xnyo->database_type	= DB_TYPE;
-	$xnyo->db_host 			= DB_HOST;
-	$xnyo->db_user			= DB_USER;
-	$xnyo->db_passwd		= DB_PASS;
-	$xnyo->start();
+//	Include Class Autoloader
+require_once('modules/classAutoloader.php');
 
-	$db->select_db(DB_NAME);
+$xnyo = new Xnyo();
+$xnyo->database_type = DB_TYPE;
+$xnyo->db_host = DB_HOST;
+$xnyo->db_user = DB_USER;
+$xnyo->db_passwd = DB_PASS;
+$xnyo->start();
 
-	$xnyo->filter_get_var('query', 'text');
-	$xnyo->filter_get_var('departmentID', 'text');
-	$xnyo->filter_get_var('facilityID', 'text');
-	$xnyo->filter_get_var('category', 'text');
-	$xnyo->filter_get_var('field', 'text');
-    $xnyo->filter_get_var('subBookmark', 'text');
-	$xnyo->filter_get_var('id', 'text');
-    $xnyo->filter_get_var('pfpTypes', 'text');
+$db->select_db(DB_NAME);
 
-	$request = $_GET; 
-	switch ($request['category']) {
-		case "mix":
-			$mixObj = new Mix($db);
-			$suggestions = $mixObj->mixAutocomplete($request['query'], $request['departmentID']);	//for new autocomplete
-			if ($suggestions) {																		//new
-				$response = array('query'=>$request['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
-			}
-			break;
+$xnyo->filter_get_var('query', 'text');
+$xnyo->filter_get_var('departmentID', 'text');
+$xnyo->filter_get_var('facilityID', 'text');
+$xnyo->filter_get_var('category', 'text');
+$xnyo->filter_get_var('field', 'text');
+$xnyo->filter_get_var('subBookmark', 'text');
+$xnyo->filter_get_var('id', 'text');
+$xnyo->filter_get_var('pfpTypes', 'text');
 
-		case "product":
+$request = $_GET;
+switch ($request['category']) {
+	case "mix":
+		$mixObj = new Mix($db);
+		$suggestions = $mixObj->mixAutocomplete($request['query'], $request['departmentID']); //for new autocomplete
+		if ($suggestions) {				  //new
+			$response = array('query' => $request['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
 
-                     if(isset($request['facilityID'])) {
-                            $query = "SELECT f.company_id FROM ".TB_FACILITY." f " .
-					"WHERE f.facility_id = ".$request['facilityID'];
-                        } elseif (isset($request['departmentID'])) {
-                            $query = "SELECT f.company_id FROM ".TB_DEPARTMENT." d, ".TB_FACILITY." f " .
+	case "product":
+
+		if (isset($request['facilityID'])) {
+			$query = "SELECT f.company_id FROM " . TB_FACILITY . " f " .
+					"WHERE f.facility_id = " . $request['facilityID'];
+		} elseif (isset($request['departmentID'])) {
+			$query = "SELECT f.company_id FROM " . TB_DEPARTMENT . " d, " . TB_FACILITY . " f " .
 					"WHERE d.facility_id = f.facility_id " .
-					"AND d.department_id = ".$request['departmentID'];
-                        }
+					"AND d.department_id = " . $request['departmentID'];
+		}
 
-			$db->query($query);
+		$db->query($query);
 
-			if ($db->num_rows() > 0) {
-				$companyID = $db->fetch(0)->company_id;
-				$productObj = new Product($db);
-				$sub = $request['subBookmark'];
-				$productList = $productObj->productAutocomplete($request['query'],$companyID );
-				if ($productList) {
-					foreach ($productList as $product) {
-						$suggestions[] = $product['productNR'];
-					}
-					$response = array('query'=>$request['query'], 'suggestions'=>$suggestions);
-					echo json_encode($response);
-				}
-                        }
-                        break;
-
-		case "productAll":
-
+		if ($db->num_rows() > 0) {
+			$companyID = $db->fetch(0)->company_id;
 			$productObj = new Product($db);
-			$productList = $productObj->productAutocomplete($_GET['query']);
+			$sub = $request['subBookmark'];
+			$productList = $productObj->productAutocomplete($request['query'], $companyID);
 			if ($productList) {
 				foreach ($productList as $product) {
 					$suggestions[] = $product['productNR'];
 				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+				$response = array('query' => $request['query'], 'suggestions' => $suggestions);
 				echo json_encode($response);
 			}
-			break;
+		}
+		break;
 
-		case "accessoryAll":
+	case "productAll":
 
-			$productObj = new Accessory($db);
-			$productList = $productObj->accessoryAutocomplete($_GET['query']);
-			if ($productList) {
-				foreach ($productList as $product) {
-					$suggestions[] = $product['productNR'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
+		$productObj = new Product($db);
+		$productList = $productObj->productAutocomplete($_GET['query']);
+		if ($productList) {
+			foreach ($productList as $product) {
+				$suggestions[] = $product['productNR'];
 			}
-			break;
-
-		case "loggingAll":
-
-			$loggingManager = new UserLoggingManager($db);
-			$userList = $loggingManager->loggingAutocomplete($_GET['query']);
-			if ($userList) {
-				foreach ($userList as $user) {
-					$suggestions[] = $user['username'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
-			}
-			break;
-
-		case "logbook":
-			$logbookObj = new Logbook($db, $request['facilityID']);
-			$suggestions = $logbookObj->logbookAutocomplete($_GET['query']);
-			$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
 			echo json_encode($response);
-			break;
+		}
+		break;
 
-		case "track":
-			$trackingManagerObj = new TrackManager($db);
-			$trackingList = $trackingManagerObj->trackAutocomplete($_GET['query']);
-			$response = array('query'=>$_GET['query'], 'suggestions'=>$trackingList);
+	case "accessoryAll":
+
+		$productObj = new Accessory($db);
+		$productList = $productObj->accessoryAutocomplete($_GET['query']);
+		if ($productList) {
+			foreach ($productList as $product) {
+				$suggestions[] = $product['productNR'];
+			}
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
 			echo json_encode($response);
-			break;
+		}
+		break;
 
-        case "salescontacts":
-                        $sub = $request['subBookmark'];
-                        if($sub == '') {
-                                $sub = "contacts";
-                        }
-                        $sub = strtolower($sub);
-                        $sub = htmlentities($sub);
-                         $contactObj = new SalesContactsManager($db);
-                                $suggestions = $contactObj->contactAutocomplete($request['query'], $sub);
-                                if ($suggestions) {																		//new
-                                        $response = array('query'=>$request['query'], 'suggestions'=>$suggestions);
-                                        echo json_encode($response);
-                                }
-                        break;
+	case "loggingAll":
 
-		case "assignMsds":
-			$msds = new MSDS($db);
-			$msdsList = $msds->searchAutocomplete($_GET['query']);
-			if ($msdsList) {
-				foreach ($msdsList as $msdsFile) {
-					$suggestions[] = $msdsFile['name'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
+		$loggingManager = new UserLoggingManager($db);
+		$userList = $loggingManager->loggingAutocomplete($_GET['query']);
+		if ($userList) {
+			foreach ($userList as $user) {
+				$suggestions[] = $user['username'];
 			}
-			break;
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
 
-/*
-		case "pfpLibrary":
-			$pfpManager = new PFPManager($db);
-			$pfpList = $pfpManager->searchAutocomplete($_GET['query']);
-			if($pfpList) {
-				foreach ($pfpList as $pfpSuggestion) {
-					$suggestions[] = $pfpSuggestion['pfp'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
-			}
-			break;
-*/			
-		case "repairOrder": 
-			$repairOrder = new RepairOrder($db);
-			$facilityId = $_GET["facilityID"];
-			$repairOrderList = $repairOrder->searchAutocomplete($_GET['query'], $facilityId); 
-			if($repairOrderList) {
-				foreach ($repairOrderList as $repairOrderSuggestion) {
-					$suggestions[] = $repairOrderSuggestion['repairOrder'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions); 
-				echo json_encode($response);
-			}
-			break;	
-		
-		case "pfpLibrary":
-		case "pfpTypes": 
-			$pfpManager = new PFPManager($db);
-			$facility = new Facility($db);
-			$facilityId = $_GET["facilityID"];
-			$facilityDet = $facility->getFacilityDetails($facilityId);
-			$companyId = $facilityDet["company_id"]; 
-			if ($_GET["pfpTypes"] == "group") {
-				$pfpTypeId = $_GET["id"];
-			}
-			$pfpList = $pfpManager->searchAutocomplete($_GET['query'], $companyId, $pfpTypeId);
-			if($pfpList) {
-				foreach ($pfpList as $pfpSuggestion) {
-					$suggestions[] = $pfpSuggestion['pfp'];
-				}
-				$response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
-				echo json_encode($response);
-			}
-			break;		
-	}
+	case "logbook":
+		$logbookObj = new Logbook($db, $request['facilityID']);
+		$suggestions = $logbookObj->logbookAutocomplete($_GET['query']);
+		$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
+		echo json_encode($response);
+		break;
 
+	case "track":
+		$trackingManagerObj = new TrackManager($db);
+		$trackingList = $trackingManagerObj->trackAutocomplete($_GET['query']);
+		$response = array('query' => $_GET['query'], 'suggestions' => $trackingList);
+		echo json_encode($response);
+		break;
+
+	case "salescontacts":
+		$sub = $request['subBookmark'];
+		if ($sub == '') {
+			$sub = "contacts";
+		}
+		$sub = strtolower($sub);
+		$sub = htmlentities($sub);
+		$contactObj = new VWM\Apps\Sales\Manager\SalesContactsManager($db);
+		$suggestions = $contactObj->contactAutocomplete($request['query'], $sub);
+		if ($suggestions) {				  //new
+			$response = array('query' => $request['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
+
+	case "assignMsds":
+		$msds = new MSDS($db);
+		$msdsList = $msds->searchAutocomplete($_GET['query']);
+		if ($msdsList) {
+			foreach ($msdsList as $msdsFile) {
+				$suggestions[] = $msdsFile['name'];
+			}
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
+
+	/*
+	  case "pfpLibrary":
+	  $pfpManager = new PFPManager($db);
+	  $pfpList = $pfpManager->searchAutocomplete($_GET['query']);
+	  if($pfpList) {
+	  foreach ($pfpList as $pfpSuggestion) {
+	  $suggestions[] = $pfpSuggestion['pfp'];
+	  }
+	  $response = array('query'=>$_GET['query'], 'suggestions'=>$suggestions);
+	  echo json_encode($response);
+	  }
+	  break;
+	 */
+	case "repairOrder":
+		$repairOrder = new RepairOrder($db);
+		$facilityId = $_GET["facilityID"];
+		$repairOrderList = $repairOrder->searchAutocomplete($_GET['query'], $facilityId);
+		if ($repairOrderList) {
+			foreach ($repairOrderList as $repairOrderSuggestion) {
+				$suggestions[] = $repairOrderSuggestion['repairOrder'];
+			}
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
+
+	case "pfpLibrary":
+	case "pfpTypes":
+		$pfpManager = new PFPManager($db);
+		$facility = new Facility($db);
+		$facilityId = $_GET["facilityID"];
+		$facilityDet = $facility->getFacilityDetails($facilityId);
+		$companyId = $facilityDet["company_id"];
+		if ($_GET["pfpTypes"] == "group") {
+			$pfpTypeId = $_GET["id"];
+		}
+		$pfpList = $pfpManager->searchAutocomplete($_GET['query'], $companyId, $pfpTypeId);
+		if ($pfpList) {
+			foreach ($pfpList as $pfpSuggestion) {
+				$suggestions[] = $pfpSuggestion['pfp'];
+			}
+			$response = array('query' => $_GET['query'], 'suggestions' => $suggestions);
+			echo json_encode($response);
+		}
+		break;
+}
 ?>

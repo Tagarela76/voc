@@ -1,6 +1,12 @@
 <?php
-class SalesContact
-{
+
+namespace VWM\Apps\Sales\Entity;
+
+class SalesContact {
+	
+	/**
+	 * @var \db xnyo database
+	 */
 	private $db;
 
 	private $id;
@@ -39,7 +45,13 @@ class SalesContact
 
 	public $errors;
 
-	function SalesContact($db,Array $array = null) {
+	/**
+	 * array of meetings
+	 * @var MeetingWithContact[]
+	 */
+	protected $meetings = false;
+
+	public function __construct($db,Array $array = null) {
 		$this->db=$db; //control_panel_center
 
 		if(isset($array)) {
@@ -54,7 +66,7 @@ class SalesContact
 				//Set values trough setter
 
 				$this->__set($key, $value);
-			}catch(Exception $e) {
+			}catch(\Exception $e) {
 				$this->errors[] = $e->getMessage();
 			}
 		}
@@ -82,7 +94,7 @@ class SalesContact
 
 	public function get_country_name() {
 		if(isset($this->country_id) and !isset($this->country_name)) {
-			$country = new Country($this->db);
+			$country = new \Country($this->db);
 			$details = $country->getCountryDetails($this->country_id);
 			$this->country_name = $details['country_name'];
 
@@ -94,7 +106,7 @@ class SalesContact
 		if(!isset($this->state_id) and isset($this->state)) {
 			return $this->state;
 		} else if (isset($this->state_id)) {
-			$state = new State($this->db);
+			$state = new \State($this->db);
 			$details = $state->getStateDetails($this->state_id);
 			return $details['name'];
 		}
@@ -113,32 +125,32 @@ class SalesContact
 	private function set_type($value) {
 		try {
 			$this->type = $value;
-		} catch(Exception $e) {
-			throw new Exception("Contact Type: " . $e->getMessage());
+		} catch(\Exception $e) {
+			throw new \Exception("Contact Type: " . $e->getMessage());
 		}
 	}
 
 	private function set_mail($value) {
 		try {
 			$this->mail = $value;
-		} catch(Exception $e) {
-			throw new Exception("Contact Mail: " . $e->getMessage());
+		} catch(\Exception $e) {
+			throw new \Exception("Contact Mail: " . $e->getMessage());
 		}
 	}
 
 	private function set_cellphone($value) {
 		try {
 			$this->cellphone = $value;
-		} catch(Exception $e) {
-			throw new Exception("Contact Cellphone: " . $e->getMessage());
+		} catch(\Exception $e) {
+			throw new \Exception("Contact Cellphone: " . $e->getMessage());
 		}
 	}
 
 	private function set_id($value) {
 		try {
 			$this->id = $value;
-		} catch(Exception $e) {
-			throw new Exception("Id cannot be empty!");
+		} catch(\Exception $e) {
+			throw new \Exception("Id cannot be empty!");
 		}
 	}
 
@@ -147,9 +159,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->company = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors['company'] = $e->getMessage();
-			throw new Exception("Company cannot be empty!");
+			throw new \Exception("Company cannot be empty!");
 		}
 
 		$this->company = $value;
@@ -161,9 +173,9 @@ class SalesContact
 			$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->contact = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["contact"] = $e->getMessage();
-			throw new Exception("contact cannot be empty!");
+			throw new \Exception("contact cannot be empty!");
 		}
 	}
 
@@ -175,9 +187,9 @@ class SalesContact
 			}
 			$value = $this->escapeValue($value);
 			$this->phone = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["phone"] = $e->getMessage();
-			throw new Exception("phone cannot be empty!");
+			throw new \Exception("phone cannot be empty!");
 		}
 	}
 	private function set_fax($value) {
@@ -185,9 +197,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->fax = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["fax"] = $e->getMessage();
-			throw new Exception("fax cannot be empty!");
+			throw new \Exception("fax cannot be empty!");
 		}
 	}
 	private function set_email($value) {
@@ -198,9 +210,9 @@ class SalesContact
 			}
 			$value = $this->escapeValue($value);
 			$this->email = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["email"] = $e->getMessage();
-			throw new Exception("mail cannot be empty!");
+			throw new \Exception("mail cannot be empty!");
 		}
 	}
 	private function set_website($value) {
@@ -209,9 +221,9 @@ class SalesContact
 
 			$value = $this->escapeValue($value);
 			$this->website = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->website["website"] = $e->getMessage();
-			throw new Exception("website cannot be empty!");
+			throw new \Exception("website cannot be empty!");
 		}
 	}
 	private function set_title($value) {
@@ -219,9 +231,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->title = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["title"] = $e->getMessage();
-			throw new Exception("title cannot be empty!");
+			throw new \Exception("title cannot be empty!");
 		}
 	}
 
@@ -229,16 +241,16 @@ class SalesContact
 		try {
 			$value = $this->escapeValue($value);
 			$this->industry = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["industry"] = $e->getMessage();
-			throw new Exception("industry cannot be empty!");
+			throw new \Exception("industry cannot be empty!");
 		}
 	}
 	private function set_comments($value) {
 		try {
 			$value = $this->escapeValue($value);
 			$this->comments = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 		}
 	}
 	private function set_state($value) {
@@ -246,9 +258,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->state = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["state"] = $e->getMessage();
-			throw new Exception("state cannot be empty!");
+			throw new \Exception("state cannot be empty!");
 		}
 	}
 	private function set_city($value) {
@@ -256,9 +268,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->city = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->city["city"] = $e->getMessage();
-			throw new Exception("city cannot be empty!");
+			throw new \Exception("city cannot be empty!");
 		}
 	}
 	private function set_zip_code($value) {
@@ -266,9 +278,9 @@ class SalesContact
 			//$this->checkEmpty($value);
 			$value = $this->escapeValue($value);
 			$this->zip_code = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["zip_code"] = $e->getMessage();
-			throw new Exception("zip code cannot be empty!");
+			throw new \Exception("zip code cannot be empty!");
 		}
 	}
 	private function set_country_id($value) {
@@ -276,9 +288,9 @@ class SalesContact
 
 			$this->checkNumber($value);
 			$this->country_id = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["country_id"] = $e->getMessage();
-			throw new Exception("set country_id: " . $e->getMessage());
+			throw new \Exception("set country_id: " . $e->getMessage());
 		}
 
 	}
@@ -288,9 +300,9 @@ class SalesContact
 
 			$this->checkNumber($value);
 			$this->creater_id = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["creater_id"] = $e->getMessage();
-			throw new Exception("set creater_id: " . $e->getMessage());
+			throw new \Exception("set creater_id: " . $e->getMessage());
 		}
 
 	}
@@ -300,9 +312,9 @@ class SalesContact
 
 			//$this->checkNumber($value);
 			$this->acc_number = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["acc_number"] = $e->getMessage();
-			throw new Exception("set acc_number: " . $e->getMessage());
+			throw new \Exception("set acc_number: " . $e->getMessage());
 		}
 
 	}
@@ -312,9 +324,9 @@ class SalesContact
 
 			//$this->checkNumber($value);
 			$this->paint_supplier = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["paint_supplier"] = $e->getMessage();
-			throw new Exception("set paint_supplier: " . $e->getMessage());
+			throw new \Exception("set paint_supplier: " . $e->getMessage());
 		}
 
 	}
@@ -324,9 +336,9 @@ class SalesContact
 
 			//$this->checkNumber($value);
 			$this->paint_system = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["paint_system"] = $e->getMessage();
-			throw new Exception("set paint_system: " . $e->getMessage());
+			throw new \Exception("set paint_system: " . $e->getMessage());
 		}
 
 	}
@@ -336,9 +348,9 @@ class SalesContact
 
 			//$this->checkNumber($value);
 			$this->jobber = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["jobber"] = $e->getMessage();
-			throw new Exception("Jobber cannot be empty! " . $e->getMessage());
+			throw new \Exception("Jobber cannot be empty! " . $e->getMessage());
 		}
 
 	}
@@ -348,9 +360,9 @@ class SalesContact
 		try{
 			$this->checkNumber($value);
 			$this->state_id = $value;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->errors["state_id"] = $e->getMessage();
-			throw new Exception("set state_id: " . $e->getMessage());
+			throw new \Exception("set state_id: " . $e->getMessage());
 		}
 
 	}
@@ -359,17 +371,17 @@ class SalesContact
 
 		$isN = is_numeric($value);
 		if( !$isN  ) {
-			throw new Exception("Value ($value) is not numeric!");
+			throw new \Exception("Value ($value) is not numeric!");
 		} else if(!isset($value)) {
-			throw new Exception("Value ($value) is not set!");
+			throw new \Exception("Value ($value) is not set!");
 		}
 	}
 
 	private function checkEmpty($value) {
 		if(!isset($value) or empty($value)) {
-			throw new Exception("Value is empty");
+			throw new \Exception("Value is empty");
 		} else if(strlen($value) > 255) {
-			throw new Exception("Value is too long (max 255 symbols)");
+			throw new \Exception("Value is too long (max 255 symbols)");
 		}
 	}
 
@@ -379,22 +391,22 @@ class SalesContact
 	}
 
 	private function checkEmail($value) {
-		$validator = new Validation($this->db);
+		$validator = new \Validation($this->db);
 		$res = $validator->check_email($value);
 		if(!$res) {
-			throw new Exception("Email is invalid");
+			throw new \Exception("Email is invalid");
 		}
 	}
 
 	private function checkPhone($value) {
-		$validator = new Validation($this->db);
+		$validator = new \Validation($this->db);
 		$res = $validator->check_phone($value);
 		if(!$res) {
-			throw new Exception("Phone is invalid");
+			throw new \Exception("Phone is invalid");
 		}
 	}
 
-        public function getContactsList(Pagination $pagination = null,$filter=' TRUE ',$sort=' ORDER BY id DESC ') {
+        public function getContactsList(\Pagination $pagination = null,$filter=' TRUE ',$sort=' ORDER BY id DESC ') {
 		$departmentID=mysql_escape_string($departmentID);
 		$query = "SELECT * FROM ".TB_CONTACTS." WHERE $filter $sort ";
 		if (isset($pagination)) {
@@ -473,4 +485,29 @@ class SalesContact
 	 		return false;
 	 	}
 	 }
+
+	 /**	  
+	  * @return MeetingWithContact[]
+	  */
+	 public function getMeetings() {
+		if ($this->meetings === false) {
+			$sql = "SELECT * " .
+					"FROM " . MeetingWithContact::TABLE_NAME . " " .
+					"WHERE contact_id = {$this->db->sqltext($this->id)}";
+			$this->db->query($sql);
+			if($this->db->num_rows() == 0) {
+				$this->meetings = array();
+			} else {
+				$rows = $this->db->fetch_all();
+				$this->meetings = array();				
+				foreach ($rows as $row) {
+					$meeting = new MeetingWithContact($this->db);
+					$meeting->initByArray($row);
+					$this->meetings[] = $meeting;
+				}
+			}
+		}
+
+		return $this->meetings;
+	}
 }

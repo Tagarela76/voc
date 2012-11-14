@@ -89,27 +89,7 @@
 					<div align="left" >&nbsp;{$contact->mail}</div>								
 				</td>
 			</tr>
-			
-
-			
-			<!--  <tr>
-				<td class="border_users_l border_users_b" height="20">
-					Government Agencies:
-				</td>
-				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->government_agencies}</div>								
-				</td>
-			</tr>
-			
-			<tr>
-				<td class="border_users_l border_users_b" height="20">
-					Affiliations:
-				</td>
-				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->affiliations}</div>								
-				</td>
-			</tr>-->
-			
+												
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
 					Industry:

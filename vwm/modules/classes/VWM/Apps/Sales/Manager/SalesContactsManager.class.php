@@ -1,14 +1,20 @@
 <?php
 
+namespace VWM\Apps\Sales\Manager;
+
+use VWM\Apps\Sales\Entity\SalesContact;
+
+//TODO: needs complete rewrite
+
 class SalesContactsManager {
 
 	private $db;
 
-	function SalesContactsManager($db) {
+	public function __construct(\db $db) {
 		$this->db = $db;
 	}
 
-	public function getContactsList(Pagination $pagination = null, $contacts_type_name, $filter, $creater_id = null, $sortStr = null) {
+	public function getContactsList(\Pagination $pagination = null, $contacts_type_name, $filter, $creater_id = null, $sortStr = null) {
 
 		$query = "SELECT c. * FROM " . TB_CONTACTS . " c ";
 		$contacts_type_name = mysql_escape_string($contacts_type_name);
@@ -61,7 +67,7 @@ class SalesContactsManager {
 		$this->db->query($query);
 
 		if (!$this->db->num_rows() > 0) {
-			throw new Exception('Permission denied');
+			throw new \Exception('Permission denied');
 		}
 		$arr = $this->db->fetch_all_array();
 		return $arr;
@@ -72,7 +78,7 @@ class SalesContactsManager {
 		$this->db->query($query);
 
 		if (!$this->db->num_rows() > 0) {
-			throw new Exception('Permission denied');
+			throw new \Exception('Permission denied');
 		}
 		$arr = $this->db->fetch_all_array();
 		return $arr;
@@ -89,7 +95,7 @@ class SalesContactsManager {
 		$this->db->query($query);
 
 		if (!$this->db->num_rows() > 0) {
-			throw new Exception('Permission denied');
+			throw new \Exception('Permission denied');
 		}
 		$arr = $this->db->fetch_all_array();
 		$contactsArr = $arr[0];
@@ -116,7 +122,7 @@ class SalesContactsManager {
 		if (mysql_error() == '') {
 			return true;
 		} else {
-			throw new Exception(mysql_error());
+			throw new \Exception(mysql_error());
 		}
 	}
 
@@ -181,7 +187,7 @@ class SalesContactsManager {
 		if (mysql_error() == '') {
 			return true;
 		} else {
-			throw new Exception(mysql_error());
+			throw new \Exception(mysql_error());
 		}
 	}
 
@@ -237,7 +243,7 @@ class SalesContactsManager {
 				}
 				return true;
 			} else {
-				throw new Exception(mysql_error());
+				throw new \Exception(mysql_error());
 			}
 		}
 	}

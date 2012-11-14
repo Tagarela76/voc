@@ -1,5 +1,8 @@
 <?php
 
+use VWM\Apps\Sales\Manager\SalesContactsManager;
+use VWM\Apps\Sales\Entity\SalesContact;
+
 class CAContacts extends Controller {
 	
 	function CAContacts($smarty,$xnyo,$db,$user,$action) {

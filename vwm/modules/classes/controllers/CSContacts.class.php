@@ -1,5 +1,8 @@
 <?php
 
+use VWM\Apps\Sales\Manager\SalesContactsManager;
+use VWM\Apps\Sales\Entity\SalesContact;
+
 class CSContacts extends Controller {
 	
 	function CSContacts($smarty,$xnyo,$db,$user,$action) {
@@ -128,10 +131,10 @@ class CSContacts extends Controller {
 	}
 	
 
-	private function actionViewDetails() {
-		
+	private function actionViewDetails() {		
 		$manager = new SalesContactsManager($this->db);
-		$contact = $manager->getSalesContact($this->getFromRequest('id'),$this->user->xnyo->user['user_id']);
+		$contact = $manager->getSalesContact($this->getFromRequest('id'),$this->user->xnyo->user['user_id']);		
+
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$this->getFromRequest());
 		$this->smarty->assign('contact', $contact);

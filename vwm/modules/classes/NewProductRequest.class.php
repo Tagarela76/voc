@@ -168,7 +168,7 @@ class NewProductRequest extends Model {
 		}
 	}	
 	
-	private function _insert() {
+	protected function _insert() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: 'NULL';
@@ -194,7 +194,7 @@ class NewProductRequest extends Model {
 		}		
 	}
 	
-	private function _update() {
+	protected function _update() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: 'NULL';

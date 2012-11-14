@@ -1,6 +1,6 @@
 <?php
 
-require_once ("modules/Validate.php");
+require_once (dirname(__FILE__)."/../Validate.php");
 
 class Validation {
 
