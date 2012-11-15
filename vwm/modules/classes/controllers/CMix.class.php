@@ -642,7 +642,7 @@ class CMix extends Controller {
 				$mixObjList["url"] = $mix->url; // it is fix value (always display
 				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
 				$mixFormatObjList[] = $mixObjList;
-			} 
+			}
 			$this->smarty->assign('widths', $widths);
 			$this->smarty->assign('columnCount', count($mixColumn4Display));
 			$this->smarty->assign('mixColumn4Display', $mixColumn4Display);

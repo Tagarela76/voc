@@ -380,6 +380,21 @@
 					</div>
 				</td>				
 			</tr>
+
+			<tr height="10px">
+				<td class="border_users_l border_users_b">
+						Shop type:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+						<select name="shop_type">
+							{foreach from=$data->getShopTypeOptions() item=shop_type_id key=shop_type_name}
+								<option value="{$shop_type_id}" {if $shop_type_id == $data->shop_type}selected{/if}>{$shop_type_name}</option>
+							{/foreach}
+						</select>
+					</div>
+				</td>
+			</tr>
 			
 			<tr>
              	 <td height="20" class="users_u_bottom">

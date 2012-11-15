@@ -39,7 +39,7 @@ class CSContacts extends Controller {
 
 		// to edit filter need to edit TB_FILTER 
 		$filterStr = $this->filterList('contacts');
-		
+
 		$manager = new SalesContactsManager($this->db);
 		$creater_id = $this->user->xnyo->user['user_id'];
 		// search (not empty q)
@@ -85,7 +85,7 @@ class CSContacts extends Controller {
 				$filterStr = " c." . $filterStr;
 			}
 			if ($this->getFromRequest('searchAction') == 'filter') {
-				
+
 				$pagination = new Pagination($manager->countContacts($subNumber, $filterStr,$creater_id));
 				
 				$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest('category') . "&bookmark=" . $this->getFromRequest('bookmark')."&subBookmark=" . urlencode($this->getFromRequest('subBookmark'));
@@ -123,6 +123,10 @@ class CSContacts extends Controller {
 		//	set js scripts
 		$jsSources = array('modules/js/autocomplete/jquery.autocomplete.js','modules/js/checkBoxes.js');
 		$this->smarty->assign('jsSources', $jsSources);
+		
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+
 		$this->smarty->assign("contacts", $contactsList);
 		$this->smarty->assign("itemsCount", $totalCount);
 		$this->smarty->assign('tpl', 'tpls/bookmarkContacts.tpl');
@@ -154,7 +158,7 @@ class CSContacts extends Controller {
 	
 		if ($this->getFromPost('save') == 'Save') {
 			
-			$contact = $this->createContactByForm($_POST);
+			$contact = $this->createContactByForm($_POST);			
 			$contact->id = $id;
                         
 			if(!empty($contact->errors)) {
@@ -277,10 +281,10 @@ class CSContacts extends Controller {
 			$form['state_id'] = $form['selState'];
 		}
 		$contact = new SalesContact($this->db);		
-		foreach($form as $key => $value) {
+		foreach($form as $key => $value) {			
 			try {
-				$contact->$key = $value;
-			}catch(Exception $e) {
+				$contact->$key = $value;				
+			}catch(Exception $e) {				
 				$contact->unsafe_set_value($key,$value);
 			}
 		} 

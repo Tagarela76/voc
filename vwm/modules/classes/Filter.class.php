@@ -45,17 +45,17 @@ class Filter {
    		$value=$filterData['filterValue'];
    		
    		$filter=(($pseudonymTable!=null)?$pseudonymTable.".":"");
-   		
-   		
+   		   		
+
    		if(isset($filterData['dateFormat']) and $filterData['filterField'] == 'creation_time') {
-   			
+			
    			$beginDay = DateTime::createFromFormat($filterData['dateFormat'], $value);
    			$beginDay->setTime("00","00","00");
    					
    			$endDay = DateTime::createFromFormat($filterData['dateFormat'], $value);
    			$endDay->setTime("23","59","59");
    		}
-   			
+		   
    		switch ($filterData['filterCondition'])
    		{
    			case 'dateEquals':

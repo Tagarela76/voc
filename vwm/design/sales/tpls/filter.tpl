@@ -2,7 +2,13 @@
 	var filterFieldText='{$filterData.filterField}';	
 	var filterConditionText='{$filterData.filterCondition}';	
 	var filterValueText='{$filterData.filterValue}';			
-	var filterStr='{$filterArray}';			
+	var filterStr='{$filterArray}';
+
+	{if $dateFormat}
+		var filterDateFormat = '{$dateFormat}';
+	{else}
+		var filterDateFormat = 'yy-mm-dd';
+	{/if}
 </script>
 
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js"></script>

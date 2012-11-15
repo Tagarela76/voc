@@ -36,6 +36,7 @@ class SalesContact {
 	private $paint_supplier; //List of contact's suppliers
 	private $paint_system; //contact paint system
 	private $jobber; //
+	private $shop_type;
 
 	private $country_name; // Inits dynamicly, when calls outside by country_id
 	private $state_name; // Inits dynamicly, when calls outside by state_id or state
@@ -44,6 +45,9 @@ class SalesContact {
 	private $viewDetailsUrl; // Url for smarty. Builds dynamicly
 
 	public $errors;
+
+	const SHOP_SINLGE = 0;
+	const SHOP_MULTIPLE = 1;
 
 	/**
 	 * array of meetings
@@ -355,6 +359,10 @@ class SalesContact {
 
 	}
 
+	private function set_shop_type($value) {
+		$this->shop_type = $value;
+	}
+
 
 	private function set_state_id($value) {
 		try{
@@ -510,5 +518,23 @@ class SalesContact {
 		}
 
 		return $this->meetings;
+	}
+
+
+	public function getShopTypeOptions() {
+		return array(
+			'Single' => self::SHOP_SINLGE,
+			'Multiple' => self::SHOP_MULTIPLE,
+		);
+	}
+
+
+	public function getShopTypeName() {
+		$options = $this->getShopTypeOptions();
+		foreach ($options as $key => $option) {
+			if($option == $this->shop_type) {
+				return $key;
+			}
+		}
 	}
 }
