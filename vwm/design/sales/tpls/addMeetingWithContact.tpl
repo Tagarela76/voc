@@ -29,7 +29,12 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
-						<input type='text' name="meeting_date" id="date" class="calendarFocus" value='{$meeting->getMeetingDate()|escape}'>							
+						{if $violationList|@count == 0}
+							{assign var="meetingDate" value=$meeting->getMeetingDate(true)}
+						{else}
+							{assign var="meetingDate" value=$meeting->getMeetingDate()}
+						{/if}
+						<input type='text' name="meeting_date" id="date" class="calendarFocus" value='{$meetingDate|escape}'>
 					</div>
 						{foreach from=$violationList item="violation"}
 								{if $violation->getPropertyPath() eq 'meeting_date'}
@@ -73,7 +78,7 @@
 		<div align="right">
 			<br>
 			<input type='submit' name='save' class="button" value='Save'>
-			<input type='button' class="button" id='cancelButton' value='Cancel' onclick="location.href='sales.php?action=viewDetails&category=contacts&id={$request.contactId|escape}'">
+			<input type='button' class="button" id='cancelButton' value='Cancel' onclick="location.href='sales.php?action=viewDetails&category=contacts&id={$meeting->getContactId()|escape}'">
 			<span style="padding-right:50">&nbsp;</span>
 		</div>		
 	</form>

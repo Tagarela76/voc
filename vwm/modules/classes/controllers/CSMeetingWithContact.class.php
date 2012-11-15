@@ -62,5 +62,48 @@ class CSMeetingWithContact extends Controller {
 		$this->smarty->assign('request', $this->getFromRequest());
 		$this->render();
 	}
+
+
+	public function actionEdit() {
+		$meeting = new MeetingWithContact($this->db, $this->getFromRequest('id'));
+
+		if($this->getFromPost()) {
+			$meeting->setMeetingDate($this->getFromPost('meeting_date'));
+			$meeting->setNotes($this->getFromPost('notes'));
+			$violationList = $meeting->validate();
+			if(count($violationList) == 0) {
+				$format = \VOCApp::get_instance()->getDateFormat();
+				$format .= " H:i";
+				$meetingDate = DateTime::createFromFormat($format,
+						$meeting->getMeetingDate());
+
+				$meeting->setMeetingDate($meetingDate->getTimestamp());
+				if(!$meeting->save()) {
+					throw new Exception("Failed to save meeting");
+				}
+				header("Location: sales.php?action=viewDetails&category=contacts&id=".$meeting->getContactId());
+			} else {
+				var_dump($violationList);
+				$this->smarty->assign('violationList', $violationList);
+			}
+		}
+
+		$this->smarty->assign('meeting', $meeting);
+
+		$jsSources = array(
+			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',
+			'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+
+		$typeChain = new TypeChain(null, 'date', $this->db, 0, 'company');
+		$this->smarty->assign('dataChain', $typeChain);
+		
+		$this->smarty->assign('tpl', 'tpls/addMeetingWithContact.tpl');
+		$this->render();
+	}
 }
 
