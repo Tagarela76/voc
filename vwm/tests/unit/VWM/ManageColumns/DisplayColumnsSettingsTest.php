@@ -8,7 +8,7 @@ use VWM\ManageColumns\DisplayColumnsSettings;
 class DisplayColumnsSettingsTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		INDUSTRY_TYPE, TB_DISPLAY_COLUMNS_SETTINGS
+		TB_INDUSTRY_TYPE, TB_BROWSE_CATEGORY_ENTITY, TB_DISPLAY_COLUMNS_SETTINGS,
 	);
 	
 	public function testGetDisplayColumnsSettings() {
@@ -17,7 +17,9 @@ class DisplayColumnsSettingsTest extends DbTestCase {
 
 		$displayColumnsSettingsObj = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryEntityName);
 		$this->assertTrue($displayColumnsSettingsObj instanceof DisplayColumnsSettings);
-		$this->assertTrue($displayColumnsSettingsObj->getValue() == 'Mix ID,Product Name,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date');
+		$actual = $displayColumnsSettingsObj->getValue();
+		$this->assertEquals('Product Name,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date' ,
+				$actual);
 	}
 
 	public function testDisplayColumnsSettingsSave() {
@@ -44,13 +46,12 @@ class DisplayColumnsSettingsTest extends DbTestCase {
 		
 		// check UPDATE
 		
-		 $displayColumnsSettingsUpdated = new DisplayColumnsSettings($this->db);
-		 $newValue = "[111]";
-		 $displayColumnsSettingsUpdated->setId('1');
-		 $displayColumnsSettingsUpdated->setValue($newValue);
-		 $displayColumnsSettingsUpdated->save();
-		 $displayColumnsSettingsUpdatedTest = \Phactory::get(TB_DISPLAY_COLUMNS_SETTINGS, array('id'=>"1"));		
-		 $this->assertTrue($displayColumnsSettingsUpdatedTest->value == $newValue);
+		 //$displayColumnsSettingsUpdated = new DisplayColumnsSettings($this->db);
+		 $newValue = "[111]";		 
+		 $displayColumnsSettings->setValue($newValue);
+		 $displayColumnsSettings->save();
+		 $displayColumnsSettingsUpdatedTest = \Phactory::get(TB_DISPLAY_COLUMNS_SETTINGS, array('id'=>"3"));
+		 $this->assertEquals($newValue, $displayColumnsSettingsUpdatedTest->value);
 		
 	}
 

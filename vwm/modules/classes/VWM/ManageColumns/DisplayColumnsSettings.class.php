@@ -87,23 +87,10 @@ class DisplayColumnsSettings extends Model {
 	}
 	
 	/**
-	 * Insert or Update
-	 * @return int
-	 */
-	public function save() {
-		if (is_null($this->getId())) {
-			$result = $this->_insert();
-		} else {
-			$result = $this->_update();
-		}
-		return $result;
-	}
-
-	/**
 	 * Insert
 	 * @return boolean
 	 */
-	private function _insert() {
+	protected function _insert() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
@@ -129,7 +116,7 @@ class DisplayColumnsSettings extends Model {
 	 * Update event
 	 * @return boolean
 	 */
-	private function _update() {				
+	protected function _update() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";

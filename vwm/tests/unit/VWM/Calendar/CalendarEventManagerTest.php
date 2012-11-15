@@ -9,7 +9,7 @@ use VWM\Calendar\CalendarEventManager;
 class CalendarEventManagerTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		TB_CALENDAR
+		TB_USER, TB_CALENDAR
 	);
 	
 	public function testGetAllEventsByUser() {

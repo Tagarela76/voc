@@ -43,7 +43,7 @@ class BinContextTest extends DbTestCase {
 		
 		$r = $binContext->save();
 
-		$this->assertEquals("true", $r);
+		$this->assertTrue($r);
 		
 		// if we add a new item
 		$sql = "SELECT * FROM ". BinContext::TABLE_NAME;

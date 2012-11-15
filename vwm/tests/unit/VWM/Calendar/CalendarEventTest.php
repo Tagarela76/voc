@@ -8,7 +8,7 @@ use VWM\Calendar\CalendarEvent;
 class CalendarEventTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		TB_CALENDAR
+		TB_USER, TB_CALENDAR
 	);
 	
 	public function testCalendarEvent() {
