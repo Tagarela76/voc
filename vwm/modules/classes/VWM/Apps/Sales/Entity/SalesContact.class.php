@@ -493,7 +493,8 @@ class SalesContact {
 		if ($this->meetings === false) {
 			$sql = "SELECT * " .
 					"FROM " . MeetingWithContact::TABLE_NAME . " " .
-					"WHERE contact_id = {$this->db->sqltext($this->id)}";
+					"WHERE contact_id = {$this->db->sqltext($this->id)} " .
+					"ORDER BY meeting_date DESC";
 			$this->db->query($sql);
 			if($this->db->num_rows() == 0) {
 				$this->meetings = array();

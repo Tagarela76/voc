@@ -14,15 +14,17 @@ class CTDate extends CType {
     
     private function _loadConfig() {
     	//step 1: we should check for accesslevel(it can be a superuser level)
-    	if (is_null($this->companyID)) {
+    	if (!$this->companyID) {
     		//oh? this is a super user level! We should use defaults!
-    		$this->format = $this->mainFormat;
+    		//$this->format = $this->mainFormat;			
+			$this->format = DEFAULT_DATE_FORMAT;
+			$this->outputFormat = 'mm/dd/yyyy';
     		return;
     	}
     	
     	//step 2: we should get company's date format!
     	$formatDetails = $this->getDateFormatByCompanyID($this->companyID);
-    	
+		
     	$this->format = $formatDetails->format;
     	$this->outputFormat = $formatDetails->description;
     }
@@ -31,9 +33,14 @@ class CTDate extends CType {
     	$query = "SELECT c.date_format_id as id, df.format, df.description FROM ".TB_COMPANY." c, ".TB_DATE_FORMAT." df " .
     			" WHERE c.company_id = '$companyID' AND " .
     			" c.date_format_id = df.id " .
-    			" LIMIT 1";
-    	
+    			" LIMIT 1";    	
     	$this->db->query($query);
+		/*if($this->db->num_rows() == 0) {
+			return array(
+				'format' => DEFAULT_DATE_FORMAT,
+				'description' => 'mm/dd/yyyy'
+			);
+		}*/
     	return $this->db->fetch(0);
     }
     

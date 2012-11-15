@@ -199,3 +199,5 @@
            				</tr>
 			</table>
 </div>
+
+{include file="tpls:tpls/_meetingsWithContact.tpl" meetings=$contact->getMeetings()}

@@ -10,8 +10,7 @@
 		<script type="text/javascript" src='modules/js/jquery-ui-1.8.2.custom/js/jquery-1.4.2.min.js'></script>
 		{foreach from=$jsSources item=jsSource}
 			<script type="text/javascript" src="{$jsSource}"></script>
-		{/foreach}
-		<link rel="stylesheet" href="extensions/calendar/css/master.css" type="text/css" media="screen" charset="utf-8" />
+		{/foreach}		
 		{foreach from=$cssSources item=cssSource}
 			<link href="{$cssSource}" rel="stylesheet" type="text/css"/>
 		{/foreach}

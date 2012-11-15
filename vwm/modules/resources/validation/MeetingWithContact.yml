@@ -1,0 +1,14 @@
+VWM\Apps\Sales\Entity\MeetingWithContact:
+  properties:
+    contact_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    user_id:
+      - NotBlank: ~
+      - Min: 0
+      - Max: 9999999999
+    meeting_date:
+      - NotBlank: ~
+      - VWM\Framework\Validator\Constraints\DateTime: ~
+    notes:

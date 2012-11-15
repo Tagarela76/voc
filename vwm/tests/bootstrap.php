@@ -20,3 +20,6 @@ $xnyo->db_passwd = DB_PASS;
 $xnyo->start();
 
 $GLOBALS["db"]->select_db(DB_NAME);
+
+$user = new User($GLOBALS["db"]);
+VOCApp::get_instance()->setUser($user);

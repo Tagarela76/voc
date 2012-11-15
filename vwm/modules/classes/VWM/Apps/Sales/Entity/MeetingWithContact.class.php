@@ -3,6 +3,8 @@
 namespace VWM\Apps\Sales\Entity;
 
 use VWM\Framework\Model;
+use VWM\Apps\Sales\Manager\SalesContactsManager;
+use VWM\Framework\Utils\DateTime;
 
 class MeetingWithContact extends Model {
 
@@ -13,12 +15,29 @@ class MeetingWithContact extends Model {
 	protected $notes;
 	protected $last_update_time;
 
+	/**
+	 * @var SalesContact
+	 */
+	protected $contact;
+
+	/**	 
+	 * @var \stdClass
+	 */
+	protected $user;
+
+	/**
+	 * @var SalesContactsManager
+	 */
+	protected $salesManager;
+
 	const TABLE_NAME = 'meeting_with_contact';
 
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = "MeetingWithContact";
 
+		$this->salesManager = new SalesContactsManager($this->db);
+		
 		if($id !== null) {
 			$this->setId($id);
 			if(!$this->_load()) {
@@ -51,7 +70,14 @@ class MeetingWithContact extends Model {
 		$this->user_id = $user_id;
 	}
 
-	public function getMeetingDate() {
+	public function getMeetingDate($formatted = false) {
+		if($formatted) {
+			$datetime = new DateTime();
+			$datetime->setTimestamp($this->meeting_date);
+			
+			return $datetime->format(
+					\VOCApp::get_instance()->getDateFormat()." H:i");
+		}
 		return $this->meeting_date;
 	}
 
@@ -137,6 +163,27 @@ class MeetingWithContact extends Model {
 		$this->initByArray($row);
 
 		return true;
+	}
+
+	public function getContact() {
+		if(!$this->contact) {
+			$contact = $this->salesManager->getSalesContact($this->getContactId());
+			$this->contact = $contact;
+		}
+
+		return $this->contact;
+	}
+
+	public function getUser() {
+		if(!$this->user) {
+			$userDetails = \VOCApp::get_instance()
+					->getUser()
+					->getUserDetails($this->getUserId());
+			$this->user = new \stdClass();
+			$this->user->username = $userDetails['username'];
+		}
+
+		return $this->user;
 	}
 }
 

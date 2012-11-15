@@ -91,6 +91,8 @@ class VOCApp {
 
 			$chain = new TypeChain(null, 'Date', $this->db, $this->customer_id, 'company');
 			$this->date_format = $chain->getFromTypeController('getFormat');
+		} else {			
+			$this->date_format = DEFAULT_DATE_FORMAT;
 		}
 		return $this->date_format;
 	}
