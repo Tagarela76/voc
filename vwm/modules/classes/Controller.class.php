@@ -1597,7 +1597,10 @@ class Controller {
         }
         $this->smarty->assign('pxNoxCount', $pxNoxCount); //	200px - indicator length
     }
-	
+
+	protected function render() {
+		$this->smarty->display("tpls:index.tpl");
+	}
 }
 
 ?>
