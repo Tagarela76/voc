@@ -1159,12 +1159,12 @@ class Product extends ProductProperties {
 		}
 	}
 
-	public function assignProduct2Type($productID, $industryType, $industrySubType) {
+	public function assignProduct2Type($productID, $industryType, $industrySubType) { 
 		if ($industrySubType !== '') {
 			$query = "SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE type = '" . $industrySubType .
 					"' AND parent = " .
 					" (SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE type = '" . $industryType . "' AND parent is NULL)";
-			$this->db->query($query);
+			$this->db->query($query); 
 			if ($this->db->num_rows() > 0) {
 				$resultSubType = $this->db->fetch(0);
 				$this->db->query("SELECT * FROM " . TB_PRODUCT2INDUSTRY_TYPE . " WHERE product_id = " . $productID . " AND industry_type_id = " . $resultSubType->id);
@@ -1174,14 +1174,14 @@ class Product extends ProductProperties {
 			} else {
 				//create new Type or SubType
 				$query = "SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE type = '" . $industryType . "' AND parent is NULL";
-				$this->db->query($query);
+				$this->db->query($query); 
 				//$resultType = $this->db->fetch(0);
 				if ($this->db->num_rows() > 0) {
-					$industryTypeId = $this->db->fetch(0);
+					$industryTypeId = $this->db->fetch(0)->id;
 
 					$industryTypeClass = new IndustryType($this->db);
 					$industryTypeClass->type = $industrySubType;
-					$industryTypeClass->parent = $industryTypeId;
+					$industryTypeClass->parent = $industryTypeId; 
 					$resultID = $industryTypeClass->add();
 					// set product to new industry type(sub type)
 					$industryTypeClass = new IndustryType($this->db, $resultID);
