@@ -395,6 +395,19 @@
 					</div>
 				</td>
 			</tr>
+            
+            <tr height="10px">
+				<td class="border_users_l border_users_b">
+						Features:
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style='display:inline; float:left;'>
+                        {foreach from=$data->getFeaturesOptions() item=features_id key=features_name}
+                            &nbsp;<input type="checkbox" name="features[]" value="{$features_id}" {if in_array($features_name, $data->getFeaturesName())}checked{/if}/> {$features_name|escape}
+                        {/foreach}
+					</div>
+				</td>
+			</tr>
 			
 			<tr>
              	 <td height="20" class="users_u_bottom">

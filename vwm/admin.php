@@ -80,7 +80,8 @@ try {
 			$action = 'main';
 		}
 
-
+        VOCApp::get_instance()->setUser($user);
+        
 		$smarty->assign("accessname", $xnyo->user['username']);
 
 		if (isset($_GET['category']) || isset($_POST['itemID'])) {

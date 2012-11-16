@@ -1,0 +1,1 @@
+ALTER TABLE  `contacts` ADD  `features` VARCHAR( 255 ) NOT NULL
