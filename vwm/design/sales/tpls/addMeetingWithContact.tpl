@@ -30,7 +30,11 @@
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style='display:inline; float:left;'>
 						{if $violationList|@count == 0}
-							{assign var="meetingDate" value=$meeting->getMeetingDate(true)}
+							{if $request.action != 'add'}
+								{assign var="meetingDate" value=$meeting->getMeetingDate(true)}
+							{else}
+								{assign var="meetingDate" value=$meeting->getMeetingDate()}
+							{/if}
 						{else}
 							{assign var="meetingDate" value=$meeting->getMeetingDate()}
 						{/if}
