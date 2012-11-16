@@ -87,7 +87,7 @@ class SalesContactsManager {
 	public function getSalesContact($contactID, $creater_id = null) {
 		$query = "SELECT c.* from " . TB_CONTACTS . " c ";
 		//$query .= ", ct.type_id  LEFT JOIN contacts2type ct ON c.id = ct.contact_id	";
-		$query .= " WHERE c.id = $contactID ";
+		$query .= " WHERE c.id = $contactID "; 
 		/* 	if(isset($creater_id)) {
 		  $query .= " AND creater_id = $creater_id";
 		  } */
@@ -100,7 +100,7 @@ class SalesContactsManager {
 		$arr = $this->db->fetch_all_array();
 		$contactsArr = $arr[0];
 
-		$contact = new SalesContact($this->db, $contactsArr);
+		$contact = new SalesContact($this->db, $contactsArr); 
 		$types = $this->getSalesContactType($contactID);
 		foreach ($types as $type) {
 			$tmp[] = $type;
@@ -151,35 +151,34 @@ class SalesContactsManager {
 		if (!isset($state_id)) {
 			$state_id = " NULL ";
 		}
-
-
-
+        
 		$query = "UPDATE " . TB_CONTACTS . " SET
-					company = '" . mysql_real_escape_string($c->company) . "',
-					contact = '" . mysql_real_escape_string($c->contact) . "',
-					phone 	= '" . mysql_real_escape_string($c->phone) . "',
-					fax		= '" . mysql_real_escape_string($c->fax) . "',
-					email	= '" . mysql_real_escape_string($c->email) . "',
-					website = '" . mysql_real_escape_string($c->website) . "',
-					title	= '" . mysql_real_escape_string($c->title) . "',
-					government_agencies = '" . mysql_real_escape_string($c->government_agencies) . "',
-					affiliations	= '" . mysql_real_escape_string($c->affiliations) . "',
-					industry		= '" . mysql_real_escape_string($c->industry) . "',
-					comments		= '" . mysql_real_escape_string($c->comments) . "',
-					state			= '" . mysql_real_escape_string($c->state) . "',
-					city			= '" . mysql_real_escape_string($c->city) . "',
-					zip_code		= '" . mysql_real_escape_string($c->zip_code) . "',
-					country_id		= '" . mysql_real_escape_string($c->country_id) . "',
-					state_id		= $state_id,
-					mail			= '" . mysql_real_escape_string($c->mail) . "',
-					cellphone		= '" . mysql_real_escape_string($c->cellphone) . "',
-					acc_number		= '" . mysql_real_escape_string($c->acc_number) . "',
-					paint_supplier		= '" . mysql_real_escape_string($c->paint_supplier) . "',
-					paint_system		= '" . mysql_real_escape_string($c->paint_system) . "',
-					jobber		= '" . mysql_real_escape_string($c->jobber) . "',
-					creater_id		= '" . mysql_real_escape_string($c->creater_id) . "',
-					shop_type = {$this->db->sqltext($c->shop_type)}
-					WHERE id = " . mysql_real_escape_string($c->id) . "";
+					company = '{$this->db->sqltext($c->company)}',
+					contact = '{$this->db->sqltext($c->contact)}',
+					phone 	= '{$this->db->sqltext($c->phone)}',
+					fax		= '{$this->db->sqltext($c->fax)}',
+					email	= '{$this->db->sqltext($c->email)}',
+					website = '{$this->db->sqltext($c->website)}',
+					title	= '{$this->db->sqltext($c->title)}',
+					government_agencies = '{$this->db->sqltext($c->government_agencies)}',
+					affiliations	= '{$this->db->sqltext($c->affiliations)}',
+					industry		= '{$this->db->sqltext($c->industry)}',
+					comments		= '{$this->db->sqltext($c->comments)}',
+					state			= '{$this->db->sqltext($c->state)}',
+					city			= '{$this->db->sqltext($c->city)}',
+					zip_code		= '{$this->db->sqltext($c->zip_code)}',
+					country_id		= '{$this->db->sqltext($c->country_id)}',
+					state_id		= {$this->db->sqltext($state_id)},
+					mail			= '{$this->db->sqltext($c->mail)}',
+					cellphone		= '{$this->db->sqltext($c->cellphone)}',
+					acc_number		= '{$this->db->sqltext($c->acc_number)}',
+					paint_supplier		= '{$this->db->sqltext($c->paint_supplier)}',
+					paint_system		= '{$this->db->sqltext($c->paint_system)}',
+					jobber		= '{$this->db->sqltext($c->jobber)}',
+					creater_id		= '{$this->db->sqltext($c->creater_id)}',
+					shop_type = {$this->db->sqltext($c->shop_type)},
+                    features = '{$this->db->sqltext($c->features)}'    
+					WHERE id = " . mysql_real_escape_string($c->id) . ""; 
 
 		$this->db->query($query);
 
@@ -203,10 +202,34 @@ class SalesContactsManager {
 			}
 
 
-			$query = "INSERT INTO " . TB_CONTACTS . " (company,contact,phone,fax,email,website,title,government_agencies,affiliations,industry,comments,state,city,zip_code,creater_id,acc_number,paint_supplier,paint_system,jobber, shop_type, country_id,state_id,mail,cellphone,type) VALUES (
-						'" . mysql_real_escape_string($c->company) . "', '" . mysql_real_escape_string($c->contact) . "', '" . mysql_real_escape_string($c->phone) . "', '" . mysql_real_escape_string($c->fax) . "', '" . mysql_real_escape_string($c->email) . "','" . mysql_real_escape_string($c->website) . "', '" . mysql_real_escape_string($c->title) . "', '" . mysql_real_escape_string($c->government_agencies) . "',
-						'" . mysql_real_escape_string($c->affiliations) . "','" . mysql_real_escape_string($c->industry) . "','" . mysql_real_escape_string($c->comments) . "','" . mysql_real_escape_string($c->state) . "','" . mysql_real_escape_string($c->city) . "','" . mysql_real_escape_string($c->zip_code) . "','" . mysql_real_escape_string($c->creater_id) . "','" . mysql_real_escape_string($c->acc_number) . "','" . mysql_real_escape_string($c->paint_supplier) . "','" . mysql_real_escape_string($c->paint_system) . "','" . mysql_real_escape_string($c->jobber) . "',
-						{$this->db->sqltext($c->shop_type)}
+			$query = "INSERT INTO " . TB_CONTACTS . " " .
+                     "(company, contact, phone, fax, email, website, title, " .
+                     "government_agencies, affiliations, industry, comments, " .
+                     "state, city, zip_code, creater_id, acc_number, " .
+                     "paint_supplier, paint_system, jobber, shop_type, " .
+                     "features, country_id, state_id, mail, cellphone, type) " .
+                     "VALUES (" .
+						"'{$this->db->sqltext($c->company)}', " .
+                        "'{$this->db->sqltext($c->contact)}', " .
+                        "'{$this->db->sqltext($c->phone)}', " .
+                        "'{$this->db->sqltext($c->fax)}', " .
+                        "'{$this->db->sqltext($c->email)}', " .
+                        "'{$this->db->sqltext($c->website)}', " .
+                        "'{$this->db->sqltext($c->title)}', " .
+                        "'{$this->db->sqltext($c->government_agencies)}', " .
+						"'{$this->db->sqltext($c->affiliations)}', " .
+                        "'{$this->db->sqltext($c->industry)}', " .
+                        "'{$this->db->sqltext($c->comments)}', " .
+                        "'{$this->db->sqltext($c->state)}', " .
+                        "'{$this->db->sqltext($c->city)}', " .
+                        "'{$this->db->sqltext($c->zip_code)}', " .
+                        "'{$this->db->sqltext($c->creater_id)}', " .
+                        "'{$this->db->sqltext($c->acc_number)}', " .
+                        "'{$this->db->sqltext($c->paint_supplier)}', " .
+                        "'{$this->db->sqltext($c->paint_system)}', " .
+                        "'{$this->db->sqltext($c->jobber)}', " .
+						"{$this->db->sqltext($c->shop_type)}, " .
+                        "'{$this->db->sqltext($c->features)}'        
 						";			
 			/**
 			  PHP isset function will return every time false on __get magic method =(
@@ -218,7 +241,7 @@ class SalesContactsManager {
 			$query .= isset($state_id) ? " , " . $c->state_id : " , NULL ";
 
 
-			$query .= " , '" . mysql_real_escape_string($c->mail) . "', '" . mysql_real_escape_string($c->cellphone) . "' , '{$typeID}'";
+			$query .= " , '{$this->db->sqltext($c->mail)}', '{$this->db->sqltext($c->cellphone)}' , '{$typeID}'";
 
 
 			$query .= " )";

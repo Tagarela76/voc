@@ -131,7 +131,9 @@ class CAContacts extends Controller {
 		
 		$manager = new SalesContactsManager($this->db);
 		$contact = $manager->getSalesContact($this->getFromRequest('id'));
-
+        $conatactPreferedFeatures = $contact->getFeaturesName();       
+        $conatactPreferedFeaturesFormat = implode(",", $conatactPreferedFeatures);
+        $this->smarty->assign('conatactPreferedFeatures', $conatactPreferedFeaturesFormat);
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -286,7 +288,10 @@ class CAContacts extends Controller {
 				$contact->unsafe_set_value($key,$value);
 			}
 		} 
-		
+		$features = $form["features"];
+        $features = implode(",", $features);
+        $contact->set_features($features);
+        
 		if(empty($contact->errors)) {
 			$contact->erorrs = false;
 		}		

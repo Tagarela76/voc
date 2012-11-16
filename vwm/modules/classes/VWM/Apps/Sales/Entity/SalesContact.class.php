@@ -46,8 +46,15 @@ class SalesContact {
 
 	public $errors;
 
+    private $features; //services wich used by gyant cliens
+    
 	const SHOP_SINLGE = 0;
 	const SHOP_MULTIPLE = 1;
+    
+    const VOC_FEATURE = 0;
+    const NOX_FEATURE = 1;
+    const IIPP_PLAN_FEATURE = 2;
+    const HMMP_FEATURE = 3;
 
 	/**
 	 * array of meetings
@@ -121,7 +128,11 @@ class SalesContact {
 	/**
 	 * SETTERS
 	 */
-
+    
+    public function set_features($features) {
+        $this->features = $features;
+    }
+    
 	public function unsafe_set_value($property,$value) {
 		$this->$property = $value;
 	}
@@ -536,5 +547,38 @@ class SalesContact {
 				return $key;
 			}
 		}
+	}
+    
+    /**
+     * Return voc system's features 
+     * @return array
+     */
+    public function getFeaturesOptions() {
+		return array(
+			'VOC' => self::VOC_FEATURE,
+			'NOx' => self::NOX_FEATURE,
+            'IIPP plan' => self::IIPP_PLAN_FEATURE,
+            'HMMP' => self::HMMP_FEATURE
+		);
+	}
+    
+    /**
+     * Return features wich used by customers
+     * @return boolean|array
+     */
+    public function getFeaturesName() {     
+        if (!is_null($this->features) && $this->features != '') {
+           $options = $this->getFeaturesOptions();
+            $features = explode(",", $this->features);
+            $featuresName = array();
+            foreach ($options as $key => $option) {
+                if (in_array($option, $features)) {
+                    $featuresName[] = $key;
+                }
+            }
+            return $featuresName; 
+        } else {
+            return false;
+        }
 	}
 }

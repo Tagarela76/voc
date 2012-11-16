@@ -141,6 +141,9 @@ class CSContacts extends Controller {
 
 		$this->smarty->assign("parent",$this->parent_category);
 		$this->smarty->assign("request",$this->getFromRequest());
+        $conatactPreferedFeatures = $contact->getFeaturesName();        
+        $conatactPreferedFeaturesFormat = implode(",", $conatactPreferedFeatures);
+        $this->smarty->assign('conatactPreferedFeatures', $conatactPreferedFeaturesFormat);
 		$this->smarty->assign('contact', $contact);
 		$this->smarty->assign('tpl', 'tpls/viewContact.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -200,7 +203,7 @@ class CSContacts extends Controller {
 
 		if ($this->getFromPost('save') == 'Save') {
 			
-			$contact = $this->createContactByForm($_POST);
+			$contact = $this->createContactByForm($_POST);            
 			
 			$sub = $this->getFromRequest("subBookmark");
 			
@@ -287,7 +290,10 @@ class CSContacts extends Controller {
 			}catch(Exception $e) {				
 				$contact->unsafe_set_value($key,$value);
 			}
-		} 
+		}
+        $features = $form["features"];
+        $features = implode(",", $features);
+        $contact->set_features($features);
 		
 		if(empty($contact->errors)) {
 			$contact->erorrs = false;
