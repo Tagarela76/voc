@@ -10,10 +10,15 @@ class CNox extends Controller {
 	}
 
 	protected function actionConfirmDelete() {
-		$NOx = new NoxEmissionManager($this->db);
+		$NOx = new NoxEmissionManager($this->db);		
 		foreach ($this->itemID as $id) {
-			$NOxDetails = $NOx->getNoxEmissionDetails($id);
-			$NOx->deleteNoxEmissionsByID($id);
+			if ($this->getFromPost('tab') == 'burner') {
+				$NOx->deleteNoxBurner($id);
+			} elseif ($this->getFromPost('tab') == 'nox') {
+				$NOx->deleteNoxEmissionsByID($id);
+			} else {
+				throw new Exception('404');
+			}
 		}
 
 		if ($this->successDeleteInventories) {
@@ -29,14 +34,22 @@ class CNox extends Controller {
 	}
 
 	protected function actionDeleteItem() {
-		$req_id=$this->getFromRequest('id');
+		$req_id = $this->getFromRequest('id');
 		!is_array($req_id) ? $req_id = array($req_id) : "";
 		$NOx = new NoxEmissionManager($this->db);
 		if (!is_null($this->getFromRequest('id'))) {
-		foreach ($req_id as $nox_id) {
-				$NOxDetails = $NOx->getNoxEmissionDetails($nox_id);
-				$delete["id"] =	$NOxDetails["nox_id"];
-				$delete["description"] = $NOxDetails["description"];
+			foreach ($req_id as $id) {				
+				if($this->getFromRequest('tab') == 'burner') {
+					$burnerDetails = $NOx->getBurnerDetail($id);					
+					$delete["id"] = $burnerDetails["burner_id"];
+					$delete["description"] = $burnerDetails["model"];
+				} elseif($this->getFromRequest('tab') == 'nox') {
+					$NOxDetails = $NOx->getNoxEmissionDetails($id);
+					$delete["id"] = $NOxDetails["nox_id"];
+					$delete["description"] = $NOxDetails["description"];					
+				} else {
+					throw new Exception('404');
+				}
 				$itemForDelete[] = $delete;
 			}
 		}
@@ -47,22 +60,22 @@ class CNox extends Controller {
 		$departmentID = $this->getFromRequest('departmentID');
 		$facilityID = $this->getFromRequest('facilityID');
 		if ($departmentID) {
-			$cancelUrl = "?action=browseCategory&category=department&id=".$this->getFromRequest('departmentID')."&bookmark=nox&tab=nox";
+			$cancelUrl = "?action=browseCategory&category=department&id=" . $this->getFromRequest('departmentID') . "&bookmark=nox&tab=nox";
 			$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
 			$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
 			$this->setPermissionsNew('viewData');
-			$this->smarty->assign("action", "?action=confirmDelete&departmentID=".$departmentID);
+			$this->smarty->assign("action", "?action=confirmDelete&departmentID=" . $departmentID);
 		} else if ($facilityID) {
-			$cancelUrl = "?action=browseCategory&category=facility&id=".$this->getFromRequest('facilityID')."&bookmark=nox&tab=nox";
+			$cancelUrl = "?action=browseCategory&category=facility&id=" . $this->getFromRequest('facilityID') . "&bookmark=nox&tab=nox";
 			$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'));
 			$this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
 			$this->setPermissionsNew('viewData');
-			$this->smarty->assign("action", "?action=confirmDelete&facilityID=".$facilityID);
+			$this->smarty->assign("action", "?action=confirmDelete&facilityID=" . $facilityID);
 		}
 
 		$this->smarty->assign("cancelUrl", $cancelUrl);
 
-		$this->finalDeleteItemCommon($itemForDelete,$linkedNotify,$count,$info);
+		$this->finalDeleteItemCommon($itemForDelete, $linkedNotify, $count, $info);
 	}
 
 	protected function actionViewDetails() {
