@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `company_level_label` (
   `name4display` varchar(120) NOT NULL,
   `default_label_text` varchar(120) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `industry_type2label` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `industry_type2label` (
   `industry_type_id` int(11) NOT NULL,
   `last_update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 ALTER TABLE `industry_type2label` ADD FOREIGN KEY ( `company_level_label_id` ) REFERENCES `company_level_label` (
 `id`
@@ -25,7 +25,7 @@ ALTER TABLE `industry_type2label` ADD FOREIGN KEY ( `industry_type_id` ) REFEREN
 `id`
 ) ON DELETE CASCADE ON UPDATE RESTRICT ;
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -35,7 +35,7 @@ VALUES (
 NULL ,  'repair_order',  'Repair Order Label',  'Repair Order'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -45,7 +45,7 @@ VALUES (
 NULL ,  'add_job',  'Add Job Label',  'Add Job'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -55,7 +55,7 @@ VALUES (
 NULL ,  'product_name',  'Product Name Label',  'Product Name'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -65,7 +65,7 @@ VALUES (
 NULL ,  'r_o_description',  'R/O Description Label',  'R/O Description'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -75,7 +75,7 @@ VALUES (
 NULL ,  'description',  'Description Label',  'Description'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -85,7 +85,7 @@ VALUES (
 NULL ,  'contact',  'Contact Label',  'Contact'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -95,7 +95,7 @@ VALUES (
 NULL ,  'r_o_vin_number',  'R/O VIN number Label',  'R/O VIN number'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -105,7 +105,7 @@ VALUES (
 NULL ,  'voc',  'VOC Label',  'VOC'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,
@@ -115,7 +115,7 @@ VALUES (
 NULL ,  'creation_date',  'Creation Date Label',  'Creation Date'
 );
 
-INSERT INTO  `voc`.`company_level_label` (
+INSERT INTO  `company_level_label` (
 `id` ,
 `label_id` ,
 `name4display` ,

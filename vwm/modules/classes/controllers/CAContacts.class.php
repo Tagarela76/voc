@@ -109,11 +109,23 @@ class CAContacts extends Controller {
 			
 			
 		}
-		
-
-
-
-
+        $contactPreferedFeatures = array();
+        $contact = new SalesContact($this->db);
+        $contactFeaturesOptions = $contact->getFeaturesOptions(); 
+        foreach ($contactsList as $contactItem) {
+            $contactFeatures = array();
+            $conatactPreferedFeatures = $contactItem->getFeaturesName(); 
+            if ($conatactPreferedFeatures) { 
+                foreach($contactFeaturesOptions as $key => $featuresOptions) {
+                    if (in_array($key, $conatactPreferedFeatures)) {
+                        $contactFeatures[$key] = $featuresOptions;
+                    }
+                }
+            }
+            $contactPreferedFeatures[] = $contactFeatures; 
+        }
+        $this->smarty->assign('conatactPreferedFeatures', $contactPreferedFeatures);
+        
 		$page = $this->getFromRequest("page");
 		$this->smarty->assign('page', $page);
 		//	set js scripts

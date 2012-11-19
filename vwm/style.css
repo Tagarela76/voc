@@ -3822,3 +3822,31 @@ div:hover.category_folder_hover{cursor:pointer;}
 	float: right;
 	margin-right: 300px;
 }
+
+.features {
+    font-size: 11.844px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #99999;
+    padding: 2px 4px 2px;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
+}
+
+.features_0 {
+    background-color: #26CC17;
+}
+.features_1 {
+    background-color: #294887;
+}
+.features_2 {
+    background-color: #00ccff;
+}
+.features_3 {
+    background-color: #A38AC8;
+}
