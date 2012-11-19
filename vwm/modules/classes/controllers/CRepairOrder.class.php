@@ -1,5 +1,6 @@
 <?php
 use VWM\Label\CompanyLevelLabel;
+use VWM\Label\CompanyLabelManager;
 
 class CRepairOrder extends Controller {
 
@@ -27,10 +28,25 @@ class CRepairOrder extends Controller {
 			$mixList[] = $mix;
 		}
 		$facility = new Facility($this->db);
+        $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
-		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
-		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+        $companyIndustryTypes = $company->getIndustryTypes($companyId);
+        // we need only one industry Type. get first item
+        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
+
+        if (!$repairOrderLabelValue) {
+            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
+        } else {
+            // get deafult settings
+            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
+        }
+            
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
@@ -117,10 +133,24 @@ class CRepairOrder extends Controller {
         $this->setPermissionsNew('viewFacility');
 
 		$facility = new Facility($this->db);
+        $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
-		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
-		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+        $companyIndustryTypes = $company->getIndustryTypes($companyId);
+        // we need only one industry Type. get first item
+        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
+
+        if (!$repairOrderLabelValue) {
+            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
+        } else {
+            // get deafult settings
+            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
+        }
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
         //	set js scripts
@@ -213,10 +243,24 @@ class CRepairOrder extends Controller {
         $this->setPermissionsNew('viewRepairOrder');
 
 		$facility = new Facility($this->db);
+        $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
-		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
-		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+        $companyIndustryTypes = $company->getIndustryTypes($companyId);
+        // we need only one industry Type. get first item
+        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
+
+        if (!$repairOrderLabelValue) {
+            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
+        } else {
+            // get deafult settings
+            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
+        }
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		
         //	set js scripts
@@ -248,10 +292,24 @@ class CRepairOrder extends Controller {
 		}
 
 		$facility = new Facility($this->db);
+        $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($repairOrder->facility_id);
 		$companyId = $facilityDetails["company_id"];
-		$labelCompanySystem = new CompanyLevelLabel($this->db, $companyId);
-		$repairOrderLabel = $labelCompanySystem->getRepairOrderLabel();
+        $companyIndustryTypes = $company->getIndustryTypes($companyId);
+        // we need only one industry Type. get first item
+        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
+
+        if (!$repairOrderLabelValue) {
+            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
+        } else {
+            // get deafult settings
+            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
+        }
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
