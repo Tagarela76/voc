@@ -304,6 +304,11 @@ define ('TB_CALENDAR', 'calendar');
 define ('TB_BROWSE_CATEGORY_ENTITY', 'browse_category_entity');
 define ('TB_DISPLAY_COLUMNS_SETTINGS', 'display_columns_settings');
 
+define ('TB_GOM', 'gom');
+
+define ('TB_COMPANY_LEVEL_LABEL', 'company_level_label');
+define ('TB_INDUSTRY_TYPE2LABEL', 'industry_type2label');
+
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');
 define ('SQL_DELIMITER',';');
@@ -417,10 +422,5 @@ define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFil
 
 define ('MYSQL_DATE_FORMAT', 'Y-m-d');
 define ('MYSQL_DATETIME_FORMAT', 'Y-m-d H:i:s');
-
-define ('TB_GOM', 'gom');
-
-define ('TB_COMPANY_LEVEL_LABEL', 'company_level_label');
-define ('TB_INDUSTRY_TYPE2LABEL', 'industry_type2label');
 
 ?>
