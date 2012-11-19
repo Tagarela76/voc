@@ -103,7 +103,7 @@
 			<td class="border_users_l border_users_b">
 				<input type="checkbox"  value="{$contacts[i]->id}" name="item_{$smarty.section.i.index}" onclick="return CheckCB(this);">
 			</td>
-			<td class="border_users_b border_users_l">               
+			<td class="border_users_b border_users_l">   &nbsp;            
                 {foreach from=$conatactPreferedFeatures[i] item=featuresStyle key=features}
                     <div style="margin-top: 5px; margin-bottom: 5px;">
                         <span class="features features_{$featuresStyle}">{$features}</span>
