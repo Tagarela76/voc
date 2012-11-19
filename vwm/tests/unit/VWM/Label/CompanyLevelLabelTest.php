@@ -8,9 +8,9 @@ use VWM\Framework\Test\DbTestCase;
 class CompanyLevelLabelTest extends DbTestCase {
 	
 	public $fixtures = array(
-		TB_INDUSTRY_TYPE,
         TB_COMPANY_LEVEL_LABEL,
-		TB_COMPANY2INDUSTRY_TYPE
+        TB_INDUSTRY_TYPE,
+        TB_INDUSTRY_TYPE2LABEL
 	);
 
 
@@ -25,6 +25,7 @@ class CompanyLevelLabelTest extends DbTestCase {
 		$industryType = 1;
 		$labelText = "Work Order Label";
 		$labelSystem = new CompanyLabelManager($this->db, $industryType);
+
         $labelCompanySystem = $labelSystem->getLabel("repair_order");
 		$labelCompanySystem->setLabelText($labelText);
         $labelCompanySystem->save();
