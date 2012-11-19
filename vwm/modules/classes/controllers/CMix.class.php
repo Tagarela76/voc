@@ -2,6 +2,7 @@
 
 use VWM\Framework\Cache\DbCacheDependency;
 use VWM\Label\CompanyLevelLabel;
+use VWM\Label\CompanyLabelManager;
 use VWM\ManageColumns\BrowseCategoryEntity;
 use VWM\ManageColumns\DisplayColumnsSettings;
 
@@ -589,6 +590,10 @@ class CMix extends Controller {
 				// get deafult settings
 				$mixColumn4Display = $mixColumnDefault;
 			}
+            // for displaying voc unit type
+			$unittype = new Unittype($this->db);
+			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
+            
 			$mixFormatObjList = array();
 			foreach ($mixList as $mix) {
 				// create new mix object
@@ -601,10 +606,11 @@ class CMix extends Controller {
 				}
 				$repairOrder = $mix->getRepairOrder();
 				$widths = array();
-
+                $labels = array();
 				if (in_array($mixColumnDefault[0], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[0]"] = $productName; 
 					$widths[] = "12%";
+                    $labels[] = "product_name";
 				}
 				if (in_array($mixColumnDefault[1], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[1]"] = (!$mix->hasChild)? 
@@ -612,30 +618,42 @@ class CMix extends Controller {
 						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
 							title='Add child job'>add</a> &nbsp" : "";
 					$widths[] = "10%";
+                    $labels[] = "add_job";
 				}
 				if (in_array($mixColumnDefault[2], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[2]"] = $mix->description;
 					$widths[] = "15%";
+                    $labels[] = "description";
 				}
 				if (in_array($mixColumnDefault[3], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[3]"] = $repairOrder->description;
 					$widths[] = "15%";
+                    $labels[] = "r_o_description";
 				}
 				if (in_array($mixColumnDefault[4], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[4]"] = $repairOrder->customer_name;
 					$widths[] = "13%";
+                    $labels[] = "contact";
 				}
 				if (in_array($mixColumnDefault[5], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[5]"] = $repairOrder->vin;
 					$widths[] = "20%";
+                    $labels[] = "r_o_vin_number";
 				}
 				if (in_array($mixColumnDefault[6], $mixColumn4Display)) {
 					$mixFormatObj["$mixColumnDefault[6]"] = $mix->voc;
 					$widths[] = "5%";
+                    $labels[] = "voc";
 				}
-				if (in_array($mixColumnDefault[7], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[7]"] = $mix->creation_time; 
+                if (in_array($mixColumnDefault[7], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[7]"] = $vocUnitType; 
 					$widths[] = "15%";
+                    $labels[] = "unit_type";
+				}
+				if (in_array($mixColumnDefault[8], $mixColumn4Display)) {
+					$mixFormatObj["$mixColumnDefault[8]"] = $mix->creation_time; 
+					$widths[] = "15%";
+                    $labels[] = "creation_date";
 				}
 				$mixObjList["mixObject"] = $mixFormatObj;
 				$mixObjList["valid"] = $mix->valid; 
@@ -643,16 +661,18 @@ class CMix extends Controller {
 				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
 				$mixFormatObjList[] = $mixObjList;
 			}
+            $mixColumn4DisplayFormat = array();
+            
+            $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+            foreach ($labels as $label) {
+                $mixColumn4DisplayFormat[] = $companyLabelManager->getLabel($label)->getLabelText();
+            }
+            
 			$this->smarty->assign('widths', $widths);
 			$this->smarty->assign('columnCount', count($mixColumn4Display));
-			$this->smarty->assign('mixColumn4Display', $mixColumn4Display);
+			$this->smarty->assign('mixColumn4Display', $mixColumn4DisplayFormat);
 			$this->smarty->assign('mixFormatObjList', $mixFormatObjList);
 			
-			//var_dump($widths); die();
-		//	 die('o');
-			// for displaying voc unit type
-			$unittype = new Unittype($this->db);
-			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
 			$this->smarty->assign('vocUnitType', $vocUnitType);
 			$this->smarty->assign('childCategoryItems', $mixList);
 			//set js scripts
@@ -1551,9 +1571,24 @@ class CMix extends Controller {
 		// $this->getLibraryInjection()->injectToolTip();
 		
 		// Repair order or Working Order
-		$companyLevelLabel = new CompanyLevelLabel($this->db, $companyID);
-		$this->smarty->assign('repairOrderLabel', 
-				$companyLevelLabel->getRepairOrderLabel());
+
+        $companyIndustryTypes = $company->getIndustryTypes($companyID);
+        // we need only one industry Type. get first item
+        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
+
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
+        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
+
+        if (!$repairOrderLabelValue) {
+            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
+        } else {
+            // get deafult settings
+            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
+        }
+            
+		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		
 		// for displaying voc unit type
 		$unittype = new Unittype($this->db);

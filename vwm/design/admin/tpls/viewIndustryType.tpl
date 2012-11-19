@@ -103,16 +103,90 @@
 				<span >Label Text</span>
 			</td>
 		</tr>
-		{foreach from=$industryLabelList item=industryLabel}
-			<tr>
-				<td class="border_users_l border_users_b" height="20">
-					{$industryLabel.label_id}
-				</td>
-				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$industryLabel.label_text}</div>
-				</td>
-			</tr>
-		{/foreach}
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelRepairOrderDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$repairOrderLabel}</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelProductNameDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$productNameLabel}</div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelAddJobDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$addJobLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelDescriptionDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$descriptionLabel}</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelRODescriptionDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$roDescriptionLabel}</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelContactDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$contactLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelROVinNumberDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$roVinNumberLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelVocDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$vocLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelCreationDateDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$creationDateLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelUnitTypeDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$unitTypeLabel}</div>
+            </td>
+        </tr>
 		<tr>
 			<td height="20" class="users_u_bottom">
 				&nbsp;
