@@ -358,7 +358,13 @@ class bulkUploader {
 				$this->productObj->assignProduct2WasteClass($productID, $wasteClassID);
 			}
 		}
+        //	set product to chemical class link
+        $this->hazardousObj->setProduct2ChemicalClasses($productID, $chemicalClasses);
 
+        //	component part
+        for ($i=0;$i<count($product['component']);$i++){
+            $actionLog .= $this->addComponentToProduct($product['component'][$i],$productID,$product['productID']);
+        }
 		//updating industy type and subtype
 		$this->productObj->unassignProductFromType($productID);
 		foreach ($product['industryType'] as $industryType){
@@ -407,32 +413,40 @@ class bulkUploader {
 	private function addComponentToProduct($component,$productID,$product) {
 		//component
 		$query = "SELECT component_id " .
-			"FROM component " .
-			"WHERE cas = '" .$component['caseNumber'] . "' " .
-			"AND description = '" . $component['description'] . "'";
+			     "FROM component " .
+			     "WHERE cas = '{$this->db->sqltext($component['caseNumber'])}' " .
+			     "AND description = '{$this->db->sqltext($component['description'])}'";
 		$this->db->query($query);
 		$r=$this->db->fetch(0);
 
-		if (empty($r->component_id)){//adding component
-			$actionLog .= "				Adding component '".$component['caseNumber']."','".$component['description'] ."'\n";
-			$this->db->query("INSERT INTO component (einecs_elincs, substance_symbol, cas, description) VALUES (" .
-					"'".$component['einecsElincs']."', " .
-					"'".$component['substanceSymbol']."', " .
-					"'".$component['caseNumber']."', " .
-					"'".$component['description']."')");
+		if (empty($r->component_id)){
+        //adding component
+			$actionLog .= "	Adding component '{$component['caseNumber']}','{$component['description']}'\n";
+            $query = "INSERT INTO component (" .
+                     "einecs_elincs, substance_symbol, " .
+                     "cas, description) VALUES (" .
+                     "'{$this->db->sqltext($component['einecsElincs'])}', " .
+                     "'{$this->db->sqltext($component['substanceSymbol'])}', " .
+                     "'{$this->db->sqltext($component['caseNumber'])}', " .
+                     "'{$this->db->sqltext($component['description'])}')";
+                 
+			$this->db->query($query);
 
 			$query = "SELECT component_id " .
-				"FROM component " .
-				"WHERE cas = '" .$component['caseNumber'] . "' " .
-				"AND description = '" . $component['description'] . "'";
+				     "FROM component " .
+				     "WHERE cas = '{$this->db->sqltext($component['caseNumber'])}' " .
+				     "AND description = '{$this->db->sqltext($component['description'])}'";
 			$this->db->query($query);
 			$r=$this->db->fetch(0);
-
+  
 			//	substance rules
 			if ( !empty($component['substanceR'])) {
 				$substanceRs = $this->processSubstanceR($component['substanceR']);
 				foreach ($substanceRs as $substanceR) {
-					$query = "INSERT INTO component2rule (component_id, rule_id) VALUES (".$r->component_id.", ".$substanceR.")";
+					$query = "INSERT INTO component2rule (" .
+                             "component_id, rule_id) VALUES (" . 
+                             "{$this->db->sqltext($r->component_id)}, " .
+                             "{$this->db->sqltext($substanceR)})";
 					$this->db->exec($query);
 				}
 			}
@@ -441,13 +455,22 @@ class bulkUploader {
 
 		//substrate
 		if ( !empty($component['substrate']) ){
-			$this->db->query("SELECT substrate_id FROM substrate WHERE substrate_desc = '".$component['substrate']."'");
+            $query = "SELECT substrate_id " .
+                     "FROM substrate " .
+                     "WHERE substrate_desc = '{$this->db->sqltext($component['substrate'])}'";
+			$this->db->query($query);
 			$r=$this->db->fetch(0);
 			if (empty($r->substrate_id)) {
-				$actionLog .= "				Adding substrate '" . $component['substrate']."'\n";
-				$this->db->query("INSERT INTO substrate (substrate_desc) VALUES ('".$component['substrate']."')");
-
-				$this->db->query("SELECT substrate_id FROM substrate WHERE substrate_desc = '".$component['substrate']."'");
+				$actionLog .= "Adding substrate '{$component['substrate']}'\n";
+                $query = "INSERT INTO substrate (" .
+                          "substrate_desc) VALUES (" .
+                          "'{$this->db->sqltext($component['substrate'])}')";
+				$this->db->query($query);
+                
+                $query = "SELECT substrate_id " .
+                         "FROM substrate " .
+                         "WHERE substrate_desc = '{$this->db->sqltext($component['substrate'])}'";
+				$this->db->query($query);
 				$r=$this->db->fetch(0);
 			}
 			$substrateID = $r->substrate_id;
@@ -457,7 +480,12 @@ class bulkUploader {
 
 		//rule
 		if ( !empty($component['rule']) ){
-			$this->db->query("SELECT rule_id FROM rule WHERE ".$this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()]." = '".$component['rule']."'");
+            $query = "SELECT rule_id " .
+                     "FROM rule " .
+                     "WHERE {$this->db->sqltext($this->ruleObj->ruleNrMap[$this->ruleObj->getRegion()])}=" .
+                     "'{$this->db->sqltext($component['rule'])}'";
+                         
+			$this->db->query($query);
 			$r=$this->db->fetch(0);
 			if ( empty($r->rule_id) ) {
 				$r->rule_id = "NULL";
@@ -483,48 +511,56 @@ class bulkUploader {
 			$component['vocpm'] = "VOC";
 		}
 
-		//component group insertion
-
-		$query="INSERT INTO components_group (component_id, product_id, substrate_id, rule_id, mm_hg, temp, weight_from, weight_to, type) ".
-			"VALUES (" . $componentID . ", " .
-				$productID . ", " .
-				$substrateID . ", " .
-				$ruleID . ", " .
-				$component['mmhg'] . ", " .
-				$component['temp'] . ", " .
-				$component['weightFrom'] . ", " .
-				$component['weightTo'] . ", '" .
-				$component['vocpm'] . "')";
+		//component group insertion OR update
+        $query = "SELECT component_id " .
+				 "FROM components_group " .
+				 "WHERE component_id={$this->db->sqltext($componentID)} " .
+				 "AND product_id ={$this->db->sqltext($productID)}";
+			$this->db->query($query);
+			$rows=$this->db->fetch(0);
+             
+            if (!$rows) {
+                //insert
+                $query="INSERT INTO components_group (" .
+                       "component_id, product_id, " .
+                       "substrate_id, rule_id, mm_hg, " .
+                       "temp, weight_from, weight_to, type) VALUES (" . 
+                       "{$this->db->sqltext($componentID)}, " .
+                       "{$this->db->sqltext($productID)}, " .
+                       "{$this->db->sqltext($substrateID)}, " .
+                       "{$this->db->sqltext($ruleID)}, " .
+                       "{$this->db->sqltext($component['mmhg'])}, " .
+                       "{$this->db->sqltext($component['temp'])}, " .
+                       "{$this->db->sqltext($component['weightFrom'])}, " .
+                       "{$this->db->sqltext($component['weightTo'])}, " .
+                       "'{$this->db->sqltext($component['vocpm'])}')";
+                       $action = "	Adding component " .$component['caseNumber'] . " to product " .$product."\n";
+            } else {
+                // update
+                $query="UPDATE components_group 
+                        SET substrate_id={$this->db->sqltext($substrateID)}, " .
+                        "rule_id={$this->db->sqltext($ruleID)}, " . 
+                        "mm_hg={$this->db->sqltext($component['mmhg'])}, " .
+                        "temp={$this->db->sqltext($component['weightFrom'])}, " .
+                        "weight_from={$this->db->sqltext($component['weightTo'])}, " . 
+                        "weight_to={$this->db->sqltext($component['weightTo'])}, " . 
+                        "type='{$this->db->sqltext($component['vocpm'])}' ".
+                        "WHERE component_id = $componentID AND product_id=$productID";
+                        $action = "	Updating component " .$component['caseNumber'] . " for product " .$product."\n";
+            } 
 		$this->db->query($query);
 
 		if (mysql_errno()==0) {
-			//$productID = mysql_insert_id();
-			$actionLog .= "			Adding component " .$component['caseNumber'] . " to product " .$product."\n";
+			$actionLog .= $action;
 		} else {
 			//$productID = 0;
-			$actionLog .= "			Error while adding component " . $component['caseNumber'] . " to product " . $product . "\n";
+			$actionLog .= "	Error while adding component " . $component['caseNumber'] . " to product " . $product . "\n";
 		}
 
 		return $actionLog;
 	}
 
 
-
-
-	/*
-	 * return array
-  0 =>
-    array
-      'id' => string '1' (length=1)
-      'rules' =>
-        array
-          0 => string '61' (length=2)
-          1 => string '58' (length=2)
-          2 => string '135' (length=3)
-          3 => string '140' (length=3)
-          4 => string '115' (length=3)
-          5 => string '128' (length=3)
-	 */
 	private function processChemicalClass($product) {
 
 //		//$this->db->select_db(DB_NAME);
