@@ -219,6 +219,11 @@ class NoxEmissionManager {
 		$this->db->query($query);
 	}
 
+	public function deleteNoxBurner($burnerId) {
+		$sql = "DELETE FROM burner WHERE burner_id = {$this->db->sqltext($burnerId)}";
+		$this->db->exec($sql);
+	}
+
 	public function getNoxEmissionDetails($noxEmissionID) {
 		$sql = "SELECT * FROM `nox` WHERE nox_id = " . mysql_escape_string($noxEmissionID);
 		$this->db->query($sql);
