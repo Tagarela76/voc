@@ -1,6 +1,8 @@
 <?php
 
 use VWM\Framework\Model;
+use \VWM\Label\CompanyLabelManager;
+use \VWM\ManageColumns\DisplayColumnsSettings;
 
 class IndustryType extends Model {
 
@@ -39,6 +41,34 @@ class IndustryType extends Model {
      * @var string 
      */
     public $parentIndustryType;
+    
+    protected $labelManager;
+    
+    protected $displayColumnsManager;
+    
+    public function getDisplayColumnsManager() {
+        if(!$this->id) {
+			throw new \Exception('Industry Type ID should be set before calling this method');
+		}
+        if (!$this->displayColumnsManager) {
+            $displayColumnsManager = new DisplayColumnsSettings($this->db, $this->id);
+            return $displayColumnsManager;
+        } else {
+            return $this->displayColumnsManager;
+        }
+    }
+    
+    public function getLabelManager() {
+        if(!$this->id) {
+			throw new \Exception('Industry Type ID should be set before calling this method');
+		}
+        if (!$this->labelManager) {
+            $labelManager = new CompanyLabelManager($this->db, $this->id);
+            return $labelManager;
+        } else {
+            return $this->labelManager;
+        }
+    }
 
     function __construct(db $db, $id = NULL) {
 		

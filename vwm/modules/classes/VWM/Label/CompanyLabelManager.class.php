@@ -154,24 +154,26 @@ class CompanyLabelManager {
 	 * @param string $companyLevelLabelId
 	 * @return boolean|\VWM\Label\CompanyLabelManager
 	 */
-	public function getLabel($companyLevelLabelId) {
+	public function getLabel($labelId) {
 		
+        $label = new CompanyLevelLabel($this->db);
+        $companyLabelManager = new CompanyLabelManager($this->db);
 		$sql = "SELECT itl.* FROM " . TB_INDUSTRY_TYPE2LABEL . " itl " .
 			   "JOIN " . TB_COMPANY_LEVEL_LABEL . " cll " . 
 			   "ON itl.company_level_label_id= cll.id " .
-			   "WHERE cll.label_id='{$this->db->sqltext($companyLevelLabelId)}' " .
+			   "WHERE cll.label_id='{$this->db->sqltext($labelId)}' " .
 			   "AND itl.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}";  
  		$this->db->query($sql);
 		$row = $this->db->fetch(0); 
 		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$companyLabelManager = new CompanyLabelManager($this->db);
-        $companyLabelManager->setId($row->id);
-        $companyLabelManager->setCompanyLevelLabelId($row->company_level_label_id);
-        $companyLabelManager->setLabelText($row->label_text);
-        $companyLabelManager->setIndustryTypeId($row->industry_type_id);
-		
+            $companyLabelManager->setLabelText($label->getDefaultLabelName($labelId));
+            $companyLabelManager->setIndustryTypeId($this->getIndustryTypeId());
+		} else {
+            $companyLabelManager->setId($row->id);
+            $companyLabelManager->setCompanyLevelLabelId($row->company_level_label_id);
+            $companyLabelManager->setLabelText($row->label_text);
+            $companyLabelManager->setIndustryTypeId($row->industry_type_id);
+        }
 		return $companyLabelManager;
 	}
     

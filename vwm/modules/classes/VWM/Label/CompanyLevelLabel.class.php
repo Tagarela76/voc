@@ -174,6 +174,32 @@ class CompanyLevelLabel {
 	
 	}
     
+    public function getDefaultLabels() {
+        
+        return array(
+            self::LABEL_ID_REPAIR_ORDER => $this->getRepairOrderLabel()->default_label_text,
+            self::LABEL_ID_PRODUCT_NAME => $this->getProductNameLabel()->default_label_text,
+            self::LABEL_ID_ADD_JOB => $this->getAddJobLabel()->default_label_text,
+            self::LABEL_ID_DESCRIPTION => $this->getDescriptionLabel()->default_label_text,
+            self::LABEL_ID_R_O_DESCRIPTION => $this->getRODescriptionLabel()->default_label_text,
+            self::LABEL_ID_CONTACT => $this->getContactLabel()->default_label_text,
+            self::LABEL_ID_R_O_VIN_NUMBER => $this->getROVinNumberLabel()->default_label_text,
+            self::LABEL_ID_VOC => $this->getVocLabel()->default_label_text,
+            self::LABEL_ID_CREATION_DATE => $this->getCreationDateLabel()->default_label_text,
+            self::LABEL_ID_UNIT_TYPE => $this->getUnitTypeLabel()->default_label_text,
+        );
+    }
+    
+    public function getDefaultLabelName($labelId) {
+        
+        $labels = $this->getDefaultLabels();
+        foreach ($labels as $id => $label) {
+            if($labelId == $id) {
+                return $label;
+            }
+        }
+    }
+    
 }
 
 ?>
