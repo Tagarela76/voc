@@ -98,7 +98,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 					" ORDER BY nox.start_time DESC";															
 				break;
 		}
-		$noxEmissions = $this->group($query);																					
+		$noxEmissions = $this->group($query);																	
 		$this->createXML($noxEmissions, $orgInfo, $datePeriod, $fileName);					
 	}
 	
@@ -125,7 +125,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 				$burners[$noxEmission['burner_id']] = $noxManager->getBurnerDetail($noxEmission['burner_id']);
 			}
 			
-			$noxEmission['burnerDescription'] = $burners[$noxEmission['burner_id']] ['model']." >> ".$burners[$noxEmission['burner_id']] ['serial'];
+			$noxEmission['burnerDescription'] = $burners[$noxEmission['burner_id']] ['model'];
 			$departments[ $departmentNames[$noxEmission['department_id']] ] [] = $noxEmission;			
 		}			
 		return $departments;
@@ -284,7 +284,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 			);
 			$depTag->appendChild( $depIDTag );
 			
-			foreach ($noxEmissions[$depID] as $key => $noxEmission) {
+			foreach ($noxEmissions[$depID] as $key => $noxEmission) { 
 				$emissionTag = $doc->createElement('emission');
 				$depTag->appendChild($emissionTag);
 				
