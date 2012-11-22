@@ -55,7 +55,7 @@ class Company extends Model {
 			throw new \Exception('Company ID should be set before calling this method');
 		}
         if (!$this->industryType) {
-            $industryTypes = $this->getIndustryTypes();
+            $industryTypes = $this->getIndustryTypes(); 
             return $industryTypes[0];
         } else {
             return $this->industryType;
@@ -350,7 +350,9 @@ class Company extends Model {
 			   " WHERE company_id={$this->db->sqltext($this->getCompanyId())}"; 
 		$this->db->query($sql);
         if($this->db->num_rows() == 0) {
-			return false;
+			$industryType = new \IndustryType($this->db, 3); // default value (industrial)
+            $industryTypes[] = $industryType;
+            return $industryTypes;
 		}
 		$rows = $this->db->fetch_all_array();
         $industryTypes = array();
