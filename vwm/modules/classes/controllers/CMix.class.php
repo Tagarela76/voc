@@ -1562,8 +1562,8 @@ class CMix extends Controller {
 		// Repair order or Working Order
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-        $company = new VWM\Hierarchy\Company($this->db, $companyID);
-        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText(); 
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText(); 
             
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		

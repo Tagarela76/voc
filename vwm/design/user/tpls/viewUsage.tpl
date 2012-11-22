@@ -76,7 +76,7 @@
                     </tr>
 					<tr>
                         <td class="" height="20">
-                            Spent time:
+                            Spray/spent time in minutes:
                         </td>
                         <td class="">
                             <div align="left">

@@ -194,7 +194,7 @@ function createSelectUnittypeClass(id) {
 			
 			<tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">
-                   Spent Spray in minutes:  (not necessary)
+                   Spray/spent time in minutes:  (not necessary)
                 </td>
                 <td class="border_users_r border_users_b">
                     <div align="left" >
