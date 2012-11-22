@@ -59,9 +59,9 @@ class IndustryType extends Model {
     }
     
     public function getLabelManager() {
-        if(!$this->id) {
+    /*    if(!$this->id) {
 			throw new \Exception('Industry Type ID should be set before calling this method');
-		}
+		}*/
         if (!$this->labelManager) {
             $labelManager = new CompanyLabelManager($this->db, $this->id);
             return $labelManager;

@@ -468,89 +468,37 @@ class CAIndustryType extends Controller {
 				$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
 				$mixColumnsDisplayDefault = explode(',', $browseCategoryMix->default_value);
                 // get label text
-                $companyLabelManager = new CompanyLabelManager($this->db, $this->getFromRequest('industryTypeId'));
                 $companyLevelLabel = new CompanyLevelLabel($this->db);
+                $industryType = new IndustryType($this->db, $this->getFromRequest('industryTypeId'));
                 // Product Name
                 $companyLevelLabelProductNameDefault = $companyLevelLabel->getProductNameLabel();
-                $companyLevelLabelProductName = $companyLabelManager->getLabel($companyLevelLabelProductNameDefault->label_id);
-                if ($companyLevelLabelProductName) {
-                     $productNameLabel = $companyLevelLabelProductName->getLabelText();
-                } else {
-                    $productNameLabel = $companyLevelLabelProductNameDefault->default_label_text;
-                }
+                $productNameLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelProductNameDefault->label_id)->getLabelText(); 
                 // Add Job
                 $companyLevelLabelAddJobDefault = $companyLevelLabel->getAddJobLabel();
-                $companyLevelLabelAddJob = $companyLabelManager->getLabel($companyLevelLabelAddJobDefault->label_id);
-                if ($companyLevelLabelAddJob) {
-                     $addJobLabel = $companyLevelLabelAddJob->getLabelText();
-                } else {
-                    $addJobLabel = $companyLevelLabelAddJobDefault->default_label_text;
-                }
+                $addJobLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelAddJobDefault->label_id)->getLabelText(); 
                 // Description
                 $companyLevelLabelDescriptionDefault = $companyLevelLabel->getDescriptionLabel();
-                $companyLevelLabelDescription = $companyLabelManager->getLabel($companyLevelLabelDescriptionDefault->label_id);
-                if ($companyLevelLabelDescription) {
-                     $descriptionLabel = $companyLevelLabelDescription->getLabelText();
-                } else {
-                    $descriptionLabel = $companyLevelLabelDescriptionDefault->default_label_text;
-                }
+                $descriptionLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelDescriptionDefault->label_id)->getLabelText(); 
                 // R/O Description
                 $companyLevelLabelRODescriptionDefault = $companyLevelLabel->getRODescriptionLabel();
-                $companyLevelLabelRODescription = $companyLabelManager->getLabel($companyLevelLabelRODescriptionDefault->label_id);
-                if ($companyLevelLabelRODescription) {
-                     $roDescriptionLabel = $companyLevelLabelRODescription->getLabelText();
-                } else {
-                    $roDescriptionLabel = $companyLevelLabelRODescriptionDefault->default_label_text;
-                }
+                $roDescriptionLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelRODescriptionDefault->label_id)->getLabelText();
                 // R/O VIN Number
                 $companyLevelLabelROVinNumberDefault = $companyLevelLabel->getROVinNumberLabel();
-                $companyLevelLabelROVinNumber = $companyLabelManager->getLabel($companyLevelLabelROVinNumberDefault->label_id);
-                if ($companyLevelLabelROVinNumber) {
-                    $roVinNumberLabel = $companyLevelLabelROVinNumber->getLabelText();
-                } else {
-                    $roVinNumberLabel = $companyLevelLabelROVinNumberDefault->default_label_text;
-                }
+                $roVinNumberLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelROVinNumberDefault->label_id)->getLabelText();
                 // Contact
                 $companyLevelLabelContactDefault = $companyLevelLabel->getContactLabel();
-                $companyLevelLabelContact = $companyLabelManager->getLabel($companyLevelLabelContactDefault->label_id);
-                if ($companyLevelLabelContact) {
-                    $contactLabel = $companyLevelLabelContact->getLabelText();
-                } else {
-                    $contactLabel = $companyLevelLabelContactDefault->default_label_text;
-                }
+                $contactLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelContactDefault->label_id)->getLabelText();
                 // Voc
                 $companyLevelLabelVocDefault = $companyLevelLabel->getVocLabel();
-                $companyLevelLabelVoc = $companyLabelManager->getLabel($companyLevelLabelVocDefault->label_id);
-                if ($companyLevelLabelVoc) {
-                    $vocLabel = $companyLevelLabelVoc->getLabelText();
-                } else {
-                    $vocLabel = $companyLevelLabelVocDefault->default_label_text;
-                }
+                $vocLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelVocDefault->label_id)->getLabelText();
                 // Creation Date
                 $companyLevelLabelCreationDateDefault = $companyLevelLabel->getCreationDateLabel();
-                $companyLevelLabelCreationDate = $companyLabelManager->getLabel($companyLevelLabelCreationDateDefault->label_id);
-                if ($companyLevelLabelCreationDate) {
-                    $creationDateLabel = $companyLevelLabelCreationDate->getLabelText();
-                } else {
-                    $creationDateLabel = $companyLevelLabelCreationDateDefault->default_label_text;
-                }
+                $creationDateLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelCreationDateDefault->label_id)->getLabelText();
                 // Unit Type
                 $companyLevelLabelUnitTypeDefault = $companyLevelLabel->getUnitTypeLabel();
-                $companyLevelLabelUnitType = $companyLabelManager->getLabel($companyLevelLabelUnitTypeDefault->label_id);
-                if ($companyLevelLabelUnitType) {
-                    $unitTypeLabel = $companyLevelLabelUnitType->getLabelText();
-                } else {
-                    $unitTypeLabel = $companyLevelLabelUnitTypeDefault->default_label_text;
-                }
+                $unitTypeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelUnitTypeDefault->label_id)->getLabelText();
 				if ($this->getFromRequest('industryTypeId') != 'false') {
-					$displayColumnsSettings = new DisplayColumnsSettings($this->db, $this->getFromRequest('industryTypeId'));					
-					$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name); 
-
-                    if ($columnsSettingsMix) {
-						 $columnsSettingsMixValue = $columnsSettingsMix->getValue();
-				    } else {
-					    $columnsSettingsMixValue = $browseCategoryMix->default_value;
-				    }
+                    $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
 					$mixColumnsDisplay = explode(',', $columnsSettingsMixValue);
                     $labels = array($productNameLabel, $addJobLabel, $descriptionLabel, 
                             $roDescriptionLabel, $contactLabel, $roVinNumberLabel, 
