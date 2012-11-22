@@ -185,6 +185,10 @@
 				<input type='hidden' name='info' value="{$info.method}">
 				<input type='hidden' name='dateEmpty' value="{$info.date}">
 			{/if}
+
+			{if $request.tab}
+				<input type='hidden' name='tab' value="{$request.tab}">
+			{/if}
         </div>
     </div>
 </form>

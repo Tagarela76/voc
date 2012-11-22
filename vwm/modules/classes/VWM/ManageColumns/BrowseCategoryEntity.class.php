@@ -21,8 +21,24 @@ class BrowseCategoryEntity {
 		} else {
 			return $this->db->fetch(0);
 		}
-	
 	}
+    
+    public function getBrowseCategory() {
+        
+        return array(
+            self::BROWSE_CATEGORY_MIX => $this->getBrowseCategoryMix()->default_value,
+        );
+    }
+    
+    public function getDefaultBrowseCategoryValue($browseCategoryEntityName) {
+        
+        $browseCategoryEntities = $this->getBrowseCategory();
+        foreach ($browseCategoryEntities as $id => $browseCategory) {
+            if($browseCategoryEntityName == $id) {
+                return $browseCategory;
+            }
+        }
+    }
 	
 }
 
