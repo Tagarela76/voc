@@ -30,7 +30,7 @@
             </td>
 			<td class="border_users_b" width="15%">
                     <div style='color:white;'>
-                        Time Spent (min)
+                        Spray/spent time in minutes
                     </div>
             </td>
 			<td class="users_u_top_r_yellowgreen" width="20%">

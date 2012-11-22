@@ -1004,8 +1004,8 @@ class Controller {
 			$companyId = $facilityDetails["company_id"];
             $companyLevelLabel = new CompanyLevelLabel($this->db);
             $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-            $company = new VWM\Hierarchy\Company($this->db, $companyId);
-			$repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();          
+            $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+			$repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();          
 			$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		}
     }
