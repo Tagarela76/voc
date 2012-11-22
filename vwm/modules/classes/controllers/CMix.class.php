@@ -572,24 +572,15 @@ class CMix extends Controller {
 				return ;
 			}
 			// I need get company's industry type 
-			$companyId = $companyDetails["company_id"];
-			$company = new Company($this->db);
-			$companyIndustryTypes = $company->getIndustryTypes($companyId);
-			// we need only one industry Type. get first item
-			$industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
-			// we should get browse category entity for mix
+            // we should get browse category entity for mix
 			$browseCategoryEntity = new BrowseCategoryEntity($this->db);
 			$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
-			// get display columns settings for mix
-			$displayColumnsSettings = new DisplayColumnsSettings($this->db, $industryTypeId);
-			$displayColumn = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name);
-			$mixColumnDefault = explode(",", $browseCategoryMix->default_value);
-			if (!is_null($displayColumn->value)) {
-				$mixColumn4Display = explode(",", $displayColumn->value);
-			} else {
-				// get deafult settings
-				$mixColumn4Display = $mixColumnDefault;
-			}
+            $mixColumnDefault = explode(",", $browseCategoryMix->default_value);
+			$companyId = $companyDetails["company_id"];
+			$company = new VWM\Hierarchy\Company($this->db, $companyId);
+            $mixColumn4Display = $company->getIndustryType()->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
+            $mixColumn4Display = explode(",", $mixColumn4Display);
+
             // for displaying voc unit type
 			$unittype = new Unittype($this->db);
 			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
@@ -662,10 +653,8 @@ class CMix extends Controller {
 				$mixFormatObjList[] = $mixObjList;
 			}
             $mixColumn4DisplayFormat = array();
-            
-            $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
             foreach ($labels as $label) {
-                $mixColumn4DisplayFormat[] = $companyLabelManager->getLabel($label)->getLabelText();
+                $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($label)->getLabelText();
             }
             
 			$this->smarty->assign('widths', $widths);
@@ -1571,22 +1560,10 @@ class CMix extends Controller {
 		// $this->getLibraryInjection()->injectToolTip();
 		
 		// Repair order or Working Order
-
-        $companyIndustryTypes = $company->getIndustryTypes($companyID);
-        // we need only one industry Type. get first item
-        $industryTypeId = $companyIndustryTypes[0]["industry_type_id"];
-
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-        $companyLabelManager = new CompanyLabelManager($this->db, $industryTypeId);
-        $repairOrderLabelValue = $companyLabelManager->getLabel($companyLevelLabelRepairOrder->label_id);
-
-        if (!$repairOrderLabelValue) {
-            $repairOrderLabel = $companyLevelLabelRepairOrder->default_label_text;
-        } else {
-            // get deafult settings
-            $repairOrderLabel = $repairOrderLabelValue->getLabelText();
-        }
+        $company = new VWM\Hierarchy\Company($this->db, $companyID);
+        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText(); 
             
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		

@@ -1,0 +1,1 @@
+ALTER TABLE  `company` ADD  `last_update_time` DATETIME NULL DEFAULT NULL

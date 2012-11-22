@@ -143,6 +143,8 @@ class DisplayColumnsSettings extends Model {
 	 */
 	public function getDisplayColumnsSettings($browseCategoryEntityName) {
 		
+        $displayColumnsSettings = new DisplayColumnsSettings($this->db);
+        $browseCategoryEntity = new BrowseCategoryEntity($this->db);
 		$sql = "SELECT cs.* FROM " . TB_DISPLAY_COLUMNS_SETTINGS . " cs " .
 			   "JOIN " . TB_BROWSE_CATEGORY_ENTITY . " be " . 
 			   "ON cs.browse_category_entity_id= be.id " .
@@ -151,15 +153,14 @@ class DisplayColumnsSettings extends Model {
  		$this->db->query($sql); 
 		$row = $this->db->fetch(0); 
 		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		
-		$displayColumnsSettings = new DisplayColumnsSettings($this->db);
-		$displayColumnsSettings->setId($row->id);
-		$displayColumnsSettings->setBrowseCategoryEntityId($row->browse_category_entity_id);
-		$displayColumnsSettings->setIndustryTypeId($row->industry_type_id);
-		$displayColumnsSettings->setValue($row->value);
-		
+			$displayColumnsSettings->setValue($browseCategoryEntity->getDefaultBrowseCategoryValue($browseCategoryEntityName));
+            $displayColumnsSettings->setIndustryTypeId($this->getIndustryTypeId());
+		} else {
+            $displayColumnsSettings->setId($row->id);
+        	$displayColumnsSettings->setBrowseCategoryEntityId($row->browse_category_entity_id);
+            $displayColumnsSettings->setIndustryTypeId($row->industry_type_id);
+            $displayColumnsSettings->setValue($row->value);
+        }
 		return $displayColumnsSettings;
 	}
 }
