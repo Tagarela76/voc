@@ -26,7 +26,7 @@ class Controller {
     protected $parentCategory;
     protected $filter;
     private $typeInformer;
-	
+
 
 	/**
 	 * List of blocks
@@ -141,14 +141,14 @@ class Controller {
         } elseif ($controllerType == 'vps') {
             $functionName = 'action' . ucfirst($this->action) . 'VCommon';
         }
-		*/	   
+		*/
         if (method_exists($this, $functionName))
             $this->$functionName();
     }
 
 
-	public function runAction() {		
-		$this->runCommon();		
+	public function runAction() {
+		$this->runCommon();
 		$functionName = 'action'.ucfirst($this->action);
 		if (method_exists($this,$functionName)) {
 			$this->$functionName();
@@ -476,22 +476,22 @@ class Controller {
     protected function actionAddNewProduct() {
         //  if form were submitted
         if ($this->getFromPost('productAction') == 'Submit') {
-			
-			$productRequest = new NewProductRequest($this->db);	
+
+			$productRequest = new NewProductRequest($this->db);
 			$productRequest->setSupplier($this->getFromPost('productSupplier'));
 			$productRequest->setProductId($this->getFromPost('productId'));
 			$productRequest->setName($this->getFromPost('productName'));
-			$productRequest->setDescription($this->getFromPost('productDescription'));			
+			$productRequest->setDescription($this->getFromPost('productDescription'));
 			$productRequest->setUserId($_SESSION['user_id']);
 			$productRequest->setMsdsId(0);
 			$productRequest->setStatus(NewProductRequest::STATUS_NEW);
-			
+
 			$violationList = $productRequest->validate();
 			if(count($violationList) == 0) {
 				if(!$productRequest->save()) {
 					throw new Exception('Failed to save request. This should not happen');
 				}
-				
+
 				//TODO: needs complete rewrite
 				if ($_FILES) {
 					$strangeRequest = array('category' => $this->getFromRequest('category'),
@@ -504,31 +504,31 @@ class Controller {
 					$save["departmentID"] = $sSave['departmentID'];
 					$save['msds'] = $msRes['msdsResult'];
 					$msds->addSheets($save);
-					$msdsId = $this->db->getLastInsertedID();					
+					$msdsId = $this->db->getLastInsertedID();
 				} else {
 					$msdsId = 0;
 				}
-				
+
 				$productRequest->setMsdsId($msdsId);
 				$productRequest->save();
-				
+
 				$manager = new NewProductRequestManager($this->db);
-				$manager->setEmailService(new EMail());			
+				$manager->setEmailService(new EMail());
 				$manager->sendNewEmailNotification($productRequest);
-				
-				header("Location:" . $this->getFromPost('productReferer') . 
+
+				header("Location:" . $this->getFromPost('productReferer') .
 						"&message=".  urlencode('New Product Submitted')."&color=green");
                 die();
-			} else {				
+			} else {
 				$notifyc = new Notify(null, $this->db);
 				$notify = $notifyc->getPopUpNotifyMessage(401);
 				$this->smarty->assign("notify", $notify);
 				$this->smarty->assign('violationList', $violationList);
 				$this->smarty->assign('productRequest', $productRequest);
 			}
-								
-						
-			
+
+
+
             /*$prRequest = new NewProductRequest($this->db);
             $prRequest->setSupplier($this->getFromPost('productSupplier'));
             $prRequest->setProductId($this->getFromPost('productId'));
@@ -580,12 +580,12 @@ class Controller {
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $request);
 
-		$referer = ($this->getFromPost('productReferer')) 
+		$referer = ($this->getFromPost('productReferer'))
 				? $this->getFromPost('productReferer')
-				: $_SERVER["HTTP_REFERER"];        
-		
+				: $_SERVER["HTTP_REFERER"];
+
         $this->smarty->assign("productReferer", $referer);
-        
+
         $this->smarty->assign("tpl", "tpls/addNewProduct.tpl");
         $this->smarty->display("tpls:index.tpl");
     }
@@ -855,7 +855,7 @@ class Controller {
         $customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $cfd['companyID'], $cfd['facilityID'], $cfd['departmentID']);
         $this->smarty->assign('ruleList', $ruleList);
         $this->smarty->assign('customizedRuleList', $customizedRuleList);
-		
+
 		// i need do this because js don't want work with empty value(company level)
 		if (!isset($cfd['facilityID'])) {
 			$cfd['facilityID'] = "false";
@@ -982,7 +982,7 @@ class Controller {
 
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $this->request);
-		
+
         //	Access control
 		if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
             throw new Exception('deny');
@@ -995,19 +995,31 @@ class Controller {
         if (!empty($this->request['tab'])) {
             $paramsForListLeft ['tab'] = $this->getFromRequest('tab');
         }
-		
+
 		// set label List (repair order)
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
+        $companyLevelLabelPaintShopProduct = $companyLevelLabel->getPaintShopProductLabel();
+        $companyLevelLabelBodyShopProduct = $companyLevelLabel->getBodyShopProductLabel();
+        $companyLevelLabelDetailingShopProduct = $companyLevelLabel->getDetailingShopProductLabel();
+        $facility = new Facility($this->db);
 		if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
-            $company = new Company($this->db);
-			$facility = new Facility($this->db);
 			$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
-			$companyId = $facilityDetails["company_id"];
-            $companyLevelLabel = new CompanyLevelLabel($this->db);
-            $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-            $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
-			$repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();          
-			$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-		}
+		} else {
+            $department = new Department($this->db);
+            $departmentDetails = $department->getDepartmentDetails($this->getFromRequest('id'));
+            $facilityDetails = $facility->getFacilityDetails($departmentDetails["facility_id"]);
+        }
+        $companyId = $facilityDetails["company_id"]; 
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        $paintShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPaintShopProduct->label_id)->getLabelText();
+        $bodyShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelBodyShopProduct->label_id)->getLabelText();
+        $detailingShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelDetailingShopProduct->label_id)->getLabelText();
+        $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+        $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
+        $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
+        $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
     }
 
     private function actionBrowseCategoryACommon() {
@@ -1133,7 +1145,7 @@ class Controller {
 					$departmentDetails = $departments->getDepartmentDetails($id);
 					$departmentList = $departments->getDepartmentListByFacility($departmentDetails['facility_id']);
 				}
-				
+
                 for ($i = 0; $i < count($departmentList); $i++) {
                     $url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . (($tail == '') ? "&bookmark=mix" : $tail);
                     $departmentList[$i]['url'] = $url;
@@ -1421,7 +1433,7 @@ class Controller {
                 $permissions['repairOrder']['edit'] = $this->user->isHaveAccessTo('edit', 'repairOrder') ? true : false;
                 $permissions['repairOrder']['delete'] = $this->user->isHaveAccessTo('delete', 'repairOrder') ? true : false;
                 break;
-			
+
 			case "viewReminder":
                 $permissions['showOverCategory'] = $this->user->isHaveAccessTo('view', 'facility') ? true : false;
                 $permissions['root']['view'] = $this->user->isHaveAccessTo('view', 'root') ? true : false;
