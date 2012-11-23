@@ -28,6 +28,12 @@ class CompanyLevelLabel {
     const LABEL_ID_CREATION_DATE = 'creation_date';
     
     const LABEL_ID_UNIT_TYPE = 'unit_type';
+    
+    const LABEL_ID_PAINT_SHOP_PRODUCT = 'paint_shop_product';
+    
+    const LABEL_ID_BODY_SHOP_PRODUCT = 'body_shop_product';
+    
+    const LABEL_ID_DETAILING_SHOP_PRODUCT = 'detailing_shop_product';
 
 
 	public function __construct(\db $db) {
@@ -174,6 +180,45 @@ class CompanyLevelLabel {
 	
 	}
     
+    public function getPaintShopProductLabel() {
+		
+		$sql = "SELECT * FROM " . TB_COMPANY_LEVEL_LABEL . " " . 
+			   "WHERE label_id='" . self::LABEL_ID_PAINT_SHOP_PRODUCT . "' " . 
+			   "LIMIT 1"	;		
+ 		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return $this->db->fetch(0);
+		}
+	}
+    
+    public function getBodyShopProductLabel() {
+		
+		$sql = "SELECT * FROM " . TB_COMPANY_LEVEL_LABEL . " " . 
+			   "WHERE label_id='" . self::LABEL_ID_BODY_SHOP_PRODUCT . "' " . 
+			   "LIMIT 1"	;		
+ 		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return $this->db->fetch(0);
+		}
+	}
+    
+    public function getDetailingShopProductLabel() {
+		
+		$sql = "SELECT * FROM " . TB_COMPANY_LEVEL_LABEL . " " . 
+			   "WHERE label_id='" . self::LABEL_ID_DETAILING_SHOP_PRODUCT . "' " . 
+			   "LIMIT 1"	;		
+ 		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return $this->db->fetch(0);
+		}
+	}
+    
     public function getDefaultLabels() {
         
         return array(
@@ -187,6 +232,9 @@ class CompanyLevelLabel {
             self::LABEL_ID_VOC => $this->getVocLabel()->default_label_text,
             self::LABEL_ID_CREATION_DATE => $this->getCreationDateLabel()->default_label_text,
             self::LABEL_ID_UNIT_TYPE => $this->getUnitTypeLabel()->default_label_text,
+            self::LABEL_ID_PAINT_SHOP_PRODUCT => $this->getPaintShopProductLabel()->default_label_text,
+            self::LABEL_ID_BODY_SHOP_PRODUCT => $this->getBodyShopProductLabel()->default_label_text,
+            self::LABEL_ID_DETAILING_SHOP_PRODUCT => $this->getDetailingShopProductLabel()->default_label_text,
         );
     }
     

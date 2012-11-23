@@ -32,6 +32,13 @@ class CompanyLevelLabelTest extends DbTestCase {
         $labelCompanySystemUpdated = $labelSystem->getLabel("repair_order");
 		$this->assertEquals($labelText, $labelCompanySystemUpdated->getLabelText());
 	}
+    
+    public function testGetPaintShopProductLabel() {
+		$labelSystem = new CompanyLevelLabel($this->db);
+		$label = $labelSystem->getPaintShopProductLabel();
+		
+		$this->assertEquals("Paint Shop Products", $label->default_label_text);
+	}
 }
 
 ?>

@@ -83,7 +83,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelRepairOrderDefault->label_id}" id="{$companyLevelLabelRepairOrderDefault->label_id}" value='{$repairOrderLabel}'/></div>
-                    {if $errors.repairOrderError eq 'true'}							
+                    {if $errors.repair_order eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -96,7 +96,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelProductNameDefault->label_id}" id="{$companyLevelLabelProductNameDefault->label_id}" value='{$productNameLabel}'/></div>
-                    {if $errors.productNameLabelError eq 'true'}							
+                    {if $errors.product_name eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -109,7 +109,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelAddJobDefault->label_id}" id="{$companyLevelLabelAddJobDefault->label_id}" value='{$addJobLabel}'/></div>
-                    {if $errors.addJobLabelError eq 'true'}							
+                    {if $errors.add_job eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -122,7 +122,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelDescriptionDefault->label_id}" id="{$companyLevelLabelDescriptionDefault->label_id}" value='{$descriptionLabel}'/></div>
-                    {if $errors.descriptionLabelError eq 'true'}							
+                    {if $errors.description eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -135,7 +135,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelRODescriptionDefault->label_id}" id="{$companyLevelLabelRODescriptionDefault->label_id}" value='{$roDescriptionLabel}'/></div>
-                    {if $errors.roDescriptionLabelError eq 'true'}							
+                    {if $errors.r_o_description eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -148,7 +148,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelContactDefault->label_id}" id="{$companyLevelLabelContactDefault->label_id}" value='{$contactLabel}'/></div>
-                    {if $errors.contactLabelError eq 'true'}							
+                    {if $errors.contact eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -161,7 +161,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelROVinNumberDefault->label_id}" id="{$companyLevelLabelROVinNumberDefault->label_id}" value='{$roVinNumberLabel}'/></div>
-                    {if $errors.roVinNumberLabelError eq 'true'}							
+                    {if $errors.r_o_vin_number eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -174,7 +174,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelVocDefault->label_id}" id="{$companyLevelLabelVocDefault->label_id}" value='{$vocLabel}'/></div>
-                    {if $errors.vocLabelError eq 'true'}							
+                    {if $errors.voc eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -187,7 +187,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelCreationDateDefault->label_id}" id="{$companyLevelLabelCreationDateDefault->label_id}" value='{$creationDateLabel}'/></div>
-                    {if $errors.creationDateLabelError eq 'true'}							
+                    {if $errors.creation_date eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    
@@ -200,7 +200,46 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left"><input type='text' name="{$companyLevelLabelUnitTypeDefault->label_id}" id="{$companyLevelLabelUnitTypeDefault->label_id}" value='{$unitTypeLabel}'/></div>
-                    {if $errors.unitTypeLabelError eq 'true'}							
+                    {if $errors.unit_type eq 'true'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
+                        {*/ERROR*}						    
+                    {/if}
+                </td>
+            </tr>
+            <tr height="10px">
+                <td class="border_users_l border_users_b" height="20">
+                    {$companyLevelLabelPaintShopProductDefault->name4display}
+                </td>
+                <td class="border_users_l border_users_b border_users_r">
+                    <div align="left"><input type='text' name="{$companyLevelLabelPaintShopProductDefault->label_id}" id="{$companyLevelLabelPaintShopProductDefault->label_id}" value='{$paintShopProductLabel}'/></div>
+                    {if $errors.paint_shop_product eq 'true'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
+                        {*/ERROR*}						    
+                    {/if}
+                </td>
+            </tr>
+            <tr height="10px">
+                <td class="border_users_l border_users_b" height="20">
+                    {$companyLevelLabelBodyShopProductDefault->name4display}
+                </td>
+                <td class="border_users_l border_users_b border_users_r">
+                    <div align="left"><input type='text' name="{$companyLevelLabelBodyShopProductDefault->label_id}" id="{$companyLevelLabelBodyShopProductDefault->label_id}" value='{$bodyShopProductLabel}'/></div>
+                    {if $errors.body_shop_product eq 'true'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
+                        {*/ERROR*}						    
+                    {/if}
+                </td>
+            </tr>
+            <tr height="10px">
+                <td class="border_users_l border_users_b" height="20">
+                    {$companyLevelLabelDetailingShopProductDefault->name4display}
+                </td>
+                <td class="border_users_l border_users_b border_users_r">
+                    <div align="left"><input type='text' name="{$companyLevelLabelDetailingShopProductDefault->label_id}" id="{$companyLevelLabelDetailingShopProductDefault->label_id}" value='{$detailingShopProductLabel}'/></div>
+                    {if $errors.detailing_shop_product eq 'true'}							
                         {*ERROR*}					
                         <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
                         {*/ERROR*}						    

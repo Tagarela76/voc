@@ -308,6 +308,7 @@ define ('TB_GOM', 'gom');
 
 define ('TB_COMPANY_LEVEL_LABEL', 'company_level_label');
 define ('TB_INDUSTRY_TYPE2LABEL', 'industry_type2label');
+define ('TB_WO2DEPARTMENT', 'wo2department');
 
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');

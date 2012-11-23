@@ -20,27 +20,27 @@
 {*/PAGINATION*}
 <table class="users" height="200" cellspacing="0" cellpadding="0" align="center">
     <tr class="users_top" height="27px">
-        <td class="users_u_top" width="10%">
-            <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
+    <td class="users_u_top" width="10%">
+        <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
+    </td>
+    <td class="" width="10%">
+        <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
+            <div style='width:100%;  color:white;'>
+                Mix ID
+            </div>
+        </a>
+    </td>
+    {foreach from=$mixColumn4Display item=mixTitle key=index}
+        <td class="{if ($index+2) > $columnCount}users_u_top_r{/if}" width="{$widths.$index}">
+            <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
+                <div style='width:100%;  color:white;'>
+                    {$mixTitle|escape}
+                </div>
+            </a>
         </td>
-		<td class="" width="10%">
-			<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
-				<div style='width:100%;  color:white;'>
-					Mix ID
-				</div>
-			</a>
-		</td>
-		{foreach from=$mixColumn4Display item=mixTitle key=index}
-			<td class="{if ($index+2) > $columnCount}users_u_top_r{/if}" width="{$widths.$index}">
-				<a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
-					<div style='width:100%;  color:white;'>
-						{$mixTitle|escape}
-					</div>
-				</a>
-			</td>
-		{/foreach}
+    {/foreach}
 	</tr>
-	{if $mixFormatObjList|@is_array and $mixFormatObjList|@count > 0}
+	{if $mixColumn4Display|@is_array and $mixColumn4Display|@count > 0}
 		{foreach from=$mixFormatObjList item=mix}
 			<!-- Begin Highlighting -->
 			<tr {if $mix.valid  eq "valid"}

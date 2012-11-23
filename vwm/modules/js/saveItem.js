@@ -698,6 +698,7 @@ function saveRepairOrderDetails()
 	var work_order_status=$('#repairOrderStatus').attr('value');
 	var work_order_id = $('#work_order_id').attr('value'); 
 	var work_order_vin=$('#repairOrderVin').attr('value'); 
+    var woDepartments_id=$('#woDepartments_id').attr('value'); 
 	if (work_order_action == 'addItem') 
 	{		
 		var id=$('input:hidden[name=facility_id]').attr('value');
@@ -720,7 +721,8 @@ function saveRepairOrderDetails()
 			"work_order_status":work_order_status,
 			"action":work_order_action,
 			"work_order_id":work_order_id,
-			"work_order_vin":work_order_vin
+			"work_order_vin":work_order_vin,
+            "woDepartments_id":woDepartments_id
 		},      			
 		dataType: "html",
 		success: function (response) 
