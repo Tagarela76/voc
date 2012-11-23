@@ -34,7 +34,9 @@ class Facility extends FacilityProperties {
 			$sql .= implode(' OR ', $searchSql);
 			$sql .= ") ";
 		}
-		
+
+		$sql .= " ORDER BY id DESC";
+
         if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}        
