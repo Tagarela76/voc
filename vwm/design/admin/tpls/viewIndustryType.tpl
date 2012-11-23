@@ -188,6 +188,31 @@
             </td>
         </tr>
 		<tr>
+            <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelPaintShopProductDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$paintShopProductLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelBodyShopProductDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$bodyShopProductLabel}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelDetailingShopProductDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$detailingShopProductLabel}</div>
+            </td>
+        </tr>
+		<tr>
 			<td height="20" class="users_u_bottom">
 				&nbsp;
 			</td>

@@ -178,48 +178,14 @@ class CompanyLabelManager {
 	}
     
         
-    public function validate($data) {
+    public function validate($labels) {
         $errors = array();
         $errors["validateStatus"] = "success";
-        if ($data["repair_order"] == "") {
-            $errors["repairOrderError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["product_name"] == "") {
-            $errors["productNameLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["add_job"] == "") {
-            $errors["addJobLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["description"] == "") {
-            $errors["descriptionLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["r_o_description"] == "") {
-            $errors["roDescriptionLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["contact"] == "") {
-            $errors["contactLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["r_o_vin_number"] == "") {
-            $errors["roVinNumberLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["voc"] == "") {
-            $errors["vocLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["creation_date"] == "") {
-            $errors["creationDateLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
-        }
-        if ($data["unit_type"] == "") {
-            $errors["unitTypeLabelError"] = 'true';
-            $errors["validateStatus"] = "false";
+        foreach ($labels as $key => $label) {
+           if ($label == "") {
+                $errors[$key] = 'true';
+                $errors["validateStatus"] = "false";
+            } 
         }
         return $errors;
     }

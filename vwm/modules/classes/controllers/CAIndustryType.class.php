@@ -69,7 +69,6 @@ class CAIndustryType extends Controller {
 		$subIndustryTypes = $industryType->getSubIndustryTypes();
 		// get industry type label list
 		$companyLevelLabel = new CompanyLevelLabel($this->db);
-        $companyLabelManager = new CompanyLabelManager($this->db, $this->getFromRequest('id'));
         // for repair order
         $companyLevelLabelRepairOrderDefault = $companyLevelLabel->getRepairOrderLabel(); 
         $repairOrderLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelRepairOrderDefault->label_id)->getLabelText(); 
@@ -102,6 +101,18 @@ class CAIndustryType extends Controller {
         $companyLevelLabelUnitTypeDefault = $companyLevelLabel->getUnitTypeLabel();
         $unitTypeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelUnitTypeDefault->label_id)->getLabelText();
         
+        // Paint Shop Product
+        $companyLevelLabelPaintShopProductDefault = $companyLevelLabel->getPaintShopProductLabel();
+        $paintShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelPaintShopProductDefault->label_id)->getLabelText();
+        
+        // Body Shop Product
+        $companyLevelLabelBodyShopProductDefault = $companyLevelLabel->getBodyShopProductLabel();
+        $bodyShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelBodyShopProductDefault->label_id)->getLabelText();
+        
+        // Detailing Shop Product
+        $companyLevelLabelDetailingShopProductDefault = $companyLevelLabel->getDetailingShopProductLabel();
+        $detailingShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelDetailingShopProductDefault->label_id)->getLabelText();
+        
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -131,6 +142,15 @@ class CAIndustryType extends Controller {
         
         $this->smarty->assign('unitTypeLabel', $unitTypeLabel);
         $this->smarty->assign('companyLevelLabelUnitTypeDefault', $companyLevelLabelUnitTypeDefault);
+        
+        $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
+        $this->smarty->assign('companyLevelLabelPaintShopProductDefault', $companyLevelLabelPaintShopProductDefault);
+        
+        $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
+        $this->smarty->assign('companyLevelLabelBodyShopProductDefault', $companyLevelLabelBodyShopProductDefault);
+        
+        $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
+        $this->smarty->assign('companyLevelLabelDetailingShopProductDefault', $companyLevelLabelDetailingShopProductDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -197,6 +217,18 @@ class CAIndustryType extends Controller {
         $companyLevelLabelUnitTypeDefault = $companyLevelLabel->getUnitTypeLabel();
         $unitTypeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelUnitTypeDefault->label_id)->getLabelText();
         
+        // Paint Shop Product
+        $companyLevelLabelPaintShopProductDefault = $companyLevelLabel->getPaintShopProductLabel();
+        $paintShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelPaintShopProductDefault->label_id)->getLabelText();
+        
+        // Body Shop Product
+        $companyLevelLabelBodyShopProductDefault = $companyLevelLabel->getBodyShopProductLabel();
+        $bodyShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelBodyShopProductDefault->label_id)->getLabelText();
+        
+        // Detailing Shop Product
+        $companyLevelLabelDetailingShopProductDefault = $companyLevelLabel->getDetailingShopProductLabel();
+        $detailingShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelDetailingShopProductDefault->label_id)->getLabelText();
+        
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -226,6 +258,15 @@ class CAIndustryType extends Controller {
 
         $this->smarty->assign('unitTypeLabel', $unitTypeLabel);
         $this->smarty->assign('companyLevelLabelUnitTypeDefault', $companyLevelLabelUnitTypeDefault);
+        
+        $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
+        $this->smarty->assign('companyLevelLabelPaintShopProductDefault', $companyLevelLabelPaintShopProductDefault);
+        
+        $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
+        $this->smarty->assign('companyLevelLabelBodyShopProductDefault', $companyLevelLabelBodyShopProductDefault);
+        
+        $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
+        $this->smarty->assign('companyLevelLabelDetailingShopProductDefault', $companyLevelLabelDetailingShopProductDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -349,6 +390,21 @@ class CAIndustryType extends Controller {
                     $companyLevelLabelUnitType->setCompanyLevelLabelId($companyLevelLabelUnitTypeDefault->id);
                     $companyLevelLabelUnitType->setLabelText($post[$companyLevelLabelUnitTypeDefault->label_id]);
                     $companyLevelLabelUnitType->save();
+                    
+                    $companyLevelLabelPaintShopProduct = $industryType->getLabelManager()->getLabel($companyLevelLabelPaintShopProductDefault->label_id);
+                    $companyLevelLabelPaintShopProduct->setCompanyLevelLabelId($companyLevelLabelPaintShopProductDefault->id);
+                    $companyLevelLabelPaintShopProduct->setLabelText($post[$companyLevelLabelPaintShopProductDefault->label_id]);
+                    $companyLevelLabelPaintShopProduct->save();
+                    
+                    $companyLevelLabelBodyShopProduct = $industryType->getLabelManager()->getLabel($companyLevelLabelBodyShopProductDefault->label_id);
+                    $companyLevelLabelBodyShopProduct->setCompanyLevelLabelId($companyLevelLabelBodyShopProductDefault->id);
+                    $companyLevelLabelBodyShopProduct->setLabelText($post[$companyLevelLabelBodyShopProductDefault->label_id]);
+                    $companyLevelLabelBodyShopProduct->save();
+                    
+                    $companyLevelLabelDetailingShopProduct = $industryType->getLabelManager()->getLabel($companyLevelLabelDetailingShopProductDefault->label_id);
+                    $companyLevelLabelDetailingShopProduct->setCompanyLevelLabelId($companyLevelLabelDetailingShopProductDefault->id);
+                    $companyLevelLabelDetailingShopProduct->setLabelText($post[$companyLevelLabelDetailingShopProductDefault->label_id]);
+                    $companyLevelLabelDetailingShopProduct->save();
                     
 					// redirect
 					header("Location: ?action=viewDetails&category=industryType&id=" . $this->getFromRequest('id') . "&&notify=54");
