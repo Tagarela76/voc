@@ -1145,8 +1145,8 @@ class Product extends ProductProperties {
 
 		if ($this->productCategoryFilter != 0) {
 			//	get with sub categories
-			$query .= " AND p2t.product_id = p.product_id AND (p2t.type_id IN " .
-					"(SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE parent = {$this->db->sqltext($this->productCategoryFilter)}) OR p2t.type_id = {$this->db->sqltext($this->productCategoryFilter)})";
+			$query .= " AND p2t.product_id = p.product_id AND (p2t.industry_type_id IN " .
+					"(SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE parent = {$this->db->sqltext($this->productCategoryFilter)}) OR p2t.industry_type_id = {$this->db->sqltext($this->productCategoryFilter)})";
 		}
 
 		$this->db->query($query);
@@ -1281,7 +1281,7 @@ class Product extends ProductProperties {
 					"FROM " . $this->_declareTablesForSearchAndListProducts() . " " .
 					"LEFT JOIN price4product pp ON(pp.product_id=p.product_id)" .
 					"WHERE p.supplier_id = s.supplier_id " .
-					"AND coat.coat_id = p.coating_id ";
+					"AND coat.coat_id = p.coating_id "; 
 		}
 	
 		if(count($this->searchCriteria) > 0) {
@@ -1307,8 +1307,8 @@ class Product extends ProductProperties {
 
 		if ($this->productCategoryFilter != 0) {
 			//	get with sub categories
-			$query .= " AND p2t.product_id = p.product_id AND (p2t.type_id IN " .
-					"(SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE parent = {$this->db->sqltext($this->productCategoryFilter)}) OR p2t.type_id = {$this->db->sqltext($this->productCategoryFilter)})";
+			$query .= " AND p2t.product_id = p.product_id AND (p2t.industry_type_id IN " .
+					"(SELECT id FROM " . TB_INDUSTRY_TYPE . " WHERE parent = {$this->db->sqltext($this->productCategoryFilter)}) OR p2t.industry_type_id = {$this->db->sqltext($this->productCategoryFilter)})";
 		}
 
         //  we should sort by product_nr in the last
