@@ -997,29 +997,32 @@ class Controller {
         }
 
 		// set label List (repair order)
-        $companyLevelLabel = new CompanyLevelLabel($this->db);
-        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
-        $companyLevelLabelPaintShopProduct = $companyLevelLabel->getPaintShopProductLabel();
-        $companyLevelLabelBodyShopProduct = $companyLevelLabel->getBodyShopProductLabel();
-        $companyLevelLabelDetailingShopProduct = $companyLevelLabel->getDetailingShopProductLabel();
-        $facility = new Facility($this->db);
-		if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
-			$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
-		} else {
-            $department = new Department($this->db);
-            $departmentDetails = $department->getDepartmentDetails($this->getFromRequest('id'));
-            $facilityDetails = $facility->getFacilityDetails($departmentDetails["facility_id"]);
+        if ($this->getFromRequest('category') == 'facility' || $this->getFromRequest('category') == 'department') {
+            $companyLevelLabel = new CompanyLevelLabel($this->db);
+            $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
+            $companyLevelLabelPaintShopProduct = $companyLevelLabel->getPaintShopProductLabel();
+            $companyLevelLabelBodyShopProduct = $companyLevelLabel->getBodyShopProductLabel();
+            $companyLevelLabelDetailingShopProduct = $companyLevelLabel->getDetailingShopProductLabel();
+            $facility = new Facility($this->db);
+            if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
+                $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
+            } else {
+                $department = new Department($this->db);
+                $departmentDetails = $department->getDepartmentDetails($this->getFromRequest('id'));
+                $facilityDetails = $facility->getFacilityDetails($departmentDetails["facility_id"]);
+            }
+            $companyId = $facilityDetails["company_id"]; 
+            $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+            $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+            $paintShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPaintShopProduct->label_id)->getLabelText();
+            $bodyShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelBodyShopProduct->label_id)->getLabelText();
+            $detailingShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelDetailingShopProduct->label_id)->getLabelText();
+            $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
+            $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
+            $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
+            $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
         }
-        $companyId = $facilityDetails["company_id"]; 
-        $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
-        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
-        $paintShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPaintShopProduct->label_id)->getLabelText();
-        $bodyShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelBodyShopProduct->label_id)->getLabelText();
-        $detailingShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelDetailingShopProduct->label_id)->getLabelText();
-        $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-        $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
-        $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
-        $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
+        
     }
 
     private function actionBrowseCategoryACommon() {
