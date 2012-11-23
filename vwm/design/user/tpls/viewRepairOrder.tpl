@@ -67,6 +67,16 @@
             </td>
         </tr>
         <tr>
+            <td class="border_users_l border_users_b" height="20">
+                Departments:
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left">
+                    &nbsp; {$woDepartments}
+                </div>
+            </td>
+        </tr>
+        <tr>
             <td height="20" class="users_u_bottom">
             </td>
             <td height="20" class="users_u_bottom_r">

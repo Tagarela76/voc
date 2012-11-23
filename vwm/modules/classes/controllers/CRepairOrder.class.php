@@ -28,6 +28,7 @@ class CRepairOrder extends Controller {
 			$mixList[] = $mix;
 		}
 		$facility = new Facility($this->db);
+        $department = new Department($this->db);
         $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
@@ -37,7 +38,21 @@ class CRepairOrder extends Controller {
         $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
             
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-		
+		// get wo departments
+        $repairOrderManager = new RepairOrderManager($this->db);
+        $woDepartments = $repairOrderManager->getDepartmentsByWo($this->getFromRequest('id'));
+        if (!$woDepartments) {
+            // we shoul get all department list
+            $woDepartments = $facility->getDepartmentList($this->getFromRequest("facilityID"));
+        }
+        $departmetsName = array();
+        foreach ($woDepartments as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmetsName[] = $departmentDetails["name"];
+        }
+        $woDepartments = implode(",", $departmetsName);
+        $this->smarty->assign('woDepartments', $woDepartments);
+
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
 		
@@ -110,7 +125,7 @@ class CRepairOrder extends Controller {
         }
 
         $request = $this->getFromRequest();
-        $request["id"] = $request["facilityID"];
+        $request["id"] = "false";
         $request['parent_id'] = $request['facilityID'];
         $request['parent_category'] = 'facility';
         $this->smarty->assign('request', $request);
@@ -122,6 +137,7 @@ class CRepairOrder extends Controller {
         $this->setPermissionsNew('viewFacility');
 
 		$facility = new Facility($this->db);
+        $department = new Department($this->db);
         $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
@@ -131,12 +147,41 @@ class CRepairOrder extends Controller {
         $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
+        // get wo departments
+        $woDepartments = $facility->getDepartmentList($this->getFromRequest("facilityID"));
+        $departmetsName = array();
+        foreach ($woDepartments as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmetsName[] = $departmentDetails["name"];
+        }
+        $woDepartmentsName = implode(",", $departmetsName);
+        $woDepartments = implode(",", $woDepartments);
+        $this->smarty->assign('woDepartments', $woDepartments);
+        $this->smarty->assign('woDepartmentsName', $woDepartmentsName);
+        
         //	set js scripts
         $jsSources = array(
-            'modules/js/saveItem.js',
-            'modules/js/PopupWindow.js'
-        );
-        $this->smarty->assign('jsSources', $jsSources);
+            "modules/js/reg_country_state.js",
+            "modules/js/saveItem.js",
+            "modules/js/PopupWindow.js",
+            "modules/js/addJobberPopups.js",
+            "modules/js/checkBoxes.js",
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+            'modules/js/repairOrderManager.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
 
         $this->smarty->assign('pleaseWaitReason', "Recalculating repair orders at facility.");
         $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
@@ -221,6 +266,7 @@ class CRepairOrder extends Controller {
         $this->setPermissionsNew('viewRepairOrder');
 
 		$facility = new Facility($this->db);
+        $department = new Department($this->db);
         $company = new Company($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
@@ -229,16 +275,45 @@ class CRepairOrder extends Controller {
         $company = new VWM\Hierarchy\Company($this->db, $companyId);
         $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-		
+		// get wo departments
+        $repairOrderManager = new RepairOrderManager($this->db);
+        $woDepartments = $repairOrderManager->getDepartmentsByWo($this->getFromRequest('id'));
+        if (!$woDepartments) {
+            // we shoul get all department list
+            $woDepartments = $facility->getDepartmentList($this->getFromRequest("facilityID"));
+        }
+        $departmetsName = array();
+        foreach ($woDepartments as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmetsName[] = $departmentDetails["name"];
+        }
+        $woDepartmentsName = implode(",", $departmetsName);
+        $woDepartments = implode(",", $woDepartments);
+        $this->smarty->assign('woDepartments', $woDepartments);
+        $this->smarty->assign('woDepartmentsName', $woDepartmentsName);
         //	set js scripts
         $jsSources = array(
-            'modules/js/reg_country_state.js',
-            'modules/js/saveItem.js',
-            'modules/js/PopupWindow.js',
-            'modules/js/addJobberPopups.js',
-            'modules/js/checkBoxes.js'
-        );
-        $this->smarty->assign('jsSources', $jsSources);
+            "modules/js/reg_country_state.js",
+            "modules/js/saveItem.js",
+            "modules/js/PopupWindow.js",
+            "modules/js/addJobberPopups.js",
+            "modules/js/checkBoxes.js",
+			"modules/js/autocomplete/jquery.autocomplete.js",
+			"modules/js/checkBoxes.js",
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/external/jquery.bgiframe-2.1.1.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+            'modules/js/repairOrderManager.js'
+		);
+		$this->smarty->assign('jsSources', $jsSources);
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
 
         $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
@@ -274,6 +349,52 @@ class CRepairOrder extends Controller {
 
 		$this->smarty->display("tpls/repairOrderLabel.tpl");
 	}
+    
+    protected function actionLoadDepartments() {
+        
+        $facilityId = $this->getFromRequest('facilityId');
+        $department = new Department($this->db);
+        $facility = new Facility($this->db);
+        $woDepartmentsDeafult = $facility->getDepartmentList($facilityId);
+        $woId = $this->getFromRequest('woId'); 
+        // if we add new wo we cannot knew wo id so
+        if ($woId == "false") {
+            // we shoul get all department list
+            $woDepartments = $woDepartmentsDeafult;
+        } else {
+            $repairOrderManager = new RepairOrderManager($this->db);
+            $woDepartments = $repairOrderManager->getDepartmentsByWo($woId);
+            if (!$woDepartments) {
+                // we shoul get all department list
+                $woDepartments = $woDepartmentsDeafult;
+            }
+        }
+        
+        $departmentsDeafult = array();
+        foreach ($woDepartmentsDeafult as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentsDeafult[$departmentId] = $departmentDetails["name"];
+        }
+        $this->smarty->assign('woDepartments', $woDepartments);
+        $this->smarty->assign('departmentsDeafult', $departmentsDeafult);
+		echo $this->smarty->fetch('tpls/setDepartmentToWo.tpl');
+    }
+    
+    protected function actionSetDepartmentToWo() {
+	
+        $department = new Department($this->db);
+		$rowsToSave = $this->getFromRequest('rowsToSave'); 
+        $value = implode(",", $rowsToSave);
+        $departmentName = array();
+        foreach ($rowsToSave as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentName[] = $departmentDetails["name"];
+        }
+        $response = implode(",", $departmentName);
+        $response .= "<input type='hidden' name='woDepartments_id' id='woDepartments_id' value='$value' />";
+
+		echo $response;
+    }
 
 }
 

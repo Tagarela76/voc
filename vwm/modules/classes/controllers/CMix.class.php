@@ -475,11 +475,24 @@ class CMix extends Controller {
 				$mixHover = new Hover();
 
 				$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
-
 				if (!$mixList) {
 					$mixList = array();
 				}
-
+                // filter mix list - we should display wo only for accepted department
+                $mixFiltered = array(); // array for new mix list
+                $repairOrderManager = new RepairOrderManager($this->db);
+                foreach ($mixList as $mix) {
+                    $acceptedDepartments = $repairOrderManager->getDepartmentsByWo($mix->wo_id); 
+                    if (!$acceptedDepartments) {
+                        // accept in all departments
+                        $mixFiltered[] = $mix;
+                    } else { 
+                        if (in_array($departmentDetails['department_id'], $acceptedDepartments)) {
+                            $mixFiltered[] = $mix;
+                        }
+                    }
+                }
+                $mixList = $mixFiltered;
 				foreach ($mixList as $mix) {
 					$mix->url = "?action=viewDetails&category=mix&id=" . urlencode($mix->mix_id) . "&departmentID=" .
 						urlencode($this->getFromRequest('id'));
@@ -656,7 +669,10 @@ class CMix extends Controller {
             foreach ($labels as $label) {
                 $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($label)->getLabelText();
             }
-            
+            if (empty($mixColumn4DisplayFormat)) {
+                $mixColumn4DisplayFormat = $mixColumn4Display;
+            }
+
 			$this->smarty->assign('widths', $widths);
 			$this->smarty->assign('columnCount', count($mixColumn4Display));
 			$this->smarty->assign('mixColumn4Display', $mixColumn4DisplayFormat);

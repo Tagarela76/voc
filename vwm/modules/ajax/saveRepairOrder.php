@@ -36,7 +36,8 @@
 	$xnyo->filter_post_var("work_order_status", "text");
 	$xnyo->filter_post_var("work_order_id", "text");
 	$xnyo->filter_post_var("work_order_vin", "text");
-	
+    $xnyo->filter_post_var("woDepartments_id", "text");
+
 	$repairOrderId = $_POST["work_order_id"]; // could be NULL (add action)
 	if ($repairOrderId == '') {
 		$repairOrderId = null;
@@ -53,7 +54,12 @@
 
 	$validation = new Validation($db);
 	$validStatus = $validation->validateRegDataRepairOrder($repairOrder);
-
+    // departments list validation
+    $woDepartments_id = $_REQUEST["woDepartments_id"];
+    if ($woDepartments_id == "") {
+        $validStatus['summary'] = 'false';
+		$validStatus['woDepartments'] = 'failed';
+    }
 	if ($action == 'addItem') {
 		if (!$validation->isUniqueName("repairOrder", $repairOrder->number, $repairOrder->facility_id)) {
 			$validStatus['summary'] = 'false';
@@ -97,7 +103,15 @@
 			}
 		}
 	}
-
+    // set department to wo
+    $woDepartments_id = explode(",", $woDepartments_id);
+    $repairOrderManager = new RepairOrderManager($db);
+    // i should unset all departments from wo at first
+    $repairOrderManager->unSetDepartmentToWo($repairOrderId);
+    // set departments to wo
+    foreach ($woDepartments_id as $departmentId) {
+       $repairOrderManager->setDepartmentToWo($repairOrderId, $departmentId); 
+    }
 	echo json_encode($validStatus);		
 
 ?>
