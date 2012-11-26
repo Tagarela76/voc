@@ -8,12 +8,12 @@
 	<tr>
 		<td>
 			<div>
-				{foreach from=$columnsDefaultDisplay item=columnDefault}
+				{foreach from=$columnsDefaultDisplay key=columnId item=columnDefault}
 					<tr>
 						<td align="center" style="width:150px">
-							<input type="checkbox" value="{$columnDefault}"
+							<input type="checkbox" value="{$columnId}"
 								   {foreach from=$columnsDisplay item=column}
-									   {if $columnDefault eq $column} checked {/if}
+									   {if $columnId eq $column} checked {/if}
 								   {/foreach}
 							/>
 						</td>

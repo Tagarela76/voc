@@ -155,18 +155,12 @@ class CAIndustryType extends Controller {
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
 		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
-        $browseCategoryMixDefaultValueArray = explode(",", $browseCategoryMix->default_value);
         $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
         $columnsSettingsMixValueArray = explode(",", $columnsSettingsMixValue);
 
-        $labels = array($productNameLabel, $addJobLabel, $descriptionLabel, 
-            $roDescriptionLabel, $contactLabel, $roVinNumberLabel, 
-            $vocLabel, $unitTypeLabel, $creationDateLabel);
         $mixColumn4Display = array();
-        foreach ($browseCategoryMixDefaultValueArray as $key=> $value) {
-            if (in_array($value, $columnsSettingsMixValueArray)) {
-                $mixColumn4Display[] = $labels[$key];
-            }
+        foreach ($columnsSettingsMixValueArray as $columnId) {
+            $mixColumn4Display[] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText(); 
         }
         $columnsSettingsMixValue = implode(",", $mixColumn4Display);
 
@@ -271,20 +265,15 @@ class CAIndustryType extends Controller {
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
 		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
-        $browseCategoryMixDefaultValueArray = explode(",", $browseCategoryMix->default_value);
         $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
         $columnsSettingsMixValueArray = explode(",", $columnsSettingsMixValue);
 
-        $labels = array($productNameLabel, $addJobLabel, $descriptionLabel, 
-            $roDescriptionLabel, $contactLabel, $roVinNumberLabel, 
-            $vocLabel, $unitTypeLabel, $creationDateLabel);
         $mixColumn4Display = array();
-        foreach ($browseCategoryMixDefaultValueArray as $key=> $value) {
-            if (in_array($value, $columnsSettingsMixValueArray)) {
-                $mixColumn4Display[] = $labels[$key];
-            }
+        foreach ($columnsSettingsMixValueArray as $columnId) {
+            $mixColumn4Display[] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText();
         }
         $columnsSettingsMixValue = implode(",", $mixColumn4Display);
+
 		$this->smarty->assign('browseCategoryMix', $browseCategoryMix);
 		$this->smarty->assign('columnsSettingsMixValue', $columnsSettingsMixValue);
 		$this->smarty->assign('columnsSettingsMixValueArray', $columnsSettingsMixValueArray);
@@ -310,13 +299,8 @@ class CAIndustryType extends Controller {
 		
 		if ($this->getFromPost('save') == 'Save') {
 			// save display columns settings for mix entity
-			$value = $this->getFromPost('browseCategoryMix_id');
-            $defaultLabels = array();
-            foreach ($value as $labelText) {
-                $defaultLabels[] = $companyLabelManager->getDefaultLabelByLabelText($labelText);
-            }
-			$columnsDisplayValue = implode(",", $defaultLabels);
-
+			$value = $this->getFromPost('browseCategoryMix_id'); 
+			$columnsDisplayValue = implode(",", $value);
 			// we should knew - insert/update. So i get columns settings and set display columns settings id
             $displayColumnsSettings = $industryType->getDisplayColumnsManager();
 			$columnsSettingsMix = $displayColumnsSettings->getDisplayColumnsSettings($browseCategoryMix->name);
@@ -433,6 +417,11 @@ class CAIndustryType extends Controller {
 		$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix(); 
 		$columnsSettingsMixValue = $browseCategoryMix->default_value;
 		$columnsSettingsMixValueArray = explode(',', $columnsSettingsMixValue);
+        $mixColumn4Display = array();
+        foreach ($columnsSettingsMixValueArray as $columnId) {
+            $mixColumn4Display[] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText();
+        }
+        $columnsSettingsMixValue = implode(",", $mixColumn4Display);
 		$this->smarty->assign('browseCategoryMix', $browseCategoryMix);
 		$this->smarty->assign('columnsSettingsMixValue', $columnsSettingsMixValue);
 		$this->smarty->assign('columnsSettingsMixValueArray', $columnsSettingsMixValueArray);
@@ -553,27 +542,15 @@ class CAIndustryType extends Controller {
                 // Unit Type
                 $companyLevelLabelUnitTypeDefault = $companyLevelLabel->getUnitTypeLabel();
                 $unitTypeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelUnitTypeDefault->label_id)->getLabelText();
-				if ($this->getFromRequest('industryTypeId') != 'false') {
-                    $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
-					$mixColumnsDisplay = explode(',', $columnsSettingsMixValue);
-                    $labels = array($productNameLabel, $addJobLabel, $descriptionLabel, 
-                            $roDescriptionLabel, $contactLabel, $roVinNumberLabel, 
-                            $vocLabel, $unitTypeLabel, $creationDateLabel);
-                    $mixColumn4Display = array();
-                    $mixColumn4DisplayDefault = array();
-                    foreach ($mixColumnsDisplayDefault as $key=> $value) {
-                        if (in_array($value, $mixColumnsDisplay)) {
-                            $mixColumn4Display[] = $labels[$key];
-                        }
-                        $mixColumn4DisplayDefault[] = $labels[$key];
-                    }
-                    $mixColumnsDisplay = $mixColumn4Display;
-                    $mixColumnsDisplayDefault = $mixColumn4DisplayDefault;
-				} else {
-					$mixColumnsDisplay = $mixColumnsDisplayDefault;
-				}
+                
+                $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
+                $mixColumnsDisplay = explode(',', $columnsSettingsMixValue);
+                $mixColumn4DisplayDefault = array();
+                foreach ($mixColumnsDisplayDefault as $columnId) {
+                    $mixColumn4DisplayDefault[$columnId] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText();
+                }
 
-				$this->smarty->assign('columnsDefaultDisplay', $mixColumnsDisplayDefault);
+				$this->smarty->assign('columnsDefaultDisplay', $mixColumn4DisplayDefault);
 				$this->smarty->assign('columnsDisplay', $mixColumnsDisplay);
 			break;	
 		}
@@ -584,10 +561,16 @@ class CAIndustryType extends Controller {
 
 		$entity = $this->getFromRequest('entity');		
 		$rowsToSave = $this->getFromRequest('rowsToSave'); 
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $industryType = new IndustryType($this->db, $this->getFromRequest('industryTypeId'));
         // get browse category list
 		switch ($entity) {
 			case "mix" :
-				$response = implode(",", $rowsToSave);
+                $mixColumn4Display = array();
+                foreach ($rowsToSave as $columnId) {
+                    $mixColumn4Display[] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText();
+                }
+				$response = implode(",", $mixColumn4Display);
 				foreach ($rowsToSave as $value) {
 					$response .= "<input type='hidden' name='browseCategoryMix_id[]' id='browseCategoryMix_id[]' value='$value' />";
 				}
