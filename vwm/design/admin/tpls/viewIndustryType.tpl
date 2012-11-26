@@ -212,6 +212,15 @@
                 <div align="left" >&nbsp;{$detailingShopProductLabel}</div>
             </td>
         </tr>
+        
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
+                {$companyLevelLabelFuelAndOilProductDefault->name4display}
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left" >&nbsp;{$fuelAndOilProductLabel}</div>
+            </td>
+        </tr>
 		<tr>
 			<td height="20" class="users_u_bottom">
 				&nbsp;

@@ -197,6 +197,10 @@ class ProductLibraryType {
 			case "detailingShop":
 				$productLibraryType = "3";
 			break;
+        
+            case "fuelAndOils":
+				$productLibraryType = "4";
+			break;
 	}
 		return $productLibraryType;
 
