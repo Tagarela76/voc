@@ -210,15 +210,6 @@ class PFPManager {
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
-        $sql = "SELECT pfp.id, pfp.description, pfp.company_id, industry_type.type
-                FROM preformulated_products pfp, pfp2product pfp2p, product p, product2industry_type p2t , supplier s, industry_type industry_type
-                WHERE pfp2p.preformulated_products_id = pfp.id 
-                AND p.product_id = pfp2p.product_id 
-                AND p.product_id = p2t.product_id
-                AND p.supplier_id = s.supplier_id 
-                AND p2t.industry_type_id = industry_type.id
-                AND s.original_id = 54 GROUP BY pfp.id ORDER BY pfp.description LIMIT 50 OFFSET 0";
-die($sql);
 		return $this->_processGetPFPListQuery($query);
 	}
 
