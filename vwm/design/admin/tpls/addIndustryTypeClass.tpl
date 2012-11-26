@@ -246,6 +246,19 @@
                     {/if}
                 </td>
             </tr>
+            <tr height="10px">
+                <td class="border_users_l border_users_b" height="20">
+                    {$companyLevelLabelFuelAndOilProductDefault->name4display}
+                </td>
+                <td class="border_users_l border_users_b border_users_r">
+                    <div align="left"><input type='text' name="{$companyLevelLabelFuelAndOilProductDefault->label_id}" id="{$companyLevelLabelFuelAndOilProductDefault->label_id}" value='{$fuelAndOilProductLabel}'/></div>
+                    {if $errors.fuel_and_oils_product eq 'true'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank</span></div>
+                        {*/ERROR*}						    
+                    {/if}
+                </td>
+            </tr>
 			<tr>
 				<td height="20" class="users_u_bottom">
 					&nbsp;

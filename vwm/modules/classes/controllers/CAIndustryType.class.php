@@ -113,6 +113,10 @@ class CAIndustryType extends Controller {
         $companyLevelLabelDetailingShopProductDefault = $companyLevelLabel->getDetailingShopProductLabel();
         $detailingShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelDetailingShopProductDefault->label_id)->getLabelText();
         
+        // Fuel and Oils Label
+        $companyLevelLabelFuelAndOilProductDefault = $companyLevelLabel->getFuelAndOilProductLabel(); 
+        $fuelAndOilProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelFuelAndOilProductDefault->label_id)->getLabelText();
+        
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -151,6 +155,9 @@ class CAIndustryType extends Controller {
         
         $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
         $this->smarty->assign('companyLevelLabelDetailingShopProductDefault', $companyLevelLabelDetailingShopProductDefault);
+        
+        $this->smarty->assign('fuelAndOilProductLabel', $fuelAndOilProductLabel);
+        $this->smarty->assign('companyLevelLabelFuelAndOilProductDefault', $companyLevelLabelFuelAndOilProductDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -223,6 +230,10 @@ class CAIndustryType extends Controller {
         $companyLevelLabelDetailingShopProductDefault = $companyLevelLabel->getDetailingShopProductLabel();
         $detailingShopProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelDetailingShopProductDefault->label_id)->getLabelText();
         
+        // Fuel and Oils Label
+        $companyLevelLabelFuelAndOilProductDefault = $companyLevelLabel->getFuelAndOilProductLabel();
+        $fuelAndOilProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelFuelAndOilProductDefault->label_id)->getLabelText();
+        
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -261,6 +272,9 @@ class CAIndustryType extends Controller {
         
         $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
         $this->smarty->assign('companyLevelLabelDetailingShopProductDefault', $companyLevelLabelDetailingShopProductDefault);
+        
+        $this->smarty->assign('fuelAndOilProductLabel', $fuelAndOilProductLabel);
+        $this->smarty->assign('companyLevelLabelFuelAndOilProductDefault', $companyLevelLabelFuelAndOilProductDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -389,6 +403,11 @@ class CAIndustryType extends Controller {
                     $companyLevelLabelDetailingShopProduct->setCompanyLevelLabelId($companyLevelLabelDetailingShopProductDefault->id);
                     $companyLevelLabelDetailingShopProduct->setLabelText($post[$companyLevelLabelDetailingShopProductDefault->label_id]);
                     $companyLevelLabelDetailingShopProduct->save();
+                    
+                    $companyLevelLabelFuelAndOilProduct = $industryType->getLabelManager()->getLabel($companyLevelLabelFuelAndOilProductDefault->label_id);
+                    $companyLevelLabelFuelAndOilProduct->setCompanyLevelLabelId($companyLevelLabelFuelAndOilProductDefault->id);
+                    $companyLevelLabelFuelAndOilProduct->setLabelText($post[$companyLevelLabelFuelAndOilProductDefault->label_id]);
+                    $companyLevelLabelFuelAndOilProduct->save();
                     
 					// redirect
 					header("Location: ?action=viewDetails&category=industryType&id=" . $this->getFromRequest('id') . "&&notify=54");

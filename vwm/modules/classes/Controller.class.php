@@ -1003,6 +1003,7 @@ class Controller {
             $companyLevelLabelPaintShopProduct = $companyLevelLabel->getPaintShopProductLabel();
             $companyLevelLabelBodyShopProduct = $companyLevelLabel->getBodyShopProductLabel();
             $companyLevelLabelDetailingShopProduct = $companyLevelLabel->getDetailingShopProductLabel();
+            $companyLevelLabelFuelAndOilsProduct = $companyLevelLabel->getFuelAndOilProductLabel();
             $facility = new Facility($this->db);
             if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
                 $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
@@ -1017,10 +1018,12 @@ class Controller {
             $paintShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPaintShopProduct->label_id)->getLabelText();
             $bodyShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelBodyShopProduct->label_id)->getLabelText();
             $detailingShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelDetailingShopProduct->label_id)->getLabelText();
+            $fuelAndOilsProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelFuelAndOilsProduct->label_id)->getLabelText();
             $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
             $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
             $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
             $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
+            $this->smarty->assign('fuelAndOilsProductLabel', $fuelAndOilsProductLabel);
         }
         
     }
