@@ -189,21 +189,6 @@ class CompanyLabelManager {
         }
         return $errors;
     }
-    
-    public function getDefaultLabelByLabelText($labelText) {
-		
-		$sql = "SELECT cll.default_label_text FROM " . TB_INDUSTRY_TYPE2LABEL . " itl " .
-			   "JOIN " . TB_COMPANY_LEVEL_LABEL . " cll " . 
-			   "ON itl.company_level_label_id= cll.id " .
-			   "WHERE itl.label_text='{$this->db->sqltext($labelText)}' " .
-			   "AND itl.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}"; 
- 		$this->db->query($sql); 
-		$row = $this->db->fetch(0); 
-		if ($this->db->num_rows() == 0) {
-			return $labelText;
-		}
-		return $row->default_label_text;
-	}
 }
 
 ?>
