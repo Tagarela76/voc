@@ -588,7 +588,6 @@ class CMix extends Controller {
             // we should get browse category entity for mix
 			$browseCategoryEntity = new BrowseCategoryEntity($this->db);
 			$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
-            $mixColumnDefault = explode(",", $browseCategoryMix->default_value);
 			$companyId = $companyDetails["company_id"];
 			$company = new VWM\Hierarchy\Company($this->db, $companyId);
             $mixColumn4Display = $company->getIndustryType()->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
@@ -597,7 +596,17 @@ class CMix extends Controller {
             // for displaying voc unit type
 			$unittype = new Unittype($this->db);
 			$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
-            
+            $widths4column = array(
+                    "r_o_description" => "15%",
+                    "add_job" => "10%",
+                    "product_name" => "12%",
+                    "description" => "15%",
+                    "contact" => "13%",
+                    "r_o_vin_number" => "20%",
+                    "voc" => "5%",
+                    "unit_type" => "15%",
+                    "creation_date" => "15%"
+                );
 			$mixFormatObjList = array();
 			foreach ($mixList as $mix) {
 				// create new mix object
@@ -609,56 +618,42 @@ class CMix extends Controller {
 					}
 				}
 				$repairOrder = $mix->getRepairOrder();
-				$widths = array();
-                $labels = array();
-				if (in_array($mixColumnDefault[0], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[0]"] = $productName; 
-					$widths[] = "12%";
-                    $labels[] = "product_name";
+                $widths = array();
+                if (in_array("r_o_description", $mixColumn4Display)) {
+					$mixObj["r_o_description"] = $repairOrder->description;
 				}
-				if (in_array($mixColumnDefault[1], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[1]"] = (!$mix->hasChild)? 
+				if (in_array("add_job", $mixColumn4Display)) {
+					$mixObj["add_job"] = (!$mix->hasChild)? 
 					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') . 
 						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
 							title='Add child job'>add</a> &nbsp" : "";
-					$widths[] = "10%";
-                    $labels[] = "add_job";
 				}
-				if (in_array($mixColumnDefault[2], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[2]"] = $mix->description;
-					$widths[] = "15%";
-                    $labels[] = "description";
+                if (in_array("product_name", $mixColumn4Display)) {
+					$mixObj["product_name"] = $productName; 
 				}
-				if (in_array($mixColumnDefault[3], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[3]"] = $repairOrder->description;
-					$widths[] = "15%";
-                    $labels[] = "r_o_description";
+				if (in_array("description", $mixColumn4Display)) {
+					$mixObj["description"] = $mix->description;
 				}
-				if (in_array($mixColumnDefault[4], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[4]"] = $repairOrder->customer_name;
-					$widths[] = "13%";
-                    $labels[] = "contact";
+				if (in_array("contact", $mixColumn4Display)) {
+					$mixObj["contact"] = $repairOrder->customer_name;
 				}
-				if (in_array($mixColumnDefault[5], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[5]"] = $repairOrder->vin;
-					$widths[] = "20%";
-                    $labels[] = "r_o_vin_number";
+				if (in_array("r_o_vin_number", $mixColumn4Display)) {
+					$mixObj["r_o_vin_number"] = $repairOrder->vin;
 				}
-				if (in_array($mixColumnDefault[6], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[6]"] = $mix->voc;
-					$widths[] = "5%";
-                    $labels[] = "voc";
+				if (in_array("voc", $mixColumn4Display)) {
+					$mixObj["voc"] = $mix->voc;
 				}
-                if (in_array($mixColumnDefault[7], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[7]"] = $vocUnitType; 
-					$widths[] = "15%";
-                    $labels[] = "unit_type";
+                if (in_array("unit_type", $mixColumn4Display)) {
+					$mixObj["unit_type"] = $vocUnitType; 
 				}
-				if (in_array($mixColumnDefault[8], $mixColumn4Display)) {
-					$mixFormatObj["$mixColumnDefault[8]"] = $mix->creation_time; 
-					$widths[] = "15%";
-                    $labels[] = "creation_date";
+				if (in_array("creation_date", $mixColumn4Display)) {
+					$mixObj["creation_date"] = $mix->creation_time; 
 				}
+                // sort values
+                foreach ($mixColumn4Display as $columnId) {
+                    $mixFormatObj["$columnId"] = $mixObj["$columnId"];
+                    $widths[] = $widths4column["$columnId"];
+                }
 				$mixObjList["mixObject"] = $mixFormatObj;
 				$mixObjList["valid"] = $mix->valid; 
 				$mixObjList["url"] = $mix->url; // it is fix value (always display
@@ -666,15 +661,13 @@ class CMix extends Controller {
 				$mixFormatObjList[] = $mixObjList;
 			}
             $mixColumn4DisplayFormat = array();
-            foreach ($labels as $label) {
-                $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($label)->getLabelText();
+            foreach ($mixColumn4Display as $columnId) {
+                $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($columnId)->getLabelText();
             }
-            if (empty($mixColumn4DisplayFormat)) {
-                $mixColumn4DisplayFormat = $mixColumn4Display;
-            }
+            //var_dump($mixColumn4DisplayFormat, $mixFormatObjList); die();
 
 			$this->smarty->assign('widths', $widths);
-			$this->smarty->assign('columnCount', count($mixColumn4Display));
+			$this->smarty->assign('columnCount', count($mixColumn4DisplayFormat));
 			$this->smarty->assign('mixColumn4Display', $mixColumn4DisplayFormat);
 			$this->smarty->assign('mixFormatObjList', $mixFormatObjList);
 			

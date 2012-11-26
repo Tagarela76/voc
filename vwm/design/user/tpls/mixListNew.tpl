@@ -23,13 +23,6 @@
     <td class="users_u_top" width="10%">
         <span style='display:inline-block; width:60px;'> <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a></span>
     </td>
-    <td class="" width="10%">
-        <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
-            <div style='width:100%;  color:white;'>
-                Mix ID
-            </div>
-        </a>
-    </td>
     {foreach from=$mixColumn4Display item=mixTitle key=index}
         <td class="{if ($index+2) > $columnCount}users_u_top_r{/if}" width="{$widths.$index}">
             <a style='color:white;' onclick='$("#sort").attr("value","{if $sort==1}2{else}1{/if}"); $("#sortForm").submit();'>
@@ -40,7 +33,7 @@
         </td>
     {/foreach}
 	</tr>
-	{if $mixColumn4Display|@is_array and $mixColumn4Display|@count > 0}
+	{if $mixFormatObjList|@is_array and $mixFormatObjList|@count > 0}
 		{foreach from=$mixFormatObjList item=mix}
 			<!-- Begin Highlighting -->
 			<tr {if $mix.valid  eq "valid"}
@@ -66,18 +59,11 @@
 				{/if}
 				<input type="checkbox" value="{$mix.mix_id}" name="id[]">
 			</td>
-			<td class="border_users_b border_users_r" >
-					<a href="{$mix.url}" class="id_company1">
-						<div style="width:100%;">
-							{$mix.mix_id|escape} &nbsp;
-						</div>
-					</a>
-			</td>
 			{foreach from=$mix.mixObject item=mixValue key=columnName}
 				<td class="border_users_b border_users_r" >
 					<a href="{$mix.url}" class="id_company1">
 						<div style="width:100%;">
-							{if $columnName eq "Add Job"}
+							{if $columnName eq "add_job"}
 								{$mixValue} &nbsp;
 							{else}
 								{$mixValue|escape} &nbsp;
@@ -88,7 +74,7 @@
 			{/foreach}				
 		{/foreach}		
 		<tr>
-			<td colspan="{$columnCount+2}" class="border_users_l border_users_r">
+			<td colspan="{$columnCount+1}" class="border_users_l border_users_r">
 				&nbsp;
 			</td>
 		</tr>
@@ -96,14 +82,14 @@
 	{else}
 		{*BEGIN	EMPTY LIST*}
 		<tr class="">
-			<td colspan="{$columnCount+2}"class="border_users_l border_users_r" align="center">
+			<td colspan="{$columnCount+1}"class="border_users_l border_users_r" align="center">
 				No mixes in the department
 			</td>
 		</tr>
 		{*END	EMPTY LIST*}
 	{/if}
     <tr>
-        <td class="users_u_bottom" colspan="{$columnCount+1}" height="15">
+        <td class="users_u_bottom" colspan="{$columnCount}" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>
