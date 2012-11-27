@@ -66,8 +66,8 @@
 							{if $columnName eq "add_job"}
 								{$mixValue} &nbsp;
 							{else}
-								{$mixValue|escape} &nbsp;
-							{/if}	
+								{$mixValue|escape}
+							{/if}
 						</div>
 					</a>
 				</td>
