@@ -131,6 +131,16 @@ class CDepartment extends Controller {
 			'moduleMap' => $moduleMap,
 			'tab' => $this->getFromRequest("tab")
 		);
+        // we should new - show nox emissions tab
+        $noxManager = new NoxEmissionManager($this->db);
+        $noxList = $noxManager->getNoxListByDepartment($departmentDetails['department_id']);
+        if (!$noxList) {
+            // we shouldn't show nox emissions tab
+            $displayNoxEmissionsTab = false;
+        } else {
+            $displayNoxEmissionsTab = true;
+        }
+        $this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
 
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
