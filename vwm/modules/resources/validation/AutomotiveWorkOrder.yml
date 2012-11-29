@@ -1,0 +1,5 @@
+VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder:
+  properties:
+    number: 
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 64, groups: [add,Default] }

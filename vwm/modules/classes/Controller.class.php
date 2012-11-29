@@ -65,7 +65,7 @@ class Controller {
         $this->smarty->assign('footerYear', date('Y'));
     }
 
-    protected function forward($controller, $function, $vars, $controllerType = 'main') {
+    protected function forward($controller, $function, $vars, $controllerType = 'main') { 
 
 		switch ($controllerType) {
 			case "vps":
