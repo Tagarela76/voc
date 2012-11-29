@@ -39,11 +39,13 @@
 					Status
 				</div>
 			</td>
-			<td>
-				<div class="users_header_blue_r">
-					<div>VIN number</div>
-				</div>
-			</td>
+            {if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
+                <td>
+                    <div class="users_header_blue_r">
+                        <div>VIN number</div>
+                    </div>
+                </td>
+            {/if}
 		</tr>
 
 {if $childCategoryItems}
@@ -80,13 +82,15 @@
 					</div>
 				</a>
 			</td>
-			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
-					<div style="width:100%;">
-						{$repairOrder->vin|escape}
-					</div>
-				</a>
-			</td>
+            {if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
+                <td style="width:250px;" class="border_users_b border_users_l border_users_r">
+                    <a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+                        <div style="width:100%;">
+                            {$repairOrder->vin|escape}
+                        </div>
+                    </a>
+                </td>
+            {/if}    
         </tr>
 	{/foreach}
 {else}

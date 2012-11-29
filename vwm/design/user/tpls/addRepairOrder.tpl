@@ -20,7 +20,8 @@
 </div>
 	
 <div class="padd7">
-	<form action='' name="addRepairOrder" onsubmit="return false;">
+    <form id="addRepairOrder" name="addRepairOrder" action='{$sendFormAction}' method="post">	
+	<!--<form action='' name="addRepairOrder" onsubmit="return false;">-->
 		<table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
 			<tr class="users_header_orange">
 				<td>
@@ -37,12 +38,15 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='repairOrderNumber' type='text' name='name' value='{$data->number|escape}' maxlength="64">
+						<input id='repairOrderNumber' type='text' name='number' value='{$data->number|escape}' maxlength="64">
 					</div>					
-			     		{*ERROR*}					
-							<div id="error_number" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>					    						
-							<div id="error_number_alredyExist" class="error_img" style="display:none;"><span class="error_text">Entered number is alredy in use!</span></div>
-						{*/ERROR*}									
+			     	{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'number' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}									
 													
 				</td>					
 			</tr>
@@ -55,9 +59,13 @@
 					<div align="left">
 						<textarea id='repairOrderDescription' name='repairOrderDescription' cols="49" rows="5">{$data->description|escape}</textarea>
 					</div>							
-			     				{*ERROR*}					
-								<div id="error_description" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
+			     	{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'repairOrderDescription' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}						    						
 				</td>					
 			</tr>
 			
@@ -69,9 +77,13 @@
 					<div align="left">
 						<input id='repairOrderCustomerName' type='text' name='repairOrderCustomerName' value='{$data->customer_name|escape}' maxlength="30">
 					</div>							
-			     				{*ERROR*}					
-								<div id="error_customer_name" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
+			     	{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'repairOrderCustomerName' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}						    						
 				</td>					
 			</tr>
 			<tr class="border_users_b border_users_r">			
@@ -82,11 +94,16 @@
 					<div align="left">
 						<input id='repairOrderStatus' type='text' name='repairOrderStatus' value='{$data->status|escape}' maxlength="30">
 					</div>							
-			     				{*ERROR*}					
-								<div id="error_status" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
+			     	{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'repairOrderStatus' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}							    						
 				</td>					
 			</tr>
+            {if $data instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
 			<tr class="border_users_b border_users_r">			
 				<td height="20" class="border_users_l">
 					{$repairOrderLabel} VIN number:
@@ -95,11 +112,16 @@
 					<div align="left">
 						<input id='repairOrderVin' type='text' name='repairOrderVin' value='{$data->vin|escape}' maxlength="30">
 					</div>							
-			     				{*ERROR*}					
-								<div id="error_vin" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}						    						
+			     	{foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'repairOrderVin' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}					    						
 				</td>					
 			</tr>
+            {/if}
 			<tr height="10px">
 				<td height="20" class="border_users_l">
 					Departments:
@@ -111,9 +133,11 @@
 					</div>
 					<a href="#" onclick="repairOrderPage.manageRepairOrder.openDialog();">edit</a>
                     </div>
+                    {if $woDepartmentsError eq 'true'}							
                     {*ERROR*}					
-                    <div id="error_woDepartments" class="error_img" style="display:none;"><span class="error_text">This value should not be blank.</span></div>	
-                    {*/ERROR*}
+                    <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank.</span></div>
+                    {*/ERROR*}						    
+                    {/if}
                 </td>    
 			</tr>
 			<tr class="border_users_l border_users_r">
@@ -138,7 +162,8 @@
 				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=repairOrder&id={$request.id}&facilityID={$data->facility_id}'"
 				{/if}
 			>
-			<input type='submit' name='save' class="button" value='Save' onClick="saveRepairOrderDetails();">						
+            <input type='submit' name='save' class="button" value='Save'>
+			<!--<input type='submit' name='save' class="button" value='Save' onClick="saveRepairOrderDetails();">-->						
 		</div>
 		
 		{*HIDDEN*}
@@ -155,6 +180,7 @@
 						</td>
 			</tr>
 		</table>
+ </form>       
 </div>
 <div id="setDepartmentToWoContainer" title="Set department to work order" style="display:none;">Loading ...</div>	
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}	

@@ -1,6 +1,8 @@
 <?php
 use VWM\Label\CompanyLevelLabel;
-use VWM\Label\CompanyLabelManager;
+use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
+use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
+use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
 
 class CRepairOrder extends Controller {
 
@@ -34,8 +36,8 @@ class CRepairOrder extends Controller {
 		$companyId = $facilityDetails["company_id"];
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-        $company = new VWM\Hierarchy\Company($this->db, $companyId);
-        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
             
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		// get wo departments
@@ -53,6 +55,10 @@ class CRepairOrder extends Controller {
         $woDepartments = implode(",", $departmetsName);
         $this->smarty->assign('woDepartments', $woDepartments);
 
+        $industryTypeId = $companyNew->getIndustryType();
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
+        $this->smarty->assign('instanceOfWorkOrder', $workOrder);
+   
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
 		
@@ -95,6 +101,11 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('pagination', $pagination);
         
         $repairOrderList = $facility->getRepairOrdersList($facilityDetails['facility_id'],$pagination);
+        $company = new VWM\Hierarchy\Company($this->db, $facilityDetails["company_id"]);
+        $industryTypeId = $company->getIndustryType();
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
+        $this->smarty->assign('instanceOfWorkOrder', $workOrder);
+        
         if ($repairOrderList) {
             for ($i = 0; $i < count($repairOrderList); $i++) {
                 $url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				
@@ -135,16 +146,70 @@ class CRepairOrder extends Controller {
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
         $this->setPermissionsNew('viewFacility');
-
-		$facility = new Facility($this->db);
+        $facility = new Facility($this->db);
         $department = new Department($this->db);
         $company = new Company($this->db);
-		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
+        $facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
 		$companyId = $facilityDetails["company_id"];
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+        $industryTypeId = $companyNew->getIndustryType(); 
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
+        
+        $post = $this->getFromPost();
+
+		if (count($post) > 0) { 
+
+            $facilityID = $post['facility_id'];
+            $woDepartments_id = $post['woDepartments_id'];
+            $workOrder->setNumber($post['number']);
+            $workOrder->setCustomer_name($post['repairOrderCustomerName']);
+            $workOrder->setStatus($post['repairOrderStatus']);
+            $workOrder->setDescription($post['repairOrderDescription']);
+            $workOrder->setFacility_id($facilityID); 
+            if ($workOrder instanceof AutomotiveWorkOrder) {
+                $workOrder->setVin($post['repairOrderVin']);
+            }
+			$violationList = $workOrder->validate(); 
+			if(count($violationList) == 0 && $woDepartments_id != '') { 
+				$woID = $workOrder->save(); 
+                // get current facility departments
+                $departmentIds = $facility->getDepartmentList($facilityID);
+                if (!empty($departmentIds)) {
+                    // add empty mix for each facility department
+                    $mixOptimized = new MixOptimized($this->db);
+                    $mixOptimized->description = $post["number"];
+                    $mixOptimized->wo_id = $woID;
+                    $mixOptimized->iteration = 0;
+                    $mixOptimized->facility_id = $facilityID; 
+                    $mixOptimized->department_id = $departmentIds[0];
+                    $mixOptimized->save();
+                }
+                // set department to wo
+                $woDepartments_id = explode(",", $woDepartments_id);
+                $repairOrderManager = new RepairOrderManager($this->db);
+                // i should unset all departments from wo at first
+                $repairOrderManager->unSetDepartmentToWo($woID);
+                // set departments to wo
+                foreach ($woDepartments_id as $departmentId) {
+                   $repairOrderManager->setDepartmentToWo($woID, $departmentId); 
+                }
+				// redirect
+				header("Location: ?action=viewDetails&category=repairOrder&id=" . $workOrder->id . "&facilityID=" . $facilityID . "&notify=59");
+			} else {						
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);						
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $workOrder);
+                if ($woDepartments_id == '') {
+                    $this->smarty->assign('woDepartmentsError', true);
+                }
+			}																	
+		}
+
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-        $company = new VWM\Hierarchy\Company($this->db, $companyId);
-        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
         // get wo departments
@@ -256,8 +321,17 @@ class CRepairOrder extends Controller {
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
         }
-        $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
-        $this->smarty->assign('data', $repairOrder);
+        $facility = new Facility($this->db);
+        $department = new Department($this->db);
+        $company = new Company($this->db);
+		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
+		$companyId = $facilityDetails["company_id"];
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
+        $industryTypeId = $companyNew->getIndustryType(); 
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $this->getFromRequest('id'));
+        $woOldDesc = $workOrder->number;
+   //     $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
+        $this->smarty->assign('data', $workOrder);
 
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "repairOrder");
@@ -265,15 +339,63 @@ class CRepairOrder extends Controller {
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
         $this->setPermissionsNew('viewRepairOrder');
 
-		$facility = new Facility($this->db);
-        $department = new Department($this->db);
-        $company = new Company($this->db);
-		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest("facilityID"));
-		$companyId = $facilityDetails["company_id"];
+        $post = $this->getFromPost();
+
+		if (count($post) > 0) { 
+            $facilityID = $post['id'];
+            $woDepartments_id = $post['woDepartments_id'];
+            $workOrder->setNumber($post['number']);
+            $workOrder->setCustomer_name($post['repairOrderCustomerName']);
+            $workOrder->setStatus($post['repairOrderStatus']);
+            $workOrder->setDescription($post['repairOrderDescription']);
+            $workOrder->setFacility_id($facilityID);
+            if ($workOrder instanceof AutomotiveWorkOrder) {
+                $workOrder->setVin($post['repairOrderVin']);
+            }
+			$violationList = $workOrder->validate(); 
+			if(count($violationList) == 0 && $woDepartments_id != '') { 
+				$woID = $workOrder->save(); 
+                // get work order mix id
+                $mixIDs = $workOrder->getMixes();   
+                // now we should update child work order mix (don't touch iteration suffix)
+                foreach ($mixIDs as $mixID) {
+                    // add empty mix for each facility department
+                    $mixOptimized = new MixOptimized($this->db, $mixID->mix_id);
+                    preg_match("/$woOldDesc(.*)/", $mixOptimized->description, $suffix);  
+
+                    $mixOptimized->description = $post['number'];
+                    if(!empty($suffix[1]) ) {
+                        $mixOptimized->description .= $suffix[1]; 
+                    }
+                    $mixOptimized->save(); 
+                }
+                // set department to wo
+                $woDepartments_id = explode(",", $woDepartments_id);
+                $repairOrderManager = new RepairOrderManager($this->db);
+                // i should unset all departments from wo at first
+                $repairOrderManager->unSetDepartmentToWo($woID);
+                // set departments to wo
+                foreach ($woDepartments_id as $departmentId) {
+                   $repairOrderManager->setDepartmentToWo($woID, $departmentId); 
+                }
+				// redirect
+				header("Location: ?action=viewDetails&category=repairOrder&id=" . $workOrder->id . "&facilityID=" . $facilityID . "&notify=58");
+			} else {						
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);						
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $workOrder);
+                if ($woDepartments_id == '') {
+                    $this->smarty->assign('woDepartmentsError', true);
+                }
+			}																	
+		}
+
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
-        $company = new VWM\Hierarchy\Company($this->db, $companyId);
-        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 		// get wo departments
         $repairOrderManager = new RepairOrderManager($this->db);
