@@ -856,6 +856,15 @@ class CNox extends Controller {
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
+    
+    protected function actionShowNoxTab() {
+        
+        if (!isset($_SESSION["noxTabShow"])) {
+            $_SESSION["noxTabShow"] = true;
+        }       
+        // redirect back
+        header("Location: " . $_SERVER['HTTP_REFERER']);        
+    }
 
 }
 

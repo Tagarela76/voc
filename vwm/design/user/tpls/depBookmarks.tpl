@@ -21,7 +21,7 @@
                         </a>
                     </td>
                     {/if}
-                    {if $permissions.data.view && $displayNoxEmissionsTab}
+                    {if $permissions.data.view && ($displayNoxEmissionsTab || $smarty.session.noxTabShow eq "true")}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=nox&tab=nox">{if $request.bookmark != "nox"}
                             <div class="deactiveBookmark">

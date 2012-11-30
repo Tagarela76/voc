@@ -1,6 +1,5 @@
 <?php
-
-namespace VWM\WorkOrder;
+namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Test\DbTestCase;
 use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
@@ -8,7 +7,7 @@ use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
 class IndustrialWorkOrderTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		TB_INDUSTRY_TYPE, TB_WORK_ORDER
+		TB_WORK_ORDER
 	);
 
 
@@ -18,7 +17,6 @@ class IndustrialWorkOrderTest extends DbTestCase {
         $industrialWO->setCustomer_name("Tom Smith");
         $industrialWO->setDescription("test wo");
         $industrialWO->setFacility_id("1");
-        $industrialWO->setIndustry_type("3");
         $industrialWO->setNumber("wo nubmer");
         $industrialWO->setStatus("in progress");
 		$r = $industrialWO->save();

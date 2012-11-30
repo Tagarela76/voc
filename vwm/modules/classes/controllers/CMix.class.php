@@ -609,16 +609,11 @@ class CMix extends Controller {
                 );
 			$mixFormatObjList = array();
 			foreach ($mixList as $mix) {
-				// create new mix object
-				$productName = "";
-				$products = $mix->getProducts();
-				foreach ($products as $item) {
-					if ($item->is_primary) {
-						$productName = $item->name;
-					}
-				}
-				$repairOrder = $mix->getRepairOrder();
+                $mixFormatObj = array();
+                $mixObj = array();
                 $widths = array();
+				// create new mix object	
+				$repairOrder = $mix->getRepairOrder();
                 if (in_array("r_o_description", $mixColumn4Display)) {
 					$mixObj["r_o_description"] = $repairOrder->description;
 				}
@@ -629,6 +624,13 @@ class CMix extends Controller {
 							title='Add child job'>add</a> &nbsp" : "";
 				}
                 if (in_array("product_name", $mixColumn4Display)) {
+                    $productName = "";
+                    $products = $mix->getProducts();
+                    foreach ($products as $item) {
+                        if ($item->is_primary) {
+                            $productName = $item->name;
+                        }
+                    }
 					$mixObj["product_name"] = $productName; 
 				}
 				if (in_array("description", $mixColumn4Display)) {
@@ -651,7 +653,7 @@ class CMix extends Controller {
 				}
                 // sort values
                 foreach ($mixColumn4Display as $columnId) {
-                    $mixFormatObj["$columnId"] = $mixObj["$columnId"];
+                    $mixFormatObj[$columnId] = $mixObj[$columnId];
                     $widths[] = $widths4column["$columnId"];
                 }
 				$mixObjList["mixObject"] = $mixFormatObj;
@@ -660,6 +662,7 @@ class CMix extends Controller {
 				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
 				$mixFormatObjList[] = $mixObjList;
 			}
+       //     var_dump($mixFormatObjList); die();
             $mixColumn4DisplayFormat = array();
             foreach ($mixColumn4Display as $columnId) {
                 $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($columnId)->getLabelText();
