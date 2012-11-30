@@ -154,7 +154,7 @@ class CRepairOrder extends Controller {
         $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
         $industryTypeId = $companyNew->getIndustryType(); 
         $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
-        
+        $this->smarty->assign('data', $workOrder);
         $post = $this->getFromPost();
 
 		if (count($post) > 0) { 
