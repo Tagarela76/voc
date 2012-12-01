@@ -37,6 +37,7 @@ class Controller {
 		self::INSERT_AFTER_VOC_GAUGE => array(),
 		self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE => array(),
 		self::INSERT_AFTER_INDUSTRY_TYPES => array(),
+        self::INSERT_AFTER_NOX_GAUGE => array(),
 	);
 
 
@@ -44,6 +45,7 @@ class Controller {
 	const INSERT_AFTER_VOC_GAUGE = 1;
 	const INSERT_NOX_LOG_BEFORE_NOX_GAUGE = 2;
 	const INSERT_AFTER_INDUSTRY_TYPES = 3;
+    const INSERT_AFTER_NOX_GAUGE = 4;
 
     function Controller($smarty, $xnyo, $db, $user, $action) {
         $this->smarty = $smarty;
@@ -1598,7 +1600,7 @@ class Controller {
 		if (array_key_exists($whereToInsert, $this->blocksToInsert)) {
 			array_push($this->blocksToInsert[$whereToInsert], $path);
 
-			$this->smarty->assign('blocksToInsert', $this->blocksToInsert);
+			$this->smarty->assign('blocksToInsert', $this->blocksToInsert); 
 
 			return true;
 		} else {
@@ -1623,6 +1625,17 @@ class Controller {
 	protected function render() {
 		$this->smarty->display("tpls:index.tpl");
 	}
+    
+    //	product QTY indicator
+    protected function setQtyProductIndicator($limit, $currenProductQty) {
+        $this->smarty->assign('qtyProductLimit', $limit);
+        $this->smarty->assign('currenProductQty', round($currenProductQty, 2));
+        $pxQtyProductCount = round(200 * $currenProductQty / $limit); 
+        if ($pxQtyProductCount > 200) {
+            $pxQtyProductCount = 200;
+        }
+        $this->smarty->assign('pxQtyProductCount', $pxQtyProductCount); //	200px - indicator length
+    }
 }
 
 ?>

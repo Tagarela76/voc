@@ -151,7 +151,7 @@ function ManagePermissions() {
 	}
 }
 
-function manageAdditionalEmailAccounts() {
+function ManageAdditionalEmailAccounts() {
 	this.divId = 'manageAdditionalEmailAccountsContainer';
 	this.divUserAccountListId = 'userAccountListContainer';
 	this.isLoaded = false;
@@ -275,10 +275,83 @@ function manageAdditionalEmailAccounts() {
 	}
 }
 			
+function ManageQtyProductGage() {
+	this.divId = 'manageQtyProductGageContainer';
+	this.isLoaded = false;
+
+	this.iniDialog = function(divId) {
+		divId = typeof divId !== 'undefined' ? divId : this.divId;
+		if(divId !== this.divId) {
+			this.divId = divId;
+		}
+
+		var that = this;
+		$("#"+divId).dialog({
+			width: 350,
+			height: 200,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog('close');
+					that.isLoaded = false;
+				},
+				'Save': function() {
+					that.save();
+				}
+			}
+		});
+	}
+
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
+
+	this.loadContent = function() {
+		var that = this;
+		$.ajax({
+			url: "?action=loadQtyProductSettings",
+			data: {facilityId: settings.facilityId, companyId: settings.companyId},
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				$("#"+that.divId).html(response);
+				that.isLoaded = true;
+      		}
+		});
+	};
+	
+	this.save = function() {
+		var that = this;
+        var id = $("#id").val();
+		var limit = $("#limit").val();
+        var unit_type = $("#unit_type").val();
+        var period = $("#period").val();
+        var facility_id = $("#facility_id").val();
+		$.ajax({
+			url: "?action=saveQtyProductGageSettings",
+			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id},
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				that.isLoaded = false;
+				$("#"+that.divId).dialog('close'); 
+				that.divId.isLoaded = false;
+			}
+		});
+	};
+}
 		
 function Settings() {
 	this.managePermissions = new ManagePermissions();
-	this.manageAdditionalEmailAccounts = new manageAdditionalEmailAccounts();
+	this.manageAdditionalEmailAccounts = new ManageAdditionalEmailAccounts();
+    this.manageQtyProductGage = new ManageQtyProductGage();
 	this.companyId = false;
 	this.facilityId = false;
 }
@@ -292,4 +365,5 @@ $(function() {
 	settings = new Settings();
 	settings.managePermissions.iniDialog();
 	settings.manageAdditionalEmailAccounts.iniDialog();
+    settings.manageQtyProductGage.iniDialog();
 });
