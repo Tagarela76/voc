@@ -201,7 +201,20 @@
 								<input type="hidden" name="id" value="{$request.id}" />
 								<input type="hidden" name="bookmark" value="{$request.bookmark}" />
 							{/if}
-							
+							<div style="clear: both;"> </div>
+							{if $request.category == 'department' || ($request.category == 'facility' && $request.bookmark == 'department')}
+							<div class="button_float_right">
+							{*INSERT_AFTER_NOX_GAUGE*}
+							{*Stupid Smarty does not support class constants*}
+							{*blocksToInsert.4 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
+								{if $blocksToInsert.4|@count > 0}
+									{foreach from=$blocksToInsert.4 item="blockPath"}
+										{include file="tpls:$blockPath"}
+									{/foreach}
+								{/if}
+							{*/INSERT_AFTER_NOX_GAUGE*}
+							</div>
+							{/if}
 						</div>
 							
 					</div>

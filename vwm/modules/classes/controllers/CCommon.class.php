@@ -1,4 +1,5 @@
 <?php
+use VWM\Apps\Gauge\QtyProductGauge;
 
 class CCommon extends Controller
 {
@@ -965,6 +966,43 @@ jgypsyn@gyantgroup.com
 		$this->smarty->assign('additionalEmailAccountsList', $additionalEmailAccountsList);
 		echo $this->smarty->fetch('tpls/manageAdditionalEmailAccounts.tpl');
 	}
+    
+    public function actionLoadQtyProductSettings() {
+		//	Access control
+		if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityId'))) {
+			throw new Exception('deny');
+		}
+        if (!$_SESSION['accessLevel'] == "SuperuserLevel") {
+            throw new Exception('deny');
+        }
+		$facilityId = $this->getFromRequest('facilityId');
+        $qtyProductGage = new QtyProductGauge($this->db, $facilityId);
+        $unitType = new Unittype($this->db);
+        $unitTypeList = $unitType->getUnittypeList();
+        $periodOptions = $qtyProductGage->getPeriodOptions();
+
+		$this->smarty->assign('data', $qtyProductGage);
+        $this->smarty->assign('unitTypeList', $unitTypeList);
+        $this->smarty->assign('periodOptions', $periodOptions);
+		echo $this->smarty->fetch('tpls/qtyProductGaugeSettings.tpl');
+	}
+    
+    public function actionSaveQtyProductGageSettings() {
+        
+        $id = $this->getFromRequest('id');
+        $facilityId = $this->getFromRequest('facility_id');
+        $limit = $this->getFromRequest('limit');
+        $period = $this->getFromRequest('period');
+        $unitType = $this->getFromRequest('unit_type');
+        
+        $qtyProductGage = new QtyProductGauge($this->db);
+        $qtyProductGage->setId($id);
+        $qtyProductGage->setFacility_id($facilityId);
+        $qtyProductGage->setLimit($limit);
+        $qtyProductGage->setPeriod($period);
+        $qtyProductGage->setUnit_type($unitType); 
+        $qtyProductGage->save();
+    }
 	
 }
 ?>

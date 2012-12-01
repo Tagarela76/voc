@@ -75,6 +75,16 @@
                         Add or remove additional email accounts.
                     </td>
                 </tr>
+                <tr>
+                    <td>
+						<a style="color: black" href="#manageQtyProductGage" onclick="settings.manageQtyProductGage.openDialog()">
+							<h2>Quentity Gage</h2>
+						</a>
+                    </td>
+                    <td>
+                        Manage Product QTY Gage Settings
+                    </td>
+                </tr>
             </table>
 
             {*/shadow_table*}
@@ -225,3 +235,4 @@
 
 <div id="managePermissionsContainer" title="Manage User Permissions" style="display:none;">Loading ...</div>
 <div id="manageAdditionalEmailAccountsContainer" title="Manage Additional Email Accounts" style="display:none;">Loading ...</div>
+<div id="manageQtyProductGageContainer" title="Manage Quentity Gage Settings" style="display:none;">Loading ...</div>

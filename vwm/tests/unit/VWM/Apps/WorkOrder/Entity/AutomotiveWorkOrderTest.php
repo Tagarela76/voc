@@ -5,7 +5,7 @@ namespace VWM\Apps\WorkOrder\Entity;
 use VWM\Framework\Test\DbTestCase;
 use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
 
-class IndustrialWorkOrderTest extends DbTestCase {
+class AutomotiveWorkOrderTest extends DbTestCase {
 	
 	protected $fixtures = array(
 		TB_WORK_ORDER
