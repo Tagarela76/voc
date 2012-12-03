@@ -77,12 +77,12 @@
                 </tr>
                 <tr>
                     <td>
-						<a style="color: black" href="#manageQtyProductGage" onclick="settings.manageQtyProductGage.openDialog()">
-							<h2>Quentity Gage</h2>
+						<a style="color: black" href="#manageQtyProductGauge" onclick="settings.manageQtyProductGauge.openDialog()">
+							<h2>Quantity Gauge</h2>
 						</a>
                     </td>
                     <td>
-                        Manage Product QTY Gage Settings
+                        Manage Product Quantity Gauge Settings
                     </td>
                 </tr>
             </table>
@@ -235,4 +235,4 @@
 
 <div id="managePermissionsContainer" title="Manage User Permissions" style="display:none;">Loading ...</div>
 <div id="manageAdditionalEmailAccountsContainer" title="Manage Additional Email Accounts" style="display:none;">Loading ...</div>
-<div id="manageQtyProductGageContainer" title="Manage Quentity Gage Settings" style="display:none;">Loading ...</div>
+<div id="manageQtyProductGaugeContainer" title="Manage Quantity Gauge Settings" style="display:none;">Loading ...</div>

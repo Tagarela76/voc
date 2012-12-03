@@ -275,8 +275,8 @@ function ManageAdditionalEmailAccounts() {
 	}
 }
 			
-function ManageQtyProductGage() {
-	this.divId = 'manageQtyProductGageContainer';
+function ManageQtyProductGauge() {
+	this.divId = 'manageQtyProductGaugeContainer';
 	this.isLoaded = false;
 
 	this.iniDialog = function(divId) {
@@ -335,7 +335,7 @@ function ManageQtyProductGage() {
         var period = $("#period").val();
         var facility_id = $("#facility_id").val();
 		$.ajax({
-			url: "?action=saveQtyProductGageSettings",
+			url: "?action=saveQtyProductGaugeSettings",
 			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id},
 			type: "GET",
 			dataType: "html",
@@ -351,7 +351,7 @@ function ManageQtyProductGage() {
 function Settings() {
 	this.managePermissions = new ManagePermissions();
 	this.manageAdditionalEmailAccounts = new ManageAdditionalEmailAccounts();
-    this.manageQtyProductGage = new ManageQtyProductGage();
+    this.manageQtyProductGauge = new ManageQtyProductGauge();
 	this.companyId = false;
 	this.facilityId = false;
 }
@@ -365,5 +365,5 @@ $(function() {
 	settings = new Settings();
 	settings.managePermissions.iniDialog();
 	settings.manageAdditionalEmailAccounts.iniDialog();
-    settings.manageQtyProductGage.iniDialog();
+    settings.manageQtyProductGauge.iniDialog();
 });

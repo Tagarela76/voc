@@ -75,11 +75,11 @@ abstract class WorkOrder extends Model {
         $this->customer_name = $customer_name;
     }
 
-    public function getFacility_id() {
+    public function getFacilityId() {
         return $this->facility_id;
     }
 
-    public function setFacility_id($facility_id) {
+    public function setFacilityId($facility_id) {
         $this->facility_id = $facility_id;
     }
 

@@ -976,18 +976,18 @@ jgypsyn@gyantgroup.com
             throw new Exception('deny');
         }
 		$facilityId = $this->getFromRequest('facilityId');
-        $qtyProductGage = new QtyProductGauge($this->db, $facilityId);
+        $qtyProductGauge = new QtyProductGauge($this->db, $facilityId);
         $unitType = new Unittype($this->db);
-        $unitTypeList = $unitType->getUnittypeList();
-        $periodOptions = $qtyProductGage->getPeriodOptions();
+        $unitTypeList = $unitType->getUnittypeListDefault(); 
+        $periodOptions = $qtyProductGauge->getPeriodOptions();
 
-		$this->smarty->assign('data', $qtyProductGage);
+		$this->smarty->assign('data', $qtyProductGauge);
         $this->smarty->assign('unitTypeList', $unitTypeList);
         $this->smarty->assign('periodOptions', $periodOptions);
 		echo $this->smarty->fetch('tpls/qtyProductGaugeSettings.tpl');
 	}
     
-    public function actionSaveQtyProductGageSettings() {
+    public function actionSaveQtyProductGaugeSettings() {
         
         $id = $this->getFromRequest('id');
         $facilityId = $this->getFromRequest('facility_id');
@@ -995,13 +995,13 @@ jgypsyn@gyantgroup.com
         $period = $this->getFromRequest('period');
         $unitType = $this->getFromRequest('unit_type');
         
-        $qtyProductGage = new QtyProductGauge($this->db);
-        $qtyProductGage->setId($id);
-        $qtyProductGage->setFacility_id($facilityId);
-        $qtyProductGage->setLimit($limit);
-        $qtyProductGage->setPeriod($period);
-        $qtyProductGage->setUnit_type($unitType); 
-        $qtyProductGage->save();
+        $qtyProductGauge = new QtyProductGauge($this->db);
+        $qtyProductGauge->setId($id);
+        $qtyProductGauge->setFacilityId($facilityId);
+        $qtyProductGauge->setLimit($limit);
+        $qtyProductGauge->setPeriod($period);
+        $qtyProductGauge->setUnitType($unitType); 
+        $qtyProductGauge->save();
     }
 	
 }

@@ -56,7 +56,7 @@ class IndustrialWorkOrder extends WorkOrder {
 				'" . $this->db->sqltext($this->getNumber()) . "'
 				, '" . $this->db->sqltext($this->getDescription()) . "'
 				, '" . $this->db->sqltext($this->getCustomer_name()) . "'
-				, '" . $this->db->sqltext($this->getFacility_id()) . "'	
+				, '" . $this->db->sqltext($this->getFacilityId()) . "'	
 				, '" . $this->db->sqltext($this->getStatus()) . "'	
 				)";
 		$this->db->query($query); 
@@ -75,7 +75,7 @@ class IndustrialWorkOrder extends WorkOrder {
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
 						customer_name='" . $this->db->sqltext($this->getCustomer_name()) . "',	
-						facility_id='" . $this->db->sqltext($this->getFacility_id()) . "',
+						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
 						status='" . $this->db->sqltext($this->getStatus()) . "'
 					WHERE id= " . $this->db->sqltext($this->getId());
 		$this->db->query($query);

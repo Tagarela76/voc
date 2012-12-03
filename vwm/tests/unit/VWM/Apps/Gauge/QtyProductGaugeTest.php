@@ -9,42 +9,42 @@ class QtyProductGaugeTest extends DbTestCase {
 		TB_UNITTYPE,
         TB_COMPANY,
         TB_FACILITY,
-        TB_QTY_PRODUCT_GAGE
+        TB_QTY_PRODUCT_GAUGE
 	);
 	
 
-	public function testQtyProductGageSave() {
+	public function testQtyProductGaugeSave() {
 		
-        $qtyProductGage = new QtyProductGage($this->db);
-        $qtyProductGage->setLimit("100");
-        $qtyProductGage->setUnit_type("1");
-        $qtyProductGage->setPeriod("0");
-        $qtyProductGage->setFacility_id("3");
+        $qtyProductGauge = new QtyProductGauge($this->db);
+        $qtyProductGauge->setLimit("100");
+        $qtyProductGauge->setUnit_type("1");
+        $qtyProductGauge->setPeriod("0");
+        $qtyProductGauge->setFacility_id("2");
         
-		$expectedId = 3;
-		$result = $qtyProductGage->save();
+		$expectedId = 2;
+		$result = $qtyProductGauge->save();
 		
 		$this->assertEquals($expectedId, $result);	// last id
 		
-		$myTest = \Phactory::get(TB_QTY_PRODUCT_GAGE, array('facility_id'=>"3"));
-		$this->assertTrue($myTest->id == '3');
+		$myTest = \Phactory::get(TB_QTY_PRODUCT_GAUGE, array('facility_id'=>"2"));
+		$this->assertTrue($myTest->id == '2');
 
-		$sql = "SELECT * FROM " . TB_QTY_PRODUCT_GAGE . " WHERE id = {$expectedId}";
+		$sql = "SELECT * FROM " . TB_QTY_PRODUCT_GAUGE . " WHERE id = {$expectedId}";
 		$this->db->query($sql);
 		$row = $this->db->fetch_array(0);
-		$qtyProductGageActual = new QtyProductGage($this->db);
-		$qtyProductGageActual->initByArray($row);
-		$qtyProductGageActual->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		$this->assertEquals($qtyProductGage, $qtyProductGageActual);
+		$qtyProductGaugeActual = new QtyProductGauge($this->db);
+		$qtyProductGaugeActual->initByArray($row);
+		$qtyProductGaugeActual->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+		$this->assertEquals($qtyProductGauge, $qtyProductGaugeActual);
 		
 		// check UPDATE
 		
-		 $qtyProductGageUpdated = new QtyProductGage($this->db, '1');
+		 $qtyProductGaugeUpdated = new QtyProductGauge($this->db, '1');
 		 $newLimit = "500";
-		 $qtyProductGageUpdated->setLimit($newLimit);
-		 $qtyProductGageUpdated->save();
-		 $qtyProductGageUpdatedTest = \Phactory::get(TB_QTY_PRODUCT_GAGE, array('id'=>"1"));		
-		 $this->assertTrue($qtyProductGageUpdatedTest->limit == $newLimit);		
+		 $qtyProductGaugeUpdated->setLimit($newLimit);
+		 $qtyProductGaugeUpdated->save();
+		 $qtyProductGaugeUpdatedTest = \Phactory::get(TB_QTY_PRODUCT_GAUGE, array('id'=>"1"));		
+		 $this->assertTrue($qtyProductGaugeUpdatedTest->limit == $newLimit);		
 	}
 
 }

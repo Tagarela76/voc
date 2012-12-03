@@ -165,7 +165,7 @@ class CRepairOrder extends Controller {
             $workOrder->setCustomer_name($post['repairOrderCustomerName']);
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
-            $workOrder->setFacility_id($facilityID); 
+            $workOrder->setFacilityId($facilityID); 
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
@@ -348,7 +348,7 @@ class CRepairOrder extends Controller {
             $workOrder->setCustomer_name($post['repairOrderCustomerName']);
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
-            $workOrder->setFacility_id($facilityID);
+            $workOrder->setFacilityId($facilityID);
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
