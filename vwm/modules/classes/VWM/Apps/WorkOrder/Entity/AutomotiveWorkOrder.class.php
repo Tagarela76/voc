@@ -70,7 +70,7 @@ class AutomotiveWorkOrder extends WorkOrder {
 				'" . $this->db->sqltext($this->getNumber()) . "'
 				, '" . $this->db->sqltext($this->getDescription()) . "'
 				, '" . $this->db->sqltext($this->getCustomer_name()) . "'
-				, '" . $this->db->sqltext($this->getFacility_id()) . "'	
+				, '" . $this->db->sqltext($this->getFacilityId()) . "'	
 				, '" . $this->db->sqltext($this->getStatus()) . "'	
 				, '" . $this->db->sqltext($this->getVin()) . "'	
 				)";
@@ -90,7 +90,7 @@ class AutomotiveWorkOrder extends WorkOrder {
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
 						customer_name='" . $this->db->sqltext($this->getCustomer_name()) . "',	
-						facility_id='" . $this->db->sqltext($this->getFacility_id()) . "',
+						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
 						status='" . $this->db->sqltext($this->getStatus()) . "', 	
 						vin='" . $this->db->sqltext($this->getVin()) . "'
 					WHERE id= " . $this->db->sqltext($this->getId());

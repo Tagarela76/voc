@@ -997,10 +997,10 @@ jgypsyn@gyantgroup.com
         
         $qtyProductGauge = new QtyProductGauge($this->db);
         $qtyProductGauge->setId($id);
-        $qtyProductGauge->setFacility_id($facilityId);
+        $qtyProductGauge->setFacilityId($facilityId);
         $qtyProductGauge->setLimit($limit);
         $qtyProductGauge->setPeriod($period);
-        $qtyProductGauge->setUnit_type($unitType); 
+        $qtyProductGauge->setUnitType($unitType); 
         $qtyProductGauge->save();
     }
 	
