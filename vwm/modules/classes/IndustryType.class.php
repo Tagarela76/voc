@@ -78,8 +78,9 @@ class IndustryType extends Model {
 		if (isset($id)) {
 			$this->id = $id;
 			$this->_load();
+            $this->loadSubIndustryTypes();
 		}
-		$this->loadSubIndustryTypes();
+		
 	}
 	
 	private function _load() {
