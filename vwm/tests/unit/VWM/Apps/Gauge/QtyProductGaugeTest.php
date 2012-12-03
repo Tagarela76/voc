@@ -17,7 +17,7 @@ class QtyProductGaugeTest extends DbTestCase {
 		
         $qtyProductGauge = new QtyProductGauge($this->db);
         $qtyProductGauge->setLimit("100");
-        $qtyProductGauge->setUnit_type("1");
+        $qtyProductGauge->setUnitType("1");
         $qtyProductGauge->setPeriod("0");
         $qtyProductGauge->setFacility_id("2");
         

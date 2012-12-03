@@ -159,8 +159,10 @@ class CDepartment extends Controller {
         $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
         // insert nox indicator bar into tpl
-        $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-
+        if($qtyProductGauge->getLimit() == 0) {
+            $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+        }
+        
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -295,7 +297,9 @@ class CDepartment extends Controller {
         $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
         // insert nox indicator bar into tpl
-        $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+        if($qtyProductGauge->getLimit() == 0) {
+            $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+        }
         
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
