@@ -145,18 +145,18 @@ class CDepartment extends Controller {
         
         //	qty product indicator
         $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $facilityProductsDetails = $facility->getProductCountInFacility(
-                $qtyProductGauge->getFacility_id(), $qtyProductGauge->getPeriod());
+        $facilityProductsDetails = $facility->getProductQuantityInFacility(
+                $qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
         // convert to preffered unit type
         $unitTypeConverter = new UnitTypeConverter($this->db);
         $unitType = new Unittype($this->db);
-        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnit_type());
+        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnitType());
         foreach ($facilityProductsDetails as $product) {
             $productQty += $unitTypeConverter->fromDefaultWeight($product['quantity'], $destinationType); 
         }
         
         $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
-        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnit_type());
+        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
         // insert nox indicator bar into tpl
         $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
@@ -281,18 +281,18 @@ class CDepartment extends Controller {
 
         //	qty product indicator
         $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $facilityProductsDetails = $facility->getProductCountInFacility(
-                $qtyProductGauge->getFacility_id(), $qtyProductGauge->getPeriod());
+        $facilityProductsDetails = $facility->getProductQuantityInFacility(
+                $qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
         // convert to preffered unit type
         $unitTypeConverter = new UnitTypeConverter($this->db);
         $unitType = new Unittype($this->db);
-        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnit_type());
+        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnitType());
         foreach ($facilityProductsDetails as $product) {
             $productQty += $unitTypeConverter->fromDefaultWeight($product['quantity'], $destinationType); 
         }
         
         $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
-        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnit_type());
+        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
         // insert nox indicator bar into tpl
         $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);

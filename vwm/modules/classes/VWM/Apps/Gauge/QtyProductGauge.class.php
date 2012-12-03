@@ -35,11 +35,11 @@ class QtyProductGauge extends Model {
         $this->limit = $limit;
     }
 
-    public function getUnit_type() {
+    public function getUnitType() {
         return $this->unit_type;
     }
 
-    public function setUnit_type($unit_type) {
+    public function setUnitType($unit_type) {
         $this->unit_type = $unit_type;
     }
 
@@ -51,19 +51,19 @@ class QtyProductGauge extends Model {
         $this->period = $period;
     }
 
-    public function getLast_update_time() {
+    public function getLastUpdateTime() {
         return $this->last_update_time;
     }
 
-    public function setLast_update_time($last_update_time) {
+    public function setLastUpdateTime($last_update_time) {
         $this->last_update_time = $last_update_time;
     }
     
-    public function getFacility_id() {
+    public function getFacilityId() {
         return $this->facility_id;
     }
 
-    public function setFacility_id($facility_id) {
+    public function setFacilityId($facility_id) {
         $this->facility_id = $facility_id;
     }
 
@@ -71,19 +71,19 @@ class QtyProductGauge extends Model {
 		$this->db = $db;
 		$this->modelName = 'QtyProductGauge';
 		if (isset($facilityId)) {
-			$this->setFacility_id($facilityId);
+			$this->setFacilityId($facilityId);
 			$this->_load();
 		}		
 	}
 	
 	private function _load() {
 
-		if (is_null($this->getFacility_id())) {
+		if (is_null($this->getFacilityId())) {
 			return false;
 		}
 		$sql = "SELECT * ".
 				"FROM " . TB_QTY_PRODUCT_GAUGE . " ".
-				"WHERE facility_id={$this->db->sqltext($this->getFacility_id())} " . 
+				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())} " . 
 				"LIMIT 1";
 		$this->db->query($sql);
 
@@ -122,9 +122,9 @@ class QtyProductGauge extends Model {
 				"`limit`, unit_type, period, facility_id, last_update_time" .
 				") VALUES ( ".
 				"{$this->db->sqltext($this->getLimit())}, " .
-				"{$this->db->sqltext($this->getUnit_type())}, " .
+				"{$this->db->sqltext($this->getUnitType())}, " .
 				"{$this->db->sqltext($this->getPeriod())}, " .
-				"{$this->db->sqltext($this->getFacility_id())}, " .
+				"{$this->db->sqltext($this->getFacilityId())}, " .
 				"{$lastUpdateTime} " .
 				")"; 
 		$response = $this->db->exec($sql);
@@ -149,9 +149,9 @@ class QtyProductGauge extends Model {
 				
 		$sql = "UPDATE ".TB_QTY_PRODUCT_GAUGE." SET " .
 				"`limit`={$this->db->sqltext($this->getLimit())}, " .
-				"unit_type='{$this->db->sqltext($this->getUnit_type())}', " .
+				"unit_type='{$this->db->sqltext($this->getUnitType())}', " .
 				"period={$this->db->sqltext($this->getPeriod())}, " .
-                "facility_id={$this->db->sqltext($this->getFacility_id())}, " .        
+                "facility_id={$this->db->sqltext($this->getFacilityId())}, " .        
 				"last_update_time={$lastUpdateTime} " .
 				"WHERE id={$this->db->sqltext($this->getId())}";	
 		
@@ -169,7 +169,7 @@ class QtyProductGauge extends Model {
 	public function delete() {
 
 		$sql = "DELETE FROM " . TB_QTY_PRODUCT_GAUGE . "
-				 WHERE facility_id={$this->db->sqltext($this->getFacility_id())}";
+				 WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";
 		$this->db->query($sql);
 	}
     

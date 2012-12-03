@@ -850,7 +850,7 @@ class Facility extends FacilityProperties {
 		}
 	}
     
-    public function getProductCountInFacility($facilityId, $monthly = 0) {
+    public function getProductQuantityInFacility($facilityId, $monthly = 0) {
         $month = 'MONTH(CURRENT_DATE)';
         $year = 'YEAR(CURRENT_DATE)';
         
