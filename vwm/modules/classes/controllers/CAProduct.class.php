@@ -2,7 +2,7 @@
 
 class CAProduct extends Controller {
 
-	function CAProduct($smarty,$xnyo,$db,$user,$action) {
+	public function __construct($smarty,$xnyo,$db,$user,$action) {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='product';
 		$this->parent_category='product';
@@ -324,8 +324,26 @@ class CAProduct extends Controller {
 		$this->smarty->assign("productTypeList", $productIndustryTypeList);
 		$this->smarty->assign('page', $this->getFromRequest('page'));
         
-		$productIndustryType = $industryType->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+		$productIndustryType = $industryType->getTypeAndSubTypeByProductID(
+				$this->getFromRequest('id'));
 		$this->smarty->assign('productTypes', $productIndustryType);
+
+		// Format the industry type label
+		$formattedIndustryTypes = array();
+		foreach ($productIndustryType as $productIndustryTypeItem) {
+			// some product may not have sub industry type			
+			$humanReadableName = array();
+			$humanReadableName[] = $productIndustryTypeItem['industryType'];
+			if($productIndustryTypeItem['industrySubType']) {
+				$humanReadableName[] = $productIndustryTypeItem['industrySubType'];
+			}
+
+			$humanReadableName = implode(' / ', $humanReadableName);			
+			$formattedIndustryTypes[] = $humanReadableName;
+		}
+		$formattedIndustryTypes = implode(', ', $formattedIndustryTypes);
+		$this->smarty->assign('formattedIndustryTypes', $formattedIndustryTypes);
+		
 
 		$product = new Product($this->db);
 		$id = $this->getFromRequest('id');
@@ -429,13 +447,18 @@ class CAProduct extends Controller {
 		//	IF NO POST REQUEST
 		else
 		{
+			//TODO: refactor this method
 			$productData = $product->getProductDetails($id, true);
+			if($productData['product_id'] === null) {
+				throw new Exception('404');
+			}
 
 			$this->smarty->assign("componentCount", count($productData['components']));
 			$this->smarty->assign("compsAdded", $productData['components']);
 
 			$component=new Component($this->db);
 
+			//TODO: wtf? Why this needed?
 			$componentsListTemp=$component->getComponentList();
 			for ($i=0; $i < count($componentsListTemp); $i++) {
 				$f=true;
@@ -472,11 +495,12 @@ class CAProduct extends Controller {
 			$chemicalClassesList = $hazardous->getChemicalClassesList();
 			$this->smarty->assign("chemicalClassesList",$chemicalClassesList);
 
-			$productIndustryTypesList = $industryType->getTypesWithSubTypes();
-			$this->smarty->assign('productTypeList', $productIndustryTypesList);
+			//	Duplicates line 322
+			//$productIndustryTypesList = $industryType->getTypesWithSubTypes();
+			//$this->smarty->assign('productTypeList', $productIndustryTypesList);
 
-			$productIndustryType = $industryType->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
-			$this->smarty->assign('productTypes', $productIndustryType);
+			//$productIndustryType = $industryType->getTypeAndSubTypeByProductID($this->getFromRequest('id'));
+			//$this->smarty->assign('productTypes', $productIndustryType);
 
 			//density
 			$cDensity = new Density($this->db);
@@ -694,9 +718,10 @@ class CAProduct extends Controller {
 			"modules/js/getInventoryShortInfo.js",
 			"modules/js/addProductQuantity.js",
 			"modules/js/hazardousPopup.js",
-			"modules/js/industryTypesPopup.js",
-			"modules/js/addUsage.js"
-		);
+			//"modules/js/industryTypesPopup.js",
+			//"modules/js/addUsage.js",// does this needed?
+			"modules/js/productAddEditPage.js",
+		);		
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('tpl','tpls/addProductClass.tpl');
 		$this->smarty->assign('data', $data);
@@ -1154,6 +1179,19 @@ class CAProduct extends Controller {
 		$techSheet->unlinkTechSheet($sheet['id']);
 		header('Location: ?action=viewDetails&category=product&id='.$this->getFromRequest('productID'));
 	}
+
+
+	protected function actionLoadIndustryTypes() {
+		$industryType = new IndustryType($this->db);
+		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
+		$this->smarty->assign("productTypeList", $productIndustryTypeList);		
+
+		$productIndustryType = $industryType->getTypeAndSubTypeByProductID(
+				$this->getFromRequest('productId'));
+		$this->smarty->assign('productTypes', $productIndustryType);
+		$this->smarty->display('tpls:tpls/_industryTypeList.tpl');
+	}
+	
 
 	private function generateAdditinalParamsGet() {
 		$getQuery = "";
