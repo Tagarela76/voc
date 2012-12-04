@@ -402,11 +402,11 @@
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
 							<div align="left" >
-								<div id="typesClassString">
-									
+								<div id="productLibraryTypes">
+									{$productLibraryTypeName}
 								</div>
 								<div>
-									<a href="#" onclick="$('#industryTypesPopup').dialog('open');return false;">edit</a>
+									<a href="#" onclick="page.manageProductLibraryTypes.openDialog();">edit</a>
 								</div>
 							</div>
 							</td>
@@ -822,4 +822,5 @@
 
 {*SELECT_INDUSTRY_TYPES_CLASS_POPUP*}
 <div id="manageIndustryTypesContainer" title="Choose industry types and sub-categories" style="display:none;">Loading ...</div>
+<div id="manageProductLibraryTypesContainer" title="Choose product library type" style="display:none;">Loading ...</div>
 

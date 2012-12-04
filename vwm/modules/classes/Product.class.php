@@ -1482,7 +1482,7 @@ class Product extends ProductProperties {
 		$productLibraryTypes = array();
 		foreach ($rows as $row) {
 			$productLibraryType = new ProductLibraryType($this->db);
-			foreach ($productLibraryType as $key => $value) {
+			foreach ($row as $key => $value) {
 				if (property_exists($productLibraryType, $key)) {
 					$productLibraryType->$key = $value;
 				}
