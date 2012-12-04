@@ -396,6 +396,22 @@
 							</td>
 						</tr>
 						
+                        <tr>
+							<td class="border_users_l border_users_b" height="20">
+									Product Library Type:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+							<div align="left" >
+								<div id="typesClassString">
+									
+								</div>
+								<div>
+									<a href="#" onclick="$('#industryTypesPopup').dialog('open');return false;">edit</a>
+								</div>
+							</div>
+							</td>
+						</tr>
+                        
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
 								Price
