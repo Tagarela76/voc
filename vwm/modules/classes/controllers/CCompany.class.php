@@ -99,7 +99,7 @@ class CCompany extends Controller {
 
 		$facilities = new Facility($this->db);
 		$facilityList = $facilities->getFacilityListByCompany($this->getFromRequest('id'));
-
+		
 		//Set Title
 		$company = new Company($this->db);
 		$companyDetails = $company->getCompanyDetails($this->getFromRequest('id'));

@@ -9,6 +9,16 @@
 	{if $color eq "blue"}
 		{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 	{/if}
+
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global settings object defined at productAddEditPage.js
+		page.productId = {/literal} {$data.product_id} {literal};
+	});
+</script>
+{/literal}
+
 <div style="padding:7px;">
 	<form method='POST' action='admin.php?action={$request.action}&category=product{if $request.action neq "addItem"}&id={$request.id}{else}&companyID={$request.companyID}{/if}{if $request.subBookmark}&subBookmark={$request.subBookmark}{/if}{if $request.letterpage}&letterpage={$request.letterpage}{/if}&page={$page}'>
 		<table class="users" align="center" cellpadding="0" cellspacing="0">
@@ -369,23 +379,13 @@
 							<div align="left" >
 								<div id="typesClassString">
 									{if $productTypes|@count > 0}
-										{foreach from=$productTypes item=category key=k}
-											{if $category.industrySubType neq ''}
-												{if $k < $productTypes|@count-1}
-													&nbsp;{$category.industryType} / {$category.industrySubType},
-												{else}
-													{$category.industryType} / {$category.industrySubType}
-												{/if}
-											{else}
-												{$category.industryType},
-											{/if}
-										{/foreach}
+										{$formattedIndustryTypes}
 									{else}
 										&nbsp;
 									{/if}
 								</div>
 								<div>
-									<a href="#" onclick="$('#industryTypesPopup').dialog('open');return false;">edit</a>
+									<a href="#" onclick="page.manageIndustryTypes.openDialog();">edit</a>
 								</div>
 								<div id="hiddenTypesClasses">
 									{foreach from=$productTypes item=productType key=k name=foo}
@@ -821,78 +821,5 @@
 </div>
 
 {*SELECT_INDUSTRY_TYPES_CLASS_POPUP*}
-<div id="industryTypesPopup" title="Choose industry types and sub-categories" style="background-color:#e3e9f8; padding:25px; font-size:150%; text-align:center;display:none;">
-		 <table id="typesClassList" width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center" >
-			<tr>
-				 <td class="control_list" colspan="2" style="border-bottom:0px solid #fff;padding-left:0px">
-					Select:
-					<a onclick="CheckAll(this)" name="allTypesClasses" class="id_company1" >All</a>
-				 	/
-					<a onclick="unCheckAll(this)" name="allTypesClasses" class="id_company1">None</a>
-				</td>
-			</tr>
-
-			<tr class="table_popup_rule">
-				<td>
-					Select
-				</td>
-				<td>
-					Name
-				</td>
-			</tr>
-
-			{foreach from=$productTypeList item=type key=k}
-				<tr>
-					<td align="center" style="width:150px">
-						<input type="checkbox"  value="{$type.id}"
-							   {foreach from=$productTypes item=productType key=j}
-								   {if $type.id eq $j} checked {/if}
-							   {/foreach}
-						/>
-					</td>
-					<td id="category_{$type.id}">
-						<b>{$k}&nbsp;</b>
-					</td>
-				</tr>
-				{foreach from=$type.subTypes item=subType key=i}
-					<tr>
-						<td align="center" style="width:150px">
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox"  value="{$i}"
-																						 {foreach from=$productTypes item=productType key=j}
-																							{if $i eq $j} checked {/if}
-																						 {/foreach}
-																				  />
-						</td>
-						<td id="category_{$i}">
-							{$subType}&nbsp;
-						</td>
-					</tr>
-				{/foreach}
-				<tr>
-					<td colspan="2"><hr/></td>
-					<input type="hidden" name="page" value="{$page}"/>
-				</tr>
-			{/foreach}
-			{*section name=i loop=$chemicalClassesList}
-			<tr>
-				<td align="center" style="width:150px">
-					<input type="checkbox"  value="{$chemicalClassesList[i].id}"
-						{section name=j loop=$data.chemicalClasses}
-							{if $chemicalClassesList[i].id == $data.chemicalClasses[j].id}
-								checked
-							{/if}
-						{/section}
-					></td>
-				</td>
-				<td id="chemicalClassName_{$smarty.section.i.index}">
-					{$chemicalClassesList[i].name}&nbsp;
-				</td>
-				<td>
-					{$chemicalClassesList[i].description}&nbsp;
-				</td>
-			</tr>
-			{/section*}
-
-		</table>
-</div>
+<div id="manageIndustryTypesContainer" title="Choose industry types and sub-categories" style="display:none;">Loading ...</div>
 
