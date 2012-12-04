@@ -19,7 +19,7 @@ class QtyProductGaugeTest extends DbTestCase {
         $qtyProductGauge->setLimit("100");
         $qtyProductGauge->setUnitType("1");
         $qtyProductGauge->setPeriod("0");
-        $qtyProductGauge->setFacility_id("2");
+        $qtyProductGauge->setFacilityId("2");
         
 		$expectedId = 2;
 		$result = $qtyProductGauge->save();

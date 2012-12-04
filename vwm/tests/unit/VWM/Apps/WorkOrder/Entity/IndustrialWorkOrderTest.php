@@ -16,7 +16,7 @@ class IndustrialWorkOrderTest extends DbTestCase {
         $industrialWO = new IndustrialWorkOrder($this->db);
         $industrialWO->setCustomer_name("Tom Smith");
         $industrialWO->setDescription("test wo");
-        $industrialWO->setFacility_id("1");
+        $industrialWO->setFacilityId("1");
         $industrialWO->setNumber("wo nubmer");
         $industrialWO->setStatus("in progress");
 		$r = $industrialWO->save();
