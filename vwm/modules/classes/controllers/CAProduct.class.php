@@ -338,7 +338,7 @@ class CAProduct extends Controller {
         foreach ($productLibraryTypes as $productLibraryType) {
             $productLibraryTypeName[] = $productLibraryType->name;
         }
-        $productLibraryTypeName = implode(',', $productLibraryTypeName);
+        $productLibraryTypeName = implode(', ', $productLibraryTypeName);
         $this->smarty->assign('productLibraryTypeName', $productLibraryTypeName);
         // Format the industry type label
         $formattedIndustryTypes = array();
@@ -1241,7 +1241,7 @@ class CAProduct extends Controller {
         foreach ($productLibraryTypes as $productLibraryType) {
             $productLibraryTypeName[] = $productLibraryType->name;
         }
-        $productLibraryTypeName = implode(',', $productLibraryTypeName);
+        $productLibraryTypeName = implode(', ', $productLibraryTypeName);
         echo $productLibraryTypeName;
     }
 

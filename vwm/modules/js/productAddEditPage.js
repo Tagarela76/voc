@@ -33,7 +33,7 @@ function ManageProductLibraryTypes(){
 
 		var that = this;
 		$("#"+divId).dialog({
-			width: 800,
+			width: 500,
 			height: 500,
 			autoOpen: false,
 			resizable: true,

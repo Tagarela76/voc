@@ -9,10 +9,10 @@
 	</tr>
     {foreach from=$libraryTypesList item=libraryType key=i}
         <tr>
-            <td align="center" style="width:150px">
+            <td>
                 <input type="checkbox"  value="{$libraryType->id}" id="checkBox_{$i}" {if $libraryType->checked}checked{/if}>
             </td>
-             <td align="center" style="width:150px">
+             <td>
                 {$libraryType->name}
             </td>
         <tr>
