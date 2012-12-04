@@ -266,6 +266,19 @@ class CAProduct extends Controller {
         $product = new Product($this->db);
         $productDetails = $product->getProductDetails($this->getFromRequest('id'));
 
+        
+        //get product library types
+        $productLibraryTypes = $product->getProductLibraryTypes(
+                $this->getFromRequest('id'));
+
+        //Format the library type
+        $productLibraryTypeName = array();
+        foreach ($productLibraryTypes as $productLibraryType) {
+            $productLibraryTypeName[] = $productLibraryType->name;
+        }
+        $productLibraryTypeName = implode(', ', $productLibraryTypeName);
+        $this->smarty->assign('productLibraryTypeName', $productLibraryTypeName);
+        
         //density
         $cDensity = new Density($this->db, $productDetails['densityUnitID']);
         $densityDetailsTrue = array(

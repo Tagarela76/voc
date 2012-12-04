@@ -222,6 +222,17 @@
 
 							</td>
 						</tr>
+                        <tr>
+                           <td class="border_users_l border_users_b" height="20">
+									Product Library Type:
+							</td>
+                            
+                            <td class="border_users_l border_users_r border_users_b">
+							<div align="left" >
+								{$productLibraryTypeName}
+							</div>
+							</td>
+                        </tr>
 
 
 						<tr>
