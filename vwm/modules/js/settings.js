@@ -317,7 +317,9 @@ function ManageQtyProductGauge() {
 		var that = this;
 		$.ajax({
 			url: "?action=loadQtyProductSettings",
-			data: {facilityId: settings.facilityId, companyId: settings.companyId},
+			data: {facilityId: settings.facilityId, 
+				companyId: settings.companyId, 
+				departmentId:(settings.departmentId) ? settings.departmentId : 0 },
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -334,12 +336,13 @@ function ManageQtyProductGauge() {
         var unit_type = $("#unit_type").val();
         var period = $("#period").val();
         var facility_id = $("#facility_id").val();
+		
 		$.ajax({
 			url: "?action=saveQtyProductGaugeSettings",
-			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id},
+			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id, department_id: settings.departmentId},
 			type: "GET",
 			dataType: "html",
-			success: function (response) {
+			success: function (response) {console.log(response);
 				that.isLoaded = false;
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
@@ -354,6 +357,7 @@ function Settings() {
     this.manageQtyProductGauge = new ManageQtyProductGauge();
 	this.companyId = false;
 	this.facilityId = false;
+	this.departmentId = false;
 }
 
 

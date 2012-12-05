@@ -974,9 +974,18 @@ jgypsyn@gyantgroup.com
 		}
         if (!$_SESSION['accessLevel'] == "SuperuserLevel") {
             throw new Exception('deny');
-        }
-		$facilityId = $this->getFromRequest('facilityId');
-        $qtyProductGauge = new QtyProductGauge($this->db, $facilityId);
+        }				
+		
+        $qtyProductGauge = new QtyProductGauge($this->db);
+		if($this->getFromRequest('departmentId')) {
+			$qtyProductGauge->setDepartmentId($this->getFromRequest('departmentId'));
+		} 
+		
+		if($this->getFromRequest('facilityId')) {
+			$qtyProductGauge->setFacilityId($this->getFromRequest('facilityId'));
+		}
+		
+		$qtyProductGauge->load();
         $unitType = new Unittype($this->db);
         $unitTypeList = $unitType->getUnittypeListDefault(); 
         $periodOptions = $qtyProductGauge->getPeriodOptions();
@@ -989,7 +998,20 @@ jgypsyn@gyantgroup.com
     
     public function actionSaveQtyProductGaugeSettings() {
         
-        $id = $this->getFromRequest('id');
+		if ($this->getFromRequest('department_id')!='false') {
+			$departmentId = $this->getFromRequest('department_id');
+		} else {
+			$departmentId = 'NULL';
+		}
+		$id = $this->getFromRequest('id');
+		
+		if (isset($id) && $id!='') {
+			$id = $this->getFromRequest('id');
+		} else {
+			$id = false;
+		}
+		
+        //$id = $this->getFromRequest('id');
         $facilityId = $this->getFromRequest('facility_id');
         $limit = $this->getFromRequest('limit');
         $period = $this->getFromRequest('period');
@@ -998,9 +1020,11 @@ jgypsyn@gyantgroup.com
         $qtyProductGauge = new QtyProductGauge($this->db);
         $qtyProductGauge->setId($id);
         $qtyProductGauge->setFacilityId($facilityId);
+		$qtyProductGauge->setDepartmentId($departmentId);
         $qtyProductGauge->setLimit($limit);
         $qtyProductGauge->setPeriod($period);
-        $qtyProductGauge->setUnitType($unitType); 
+        $qtyProductGauge->setUnitType($unitType);		
+		//var_dump($qtyProductGauge->getId());
         $qtyProductGauge->save();
     }
 	

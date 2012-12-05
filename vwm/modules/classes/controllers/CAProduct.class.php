@@ -1243,8 +1243,8 @@ class CAProduct extends Controller {
 	}
 
 	protected function actionSaveProductLibraryTypes() {
-		$productId = $_REQUEST['productId'];
-		$productLibraryTypeIds = $_REQUEST['productlibraryTipesIds'];
+		$productId = $this->getFromRequest('productId');
+		$productLibraryTypeIds = $this->getFromRequest('productlibraryTipesIds');
 		$product = new Product($this->db);
 		$product->deleteProductLibraryTypes($productId);
 		$product->addProductLibraryTypes($productLibraryTypeIds, $productId);

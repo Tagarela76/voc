@@ -144,9 +144,12 @@ class CDepartment extends Controller {
 		}
 		$this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
 
-		//	qty product indicator
+
+		//	qty product indicator department
 		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-		$productQty = $qtyProductGauge->getCurrentUsage();
+		$qtyProductGauge->setDepartmentId($departmentDetails['department_id']);
+		
+		$productQty = $qtyProductGauge->getCurrentDepartmentUsage();
 		$unitType = new Unittype($this->db);
 		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
 		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
@@ -274,7 +277,7 @@ class CDepartment extends Controller {
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources', $cssSources);
 
-		//	qty product indicator
+		//	qty product indicator facillity
 		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
 		$productQty = $qtyProductGauge->getCurrentUsage();
 		$unitType = new Unittype($this->db);
