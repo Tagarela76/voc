@@ -149,8 +149,8 @@ class Controller {
     }
 
 
-	public function runAction() {
-		$this->runCommon();
+	public function runAction() {		
+		$this->runCommon();		
 		$functionName = 'action'.ucfirst($this->action);
 		if (method_exists($this,$functionName)) {
 			$this->$functionName();
@@ -1027,7 +1027,7 @@ class Controller {
             $this->smarty->assign('detailingShopProductLabel', $detailingShopProductLabel);
             $this->smarty->assign('fuelAndOilsProductLabel', $fuelAndOilsProductLabel);
         }
-        
+
     }
 
     private function actionBrowseCategoryACommon() {

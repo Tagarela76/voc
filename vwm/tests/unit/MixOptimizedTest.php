@@ -6,7 +6,7 @@ use VWM\Framework\Test as Testing;
 class MixOptimizedTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_WORK_ORDER, TB_USAGE, 
+		TB_TYPE, TB_UNITTYPE, TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_WORK_ORDER, TB_USAGE,
 		TB_MIXGROUP, 'price4product'
 	);
 
@@ -18,10 +18,10 @@ class MixOptimizedTest extends Testing\DbTestCase {
 
 		$mix->description = "WO12-020220-UPDATED";
 		$mix->spent_time = 120;
-		$mix->save(false);
+		$this->assertEquals($mixID, $mix->save(false));
 
 		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID)); 
-		$this->assertTrue($wo12Mix->description == $mix->description);
+		$this->assertEquals($wo12Mix->description, $mix->description);
 		$this->assertEquals($mix->spent_time, $wo12Mix->spent_time);
 
 		//	did we lost products?

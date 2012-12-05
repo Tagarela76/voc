@@ -260,7 +260,7 @@ class MixOptimized extends Model {
 	public function save($isMWS = false, $mix = null) {
 
 		//check mix products for duplication
-		if($this->doesProductsHaveDuplications()) {
+		if($this->doesProductsHaveDuplications()) {			
 			return false;
 		}
 
@@ -584,7 +584,7 @@ class MixOptimized extends Model {
 
 		//	we'll put SQL for each product here
 		$queryProducts = array();
-		foreach ($this->products as $product) {
+		foreach ($this->products as $product) {			
 			$type = $unittype->isWeightOrVolume($product->unittypeDetails['unittype_id']);
 			if ($type == 'weight') {
 				/* Get value by weight */
@@ -604,7 +604,7 @@ class MixOptimized extends Model {
 					$value = "'" . $this->db->sqltext($value) . "'";
 				}
 			}
-
+			
 			$ratio = (isset($product->ratio_to_save)) ? $this->db->sqltext($product->ratio_to_save) : 'NULL';
 			$queryProducts[] = " ({$this->db->sqltext($mixID)}, " .
 								"{$this->db->sqltext($product->product_id)}, " .
