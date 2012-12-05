@@ -59,7 +59,11 @@ class Unittype {
 
 	public function getUnittypeDetails($unittypeID, $vanilla = false) {
 
-		$this->db->query("SELECT * FROM " . TB_UNITTYPE . "," . TB_TYPE . " WHERE type.type_id = unittype.type_id AND unittype_id=" . $unittypeID);
+		$sql = "SELECT * " .
+				"FROM ".TB_UNITTYPE." u " .
+				"JOIN ".TB_TYPE . " t ON t.type_id = u.type_id " .
+				"WHERE  u.unittype_id = {$this->db->sqltext($unittypeID)}";
+		$this->db->query($sql);
 		if ($this->db->num_rows() == 0) {
 			//exit;
 			//throw new Exception('Unittype::getUnittypeDetails() - query failed, no unittype with received ID '.$unittypeID);
