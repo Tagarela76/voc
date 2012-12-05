@@ -859,8 +859,17 @@ class CNox extends Controller {
     
     protected function actionShowNoxTab() {
         
-        if (!isset($_SESSION["noxTabShow"])) {
+        if (!isset($_SESSION["noxTabShow"]) || $_SESSION["noxTabShow"] == false) {
             $_SESSION["noxTabShow"] = true;
+        }      
+        // redirect back
+        header("Location: " . $_SERVER['HTTP_REFERER']);        
+    }
+    
+    protected function actionHideNoxTab() {
+        
+        if (isset($_SESSION["noxTabShow"])) {
+            $_SESSION["noxTabShow"] = false;
         }       
         // redirect back
         header("Location: " . $_SERVER['HTTP_REFERER']);        
