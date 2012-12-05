@@ -34,7 +34,9 @@ class Facility extends FacilityProperties {
 			$sql .= implode(' OR ', $searchSql);
 			$sql .= ") ";
 		}
-		
+
+		$sql .= " ORDER BY id DESC";
+
         if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}        
@@ -256,10 +258,16 @@ class Facility extends FacilityProperties {
 
 		$company_id=$this->db->sqltext($company_id);
 
-		//$this->db->select_db(DB_NAME);
-		$this->db->query("SELECT * FROM ".TB_FACILITY." WHERE company_id=".$company_id. " ORDER BY name");
+		$sql = "SELECT f.facility_id id, f.name, f.address, f.contact, f.phone, s.name stateName " .
+				"FROM ".TB_FACILITY." f " .
+				"LEFT JOIN ".TB_STATE." s ON f.state = s.state_id " .
+				"WHERE company_id=".$company_id. " ORDER BY f.name";
+		$this->db->query($sql);
+		
+		$facilityList = null;
 		if ($this->db->num_rows()) {
-			for ($i=0; $i<$this->db->num_rows(); $i++) {
+			$facilityList = $this->db->fetch_all_array();
+			/*for ($i=0; $i<$this->db->num_rows(); $i++) {
 				$data=$this->db->fetch($i);
 				$facility=array (
 					'id'	=>	$data->facility_id,
@@ -269,7 +277,7 @@ class Facility extends FacilityProperties {
 					'phone'			=>	$data->phone
 				);
 				$facilityList[]=$facility;
-			}
+			}*/
 		}
 
 		return $facilityList;

@@ -20,8 +20,11 @@
             <td>
 				<div> Facility name</div>
             </td>
-		<td>
+			<td>
 				<div>Location/Contact</div>
+            </td>
+			<td>
+				<div>State</div>
             </td>
 	     <td>
 				<div class="users_header_blue_r"><div>Gauge</div></div>
@@ -49,7 +52,7 @@
 								{$facility.name|escape}
 							</div>
 						</a>
-					</td>
+					</td>					
 					<td>
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
@@ -57,7 +60,13 @@
 							</div>
 						</a>
 					</td>
-
+					<td>
+						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
+							<div style="width:100%;">
+								{$facility.stateName|escape}
+							</div>
+						</a>
+					</td>
 					<td class="border_users_r" style="width:390px;">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
@@ -73,7 +82,7 @@
 
 			{*BEGIN	EMPTY LIST*}
 			<tr>
-				<td colspan="5"class="border_users_l border_users_r" align="center">
+				<td colspan="6"class="border_users_l border_users_r" align="center">
 					No facilities in the list
 				</td>
 			</tr>
