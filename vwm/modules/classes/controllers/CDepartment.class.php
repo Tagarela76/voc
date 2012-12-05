@@ -1,4 +1,5 @@
 <?php
+
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 
 class CDepartment extends Controller {
@@ -124,7 +125,7 @@ class CDepartment extends Controller {
 		$unittype = new Unittype($this->db);
 		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
 		$this->smarty->assign('vocUnitType', $vocUnitType);
-		
+
 		$vars = array(
 			'departmentDetails' => $departmentDetails,
 			'facilityDetails' => $facilityDetails,
@@ -132,29 +133,29 @@ class CDepartment extends Controller {
 			'moduleMap' => $moduleMap,
 			'tab' => $this->getFromRequest("tab")
 		);
-        // we should new - show nox emissions tab
-        $noxManager = new NoxEmissionManager($this->db);
-        $noxList = $noxManager->getNoxListByDepartment($departmentDetails['department_id']);
-        if (!$noxList) {
-            // we shouldn't show nox emissions tab
-            $displayNoxEmissionsTab = false;
-        } else {
-            $displayNoxEmissionsTab = true;
-        }
-        $this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
-        
-        //	qty product indicator
-        $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $productQty = $qtyProductGauge->getCurrentUsage($qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
-        $unitType = new Unittype($this->db);
-        $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
-        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
-        $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
-        // insert nox indicator bar into tpl
-        if($qtyProductGauge->getLimit() != 0) {
-            $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-        }
-        
+		// we should new - show nox emissions tab
+		$noxManager = new NoxEmissionManager($this->db);
+		$noxList = $noxManager->getNoxListByDepartment($departmentDetails['department_id']);
+		if (!$noxList) {
+			// we shouldn't show nox emissions tab
+			$displayNoxEmissionsTab = false;
+		} else {
+			$displayNoxEmissionsTab = true;
+		}
+		$this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
+
+		//	qty product indicator
+		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
+		$productQty = $qtyProductGauge->getCurrentUsage();
+		$unitType = new Unittype($this->db);
+		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
+		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
+		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
+		// insert nox indicator bar into tpl
+		if ($qtyProductGauge->getLimit() != 0) {
+			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+		}
+
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -227,8 +228,8 @@ class CDepartment extends Controller {
 		$filterStr = $this->filterList('department');
 
 		$departments = new Department($this->db);
-        $facility = new Facility($this->db);
-        
+		$facility = new Facility($this->db);
+
 		$pagination = new Pagination($departments->countDepartments($this->getFromRequest('id'), $filterStr));
 		$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest("category") . "&id=" . $this->getFromRequest("id") . "&bookmark=" . $this->getFromRequest("bookmark");
 		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr, $sortStr);
@@ -273,19 +274,18 @@ class CDepartment extends Controller {
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources', $cssSources);
 
-        //	qty product indicator
-        $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $productQty = $qtyProductGauge->getCurrentUsage(
-                $qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
-        $unitType = new Unittype($this->db);
-        $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
-        $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
-        $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
-        // insert nox indicator bar into tpl
-        if($qtyProductGauge->getLimit() != 0) {
-            $this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-        }
-        
+		//	qty product indicator
+		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
+		$productQty = $qtyProductGauge->getCurrentUsage();
+		$unitType = new Unittype($this->db);
+		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
+		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
+		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
+		// insert nox indicator bar into tpl
+		if ($qtyProductGauge->getLimit() != 0) {
+			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+		}
+
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
 		$this->smarty->assign('pagination', $pagination);

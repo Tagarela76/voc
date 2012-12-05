@@ -7,24 +7,23 @@ class ProductLibraryType {
 	 * @var int 
 	 */
 	public $id;
-	
+
 	/**
 	 *
 	 * @var string 
 	 */
 	public $name;
-		
+
 	/**
 	 * db connection
 	 * @var db 
 	 */
 	private $db;
 
-
 	const PAINT_SHOP_PRODUCTS = "Paint Shop Products";
 	const BODY_SHOP_PRODUCTS = "Body Shop Products";
 	const DETAILING_SHOP_PRODUCTS = "Detailing Products";
-	
+
 	function __construct(db $db, $productLibraryTypeId = null) {
 		$this->db = $db;
 
@@ -33,7 +32,7 @@ class ProductLibraryType {
 			$this->_load();
 		}
 	}
-	
+
 	/**
 	 * Insert/update product library type
 	 * @return int 
@@ -47,7 +46,7 @@ class ProductLibraryType {
 		}
 		return $productLibraryTypeId;
 	}
-	
+
 	/**
 	 * insert new product library type
 	 * @return int 
@@ -58,12 +57,12 @@ class ProductLibraryType {
 				VALUES ( 
 				'" . $this->db->sqltext($this->name) . "'
 				)";
-		$this->db->query($query); 
+		$this->db->query($query);
 		$productLibraryTypeId = $this->db->getLastInsertedID();
 		$this->id = $productLibraryTypeId;
 		return $productLibraryTypeId;
 	}
-	
+
 	/**
 	 * update product library type
 	 * @return int 
@@ -156,13 +155,13 @@ class ProductLibraryType {
 			}
 		}
 	}
-	
+
 	/**
 	 * get all product library types
 	 * @return boolean|\ProductLibraryType 
 	 */
 	public function getProductLibraryTypes() {
-		
+
 		$query = "SELECT * FROM " . TB_PRODUCT_LIBRARY_TYPE;
 		$this->db->query($query);
 		$rows = $this->db->fetch_all_array();
@@ -182,28 +181,27 @@ class ProductLibraryType {
 		}
 		return $productLibraryTypes;
 	}
-	
-	public function mapping($libraryType) { 
-	
-	switch (trim($libraryType)) {
+
+	public function mapping($libraryType) {
+
+		switch (trim($libraryType)) {
 			case "paintShop" :
 				$productLibraryType = "1";
-			break;
+				break;
 
 			case "bodyShop":
 				$productLibraryType = "2";
-			break;
+				break;
 
 			case "detailingShop":
 				$productLibraryType = "3";
-			break;
-        
-            case "fuelAndOils":
-				$productLibraryType = "4";
-			break;
-	}
-		return $productLibraryType;
+				break;
 
+			case "fuelAndOils":
+				$productLibraryType = "4";
+				break;
+		}
+		return $productLibraryType;
 	}
 
 }
