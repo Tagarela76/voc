@@ -18,6 +18,8 @@ class QtyProductGauge extends Model {
     
     const PERIOD_MONTHLY = 0;
 	const PERIOD_ANNUALLY= 1;
+
+	const TABLE_NAME = 'qty_product_gauge';
     
     public function getId() {
         return $this->id;
@@ -82,7 +84,7 @@ class QtyProductGauge extends Model {
 			return false;
 		}
 		$sql = "SELECT * ".
-				"FROM " . TB_QTY_PRODUCT_GAUGE . " ".
+				"FROM " . self::TABLE_NAME . " ".
 				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())} " . 
 				"LIMIT 1";
 		$this->db->query($sql);
@@ -90,24 +92,11 @@ class QtyProductGauge extends Model {
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}
-		$rows = $this->db->fetch(0);
+		$row = $this->db->fetch(0);
 
-		foreach ($rows as $key => $value) {
-			if (property_exists($this, $key)) {
-				$this->$key = $value;
-			}
-		}
+		$this->initByArray($row);
 	}
 	
-	public function save() {		
-		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
-		if($this->getId() ) {
-			return $this->_update();
-		} else {
-			return $this->_insert();
-		}
-	}
 	
     /**
      * Insert new settings
@@ -118,7 +107,7 @@ class QtyProductGauge extends Model {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 				
-		$sql = "INSERT INTO ".TB_QTY_PRODUCT_GAUGE." (" .
+		$sql = "INSERT INTO ".self::TABLE_NAME." (" .
 				"`limit`, unit_type, period, facility_id, last_update_time" .
 				") VALUES ( ".
 				"{$this->db->sqltext($this->getLimit())}, " .
@@ -147,7 +136,7 @@ class QtyProductGauge extends Model {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 				
-		$sql = "UPDATE ".TB_QTY_PRODUCT_GAUGE." SET " .
+		$sql = "UPDATE ".self::TABLE_NAME." SET " .
 				"`limit`={$this->db->sqltext($this->getLimit())}, " .
 				"unit_type='{$this->db->sqltext($this->getUnitType())}', " .
 				"period={$this->db->sqltext($this->getPeriod())}, " .
@@ -168,7 +157,7 @@ class QtyProductGauge extends Model {
 	 */
 	public function delete() {
 
-		$sql = "DELETE FROM " . TB_QTY_PRODUCT_GAUGE . "
+		$sql = "DELETE FROM " . self::TABLE_NAME . "
 				 WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";
 		$this->db->query($sql);
 	}

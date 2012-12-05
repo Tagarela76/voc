@@ -9,7 +9,7 @@ class QtyProductGaugeTest extends DbTestCase {
 		TB_UNITTYPE,
         TB_COMPANY,
         TB_FACILITY,
-        TB_QTY_PRODUCT_GAUGE
+        QtyProductGauge::TABLE_NAME,
 	);
 	
 
