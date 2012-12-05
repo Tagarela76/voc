@@ -145,16 +145,8 @@ class CDepartment extends Controller {
         
         //	qty product indicator
         $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $facilityProductsDetails = $facility->getProductQuantityInFacility(
-                $qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
-        // convert to preffered unit type
-        $unitTypeConverter = new UnitTypeConverter($this->db);
+        $productQty = $qtyProductGauge->getCurrentUsage($qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
         $unitType = new Unittype($this->db);
-        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnitType());
-        foreach ($facilityProductsDetails as $product) {
-            $productQty += $unitTypeConverter->fromDefaultWeight($product['quantity'], $destinationType); 
-        }
-        
         $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
         $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
@@ -283,16 +275,9 @@ class CDepartment extends Controller {
 
         //	qty product indicator
         $qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-        $facilityProductsDetails = $facility->getProductQuantityInFacility(
+        $productQty = $qtyProductGauge->getCurrentUsage(
                 $qtyProductGauge->getFacilityId(), $qtyProductGauge->getPeriod());
-        // convert to preffered unit type
-        $unitTypeConverter = new UnitTypeConverter($this->db);
         $unitType = new Unittype($this->db);
-        $destinationType = $unitType->getDescriptionByID($qtyProductGauge->getUnitType());
-        foreach ($facilityProductsDetails as $product) {
-            $productQty += $unitTypeConverter->fromDefaultWeight($product['quantity'], $destinationType); 
-        }
-        
         $this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
         $productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
         $this->smarty->assign('productQtyUnitType', $productQtyUnitType);
