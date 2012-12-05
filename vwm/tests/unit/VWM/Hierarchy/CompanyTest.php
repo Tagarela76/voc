@@ -95,8 +95,9 @@ class CompanyTest extends DbTestCase {
         $companyId = 1; 
         $company = new Company($this->db, $companyId);
         $repairOrderLabelId = "repair_order";
-        $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($repairOrderLabelId)->getLabelText(); 
-        $this->assertTrue($repairOrderLabel == "repair order");
+        $repairOrderLabel = $company->getIndustryType()->getLabelManager()
+				->getLabel($repairOrderLabelId)->getLabelText();
+        $this->assertTrue($repairOrderLabel == "Work Order Label");
     }
     
     public function testGetDisplayColumnsManager() {
