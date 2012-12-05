@@ -1,5 +1,5 @@
 <?php
-use VWM\Apps\Gauge\QtyProductGauge;
+use VWM\Apps\Gauge\Entity\QtyProductGauge;
 
 class CDepartment extends Controller {
 

@@ -4,4 +4,4 @@ INSERT INTO  `notify_code` (
 `message`
 )
 VALUES (
-NULL ,  '58',  'Repair Order Edited'
+NULL ,  '58',  'Repair Order Edited');

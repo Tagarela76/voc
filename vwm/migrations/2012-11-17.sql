@@ -122,5 +122,5 @@ INSERT INTO  `company_level_label` (
 `default_label_text`
 )
 VALUES (
-NULL ,  'unit_type',  'Unit type Label',  'Unit Yype'
+NULL ,  'unit_type',  'Unit type Label',  'Unit Type'
 );

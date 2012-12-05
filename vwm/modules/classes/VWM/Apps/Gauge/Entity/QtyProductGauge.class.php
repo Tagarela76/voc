@@ -1,75 +1,12 @@
 <?php
-namespace VWM\Apps\Gauge;
+namespace VWM\Apps\Gauge\Entity;
 use VWM\Framework\Model;
 
-class QtyProductGauge extends Model {
-	
-	protected $id;
+class QtyProductGauge extends Gauge {		
 
-	protected $limit=0;
-    
-    protected $unit_type=1;
-    
-    protected $period=0;
-    
-    protected $facility_id;
-    
-    protected $last_update_time;
-    
-    const PERIOD_MONTHLY = 0;
-	const PERIOD_ANNUALLY= 1;
+	const TABLE_NAME = 'qty_product_gauge';        
 
-	const TABLE_NAME = 'qty_product_gauge';
-    
-    public function getId() {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-    }
-
-    public function getLimit() {
-        return $this->limit;
-    }
-
-    public function setLimit($limit) {
-        $this->limit = $limit;
-    }
-
-    public function getUnitType() {
-        return $this->unit_type;
-    }
-
-    public function setUnitType($unit_type) {
-        $this->unit_type = $unit_type;
-    }
-
-    public function getPeriod() {
-        return $this->period;
-    }
-
-    public function setPeriod($period) {
-        $this->period = $period;
-    }
-
-    public function getLastUpdateTime() {
-        return $this->last_update_time;
-    }
-
-    public function setLastUpdateTime($last_update_time) {
-        $this->last_update_time = $last_update_time;
-    }
-    
-    public function getFacilityId() {
-        return $this->facility_id;
-    }
-
-    public function setFacilityId($facility_id) {
-        $this->facility_id = $facility_id;
-    }
-
-    function __construct(\db $db, $facilityId = null) {
+    public function __construct(\db $db, $facilityId = null) {
 		$this->db = $db;
 		$this->modelName = 'QtyProductGauge';
 		if (isset($facilityId)) {
@@ -160,24 +97,7 @@ class QtyProductGauge extends Model {
 		$sql = "DELETE FROM " . self::TABLE_NAME . "
 				 WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";
 		$this->db->query($sql);
-	}
-    
-    public function getPeriodOptions() {
-		return array(
-			'Monthly' => self::PERIOD_MONTHLY,
-			'Annually' => self::PERIOD_ANNUALLY,
-		);
-	}
-
-
-	public function getPeriodName() {
-		$options = $this->getPeriodOptions();
-		foreach ($options as $key => $option) {
-			if($option == $this->getPeriod()) {
-				return $key;
-			}
-		}
-	}
+	}       
 }
 
 ?>

@@ -95,14 +95,6 @@ abstract class Gauge extends Model {
 		$this->facility_id = $facility_id;
 	}
 
-	public function getLastUpdateTime() {
-		return $this->last_update_time;
-	}
-
-	public function setLastUpdateTime($last_update_time) {
-		$this->last_update_time = $last_update_time;
-	}
-
 	public function getPeriodOptions() {
 		return array(
 			'Monthly' => self::PERIOD_MONTHLY,
@@ -117,6 +109,11 @@ abstract class Gauge extends Model {
 				return $key;
 			}
 		}
+	}
+
+
+	public function getCurrentUsage() {
+		throw new Exception("getCurrentUsage() should be implemented by child");
 	}
 }
 

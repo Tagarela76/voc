@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Apps\Gauge;
+namespace VWM\Apps\Gauge\Entity;
 use VWM\Framework\Test\DbTestCase;
 
 class QtyProductGaugeTest extends DbTestCase {
@@ -26,10 +26,10 @@ class QtyProductGaugeTest extends DbTestCase {
 		
 		$this->assertEquals($expectedId, $result);	// last id
 		
-		$myTest = \Phactory::get(TB_QTY_PRODUCT_GAUGE, array('facility_id'=>"2"));
+		$myTest = \Phactory::get(QtyProductGauge::TABLE_NAME, array('facility_id'=>"2"));
 		$this->assertTrue($myTest->id == '2');
 
-		$sql = "SELECT * FROM " . TB_QTY_PRODUCT_GAUGE . " WHERE id = {$expectedId}";
+		$sql = "SELECT * FROM " . QtyProductGauge::TABLE_NAME . " WHERE id = {$expectedId}";
 		$this->db->query($sql);
 		$row = $this->db->fetch_array(0);
 		$qtyProductGaugeActual = new QtyProductGauge($this->db);
@@ -43,7 +43,7 @@ class QtyProductGaugeTest extends DbTestCase {
 		 $newLimit = "500";
 		 $qtyProductGaugeUpdated->setLimit($newLimit);
 		 $qtyProductGaugeUpdated->save();
-		 $qtyProductGaugeUpdatedTest = \Phactory::get(TB_QTY_PRODUCT_GAUGE, array('id'=>"1"));		
+		 $qtyProductGaugeUpdatedTest = \Phactory::get(QtyProductGauge::TABLE_NAME, array('id'=>"1"));
 		 $this->assertTrue($qtyProductGaugeUpdatedTest->limit == $newLimit);		
 	}
 
