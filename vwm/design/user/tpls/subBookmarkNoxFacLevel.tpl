@@ -5,6 +5,10 @@
 	<a href="?action=browseCategory&category={$request.category}&id={$request.id}&bookmark=nox&tab=burnerRatio" {if $request.tab == "burnerRatio"} class="active_link" {/if}>Burner Ratio's </a>
  </div>	
  {if $smarty.session.accessLevel eq "SuperuserLevel"}
- <input type="button" class="button" value="Show 'Nox Emissions' tab in Department level" onclick="location.href='index.php?action=showNoxTab&category=nox'"/>
- {/if}
+    {if $smarty.session.noxTabShow eq "true"}
+        <input type="button" class="button" value="Hide 'Nox Emissions' tab in Department level" onclick="location.href='index.php?action=hideNoxTab&category=nox'"/>
+    {else}
+       <input type="button" class="button" value="Show 'Nox Emissions' tab in Department level" onclick="location.href='index.php?action=showNoxTab&category=nox'"/>
+    {/if}   
+{/if}
 {/if}
