@@ -17,7 +17,7 @@ class QtyProductGauge extends Model {
     protected $last_update_time;
     
     const PERIOD_MONTHLY = 0;
-	const PERIOD_ANNUM= 1;
+	const PERIOD_ANNUALLY= 1;
     
     public function getId() {
         return $this->id;
@@ -176,7 +176,7 @@ class QtyProductGauge extends Model {
     public function getPeriodOptions() {
 		return array(
 			'Monthly' => self::PERIOD_MONTHLY,
-			'Annum' => self::PERIOD_ANNUM,
+			'Annually' => self::PERIOD_ANNUALLY,
 		);
 	}
 
