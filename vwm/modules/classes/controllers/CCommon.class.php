@@ -997,13 +997,6 @@ jgypsyn@gyantgroup.com
 			}
 		}
 		
-		
-        /*$unitTypeList = $unitType->getUnittypeListDefault();
-		
-		$galUnitType = $unitType->getUnittypeByName('gal');
-		$galUnitType['description'] = $galUnitType['name'];
-		$unitTypeList[]= $galUnitType;*/
-		
         $periodOptions = $qtyProductGauge->getPeriodOptions();
 
 		$this->smarty->assign('data', $qtyProductGauge);
