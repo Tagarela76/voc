@@ -987,7 +987,12 @@ jgypsyn@gyantgroup.com
 		
 		$qtyProductGauge->load();
         $unitType = new Unittype($this->db);
-        $unitTypeList = $unitType->getUnittypeListDefault(); 
+        $unitTypeList = $unitType->getUnittypeListDefault();
+		
+		$galUnitType = $unitType->getUnittypeByName('gal');
+		$galUnitType['description'] = $galUnitType['name'];
+		$unitTypeList[]= $galUnitType;
+		
         $periodOptions = $qtyProductGauge->getPeriodOptions();
 
 		$this->smarty->assign('data', $qtyProductGauge);
@@ -1001,7 +1006,7 @@ jgypsyn@gyantgroup.com
 		if ($this->getFromRequest('department_id')!='false') {
 			$departmentId = $this->getFromRequest('department_id');
 		} else {
-			$departmentId = 'NULL';
+			$departmentId = false;
 		}
 		$id = $this->getFromRequest('id');
 		 
