@@ -23,7 +23,7 @@
                 <div align="left" style="float: left;">	
                 <select name="unit_type" id="unit_type">
                 {section name=i loop=$unitTypeList}										
-                        <option value='{$unitTypeList[i].unittype_id}' {if $unitTypeList[i].unittype_id eq $data->unit_type}selected="selected"{/if}> {$unitTypeList[i].description}</option>										
+                        <option value='{$unitTypeList[i].unittype_id}' {if $unitTypeList[i].unittype_id eq $data->unit_type}selected="selected"{/if}> {$unitTypeList[i].name}</option>										
                 {/section}
                 </select>									
             </div>	
