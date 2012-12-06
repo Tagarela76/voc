@@ -1004,14 +1004,13 @@ jgypsyn@gyantgroup.com
 			$departmentId = 'NULL';
 		}
 		$id = $this->getFromRequest('id');
-		
+		 
 		if (isset($id) && $id!='') {
 			$id = $this->getFromRequest('id');
 		} else {
 			$id = false;
 		}
 		
-        //$id = $this->getFromRequest('id');
         $facilityId = $this->getFromRequest('facility_id');
         $limit = $this->getFromRequest('limit');
         $period = $this->getFromRequest('period');
@@ -1024,7 +1023,6 @@ jgypsyn@gyantgroup.com
         $qtyProductGauge->setLimit($limit);
         $qtyProductGauge->setPeriod($period);
         $qtyProductGauge->setUnitType($unitType);		
-		//var_dump($qtyProductGauge->getId());
         $qtyProductGauge->save();
     }
 	
