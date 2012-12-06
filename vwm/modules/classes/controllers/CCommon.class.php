@@ -972,7 +972,12 @@ jgypsyn@gyantgroup.com
 		if (!$this->user->checkAccess('facility', $this->getFromRequest('facilityId'))) {
 			throw new Exception('deny');
 		}
-        if (!$_SESSION['accessLevel'] == "SuperuserLevel") {
+		
+		// super, company, facility
+		$allowtoAccessLevels = array(
+			3, 0, 1
+		);
+        if (!in_array($_SESSION['auth']['accesslevel_id'], $allowtoAccessLevels)) {
             throw new Exception('deny');
         }				
 		
