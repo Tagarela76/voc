@@ -843,7 +843,13 @@ class Controller {
 
     private function actionSettingsCommon() {
         $this->smarty->assign('request', $this->getFromRequest());
-
+		
+		if($_REQUEST['category']=='department'){
+			$this->smarty->assign('departmentId', $_REQUEST['id']);
+		}else{
+			$this->smarty->assign('departmentId', 0);
+		}
+		
         $cfd = $this->noname();
 
 

@@ -1,20 +1,22 @@
 function ManageProductLibraryTypes(){
-    this.divId = 'manageProductLibraryTypesContainer';
-    this.isLoaded = false; 
+	this.divId = 'manageProductLibraryTypesContainer';
+	this.isLoaded = false; 
     
-    this.openDialog = function() {
-        $('#'+this.divId).dialog('open');
-        if(!this.isLoaded) {
-            this.loadContent();
-        }
-        return false;
-    }
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
     
-    this.loadContent = function() {
+	this.loadContent = function() {
 		var that = this;
 		$.ajax({
 			url: "?action=loadProductLibraryTypes&category=product",
-			data: {productId: page.productId},
+			data: {
+				productId: page.productId
+			},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -22,10 +24,10 @@ function ManageProductLibraryTypes(){
 				
 				// do not perform any AJAX queries from now
 				that.isLoaded = true;
-      		}
+			}
 		});
 	}
-    this.iniDialog = function(divId) {
+	this.iniDialog = function(divId) {
 		divId = typeof divId !== 'undefined' ? divId : this.divId;
 		if(divId != this.divId) {
 			this.divId = divId;
@@ -51,26 +53,28 @@ function ManageProductLibraryTypes(){
 		});
 	}
     
-    this.save = function() {
-        var countLibraryTypes = $('#countLibraryTypes').val();
-        var productLibraryTypesIds =new Array();
-        for(var i = 0; i<countLibraryTypes; i++){
-            if ($('#checkBox_'+i).is(":checked")){
-                productLibraryTypesIds.push($('#checkBox_'+i).val()); 
-            }
-        }
-        $.ajax({
+	this.save = function() {
+		var countLibraryTypes = $('#countLibraryTypes').val();
+		var productLibraryTypesIds =new Array();
+		for(var i = 0; i<countLibraryTypes; i++){
+			if ($('#checkBox_'+i).is(":checked")){
+				productLibraryTypesIds.push($('#checkBox_'+i).val()); 
+			}
+		}
+		$.ajax({
 			url: "?action=saveProductLibraryTypes&category=product",
-			data: {productId: page.productId, productlibraryTipesIds: productLibraryTypesIds},
+			data: {
+				productId: page.productId, 
+				productlibraryTipesIds: productLibraryTypesIds
+			},
 			type: "Post",
 			success: function (response) {
 				$('#productLibraryTypes').html(response);
-				// do not perform any AJAX queries from now
-      		}
+			}
 		});
         
-        $("#"+this.divId).dialog('close');
-    }
+		$("#"+this.divId).dialog('close');
+	}
     
 }
 
@@ -116,15 +120,15 @@ function ManageIndustryTypes() {
 		var that = this;
 		$.ajax({
 			url: "?action=loadIndustryTypes&category=product",
-			data: {productId: page.productId},
+			data: {
+				productId: page.productId
+			},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
 				$("#"+that.divId).html(response);
-				
-				// do not perform any AJAX queries from now
 				that.isLoaded = true;
-      		}
+			}
 		});
 	}
 
@@ -161,7 +165,7 @@ function ManageIndustryTypes() {
 
 function ProductAddEditPage() {
 	this.manageIndustryTypes = new ManageIndustryTypes();
-    this.manageProductLibraryTypes = new ManageProductLibraryTypes();
+	this.manageProductLibraryTypes = new ManageProductLibraryTypes();
 	this.productId = false;
 }
 
@@ -170,5 +174,5 @@ var page;
 $(function() {
 	page = new ProductAddEditPage();
 	page.manageIndustryTypes.iniDialog();
-    page.manageProductLibraryTypes.iniDialog();
+	page.manageProductLibraryTypes.iniDialog();
 });

@@ -5,6 +5,9 @@
 		settings.companyId = {/literal} {$cfd.companyID} {literal}; 
 		settings.facilityId = {/literal} {$cfd.facilityID} {literal};
 		
+		{/literal}{if $cfd.departmentID}{literal}
+			settings.departmentId = {/literal} {$cfd.departmentID} {literal};			
+		{/literal}{/if}{literal}
 	});
 </script>
 {/literal}
@@ -80,6 +83,7 @@
 						<a style="color: black" href="#manageQtyProductGauge" onclick="settings.manageQtyProductGauge.openDialog()">
 							<h2>Quantity Gauge</h2>
 						</a>
+						<input type="hidden" id='department_id' value="{$departmentId}">
                     </td>
                     <td>
                         Manage Product Quantity Gauge Settings
