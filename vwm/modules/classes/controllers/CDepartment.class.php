@@ -146,10 +146,14 @@ class CDepartment extends Controller {
 
 
 		//	qty product indicator department
-		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-		$qtyProductGauge->setDepartmentId($departmentDetails['department_id']);
 		
-		$productQty = $qtyProductGauge->getCurrentDepartmentUsage();
+		$qtyProductGauge = new QtyProductGauge($this->db);
+		$qtyProductGauge->setDepartmentId($departmentDetails['department_id']);
+		$qtyProductGauge->setFacilityId($facilityDetails['facility_id']);
+		$qtyProductGauge->load();
+		$departmentId = $qtyProductGauge->getFacilityId();
+		
+		$productQty = $qtyProductGauge->getCurrentUsage();
 		$unitType = new Unittype($this->db);
 		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
 		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
