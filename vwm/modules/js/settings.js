@@ -342,7 +342,7 @@ function ManageQtyProductGauge() {
 			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id, department_id: settings.departmentId},
 			type: "GET",
 			dataType: "html",
-			success: function (response) {console.log(response);
+			success: function (response) {
 				that.isLoaded = false;
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
