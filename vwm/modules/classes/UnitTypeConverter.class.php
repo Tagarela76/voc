@@ -398,5 +398,19 @@ class UnitTypeConverter {
 	public function convertWeightToVolume($quantity, $unitTypeDetails, $density) {
 
     }
+
+	public function convertDefaultTime($time, $type) {
+		switch ($type) {
+			case "min":
+				break;
+			case "hour":
+				$time = $time/60;
+				break;
+			case "days":
+				$time = $time/1440;
+				break;
+		}
+		return $time;
+	}
 }
 ?>

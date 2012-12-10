@@ -1642,6 +1642,16 @@ class Controller {
         }
         $this->smarty->assign('pxQtyProductCount', $pxQtyProductCount); //	200px - indicator length
     }
+	
+	 protected function setTimeProductIndicator($limit, $currenProductTime) {
+        $this->smarty->assign('timeProductLimit', $limit);
+        $this->smarty->assign('currenProductTime', round($currenProductTime, 2));
+        $timeProductCount = round(200 * $currenProductTime / $limit); 
+        if ($timeProductCount > 200) {
+            $timeProductCount = 200;
+        }
+        $this->smarty->assign('timeProductCount', $timeProductCount); //	200px - indicator length
+    }
 }
 
 ?>

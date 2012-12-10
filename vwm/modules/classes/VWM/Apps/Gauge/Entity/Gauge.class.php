@@ -41,11 +41,20 @@ abstract class Gauge extends Model {
 	 * @var int
 	 */
 	protected $facility_id;
+	
+	/*
+	 * Gauge type
+	 * @var int
+	 */
+	protected $gauge_type;
 
     protected $last_update_time;
 
     const PERIOD_MONTHLY = 0;
 	const PERIOD_ANNUALLY= 1;
+	const QUANTITY_GAUGE = 1;
+	const TIME_GAUGE = 2;
+	
 
 	public function getId() {
 		return $this->id;
@@ -100,6 +109,10 @@ abstract class Gauge extends Model {
 			'Monthly' => self::PERIOD_MONTHLY,
 			'Annually' => self::PERIOD_ANNUALLY,
 		);
+	}
+		
+	public function getGaugeType() {
+		return $this->gauge_type;
 	}
 
 	public function getPeriodName() {
