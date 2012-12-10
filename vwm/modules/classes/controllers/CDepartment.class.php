@@ -1,6 +1,7 @@
 <?php
 
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
+use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 
 class CDepartment extends Controller {
 
@@ -146,6 +147,13 @@ class CDepartment extends Controller {
 
 
 		//	qty product indicator department
+		$timeProductGauge = new SpentTimeGauge($this->db);
+		$timeProductGauge->setDepartmentId($departmentDetails['department_id']);
+		$timeProductGauge->setFacilityId($facilityDetails['facility_id']);
+		$timeProductGauge->load();
+		
+		$productTime = $timeProductGauge->getCurrentUsage();
+		
 		
 		$qtyProductGauge = new QtyProductGauge($this->db);
 		$qtyProductGauge->setDepartmentId($departmentDetails['department_id']);
@@ -162,7 +170,24 @@ class CDepartment extends Controller {
 		if ($qtyProductGauge->getLimit() != 0) {
 			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
-
+		
+		
+		// insert time indicator bar into tpl 
+		$productTime = $timeProductGauge->getCurrentUsage();
+		
+		$unittype = new Unittype($this->db);
+		$unitType = $timeProductGauge->getUnitType();
+		$unitType = $unittype->getNameByID($unitType);
+		
+		$unitTypeConverter = new UnitTypeConverter($this->db);
+		$productTime = $unitTypeConverter->convertDefaultTime($productTime, $unitType);
+		$this->smarty->assign('unitType', $unitType);
+		
+		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime);
+		if ($timeProductGauge->getLimit()!=0) {
+			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+		}
+		
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -282,6 +307,7 @@ class CDepartment extends Controller {
 		$this->smarty->assign('cssSources', $cssSources);
 
 		//	qty product indicator facillity
+		
 		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
 		$productQty = $qtyProductGauge->getCurrentUsage();
 		$unitType = new Unittype($this->db);
@@ -292,7 +318,27 @@ class CDepartment extends Controller {
 		if ($qtyProductGauge->getLimit() != 0) {
 			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
-
+		
+		$timeProductGauge = new SpentTimeGauge($this->db);
+		$timeProductGauge->setFacilityId($facilityDetails['facility_id']);
+		$timeProductGauge->load();
+		
+		$productTime = $timeProductGauge->getCurrentUsage();
+		
+		$unittype = new Unittype($this->db);
+		$unitType = $timeProductGauge->getUnitType();
+		$unitType = $unittype->getNameByID($unitType);
+		
+		$unitTypeConverter = new UnitTypeConverter($this->db);
+		$productTime = $unitTypeConverter->convertDefaultTime($productTime, $unitType);
+		$this->smarty->assign('unitType', $unitType);
+		
+		// insert time indicator bar into tpl 
+		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime);
+		if ($timeProductGauge->getLimit()!=0) {
+			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+		}
+		
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
 		$this->smarty->assign('pagination', $pagination);

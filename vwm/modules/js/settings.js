@@ -333,16 +333,20 @@ function ManageQtyProductGauge() {
 		var that = this;
         var id = $("#id").val();
 		var limit = $("#limit").val();
+		var gaugeType = $("#gaugeType").val();
         var unit_type = $("#unit_type").val();
         var period = $("#period").val();
         var facility_id = $("#facility_id").val();
+		var selectProductGauge = $('#selectProductGauge :selected').val();
+		
 		
 		$.ajax({
 			url: "?action=saveQtyProductGaugeSettings",
-			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id, department_id: settings.departmentId},
+			data: {id: id, limit: limit, unit_type: unit_type, period: period, facility_id: facility_id, department_id: settings.departmentId, productGauge: selectProductGauge, gaugeType: gaugeType},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
+				
 				that.isLoaded = false;
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
@@ -371,3 +375,23 @@ $(function() {
 	settings.manageAdditionalEmailAccounts.iniDialog();
     settings.manageQtyProductGauge.iniDialog();
 });
+
+function selectProductGauge(){
+	var selectProductGauge = $('#selectProductGauge :selected').val();
+	var that = this;
+	console.log(this.divId);
+	$.ajax({
+			url: "?action=loadQtyProductSettings",
+			data: {facilityId: settings.facilityId, 
+				companyId: settings.companyId, 
+				productGauge: selectProductGauge,
+				departmentId:(settings.departmentId) ? settings.departmentId : 0 },
+				
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				$("#manageQtyProductGaugeContainer").html(response);
+				/*that.isLoaded = true;*/
+      		}
+		});
+}

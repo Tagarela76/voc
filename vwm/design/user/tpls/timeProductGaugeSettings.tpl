@@ -1,4 +1,3 @@
-
 <div>
     <table class="popup_table" align="left" cellspacing="0" cellpadding="0"> 
 		<tr>
@@ -12,7 +11,7 @@
         
         <tr>
             <td>
-                Limit:&nbsp;
+                Time Limit:&nbsp;
             </td>
             <td>
                 <div align="left" style="float: left;">	<input type='text' name='limit' id='limit' value='{$data->limit|escape}' /></div>												
@@ -25,7 +24,7 @@
                 {/foreach}
             </td>
         </tr>
-        <tr>
+		<tr>
             <td>
                 Unittype:&nbsp;
             </td>
