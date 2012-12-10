@@ -81,12 +81,12 @@
                 <tr>
                     <td>
 						<a style="color: black" href="#manageQtyProductGauge" onclick="settings.manageQtyProductGauge.openDialog()">
-							<h2>Quantity Gauge</h2>
+							<h2>Gauge</h2>
 						</a>
 						<input type="hidden" id='department_id' value="{$departmentId}">
                     </td>
                     <td>
-                        Manage Product Quantity Gauge Settings
+                        Manage Gauge Settings
                     </td>
                 </tr>
             </table>
