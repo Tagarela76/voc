@@ -67,7 +67,7 @@ function ManageProductLibraryTypes(){
 				productId: page.productId, 
 				productlibraryTipesIds: productLibraryTypesIds
 			},
-			type: "Post",
+			type: "get",
 			success: function (response) {
 				$('#productLibraryTypes').html(response);
 			}
