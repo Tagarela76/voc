@@ -15,10 +15,14 @@
 						{$currenProductQty}/<b>{$qtyProductLimit}</b>&nbsp; {$productQtyUnitType}	   
 					{/if}
 				</div>
-				<div class="widhtrelac">
-					<div class="colors" style="width:{$pxQtyProductCount}px;">
+					<div class="widhtrelac">
+						{if $overritenQtyProductCount}
+							<div class="colors" style="width:{$overritenQtyProductCount}px;"></div>
+						{else}
+							<div class="colors" style="width:{$pxQtyProductCount}px;"></div>
+						{/if}
+
 					</div>
-				</div>
 			</div>
 		</div>
 
