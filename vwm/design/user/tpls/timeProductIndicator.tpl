@@ -16,9 +16,12 @@
 					{/if}
 				</div>
 				<div class="widhtrelac">
-					<div class="colors" style="width:{$timeProductCount}px;">
-						
-					</div>
+					{if $overritenTimeProductCount}
+						<div class="colors" style="width:{$overritenTimeProductCount}px;"></div>
+					{else}
+						<div class="colors" style="width:{$timeProductCount}px;"></div>
+					{/if}
+
 				</div>
 			</div>
 		</div>
