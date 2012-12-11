@@ -951,9 +951,10 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 
 				$periodOptions = $qtyProductGauge->getPeriodOptions();
 
+				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('data', $qtyProductGauge);
 				$this->smarty->assign('unitTypeList', $unitTypeList);
-				
+				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/qtyProductGaugeSettings.tpl');
 				break;
 
@@ -968,6 +969,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 				$timeProductGauge->load();
 				$periodOptions = $timeProductGauge->getPeriodOptions();
+
 				$allUnitTypeList = $unitType->getUnittypeList();
 				$unitTypeList = array();
 				foreach ($allUnitTypeList as $type) {
@@ -978,7 +980,9 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 
 				$this->smarty->assign('unitTypeList', $unitTypeList);
+				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('data', $timeProductGauge);
+				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/timeProductGaugeSettings.tpl');
 				break;
 			case Gauge::VOC_GAUGE:
@@ -992,14 +996,15 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 					$this->smarty->assign('vocLimit', $departmentDetails['voc_limit']);
 				}
 				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
+				$this->smarty->assign('gaugeType', $selectProductGauge);
+				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/vocGaugeSettings.tpl');
 				break;
 
 			default:
 				break;
 		}
-		$this->smarty->assign('gaugeType', $selectProductGauge);
-		$this->smarty->assign('periodOptions', $periodOptions);
+		
 	}
 
 	public function actionSaveQtyProductGaugeSettings() {
