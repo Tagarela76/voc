@@ -304,7 +304,7 @@ class CDepartment extends Controller {
 			$unittype = new Unittype($this->db);
 			$unitType = $timeGauge->getUnitType();
 			$unitType = $unittype->getNameByID($unitType);
-			
+			//var_dump($unitType);die();
 			$unitTypeConverter = new UnitTypeConverter($this->db);
 			$currentTimeUsage = $unitTypeConverter->convertDefaultTime($currentTimeUsage, $unitType);
 			
@@ -314,7 +314,7 @@ class CDepartment extends Controller {
 			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);
 			$departmentList[$i]['time_gauge'] = array(
 				'currentUsage' => round($currentTimeUsage, 2),
-				'vocLimit' => $timeLimit,
+				'timeLimit' => $timeLimit,
 				'pxCount' => $pxTimeCount,
 				'unitType'=>$unitType
 				

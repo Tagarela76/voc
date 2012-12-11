@@ -71,18 +71,22 @@
 							pxCount=$department.gauge.pxCount }
 				</div>
 				</a>
+				{if $department.$department.time_gauge.timeLimit!=0}
 				<div style="width:100%;">
 					{include file="tpls:tpls/timeProductIndicator.tpl" overritenCurrenProductTime=$department.time_gauge.currentUsage
-							overritenTimeProductLimit=$department.time_gauge.vocLimit
+							overritenTimeProductLimit=$department.time_gauge.timeLimit
 							overritenTimeProductCount=$department.time_gauge.pxCount
 							overritenUnitType=$department.time_gauge.unitType}
 				</div>
+				{/if}
+				{if $department.qty_gauge.qtyLimit!=0}
 				<div style="width:100%;">
 					{include file="tpls:tpls/qtyProductIndicator.tpl" overritenCurrenProductQty=$department.qty_gauge.currentUsage
 							overritenQtyProductLimit=$department.qty_gauge.qtyLimit
 							overritenQtyProductCount=$department.qty_gauge.pxCount
 							overritenUnitType=$department.qty_gauge.unitType}
 				</div>
+				{/if}
 			</td>
         </tr>
 	{/foreach}
