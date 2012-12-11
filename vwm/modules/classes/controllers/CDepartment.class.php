@@ -291,7 +291,55 @@ class CDepartment extends Controller {
 				'vocLimit' => $limit,
 				'pxCount' => $pxCount
 			);
+			
+			
+			//Time Gauge
+			$timeGauge = new SpentTimeGauge($this->db);
+			$timeGauge->setDepartmentId($departmentList[$i]['id']);
+			$timeGauge->setFacilityId($facilityDetails['facility_id']);
+			$timeGauge->load();
+			
+			$currentTimeUsage = $timeGauge->getCurrentUsage();
+			
+			$unittype = new Unittype($this->db);
+			$unitType = $timeGauge->getUnitType();
+			$unitType = $unittype->getNameByID($unitType);
+			
+			$unitTypeConverter = new UnitTypeConverter($this->db);
+			$currentTimeUsage = $unitTypeConverter->convertDefaultTime($currentTimeUsage, $unitType);
+			
 
+
+			$timeLimit = $timeGauge->getLimit();
+			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);
+			$departmentList[$i]['time_gauge'] = array(
+				'currentUsage' => round($currentTimeUsage, 2),
+				'vocLimit' => $timeLimit,
+				'pxCount' => $pxTimeCount,
+				'unitType'=>$unitType
+				
+			);
+			
+			// qtyDetails
+			$qtyProductGauge = new QtyProductGauge($this->db);
+			$qtyProductGauge->setDepartmentId($departmentList[$i]['id']);
+			$qtyProductGauge->setFacilityId($facilityDetails['facility_id']);
+			$qtyProductGauge->load();
+			$currentQtyUsage = $qtyProductGauge->getCurrentUsage();
+			$qtyLimit = $qtyProductGauge->getLimit();
+			
+			$unitType = $qtyProductGauge->getUnitType();
+			$unittype = new Unittype($this->db);
+			$unitType = $unittype->getNameByID($unitType);
+			
+			$pxQtyCount = round(200 * $currentQtyUsage / $qtyLimit);
+			$departmentList[$i]['qty_gauge'] = array(
+				'currentUsage' => round($currentQtyUsage, 2),
+				'qtyLimit' => $qtyLimit,
+				'pxCount' => $pxTimeCount,
+				'unitType'=>$unitType
+			);
+			//var_dump($departmentList);die();
 			//	sum total usage
 			$totalUsage += $currentUsage;
 		}

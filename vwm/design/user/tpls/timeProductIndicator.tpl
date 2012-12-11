@@ -9,7 +9,11 @@
 		<div class="widhtsh" style="float:left;">
 			<div class="gray">
 				<div style="margin: 0px 0px 0px 120px; position: absolute; z-index: 1">
-					{$currenProductTime}/<b>{$timeProductLimit}</b> {$unitType}	   
+					{if $overritenCurrenProductTime}
+						{$overritenCurrenProductTime}/<b>{$overritenTimeProductLimit}</b> {$overritenUnitType}	   
+					{else}
+						{$currenProductTime}/<b>{$timeProductLimit}</b> {$unitType}	   
+					{/if}
 				</div>
 				<div class="widhtrelac">
 					<div class="colors" style="width:{$timeProductCount}px;">
