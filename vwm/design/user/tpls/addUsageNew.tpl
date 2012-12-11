@@ -198,7 +198,8 @@ function createSelectUnittypeClass(id) {
                 </td>
                 <td class="border_users_r border_users_b">
                     <div align="left" >
-						<input type="text" name="spent_time" id="spentTime" value="{$data->spent_time}">
+						<input type="text" name="spent_time" id="spentTime" value="{$data->spent_time}" style="border: 0; background-color: #EFEFEF;">
+						<div id="spentTimeSlider" style="width:200px"></div>
                         <div id="spent_timeError" style="display:none;" class="error_img"><span class="error_text">Error!</span></div>
                         {if $validStatus.summary eq 'false'}
                             {if $validStatus.spent_time eq 'failed'}
@@ -209,7 +210,20 @@ function createSelectUnittypeClass(id) {
                         {/if}
                     </div>     
 					<script type="text/javascript">
-                            $("#spentTime").numeric();
+						$("#spentTime").numeric();
+						{literal}
+						$(function() {
+							$( "#spentTimeSlider" ).slider({
+								value: $( "#spentTime" ).val(),
+								min: 0,
+								max: 180,
+								step: 10,
+								slide: function( event, ui ) {
+									$( "#spentTime" ).val(ui.value);
+								}
+							});							
+						});
+						{/literal}
 					</script>
                 </td>
             </tr>
