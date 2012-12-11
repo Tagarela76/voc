@@ -263,7 +263,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		//recalc density for waste storages!!
 		$query = "SELECT * FROM `storage` " . "WHERE density_unit_id IS NULL ";
 		$this->db->query($query);
-		$data = $this->db->fetch_all(); //var_dump($query);var_dump($db);
+		$data = $this->db->fetch_all();
 		$densityObj = new Density($this->db, 1); // 1 - density_unit_id for default
 		$unittype = new Unittype($this->db);
 		$unittypeConverter = new UnitTypeConverter();
@@ -274,7 +274,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		foreach ($data as $record) {
 			$weight = $unittypeConverter->convertFromTo($record->capacity_weight, $unittype->getDescriptionByID($record->weight_unittype), $weightUnittype);
 			$volume = $unittypeConverter->convertFromTo($record->capacity_volume, $unittype->getDescriptionByID($record->volume_unittype), $volumeUnittype);
-			$density = $weight / $volume; //var_dump(round($density,4));
+			$density = $weight / $volume; 
 			$query = "UPDATE `storage` SET density='" . round($density, 4) . "', density_unit_id='1' WHERE storage_id='$record->storage_id' ";
 			if ($this->db->query($query)) {
 				$done++;
@@ -380,7 +380,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		$message .= "Company Name: " . $_POST['name'] . "\r\n\r\n";
 		$message .= "Email:" . $_POST['email'] . "\r\n\r\n";
 
-		//var_dump($_POST); die();
+		
 		switch ($_POST['postType']) {
 			case 'representativeCompany':
 				$cSetupRequest->setName($_POST['name']);
@@ -866,7 +866,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 					->getUser()
 					->getUserDetails($assignedUser);
 			if ($userDetails['facility_id'] != $departmentDetails['facility_id']) {
-				var_dump($userDetails, $departmentDetails);
+				//var_dump($userDetails, $departmentDetails);
 				$ajaxResponse->setSuccess(false);
 				$ajaxResponse->setMessage(VOCApp::t('general', 'You do not have permissions'));
 				$ajaxResponse->response();
@@ -922,13 +922,12 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		}
 		//quantity product gauge
 		//select Gauge
-		$gauges = Gauge::getGaugeOptions();
-		//var_dump($gauges);die();
+		$gauges = Gauge::getGaugeTypes();
 		$this->smarty->assign('gauges', $gauges);
 		$this->smarty->assign('selectProductGauge', $selectProductGauge);
-
+		
 		switch ($selectProductGauge) {
-			case 1:
+			case Gauge::QUANTITY_GAUGE :
 
 				$qtyProductGauge = new QtyProductGauge($this->db);
 				if ($this->getFromRequest('departmentId')) {
@@ -952,14 +951,13 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 
 				$periodOptions = $qtyProductGauge->getPeriodOptions();
 
-				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('data', $qtyProductGauge);
 				$this->smarty->assign('unitTypeList', $unitTypeList);
-				$this->smarty->assign('periodOptions', $periodOptions);
+				
 				echo $this->smarty->fetch('tpls/qtyProductGaugeSettings.tpl');
 				break;
 
-			case 2:
+			case Gauge::TIME_GAUGE:
 				$timeProductGauge = new SpentTimeGauge($this->db);
 				if ($this->getFromRequest('departmentId')) {
 					$timeProductGauge->setDepartmentId($this->getFromRequest('departmentId'));
@@ -970,7 +968,6 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 				$timeProductGauge->load();
 				$periodOptions = $timeProductGauge->getPeriodOptions();
-
 				$allUnitTypeList = $unitType->getUnittypeList();
 				$unitTypeList = array();
 				foreach ($allUnitTypeList as $type) {
@@ -981,12 +978,10 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 
 				$this->smarty->assign('unitTypeList', $unitTypeList);
-				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('data', $timeProductGauge);
-				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/timeProductGaugeSettings.tpl');
 				break;
-			case 3:
+			case Gauge::VOC_GAUGE:
 				if($this->getFromRequest('departmentId')==0){
 					$facilities = new Facility($this->db);
 					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
@@ -997,14 +992,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 					$this->smarty->assign('vocLimit', $departmentDetails['voc_limit']);
 				}
 				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
-				$this->smarty->assign('gaugeType', $selectProductGauge);
-				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/vocGaugeSettings.tpl');
 				break;
 
 			default:
 				break;
 		}
+		$this->smarty->assign('gaugeType', $selectProductGauge);
+		$this->smarty->assign('periodOptions', $periodOptions);
 	}
 
 	public function actionSaveQtyProductGaugeSettings() {
@@ -1032,7 +1027,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 
 
 		switch ($gaugeType) {
-			case 1:
+			case Gauge::QUANTITY_GAUGE:
 				$qtyProductGauge = new QtyProductGauge($this->db);
 				$qtyProductGauge->setId($id);
 				$qtyProductGauge->setFacilityId($facilityId);
@@ -1042,11 +1037,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$qtyProductGauge->setUnitType($unitType);
 				$qtyProductGauge->save();
 				break;
-			case 2:
-				/* $unitTypeConverter = new UnitTypeConverter($this->db);
-				  $unittype = new Unittype($this->db);
-				  $unitTypeName = $unittype->getNameByID($unitType);
-				  $limit = $unitTypeConverter->convertToDefaultTime($limit, $unitTypeName); */
+			case Gauge::TIME_GAUGE:
 				$timeProductGauge = new SpentTimeGauge($this->db);
 				$timeProductGauge->setId($id);
 				$timeProductGauge->setFacilityId($facilityId);
@@ -1056,7 +1047,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$timeProductGauge->setUnitType($unitType);
 				$timeProductGauge->save();
 				break;
-			case 3:
+			case Gauge::VOC_GAUGE:
 				if (!$departmentId) {
 					$facilities = new Facility($this->db);
 					$facilities->updateFacilityVocLimit($facilityId, $limit);
