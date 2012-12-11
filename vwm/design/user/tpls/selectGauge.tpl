@@ -1,7 +1,7 @@
 <div>
 	<select onchange="selectProductGauge()" id='selectProductGauge'>
-		{foreach from=$gauges item="gauge"}
-			<option value='{$gauge->id}' {if $selectProductGauge==$gauge->id} selected="selected" {/if}>{$gauge->name}</option>
+		{foreach from=$gauges item="gauge" key="name"}
+			<option value='{$gauge}' {if $selectProductGauge==$gauge} selected="selected" {/if}>{$name}</option>
 			{/foreach}
 	</select>
 </div>

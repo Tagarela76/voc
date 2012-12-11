@@ -760,5 +760,10 @@ class Department extends DepartmentProperties {
 		$this->trashRecord = $tm->save2trash(TB_DEPARTMENT, $departmentID, $CRUD, $this->parentTrashRecord);
 
 	}
+	
+	public function updateDepartmentVocLimit($departmentId, $vocLimit){
+		$sql = 'UPDATE '.TB_DEPARTMENT." SET voc_limit=".$vocLimit. ' WHERE department_id='.$departmentId;
+		$this->db->query($sql);
+	}
 }
 ?>

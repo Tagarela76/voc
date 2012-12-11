@@ -2,8 +2,8 @@
 
 {if $emissionLog=='true'}{include file="tpls:tpls/emissionLogPopup.tpl" }{/if}
 <div>
-	<div style="float:left; font-size: 12px; font-weight: bold; text-align: center;margin-right: 5px;"> VOC </div>
-	<div style="float:left;">
+	<div style="float:left; font-size: 12px; font-weight: bold;color: #000000; text-align: center;margin-right: 5px;"> VOC </div>
+	<div style="float:right;">
 		<div class="widhtsh" style="float:left;">
 			<div class="gray">
 				<div style="float:right;padding: 2px 0px 0px 5px;">

@@ -88,6 +88,8 @@ class CFacility extends Controller {
 		foreach ($jobberList as $jobber) {
 			$jobberDetails[] = $jobberManager->getJobberDetails($jobber['jobber_id']);
 		}
+		
+		
 		$this->smarty->assign("jobberDetails", $jobberDetails);
 		$this->smarty->assign("facility", $facilityDetails);
 		$this->smarty->assign('backUrl', '?action=browseCategory&category=facility&id=' . $this->getFromRequest("id") . '&bookmark=department');

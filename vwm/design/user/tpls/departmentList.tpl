@@ -65,12 +65,18 @@
             </td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
 				<a {if $permissions.viewItem}href="{$department.url}"{/if}>
-				<div style="width:100%;">
+				<div style="width:100%; float:right;">
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
 							vocLimit=$department.gauge.vocLimit
 							pxCount=$department.gauge.pxCount }
 				</div>
 				</a>
+				<div style="width:100%;">
+					{include file="tpls:tpls/timeProductIndicator.tpl"}
+				</div>
+				<div style="width:100%;">
+					{include file="tpls:tpls/qtyProductIndicator.tpl"}
+				</div>
 			</td>
         </tr>
 	{/foreach}

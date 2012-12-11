@@ -2,6 +2,7 @@
 
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
+use VWM\Apps\Gauge\Entity\Gauge;
 
 class CCommon extends Controller {
 
@@ -906,7 +907,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 
 	public function actionLoadQtyProductSettings() {
 		$unitType = new Unittype($this->db);
-		
+
 		$selectProductGauge = $this->getFromRequest('productGauge');
 		if (!isset($selectProductGauge)) {
 			$selectProductGauge = 1;
@@ -921,23 +922,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		}
 		//quantity product gauge
 		//select Gauge
-		$gauges = array();
-		$quantityGauge = new stdClass();
-		$quantityGauge->name = 'quantityGauge';
-		$quantityGauge->id = 1;
-		$gauges[] = $quantityGauge;
-
-		$timeGauge = new stdClass();
-		$timeGauge->name = 'timeGauge';
-		$timeGauge->id = 2;
-		$gauges[] = $timeGauge;
-
+		$gauges = Gauge::getGaugeOptions();
+		//var_dump($gauges);die();
 		$this->smarty->assign('gauges', $gauges);
 		$this->smarty->assign('selectProductGauge', $selectProductGauge);
-		
+
 		switch ($selectProductGauge) {
 			case 1:
-				
+
 				$qtyProductGauge = new QtyProductGauge($this->db);
 				if ($this->getFromRequest('departmentId')) {
 					$qtyProductGauge->setDepartmentId($this->getFromRequest('departmentId'));
@@ -959,7 +951,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 
 				$periodOptions = $qtyProductGauge->getPeriodOptions();
-				
+
 				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('data', $qtyProductGauge);
 				$this->smarty->assign('unitTypeList', $unitTypeList);
@@ -978,7 +970,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 				$timeProductGauge->load();
 				$periodOptions = $timeProductGauge->getPeriodOptions();
-				
+
 				$allUnitTypeList = $unitType->getUnittypeList();
 				$unitTypeList = array();
 				foreach ($allUnitTypeList as $type) {
@@ -994,6 +986,22 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$this->smarty->assign('periodOptions', $periodOptions);
 				echo $this->smarty->fetch('tpls/timeProductGaugeSettings.tpl');
 				break;
+			case 3:
+				if($this->getFromRequest('departmentId')==0){
+					$facilities = new Facility($this->db);
+					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
+					$this->smarty->assign('vocLimit', $facilityDetails['voc_limit']);
+				}else{
+					$department = new Department($this->db);
+					$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
+					$this->smarty->assign('vocLimit', $departmentDetails['voc_limit']);
+				}
+				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
+				$this->smarty->assign('gaugeType', $selectProductGauge);
+				$this->smarty->assign('periodOptions', $periodOptions);
+				echo $this->smarty->fetch('tpls/vocGaugeSettings.tpl');
+				break;
+
 			default:
 				break;
 		}
@@ -1002,7 +1010,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 	public function actionSaveQtyProductGaugeSettings() {
 
 		$gaugeType = $this->getFromRequest('gaugeType');
-		
+
 		if ($this->getFromRequest('department_id') != 'false') {
 			$departmentId = $this->getFromRequest('department_id');
 		} else {
@@ -1015,14 +1023,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		} else {
 			$id = false;
 		}
-		
+
 		$facilityId = $this->getFromRequest('facility_id');
 		$limit = $this->getFromRequest('limit');
 		$period = $this->getFromRequest('period');
 		$unitType = $this->getFromRequest('unit_type');
-		
 
-		
+
+
 		switch ($gaugeType) {
 			case 1:
 				$qtyProductGauge = new QtyProductGauge($this->db);
@@ -1035,10 +1043,10 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$qtyProductGauge->save();
 				break;
 			case 2:
-				/*$unitTypeConverter = new UnitTypeConverter($this->db);
-				$unittype = new Unittype($this->db);
-				$unitTypeName = $unittype->getNameByID($unitType);
-				$limit = $unitTypeConverter->convertToDefaultTime($limit, $unitTypeName);*/
+				/* $unitTypeConverter = new UnitTypeConverter($this->db);
+				  $unittype = new Unittype($this->db);
+				  $unitTypeName = $unittype->getNameByID($unitType);
+				  $limit = $unitTypeConverter->convertToDefaultTime($limit, $unitTypeName); */
 				$timeProductGauge = new SpentTimeGauge($this->db);
 				$timeProductGauge->setId($id);
 				$timeProductGauge->setFacilityId($facilityId);
@@ -1048,10 +1056,19 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$timeProductGauge->setUnitType($unitType);
 				$timeProductGauge->save();
 				break;
+			case 3:
+				if (!$departmentId) {
+					$facilities = new Facility($this->db);
+					$facilities->updateFacilityVocLimit($facilityId, $limit);
+				} else {
+					$department = new Department($this->db);
+					$department->updateDepartmentVocLimit($departmentId, $limit);
+				}
+				break;
+			
 			default:
 				break;
 		}
-		
 	}
 
 }
