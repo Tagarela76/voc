@@ -9,8 +9,12 @@
 		<div class="widhtsh" style="float:left;">
 			<div class="gray">
 				<div style=" position: absolute; margin: 0px 0px 0px 120px; z-index: 1;">
-							{$currenProductQty}/<b>{$qtyProductLimit}</b>&nbsp; {$productQtyUnitType}	   
-						</div>
+					{if $overritenCurrenProductQty}
+						{$overritenCurrenProductQty}/<b>{$overritenQtyProductLimit}</b>&nbsp; {$overritenUnitType}	   
+					{else}
+						{$currenProductQty}/<b>{$qtyProductLimit}</b>&nbsp; {$productQtyUnitType}	   
+					{/if}
+				</div>
 				<div class="widhtrelac">
 					<div class="colors" style="width:{$pxQtyProductCount}px;">
 					</div>
