@@ -858,7 +858,13 @@ class Facility extends FacilityProperties {
 		}
 	}
     
-   /* public function getProductQuantityInFacility($facilityId, $monthly = 0) {
+	public function updateFacilityVocLimit($facilityId, $vocLimit){
+		$sql = 'UPDATE '.TB_FACILITY.
+		" SET voc_limit=".$this->db->sqltext($vocLimit).
+		" WHERE facility_id=".$this->db->sqltext($facilityId);
+		$this->db->query($sql);
+	}
+	/* public function getProductQuantityInFacility($facilityId, $monthly = 0) {
         $month = 'MONTH(CURRENT_DATE)';
         $year = 'YEAR(CURRENT_DATE)';
         

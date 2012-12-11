@@ -54,6 +54,7 @@ abstract class Gauge extends Model {
 	const PERIOD_ANNUALLY= 1;
 	const QUANTITY_GAUGE = 1;
 	const TIME_GAUGE = 2;
+	const VOC_GAUGE = 3;
 	
 
 	public function getId() {
@@ -127,6 +128,14 @@ abstract class Gauge extends Model {
 
 	public function getCurrentUsage() {
 		throw new Exception("getCurrentUsage() should be implemented by child");
+	}
+	
+	public static function getGaugeOptions(){
+		$gaugeOptions=array();
+		$gaugeOptions['vocGauge']=  self::VOC_GAUGE;
+		$gaugeOptions['timeGauge']=  self::TIME_GAUGE;
+		$gaugeOptions['quantityGauge']=  self::QUANTITY_GAUGE;
+		return $gaugeOptions;
 	}
 }
 

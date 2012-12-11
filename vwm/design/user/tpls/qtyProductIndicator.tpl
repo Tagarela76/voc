@@ -8,7 +8,7 @@
 		</div>-->
 		<div class="widhtsh" style="float:left;">
 			<div class="gray">
-				<div style=" position: absolute; margin: 0px 0px 0px 120px;">
+				<div style=" position: absolute; margin: 0px 0px 0px 120px; z-index: 1;">
 							{$currenProductQty}/<b>{$qtyProductLimit}</b>&nbsp; {$productQtyUnitType}	   
 						</div>
 				<div class="widhtrelac">
