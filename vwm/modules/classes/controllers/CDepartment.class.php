@@ -336,7 +336,7 @@ class CDepartment extends Controller {
 			$departmentList[$i]['qty_gauge'] = array(
 				'currentUsage' => round($currentQtyUsage, 2),
 				'qtyLimit' => $qtyLimit,
-				'pxCount' => $pxTimeCount,
+				'pxCount' => $pxQtyCount,
 				'unitType'=>$unitType
 			);
 			//var_dump($departmentList);die();
