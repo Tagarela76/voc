@@ -130,12 +130,12 @@ abstract class Gauge extends Model {
 		throw new Exception("getCurrentUsage() should be implemented by child");
 	}
 	
-	public static function getGaugeOptions(){
-		$gaugeOptions=array();
-		$gaugeOptions['vocGauge']=  self::VOC_GAUGE;
-		$gaugeOptions['timeGauge']=  self::TIME_GAUGE;
-		$gaugeOptions['quantityGauge']=  self::QUANTITY_GAUGE;
-		return $gaugeOptions;
+	public static function getGaugeTypes(){
+		return array(
+			'vocGauge'=>self::VOC_GAUGE,
+			'timeGauge'=>self::TIME_GAUGE,
+			'quantityGauge'=>self::QUANTITY_GAUGE,
+		);
 	}
 }
 

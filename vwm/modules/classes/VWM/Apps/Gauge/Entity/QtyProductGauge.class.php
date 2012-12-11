@@ -67,7 +67,7 @@ class QtyProductGauge extends Gauge {
 				"{$lastUpdateTime}, " .
 				"{$this->db->sqltext($this->getGaugeType())} " .
 				")";
-//var_dump($sql);die();
+
 		$response = $this->db->exec($sql);
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
