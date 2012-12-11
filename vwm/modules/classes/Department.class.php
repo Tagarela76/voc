@@ -762,7 +762,10 @@ class Department extends DepartmentProperties {
 	}
 	
 	public function updateDepartmentVocLimit($departmentId, $vocLimit){
-		$sql = 'UPDATE '.TB_DEPARTMENT." SET voc_limit=".$vocLimit. ' WHERE department_id='.$departmentId;
+		$sql = "UPDATE ".TB_DEPARTMENT.
+		" SET voc_limit=".$this->db->sqltext($vocLimit).
+		" WHERE department_id=".$this->db->sqltext($departmentId);
+		
 		$this->db->query($sql);
 	}
 }
