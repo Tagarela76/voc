@@ -15,14 +15,19 @@
 						{$currenProductTime}/<b>{$timeProductLimit}</b> {$unitType}	   
 					{/if}
 				</div>
-				<div class="widhtrelac">
 					{if $overritenTimeProductCount}
-						<div class="colors" style="width:{$overritenTimeProductCount}px;"></div>
-					{else}
-						<div class="colors" style="width:{$timeProductCount}px;"></div>
-					{/if}
+						<div class="widhtrelac">
+							<div class="colors" style="width:{$timeProductCount}px;">
 
-				</div>
+							</div>
+						</div>
+					{else}
+						<div class="widhtrelac">
+							<div class="colors" style="width:{$timeProductCount}px;">
+
+							</div>
+						</div>
+					{/if}
 			</div>
 		</div>
 
