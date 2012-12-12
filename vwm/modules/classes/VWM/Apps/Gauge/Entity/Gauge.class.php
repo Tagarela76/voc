@@ -55,7 +55,10 @@ abstract class Gauge extends Model {
 	const QUANTITY_GAUGE = 1;
 	const TIME_GAUGE = 2;
 	const VOC_GAUGE = 3;
-	
+	const NOX_GAUGE = 4;
+
+
+	const TABLE_NAME = 'product_gauge';
 
 	public function getId() {
 		return $this->id;
@@ -135,7 +138,61 @@ abstract class Gauge extends Model {
 			'vocGauge'=>self::VOC_GAUGE,
 			'timeGauge'=>self::TIME_GAUGE,
 			'quantityGauge'=>self::QUANTITY_GAUGE,
+			'noxGauge' => self::NOX_GAUGE,
 		);
+	}
+
+
+	protected function _insert() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'" : "NULL";
+		$departmentId = ($this->getDepartmentId())
+				? "'{$this->getDepartmentId()}'" : "NULL";
+
+		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
+				"`limit`, unit_type, period, facility_id, department_id, last_update_time, gauge_type" .
+				") VALUES ( " .
+				"{$this->db->sqltext($this->getLimit())}, " .
+				"{$this->db->sqltext($this->getUnitType())}, " .
+				"{$this->db->sqltext($this->getPeriod())}, " .
+				"{$this->db->sqltext($this->getFacilityId())}, " .
+				"{$departmentId}, " .
+				"{$lastUpdateTime}, " .
+				"{$this->db->sqltext($this->getGaugeType())} " .
+				")";
+
+		$response = $this->db->exec($sql);
+		if ($response) {
+			$this->setId($this->db->getLastInsertedID());
+			return $this->getId();
+		} else {
+			return false;
+		}
+	}
+
+	
+	protected function _update() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'" : "NULL";
+		$departmentId = ($this->getDepartmentId())
+				? "'{$this->getDepartmentId()}'" : "NULL";
+
+		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
+				"`limit`={$this->db->sqltext($this->getLimit())}, " .
+				"unit_type='{$this->db->sqltext($this->getUnitType())}', " .
+				"period={$this->db->sqltext($this->getPeriod())}, " .
+				"facility_id={$this->db->sqltext($this->getFacilityId())}, " .
+				"department_id={$departmentId}, " .
+				"gauge_type={$this->db->sqltext($this->getGaugeType())}, " .
+				"last_update_time={$lastUpdateTime} " .
+				"WHERE id={$this->db->sqltext($this->getId())}";
+
+		$response = $this->db->exec($sql);
+		if ($response) {
+			return $this->getId();
+		} else {
+			return false;
+		}
 	}
 }
 

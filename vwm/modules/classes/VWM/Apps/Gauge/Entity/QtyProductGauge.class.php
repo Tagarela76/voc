@@ -48,60 +48,7 @@ class QtyProductGauge extends Gauge {
 		$this->initByArray($row);
 	}
 
-	/**
-	 * Insert new settings
-	 * @return int| boolean
-	 */
-	protected function _insert() {
-		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
-		$departmentId = ($this->getDepartmentId()) ? "'{$this->getDepartmentId()}'" : "NULL";
-
-		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
-				"`limit`, unit_type, period, facility_id, department_id, last_update_time, gauge_type" .
-				") VALUES ( " .
-				"{$this->db->sqltext($this->getLimit())}, " .
-				"{$this->db->sqltext($this->getUnitType())}, " .
-				"{$this->db->sqltext($this->getPeriod())}, " .
-				"{$this->db->sqltext($this->getFacilityId())}, " .
-				"{$departmentId}, " .
-				"{$lastUpdateTime}, " .
-				"{$this->db->sqltext($this->getGaugeType())} " .
-				")";
-
-		$response = $this->db->exec($sql);
-		if ($response) {
-			$this->setId($this->db->getLastInsertedID());
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Update update settings
-	 * @return boolean
-	 */
-	protected function _update() {
-		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
-		$departmentId = ($this->getDepartmentId()) ? "'{$this->getDepartmentId()}'" : "NULL";
-
-		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
-				"`limit`={$this->db->sqltext($this->getLimit())}, " .
-				"unit_type='{$this->db->sqltext($this->getUnitType())}', " .
-				"period={$this->db->sqltext($this->getPeriod())}, " .
-				"facility_id={$this->db->sqltext($this->getFacilityId())}, " .
-				"department_id={$departmentId}, " .
-				"last_update_time={$lastUpdateTime}, " .
-				"gauge_type={$this->db->sqltext($this->getGaugeType())} " .
-				"WHERE id={$this->db->sqltext($this->getId())}";
-
-		$response = $this->db->exec($sql);
-		if ($response) {
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
+	
 
 	/**
 	 * Delete settings for facility
