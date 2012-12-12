@@ -1620,12 +1620,12 @@ class Controller {
     protected function setNoxIndicator($noxLimit, $totalUsage) {
         $this->smarty->assign('noxLimit', $noxLimit);
 	//	$this->smarty->assign('noxLog', 'true');
-        $this->smarty->assign('currenNoxtUsage', round($totalUsage, 2));
+        $this->smarty->assign('noxCurrentUsage', round($totalUsage, 2));
         $pxNoxCount = round(200 * $totalUsage / $noxLimit);
         if ($pxNoxCount > 200) {
             $pxNoxCount = 200;
         }
-        $this->smarty->assign('pxNoxCount', $pxNoxCount); //	200px - indicator length
+        $this->smarty->assign('noxPxCount', $pxNoxCount); //	200px - indicator length
     }
 
 	protected function render() {

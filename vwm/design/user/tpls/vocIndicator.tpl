@@ -3,7 +3,7 @@
 {*if $emissionLog=='true'}{include file="tpls:tpls/emissionLogPopup.tpl" }{/if*}
 
 <tr>
-	<td>
+	<td  style="padding: 0px;">
 		<div class="gauge_text"> VOC </div>
 	</td>
 
@@ -20,8 +20,8 @@
 
 		</div>
 	</td>
-	<td style="width: 75px;">
-		<div style="position: absolute; z-index: 1; color: #000; text-shadow: #fff 0.2em 0.2em 0.2em; ">
+	<td style="">
+		<div style="">
 	{if $emissionLog}<a href='#' onclick='$("#emissionLog").dialog("open");' style='color:black'> {$currentUsage}/<b>{$vocLimit}</b></a>{else}{$currentUsage}/<b>{$vocLimit}</b>{/if}&nbsp; {$vocUnitType}	   
 </div>
 </td>

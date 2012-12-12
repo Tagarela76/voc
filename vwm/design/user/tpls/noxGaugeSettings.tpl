@@ -14,7 +14,7 @@
                 NOx:&nbsp;
             </td>
             <td>
-                <div align="left" style="float: left;">	<input type='text' name='limit' id='limit' value='{$vocLimit|escape}' /></div>												
+                <div align="left" style="float: left;">	<input type='text' name='limit' id='limit' value='{$noxLimit|escape}' /></div>
                
             </td>
         </tr>

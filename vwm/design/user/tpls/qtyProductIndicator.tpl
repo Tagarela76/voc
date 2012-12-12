@@ -1,6 +1,6 @@
 {*qty product indicator bar*}
 <tr>
-	<td>
+	<td style="padding: 0px;">
 		<div class='gauge_text'> Product's Quantity</div>
 	</td>
 	<td>

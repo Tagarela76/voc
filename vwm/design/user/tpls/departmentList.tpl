@@ -63,13 +63,11 @@
                     </div>
                 </a>
             </td>
-			<td style="width:500px;" class="border_users_b border_users_l border_users_r">
-				<table  style="width: 100%">
-					<a {if $permissions.viewItem}href="{$department.url}"{/if}>
+			<td style="width:450px;" class="border_users_b border_users_l border_users_r">
+				<table  style="width: 100%; border-spacing: 0px;border-collapse: collapse;">
 						{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
 							vocLimit=$department.gauge.vocLimit
-							pxCount=$department.gauge.pxCount }
-					</a>
+							pxCount=$department.gauge.pxCount }					
 					{if $department.time_gauge.timeLimit!=0}
 						{include file="tpls:tpls/timeProductIndicator.tpl" overritenCurrenProductTime=$department.time_gauge.currentUsage
 							overritenTimeProductLimit=$department.time_gauge.timeLimit
@@ -82,6 +80,10 @@
 							overritenQtyProductLimit=$department.qty_gauge.qtyLimit
 							overritenQtyProductCount=$department.qty_gauge.pxCount
 							overritenUnitType=$department.qty_gauge.unitType}
+					{/if}
+
+					{if $department.nox_gauge.limit!=0}
+						{include file="tpls:tpls/noxIndicator.tpl" _gauge=$department.nox_gauge}
 					{/if}
 				</table>
 			</td>

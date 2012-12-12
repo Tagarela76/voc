@@ -69,11 +69,12 @@
 					</td>
 					<td class="border_users_r" style="width:390px;">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
-							<div style="width:100%;">
+						<table style="border-width: 0px;">													
 								{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$facility.gauge.currentUsage
 										vocLimit=$facility.gauge.vocLimit
 										pxCount=$facility.gauge.pxCount }
-							</div>
+													
+						</table>
 						</a>
 					</td>
 				</tr>

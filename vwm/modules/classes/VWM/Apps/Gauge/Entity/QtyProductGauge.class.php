@@ -17,37 +17,6 @@ class QtyProductGauge extends Gauge {
 			$this->load();
 		}
 	}
-
-	public function load() {
-
-		if (is_null($this->getFacilityId())) {
-			return false;
-		}
-
-		if ($this->getDepartmentId()) {
-			$sql = "SELECT * " .
-					"FROM " . self::TABLE_NAME . " " .
-					"WHERE department_id={$this->db->sqltext($this->getDepartmentId())} " .
-					"AND gauge_type=1 ".
-					"LIMIT 1";
-		} else {
-			$sql = "SELECT * " .
-					"FROM " . self::TABLE_NAME . " " .
-					"WHERE facility_id={$this->db->sqltext($this->getFacilityId())} " .
-					"AND gauge_type=1 ".
-					"AND department_id IS NULL " .
-					"LIMIT 1";
-		}
-
-		$this->db->query($sql);
-
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$this->initByArray($row);
-	}
-
 	
 
 	/**

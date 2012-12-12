@@ -3,6 +3,7 @@
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\Gauge;
+use VWM\Apps\Gauge\Entity\NoxGauge;
 
 class CCommon extends Controller {
 
@@ -1010,11 +1011,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				if($this->getFromRequest('departmentId')==0){
 					$facilities = new Facility($this->db);
 					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
-					$this->smarty->assign('vocLimit', $facilityDetails['monthly_nox_limit']);
-				}else{
-					$department = new Department($this->db);
-					$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
-					$this->smarty->assign('vocLimit', $departmentDetails['monthly_nox_limit']);
+					$this->smarty->assign('noxLimit', $facilityDetails['monthly_nox_limit']);
+				} else {
+					$noxGauge = new NoxGauge($this->db);
+					$noxGauge->setDepartmentId($this->getFromRequest('departmentId'));
+					$noxGauge->setFacilityId($this->getFromRequest("facilityId"));
+					$noxGauge->load();
+					
+					$this->smarty->assign('noxLimit', $noxGauge->getLimit());
 				}
 				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
 				$this->smarty->assign('gaugeType', $selectProductGauge);
@@ -1085,8 +1089,13 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 					$facilities = new Facility($this->db);
 					$facilities->updateFacilityNoxLimit($facilityId, $limit);
 				} else {
-					$department = new Department($this->db);
-					$department->updateDepartmentNoxLimit($departmentId, $limit);
+					$noxGauge = new NoxGauge($this->db);
+					$noxGauge->setDepartmentId($departmentId);
+					$noxGauge->setFacilityId($facilityId);
+					$noxGauge->load();
+
+					$noxGauge->setLimit($limit);
+					$noxGauge->save();
 				}
 				break;
 			

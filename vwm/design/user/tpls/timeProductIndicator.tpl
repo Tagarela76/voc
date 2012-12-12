@@ -2,7 +2,7 @@
 
 <!--<div style="height: 25px;">-->
 <tr>
-	<td>
+	<td style="padding: 0px;">
 		<div class='gauge_text'>Time Spent</div>
 	</td>
 	<td>

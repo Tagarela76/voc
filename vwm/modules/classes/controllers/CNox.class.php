@@ -375,9 +375,9 @@ class CNox extends Controller {
 					}
 					$this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);
 					// insert nox indicator bar into tpl
-					$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
+					//$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
 					// insert nox log into tpl
-					$this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE);
+					//$this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE);
 				}
 
 				$this->smarty->assign("childCategoryItems", $noxList);

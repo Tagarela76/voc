@@ -2,6 +2,7 @@
 
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
+use VWM\Apps\Gauge\Entity\NoxGauge;
 
 class CDepartment extends Controller {
 
@@ -187,6 +188,26 @@ class CDepartment extends Controller {
 		if ($timeProductGauge->getLimit()!=0) {
 			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
+
+		// nox gauge
+		$noxGauge = new NoxGauge($this->db);
+		$noxGauge->setDepartmentId($departmentDetails['department_id']);
+		$noxGauge->setFacilityId($facilityDetails['facility_id']);
+		$noxGauge->load();
+		
+		if ($noxGauge->getLimit()!=0) {
+			$this->setNoxIndicator($noxGauge->getLimit(), $noxGauge->getCurrentUsage());
+			$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
+		}
+
+
+		$departmentList[$i]['nox_gauge'] = array(
+			'currentUsage' => round( $noxGauge->getCurrentUsage(), 2),
+			'limit' => $noxGauge->getLimit(),
+			'pxCount' => round(200 *  $noxGauge->getCurrentUsage()
+					/ $noxGauge->getLimit()),
+			'unitType'=>''
+		);
 		
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
@@ -339,7 +360,22 @@ class CDepartment extends Controller {
 				'pxCount' => $pxQtyCount,
 				'unitType'=>$unitType
 			);
-			//var_dump($departmentList);die();
+
+			// nox gauge
+			$noxGauge = new NoxGauge($this->db);			
+			$noxGauge->setDepartmentId($departmentList[$i]['id']);
+			$noxGauge->setFacilityId($facilityDetails['facility_id']);
+			$noxGauge->load();			
+			
+			$departmentList[$i]['nox_gauge'] = array(
+				'currentUsage' => round( $noxGauge->getCurrentUsage(), 2),
+				'limit' => $noxGauge->getLimit(),
+				'pxCount' => round(200 *  $noxGauge->getCurrentUsage()
+						/ $noxGauge->getLimit()),
+				'unitType'=>''
+			);
+
+
 			//	sum total usage
 			$totalUsage += $currentUsage;
 		}
