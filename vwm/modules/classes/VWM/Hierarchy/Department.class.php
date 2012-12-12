@@ -3,6 +3,10 @@
 namespace VWM\Hierarchy;
 
 use VWM\Framework\Model;
+use VWM\Apps\Gauge\Entity\Gauge;
+use VWM\Apps\Gauge\Entity\SpentTimeGauge;
+use VWM\Apps\Gauge\Entity\QtyProductGauge;
+
 
 class Department extends Model {
 
@@ -15,8 +19,28 @@ class Department extends Model {
 
 	const TABLE_NAME = 'department';
 
-	public function __construct(\db $db) {
+	public function __construct(\db $db, $departmentId=null) {
 		$this->db = $db;
+		if (isset($departmentId)) {
+			$this->setDepartmentId($departmentId);
+			$this->load();
+		}
+	}
+	
+	public function load(){
+		if (is_null($this->getDepartmentId())) {
+			return false;
+		}
+		
+		$sql = "SELECT * FROM ".self::TABLE_NAME." WHERE department_id =".
+				$this->db->sqltext($this->getDepartmentId());
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$row = $this->db->fetch(0);
+		$this->initByArray($row);
+		
 	}
 
 	public function getDepartmentId() {
@@ -66,7 +90,53 @@ class Department extends Model {
 	public function setVocAnnualLimit($voc_annual_limit) {
 		$this->voc_annual_limit = $voc_annual_limit;
 	}
+	
+	public function getGauge($gaugeType){
+		switch ($gaugeType){
+			case Gauge::QUANTITY_GAUGE:
+				$gauge = new QtyProductGauge($this->db);
+				break;
+			case Gauge::TIME_GAUGE:
+				$gauge = new SpentTimeGauge($this->db);
+				break;
+			case Gauge::VOC_GAUGE:
+				break;
+			default:
+				break;
+		}
+		
+		$gauge->setDepartmentId($this->department_id);
+		$gauge->setFacilityId($this->facility_id);
+		$gauge->load();
+		return $gauge;
+		
+	}
 
+	public function getAllAvailableGauges() {
+		$sql = "SELECT gauge_type FROM " . QtyProductGauge::TABLE_NAME . " WHERE `limit`<>0 AND department_id=" . $this->db->sqltext($this->getDepartmentId());
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		$gauges = array();
+		foreach ($rows as $row) {
+			switch ($row["gauge_type"]) {
+				case Gauge::QUANTITY_GAUGE:
+					$gauge = new QtyProductGauge($this->db);
+					break;
+				case Gauge::TIME_GAUGE:
+					$gauge = new SpentTimeGauge($this->db);
+					break;
+				case Gauge::VOC_GAUGE:
+					break;
+				default:
+					break;
+			}
+			$gauge->setDepartmentId($this->department_id);
+			$gauge->setFacilityId($this->facility_id);
+			$gauge->load();
+			$gauges[$gauge->getGaugeType()] = $gauge;
+		}
+		return $gauges;
+	}
 
 }
 

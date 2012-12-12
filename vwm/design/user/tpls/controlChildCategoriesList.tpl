@@ -205,18 +205,20 @@
 							
 							{if $request.category == 'department' || ($request.category == 'facility' && $request.bookmark == 'department')}
 							<div class="button_float_right">
-							{if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
-									{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
-							{/if}
-							{*INSERT_AFTER_NOX_GAUGE*}
-							{*Stupid Smarty does not support class constants*}
-							{*blocksToInsert.4 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
-								{if $blocksToInsert.4|@count > 0}
-									{foreach from=$blocksToInsert.4 item="blockPath"}
-										{include file="tpls:$blockPath"}
-									{/foreach}
-								{/if}
-							{*/INSERT_AFTER_NOX_GAUGE*}
+								<table style="width: 500px;">
+									{if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
+										{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
+									{/if}
+									{*INSERT_AFTER_NOX_GAUGE*}
+									{*Stupid Smarty does not support class constants*}
+									{*blocksToInsert.4 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
+									{if $blocksToInsert.4|@count > 0}
+										{foreach from=$blocksToInsert.4 item="blockPath"}
+											{include file="tpls:$blockPath"}
+										{/foreach}
+									{/if}
+									{*/INSERT_AFTER_NOX_GAUGE*}
+									</table>
 							</div>
 							{/if}
 						</div>

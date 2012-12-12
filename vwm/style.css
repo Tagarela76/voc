@@ -3851,8 +3851,8 @@ div:hover.category_folder_hover{cursor:pointer;}
     background-color: #A38AC8;
 }
 
-.voc_gauge {
-	float:left;
+.gauge_text {
+	float:right;
 	font-size: 12px;
 	font-weight: bold;
 	color: #000000;

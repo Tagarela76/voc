@@ -37,6 +37,7 @@ class QtyProductGaugeTest extends DbTestCase {
 		$qtyProductGaugeActual->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
 		$this->assertEquals($qtyProductGauge, $qtyProductGaugeActual);
 		
+		
 		// check UPDATE
 		
 		 $qtyProductGaugeUpdated = new QtyProductGauge($this->db, '1');
@@ -44,7 +45,15 @@ class QtyProductGaugeTest extends DbTestCase {
 		 $qtyProductGaugeUpdated->setLimit($newLimit);
 		 $qtyProductGaugeUpdated->save();
 		 $qtyProductGaugeUpdatedTest = \Phactory::get(QtyProductGauge::TABLE_NAME, array('id'=>"1"));
-		 $this->assertTrue($qtyProductGaugeUpdatedTest->limit == $newLimit);		
+		 $this->assertTrue($qtyProductGaugeUpdatedTest->limit == $newLimit);
+		 
+		 //check department gauge
+		 $qtyProductGauge->setDepartmentId('3');
+		 $department1_quantityUsage = $qtyProductGauge->getCurrentUsage();
+		 $this->assertEquals($department1_quantityUsage, '300');
+		 $qtyProductGauge->setDepartmentId('2');
+		 $department2_quantityUsage = $qtyProductGauge->getCurrentUsage();
+		 $this->assertEquals($department1_quantityUsage, $department2_quantityUsage);
 	}
 
 }
