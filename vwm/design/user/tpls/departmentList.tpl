@@ -65,13 +65,13 @@
             </td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
 				<a {if $permissions.viewItem}href="{$department.url}"{/if}>
-				<div style="width:100%; float:right;">
+				<div style="width:100%;">
 					{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
 							vocLimit=$department.gauge.vocLimit
 							pxCount=$department.gauge.pxCount }
 				</div>
 				</a>
-				{if $department.$department.time_gauge.timeLimit!=0}
+				{if $department.time_gauge.timeLimit!=0}
 				<div style="width:100%;">
 					{include file="tpls:tpls/timeProductIndicator.tpl" overritenCurrenProductTime=$department.time_gauge.currentUsage
 							overritenTimeProductLimit=$department.time_gauge.timeLimit
@@ -79,6 +79,7 @@
 							overritenUnitType=$department.time_gauge.unitType}
 				</div>
 				{/if}
+				
 				{if $department.qty_gauge.qtyLimit!=0}
 				<div style="width:100%;">
 					{include file="tpls:tpls/qtyProductIndicator.tpl" overritenCurrenProductQty=$department.qty_gauge.currentUsage

@@ -310,8 +310,8 @@ class CDepartment extends Controller {
 			
 
 
-			$timeLimit = $timeGauge->getLimit();
-			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);
+			$timeLimit = $timeGauge->getLimit();			
+			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);			
 			$departmentList[$i]['time_gauge'] = array(
 				'currentUsage' => round($currentTimeUsage, 2),
 				'timeLimit' => $timeLimit,
