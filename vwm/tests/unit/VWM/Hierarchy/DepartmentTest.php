@@ -3,6 +3,7 @@
 namespace VWM\Hierarchy;
 
 use VWM\Framework\Test\DbTestCase;
+use VWM\Apps\Gauge\Entity\Gauge;
 
 class DepartmentTest extends DbTestCase {
 
@@ -32,7 +33,20 @@ class DepartmentTest extends DbTestCase {
 			$this->assertEquals($row['voc_limit'], $department->getVocLimit());
 			$this->assertEquals($row['voc_annual_limit'],
 					$department->getVocAnnualLimit());
-		}
+		}		
+	}
+
+
+	public function testGetGauge() {
+		$department = new Department($this->db, 1);// first department
+		$timeGauge = $department->getGauge(Gauge::TIME_GAUGE);
+		$this->assertInstanceOf('VWM\Apps\Gauge\Entity\Gauge\TimeGauge',
+				$timeGauge);
+		// more assests
+	}
+
+
+	public function testGetAllAvailableGauges() {
 		
 	}
 }
