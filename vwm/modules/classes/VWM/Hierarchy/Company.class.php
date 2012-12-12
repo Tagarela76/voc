@@ -45,6 +45,8 @@ class Company extends Model {
     protected $last_update_time;
     
     protected $industryType;
+
+	const TABLE_NAME = 'company';
     
     public function getCompanyId() {
         return $this->company_id;

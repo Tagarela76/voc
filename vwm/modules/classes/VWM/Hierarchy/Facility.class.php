@@ -49,7 +49,9 @@ class Facility extends Model {
 	
 	protected $client_facility_id;
 
-	protected $last_update_time;		
+	protected $last_update_time;
+
+	const TABLE_NAME = 'facility';
 	
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
