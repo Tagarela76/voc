@@ -768,5 +768,13 @@ class Department extends DepartmentProperties {
 		
 		$this->db->query($sql);
 	}
+
+	public function updateDepartmentNoxLimit($departmentId, $noxLimit){
+		$sql = "UPDATE ".TB_DEPARTMENT.
+		" SET voc_limit=".$this->db->sqltext($noxLimit).
+		" WHERE department_id=".$this->db->sqltext($departmentId);
+
+		$this->db->query($sql);
+	}
 }
 ?>
