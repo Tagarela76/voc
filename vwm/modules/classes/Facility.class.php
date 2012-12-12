@@ -864,6 +864,13 @@ class Facility extends FacilityProperties {
 		" WHERE facility_id=".$this->db->sqltext($facilityId);
 		$this->db->query($sql);
 	}
+
+	public function updateFacilityNoxLimit($facilityId, $noxLimit){
+		$sql = 'UPDATE '.TB_FACILITY.
+		" SET monthly_nox_limit=".$this->db->sqltext($noxLimit).
+		" WHERE facility_id=".$this->db->sqltext($facilityId);
+		$this->db->query($sql);
+	}
 	/* public function getProductQuantityInFacility($facilityId, $monthly = 0) {
         $month = 'MONTH(CURRENT_DATE)';
         $year = 'YEAR(CURRENT_DATE)';

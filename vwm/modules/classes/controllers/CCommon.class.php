@@ -1006,6 +1006,22 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				echo $this->smarty->fetch('tpls/vocGaugeSettings.tpl');
 				break;
 
+			case Gauge::NOX_GAUGE:
+				if($this->getFromRequest('departmentId')==0){
+					$facilities = new Facility($this->db);
+					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
+					$this->smarty->assign('vocLimit', $facilityDetails['monthly_nox_limit']);
+				}else{
+					$department = new Department($this->db);
+					$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
+					$this->smarty->assign('vocLimit', $departmentDetails['monthly_nox_limit']);
+				}
+				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
+				$this->smarty->assign('gaugeType', $selectProductGauge);
+				$this->smarty->assign('periodOptions', $periodOptions);
+				echo $this->smarty->fetch('tpls/noxGaugeSettings.tpl');
+				break;
+
 			default:
 				break;
 		}
@@ -1033,8 +1049,6 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		$limit = $this->getFromRequest('limit');
 		$period = $this->getFromRequest('period');
 		$unitType = $this->getFromRequest('unit_type');
-
-
 
 		switch ($gaugeType) {
 			case Gauge::QUANTITY_GAUGE:
@@ -1064,6 +1078,15 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				} else {
 					$department = new Department($this->db);
 					$department->updateDepartmentVocLimit($departmentId, $limit);
+				}
+				break;
+			case Gauge::NOX_GAUGE:
+				if (!$departmentId) {
+					$facilities = new Facility($this->db);
+					$facilities->updateFacilityNoxLimit($facilityId, $limit);
+				} else {
+					$department = new Department($this->db);
+					$department->updateDepartmentNoxLimit($departmentId, $limit);
 				}
 				break;
 			
