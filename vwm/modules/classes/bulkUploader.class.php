@@ -246,6 +246,10 @@ class bulkUploader {
 					case "detailing":	
 						$productLibraryTypes[] = "3";
 						break;	
+                    case "POWDER COATING":
+					case "powder coating":	
+						$productLibraryTypes[] = "5";
+						break;	
 				}
 			}
 			$productLibraryTypes = array_unique($productLibraryTypes);
@@ -396,6 +400,10 @@ class bulkUploader {
 				case "detailing":	
 					$productLibraryTypes[] = "3";
 					break;	
+                case "POWDER COATING":
+                case "powder coating":	
+                    $productLibraryTypes[] = "5";
+                    break;
 			}
 		}
 		$productLibraryTypes = array_unique($productLibraryTypes);
