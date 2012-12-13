@@ -117,6 +117,10 @@ class CAIndustryType extends Controller {
         $companyLevelLabelFuelAndOilProductDefault = $companyLevelLabel->getFuelAndOilProductLabel(); 
         $fuelAndOilProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelFuelAndOilProductDefault->label_id)->getLabelText();
         
+		//Spent Time
+		$companyLevelLabelSpentTimeDefault = $companyLevelLabel->getSpentTimeLabel();
+        $spentTimeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelSpentTimeDefault->label_id)->getLabelText();
+		
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -158,6 +162,9 @@ class CAIndustryType extends Controller {
         
         $this->smarty->assign('fuelAndOilProductLabel', $fuelAndOilProductLabel);
         $this->smarty->assign('companyLevelLabelFuelAndOilProductDefault', $companyLevelLabelFuelAndOilProductDefault);
+		
+		$this->smarty->assign('spentTimeLabel', $spentTimeLabel);
+        $this->smarty->assign('companyLevelLabelSpentTimeDefault', $companyLevelLabelSpentTimeDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -180,7 +187,7 @@ class CAIndustryType extends Controller {
 	}
 	
 	private function actionEdit() {
-
+		
 		$industryType = new IndustryType($this->db, $this->getFromRequest('id')); 
 		$post  = $this->getFromPost();
 		// get industry type label list
@@ -233,7 +240,11 @@ class CAIndustryType extends Controller {
         // Fuel and Oils Label
         $companyLevelLabelFuelAndOilProductDefault = $companyLevelLabel->getFuelAndOilProductLabel();
         $fuelAndOilProductLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelFuelAndOilProductDefault->label_id)->getLabelText();
-        
+		
+		//Spent Time
+        $companyLevelLabelSpentTimeDefault = $companyLevelLabel->getSpentTimeLabel();
+        $spentTimeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelSpentTimeDefault->label_id)->getLabelText();
+		
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
         $this->smarty->assign('companyLevelLabelRepairOrderDefault', $companyLevelLabelRepairOrderDefault);
         
@@ -275,6 +286,9 @@ class CAIndustryType extends Controller {
         
         $this->smarty->assign('fuelAndOilProductLabel', $fuelAndOilProductLabel);
         $this->smarty->assign('companyLevelLabelFuelAndOilProductDefault', $companyLevelLabelFuelAndOilProductDefault);
+		
+		$this->smarty->assign('spentTimeLabel', $spentTimeLabel);
+        $this->smarty->assign('companyLevelLabelSpentTimeDefault', $companyLevelLabelSpentTimeDefault);
         
 		// get browse category list
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
@@ -322,6 +336,7 @@ class CAIndustryType extends Controller {
 				// update
 				$displayColumnsSettings->setId($columnsSettingsMix->getId());
 			}
+			
 			$displayColumnsSettings->setBrowseCategoryEntityId($browseCategoryMix->id);
 			$displayColumnsSettings->setValue($columnsDisplayValue); 
 			$displayColumnsSettings->save();
@@ -531,6 +546,7 @@ class CAIndustryType extends Controller {
 				$browseCategoryEntity = new BrowseCategoryEntity($this->db); 
 				$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
 				$mixColumnsDisplayDefault = explode(',', $browseCategoryMix->default_value);
+				
                 // get label text
                 $companyLevelLabel = new CompanyLevelLabel($this->db);
                 $industryType = new IndustryType($this->db, $this->getFromRequest('industryTypeId'));
@@ -562,10 +578,16 @@ class CAIndustryType extends Controller {
                 $companyLevelLabelUnitTypeDefault = $companyLevelLabel->getUnitTypeLabel();
                 $unitTypeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelUnitTypeDefault->label_id)->getLabelText();
                 
+				//Spent Time
+				$companyLevelLabelSpentTimeDefault = $companyLevelLabel->getSpentTimeLabel();
+				$spentTimeLabel = $industryType->getLabelManager()->getLabel($companyLevelLabelSpentTimeDefault->label_id)->getLabelText();
+				
                 $columnsSettingsMixValue = $industryType->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategoryMix->name)->getValue();
                 $mixColumnsDisplay = explode(',', $columnsSettingsMixValue);
                 $mixColumn4DisplayDefault = array();
+				
                 foreach ($mixColumnsDisplayDefault as $columnId) {
+
                     $mixColumn4DisplayDefault[$columnId] = $industryType->getLabelManager()->getLabel($columnId)->getLabelText();
                 }
 

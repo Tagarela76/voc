@@ -603,9 +603,10 @@ class CMix extends Controller {
                     "description" => "15%",
                     "contact" => "13%",
                     "r_o_vin_number" => "20%",
+					"spent_time" => "15%",
                     "voc" => "5%",
                     "unit_type" => "15%",
-                    "creation_date" => "15%"
+                    "creation_date" => "15%",
                 );
 			$mixFormatObjList = array();
 			foreach ($mixList as $mix) {
@@ -651,6 +652,9 @@ class CMix extends Controller {
 				if (in_array("creation_date", $mixColumn4Display)) {
 					$mixObj["creation_date"] = $mix->creation_time; 
 				}
+				if (in_array("spent_time", $mixColumn4Display)) {
+					$mixObj["spent_time"] = $mix->spent_time; 
+				}
                 // sort values
                 foreach ($mixColumn4Display as $columnId) {
                     $mixFormatObj[$columnId] = $mixObj[$columnId];
@@ -662,12 +666,12 @@ class CMix extends Controller {
 				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
 				$mixFormatObjList[] = $mixObjList;
 			}
-       //     var_dump($mixFormatObjList); die();
+       
             $mixColumn4DisplayFormat = array();
             foreach ($mixColumn4Display as $columnId) {
                 $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($columnId)->getLabelText();
             }
-            //var_dump($mixColumn4DisplayFormat, $mixFormatObjList); die();
+       
 
 			$this->smarty->assign('widths', $widths);
 			$this->smarty->assign('columnCount', count($mixColumn4DisplayFormat));
