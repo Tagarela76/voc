@@ -2,6 +2,9 @@
 
 use VWM\Import\Gom\GomUploaderMapper;
 use VWM\Import\Gom\GomUploaderEntityBuilder;
+use VWM\Import\Pfp\PfpUploaderMapper;
+use VWM\Import\Pfp\PfpUploaderEntityBuilder;
+
 
 class CABulkUploader extends Controller {
 
@@ -229,7 +232,44 @@ class CABulkUploader extends Controller {
 		$this->smarty->display("tpls:index.tpl");
 	}
 
-			// GET RATIO FOR PRODUCTS IN PFP
+
+	protected function actionBrowseCategoryPfpNew() {
+		//	form submitted
+		if($this->getFromPost() && $_FILES) {
+			//	path to the uploaded file
+			$tmpName = $_FILES['inputFile']['tmp_name'];
+
+			//	real file name
+			//$realFileName = basename($_FILES['inputFile']['name']);
+
+			$mapper = new PfpUploaderMapper();
+			$mapper->doMapping($tmpName);
+			
+			$eb = new PfpUploaderEntityBuilder($this->db, $mapper);
+			$eb->buildEntities($tmpName);
+			
+			//$eb = new GomUploaderEntityBuilder($this->db, $mapper);
+			
+
+			//$goms = $eb->getGoms();
+			//$cribs = $eb->getCribs();
+			//$bins = $eb->getBins();
+
+			////....
+		}		
+
+		$title = new Titles($this->smarty);
+		$title->titleBulkUploaderSettings();
+
+		$this->smarty->assign('uploaderName',
+				VOCApp::get_instance()->t('general', 'PFP'));
+
+		$this->smarty->assign('doNotShowControls', true);
+		$this->smarty->assign('tpl', 'tpls/bulkUploaderNew.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+
+	// GET RATIO FOR PRODUCTS IN PFP
 	private function rate($ar) {
 
 		if (count($ar) > 1) {

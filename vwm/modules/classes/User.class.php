@@ -626,7 +626,7 @@ class User {
 
 
 
-	public function auth($accessname, $password) {
+	public function auth($accessname, $password) {		
 		if ($this->auth->login($accessname, $password)) {
 
 			return true;
