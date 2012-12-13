@@ -1283,7 +1283,7 @@ class Product extends ProductProperties {
 					"WHERE p.supplier_id = s.supplier_id " .
 					"AND coat.coat_id = p.coating_id "; 
 		}
-	die($query);
+	
 		if(count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= "AND ( ";
