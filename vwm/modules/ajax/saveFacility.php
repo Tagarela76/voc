@@ -217,7 +217,7 @@
 			$facility->setState($state);
 			$facility->setTitle($_POST["title"]);
 			$facility->setVocAnnualLimit($_POST["voc_annual_limit"]);
-			$facility->setVocLimit($_POST["voc_annual_limit"]);
+			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
 			
 			$violationList = $facility->validate();		
