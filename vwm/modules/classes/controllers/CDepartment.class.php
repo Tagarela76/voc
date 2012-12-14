@@ -119,7 +119,7 @@ class CDepartment extends Controller {
 		$date = getdate();
 		$this->smarty->assign('curYear', $date['year']);
 
-		//	voc indicator
+		//	voc indicator 
 		$departments->initializeByID($this->getFromRequest('id'));
 		$usage = $departments->getCurrentUsage();
 
@@ -394,6 +394,7 @@ class CDepartment extends Controller {
 				$departmentGauges[] = $departmentGauge;
 			}
 			$departmentList[$i]['gauges'] = $departmentGauges;
+			//var_dump($departmentList[$i]['gauges'][3]->getCurrentUsage());die();
 		}
 		
 		$this->smarty->assign("childCategoryItems", $departmentList);

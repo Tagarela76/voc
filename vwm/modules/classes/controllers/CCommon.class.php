@@ -4,6 +4,7 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\Gauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
+use VWM\Apps\Gauge\Entity\VocGauge;
 
 class CCommon extends Controller {
 
@@ -993,6 +994,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				echo $this->smarty->fetch('tpls/timeProductGaugeSettings.tpl');
 				break;
 			case Gauge::VOC_GAUGE:
+				$vocGauge = new VocGauge($this->db);
+				if ($this->getFromRequest('departmentId')) {
+					$vocGauge->setDepartmentId($this->getFromRequest('departmentId'));
+				}
+				if ($this->getFromRequest('facilityId')) {
+					$vocGauge->setFacilityId($this->getFromRequest('facilityId'));
+				}
+				$vocGauge->load();
 				if ($this->getFromRequest('departmentId') == 0) {
 					$facilities = new Facility($this->db);
 					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
@@ -1002,6 +1011,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 					$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
 					$this->smarty->assign('vocLimit', $departmentDetails['voc_limit']);
 				}
+				$this->smarty->assign('data', $vocGauge);
 				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
 				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('periodOptions', $periodOptions);
@@ -1078,6 +1088,14 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				$timeProductGauge->save();
 				break;
 			case Gauge::VOC_GAUGE:
+				$vocGauge = new VocGauge($this->db);
+				$vocGauge->setId($id);
+				$vocGauge->setFacilityId($facilityId);
+				$vocGauge->setDepartmentId($departmentId);
+				$vocGauge->setLimit($limit);
+				$vocGauge->setPeriod(0);
+				$vocGauge->setUnitType(2);
+				$vocGauge->save();
 				if (!$departmentId) {
 					$facilities = new Facility($this->db);
 					$facilities->updateFacilityVocLimit($facilityId, $limit);

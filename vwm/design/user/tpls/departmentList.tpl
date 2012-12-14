@@ -69,10 +69,10 @@
 					{foreach from=$department.gauges item=gauge}
 						{include file="tpls:tpls/gaugeIndicators.tpl"}
 					{/foreach}
-						{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
+						{*include file="tpls:tpls/vocIndicator.tpl" currentUsage=$department.gauge.currentUsage
 							vocLimit=$department.gauge.vocLimit
 							pxCount=$department.gauge.pxCount }					
-					{*if $department.time_gauge.timeLimit!=0}
+					{if $department.time_gauge.timeLimit!=0}
 						{include file="tpls:tpls/timeProductIndicator.tpl" overritenCurrenProductTime=$department.time_gauge.currentUsage
 							overritenTimeProductLimit=$department.time_gauge.timeLimit
 							overritenTimeProductCount=$department.time_gauge.pxCount
