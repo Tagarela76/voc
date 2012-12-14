@@ -275,7 +275,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		foreach ($data as $record) {
 			$weight = $unittypeConverter->convertFromTo($record->capacity_weight, $unittype->getDescriptionByID($record->weight_unittype), $weightUnittype);
 			$volume = $unittypeConverter->convertFromTo($record->capacity_volume, $unittype->getDescriptionByID($record->volume_unittype), $volumeUnittype);
-			$density = $weight / $volume; 
+			$density = $weight / $volume;
 			$query = "UPDATE `storage` SET density='" . round($density, 4) . "', density_unit_id='1' WHERE storage_id='$record->storage_id' ";
 			if ($this->db->query($query)) {
 				$done++;
@@ -381,7 +381,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		$message .= "Company Name: " . $_POST['name'] . "\r\n\r\n";
 		$message .= "Email:" . $_POST['email'] . "\r\n\r\n";
 
-		
+
 		switch ($_POST['postType']) {
 			case 'representativeCompany':
 				$cSetupRequest->setName($_POST['name']);
@@ -922,16 +922,17 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		$allowtoAccessLevels = array(
 			3, 0, 1
 		);
-        if (!in_array($_SESSION['auth']['accesslevel_id'], $allowtoAccessLevels)) {
-            throw new Exception('deny');
-        }
-		
+		if (!in_array($_SESSION['auth']['accesslevel_id'], $allowtoAccessLevels)) {
+			throw new Exception('deny');
+		}
+
 		//quantity product gauge
 		//select Gauge
 		$gauges = Gauge::getGaugeTypes();
+		
 		$this->smarty->assign('gauges', $gauges);
 		$this->smarty->assign('selectProductGauge', $selectProductGauge);
-		
+
 		switch ($selectProductGauge) {
 			case Gauge::QUANTITY_GAUGE :
 
@@ -992,11 +993,11 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				echo $this->smarty->fetch('tpls/timeProductGaugeSettings.tpl');
 				break;
 			case Gauge::VOC_GAUGE:
-				if($this->getFromRequest('departmentId')==0){
+				if ($this->getFromRequest('departmentId') == 0) {
 					$facilities = new Facility($this->db);
 					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
 					$this->smarty->assign('vocLimit', $facilityDetails['voc_limit']);
-				}else{
+				} else {
 					$department = new Department($this->db);
 					$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('departmentId'));
 					$this->smarty->assign('vocLimit', $departmentDetails['voc_limit']);
@@ -1008,18 +1009,20 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				break;
 
 			case Gauge::NOX_GAUGE:
-				if($this->getFromRequest('departmentId')==0){
-					$facilities = new Facility($this->db);
-					$facilityDetails = $facilities->getFacilityDetails($this->getFromRequest("facilityId"));
-					$this->smarty->assign('noxLimit', $facilityDetails['monthly_nox_limit']);
-				} else {
-					$noxGauge = new NoxGauge($this->db);
+
+				$noxGauge = new NoxGauge($this->db);
+				if ($this->getFromRequest('departmentId')) {
 					$noxGauge->setDepartmentId($this->getFromRequest('departmentId'));
-					$noxGauge->setFacilityId($this->getFromRequest("facilityId"));
-					$noxGauge->load();
-					
-					$this->smarty->assign('noxLimit', $noxGauge->getLimit());
 				}
+				if ($this->getFromRequest('facilityId')) {
+					$noxGauge->setFacilityId($this->getFromRequest('facilityId'));
+				}
+				$noxGauge->load();
+
+				$periodOptions = $noxGauge->getPeriodOptions();
+
+				$this->smarty->assign('noxLimit', $noxGauge->getLimit());
+				$this->smarty->assign('data', $noxGauge);
 				$this->smarty->assign('facilityId', $this->getFromRequest("facilityId"));
 				$this->smarty->assign('gaugeType', $selectProductGauge);
 				$this->smarty->assign('periodOptions', $periodOptions);
@@ -1029,7 +1032,6 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 			default:
 				break;
 		}
-		
 	}
 
 	public function actionSaveQtyProductGaugeSettings() {
@@ -1085,20 +1087,23 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				}
 				break;
 			case Gauge::NOX_GAUGE:
-				if (!$departmentId) {
+
+				$noxGauge = new NoxGauge($this->db);
+				$noxGauge->setId($id);
+				$noxGauge->setDepartmentId($departmentId);
+				$noxGauge->setFacilityId($facilityId);
+				$noxGauge->load();
+				$noxGauge->setLimit($limit);
+				$noxGauge->setPeriod($period);
+				$noxGauge->setLimit($limit);
+				$noxGauge->save();
+
+				if (!$departmentId && $period == 0) {
 					$facilities = new Facility($this->db);
 					$facilities->updateFacilityNoxLimit($facilityId, $limit);
-				} else {
-					$noxGauge = new NoxGauge($this->db);
-					$noxGauge->setDepartmentId($departmentId);
-					$noxGauge->setFacilityId($facilityId);
-					$noxGauge->load();
-
-					$noxGauge->setLimit($limit);
-					$noxGauge->save();
 				}
 				break;
-			
+
 			default:
 				break;
 		}

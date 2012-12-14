@@ -296,7 +296,7 @@ class NoxEmissionManager {
 	 * @param string $year
 	 * @return string
 	 */
-	public function getCurrentUsageOptimizedByDepartment($id, $category, $month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
+	public function getNoxCurrentMonthlyUsage($id, $category, $month = 'MONTH(CURRENT_DATE)', $year = 'YEAR(CURRENT_DATE)') {
 
 		if ($category == 'department') {
 			$query = "SELECT sum( n.nox ) total_usage
@@ -313,11 +313,32 @@ class NoxEmissionManager {
 				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($year)." " .
 				"AND d.facility_id = ".$id;
 		}
-
+		
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['total_usage'];
 
+	}
+	public function getNoxCurrentAnnuallyUsage($id, $category){
+		$year = 'YEAR(CURRENT_DATE)';
+		
+		if ($category == 'department') {
+			$query = "SELECT sum( n.nox ) total_usage
+				FROM ".TB_DEPARTMENT." d, nox n " .
+				"WHERE n.department_id = d.department_id " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($year)." " .
+				"AND d.department_id = ".$id;
+		} else {
+			$query = "SELECT sum( n.nox ) total_usage
+				FROM ".TB_DEPARTMENT." d, nox n " .
+				"WHERE n.department_id = d.department_id " .
+				"AND YEAR(FROM_UNIXTIME(n.start_time)) = ".$this->db->sqltext($year)." " .
+				"AND d.facility_id = ".$id;
+		}
+		$this->db->query($query);
+		$row = $this->db->fetch_array(0);
+		return $row['total_usage'];
+		
 	}
 	
 	public function getBurnerListByFacility($facilityId) {

@@ -6,7 +6,7 @@ use VWM\Framework\Model;
 
 class QtyProductGauge extends Gauge {
 
-	const TABLE_NAME = 'product_gauge';
+	const GAUGE_TYPE_NAME = 'Product\'s Quantity';
 
 	public function __construct(\db $db, $facilityId = null) {
 		$this->db = $db;
@@ -17,7 +17,6 @@ class QtyProductGauge extends Gauge {
 			$this->load();
 		}
 	}
-	
 
 	/**
 	 * Delete settings for facility
@@ -80,7 +79,7 @@ class QtyProductGauge extends Gauge {
 		$unitType = new \Unittype($this->db);
 		$gaugeUnittypeDetails = $unitType->getUnittypeDetails($this->unit_type);
 		$destinationType = $unitType->getDescriptionByID($this->unit_type);
-
+		$productQty = '';
 		if ($gaugeUnittypeDetails['type_id'] == 2) {
 			foreach ($facilityProductsDetails as $product) {
 				$productQty += $unitTypeConverter->fromDefaultWeight($product['quantity'], $destinationType);
@@ -92,7 +91,7 @@ class QtyProductGauge extends Gauge {
 		}
 
 
-		return $productQty;
+		return  round($productQty, 2);
 	}
 
 }

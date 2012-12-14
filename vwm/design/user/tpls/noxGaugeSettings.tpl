@@ -24,8 +24,12 @@
                 Period:&nbsp;
             </td>
             <td>
-                <div align="left" style="float: left;">	
-					Monthly
+				<div align="left" style="float: left;">	
+					<select name="period" id="period">
+						{foreach from=$periodOptions key='periodName' item='periodValue'}										
+							<option value='{$periodValue}' {if $periodValue eq $data->period}selected="selected"{/if}> {$periodName}</option>										
+						{/foreach}
+					</select>									
 				</div>	
             </td>
         </tr>

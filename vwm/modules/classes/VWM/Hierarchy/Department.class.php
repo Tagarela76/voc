@@ -6,6 +6,7 @@ use VWM\Framework\Model;
 use VWM\Apps\Gauge\Entity\Gauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
+use VWM\Apps\Gauge\Entity\NoxGauge;
 
 
 class Department extends Model {
@@ -116,6 +117,7 @@ class Department extends Model {
 		$sql = "SELECT gauge_type FROM " . QtyProductGauge::TABLE_NAME . " WHERE `limit`<>0 AND department_id=" . $this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
+		
 		$gauges = array();
 		foreach ($rows as $row) {
 			switch ($row["gauge_type"]) {
@@ -127,13 +129,17 @@ class Department extends Model {
 					break;
 				case Gauge::VOC_GAUGE:
 					break;
+				case Gauge::NOX_GAUGE:
+					$gauge = new NoxGauge($this->db);
+					break;
 				default:
 					break;
 			}
 			$gauge->setDepartmentId($this->department_id);
 			$gauge->setFacilityId($this->facility_id);
 			$gauge->load();
-			$gauges[$gauge->getGaugeType()] = $gauge;
+			
+			$gauges[] = $gauge;
 		}
 		return $gauges;
 	}

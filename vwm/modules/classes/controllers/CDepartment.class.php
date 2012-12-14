@@ -3,6 +3,8 @@
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
+use VWM\Apps\Gauge\Entity\Gauge;
+//use VWM\Hierarchy\Department;
 
 class CDepartment extends Controller {
 
@@ -287,6 +289,7 @@ class CDepartment extends Controller {
 		$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest("category") . "&id=" . $this->getFromRequest("id") . "&bookmark=" . $this->getFromRequest("bookmark");
 		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr, $sortStr);
 
+		
 		for ($i = 0; $i < count($departmentList); $i++) {
 			$url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . "&bookmark=mix";
 			$departmentList[$i]['url'] = $url;
@@ -301,7 +304,7 @@ class CDepartment extends Controller {
 			}
 
 			//	set gauge foreach department
-			$currentUsage = $department->getCurrentUsage();
+			/*$currentUsage = $department->getCurrentUsage();
 			$limit = $department->getMonthlyLimit();
 			$pxCount = round(200 * $currentUsage / $limit);
 			if ($pxCount > 200) {
@@ -312,24 +315,16 @@ class CDepartment extends Controller {
 				'vocLimit' => $limit,
 				'pxCount' => $pxCount
 			);
-			
+			*/
 			
 			//Time Gauge
-			$timeGauge = new SpentTimeGauge($this->db);
+			/*$timeGauge = new SpentTimeGauge($this->db);
 			$timeGauge->setDepartmentId($departmentList[$i]['id']);
 			$timeGauge->setFacilityId($facilityDetails['facility_id']);
 			$timeGauge->load();
 			
 			$currentTimeUsage = $timeGauge->getCurrentUsage();
 			
-			$unittype = new Unittype($this->db);
-			$unitType = $timeGauge->getUnitType();
-			$unitType = $unittype->getNameByID($unitType);
-			//var_dump($unitType);die();
-			$unitTypeConverter = new UnitTypeConverter($this->db);
-			$currentTimeUsage = $unitTypeConverter->convertDefaultTime($currentTimeUsage, $unitType);
-			
-
 
 			$timeLimit = $timeGauge->getLimit();			
 			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);			
@@ -339,10 +334,10 @@ class CDepartment extends Controller {
 				'pxCount' => $pxTimeCount,
 				'unitType'=>$unitType
 				
-			);
+			);*/
 			
 			// qtyDetails
-			$qtyProductGauge = new QtyProductGauge($this->db);
+			/*$qtyProductGauge = new QtyProductGauge($this->db);
 			$qtyProductGauge->setDepartmentId($departmentList[$i]['id']);
 			$qtyProductGauge->setFacilityId($facilityDetails['facility_id']);
 			$qtyProductGauge->load();
@@ -366,7 +361,7 @@ class CDepartment extends Controller {
 			$noxGauge->setDepartmentId($departmentList[$i]['id']);
 			$noxGauge->setFacilityId($facilityDetails['facility_id']);
 			$noxGauge->load();			
-			
+			//var_dump($noxGauge->getPeriodName());die();
 			$departmentList[$i]['nox_gauge'] = array(
 				'currentUsage' => round( $noxGauge->getCurrentUsage(), 2),
 				'limit' => $noxGauge->getLimit(),
@@ -377,8 +372,30 @@ class CDepartment extends Controller {
 
 
 			//	sum total usage
-			$totalUsage += $currentUsage;
+			$totalUsage += $currentUsage;*/
+			/***********************************************/
+			//Create gauges for departments
+			$departmentClass = new VWM\Hierarchy\Department($this->db,$departmentList[$i]['id']);
+			
+			
+			$allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
+			
+			$departmentGauges = array();
+			$gaugeTypeNames = Gauge::getGaugeTypes();
+			$unittype = new Unittype($this->db);
+			foreach($allDepartmentAvailableGauges as $departmentGauge){
+				$unitType = $departmentGauge->getUnitType();
+				
+				if($departmentGauge->getGaugeType() == 4){
+					$departmentGauge->setUnitTypeName('');
+				}else{
+					$departmentGauge->setUnitTypeName($unittype->getNameByID($unitType));
+				}
+				$departmentGauges[] = $departmentGauge;
+			}
+			$departmentList[$i]['gauges'] = $departmentGauges;
 		}
+		
 		$this->smarty->assign("childCategoryItems", $departmentList);
 		//	voc indicator
 		//	set js scripts
@@ -422,6 +439,7 @@ class CDepartment extends Controller {
 		if ($timeProductGauge->getLimit()!=0) {
 			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
+		
 		
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
