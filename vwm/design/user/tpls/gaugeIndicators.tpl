@@ -2,7 +2,7 @@
 
 <!--<div style="height: 25px;">-->
 <tr style='float: left;'>
-	<td style="padding: 0px; width: 110px;">
+	<td style="padding: 0px; width: 120px;">
 		<div class='gauge_text'>{$gauge->getGaugeTypeName()}</div>
 	</td>
 	<td style="width: 202px;">
