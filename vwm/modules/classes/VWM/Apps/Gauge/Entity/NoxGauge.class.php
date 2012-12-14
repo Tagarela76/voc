@@ -6,6 +6,7 @@ namespace VWM\Apps\Gauge\Entity;
 class NoxGauge extends Gauge {
 
 	protected $currentUsage;
+	const GAUGE_TYPE_NAME = 'NOx';
 
 	public function __construct(\db $db) {
 		$this->db = $db;
@@ -13,20 +14,29 @@ class NoxGauge extends Gauge {
 	}
 
 	public function getCurrentUsage() {
-		if($this->currentUsage !== null) {
+		if ($this->currentUsage !== null) {
 			return $this->currentUsage;
 		}
 
 		$noxManager = new \NoxEmissionManager($this->db);
-		if ($this->getDepartmentId()) {
-			$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment(
-					$this->getDepartmentId(),  "department");
+		if ($this->period == 1) {
+			if ($this->getDepartmentId()) {
+				$totalSumNox = $noxManager->getNoxCurrentAnnuallyUsage(
+						$this->getDepartmentId(), "department");
+			} else {
+				$totalSumNox = $noxManager->getNoxCurrentAnnuallyUsage(
+						$this->getFacilityId(), "facility");
+			}
 		} else {
-			$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment(
-					$this->getFacilityId(),  "facility");
+			if ($this->getDepartmentId()) {
+				$totalSumNox = $noxManager->getNoxCurrentMonthlyUsage(
+						$this->getDepartmentId(), "department");
+			} else {
+				$totalSumNox = $noxManager->getNoxCurrentMonthlyUsage(
+						$this->getFacilityId(), "facility");
+			}
 		}
-
-		$this->currentUsage = $totalSumNox;
+		$this->currentUsage = round($totalSumNox, 2);
 		return $this->currentUsage;
 	}
 }

@@ -211,18 +211,6 @@ class CRepairOrder extends Controller {
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
         $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-
-        // get wo departments
-        $woDepartments = $facility->getDepartmentList($this->getFromRequest("facilityID"));
-        $departmetsName = array();
-        foreach ($woDepartments as $departmentId) {
-            $departmentDetails =  $department->getDepartmentDetails($departmentId);
-            $departmetsName[] = $departmentDetails["name"];
-        }
-        $woDepartmentsName = implode(",", $departmetsName);
-        $woDepartments = implode(",", $woDepartments);
-        $this->smarty->assign('woDepartments', $woDepartments);
-        $this->smarty->assign('woDepartmentsName', $woDepartmentsName);
         
         //	set js scripts
         $jsSources = array(
@@ -480,10 +468,7 @@ class CRepairOrder extends Controller {
         $woDepartmentsDeafult = $facility->getDepartmentList($facilityId);
         $woId = $this->getFromRequest('woId'); 
         // if we add new wo we cannot knew wo id so
-        if ($woId == "false") {
-            // we shoul get all department list
-            $woDepartments = $woDepartmentsDeafult;
-        } else {
+        if ($woId != "false") {
             $repairOrderManager = new RepairOrderManager($this->db);
             $woDepartments = $repairOrderManager->getDepartmentsByWo($woId);
             if (!$woDepartments) {
@@ -497,6 +482,7 @@ class CRepairOrder extends Controller {
             $departmentDetails =  $department->getDepartmentDetails($departmentId);
             $departmentsDeafult[$departmentId] = $departmentDetails["name"];
         }
+		
         $this->smarty->assign('woDepartments', $woDepartments);
         $this->smarty->assign('departmentsDeafult', $departmentsDeafult);
 		echo $this->smarty->fetch('tpls/setDepartmentToWo.tpl');

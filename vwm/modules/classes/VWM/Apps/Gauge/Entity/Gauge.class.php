@@ -24,6 +24,7 @@ abstract class Gauge extends Model {
 	 */
     protected $unit_type=1;
 
+	
 	/**
 	 * Gauge tracking period (monthly or annually)
 	 * @var int
@@ -47,9 +48,20 @@ abstract class Gauge extends Model {
 	 * @var int
 	 */
 	protected $gauge_type;
-
+	
+	/*
+	 *Gauge unit type  name;
+	 */
+	protected $unit_type_name;
+	
     protected $last_update_time;
-
+	
+	/*
+	 *Guage pxCount
+	 * @var  int
+	 */
+	protected $pxCount;
+	
     const PERIOD_MONTHLY = 0;
 	const PERIOD_ANNUALLY= 1;
 	const QUANTITY_GAUGE = 1;
@@ -107,6 +119,24 @@ abstract class Gauge extends Model {
 	public function setFacilityId($facility_id) {
 		$this->facility_id = $facility_id;
 	}
+	
+	public function getPxCount() {
+		$this->pxCount = round(200 *  $this->getCurrentUsage()
+						/ $this->limit);
+		if($this->pxCount>200){
+			$this->pxCount=200;
+		}
+		return $this->pxCount;
+	}
+	
+	public function getUnitTypeName() {
+		return $this->unit_type_name;
+	}
+
+	public function setUnitTypeName($unit_type_name) {
+		$this->unit_type_name = $unit_type_name;
+	}
+	
 
 	public function getPeriodOptions() {
 		return array(
@@ -135,10 +165,10 @@ abstract class Gauge extends Model {
 	
 	public static function getGaugeTypes(){
 		return array(
-			'vocGauge'=>self::VOC_GAUGE,
-			'timeGauge'=>self::TIME_GAUGE,
-			'quantityGauge'=>self::QUANTITY_GAUGE,
-			'noxGauge' => self::NOX_GAUGE,
+		self::QUANTITY_GAUGE => 'Product\'s Quantity',
+		self::TIME_GAUGE => 'Time Spent',
+		self::VOC_GAUGE => 'VOC',
+		self::NOX_GAUGE => 'NOx',
 		);
 	}
 
@@ -224,6 +254,12 @@ abstract class Gauge extends Model {
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+		
+	}
+	
+	public function getGaugeTypeName(){
+		$types = $this->getGaugeTypes();
+		return $types[$this->gauge_type];
 	}
 }
 

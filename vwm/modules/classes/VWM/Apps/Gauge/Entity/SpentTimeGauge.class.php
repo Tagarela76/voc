@@ -1,22 +1,22 @@
 <?php
+
 namespace VWM\Apps\Gauge\Entity;
 
-
-
 class SpentTimeGauge extends Gauge {
-	
+
 	const TABLE_NAME = 'product_gauge';
-	
+	const GAUGE_TYPE_NAME = 'Time Spent';
+
 	public function __construct(\db $db, $facilityId = null) {
 		$this->db = $db;
 		$this->modelName = 'timeProductGauge';
-		$this->gauge_type= Gauge::TIME_GAUGE;
+		$this->gauge_type = Gauge::TIME_GAUGE;
 		if (isset($facilityId)) {
 			$this->setFacilityId($facilityId);
 			$this->load();
 		}
 	}
-					
+
 	public function getCurrentUsage() {
 		$month = 'MONTH(CURRENT_DATE)';
 		$year = 'YEAR(CURRENT_DATE)';
@@ -48,15 +48,18 @@ class SpentTimeGauge extends Gauge {
 		} else {
 			$facilityProductsDetails = 0;
 		}
-		
+
+		$spentTime='';
 		foreach ($facilityProductsDetails as $product) {
-			$productQty += $product['spent_time'];
+			$spentTime += $product['spent_time'];
 		}
 
-		return $productQty;
+		$unittype = new \Unittype($this->db);
+		$unitType = $unittype->getNameByID($this->unit_type);
+		$unitTypeConverter = new \UnitTypeConverter($this->db);
+		$spentTime = $unitTypeConverter->convertDefaultTime($spentTime, $unitType);
+		return  round($spentTime, 2);
 	}
-	
-	
-	
 }
+
 ?>
