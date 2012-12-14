@@ -205,7 +205,7 @@
 							
 							{if $request.category == 'department' || ($request.category == 'facility' && $request.bookmark == 'department')}
 							<div class="button_float_right">
-								<table style="width: 500px;">
+								<table>
 									{if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
 										{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
 									{/if}
