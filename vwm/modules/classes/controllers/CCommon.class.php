@@ -930,7 +930,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		//quantity product gauge
 		//select Gauge
 		$gauges = Gauge::getGaugeTypes();
-		
+
 		$this->smarty->assign('gauges', $gauges);
 		$this->smarty->assign('selectProductGauge', $selectProductGauge);
 
@@ -1040,6 +1040,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				break;
 
 			default:
+
 				break;
 		}
 	}
@@ -1123,6 +1124,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				break;
 
 			default:
+				throw new Exception("such gauge does not exist");
 				break;
 		}
 	}
