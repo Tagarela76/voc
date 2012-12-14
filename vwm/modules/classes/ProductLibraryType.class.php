@@ -23,6 +23,7 @@ class ProductLibraryType {
 	const PAINT_SHOP_PRODUCTS = "Paint Shop Products";
 	const BODY_SHOP_PRODUCTS = "Body Shop Products";
 	const DETAILING_SHOP_PRODUCTS = "Detailing Products";
+    const POWDER_COATING = "POWDER COATING";
 
 	function __construct(db $db, $productLibraryTypeId = null) {
 		$this->db = $db;
@@ -200,6 +201,9 @@ class ProductLibraryType {
 			case "fuelAndOils":
 				$productLibraryType = "4";
 				break;
+            
+            case "powderCoating":
+                $productLibraryType = "5";
 		}
 		return $productLibraryType;
 	}

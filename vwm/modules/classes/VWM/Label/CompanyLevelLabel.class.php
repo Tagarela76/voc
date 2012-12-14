@@ -38,6 +38,8 @@ class CompanyLevelLabel {
     const LABEL_ID_FUEL_AND_OIL_PRODUCT = 'fuel_and_oils_product';
 	
 	const LABEL_ID_SPENT_TIME = 'spent_time';
+    
+    const LABEL_ID_POWDER_COATING = "powder_coating";
 
 
 	public function __construct(\db $db) {
@@ -236,6 +238,19 @@ class CompanyLevelLabel {
 		}
 	}
     
+    public function getPowderCoating() {
+		
+		$sql = "SELECT * FROM " . TB_COMPANY_LEVEL_LABEL . " " . 
+			   "WHERE label_id='" . self::LABEL_ID_POWDER_COATING . "' " . 
+			   "LIMIT 1"	;		
+ 		$this->db->query($sql);
+		if($this->db->num_rows() == 0) {
+			return false;
+		} else {
+			return $this->db->fetch(0);
+		}
+	}
+
     public function getDefaultLabels() {
         
         return array(
@@ -254,6 +269,7 @@ class CompanyLevelLabel {
             self::LABEL_ID_DETAILING_SHOP_PRODUCT => $this->getDetailingShopProductLabel()->default_label_text,
             self::LABEL_ID_FUEL_AND_OIL_PRODUCT => $this->getFuelAndOilProductLabel()->default_label_text,
 			self::LABEL_ID_SPENT_TIME => $this->getSpentTimeLabel()->default_label_text,
+            self::LABEL_ID_POWDER_COATING => $this->getPowderCoating()->default_label_text,
         );
     }
     
