@@ -7,6 +7,7 @@ use VWM\Apps\Gauge\Entity\Gauge;
 use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
+use VWM\Apps\Gauge\Entity\VocGauge;
 
 
 class Department extends Model {
@@ -128,6 +129,7 @@ class Department extends Model {
 					$gauge = new SpentTimeGauge($this->db);
 					break;
 				case Gauge::VOC_GAUGE:
+					$gauge = new VocGauge($this->db);
 					break;
 				case Gauge::NOX_GAUGE:
 					$gauge = new NoxGauge($this->db);
