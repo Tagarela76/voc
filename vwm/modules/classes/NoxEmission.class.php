@@ -8,6 +8,7 @@ class NoxEmission extends Model {
 	private $department_id;
 	private $description;
 	private $gas_unit_used;
+	private $action;
 
 	/**
 	 * @var INT The time when burner began to work
@@ -219,10 +220,21 @@ class NoxEmission extends Model {
 		$this->nox = $nox;
 	}
 	
+	public function set_action($action) {
+		$this->action = $action;
+	}
+	
 	public function isUniqueDescription() {
-		$sql = "SELECT nox_id FROM nox " .
-				"WHERE description = '{$this->db->sqltext($this->description)}' " .
-				"AND burner_id = {$this->db->sqltext($this->burner_id)}";
+		if ($this->validationGroup == 'edit') {
+			$sql = "SELECT nox_id FROM nox " .
+					"WHERE description != '{$this->db->sqltext($this->description)}' " .
+					"AND burner_id = {$this->db->sqltext($this->burner_id)}" .
+					"AND nox_id != {$this->db->sqltext($this->nox_id)}";
+		} else {
+			$sql = "SELECT nox_id FROM nox " .
+					"WHERE description = '{$this->db->sqltext($this->description)}' " .
+					"AND burner_id = {$this->db->sqltext($this->burner_id)}";
+		}
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
 	}

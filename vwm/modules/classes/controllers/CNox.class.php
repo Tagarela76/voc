@@ -564,18 +564,24 @@ class CNox extends Controller {
 		}
 
 		$form = $this->getFromPost();
-
+		
+		
 		if (count($form) > 0) {
 			$noxEmissionDetails = $form;
 			$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
+			
 			$totalNox = $manager->calculateNox($noxEmission);
 			if ($totalNox) {
 				$noxEmission->nox = $totalNox;
 			}
+			$noxEmission->setValidationGroup('edit');
 			$violationList = $noxEmission->validate();
+			
 			if(count($violationList) == 0) {
+				$noxEmission->set_start_time(new DateTime($noxEmissionDetails['start_time']));
+				$noxEmission->set_end_time(new DateTime($noxEmissionDetails['end_time']));
 				$noxEmission->save();
-
+				
 				// redirect
 				header("Location: ?action=browseCategory&category=department&id=" . $noxEmission->department_id . "&bookmark=nox&tab=nox");
 				die();
@@ -589,6 +595,7 @@ class CNox extends Controller {
 			
 			//	convert time to timestamp
 			$startTime = new TypeChain($noxEmissionDetails['start_time'], 'date', $this->db, $companyID, 'company');
+			
 			$endTime = new TypeChain($noxEmissionDetails['end_time'], 'date', $this->db, $companyID, 'company');
 			$noxEmission->start_time = $noxEmissionDetails['start_time'] = $startTime->getTimestamp();
 			$noxEmission->end_time = $noxEmissionDetails['end_time'] = $endTime->getTimestamp();	
@@ -611,7 +618,12 @@ class CNox extends Controller {
 
 		$noxEmissionDetails['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['start_time']);
 		$noxEmissionDetails['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['end_time']);
-
+		
+		$countNoxSartTime = strlen($noxEmissionDetails['start_time']);
+		$noxEmissionDetails['start_time'] = substr(trim($noxEmissionDetails['start_time']), 0, $countNoxSartTime-3);
+		$countNoxSartTime = strlen($noxEmissionDetails['end_time']);
+		$noxEmissionDetails['end_time'] = substr(trim($noxEmissionDetails['end_time']), 0, $countNoxSartTime-3);
+		
 		$this->smarty->assign('data', $noxEmissionDetails);
 		//	$this->smarty->assign('sendFormAction', '?action=edit&category='.$request['category'].'&departmentID='.$departmentID);
 		$this->smarty->assign('tpl', 'tpls/addBurner.tpl');
