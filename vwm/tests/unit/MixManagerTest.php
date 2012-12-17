@@ -15,8 +15,8 @@ class MixManagerTest extends Testing\DbTestCase {
 		$this->assertTrue($mixCount === false);
 
 		$mixManager->departmentID = 1;
-		$mixCount = $mixManager->countMixes();
-		$this->assertTrue($mixCount === 4);
+		$mixCount = $mixManager->countMixes();		
+		$this->assertEquals(4, $mixCount);
 
 		//	now let's test filter
 		$filter = ' description LIKE \'%WO12%\' ';
@@ -30,19 +30,27 @@ class MixManagerTest extends Testing\DbTestCase {
 	}
 
 	public function testCountMixesInFacility() {
+
+		$facilityId = 1;
+		$sql = "SELECT COUNT(*) cnt " .
+				"FROM ".TB_USAGE." m " .
+				"JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+				"WHERE d.facility_id = {$facilityId}";
+		$this->db->query($sql);
+		$expectedCount = $this->db->fetch(0)->cnt;
 		$mixManager = new MixManager($this->db);
-		$mixCount = $mixManager->countMixesInFacility(1);
-		$this->assertTrue($mixCount === 5);
+		$mixCount = $mixManager->countMixesInFacility($facilityId);
+		$this->assertEquals($expectedCount, $mixCount);
 
 		//	now let's test filter
 		$filter = ' description LIKE \'%WO12%\' ';
-		$mixCount = $mixManager->countMixesInFacility(1, $filter);
-		$this->assertTrue($mixCount === 3);
+		$mixCount = $mixManager->countMixesInFacility($facilityId, $filter);
+		$this->assertEquals(4, $mixCount);
 
 		//	test search criteria
 		$mixManager->searchCriteria[] = 'WO';
-		$mixCount = $mixManager->countMixesInFacility(1);
-		$this->assertTrue($mixCount === 3);
+		$mixCount = $mixManager->countMixesInFacility($facilityId);
+		$this->assertEquals(4, $mixCount);
 	}
 
 	public function testGetMixList() {
@@ -77,6 +85,11 @@ class MixManagerTest extends Testing\DbTestCase {
 		$mixList = $mixManager->getMixListInFacility(1);
 		$this->assertTrue(count($mixList) === 3);
 
+	}
+
+
+	public function testGetMixListInDepartment() {
+		
 	}
 
 }
