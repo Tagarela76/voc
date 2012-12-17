@@ -366,14 +366,14 @@ class CNox extends Controller {
 
 					//	nox indicator
 					// choice category facility or department
-					if (isset($departmentDetails)) {
+					/*if (isset($departmentDetails)) {
 						$category = "department";
 						$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($departmentDetails['department_id'], $category);
 					} else {
 						$category = "facility";
 						$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($facilityDetails['facility_id'], $category);
 					}
-					$this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);
+					$this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);*/
 					// insert nox indicator bar into tpl
 					//$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
 					// insert nox log into tpl
@@ -640,13 +640,13 @@ class CNox extends Controller {
 		);
 		$this->smarty->assign('jsSources', $jsSources);
         
-        $totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($facilityDetails['facility_id'], "facility");
+        /*$totalSumNox = $noxManager->getCurrentUsageOptimizedByDepartment($facilityDetails['facility_id'], "facility");
 
         $this->setNoxIndicator($facilityDetails['monthly_nox_limit'], $totalSumNox);
         // insert nox indicator bar into tpl
         $this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_VOC_GAUGE);
         // insert nox log into tpl
-        $this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE);
+        $this->insertTplBlock('tpls/noxLogPopup.tpl', self::INSERT_NOX_LOG_BEFORE_NOX_GAUGE);*/
         $this->smarty->assign("childCategoryItems", $burnerList);
             
 		//	set tpl
@@ -766,19 +766,88 @@ class CNox extends Controller {
 		$post = $this->getFromPost();		
 
 		if (count($post) > 0) {
-			//nox form validation 
-			$nox = new NoxEmission($this->db);
+
+			$noxDetails = array(
+				'department_id' => $this->getFromPost('department_id'),
+				'description' => $this->getFromPost('description'),
+				'gas_unit_used' => $this->getFromPost('gas_unit_used'),
+				'start_time' => $this->getFromPost('start_time'),
+				'end_time' => $this->getFromPost('end_time'),
+				'burner_id' => $this->getFromPost('burner_id'),
+				'note' => $this->getFromPost('note')
+			);
+
+			$nox = new NoxEmission($this->db, $noxDetails);
+			$violationList = $nox->validate();
+			if (count($violationList) == 0) {
+				$nox->set_start_time(new DateTime($noxDetails['start_time']));
+				$nox->set_end_time(new DateTime($noxDetails['end_time']));
+				$totalNox = $noxManager->calculateNox($nox);
+				if ($totalNox) {
+					$nox->nox = $totalNox;
+				}
+
+				// we create a few nox emissions (for every burner)
+				$facilityID = $request['facilityID'];
+				$facilityRatio = $noxBurner->getCommonRatio4Facility($facilityID);
+				$departmentList = $facility->getDepartmentList($facilityID);
+				$burnerList = array();
+
+				$this->db->beginTransaction();
+				$error = false;
+				foreach ($departmentList as $departmentID) {
+
+					$burnerList = $noxManager->getBurnerListByDepartment($departmentID);
+					foreach ($burnerList as $burner) {
+						$gasUnitUsed = $this->getFromPost('gas_unit_used') * ($burner['ratio'] / $facilityRatio);
+						$nox = new NoxEmission($this->db);
+						$nox->department_id = $departmentID;
+						$nox->description = $this->getFromPost('description');
+						$nox->gas_unit_used = $gasUnitUsed;
+						$nox->start_time = $this->getFromPost('start_time');
+						$nox->end_time = $this->getFromPost('end_time');
+						$nox->burner_id = $burner['burner_id'];
+						$nox->note = $this->getFromPost('note');						
+
+						// validation (for every nox emission wich we will create)
+						$violationList = $nox->validate();
+						if (count($violationList) == 0) {
+							$nox->set_start_time(new DateTime($this->getFromPost('start_time')));
+							$nox->set_end_time(new DateTime($this->getFromPost('end_time')));
+							$totalNox = $noxManager->calculateNox($nox);
+							if ($totalNox) {
+								$nox->nox = $totalNox;
+							}
+							$nox->save();
+						} else {
+							throw new Exception("Error while validate form <br> $violationList");
+						}
+					}
+				}
+				if ($error) {
+					$this->db->rollbackTransaction();
+				} else {
+					$this->db->commitTransaction();
+					header("Location: ?action=browseCategory&category=facility&id=" . $facilityID . "&bookmark=nox&tab={$request['tab']}&notify=45");
+				}
+			} else {
+				$error = true;
+				$notifyc = new Notify(null, $this->db);
+				$notify = $notifyc->getPopUpNotifyMessage(401);
+				$this->smarty->assign("notify", $notify);
+				$this->smarty->assign('violationList', $violationList);
+				$this->smarty->assign('data', $noxDetails);
+			}
+			//nox form validation
+		/*	$nox = new NoxEmission($this->db);
 			$nox->department_id = 0;  // test data (only for client input data validation)
 			$nox->description = $this->getFromPost('description');
 			$nox->gas_unit_used = $this->getFromPost('gas_unit_used');
 			$nox->burner_id = 0; // test data (only for client input data validation)
 			$nox->note =  $this->getFromPost('note');
-			$nox->set_start_time(new DateTime($this->getFromPost('start_time')));
-			$nox->set_end_time(new DateTime($this->getFromPost('end_time'))); 
-			$totalNox = $noxManager->calculateNox($nox);
-			if ($totalNox) {
-				$nox->nox = $totalNox;
-			} 
+			$nox->start_time = $this->getFromPost('start_time');
+			$nox->end_time = $this->getFromPost('end_time');
+			
 			// we should save nox data as array for return to form (if error)
 			$noxDetails = array(
 				'description' => $nox->description,
@@ -788,7 +857,14 @@ class CNox extends Controller {
 				'note' => $nox->note
 			);
 			$violationList = $nox->validate(); 
-			if(count($violationList) == 0) {								
+			if(count($violationList) == 0) {
+				$nox->set_start_time(new DateTime($noxDetails['start_time']));
+				$nox->set_end_time(new DateTime($noxDetails['end_time']));
+				$totalNox = $noxManager->calculateNox($nox);
+				if ($totalNox) {
+					$nox->nox = $totalNox;
+				}
+
 				// we create a few nox emissions (for every burner)
 				$facilityID = $request['facilityID'];
 				$facilityRatio = $noxBurner->getCommonRatio4Facility($facilityID);
@@ -840,7 +916,7 @@ class CNox extends Controller {
 				$this->smarty->assign("notify", $notify);						
 				$this->smarty->assign('violationList', $violationList);
 				$this->smarty->assign('data', $noxDetails);
-			}								
+			}								*/
 		}
 		$jsSources = array(
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js',

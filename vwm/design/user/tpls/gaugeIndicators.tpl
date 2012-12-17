@@ -2,7 +2,7 @@
 
 <!--<div style="height: 25px;">-->
 <tr style='float: left;'>
-	<td style="padding: 0px; width: 120px;">
+	<td style="padding: 0px; width: 130px;">
 		<div class='gauge_text'>{$gauge->getGaugeTypeName()}</div>
 	</td>
 	<td style="width: 202px;">
@@ -26,7 +26,7 @@
 
 		</div>
 	</td>
-	<td>
+	<td style="padding:0px;">
 		{$gauge->getCurrentUsage()}/<b>{$gauge->getLimit()}</b> {$gauge->getUnitTypeName()}	   
 	</td>
 </tr>

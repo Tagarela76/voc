@@ -26,7 +26,7 @@ class DateTimeValidator extends ConstraintValidator {
 	 */
 	public function isValid($value, Constraint $constraint) {
 		$format = \VOCApp::get_instance()->getDateFormat();
-		$format .= " H:i";
+		$format .= " H:i";		
 		if(!\VWM\Framework\Utils\DateTime::createFromFormat($format, $value)) {
 			$this->setMessage($constraint->message,
 					array('%dateformat%'=>$format));

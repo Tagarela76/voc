@@ -12,10 +12,10 @@ NoxEmission:
       - Max: 9999999999
     start_time:
       - NotBlank: ~
-      - DateTime: ~
+      - VWM\Framework\Validator\Constraints\DateTime: ~
     end_time:
       - NotBlank: ~
-      - DateTime: ~
+      - VWM\Framework\Validator\Constraints\DateTime: ~
     nox:      
       - Min: 0
       - Max: 9999999999
