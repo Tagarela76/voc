@@ -152,10 +152,10 @@ class CFacility extends Controller {
 			'moduleMap' => $moduleMap
 		);
 
-		if ($bookmark == 'product' || $bookmark == 'nox') {
+		if ($bookmark == 'product' || $bookmark == 'nox' || $bookmark == 'repairOrder') {
 			//  We need to show the product and nox tab at both facility and department levels
 			//  that is why we are forwarding to Product controller, action bookmarkDProduct OR
-			//  we are forwarding to Nox controller, action bookmarkDNox OR
+			//  we are forwarding to Nox controller, action bookmarkDNox OR			
 			$this->forward($bookmark, 'bookmarkD' . ucfirst($bookmark), $vars);
 		} else {
 			$this->forward($bookmark, 'bookmark' . ucfirst($bookmark), $vars);

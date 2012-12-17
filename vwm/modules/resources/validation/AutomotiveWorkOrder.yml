@@ -1,4 +1,4 @@
-VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder:
+VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder:
   properties:
     number: 
       - NotBlank: { groups: [add,Default] }

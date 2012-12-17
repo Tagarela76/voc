@@ -2,7 +2,7 @@
 <script type="text/javascript">
 	$(function() {
 		//	global reminderPage object defined at manageReminders.js
-		repairOrderPage.facilityId = {/literal} {$request.facilityID} {literal};
+		repairOrderPage.facilityId = {/literal} {$facilityDetails.facility_id} {literal};
         repairOrderPage.woId = {/literal} {$request.id} {literal};
 	});
 </script>
@@ -122,24 +122,36 @@
 				</td>					
 			</tr>
             {/if}
+			{if $request.parent_category == 'facility'}
 			<tr height="10px">
 				<td height="20" class="border_users_l">
 					Departments:
 				</td>
-                <td>
+                <td>										
 					<div align="left">
-					<div id="departments2wo_list">{$woDepartmentsName} 
-						<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$woDepartments}" />
-					</div>
-					<a href="#" onclick="repairOrderPage.manageRepairOrder.openDialog();">edit</a>
+						<div id="departments2wo_list">{$woDepartmentsName}
+							<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$woDepartments}" />
+						</div>
+						<a href="#" onclick="repairOrderPage.manageRepairOrder.openDialog();">edit</a>
                     </div>
-                    {if $woDepartmentsError eq 'true'}							
-                    {*ERROR*}					
-                    <div class="error_img" style="float: left;"><span class="error_text">This value should not be blank.</span></div>
-                    {*/ERROR*}						    
-                    {/if}
+						{if $woDepartmentsError eq 'true'}
+						{*ERROR*}
+						<div class="error_img" style="float: left;"><span class="error_text">This value should not be blank.</span></div>
+						{*/ERROR*}
+						{/if}					
                 </td>    
 			</tr>
+			{else}
+			<tr height="10px">
+				<td height="20" class="border_users_l">
+					&nbsp;
+				</td>
+                <td class="border_users_r">
+					<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$request.parent_id|escape}" />
+					&nbsp;
+                </td>
+			</tr>
+			{/if}
 			<tr class="border_users_l border_users_r">
 				<td colspan="2">&nbsp;</td>
 			</tr>
@@ -169,7 +181,7 @@
 		{*HIDDEN*}
 		<input type='hidden' name='action' value={$request.action}>		
 		{if $request.action eq "addItem"}
-			<input type='hidden' name='facility_id' value='{$request.facilityID}'>
+			<input type='hidden' name='facility_id' value='{$facilityDetails.facility_id}'>
 		{/if}			
 		{if $request.action eq "edit"}
 			<input type="hidden" name="id" value="{$data->facility_id|escape}">
