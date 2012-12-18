@@ -5,6 +5,7 @@ function saveDepartmentDetails()
 	var dep_name=$('#departmentName').attr('value');
 	var dep_voc_limit=$('#departmentLimit').attr('value');
 	var dep_annual_limit=$('#departmentAnnualLimit').attr('value');
+	var dep_share_wo=$('#share_wo').attr('checked');	
 	var dep_action=$('input:hidden[name=action]').attr('value');
 	if (dep_action == 'addItem') 
 	{		
@@ -25,6 +26,7 @@ function saveDepartmentDetails()
 			"voc_limit":dep_voc_limit,
 			"voc_annual_limit":dep_annual_limit,
 			"action":dep_action,
+			"share_wo": dep_share_wo ? 1 : 0,
 			"id":id
 		},      			
 		dataType: "html",

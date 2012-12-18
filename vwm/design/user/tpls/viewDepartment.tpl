@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$department.name|escape}
+                    &nbsp; {$department->getName()|escape}
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$department.voc_limit|escape}
+                    &nbsp; {$department->getVocLimit()|escape}
                 </div>
             </td>
         </tr>
@@ -42,10 +42,10 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$department.voc_annual_limit|escape}
+                    &nbsp; {$department->getVocAnnualLimit()|escape}
                 </div>
             </td>
-        </tr>
+        </tr>		
         <tr>
             <td height="20" class="users_u_bottom">
             </td>

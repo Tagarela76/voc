@@ -72,7 +72,7 @@
 				</td>
 				<td>
 					<div align="left">
-						<input id='share_wo' type='checkbox' name='share_wo'/>
+						<input id='share_wo' type='checkbox' name='share_wo' {if $department->getShareWo()} checked="checked"{/if}/>
 					</div>			     				
 				</td>
 			</tr>

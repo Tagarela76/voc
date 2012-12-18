@@ -85,10 +85,9 @@ class CDepartment extends Controller {
 		$this->setListCategoriesLeftNew($this->getFromRequest('category'), $this->getFromRequest('id'), $this->paramsForListLeft);
 		$this->setNavigationUpNew($this->getFromRequest('category'), $this->getFromRequest('id'));
 		$this->setPermissionsNew('viewDepartment');
-
-		$departments = new Department($this->db);
-		$departmentDetails = $departments->getDepartmentDetails($this->getFromRequest("id"));
-		$this->smarty->assign("department", $departmentDetails);
+		
+		$this->smarty->assign("department", new VWM\Hierarchy\Department(
+				$this->db, $this->getFromRequest('id')));
 		$this->smarty->assign('backUrl', '?action=browseCategory&category=department&id=' . $this->getFromRequest("id") . '&bookmark=mix');
 		$this->smarty->assign('tpl', 'tpls/viewDepartment.tpl');
 		$this->smarty->display("tpls:index.tpl");

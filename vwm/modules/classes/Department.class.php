@@ -24,14 +24,15 @@ class Department extends DepartmentProperties {
 		{
 			$departmentData[$key]=mysql_escape_string($value);
 		}
-
-		$query="INSERT INTO ".TB_DEPARTMENT." (facility_id, name, creater_id, voc_limit, voc_annual_limit) VALUES (";
+		$shareWo = ($departmentData['share_wo']) ? 1 : 0;
+		$query="INSERT INTO ".TB_DEPARTMENT." (facility_id, name, creater_id, voc_limit, voc_annual_limit, share_wo) VALUES (";
 
 		$query.=$departmentData['facility_id'].", ";
 		$query.="'".$departmentData['name']."', ";
 		$query.="'".$departmentData['creater_id']."', ";
 		$query.=$departmentData['voc_limit'].", ";
-		$query.=$departmentData['voc_annual_limit'].")";
+		$query.=$departmentData['voc_annual_limit'].", ";
+		$query.=$departmentData['share_wo'].")";
 		$this->db->query($query);
 
 		//	save to trash_bin
@@ -243,13 +244,17 @@ class Department extends DepartmentProperties {
 			$recalculteMixLimits = true;
 		}
 
+		$shareWo = ($departmentData['share_wo']) ? 1 : 0;
+
 		//	save to trash_bin
 		$this->save2trash('U', $departmentData["department_id"]);
+
 
 		$query="UPDATE ".TB_DEPARTMENT." SET ";
 		$query.="name='".$departmentData['name']."', ";
 		$query.="voc_limit='".$departmentData['voc_limit']."', ";
-		$query.="voc_annual_limit='".$departmentData['voc_annual_limit']."' ";
+		$query.="voc_annual_limit='".$departmentData['voc_annual_limit']."', ";
+		$query.="share_wo={$shareWo} ";
 
 		$query.="WHERE department_id=".$departmentData["department_id"];
 

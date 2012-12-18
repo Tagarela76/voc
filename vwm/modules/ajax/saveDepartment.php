@@ -33,17 +33,19 @@
 		
 	switch ($action) {
 		//case 'updateItem':
-		case 'edit':
+		case 'edit':							
 			$xnyo->filter_post_var("id", "text");
 			$xnyo->filter_post_var("voc_limit", "text");
 			$xnyo->filter_post_var("voc_annual_limit", "text");
 			$xnyo->filter_post_var("name", "text");
-				
+			$xnyo->filter_post_var("share_wo", "text");
+
 			$regData = array(
 				"department_id"	=>	$_POST["id"],
 				"name"			=>	$_POST["name"],
 				"voc_limit"		=>	$_POST["voc_limit"],
 				"voc_annual_limit"		=>	$_POST["voc_annual_limit"],
+				"share_wo"		=> $_POST["share_wo"]
 			);						
 			
 			$departmentObj = new Department($db);
@@ -51,16 +53,7 @@
 			
 			//	validate
 			$validateStatus = $validate->validateRegData($regData);
-			$departmentDetails = $departmentObj->getDepartmentDetails($regData['department_id']);
-			
-			//	check for changes
-			$noChanges = false;
-			if ($departmentDetails['voc_limit'] == $regData["voc_limit"] 
-				&& $departmentDetails['name'] == $regData["name"]
-				&& $departmentDetails['voc_annual_limit'] == $regData["voc_annual_limit"]) {
-					//	no changes = recalculation does not need
-				$noChanges = true;
-			}
+			$departmentDetails = $departmentObj->getDepartmentDetails($regData['department_id']);						
 			
 			//	validate unique
 			if ($regData["name"] != $departmentDetails["name"]) {	//	dep name was changed
@@ -69,9 +62,8 @@
 					$validateStatus['name'] = 'alredyExist';
 				}
 			}			
-			
 						
-			if ($validateStatus["summary"] == "true" && !$noChanges) {
+			if ($validateStatus["summary"] == "true") {
 				//	setter injection
 				$departmentObj->setTrashRecord(new Trash($db));
 								
@@ -88,6 +80,8 @@
 			$xnyo->filter_post_var("name", "text");
 			$xnyo->filter_post_var("voc_limit", "text");
 			$xnyo->filter_post_var("voc_annual_limit", "text");
+			$xnyo->filter_post_var("share_wo", "text");
+			$xnyo->filter_post_var("share_wo", "text");
 
 			$departments = new Department($db);			
 			
@@ -96,7 +90,8 @@
 				"name"			=>	$_POST["name"],
 				"voc_limit"		=>	$_POST["voc_limit"],
 				"voc_annual_limit"		=>	$_POST["voc_annual_limit"],
-				"creater_id"	=>	$_SESSION['user_id']
+				"creater_id"	=>	$_SESSION['user_id'],
+				"share_wo"		=> $_POST["share_wo"]
 			);
 			
 			$validation = new Validation($db);
