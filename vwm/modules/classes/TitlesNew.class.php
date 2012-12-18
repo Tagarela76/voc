@@ -72,6 +72,9 @@ class TitlesNew {
 								$this->title .= ": Waste Storage of facility " .$facilityDetails['name']. 
 									" in company " .$companyDetails['name'];
 								break;
+							case 'repairOrder':
+								$this->title .= ": Work Orders of facility " .$facilityDetails['name'];
+								break;
 						}
 						break;
 					case "department":
@@ -98,6 +101,9 @@ class TitlesNew {
 								break;
 							case 'pfpLibrary':
 								$this->title .= ": Pre Formulated Products of department " .$departmentDetails['name'];
+								break;
+							case 'repairOrder':
+								$this->title .= ": Work Orders of department " .$departmentDetails['name'];
 								break;
 						}
 						break;

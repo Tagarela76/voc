@@ -207,7 +207,7 @@ class Department extends Model {
 
         if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}        
+		}
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
 		

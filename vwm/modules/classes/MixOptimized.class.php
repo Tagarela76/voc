@@ -1484,8 +1484,7 @@ class MixOptimized extends Model {
 				AND mg.mix_id = m.mix_id";
 				
 		$this->db->query($query);		
-		$resultData = $this->db->fetch_all();
-		$mixPrice = 0;
+		$resultData = $this->db->fetch_all();		
 		$price = 0;
 		foreach ($resultData as $data) {  
 			// if supllier doesn't set price we get manufacturer price

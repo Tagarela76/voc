@@ -105,6 +105,25 @@
                     </td>
                     {/if}
 
+					{if $permissions.data.view}
+                    <td>
+                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=repairOrder">{if $request.bookmark != "repairOrder"}
+                            <div class="deactiveBookmark">
+                                <div class="deactiveBookmark_right">
+                                    {$repairOrderLabel} &nbsp;
+                                </div>
+                            </div>
+                            {else}
+                            <div class="activeBookmark">
+                                <div class="activeBookmark_right">
+                                   {$repairOrderLabel} &nbsp;
+                                </div>
+                            </div>
+                            {/if}
+                        </a>
+                    </td>
+                    {/if}
+
                     {if $permissions.data.view}
                     <td>
                         <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=mix&tab=mixes">{if $request.bookmark != "mix"}
@@ -146,6 +165,7 @@
 {if $request.bookmark  eq "equipment"}  class="bookmark_bg" {/if}
 {if $request.bookmark  eq "inventory"}  class="bookmark_bg_violet" {/if}
 {if $request.bookmark  eq "product"}  class="bookmark_bg_green" {/if}
+{if $request.bookmark  eq "repairOrder"}  class="bookmark_bg" {/if}
 {if $request.bookmark  eq "mix"}  class="bookmark_bg_orange" {/if}
 {if $request.bookmark  eq "emissionGraphs"}  class="bookmark_bg_green" {/if} >
 	

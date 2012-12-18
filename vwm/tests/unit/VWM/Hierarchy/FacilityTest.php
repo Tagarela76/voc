@@ -9,6 +9,7 @@ class FacilityTest extends DbTestCase {
 	protected $fixtures = array(
 		Company::TABLE_NAME,
 		Facility::TABLE_NAME,
+		Department::TABLE_NAME,
 	);
 	
 	public function testSave() {
@@ -83,6 +84,15 @@ class FacilityTest extends DbTestCase {
 	public function testGetCompany() {
 		$facility = new Facility($this->db, 1);
 		$this->assertEquals($facility->getCompany(), new Company($this->db, 1));
+	}
+
+
+	public function testGetDepartments() {
+		$facility = new Facility($this->db, 1);
+		$departments = $facility->getDepartments();
+
+		$this->assertCount(2, $departments);
+		$this->assertEquals(new Department($this->db, 1), $departments[0]);
 	}
 
 }

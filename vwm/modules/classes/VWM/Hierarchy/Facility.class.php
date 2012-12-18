@@ -52,9 +52,14 @@ class Facility extends Model {
 	protected $last_update_time;
 
 	/**
-	 * @var Company
+	 * @var VWM\Hierarchy\Company
 	 */
 	protected $company;
+
+	/**
+	 * @var VWM\Hierarchy\Department[]
+	 */
+	protected $departments;
 
 	const TABLE_NAME = 'facility';
 	
@@ -379,6 +384,38 @@ class Facility extends Model {
 		}
 
 		return $this->company;
+	}
+
+
+	/**
+	 * Get facility's departments
+	 * @var VWM\Hierarchy\Department[]
+	 * @throws \Exception
+	 */
+	public function getDepartments() {
+		if($this->departments === null) {
+			if(!$this->getFacilityId()) {
+				throw new \Exception('Facility Id is not set');
+			}
+
+			$sql = "SELECT * " .
+					"FROM ".Department::TABLE_NAME." " .
+					"WHERE facility_id = {$this->db->sqltext($this->getFacilityId())}";
+			$this->db->query($sql);
+			if($this->db->num_rows() == 0) {
+				$this->departments = array();
+				return $this->departments;
+			}
+
+			$rows = $this->db->fetch_all_array();
+			foreach ($rows as $row) {
+				$department = new Department($this->db);
+				$department->initByArray($row);
+				$this->departments[] = $department;
+			}
+		}
+
+		return $this->departments;
 	}
 }
 

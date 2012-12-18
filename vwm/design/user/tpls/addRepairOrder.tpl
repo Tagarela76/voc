@@ -168,12 +168,19 @@
 				<td>
 		{*BUTTONS*}
 		<div align="right">
-			<input type='button' name='cancel' class="button" value='Cancel' 
+			{if $request.category == 'department'}
+			<input type='button' name='cancel' class="button" value='Cancel'
+				{if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=department&id={$request.departmentID}&bookmark=repairOrder'"
+				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=repairOrder&id={$request.id}&departmentId={}'"
+				{/if}
+			>
+			{elseif $request.category == 'facility'}
+			<input type='button' name='cancel' class="button" value='Cancel'
 				{if $request.action eq "addItem"} onClick="location.href='?action=browseCategory&category=facility&id={$request.facilityID}&bookmark=repairOrder'"
-			
 				{elseif $request.action eq "edit"} onClick="location.href='?action=viewDetails&category=repairOrder&id={$request.id}&facilityID={$data->facility_id}'"
 				{/if}
 			>
+			{/if}
             <input type='submit' name='save' class="button" value='Save'>
 			<!--<input type='submit' name='save' class="button" value='Save' onClick="saveRepairOrderDetails();">-->						
 		</div>

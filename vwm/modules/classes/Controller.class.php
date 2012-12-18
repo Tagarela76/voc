@@ -984,28 +984,26 @@ class Controller {
             $paramsForListLeft ['tab'] = $this->getFromRequest('tab');
         }
 
-        $this->setListCategoriesLeftNew($this->getFromRequest('category'), $this->getFromRequest('id'), $paramsForListLeft); //TODO add in all Controls paramsForListLeft!
-        $this->setNavigationUpNew($this->getFromRequest('category'), $this->getFromRequest('id'));
+        $this->setListCategoriesLeftNew($this->getFromRequest('category'),
+				$this->getFromRequest('id'), $paramsForListLeft); //TODO add in all Controls paramsForListLeft!
+        $this->setNavigationUpNew($this->getFromRequest('category'),
+				$this->getFromRequest('id'));
         $this->setPermissionsNew($this->getFromRequest('category'));
 
         $this->smarty->assign('accessname', $_SESSION['username']);
         $this->smarty->assign('request', $this->request);
 
         //	Access control
-		if (!$this->user->checkAccess($this->getFromRequest('category'), $this->getFromRequest('id'))) {
+		if (!$this->user->checkAccess($this->getFromRequest('category'),
+				$this->getFromRequest('id'))) {
             throw new Exception('deny');
-        }
+        }       
 
-        $paramsForListLeft = array();
-        if (!empty($this->request['bookmark'])) {
-            $paramsForListLeft ['bookmark'] = $this->request['bookmark'];
-        }
-        if (!empty($this->request['tab'])) {
-            $paramsForListLeft ['tab'] = $this->getFromRequest('tab');
-        }
-
-		// set label List (repair order)
-        if ($this->getFromRequest('category') == 'facility' || $this->getFromRequest('category') == 'department') {
+		//TODO: create getAllLabels();
+		// set label List
+        if ($this->getFromRequest('category') == 'facility'
+				|| $this->getFromRequest('category') == 'department') {
+			
             $companyLevelLabel = new CompanyLevelLabel($this->db);
             $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
             $companyLevelLabelPaintShopProduct = $companyLevelLabel->getPaintShopProductLabel();
@@ -1013,22 +1011,41 @@ class Controller {
             $companyLevelLabelDetailingShopProduct = $companyLevelLabel->getDetailingShopProductLabel();
             $companyLevelLabelFuelAndOilsProduct = $companyLevelLabel->getFuelAndOilProductLabel();
             $companyLevelLabelPowderCoating = $companyLevelLabel->getPowderCoating();
-            $facility = new Facility($this->db);
+
+			
+            //$facility = new Facility($this->db);
             if ($this->getFromRequest('category') == 'facility') { //repair order label on facility level
-                $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'));
+                $facility = new VWM\Hierarchy\Facility($this->db,$this->getFromRequest('id'));
             } else {
-                $department = new Department($this->db);
-                $departmentDetails = $department->getDepartmentDetails($this->getFromRequest('id'));
-                $facilityDetails = $facility->getFacilityDetails($departmentDetails["facility_id"]);
+                $department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
+				$facility = $department->getFacility();
             }
-            $companyId = $facilityDetails["company_id"]; 
-            $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
-            $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
-            $paintShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPaintShopProduct->label_id)->getLabelText();
-            $bodyShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelBodyShopProduct->label_id)->getLabelText();
-            $detailingShopProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelDetailingShopProduct->label_id)->getLabelText();
-            $fuelAndOilsProductLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelFuelAndOilsProduct->label_id)->getLabelText();
-            $powderCoatingLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelPowderCoating->label_id)->getLabelText();
+            
+            $company = $facility->getCompany();
+            $repairOrderLabel = $company->getIndustryType()->getLabelManager()
+					->getLabel($companyLevelLabelRepairOrder->label_id)
+					->getLabelText();
+            $paintShopProductLabel = $company->getIndustryType()
+					->getLabelManager()
+					->getLabel($companyLevelLabelPaintShopProduct->label_id)
+					->getLabelText();
+            $bodyShopProductLabel = $company->getIndustryType()
+					->getLabelManager()
+					->getLabel($companyLevelLabelBodyShopProduct->label_id)
+					->getLabelText();
+            $detailingShopProductLabel = $company->getIndustryType()
+					->getLabelManager()
+					->getLabel($companyLevelLabelDetailingShopProduct->label_id)
+					->getLabelText();
+            $fuelAndOilsProductLabel = $company->getIndustryType()
+					->getLabelManager()
+					->getLabel($companyLevelLabelFuelAndOilsProduct->label_id)
+					->getLabelText();
+            $powderCoatingLabel = $company->getIndustryType()
+					->getLabelManager()
+					->getLabel($companyLevelLabelPowderCoating->label_id)
+					->getLabelText();
+			
             $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
             $this->smarty->assign('paintShopProductLabel', $paintShopProductLabel);
             $this->smarty->assign('bodyShopProductLabel', $bodyShopProductLabel);
