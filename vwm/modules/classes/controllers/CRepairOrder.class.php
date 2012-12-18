@@ -140,7 +140,7 @@ class CRepairOrder extends Controller {
         if ($repairOrderList) {
             for ($i = 0; $i < count($repairOrderList); $i++) {
 				if($this->getFromRequest('category') == 'department') {
-					$url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&departmentID=" . $department->getDepartmentId();				                	
+					$url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&departmentID=" . $department->getDepartmentId();					
 				} else {
 					$url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				                	
 				}
@@ -215,12 +215,11 @@ class CRepairOrder extends Controller {
 		if($category == 'department' && !$departmentDetails['share_wo']) {
 			$woDepartments_id = $departmentDetails['department_id'];
 			$departmentIds = array($woDepartments_id);
-		} else {
-			$departmentIds = $facility->getDepartmentList($facilityDetails['facility_id']);
+		} else {			
+			$departmentIds = $facility->getDepartmentList($facilityDetails['facility_id']);			
 			$woDepartments_id = implode(",", $departmentIds);
-
 		}
-
+		
         $this->smarty->assign('data', $workOrder);
         $post = $this->getFromPost();
 
@@ -239,7 +238,7 @@ class CRepairOrder extends Controller {
 			$violationList = $workOrder->validate(); 
 			if(count($violationList) == 0 && $woDepartments_id != '') {
 				$this->db->beginTransaction();
-
+				
 				$woID = $workOrder->save();                 
                 if (!empty($departmentIds)) {
                     // add empty mix for each facility department
@@ -280,6 +279,8 @@ class CRepairOrder extends Controller {
                 }
 			}																	
 		}
+		
+        $this->smarty->assign('woDepartments', $woDepartments_id);
 
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     

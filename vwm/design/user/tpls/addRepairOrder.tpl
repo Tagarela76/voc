@@ -147,7 +147,7 @@
 					&nbsp;
 				</td>
                 <td class="border_users_r">
-					<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$request.parent_id|escape}" />
+					<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$woDepartments|escape}" />
 					&nbsp;
                 </td>
 			</tr>
