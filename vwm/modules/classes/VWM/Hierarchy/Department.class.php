@@ -289,18 +289,22 @@ class Department extends Model {
 		}
 	}
 
-	public function getMixList(Pagination $pagination = null) {
-		$query = "SELECT * FROM " . TB_USAGE . " m " .
+	public function getMixList(\Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
+		$woDescriptionField = 'woDescription';
+		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField}, wo.vin  " .
+				"FROM " . TB_USAGE . " m " .
+				" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
 				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
-				"WHERE m.department_id =" . $this->db->sqltext($this->department_id) . " " .
-				"OR j.department_id=" . $this->db->sqltext($this->department_id);
+				"WHERE (m.department_id ={$this->db->sqltext($this->getDepartmentId())} " .
+				"OR j.department_id={$this->db->sqltext($this->getDepartmentId())}) " .
+				" AND {$filter} ";
 
 		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= " AND ( ";
 			foreach ($this->searchCriteria as $mixCriteria) {
 				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
-						"OR description LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR m.description LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
 						"OR customer_name LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
 						"OR vin LIKE ('%" . $this->db->sqltext($mixCriteria) . "%')";
 			}
@@ -308,7 +312,9 @@ class Department extends Model {
 			$query .= ") ";
 		}
 
-		$query.= " GROUP BY mix_id";
+		$query.= " GROUP BY m.mix_id";
+
+		$query .= $sort;
 
 		if (isset($pagination)) {
 			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
@@ -317,7 +323,7 @@ class Department extends Model {
 		if (!$this->db->query($query)) {
 			throw new Exception('SQL query failed.');
 		}
-
+		
 		$rows = $this->db->fetch_all_array();
 		
 		$mixes = array();

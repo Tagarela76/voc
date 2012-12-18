@@ -435,10 +435,12 @@ class CMix extends Controller {
 			$filterStr = $this->filterList('mix', $dateFormat);
 
 			$mixManager = new MixManager($this->db, $this->getFromRequest('id'));
+			$departmentNew = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));			
 
 			//	set search criteria
 			if (!is_null($this->getFromRequest('q'))) {
 				$mixManager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+				$departmentNew->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			}
 
@@ -474,7 +476,8 @@ class CMix extends Controller {
 				$mixValidator = new MixValidatorOptimized();
 				$mixHover = new Hover();
 
-				$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
+				//$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
+				$mixList = $departmentNew->getMixList($pagination);
 				if (!$mixList) {
 					$mixList = array();
 				}
