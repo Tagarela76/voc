@@ -196,7 +196,7 @@ class Department extends Model {
 		
 		$repairOrders = array();
 		
-		$sql =  "SELECT * FROM " . TB_WORK_ORDER . " w ".
+		$sql =  "SELECT w.* FROM " . TB_WORK_ORDER . " w ".
 				"JOIN ". TB_WO2DEPARTMENT." dw ".
 				"ON w.id=dw.wo_id ".
 				"WHERE department_id=".$this->db->sqltext($this->department_id);
