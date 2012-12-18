@@ -9,6 +9,7 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 class DepartmentTest extends DbTestCase {
 
 	public $fixtures = array(
+		TB_UNITTYPE,
 		Company::TABLE_NAME,
 		Facility::TABLE_NAME,
 		Department::TABLE_NAME,
@@ -105,6 +106,15 @@ class DepartmentTest extends DbTestCase {
 		
 		$departmentList = $department->getRepairOrdersList();
 		$this->assertEquals(count($departmentList), 1);
+	}
+
+	public function testGetFacility() {
+		$departmentId = 1;
+		$department = new Department($this->db, $departmentId);
+		$facilityActual = $department->getFacility();
+		$facilityExpected = new Facility($this->db, 1);
+
+		$this->assertEquals($facilityExpected, $facilityActual);
 	}
 
 }

@@ -51,6 +51,11 @@ class Facility extends Model {
 
 	protected $last_update_time;
 
+	/**
+	 * @var Company
+	 */
+	protected $company;
+
 	const TABLE_NAME = 'facility';
 	
 	public function __construct(\db $db, $id = null) {
@@ -356,6 +361,24 @@ class Facility extends Model {
 		$this->initByArray($row);
 		
 		return true;
+	}
+
+
+	/**
+	 * Get facility's company
+	 * @return \VWM\Hierarchy\Company
+	 * @throws \Exception
+	 */
+	public function getCompany() {
+		if($this->company === null) {
+			if(!$this->getCompanyId()) {
+				throw new \Exception('Company Id is not set');
+			}
+
+			$this->company = new Company($this->db, $this->getCompanyId());
+		}
+
+		return $this->company;
 	}
 }
 

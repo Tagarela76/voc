@@ -219,7 +219,7 @@ class Company extends Model {
 		if($id !== null) {
 			$this->setCompanyId($id);
 			if(!$this->_load()) {
-				throw new Exception('404');
+				throw new \Exception('404');
 			}
 		}
 	}

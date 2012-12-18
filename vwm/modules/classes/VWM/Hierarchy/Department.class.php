@@ -18,6 +18,13 @@ class Department extends Model {
 	protected $creator_id;
 	protected $voc_limit;
 	protected $voc_annual_limit;
+
+	/**
+	 *
+	 * @var Facility
+	 */
+	protected $facility;
+
 	public $searchCriteria = array();
 
 	const TABLE_NAME = 'department';
@@ -220,6 +227,23 @@ class Department extends Model {
 		return $repairOrders;
 	}
 
+
+	/**
+	 * Get department's facility
+	 * @return \VWM\Hierarchy\Facility
+	 * @throws \Exception
+	 */
+	public function getFacility() {
+		if($this->facility === null) {
+			if(!$this->getFacilityId()) {
+				throw new \Exception('Facility Id is not set');
+			}
+				
+			$this->facility = new Facility($this->db, $this->getFacilityId());	
+		}	
+
+		return $this->facility;
+	}
 }
 
 ?>

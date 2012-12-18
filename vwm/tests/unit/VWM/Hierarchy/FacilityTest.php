@@ -7,7 +7,8 @@ use VWM\Framework\Test\DbTestCase;
 class FacilityTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		TB_FACILITY
+		Company::TABLE_NAME,
+		Facility::TABLE_NAME,
 	);
 	
 	public function testSave() {
@@ -76,6 +77,12 @@ class FacilityTest extends DbTestCase {
 		$this->db->query($sql);
 		$this->assertEquals(1, $this->db->num_rows());
 	
+	}
+
+
+	public function testGetCompany() {
+		$facility = new Facility($this->db, 1);
+		$this->assertEquals($facility->getCompany(), new Company($this->db, 1));
 	}
 
 }
