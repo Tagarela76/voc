@@ -13,6 +13,8 @@ class DepartmentTest extends DbTestCase {
 		Facility::TABLE_NAME,
 		Department::TABLE_NAME,
 		QtyProductGauge::TABLE_NAME,
+		TB_WORK_ORDER,
+		TB_WO2DEPARTMENT,
 	);
 
 	public function testInitByArray() {
@@ -76,6 +78,33 @@ class DepartmentTest extends DbTestCase {
 		}
 		
 		
+	}
+	
+	public function testCountRepairOrderInDepartment(){
+		$departmentId = 1;
+		$sql = "SELECT * repairOrderCount FROM " . TB_WORK_ORDER . " w ".
+				"JOIN ". TB_WO2DEPARTMENT." dw ".
+				"ON w.id=dw.wo_id ".
+				"WHERE department_id=1";
+		$this->db->query($sql);
+		$rowsCount = $this->db->num_rows();
+		$department = new Department($this->db, 1);
+		$countRepairOrderInDepartment = $department->countRepairOrderInDepartment();
+		$this->assertEquals($countRepairOrderInDepartment, $rowsCount);
+	}
+	
+	public function testGetRepairOrderInDepartment(){
+		$departmentId = 1;
+		$sql = "SELECT * repairOrderCount FROM " . TB_WORK_ORDER . " w ".
+				"JOIN ". TB_WO2DEPARTMENT." dw ".
+				"ON w.id=dw.wo_id ".
+				"WHERE department_id=1";
+		$this->db->query($sql);
+		$departmentRepairOrder = $this->db->fetch_all_array();
+		$department = new Department($this->db, 1);
+		
+		$departmentList = $department->getRepairOrdersList();
+		$this->assertEquals(count($departmentList), 1);
 	}
 
 }
