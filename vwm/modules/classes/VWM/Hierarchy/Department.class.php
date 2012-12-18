@@ -270,7 +270,6 @@ class Department extends Model {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 				
-				
 		$query = "UPDATE " . self::TABLE_NAME . " SET " .
 				"name='" . $this->db->sqltext($this->getName()) . "', " .
 				"facility_id=" . $this->db->sqltext($this->getFacilityId()) . ", " .
@@ -280,6 +279,8 @@ class Department extends Model {
 				"last_update_time=" . $lastUpdateTime . ", " .
 				"share_wo=" . $this->db->sqltext($this->getShareWo()) .
 				" WHERE department_id=" . $this->db->sqltext($this->getDepartmentId());
+		
+		
 		$response = $this->db->exec($query);
 		if ($response) {
 			return $this->department_id;
@@ -298,12 +299,32 @@ class Department extends Model {
 		}
 	}
 	
-	public function getMixList(){
+	public function getMixList(Pagination $pagination = null){
 		$query = "SELECT * FROM ". TB_USAGE ." m ".
 				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
-				"WHERE m.department_id =".$this->department_id." ".
-				"OR j.department_id=".$this->department_id." ".
-				"GROUP BY mix_id";
+				"WHERE m.department_id =".$this->db->sqltext($this->department_id)." ".
+				"OR j.department_id=".$this->db->sqltext($this->department_id);
+				
+		
+		if (isset($pagination)) {
+			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}  
+		
+		
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= " AND ( ";
+			foreach ($this->searchCriteria as $mixCriteria) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($mixCriteria) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
+		
+		 $query.= " GROUP BY mix_id";
 		
 		if (!$this->db->query($query)) {
 			throw new Exception('SQL query failed.');
