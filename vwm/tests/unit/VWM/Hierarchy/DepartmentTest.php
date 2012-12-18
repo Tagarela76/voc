@@ -32,7 +32,7 @@ class DepartmentTest extends DbTestCase {
 			$this->assertEquals($row['department_id'], $department->getDepartmentId());
 			$this->assertEquals($row['name'], $department->getName());
 			$this->assertEquals($row['facility_id'], $department->getFacilityId());
-			$this->assertEquals($row['creator_id'], $department->getCreatorId());
+			$this->assertEquals($row['creater_id'], $department->getCreaterId());
 			$this->assertEquals($row['voc_limit'], $department->getVocLimit());
 			$this->assertEquals($row['voc_annual_limit'], $department->getVocAnnualLimit());
 		}
@@ -82,13 +82,14 @@ class DepartmentTest extends DbTestCase {
 	
 	public function testCountRepairOrderInDepartment(){
 		$departmentId = 1;
-		$sql = "SELECT * repairOrderCount FROM " . TB_WORK_ORDER . " w ".
+		$sql = "SELECT * FROM " . TB_WORK_ORDER . " w ".
 				"JOIN ". TB_WO2DEPARTMENT." dw ".
 				"ON w.id=dw.wo_id ".
-				"WHERE department_id=1";
+				"WHERE dw.department_id=1";
 		$this->db->query($sql);
 		$rowsCount = $this->db->num_rows();
 		$department = new Department($this->db, 1);
+		
 		$countRepairOrderInDepartment = $department->countRepairOrderInDepartment();
 		$this->assertEquals($countRepairOrderInDepartment, $rowsCount);
 	}
@@ -98,15 +99,46 @@ class DepartmentTest extends DbTestCase {
 		$sql = "SELECT * repairOrderCount FROM " . TB_WORK_ORDER . " w ".
 				"JOIN ". TB_WO2DEPARTMENT." dw ".
 				"ON w.id=dw.wo_id ".
-				"WHERE department_id=1";
+				"WHERE dw.department_id=1";
 		$this->db->query($sql);
 		$departmentRepairOrder = $this->db->fetch_all_array();
 		$department = new Department($this->db, 1);
 		
 		$departmentList = $department->getRepairOrdersList();
 		$this->assertEquals(count($departmentList), 1);
+		
 	}
 
+	public function testSave(){
+		$department = new Department($this->db);
+		$department->setFacilityId('1');
+		$department->setName('Test Name');
+		$department->setShareWo('1');
+		$department->setVocLimit('100.00');
+		$department->setVocAnnualLimit('100.00');
+		$department->setCreaterId('1');
+		
+		
+		$expectedId = 4;
+		$result = $department->save();
+		$this->assertEquals($expectedId, $result);
+		
+		$sql = "SELECT * FROM ".TB_DEPARTMENT." WHERE department_id = {$expectedId}";
+		$this->db->query($sql);
+		$row = $this->db->fetch_array(0);
+		$departmentActual = new Department($this->db);
+		$departmentActual->initByArray($row);
+		$this->assertEquals($department, $departmentActual);
+		
+		//check update
+		/*$department = new Department($this->db);
+		$department->setFacilityId(1);
+		$department->setName('Test Name');
+		$department->setShareWo(1);
+		$department->setVocLimit(100);
+		$department->setVocAnnualLimit(100);
+		$department->setCreatorId(1);*/
+	}
 }
 
 ?>

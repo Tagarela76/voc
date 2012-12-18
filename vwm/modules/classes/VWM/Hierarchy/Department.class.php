@@ -15,10 +15,12 @@ class Department extends Model {
 	protected $department_id;
 	protected $name;
 	protected $facility_id;
-	protected $creator_id;
+	protected $creater_id;
 	protected $voc_limit;
 	protected $voc_annual_limit;
+	protected $share_wo;
 	public $searchCriteria = array();
+	
 
 	const TABLE_NAME = 'department';
 
@@ -46,6 +48,7 @@ class Department extends Model {
 		
 	}
 
+	
 	public function getDepartmentId() {
 		return $this->department_id;
 	}
@@ -70,12 +73,12 @@ class Department extends Model {
 		$this->facility_id = $facility_id;
 	}
 
-	public function getCreatorId() {
-		return $this->creator_id;
+	public function getCreaterId() {
+		return $this->creater_id;
 	}
 
-	public function setCreatorId($creator_id) {
-		$this->creator_id = $creator_id;
+	public function setCreaterId($creator_id) {
+		$this->creater_id = $creator_id;
 	}
 
 	public function getVocLimit() {
@@ -93,6 +96,15 @@ class Department extends Model {
 	public function setVocAnnualLimit($voc_annual_limit) {
 		$this->voc_annual_limit = $voc_annual_limit;
 	}
+	
+	public function getShareWo() {
+		return $this->share_wo;
+	}
+
+	public function setShareWo($shareWo) {
+		$this->share_wo = $shareWo;
+	}
+	
 	
 	public function getGauge($gaugeType){
 		switch ($gaugeType){
@@ -196,11 +208,12 @@ class Department extends Model {
 			$sql .= ") ";
 		}
 
-		$sql .= " ORDER BY id DESC";
+		$sql .= " ORDER BY dw.id DESC";
 
         if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}        
+		
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
 		
@@ -209,7 +222,7 @@ class Department extends Model {
 		}
 		
 		foreach ($rows as $row) {
-			$repairOrder = new RepairOrder($this->db);
+			$repairOrder = new \RepairOrder($this->db);
 			foreach ($row as $key => $value) {
 				if (property_exists($repairOrder, $key)) {
 					$repairOrder->$key = $value;
@@ -218,6 +231,65 @@ class Department extends Model {
 			$repairOrders[] = $repairOrder;
 		}
 		return $repairOrders;
+	}
+	
+	protected function _insert() {
+		
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: "NULL";
+				
+		$query = "INSERT INTO ".self::TABLE_NAME." (" .
+				"name, facility_id, creater_id, voc_limit, voc_annual_limit, share_wo, last_update_time " .
+				") VALUES ( ".
+				"'{$this->db->sqltext($this->getName())}', " .
+				"{$this->db->sqltext($this->getFacilityId())}, " .
+				"'{$this->db->sqltext($this->getCreaterId())}', " .
+				"'{$this->db->sqltext($this->getVocLimit())}', " .
+				"'{$this->db->sqltext($this->getVocAnnualLimit())}', " .
+				"'{$this->db->sqltext($this->getShareWo())}', " .
+				"{$lastUpdateTime} " .
+				")";
+		$response = $this->db->exec($query);
+		if ($response) {
+			$this->setDepartmentId($this->db->getLastInsertedID());
+			return $this->getDepartmentId();
+		} else {
+			return false;
+		}
+	}
+
+	protected function _update() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'"
+				: "NULL";
+				
+				
+		$query = "UPDATE " . self::TABLE_NAME . " SET " .
+				"name='" . $this->db->sqltext($this->getName()) . "', " .
+				"facility_id=" . $this->db->sqltext($this->getFacilityId()) . ", " .
+				"creater_id=" . $this->db->sqltext($this->getCreaterId()) . ", " .
+				"voc_limit=" . $this->db->sqltext($this->getVocLimit()) . ", " .
+				"voc_annual_limit=" . $this->db->sqltext($this->getVocAnnualLimit()) . ", " .
+				"last_update_time=" . $lastUpdateTime . ", " .
+				"share_wo=" . $this->db->sqltext($this->getShareWo()) .
+				" WHERE department_id=" . $this->db->sqltext($this->getDepartmentId());
+		$response = $this->db->exec($query);
+		if ($response) {
+			return $this->department_id;
+		} else {
+			return false;
+		}
+	}
+	
+	public function save() {		
+		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+		
+		if($this->department_id) {
+			return $this->_update();
+		} else {
+			return $this->_insert();
+		}
 	}
 
 }
