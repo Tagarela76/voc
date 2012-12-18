@@ -297,6 +297,21 @@ class Department extends Model {
 			return $this->_insert();
 		}
 	}
+	
+	public function getMixList(){
+		$query = "SELECT * FROM ". TB_USAGE ." m ".
+				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
+				"WHERE m.department_id =".$this->department_id." ".
+				"OR j.department_id=".$this->department_id." ".
+				"GROUP BY mix_id";
+		
+		if (!$this->db->query($query)) {
+			throw new Exception('SQL query failed.');
+		}
+		
+		$rows = $this->db->fetch_all_array();
+		return $rows;
+	}
 
 
 	/**
