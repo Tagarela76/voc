@@ -322,7 +322,7 @@ class Department extends Model {
 		
 		$mixes = array();
 		foreach($rows as $row) {
-			$mix = new MixOptimized($this->db);			
+			$mix = new \MixOptimized($this->db);			
 			foreach ($row as $key => $value) {				
 				if (property_exists($mix, $key)) {
 					$mix->$key = $value;
