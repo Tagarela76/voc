@@ -153,8 +153,15 @@ class DepartmentTest extends DbTestCase {
 		$this->assertEquals($newDepartment->getCreaterId(), 2);
 		
 	}
-	
+	public function testGetCountMix(){
+		$department = new Department($this->db, 1);
+		$mixCount = $department->getCountMix();
+		$this->assertEquals($mixCount, 0);
+	}
 	public function testGetMixList(){
+		/*$pagination = new Pagination(1);
+		$pagination->url = "#";*/
+		
 		$departmentId =1;
 		$query = "SELECT * FROM ". TB_USAGE ." m ".
 				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".

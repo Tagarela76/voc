@@ -9,7 +9,6 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
 
-
 class Department extends Model {
 
 	protected $department_id;
@@ -27,23 +26,23 @@ class Department extends Model {
 	protected $facility;
 
 	public $searchCriteria = array();
-	
+
 	const TABLE_NAME = 'department';
 
-	public function __construct(\db $db, $departmentId=null) {
+	public function __construct(\db $db, $departmentId = null) {
 		$this->db = $db;
 		if (isset($departmentId)) {
 			$this->setDepartmentId($departmentId);
 			$this->load();
 		}
 	}
-	
-	public function load(){
+
+	public function load() {
 		if (is_null($this->getDepartmentId())) {
 			return false;
 		}
-		
-		$sql = "SELECT * FROM ".self::TABLE_NAME." WHERE department_id =".
+
+		$sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE department_id =" .
 				$this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		if ($this->db->num_rows() == 0) {
@@ -51,10 +50,8 @@ class Department extends Model {
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
-		
 	}
 
-	
 	public function getDepartmentId() {
 		return $this->department_id;
 	}
@@ -102,7 +99,7 @@ class Department extends Model {
 	public function setVocAnnualLimit($voc_annual_limit) {
 		$this->voc_annual_limit = $voc_annual_limit;
 	}
-	
+
 	public function getShareWo() {
 		return $this->share_wo;
 	}
@@ -110,10 +107,9 @@ class Department extends Model {
 	public function setShareWo($shareWo) {
 		$this->share_wo = $shareWo;
 	}
-	
-	
-	public function getGauge($gaugeType){
-		switch ($gaugeType){
+
+	public function getGauge($gaugeType) {
+		switch ($gaugeType) {
 			case Gauge::QUANTITY_GAUGE:
 				$gauge = new QtyProductGauge($this->db);
 				break;
@@ -125,19 +121,18 @@ class Department extends Model {
 			default:
 				break;
 		}
-		
+
 		$gauge->setDepartmentId($this->department_id);
 		$gauge->setFacilityId($this->facility_id);
 		$gauge->load();
 		return $gauge;
-		
 	}
 
 	public function getAllAvailableGauges() {
 		$sql = "SELECT gauge_type FROM " . QtyProductGauge::TABLE_NAME . " WHERE `limit`<>0 AND department_id=" . $this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
-		
+
 		$gauges = array();
 		foreach ($rows as $row) {
 			switch ($row["gauge_type"]) {
@@ -159,19 +154,18 @@ class Department extends Model {
 			$gauge->setDepartmentId($this->department_id);
 			$gauge->setFacilityId($this->facility_id);
 			$gauge->load();
-			
+
 			$gauges[] = $gauge;
 		}
 		return $gauges;
 	}
-	
-	
+
 	public function countRepairOrderInDepartment() {
 
-		$sql = "SELECT count(*) repairOrderCount FROM " . TB_WORK_ORDER . " w ".
-				"JOIN ". TB_WO2DEPARTMENT." dw ".
-				"ON w.id=dw.wo_id ".
-				"WHERE department_id=".$this->db->sqltext($this->department_id);
+		$sql = "SELECT count(*) repairOrderCount FROM " . TB_WORK_ORDER . " w " .
+				"JOIN " . TB_WO2DEPARTMENT . " dw " .
+				"ON w.id=dw.wo_id " .
+				"WHERE department_id=" . $this->db->sqltext($this->department_id);
 		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$sql .= " AND ( ";
@@ -191,9 +185,9 @@ class Department extends Model {
 			return false;
 		}
 	}
-	
+
 	public function getRepairOrdersList(Pagination $pagination = null) {
-		
+
 		$repairOrders = array();
 		
 		$sql =  "SELECT w.* FROM " . TB_WORK_ORDER . " w ".
@@ -216,17 +210,17 @@ class Department extends Model {
 
 		$sql .= " ORDER BY dw.id DESC";
 
-        if (isset($pagination)) {
+		if (isset($pagination)) {
 			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}        
-		
+		}
+
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
-		
-		if($this->db->num_rows() == 0) {
+
+		if ($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		foreach ($rows as $row) {
 			$repairOrder = new \RepairOrder($this->db);
 			foreach ($row as $key => $value) {
@@ -238,16 +232,14 @@ class Department extends Model {
 		}
 		return $repairOrders;
 	}
-	
+
 	protected function _insert() {
-		
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'"
-				: "NULL";
-				
-		$query = "INSERT INTO ".self::TABLE_NAME." (" .
+
+		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
+
+		$query = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"name, facility_id, creater_id, voc_limit, voc_annual_limit, share_wo, last_update_time " .
-				") VALUES ( ".
+				") VALUES ( " .
 				"'{$this->db->sqltext($this->getName())}', " .
 				"{$this->db->sqltext($this->getFacilityId())}, " .
 				"'{$this->db->sqltext($this->getCreaterId())}', " .
@@ -266,10 +258,8 @@ class Department extends Model {
 	}
 
 	protected function _update() {
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'"
-				: "NULL";
-				
+		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
+
 		$query = "UPDATE " . self::TABLE_NAME . " SET " .
 				"name='" . $this->db->sqltext($this->getName()) . "', " .
 				"facility_id=" . $this->db->sqltext($this->getFacilityId()) . ", " .
@@ -279,8 +269,8 @@ class Department extends Model {
 				"last_update_time=" . $lastUpdateTime . ", " .
 				"share_wo=" . $this->db->sqltext($this->getShareWo()) .
 				" WHERE department_id=" . $this->db->sqltext($this->getDepartmentId());
-		
-		
+
+
 		$response = $this->db->exec($query);
 		if ($response) {
 			return $this->department_id;
@@ -288,30 +278,24 @@ class Department extends Model {
 			return false;
 		}
 	}
-	
-	public function save() {		
+
+	public function save() {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
-		if($this->department_id) {
+
+		if ($this->department_id) {
 			return $this->_update();
 		} else {
 			return $this->_insert();
 		}
 	}
-	
-	public function getMixList(Pagination $pagination = null){
-		$query = "SELECT * FROM ". TB_USAGE ." m ".
-				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
-				"WHERE m.department_id =".$this->db->sqltext($this->department_id)." ".
-				"OR j.department_id=".$this->db->sqltext($this->department_id);
-				
-		
-		if (isset($pagination)) {
-			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}  
-		
-		
-		if(count($this->searchCriteria) > 0) {
+
+	public function getMixList(Pagination $pagination = null) {
+		$query = "SELECT * FROM " . TB_USAGE . " m " .
+				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
+				"WHERE m.department_id =" . $this->db->sqltext($this->department_id) . " " .
+				"OR j.department_id=" . $this->db->sqltext($this->department_id);
+
+		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= " AND ( ";
 			foreach ($this->searchCriteria as $mixCriteria) {
@@ -323,16 +307,21 @@ class Department extends Model {
 			$query .= implode(' OR ', $searchSql);
 			$query .= ") ";
 		}
-		
-		 $query.= " GROUP BY mix_id";
-		
+
+		$query.= " GROUP BY mix_id";
+
+		if (isset($pagination)) {
+			$query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}
+
 		if (!$this->db->query($query)) {
 			throw new Exception('SQL query failed.');
 		}
-		
+
 		$rows = $this->db->fetch_all_array();
 		return $rows;
 	}
+
 
 
 	/**
@@ -350,6 +339,37 @@ class Department extends Model {
 		}	
 
 		return $this->facility;
+	}
+
+	public function getCountMix() {
+		$query = "SELECT count(*) mixCount FROM " . TB_USAGE . " m " .
+				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
+				"WHERE m.department_id =" . $this->db->sqltext($this->department_id) . " " .
+				"OR j.department_id=" . $this->db->sqltext($this->department_id);
+
+		if (count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$query .= " AND ( ";
+			foreach ($this->searchCriteria as $mixCriteria) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($mixCriteria) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($mixCriteria) . "%')";
+			}
+			$query .= implode(' OR ', $searchSql);
+			$query .= ") ";
+		}
+
+
+		if (!$this->db->query($query)) {
+			throw new Exception('SQL query failed.');
+		}
+
+		if ($this->db->num_rows() > 0) {
+			return (int) $this->db->fetch(0)->mixCount;
+		} else {
+			return false;
+		}
 	}
 }
 
