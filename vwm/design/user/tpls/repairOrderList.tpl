@@ -55,28 +55,28 @@
                 <input type="checkbox" value="{$repairOrder->id}" name="id[]">
             </td>
             <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a href="{$repairOrder->url}">
 					<div style="width:100%;">
 						{$repairOrder->number}
 					</div>
 				</a>
             </td>
             <td class="border_users_b border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a href="{$repairOrder->url}">
 					<div style="width:100%;">
 						{$repairOrder->description|escape}
 					</div>
 				</a>
             </td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a href="{$repairOrder->url}">
 					<div style="width:100%;">
 						{$repairOrder->customer_name|escape}
 					</div>
 				</a>
 			</td>
 			<td style="width:250px;" class="border_users_b border_users_l border_users_l">
-				<a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+				<a href="{$repairOrder->url}">
 					<div style="width:100%;">
 						{$repairOrder->status|escape}
 					</div>
@@ -84,7 +84,7 @@
 			</td>
             {if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
                 <td style="width:250px;" class="border_users_b border_users_l border_users_r">
-                    <a {if $permissions.viewItem}href="{$repairOrder->url}"{/if}>
+                    <a href="{$repairOrder->url}">
                         <div style="width:100%;">
                             {$repairOrder->vin|escape}
                         </div>

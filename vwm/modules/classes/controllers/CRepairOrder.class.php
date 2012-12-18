@@ -139,8 +139,12 @@ class CRepairOrder extends Controller {
         
         if ($repairOrderList) {
             for ($i = 0; $i < count($repairOrderList); $i++) {
-                $url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				
-                $repairOrderList[$i]->url = $url;
+				if($this->getFromRequest('category') == 'department') {
+					$url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&departmentID=" . $department->getDepartmentId();				                	
+				} else {
+					$url = "?action=viewDetails&category=repairOrder&id=" . $repairOrderList[$i]->id . "&facilityID=" . $facilityDetails['facility_id'];				                	
+				}
+				$repairOrderList[$i]->url = $url;
             }
         }
 		

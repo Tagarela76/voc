@@ -1274,7 +1274,7 @@ class Controller {
     }
 
     protected function setPermissionsNew($category) {
-
+		
         switch ($category) {
             case "root":
                 $permissions['viewItem'] = $this->user->isHaveAccessTo('view', 'company') ? true : false;
