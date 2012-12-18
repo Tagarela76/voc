@@ -232,6 +232,18 @@ class CDepartment extends Controller {
 		$this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
 		$this->setPermissionsNew('viewFacility');
 
+		$department = new VWM\Hierarchy\Department($this->db);
+		$department->setFacilityId($this->getFromRequest("facilityID"));
+		$this->smarty->assign('department', $department);
+
+		$woLabel = $department->getFacility()
+				->getCompany()
+				->getIndustryType()
+				->getLabelManager()
+				->getLabel(VWM\Label\CompanyLevelLabel::LABEL_ID_REPAIR_ORDER)
+				->getLabelText();
+		$this->smarty->assign('woLabel',$woLabel);
+
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
@@ -251,7 +263,13 @@ class CDepartment extends Controller {
 		$department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
 		$this->smarty->assign('department', $department);
 
-		$company = new \VWM\Hierarchy\Company($this->db, $department->getFacilityId());
+		$woLabel = $department->getFacility()
+				->getCompany()
+				->getIndustryType()
+				->getLabelManager()
+				->getLabel(VWM\Label\CompanyLevelLabel::LABEL_ID_REPAIR_ORDER)
+				->getLabelText();
+		$this->smarty->assign('woLabel',$woLabel);
 
 		$this->setNavigationUpNew($this->category, $department->getDepartmentId());
 		$this->setListCategoriesLeftNew($this->category, $department->getDepartmentId());

@@ -51,7 +51,11 @@ class Company extends Model {
     public function getCompanyId() {
         return $this->company_id;
     }
-    
+
+	/**	 
+	 * @return \IndustryType
+	 * @throws \Exception
+	 */
     public function getIndustryType() {
         if(!$this->getCompanyId()) {
 			throw new \Exception('Company ID should be set before calling this method');

@@ -68,15 +68,12 @@
 
 			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
-					Share Work Orders:
+					Share {$woLabel}:
 				</td>
 				<td>
 					<div align="left">
-						<input id='departmentAnnualLimit' type='text' name='voc_annual_limit' value='{$department->getVocAnnualLimit()|escape}' maxlength="14">
-					</div>
-			     				{*ERROR*}
-								<div id="error_voc_annual_limit" class="error_img" style="display:none;"><span class="error_text">Error!</span></div>
-							    {*/ERROR*}
+						<input id='share_wo' type='checkbox' name='share_wo'/>
+					</div>			     				
 				</td>
 			</tr>
 						
