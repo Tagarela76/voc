@@ -330,7 +330,7 @@ class Department extends Model {
 			}
 			
 			if($mix->wo_id !== null) {
-				$repairOrder = new RepairOrder($this->db);
+				$repairOrder = new \RepairOrder($this->db);
 				//	overrite mix description just because both mix and work order
 				//	have field description
 				$row['description'] = $row['woDescription'];				
