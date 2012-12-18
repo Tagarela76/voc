@@ -319,7 +319,28 @@ class Department extends Model {
 		}
 
 		$rows = $this->db->fetch_all_array();
-		return $rows;
+		
+		$mixes = array();
+		foreach($rows as $row) {
+			$mix = new MixOptimized($this->db);			
+			foreach ($row as $key => $value) {				
+				if (property_exists($mix, $key)) {
+					$mix->$key = $value;
+				}
+			}
+			
+			if($mix->wo_id !== null) {
+				$repairOrder = new RepairOrder($this->db);
+				//	overrite mix description just because both mix and work order
+				//	have field description
+				$row['description'] = $row['woDescription'];				
+				$repairOrder->initByArray($row);
+				$mix->setRepairOrder($repairOrder);
+			}
+			$mixes[] = $mix;
+		}
+
+		return $mixes;
 	}
 
 
