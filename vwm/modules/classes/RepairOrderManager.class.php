@@ -51,6 +51,7 @@ class RepairOrderManager {
 			return $departmetIds;
 		}
 	}
+	
 }
 
 ?>

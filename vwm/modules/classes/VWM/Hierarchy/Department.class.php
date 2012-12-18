@@ -18,6 +18,7 @@ class Department extends Model {
 	protected $creator_id;
 	protected $voc_limit;
 	protected $voc_annual_limit;
+	public $searchCriteria = array();
 
 	const TABLE_NAME = 'department';
 
@@ -144,6 +145,79 @@ class Department extends Model {
 			$gauges[] = $gauge;
 		}
 		return $gauges;
+	}
+	
+	
+	public function countRepairOrderInDepartment() {
+
+		$sql = "SELECT count(*) repairOrderCount FROM " . TB_WORK_ORDER . " w ".
+				"JOIN ". TB_WO2DEPARTMENT." dw ".
+				"ON w.id=dw.wo_id ".
+				"WHERE department_id=".$this->db->sqltext($this->department_id);
+		if (count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$sql .= " AND ( ";
+			foreach ($this->searchCriteria as $repairOrder) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($repairOrder) . "%')";
+			}
+			$sql .= implode(' OR ', $searchSql);
+			$sql .= ") ";
+		}
+		$this->db->query($sql);
+		if ($this->db->num_rows() > 0) {
+			return (int) $this->db->fetch(0)->repairOrderCount;
+		} else {
+			return false;
+		}
+	}
+	
+	public function getRepairOrdersList(Pagination $pagination = null) {
+		
+		$repairOrders = array();
+		
+		$sql =  "SELECT * FROM " . TB_WORK_ORDER . " w ".
+				"JOIN ". TB_WO2DEPARTMENT." dw ".
+				"ON w.id=dw.wo_id ".
+				"WHERE department_id=".$this->db->sqltext($this->department_id);
+	
+		if(count($this->searchCriteria) > 0) {
+			$searchSql = array();
+			$sql .= " AND ( ";
+			foreach ($this->searchCriteria as $repairOrder) {
+				$searchSql[] = " number LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR description LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR customer_name LIKE ('%" . $this->db->sqltext($repairOrder) . "%') " .
+						"OR vin LIKE ('%" . $this->db->sqltext($repairOrder) . "%')";
+			}
+			$sql .= implode(' OR ', $searchSql);
+			$sql .= ") ";
+		}
+
+		$sql .= " ORDER BY id DESC";
+
+        if (isset($pagination)) {
+			$sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+		}        
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		
+		if($this->db->num_rows() == 0) {
+			return false;
+		}
+		
+		foreach ($rows as $row) {
+			$repairOrder = new RepairOrder($this->db);
+			foreach ($row as $key => $value) {
+				if (property_exists($repairOrder, $key)) {
+					$repairOrder->$key = $value;
+				}
+			}
+			$repairOrders[] = $repairOrder;
+		}
+		return $repairOrders;
 	}
 
 }

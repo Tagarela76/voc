@@ -1,10 +1,11 @@
 <?php
+
 use VWM\Framework\Test as Testing;
 
 class MixManagerTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_COMPANY, TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_USAGE
+		TB_COMPANY, TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_USAGE, TB_WO2DEPARTMENT
 	);
 
 	public function testCountMixes() {
@@ -15,7 +16,7 @@ class MixManagerTest extends Testing\DbTestCase {
 		$this->assertTrue($mixCount === false);
 
 		$mixManager->departmentID = 1;
-		$mixCount = $mixManager->countMixes();		
+		$mixCount = $mixManager->countMixes();
 		$this->assertEquals(4, $mixCount);
 
 		//	now let's test filter
@@ -33,8 +34,8 @@ class MixManagerTest extends Testing\DbTestCase {
 
 		$facilityId = 1;
 		$sql = "SELECT COUNT(*) cnt " .
-				"FROM ".TB_USAGE." m " .
-				"JOIN ".TB_DEPARTMENT." d ON m.department_id = d.department_id " .
+				"FROM " . TB_USAGE . " m " .
+				"JOIN " . TB_DEPARTMENT . " d ON m.department_id = d.department_id " .
 				"WHERE d.facility_id = {$facilityId}";
 		$this->db->query($sql);
 		$expectedCount = $this->db->fetch(0)->cnt;
@@ -75,20 +76,32 @@ class MixManagerTest extends Testing\DbTestCase {
 		$mixManager = new MixManager($this->db);
 		$mixList = $mixManager->getMixListInFacility(1);
 		$this->assertTrue(is_array($mixList));
-		$this->assertTrue(count($mixList) == 5);
+
+		$this->assertEquals(count($mixList), 6);
 		$this->assertTrue($mixList[3] instanceof MixOptimized);
-		
+
 		$this->assertEquals($mixList[3]->getRepairOrder()->customer_name, "joh smith");
 
 		//	test search criteria
 		$mixManager->searchCriteria[] = 'WO';
 		$mixList = $mixManager->getMixListInFacility(1);
-		$this->assertTrue(count($mixList) === 3);
-
+		$this->assertEquals(count($mixList), 4);
 	}
 
-
 	public function testGetMixListInDepartment() {
+		$departmentId = 1;
+		$sql = "SELECT * FROM ".TB_USAGE.
+			" WHERE `department_id` =".$departmentId.
+			" OR  `wo_id` IN (SELECT  `wo_id` FROM " .TB_WO2DEPARTMENT ." WHERE `department_id` =".$departmentId.")";
+		
+		$this->db->query($sql);
+		$expectedMixList = $this->db->fetch_all_array();
+		
+		$mixManager = new MixManager($this->db);
+		$mixList = $mixManager->getMixListInDepartment($departmentId);
+		
+		$this->assertEquals(count($mixList), count($expectedMixList));
+		$this->assertEquals($mixList[0]['mix_id'], $expectedMixList[0]['mix_id']);
 		
 	}
 

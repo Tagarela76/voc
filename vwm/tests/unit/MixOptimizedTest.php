@@ -15,7 +15,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		//	--UPDATE--
 		$mixID = 1;
 		$mix = new MixOptimized($this->db, $mixID);
-
+  
 		$mix->description = "WO12-020220-UPDATED";
 		$mix->spent_time = 120;
 		$this->assertEquals($mixID, $mix->save(false));

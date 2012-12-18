@@ -213,5 +213,20 @@ class MixManager {
 	public function deleteMixList($mixIDarr) {
 
 	}
+	
+	public function getMixListInDepartment($departmentId){
+		$query = "SELECT * FROM ". TB_USAGE ." m ".
+				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
+				"WHERE m.department_id =".$departmentId." ".
+				"OR j.department_id=".$departmentId." ".
+				"GROUP BY mix_id";
+		
+		if (!$this->db->query($query)) {
+			throw new Exception('SQL query failed.');
+		}
+		
+		$rows = $this->db->fetch_all_array();
+		return $rows;
+	}
 
 }
