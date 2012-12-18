@@ -172,52 +172,55 @@ class CRepairOrder extends Controller {
 		$params = array("bookmark" => "repairOrder");
 
 		if($this->getFromRequest('departmentID')) {
-			//	Access control
-			if (!$this->user->checkAccess('department',
-					$this->getFromRequest("departmentID"))) {
-				throw new Exception('deny');
-			}
-			$request['parent_id'] = $request['departmentID'];
-			$request['parent_category'] = 'department';
-
-			$this->setListCategoriesLeftNew('department',
-					$this->getFromRequest('departmentID'), $params);
-			$this->setNavigationUpNew('department',
-					$this->getFromRequest("departmentID"));
-			$this->setPermissionsNew('viewDepartment');
-
+			$category = "department";
+			$categoryId = $this->getFromRequest('departmentID');
+			
 			$department = new Department($this->db);
 			$departmentDetails = $department->getDepartmentDetails(
 					$this->getFromRequest("departmentID"));
 
 			$facilityDetails = $facility->getFacilityDetails(
 					$departmentDetails['facility_id']);
-		} elseif($this->getFromRequest('facilityID')) {			
-			//	Access control
-			if (!$this->user->checkAccess('facility',
-					$this->getFromRequest("facilityID"))) {
-				throw new Exception('deny');
-			}
-			$request['parent_id'] = $request['facilityID'];
-			$request['parent_category'] = 'facility';
-
-			$this->setListCategoriesLeftNew('facility',
-					$this->getFromRequest('facilityID'), $params);
-			$this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
-			$this->setPermissionsNew('viewFacility');
-
+			$this->setPermissionsNew('viewDepartment');
+			
+		} elseif($this->getFromRequest('facilityID')) {
+			$category = "facility";
+			$categoryId = $this->getFromRequest('facilityID');
+						
 			$facilityDetails = $facility->getFacilityDetails(
 					$this->getFromRequest("facilityID"));
+			$this->setPermissionsNew('viewFacility');
 		} else {
 			throw new Exception('404');
 		}
+
+		//	Access control
+		if (!$this->user->checkAccess($category, $categoryId)) {
+			throw new Exception('deny');
+		}
+		$request['parent_id'] = $categoryId;
+		$request['parent_category'] = $category;
+
+		$this->setListCategoriesLeftNew($category, $categoryId, $params);
+		$this->setNavigationUpNew($category, $categoryId);		
+
         $this->smarty->assign('request', $request);
 		$this->smarty->assign('facilityDetails', $facilityDetails);
                       
 		$companyId = $facilityDetails["company_id"];
         $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
-        $industryTypeId = $companyNew->getIndustryType(); 
+        $industryTypeId = $companyNew->getIndustryType();
+		
         $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
+		if($category == 'department' && !$departmentDetails['share_wo']) {
+			$woDepartments_id = $departmentDetails['department_id'];
+			$departmentIds = array($woDepartments_id);
+		} else {
+			$departmentIds = $facility->getDepartmentList($facilityDetails['facility_id']);
+			$woDepartments_id = implode(",", $departmentIds);
+
+		}
+
         $this->smarty->assign('data', $workOrder);
         $post = $this->getFromPost();
 
@@ -237,9 +240,7 @@ class CRepairOrder extends Controller {
 			if(count($violationList) == 0 && $woDepartments_id != '') {
 				$this->db->beginTransaction();
 
-				$woID = $workOrder->save(); 
-                // get current facility departments
-                $departmentIds = $facility->getDepartmentList($facilityID);
+				$woID = $workOrder->save();                 
                 if (!empty($departmentIds)) {
                     // add empty mix for each facility department
                     $mixOptimized = new MixOptimized($this->db);
