@@ -248,13 +248,13 @@ class CDepartment extends Controller {
 		if (!$this->user->checkAccess($this->category, $this->getFromRequest('id'))) {
 			throw new Exception('deny');
 		}
+		$department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
+		$this->smarty->assign('department', $department);
 
-		$department = new Department($this->db);
-		$departmentDetails = $department->getDepartmentDetails($this->getFromRequest('id'), true);
-		$this->smarty->assign('data', $departmentDetails);
+		$company = new \VWM\Hierarchy\Company($this->db, $department->getFacilityId());
 
-		$this->setNavigationUpNew($this->category, $this->getFromRequest('id'));
-		$this->setListCategoriesLeftNew($this->category, $this->getFromRequest('id'));
+		$this->setNavigationUpNew($this->category, $department->getDepartmentId());
+		$this->setListCategoriesLeftNew($this->category, $department->getDepartmentId());
 		$this->setPermissionsNew('viewDepartment');
 
 		//	set js scripts
