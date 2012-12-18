@@ -96,16 +96,17 @@ class DepartmentTest extends DbTestCase {
 	
 	public function testGetRepairOrderInDepartment(){
 		$departmentId = 1;
-		$sql = "SELECT * repairOrderCount FROM " . TB_WORK_ORDER . " w ".
+		$sql = "SELECT * FROM " . TB_WORK_ORDER . " w ".
 				"JOIN ". TB_WO2DEPARTMENT." dw ".
 				"ON w.id=dw.wo_id ".
 				"WHERE dw.department_id=1";
 		$this->db->query($sql);
-		$departmentRepairOrder = $this->db->fetch_all_array();
+		$departmentRepairOrder = $this->db->fetch_all();
 		$department = new Department($this->db, 1);
 		
 		$departmentList = $department->getRepairOrdersList();
 		$this->assertEquals(count($departmentList), 1);
+		//$this->assertEquals($departmentList,  $departmentRepairOrder);
 		
 	}
 
@@ -123,21 +124,38 @@ class DepartmentTest extends DbTestCase {
 		$result = $department->save();
 		$this->assertEquals($expectedId, $result);
 		
-		$sql = "SELECT * FROM ".TB_DEPARTMENT." WHERE department_id = {$expectedId}";
+		$sql = "SELECT * FROM ".TB_DEPARTMENT." WHERE department_id = {$result}";
 		$this->db->query($sql);
 		$row = $this->db->fetch_array(0);
 		$departmentActual = new Department($this->db);
 		$departmentActual->initByArray($row);
 		$this->assertEquals($department, $departmentActual);
 		
+		
 		//check update
-		/*$department = new Department($this->db);
-		$department->setFacilityId(1);
-		$department->setName('Test Name');
-		$department->setShareWo(1);
-		$department->setVocLimit(100);
-		$department->setVocAnnualLimit(100);
-		$department->setCreatorId(1);*/
+		
+		$department->setCreaterId('2');
+		$department->setShareWo('0');
+		$result=$department->save();
+		
+		$newDepartment = new Department($this->db, 4);
+		$this->assertEquals($newDepartment->getShareWo(), 0);
+		$this->assertEquals($newDepartment->getCreaterId(), 2);
+		
+	}
+	
+	public function testGetMixList(){
+		$departmentId =1;
+		$query = "SELECT * FROM ". TB_USAGE ." m ".
+				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
+				"WHERE m.department_id =".$departmentId." ".
+				"OR j.department_id=".$departmentId." ".
+				"GROUP BY mix_id";
+		$rows = $this->db->fetch_all_array();
+		$this->db->query($query);
+		$department = new Department($this->db, 1);
+		$mixList = $department->getMixList();
+		$this->assertEquals($mixList, $rows);
 	}
 }
 
