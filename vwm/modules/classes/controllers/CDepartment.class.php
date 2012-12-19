@@ -181,11 +181,12 @@ class CDepartment extends Controller {
 		$unitType = $timeProductGauge->getUnitType();
 		$unitType = $unittype->getNameByID($unitType);
 		
-		$unitTypeConverter = new UnitTypeConverter($this->db);
-		$productTime = $unitTypeConverter->convertDefaultTime($productTime, $unitType);
+		
 		$this->smarty->assign('unitType', $unitType);
 		
+		
 		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime);
+		
 		if ($timeProductGauge->getLimit()!=0) {
 			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
