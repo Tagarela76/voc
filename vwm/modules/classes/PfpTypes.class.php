@@ -1,5 +1,5 @@
 <?php
-
+use \VWM\Hierarchy\Department;
 class PfpTypes {
 
 	/**
@@ -25,6 +25,10 @@ class PfpTypes {
 	 * @var db 
 	 */
 	private $db;
+	/*
+	 * pfp for department
+	 */
+	public $departments;
 
 	public $searchCriteria = array();
 	
@@ -39,6 +43,7 @@ class PfpTypes {
 		}
 	}
 
+	const TB_PFP_2_DEPARTMENT = ' pfp2department';
 	/**
 	 * add pfp type
 	 * @return int 
@@ -67,6 +72,33 @@ class PfpTypes {
 		$pfpTypeId = $this->db->getLastInsertedID();
 		$this->id = $pfpTypeId;
 		return $this->id;
+	}
+	
+	public function saveDepartmentPFP() {
+
+		$query = "INSERT INTO " . TB_PFP_TYPES . "(" .
+				"name, facility_id) " .
+				"VALUES ( " .
+				"{$this->db->sqltext($this->name)}" .
+				",{$this->db->sqltext($this->facility_id)}
+				)";
+		$this->db->query($query);
+		
+		$pfpTypeId = $this->db->getLastInsertedID();
+		
+		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_id, department_id) 
+				  VALUES (" .
+				  "{$this->db->sqltext($pfpTypeId)}, " .
+			      "{$this->db->sqltext($this->departments[0]->getDepartmentId())})";
+		
+		for($i=1; $i< count($this->departments); $i++){
+			$query .= ",( 
+				'" . $this->db->sqltext($pfpTypeId) . "'
+                , " . $this->db->sqltext($this->departments[$i]->getDepartmentId()) . "
+				)";
+		}
+		
+		$this->db->query($query);
 	}
 
 	/**
@@ -97,6 +129,36 @@ class PfpTypes {
 		}
 	}
 
+	public function getDepartments() {
+		if ($this->departments === null) {
+
+			$sql = "SELECT *" .
+					" FROM " . self::TB_PFP_2_DEPARTMENT . " p " .
+					"JOIN ".TB_DEPARTMENT." d ON ".
+					"p.department_id=d.department_id ".
+					"WHERE pfp_id = {$this->db->sqltext($this->id)}";
+					
+					
+			$this->db->query($sql);
+			if ($this->db->num_rows() == 0) {
+				$this->departments = array();
+				return $this->departments;
+			}
+
+			$rows = $this->db->fetch_all_array();
+			foreach ($rows as $row) {
+				$department = new Department($this->db);
+				$department->initByArray($row);
+				$this->departments[] = $department;
+			}
+		}
+
+		return $this->departments;
+	}
+	
+	public function setDepartments($departments){
+		$this->departments = $departments;
+	}
 	/**
 	 * Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
 	 * @param string $name - name of property
@@ -184,6 +246,8 @@ class PfpTypes {
 		return $pfpProducts;
 		
 	}
+	
+	
 
 }
 

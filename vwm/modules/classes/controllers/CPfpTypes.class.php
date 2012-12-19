@@ -1,5 +1,6 @@
 <?php
 
+
 class CPfpTypes extends Controller {
 
     function CPfpTypes($smarty, $xnyo, $db, $user, $action) {
@@ -125,6 +126,7 @@ class CPfpTypes extends Controller {
 		$facilityDet = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyId = $facilityDet["company_id"]; 
 		// TODO: add count() for pagination
+		
 		if ($isAllPFP) {
 			// we show an all pfp's list
 			$pfp = new PFPManager($this->db);
@@ -134,6 +136,7 @@ class CPfpTypes extends Controller {
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			}
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'));
+			
 			$pagination = new Pagination(count($pfps));
 			$pagination->url = $url;
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'), $pagination);			
@@ -151,6 +154,7 @@ class CPfpTypes extends Controller {
 			$pagination->url = $url; 
 			$pfps = $pfpTypes->getPfpProducts($pagination);
 		} 
+		
 		$this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('pfpTypes', $pfpTypes);
         $this->smarty->assign('pfps', $pfps);
