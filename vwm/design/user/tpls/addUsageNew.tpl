@@ -860,9 +860,9 @@ function createSelectUnittypeClass(id) {
 				delay: 30,
 				showURL: false,
 				fixPNG: true,
-				extraClass: "mixSaveButton",
-				top: -55,
-				left: -150
+				extraClass: "mixSaveButton"
+				//top: -55,
+				//right: -250
 			});
 		});
 		
