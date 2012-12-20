@@ -346,7 +346,7 @@ function ManageQtyProductGauge() {
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
-				
+				console.log(response);
 				that.isLoaded = false;
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;

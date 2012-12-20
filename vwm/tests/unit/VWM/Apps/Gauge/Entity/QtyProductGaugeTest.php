@@ -13,7 +13,7 @@ class QtyProductGaugeTest extends DbTestCase {
 	);
 	
 
-	public function testQtyProductGaugeSave() {
+	public function testSave() {
 		
         $qtyProductGauge = new QtyProductGauge($this->db);
         $qtyProductGauge->setLimit("100");
