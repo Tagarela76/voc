@@ -51,6 +51,9 @@
 								{if $request.category == "repairOrder" || $request.category == "pfpTypes"}
 									<input type="button" name="createLabel" class="button" value="Print" onclick="location.href='?action=createLabel&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
 								{/if}
+								{if $request.category == "pfpTypes"}
+									<input type="button" name="createLabel" class="button" value="Edit" onclick="location.href='?action=EditPfpTypes&category={$request.category}&id={$request.id}&facilityID={$request.facilityID}'"/>
+								{/if}
 																			
 								{if $request.category=="wastestorage"}
 									{if $deleteORrestore eq "delete"}

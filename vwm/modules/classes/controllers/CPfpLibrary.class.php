@@ -24,8 +24,9 @@ class CPfpLibrary extends Controller {
 			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		}
-		// get pfp types (filter PFP by PFP Types)
-		$pfpTypes = $facility->getPfpTypes($facilityDetails['facility_id']);
+				
+		$department = new \VWM\Hierarchy\Department($this->db, $departmentDetails['department_id']);
+		$pfpTypes = $department->getPfpTypes();
 		$selectedPfpType = $this->getFromRequest('pfpType');
 		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
 		$this->smarty->assign('allUrl', $allUrl);
@@ -38,8 +39,8 @@ class CPfpLibrary extends Controller {
 			if (is_null($selectedPfpType)) {
 				$pfpCount = $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory);
 			} else {
-				$pfpTypes = new PfpTypes($this->db, $selectedPfpType); 
-				$pfpCount = count($pfpTypes->getPfpProducts());
+				$pfpTypesObj = new PfpTypes($this->db, $selectedPfpType);
+				$pfpCount = count($pfpTypesObj->getPfpProducts());
 			}
 		} else {
 			$pfpCount = $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);

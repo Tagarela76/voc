@@ -16,6 +16,9 @@ class DepartmentTest extends DbTestCase {
 		QtyProductGauge::TABLE_NAME,
 		TB_WORK_ORDER,
 		TB_WO2DEPARTMENT,
+		TB_PFP,
+		TB_PFP_TYPES,
+		\PfpTypes::TB_PFP_2_DEPARTMENT,
 	);
 
 	public function testInitByArray() {
@@ -173,6 +176,26 @@ class DepartmentTest extends DbTestCase {
 		$department = new Department($this->db, 1);
 		$mixList = $department->getMixList();
 		$this->assertEquals($mixList, $rows);
+	}
+
+
+	public function testGetPfpTypes() {
+		$departmentId = 1;
+		$department = new Department($this->db, $departmentId);
+
+		$pfpTypes = $department->getPfpTypes();
+		$this->assertTrue(is_array($pfpTypes));
+
+		$sql = "SELECT * FROM ".\PfpTypes::TB_PFP_2_DEPARTMENT." " .
+				"WHERE department_id = {$departmentId}";
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+		$expectedPfpTypes = array();
+		foreach ($rows as $row) {
+			$expectedPfpTypes[] = new \PfpTypes($this->db, $row['pfp_type_id']);
+		}
+
+		$this->assertEquals($expectedPfpTypes, $pfpTypes);
 	}
 }
 

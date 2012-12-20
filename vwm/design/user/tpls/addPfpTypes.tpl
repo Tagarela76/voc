@@ -1,3 +1,13 @@
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global reminderPage object defined at manageReminders.js
+		pfpTypesPage.facilityId = {/literal} {$request.id} {literal};
+       // pfpTypesPage.pfpId = {/literal} {$request.id} {literal};
+	});
+</script>
+{/literal}
+
 <div id="notifyContainer">
 	{if $color eq "green"}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
@@ -35,6 +45,24 @@
                     {*/ERROR*}						    						
 				</td>					
 			</tr>
+			<tr class="border_users_b border_users_r">
+				<td height="20" class="border_users_l">
+					Departments:
+				</td>
+                <td>										
+					<div align="left">
+						<div id="departments2pfpTypes_list">{$pfpDepartmentsName}
+							<input type='hidden' name='pfpDepartments_id' id='pfpDepartments_id' value="{$pfpDepartments}" />
+						</div>
+						<a href="#" onclick="pfpTypesPage.managePfpTypes.openDialog();">edit</a>
+                    </div>
+					{if $woDepartmentsError eq 'true'}
+						{*ERROR*}
+						<div class="error_img" style="float: left;"><span class="error_text">This value should not be blank.</span></div>
+						{*/ERROR*}
+					{/if}					
+                </td>
+			</tr>
 			
 			<tr class="border_users_l border_users_r">
 				<td colspan="2">&nbsp;</td>
@@ -57,7 +85,8 @@
 		</div>
 		
 		{*HIDDEN*}
-		<input type='hidden' name='facility_id' value='{$request.id}'>			
+		<input type='hidden' name='facility_id' value='{$request.id}'>	
+		<input type='hidden' name='pfpId' id='pfpId' value=''>
 		
 		</form>
 						</td>
@@ -65,4 +94,5 @@
 		</table>
 </div>
 
+<div id="setDepartmentToPfpContainer" title="Set department to pfp type" style="display:none;">Loading ...</div>	
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}	

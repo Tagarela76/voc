@@ -1453,10 +1453,10 @@ class CMix extends Controller {
 		$currentPfpType->facility_id = 0;
 		$this->smarty->assign('currentPfpType', $currentPfpType);
 
-		$department = new Department($this->db);
-		$departmentDetails = $department->getDepartmentDetails($departmentID);
-		$facilityID = $departmentDetails['facility_id'];
-		$pfpTypes = $facility->getPfpTypes($facilityID);
+		//$department = new Department($this->db);
+		$department = new \VWM\Hierarchy\Department($this->db, $departmentID);
+		$facilityID = $department->getFacilityId();
+		$pfpTypes = $department->getPfpTypes();
 		
 		$this->smarty->assign('pfpTypes', $pfpTypes);
 		$ms = new ModuleSystem($this->db);

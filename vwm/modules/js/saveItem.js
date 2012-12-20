@@ -260,7 +260,7 @@ function answer(jsonResponse) {
 		}
 		
         //	pfp types		
-		if (document.addPfpType != null) {		 	
+		if (document.addPfpType != null) {		
             location.href = '?action=browseCategory&category=facility&id='+document.addPfpType.facility_id.value+'&bookmark=pfpTypes';
 		}
         
@@ -739,6 +739,8 @@ function savePfpTypesDetails() {
 	Popup.showModal('pleaseWait');	//	Show popup wait
 	var pfpTypeName = $('#pfpTypeName').attr('value'); 
     var id=$('input:hidden[name=facility_id]').attr('value');
+	var departmentsId = $('#pfpDepartments_id').val();
+	var pfpId = $('#pfpId').val();
 
 	$.ajax({
 		url: "modules/ajax/savePfpTypes.php",      		
@@ -746,12 +748,14 @@ function savePfpTypesDetails() {
 		async: false,
 		data: {
 			"pfpTypeName":pfpTypeName,
-			"id":id
+			"id":id,
+			"departmentsId":departmentsId,
+			'pfpId':pfpId
 		},      			
 		dataType: "html",
 		success: function (response) 
 		{   
-			jsonResponse=eval("("+response+")");		      																
+			jsonResponse=eval("("+response+")");
 			answer(jsonResponse);										
 		}        		   			   	
 	});

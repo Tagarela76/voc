@@ -1,5 +1,6 @@
 <?php
 
+//use \VWM\Hierarchy\Facility;
 class CPfpTypes extends Controller {
 
     function CPfpTypes($smarty, $xnyo, $db, $user, $action) {
@@ -60,13 +61,31 @@ class CPfpTypes extends Controller {
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
         $this->setPermissionsNew('viewFacility');
 
+		$facility = new Facility($this->db);
+		$department = new Department($this->db);
+		$pfpDepartmentsDeafult = $facility->getDepartmentList($request["id"]);
+		$pfpDepartmentsIds = implode(',', $pfpDepartmentsDeafult);
+		$pfpDepartmentsName = array();
+        foreach ($pfpDepartmentsDeafult as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $pfpDepartmentsName[] = $departmentDetails["name"];
+        }
+		$pfpDepartmentsName = implode(',', $pfpDepartmentsName);
+		
+		$this->smarty->assign('pfpDepartments', $pfpDepartmentsIds);
+        $this->smarty->assign('pfpDepartmentsName', $pfpDepartmentsName);
+		
         //	set js scripts
         $jsSources = array(
             'modules/js/saveItem.js',
-            'modules/js/PopupWindow.js'
+            'modules/js/PopupWindow.js',
+			'modules/js/pfpTypesManager.js',
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/checkBoxes.js",
         );
         $this->smarty->assign('jsSources', $jsSources);
-
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
         $this->smarty->assign('pleaseWaitReason', "Please wait.");
         $this->smarty->assign('tpl', 'tpls/addPfpTypes.tpl');
         $this->smarty->display("tpls:index.tpl");
@@ -125,6 +144,7 @@ class CPfpTypes extends Controller {
 		$facilityDet = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
 		$companyId = $facilityDet["company_id"]; 
 		// TODO: add count() for pagination
+		
 		if ($isAllPFP) {
 			// we show an all pfp's list
 			$pfp = new PFPManager($this->db);
@@ -134,6 +154,7 @@ class CPfpTypes extends Controller {
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			}
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'));
+			
 			$pagination = new Pagination(count($pfps));
 			$pagination->url = $url;
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'), $pagination);			
@@ -151,6 +172,7 @@ class CPfpTypes extends Controller {
 			$pagination->url = $url; 
 			$pfps = $pfpTypes->getPfpProducts($pagination);
 		} 
+		
 		$this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('pfpTypes', $pfpTypes);
         $this->smarty->assign('pfps', $pfps);
@@ -169,6 +191,8 @@ class CPfpTypes extends Controller {
             'modules/js/autocomplete/jquery.autocomplete.js',
             'modules/js/pfpTypes.js');
         $this->smarty->assign('jsSources', $jsSources);
+		
+		
         //set tpl
         $this->smarty->assign('tpl', 'tpls/viewPfpType.tpl');
         $this->smarty->display("tpls:index.tpl");
@@ -279,6 +303,85 @@ class CPfpTypes extends Controller {
 		$exporter->setThead($header);
 		$exporter->setTbody($goodList);
 		$exporter->export();
+	}
+	
+	public function actionLoadDepartments(){
+		
+		$facilityId = $this->getFromRequest('facilityId');
+		$departmentsId = $this->getFromRequest('departmentsId');
+		$departmentsId = explode(',', $departmentsId);
+        $department = new Department($this->db);
+        $facility = new Facility($this->db);
+        $pfpDepartmentsDeafult = $facility->getDepartmentList($facilityId);
+		
+        
+        // if we add new wo we cannot knew wo id so
+        $departmentsDeafult = array();
+        foreach ($pfpDepartmentsDeafult as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentsDeafult[$departmentId] = $departmentDetails["name"];
+        }
+		
+		$this->smarty->assign('departmentsId', $departmentsId);
+        $this->smarty->assign('departmentsDeafult', $departmentsDeafult);
+		echo $this->smarty->fetch('tpls/setDepartmentToPfpTypes.tpl');
+	}
+	
+	public function actionSetDepartmentToPfpTypes(){
+		$department = new Department($this->db);
+		$rowsToSave = $this->getFromRequest('rowsToSave'); 
+        $value = implode(",", $rowsToSave);
+        $departmentName = array();
+        foreach ($rowsToSave as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentName[] = $departmentDetails["name"];
+        }
+        $response = implode(",", $departmentName);
+        $response .= "<input type='hidden' name='pfpDepartments_id' id='pfpDepartments_id' value='$value' />";
+
+		echo $response;
+	}
+	
+	public function actionEditPfpTypes(){
+	
+		$id = $this->getFromRequest('id');
+		$facilityId = $this->getFromRequest('facilityID');
+		$pfpType = new PfpTypes($this->db, $id);
+		$pfpTypeName = $pfpType->name;
+		$departments = $pfpType->getDepartments();
+		$departmentsId = array();
+		$pfpDepartmentsName = array();
+		
+		foreach($departments as $department){
+			$departmentsId[] = $department->getDepartmentId();
+            $pfpDepartmentsName[] = $department->getName();
+		}
+		
+		$departmentsId = implode(',', $departmentsId);
+		$pfpDepartmentsName = implode(',', $pfpDepartmentsName);
+		
+		$this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'));
+        $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
+        $this->setPermissionsNew('viewFacility');
+		
+		 $jsSources = array(
+            'modules/js/saveItem.js',
+            'modules/js/PopupWindow.js',
+			'modules/js/pfpTypesManager.js',
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/checkBoxes.js",
+        );
+		 $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
+        $this->smarty->assign('jsSources', $jsSources);
+		
+		$this->smarty->assign('pfpId', $id);
+		$this->smarty->assign('pfpDepartmentsName', $pfpDepartmentsName);
+		$this->smarty->assign('pfpDepartments', $departmentsId);
+		$this->smarty->assign('facilityId', $facilityId);
+		$this->smarty->assign('pfpTypeName', $pfpTypeName);
+		$this->smarty->assign('tpl', 'tpls/editPfpTypes.tpl');
+		$this->smarty->display("tpls:index.tpl");
 	}
 
 }
