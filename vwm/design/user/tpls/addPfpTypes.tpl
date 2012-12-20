@@ -85,7 +85,8 @@
 		</div>
 		
 		{*HIDDEN*}
-		<input type='hidden' name='facility_id' value='{$request.id}'>			
+		<input type='hidden' name='facility_id' value='{$request.id}'>	
+		<input type='hidden' name='pfpId' id='pfpId' value=''>
 		
 		</form>
 						</td>

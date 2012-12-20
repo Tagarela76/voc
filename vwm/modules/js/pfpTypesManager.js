@@ -39,9 +39,10 @@ function managePfpTypes(){
 	
 	this.loadContent = function() {
 		var that = this;
+		var departmentsId = $('#pfpDepartments_id').val();
 		$.ajax({
 			url: "?action=loadDepartments&category=pfpTypes",
-			data: {facilityId: pfpTypesPage.facilityId},
+			data: {facilityId: pfpTypesPage.facilityId, departmentsId:departmentsId},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {

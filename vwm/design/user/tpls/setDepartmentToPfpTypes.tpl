@@ -20,7 +20,7 @@
 				{foreach from=$departmentsDeafult key="depDefaulId" item="depDefaultName"}
 					<tr>
 						<td>
-							<input type="checkbox" name="woDepartmentId" id="woDepartmentId" value="{$depDefaulId}" CHECKED/>
+							<input type="checkbox" name="woDepartmentId" id="woDepartmentId" value="{$depDefaulId}" {if in_array($depDefaulId,$departmentsId)} CHECKED {/if}/>
 						</td>
 						<td>
 							{$depDefaultName}

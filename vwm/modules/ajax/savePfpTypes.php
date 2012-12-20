@@ -30,11 +30,18 @@
 	$xnyo->filter_post_var("id", "text");
 	$xnyo->filter_post_var("pfpTypeName", "text");
 	$xnyo->filter_post_var("departmentsId", "text");
-
-	$pfpTypes = new PfpTypes($db);	
+	$xnyo->filter_post_var("pfpId", "text");
+	$pfpId = $_POST["pfpId"];
+	if($pfpId == ''){
+		$pfpTypes = new PfpTypes($db);
+	}else{
+		$pfpTypes = new PfpTypes($db, $pfpId);
+	}
+		
 	
 	$pfpTypes->facility_id = $_POST["id"];
 	$pfpTypes->name = $_POST["pfpTypeName"];
+	
 	$departmentsId = $_POST["departmentsId"];
 	$departmentsId = explode(',', $departmentsId);
 	$pfpTypesDepartments = array();
@@ -47,7 +54,7 @@
 	$validation = new Validation($db);
 	$validStatus = $validation->validateRegDataPfpType($pfpTypes);
 
-    if (!$validation->isUniqueName("pfpTypes", $pfpTypes->name, $pfpTypes->facility_id)) {
+    if (!$validation->isUniqueName("pfpTypes", $pfpTypes->name, $pfpTypes->facility_id) && $pfpId=='') {
         $validStatus['summary'] = 'false';
         $validStatus['pfpType'] = 'alredyExist';
     }
@@ -57,6 +64,7 @@
 		$pfpTypes->setDepartments($pfpTypesDepartments);
 		$pfpTypes->save();
 	}
+		
 
 	echo json_encode($validStatus);		
 
