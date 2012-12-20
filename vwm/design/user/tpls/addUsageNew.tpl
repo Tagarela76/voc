@@ -216,7 +216,7 @@ function createSelectUnittypeClass(id) {
 							$( "#spentTimeSlider" ).slider({
 								value: $( "#spentTime" ).val(),
 								min: 0,
-								max: 180,
+								max: 360,
 								step: 5,
 								slide: function( event, ui ) {
 									$( "#spentTime" ).val(ui.value);
