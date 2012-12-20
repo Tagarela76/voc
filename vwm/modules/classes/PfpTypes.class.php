@@ -44,7 +44,7 @@ class PfpTypes {
 		}
 	}
 
-	const TB_PFP_2_DEPARTMENT = ' pfp_type2department';
+	const TB_PFP_2_DEPARTMENT = 'pfp_type2department';
 
 	/**
 	 * add pfp type

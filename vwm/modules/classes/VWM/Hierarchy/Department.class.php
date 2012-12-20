@@ -25,6 +25,11 @@ class Department extends Model {
 	 */
 	protected $facility;
 
+	/**
+	 * @var \PfpTypes[]
+	 */
+	protected $pfpTypes;
+
 	public $searchCriteria = array();
 
 	const TABLE_NAME = 'department';
@@ -397,6 +402,35 @@ class Department extends Model {
 		} else {
 			return false;
 		}
+	}
+
+
+	public function getPfpTypes() {
+		if($this->pfpTypes === null) {
+			$sql = "SELECT pfp_t.* " .
+					"FROM ".TB_PFP_TYPES." pfp_t " .
+					"JOIN ".\PfpTypes::TB_PFP_2_DEPARTMENT." pfp_t2d " .
+					"ON pfp_t.id = pfp_t2d.pfp_type_id " .
+					"WHERE pfp_t2d.department_id = {$this->db->sqltext($this->getDepartmentId())}";
+			$this->db->query($sql);
+
+			if($this->db->num_rows() == 0) {
+				$this->pfpTypes = array();
+				return $this->pfpTypes;
+			}
+
+			$rows = $this->db->fetch_all_array();
+			foreach ($rows as $row) {
+				$pfpType = new \PfpTypes($this->db);
+				//TODO: switch to init by array
+				$pfpType->id = $row['id'];
+				$pfpType->name = $row['name'];
+				$pfpType->facility_id = $row['facility_id'];
+				$this->pfpTypes[] = $pfpType;
+			}
+		}
+
+		return $this->pfpTypes;
 	}
 }
 
