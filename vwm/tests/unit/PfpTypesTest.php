@@ -6,7 +6,7 @@ use \VWM\Hierarchy\Department;
 class PfpTypesTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_PFP_TYPES, TB_PFP, TB_FACILITY, TB_PFP2PFP_TYPES, TB_PFP_2_DEPARTMENT, TB_DEPARTMENT
+		TB_PFP_TYPES, TB_PFP, TB_FACILITY, TB_PFP2PFP_TYPES, TB_DEPARTMENT, TB_PFP_2_DEPARTMENT 
 	);
 
 	public function testAddPFPType() {
@@ -80,12 +80,6 @@ class PfpTypesTest extends Testing\DbTestCase {
 		$testDepartments = $pfpTypes->getDepartments();
 		
 		$this->assertEquals($testDepartments, $departments);
-		
-		
-		
-		
-		
-		
 		
 	}
 	

@@ -1,5 +1,5 @@
 <?php
-	
+	use \VWM\Hierarchy\Department;
 	chdir('../..');		
 	
 	require('config/constants.php');
@@ -29,11 +29,21 @@
 
 	$xnyo->filter_post_var("id", "text");
 	$xnyo->filter_post_var("pfpTypeName", "text");
+	$xnyo->filter_post_var("departmentsId", "text");
 
 	$pfpTypes = new PfpTypes($db);	
+	
 	$pfpTypes->facility_id = $_POST["id"];
 	$pfpTypes->name = $_POST["pfpTypeName"];
-
+	$departmentsId = $_POST["departmentsId"];
+	$departmentsId = explode(',', $departmentsId);
+	$pfpTypesDepartments = array();
+	foreach ($departmentsId as $departmentId){
+		$department = new Department($db, $departmentId);
+		$pfpTypesDepartments[]=$department;
+		
+	}
+	
 	$validation = new Validation($db);
 	$validStatus = $validation->validateRegDataPfpType($pfpTypes);
 
@@ -43,7 +53,8 @@
     }
     
 	if ($validStatus['summary'] == 'true') {					
-
+		
+		$pfpTypes->setDepartments($pfpTypesDepartments);
 		$pfpTypes->save();
 	}
 

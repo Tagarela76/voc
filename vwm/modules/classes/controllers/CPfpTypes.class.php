@@ -1,6 +1,6 @@
 <?php
 
-
+//use \VWM\Hierarchy\Facility;
 class CPfpTypes extends Controller {
 
     function CPfpTypes($smarty, $xnyo, $db, $user, $action) {
@@ -61,13 +61,31 @@ class CPfpTypes extends Controller {
         $this->setNavigationUpNew('facility', $this->getFromRequest("facilityID"));
         $this->setPermissionsNew('viewFacility');
 
+		$facility = new Facility($this->db);
+		$department = new Department($this->db);
+		$pfpDepartmentsDeafult = $facility->getDepartmentList($request["id"]);
+		$pfpDepartmentsIds = implode(',', $pfpDepartmentsDeafult);
+		$pfpDepartmentsName = array();
+        foreach ($pfpDepartmentsDeafult as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $pfpDepartmentsName[] = $departmentDetails["name"];
+        }
+		$pfpDepartmentsName = implode(',', $pfpDepartmentsName);
+		
+		$this->smarty->assign('pfpDepartments', $pfpDepartmentsIds);
+        $this->smarty->assign('pfpDepartmentsName', $pfpDepartmentsName);
+		
         //	set js scripts
         $jsSources = array(
             'modules/js/saveItem.js',
-            'modules/js/PopupWindow.js'
+            'modules/js/PopupWindow.js',
+			'modules/js/pfpTypesManager.js',
+			"modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+			"modules/js/checkBoxes.js",
         );
         $this->smarty->assign('jsSources', $jsSources);
-
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		$this->smarty->assign('cssSources', $cssSources);
         $this->smarty->assign('pleaseWaitReason', "Please wait.");
         $this->smarty->assign('tpl', 'tpls/addPfpTypes.tpl');
         $this->smarty->display("tpls:index.tpl");
@@ -283,6 +301,39 @@ class CPfpTypes extends Controller {
 		$exporter->setThead($header);
 		$exporter->setTbody($goodList);
 		$exporter->export();
+	}
+	
+	public function actionLoadDepartments(){
+		$facilityId = $this->getFromRequest('facilityId');
+        $department = new Department($this->db);
+        $facility = new Facility($this->db);
+        $pfpDepartmentsDeafult = $facility->getDepartmentList($facilityId);
+		
+        
+        // if we add new wo we cannot knew wo id so
+        $departmentsDeafult = array();
+        foreach ($pfpDepartmentsDeafult as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentsDeafult[$departmentId] = $departmentDetails["name"];
+        }
+		
+        $this->smarty->assign('departmentsDeafult', $departmentsDeafult);
+		echo $this->smarty->fetch('tpls/setDepartmentToPfpTypes.tpl');
+	}
+	
+	public function actionSetDepartmentToPfpTypes(){
+		$department = new Department($this->db);
+		$rowsToSave = $this->getFromRequest('rowsToSave'); 
+        $value = implode(",", $rowsToSave);
+        $departmentName = array();
+        foreach ($rowsToSave as $departmentId) {
+            $departmentDetails =  $department->getDepartmentDetails($departmentId);
+            $departmentName[] = $departmentDetails["name"];
+        }
+        $response = implode(",", $departmentName);
+        $response .= "<input type='hidden' name='pfpDepartments_id' id='pfpDepartments_id' value='$value' />";
+
+		echo $response;
 	}
 
 }

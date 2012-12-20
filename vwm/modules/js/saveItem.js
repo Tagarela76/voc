@@ -739,6 +739,7 @@ function savePfpTypesDetails() {
 	Popup.showModal('pleaseWait');	//	Show popup wait
 	var pfpTypeName = $('#pfpTypeName').attr('value'); 
     var id=$('input:hidden[name=facility_id]').attr('value');
+	var departmentsId = $('#pfpDepartments_id').val();
 
 	$.ajax({
 		url: "modules/ajax/savePfpTypes.php",      		
@@ -746,11 +747,12 @@ function savePfpTypesDetails() {
 		async: false,
 		data: {
 			"pfpTypeName":pfpTypeName,
-			"id":id
+			"id":id,
+			"departmentsId":departmentsId
 		},      			
 		dataType: "html",
 		success: function (response) 
-		{   
+		{   console.log(response);
 			jsonResponse=eval("("+response+")");		      																
 			answer(jsonResponse);										
 		}        		   			   	

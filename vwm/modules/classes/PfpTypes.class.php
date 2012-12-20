@@ -44,14 +44,14 @@ class PfpTypes {
 		}
 	}
 
-	const TB_PFP_2_DEPARTMENT = ' pfp2department';
+	const TB_PFP_2_DEPARTMENT = ' pfp_type2department';
 
 	/**
 	 * add pfp type
 	 * @return int 
 	 */
 	public function save() {
-		if($this->id){
+		if($this->id && !is_null($this->id)){
 			$this->_update();
 		}else{
 			$this->_insert();
@@ -66,10 +66,10 @@ class PfpTypes {
 		}
 		//Delete all from table
 		$query = "DELETE FROM " . self::TB_PFP_2_DEPARTMENT .
-				" WHERE  pfp_id={$this->db->sqltext($this->id)}";
+				" WHERE  pfp_type_id={$this->db->sqltext($this->id)}";
 		$this->db->query($query);
 		//Insert
-		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_id, department_id) 
+		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_type_id, department_id) 
 				  VALUES (" .
 				"{$this->db->sqltext($this->id)}, " .
 				"{$this->db->sqltext($this->departments[0]->getDepartmentId())})";
@@ -103,6 +103,7 @@ class PfpTypes {
 				'" . $this->db->sqltext($this->name) . "'
                 , " . $this->db->sqltext($this->facility_id) . "
 				)";
+		
 		$this->db->query($query);
 		$pfpTypeId = $this->db->getLastInsertedID();
 		$this->id = $pfpTypeId;
@@ -165,7 +166,7 @@ class PfpTypes {
 					" FROM " . self::TB_PFP_2_DEPARTMENT . " p " .
 					"JOIN " . TB_DEPARTMENT . " d ON " .
 					"p.department_id=d.department_id " .
-					"WHERE pfp_id = {$this->db->sqltext($this->id)}";
+					"WHERE pfp_type_id = {$this->db->sqltext($this->id)}";
 
 
 			$this->db->query($sql);
