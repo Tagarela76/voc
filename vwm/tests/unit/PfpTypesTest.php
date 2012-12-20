@@ -38,15 +38,24 @@ class PfpTypesTest extends Testing\DbTestCase {
 	}
 	
 	public function testGetDepartments(){
-		$testDepartments = array('1','2','3');
+		//$testDepartments = array('1','2','3');
+		$departments = array();
+		
+		$department = new Department($this->db, '1');
+		$departments[] = $department;
+		$department = new Department($this->db, '2');
+		$departments[] = $department;
+		$department = new Department($this->db, '3');
+		$departments[] = $department;
+		
 		$pfpTypes = new PfpTypes($this->db, '1');
-		$pfpTypes->setDepartments($testDepartments);
-		$departments = $pfpTypes->getDepartments();
+		$pfpTypes->setDepartments($departments);
+		$testDepartments = $pfpTypes->getDepartments();
 		$this->assertEquals($testDepartments, $departments);
 		
 		$newPfpTypes = new PfpTypes($this->db, '1');
 		$newDepartments = $newPfpTypes->getDepartments();
-		$department = new \VWM\Hierarchy\Department($this->db, 1);
+		$department = new Department($this->db, 1);
 		$this->assertTrue(in_array($department, $newDepartments));
 		
 		
@@ -66,10 +75,16 @@ class PfpTypesTest extends Testing\DbTestCase {
 		
 		$pfpTypes = new PfpTypes($this->db, '1');
 		$pfpTypes->setDepartments($departments);
-		$pfpTypes->saveDepartmentPFP();
+		$pfpTypes->save();
 		
 		$testDepartments = $pfpTypes->getDepartments();
+		
 		$this->assertEquals($testDepartments, $departments);
+		
+		
+		
+		
+		
 		
 		
 	}

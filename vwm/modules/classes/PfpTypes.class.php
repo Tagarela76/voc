@@ -1,5 +1,7 @@
 <?php
+
 use \VWM\Hierarchy\Department;
+
 class PfpTypes {
 
 	/**
@@ -7,19 +9,19 @@ class PfpTypes {
 	 * @var int 
 	 */
 	public $id;
-	
+
 	/**
 	 *
 	 * @var string 
 	 */
 	public $name;
-	
-    /**
+
+	/**
 	 *
 	 * @var int 
 	 */
 	public $facility_id;
-    
+
 	/**
 	 * db connection
 	 * @var db 
@@ -29,11 +31,10 @@ class PfpTypes {
 	 * pfp for department
 	 */
 	public $departments;
-
 	public $searchCriteria = array();
-	
-    const PFP_TYPES_LIMIT = 10;
-    
+
+	const PFP_TYPES_LIMIT = 10;
+
 	function __construct(db $db, $pfpTypeId = null) {
 		$this->db = $db;
 
@@ -44,63 +45,91 @@ class PfpTypes {
 	}
 
 	const TB_PFP_2_DEPARTMENT = ' pfp2department';
+
 	/**
 	 * add pfp type
 	 * @return int 
 	 */
 	public function save() {
+		if($this->id){
+			$this->_update();
+		}else{
+			$this->_insert();
+		}
+		
+	}
 
-        // Is unique ?
-        $query = "SELECT * FROM " . TB_PFP_TYPES .
-				 " WHERE name ='{$this->db->sqltext($this->name)}'
-                  AND facility_id = {$this->db->sqltext($this->facility_id)}";
-		$this->db->query($query);
-        if ($this->db->num_rows() > 0) {
+	private function _saveDepartmentPFP() {
+
+		if (count($this->departments) == 0) {
 			return false;
 		}
-        // we should limit pfp type's count (10 types)
-        $facility = new Facility($this->db);
-        if ($facility->getPfpTypesCount($this->db->sqltext($this->facility_id)) > self::PFP_TYPES_LIMIT) {
-            return false;
-        }
+		//Delete all from table
+		$query = "DELETE FROM " . self::TB_PFP_2_DEPARTMENT .
+				" WHERE  pfp_id={$this->db->sqltext($this->id)}";
+		$this->db->query($query);
+		//Insert
+		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_id, department_id) 
+				  VALUES (" .
+				"{$this->db->sqltext($this->id)}, " .
+				"{$this->db->sqltext($this->departments[0]->getDepartmentId())})";
+
+		for ($i = 1; $i < count($this->departments); $i++) {
+			$query .= ",( 
+				'" . $this->db->sqltext($this->id) . "'
+                , " . $this->db->sqltext($this->departments[$i]->getDepartmentId()) . "
+				)";
+		}
+
+		$this->db->query($query);
+	}
+
+	private function _insert(){
+		// Is unique ?
+		$query = "SELECT * FROM " . TB_PFP_TYPES .
+				" WHERE name ='{$this->db->sqltext($this->name)}'
+                  AND facility_id = {$this->db->sqltext($this->facility_id)}";
+		$this->db->query($query);
+		/* if ($this->db->num_rows() > 0) {
+		  return false;
+		  } */
+		// we should limit pfp type's count (10 types)
+		$facility = new Facility($this->db);
+		if ($facility->getPfpTypesCount($this->db->sqltext($this->facility_id)) > self::PFP_TYPES_LIMIT) {
+			return false;
+		}
 		$query = "INSERT INTO " . TB_PFP_TYPES . "(name, facility_id) 
 				VALUES ( 
 				'" . $this->db->sqltext($this->name) . "'
                 , " . $this->db->sqltext($this->facility_id) . "
 				)";
-		$this->db->query($query); 
+		$this->db->query($query);
 		$pfpTypeId = $this->db->getLastInsertedID();
 		$this->id = $pfpTypeId;
+		$this->_saveDepartmentPFP();
 		return $this->id;
 	}
 	
-	public function saveDepartmentPFP() {
-
-		$query = "INSERT INTO " . TB_PFP_TYPES . "(" .
-				"name, facility_id) " .
-				"VALUES ( " .
-				"{$this->db->sqltext($this->name)}" .
-				",{$this->db->sqltext($this->facility_id)}
-				)";
+	private function _update(){
+		$query = "SELECT * FROM " . TB_PFP_TYPES .
+				" WHERE name ='{$this->db->sqltext($this->name)}'
+                  AND facility_id = {$this->db->sqltext($this->facility_id)}";
 		$this->db->query($query);
-		
-		$pfpTypeId = $this->db->getLastInsertedID();
-		
-		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_id, department_id) 
-				  VALUES (" .
-				  "{$this->db->sqltext($pfpTypeId)}, " .
-			      "{$this->db->sqltext($this->departments[0]->getDepartmentId())})";
-		
-		for($i=1; $i< count($this->departments); $i++){
-			$query .= ",( 
-				'" . $this->db->sqltext($pfpTypeId) . "'
-                , " . $this->db->sqltext($this->departments[$i]->getDepartmentId()) . "
-				)";
+		/* if ($this->db->num_rows() > 0) {
+		  return false;
+		  } */
+		// we should limit pfp type's count (10 types)
+		$facility = new Facility($this->db);
+		if ($facility->getPfpTypesCount($this->db->sqltext($this->facility_id)) > self::PFP_TYPES_LIMIT) {
+			return false;
 		}
-		
+		$query = "UPDATE " . TB_PFP_TYPES . " SET ".
+				"name='{$this->db->sqltext($this->name)}'".
+				" WHERE id=".$this->id;
 		$this->db->query($query);
+		$this->_saveDepartmentPFP();
+		return $this->id;
 	}
-
 	/**
 	 *
 	 * delete pfp type
@@ -134,11 +163,11 @@ class PfpTypes {
 
 			$sql = "SELECT *" .
 					" FROM " . self::TB_PFP_2_DEPARTMENT . " p " .
-					"JOIN ".TB_DEPARTMENT." d ON ".
-					"p.department_id=d.department_id ".
+					"JOIN " . TB_DEPARTMENT . " d ON " .
+					"p.department_id=d.department_id " .
 					"WHERE pfp_id = {$this->db->sqltext($this->id)}";
-					
-					
+
+
 			$this->db->query($sql);
 			if ($this->db->num_rows() == 0) {
 				$this->departments = array();
@@ -155,10 +184,11 @@ class PfpTypes {
 
 		return $this->departments;
 	}
-	
-	public function setDepartments($departments){
+
+	public function setDepartments($departments) {
 		$this->departments = $departments;
 	}
+
 	/**
 	 * Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
 	 * @param string $name - name of property
@@ -184,7 +214,7 @@ class PfpTypes {
 		}
 	}
 
-	private function _load() { 
+	private function _load() {
 
 		if (!isset($this->id)) {
 			return false;
@@ -205,19 +235,18 @@ class PfpTypes {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Get list of PFP's of current type
 	 * @param Pagination $pagination
 	 * @return boolean|PFP[]
 	 */
 	public function getPfpProducts(Pagination $pagination = null) {
-		$query = "SELECT * FROM ".TB_PFP. " pfp " .
-				"JOIN ".TB_PFP2PFP_TYPES." pfp2t ON pfp.id = pfp2t.pfp_id " .
+		$query = "SELECT * FROM " . TB_PFP . " pfp " .
+				"JOIN " . TB_PFP2PFP_TYPES . " pfp2t ON pfp.id = pfp2t.pfp_id " .
 				"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($this->id)}";
-				
-		if(count($this->searchCriteria) > 0) {
+
+		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$query .= " AND ( ";
 			foreach ($this->searchCriteria as $pfp) {
@@ -225,12 +254,12 @@ class PfpTypes {
 			}
 			$query .= implode(' OR ', $searchSql);
 			$query .= ") ";
-		}	
-	
-        if (isset($pagination)) {
+		}
+
+		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
-		}    
-        
+		}
+
 		$this->db->query($query);
 		$rows = $this->db->fetch_all_array();
 
@@ -244,10 +273,7 @@ class PfpTypes {
 			$pfpProducts[] = $pfp;
 		}
 		return $pfpProducts;
-		
 	}
-	
-	
 
 }
 
