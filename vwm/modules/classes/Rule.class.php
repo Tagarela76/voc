@@ -227,10 +227,22 @@ class Rule {
 //					if (!empty($facilityID)) {
 //						if (false === ($rules = $this->tryFindRuleList('facility' , $facilityID))) {
 							//	try to find by company
-							if (!empty($companyID)) {
-								if (false === ($rules = $this->tryFindRuleList('company' , $companyID))) {
+		
+							if (!empty($facilityID)) {
+								if (false === ($rules = $this->tryFindRuleList('facility', $facilityID))) {
+
+									if (!empty($companyID)) {
+										if (false === ($rules = $this->tryFindRuleList('company', $companyID))) {
+						
+										}
+									}
 								}
 							}
+							
+							/*if (!empty($companyID)) {
+								if (false === ($rules = $this->tryFindRuleList('company' , $companyID))) {
+								}
+							}*/
 //						}
 //					}
 //				}
@@ -254,7 +266,7 @@ class Rule {
 
 
 	public function setCustomizedRuleList($ruleList, $category, $categoryID) {
-
+		
 		$category = $this->db->sqltext($category);
 		$categoryID = $this->db->sqltext($categoryID);
 

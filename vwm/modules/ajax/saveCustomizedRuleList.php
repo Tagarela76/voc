@@ -20,6 +20,7 @@
 	//	filter vars
 	$xnyo->filter_post_var('ruleCount', 'int');
 	$ruleCount = $_POST['ruleCount'];
+	
 	for($i=0;$i<$ruleCount;$i++) {
 		$xnyo->filter_post_var('ruleID_'.$i, 'int');
 		if (isset($_POST['ruleID_'.$i])) {

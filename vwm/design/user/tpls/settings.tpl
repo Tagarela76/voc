@@ -54,7 +54,9 @@
                 </tr>
                 <tr>
                     <td>
-                        <a style="color: black" href="#" onclick="$('#ruleList').dialog('open');"><h2>Manage Rule List</h2></a>
+                        <!--<a style="color: black" href="#" onclick="$('#ruleList').dialog('open');"><h2>Manage Rule List</h2></a>-->
+						<a style="color: black" href="#" onclick="settings.manageRuleList.openDialog();"><h2>Manage Rule List</h2></a>
+						
                     </td>
                     <td>
                         Add or remove rules at your rule list.
@@ -120,7 +122,7 @@
 {*END OF SETTINGS*}
 
 {*NEW RULES POPUP*}
-<div id="ruleList" title="Choose Rules" style='display:none;'>
+<!--<div id="ruleList" title="Choose Rules" style='display:none;'>
 
             <form>
                 <table width="750px" cellpadding="0" cellspacing="0" class="popup_table" align="center">
@@ -132,8 +134,8 @@
                         <td colspan="2" style="border-bottom:0px solid #fff">
                             <div>
                                 I am customizing this rule list as
-								<span style="padding:0px 3px;"><input type="radio" name="role" value="user" checked></span>user
-								<span style="padding:0px 3px;"><input type="radio" name="role" value="{$categoryName}"></span>{$categoryName}
+								<span style="padding:0px 3px;"><input type="radio" name="role" value="user" ></span>user
+								<span style="padding:0px 3px;"><input type="radio" name="role" value="{$categoryName}" checked></span>{$categoryName}
                             </div>
                         </td>
                     </tr>
@@ -179,7 +181,7 @@
 				{/if}
             </form>
 
-</div>
+</div>-->
 {*END OF NEW RULES POPUP*}
 
 {*SELECT_LIMITS_POPUP*}
@@ -240,3 +242,4 @@
 <div id="managePermissionsContainer" title="Manage User Permissions" style="display:none;">Loading ...</div>
 <div id="manageAdditionalEmailAccountsContainer" title="Manage Additional Email Accounts" style="display:none;">Loading ...</div>
 <div id="manageQtyProductGaugeContainer" title="Manage Quantity Gauge Settings" style="display:none;">Loading ...</div>
+<div id="manageRuleListContainer" title="Manage Rule List Settings" style="display:none;">Loading ...</div>

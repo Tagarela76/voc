@@ -1800,6 +1800,7 @@ class CMix extends Controller {
 		//	Get rule list
 		$rule = new Rule($this->db);
 		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID, $departmentDetails['facility_id'], $departmentID);
+		
 		$this->smarty->assign('rules', $customizedRuleList);
 
 		//	Getting Product list

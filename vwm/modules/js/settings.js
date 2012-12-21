@@ -250,7 +250,7 @@ function ManageAdditionalEmailAccounts() {
 		if (emailAccountUserName == "") {
 			$('#emailAccountUserNameError').css("display", "block");
 			isError = true;
-		} if (emailAccountUserEmail == "") {
+		}if (emailAccountUserEmail == "") {
 			$('#emailAccountUserEmailError').css("display", "block");
 			isError = true;
 		}
@@ -319,7 +319,7 @@ function ManageQtyProductGauge() {
 			url: "?action=loadQtyProductSettings",
 			data: {facilityId: settings.facilityId, 
 				companyId: settings.companyId, 
-				departmentId:(settings.departmentId) ? settings.departmentId : 0 },
+				departmentId:(settings.departmentId) ? settings.departmentId : 0},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
@@ -346,7 +346,7 @@ function ManageQtyProductGauge() {
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
-				console.log(response);
+				
 				that.isLoaded = false;
 				$("#"+that.divId).dialog('close'); 
 				that.divId.isLoaded = false;
@@ -354,11 +354,120 @@ function ManageQtyProductGauge() {
 		});
 	};
 }
+
+
+//Manage Rule List
+function ManageRuleList() {
+	this.divId = 'manageRuleListContainer';
+	this.isLoaded = false;
+
+	this.iniDialog = function(divId) {
+		divId = typeof divId !== 'undefined' ? divId : this.divId;
+		if(divId !== this.divId) {
+			this.divId = divId;
+		}
+
+		var that = this;
+		$("#"+divId).dialog({
+			width: 500,
+			height: 400,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog('close');
+					that.isLoaded = false;
+				},
+				'Save': function() {
+					that.save();
+				}
+			}
+		});
+	}
+
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
+
+	this.loadContent = function() {
+		var that = this;
+		$.ajax({
+			url: "?action=loadRuleList&category=settings",
+			data: {facilityId: settings.facilityId, 
+				companyId: settings.companyId, 
+				departmentId:(settings.departmentId) ? settings.departmentId : 0},
+			type: "GET",
+			dataType: "html",
+			success: function (response) {
+				$("#"+that.divId).html(response);
+				that.isLoaded = true;
+      		}
+		});
+	};
+	
+	this.save = function() {
+		//	scan checked rules
+		
+		var that = this;
+		var ruleCount = 0;
+		var ruleData="";
+		var rules = document.all.ruleID;
+		for (i=0;i<rules.length;i++) {
+			if (rules[i].checked) {    		
+				ruleData+="ruleID_"+ruleCount+"="+rules[i].value+"&";
+				ruleCount++;
+			}
+		}  	
+		ruleData+="ruleCount="+ruleCount;
+	
+		//	scan selected role
+		var role = document.all.role;
+		
+		for (i=0;i<role.length;i++) {
+			if (role[i].checked) 
+			{  			
+				ruleData+="&role="+role[i].value;
+				roleValue = role[i].value;
+			}
+		}
+		
+		//	get id
+		roleID = document.getElementById('categoryNameRuleListID').value;
+			
+		
+		ruleData+="&roleID="+roleID;
+		ruleData+="&role="+$('#categoryRuleListName').val();
+		
+		//
+		$.ajax({
+			url: "modules/ajax/saveCustomizedRuleList.php",      		
+			type: "POST",
+			async: false,
+			data: ruleData,      			
+			dataType: "html",
+			success: function (response) 
+			{   
+				that.isLoaded = false;
+				$("#"+that.divId).dialog('close'); 
+				that.divId.isLoaded = false;							
+			}        		   			   	
+		});
+	};
+}
+
+
 		
 function Settings() {
 	this.managePermissions = new ManagePermissions();
 	this.manageAdditionalEmailAccounts = new ManageAdditionalEmailAccounts();
     this.manageQtyProductGauge = new ManageQtyProductGauge();
+	this.manageRuleList = new ManageRuleList();
 	this.companyId = false;
 	this.facilityId = false;
 	this.departmentId = false;
@@ -374,18 +483,19 @@ $(function() {
 	settings.managePermissions.iniDialog();
 	settings.manageAdditionalEmailAccounts.iniDialog();
     settings.manageQtyProductGauge.iniDialog();
+	settings.manageRuleList.iniDialog();
 });
 
 function selectProductGauge(){
 	var selectProductGauge = $('#selectProductGauge :selected').val();
 	var that = this;
-	console.log(this.divId);
+	
 	$.ajax({
 			url: "?action=loadQtyProductSettings",
 			data: {facilityId: settings.facilityId, 
 				companyId: settings.companyId, 
 				productGauge: selectProductGauge,
-				departmentId:(settings.departmentId) ? settings.departmentId : 0 },
+				departmentId:(settings.departmentId) ? settings.departmentId : 0},
 				
 			type: "GET",
 			dataType: "html",

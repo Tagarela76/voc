@@ -1664,8 +1664,10 @@ class Controller {
     }
 	
 	 protected function setTimeProductIndicator($limit, $currenProductTime) {
+		 
         $this->smarty->assign('timeProductLimit', $limit);
-        $this->smarty->assign('currenProductTime', round($currenProductTime, 2));
+        //$this->smarty->assign('currenProductTime', round($currenProductTime, 2));
+		$this->smarty->assign('currenProductTime', round($currenProductTime, 3));
         $timeProductCount = round(200 * $currenProductTime / $limit); 
         if ($timeProductCount > 200) {
             $timeProductCount = 200;
