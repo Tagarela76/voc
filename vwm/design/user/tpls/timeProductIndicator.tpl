@@ -12,18 +12,34 @@
 					<div style="position: absolute; z-index: 1; margin-left:4px; text-shadow: #fff 0.2em 0.2em 0.2em;">
 
 					</div>
-					{if $overritenTimeProductCount}
-						<div class="widhtrelac">
-							<div class="colors" style="width:{$timeProductCount}px;">
+					{if $timePeriod==1}
+						{if $overritenTimeProductCount}
+							<div class="widhtrelac">
+								<div class="annually_colors" style="width:{$timeProductCount}px;">
 
+								</div>
 							</div>
-						</div>
+						{else}
+							<div class="widhtrelac">
+								<div class="annually_colors" style="width:{$timeProductCount}px;">
+
+								</div>
+							</div>
+						{/if}
 					{else}
-						<div class="widhtrelac">
-							<div class="colors" style="width:{$timeProductCount}px;">
+						{if $overritenTimeProductCount}
+							<div class="widhtrelac">
+								<div class="colors" style="width:{$timeProductCount}px;">
 
+								</div>
 							</div>
-						</div>
+						{else}
+							<div class="widhtrelac">
+								<div class="colors" style="width:{$timeProductCount}px;">
+
+								</div>
+							</div>
+						{/if}
 					{/if}
 				</div>
 			</div>

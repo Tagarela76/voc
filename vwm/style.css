@@ -3507,7 +3507,17 @@ td.pcenter input, select {
     background-position: 0 -16px;
     height: 16px
 }
+.annually_colors {
+    background: url(images/gray_color.png) repeat-x;
+    background-position: 0 -16px;
+    height: 16px
+}
 
+.annually_nox_indicator_colors {
+    background: url(images/nox_indicator.png) repeat-x;
+    background-position: 0 -16px;
+    height: 16px
+}
 /*
  Pagination
  */

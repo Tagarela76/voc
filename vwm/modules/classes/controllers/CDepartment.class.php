@@ -165,7 +165,8 @@ class CDepartment extends Controller {
 		
 		$productQty = $qtyProductGauge->getCurrentUsage();
 		$unitType = new Unittype($this->db);
-		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
+		$qtyPeriod = $qtyProductGauge->getPeriod();
+		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty, $qtyPeriod);
 		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
 		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
 		// insert nox indicator bar into tpl
@@ -184,8 +185,8 @@ class CDepartment extends Controller {
 		
 		$this->smarty->assign('unitType', $unitType);
 		
-		
-		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime);
+		$timePeriod = $timeProductGauge->getPeriod();
+		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime, $timePeriod);
 		
 		if ($timeProductGauge->getLimit()!=0) {
 			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
@@ -197,8 +198,9 @@ class CDepartment extends Controller {
 		$noxGauge->setFacilityId($facilityDetails['facility_id']);
 		$noxGauge->load();
 		
+		$noxPeriod = $noxGauge->getPeriod();
 		if ($noxGauge->getLimit()!=0) {
-			$this->setNoxIndicator($noxGauge->getLimit(), $noxGauge->getCurrentUsage());
+			$this->setNoxIndicator($noxGauge->getLimit(), $noxGauge->getCurrentUsage(), $noxPeriod);
 			$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}
 
@@ -431,7 +433,8 @@ class CDepartment extends Controller {
 		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
 		$productQty = $qtyProductGauge->getCurrentUsage();
 		$unitType = new Unittype($this->db);
-		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty);
+		$qtyPeriod = $qtyProductGauge->getPeriod();
+		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty, $qtyPeriod);
 		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
 		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
 		// insert nox indicator bar into tpl
@@ -454,7 +457,8 @@ class CDepartment extends Controller {
 		$this->smarty->assign('unitType', $unitType);
 		
 		// insert time indicator bar into tpl 
-		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime);
+		$timePeriod = $timeProductGauge->getPeriod();
+		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime, $timePeriod);
 		if ($timeProductGauge->getLimit()!=0) {
 			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
 		}

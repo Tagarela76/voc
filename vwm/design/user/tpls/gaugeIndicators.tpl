@@ -10,14 +10,26 @@
 			<div class="widhtsh" style="float:left;">
 				<div class="gray">
 					<div class="widhtrelac">
-						{if $gauge->getGaugeType()==4 }
-							<div class="nox_indicator_colors" style="width:{$gauge->getPxCount()}px;">
+						{if $gauge->getPeriod()==1}
+							{if $gauge->getGaugeType()==4 }
+								<div class="annually_nox_indicator_colors" style="width:{$gauge->getPxCount()}px;">
 
-							</div>
+								</div>
+							{else}
+								<div class="annually_colors" style="width:{$gauge->getPxCount()}px;">
+
+								</div>
+							{/if}
 						{else}
-							<div class="colors" style="width:{$gauge->getPxCount()}px;">
+							{if $gauge->getGaugeType()==4 }
+								<div class="nox_indicator_colors" style="width:{$gauge->getPxCount()}px;">
 
-							</div>
+								</div>
+							{else}
+								<div class="colors" style="width:{$gauge->getPxCount()}px;">
+
+								</div>
+							{/if}
 						{/if}
 					</div>
 

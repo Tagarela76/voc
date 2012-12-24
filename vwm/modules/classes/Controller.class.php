@@ -1637,7 +1637,7 @@ class Controller {
 	}
 
 	 //	nox indicator
-    protected function setNoxIndicator($noxLimit, $totalUsage) {
+    protected function setNoxIndicator($noxLimit, $totalUsage, $noxPeriod) {
         $this->smarty->assign('noxLimit', $noxLimit);
 	//	$this->smarty->assign('noxLog', 'true');
         $this->smarty->assign('noxCurrentUsage', round($totalUsage, 2));
@@ -1645,6 +1645,7 @@ class Controller {
         if ($pxNoxCount > 200) {
             $pxNoxCount = 200;
         }
+		$this->smarty->assign('noxPeriod', $noxPeriod);
         $this->smarty->assign('noxPxCount', $pxNoxCount); //	200px - indicator length
     }
 
@@ -1653,17 +1654,18 @@ class Controller {
 	}
     
     //	product QTY indicator
-    protected function setQtyProductIndicator($limit, $currenProductQty) {
+    protected function setQtyProductIndicator($limit, $currenProductQty, $qtyPeriod) {
         $this->smarty->assign('qtyProductLimit', $limit);
         $this->smarty->assign('currenProductQty', round($currenProductQty, 2));
         $pxQtyProductCount = round(200 * $currenProductQty / $limit); 
         if ($pxQtyProductCount > 200) {
             $pxQtyProductCount = 200;
         }
+		$this->smarty->assign('qtyPeriod', $qtyPeriod);
         $this->smarty->assign('pxQtyProductCount', $pxQtyProductCount); //	200px - indicator length
     }
 	
-	 protected function setTimeProductIndicator($limit, $currenProductTime) {
+	 protected function setTimeProductIndicator($limit, $currenProductTime, $timePeriod) {
 		 
         $this->smarty->assign('timeProductLimit', $limit);
         //$this->smarty->assign('currenProductTime', round($currenProductTime, 2));
@@ -1672,6 +1674,7 @@ class Controller {
         if ($timeProductCount > 200) {
             $timeProductCount = 200;
         }
+		$this->smarty->assign('timePeriod', $timePeriod);
         $this->smarty->assign('timeProductCount', $timeProductCount); //	200px - indicator length
     }
 }

@@ -10,16 +10,30 @@
 			</div>-->
 			<div class="widhtsh" style="float:left;">
 				<div class="gray">
-					{if $overritenQtyProductCount}
-						<div class="widhtrelac">
-							<div class="colors" style="width:{$overritenQtyProductCount}px;">
+					{if $qtyPeriod==1}
+						{if $overritenQtyProductCount}
+							<div class="widhtrelac">
+								<div class="annually_colors" style="width:{$overritenQtyProductCount}px;">
+								</div>
 							</div>
-						</div>
+						{else}
+							<div class="widhtrelac">
+								<div class="annually_colors" style="width:{$pxQtyProductCount}px;">
+								</div>
+							</div>
+						{/if}
 					{else}
-						<div class="widhtrelac">
-							<div class="colors" style="width:{$pxQtyProductCount}px;">
+						{if $overritenQtyProductCount}
+							<div class="widhtrelac">
+								<div class="colors" style="width:{$overritenQtyProductCount}px;">
+								</div>
 							</div>
-						</div>
+						{else}
+							<div class="widhtrelac">
+								<div class="colors" style="width:{$pxQtyProductCount}px;">
+								</div>
+							</div>
+						{/if}
 					{/if}
 				</div>
 			</div>

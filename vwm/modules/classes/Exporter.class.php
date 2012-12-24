@@ -406,7 +406,7 @@
 				$xml2pdf->Open();
 
 				$xml2pdf->Parse($filePath);
-
+//var_dump($fileName); die();
 				if (isset($this->title)) {
 					$xml2pdf->Output($fileName.'.pdf', 'I');
 				} else {
