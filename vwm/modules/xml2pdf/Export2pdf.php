@@ -199,6 +199,7 @@ class XML2PDF extends PDF_MC_Table
 		$attribs = &$this->parser->structure[$path]["Attributes"];
 		$tag = $this->parser->structure[$path]["Tag"];
 		$this->DebugPrint( "Start: $tag\n" );
+		
 		switch ($tag) 
 		{
 											
@@ -216,7 +217,7 @@ class XML2PDF extends PDF_MC_Table
 				}
 				if( !empty($attribs["LEFTMARGIN"]) ) 
 				{					
-					$this->SetTopMargin( $attribs["LEFTMARGIN"] );
+					$this->SetLeftMargin( $attribs["LEFTMARGIN"] );
 				}
 				if( !empty($attribs["RIGHTMARGIN"]) ) 
 				{
@@ -403,7 +404,7 @@ class XML2PDF extends PDF_MC_Table
 					}
 					$this->upperWidths []= $this->widths;
 				} else {
-					$this->setX($this->GetX()+15);
+					//$this->setX($this->GetX()+15);
 					$this->Row($this->tdElem);
 				}
 				break;	
@@ -558,7 +559,7 @@ class XML2PDF extends PDF_MC_Table
 			}
 			$this->SetFont('Arial','B',10);
 			$this->SetAligns($this->aligns); 
-			$this->setX($this->GetX()+15);
+			//$this->setX($this->GetX()+15);
 			foreach ($this->trElem as $key => $trElement) {
 				$fieldsCount = count($trElement);
 				$this->SetWidths($this->upperWidths[$key]);

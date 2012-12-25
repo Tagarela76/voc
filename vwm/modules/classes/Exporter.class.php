@@ -406,7 +406,7 @@
 				$xml2pdf->Open();
 
 				$xml2pdf->Parse($filePath);
-//var_dump($fileName); die();
+
 				if (isset($this->title)) {
 					$xml2pdf->Output($fileName.'.pdf', 'I');
 				} else {
@@ -457,7 +457,7 @@
 			$page->appendChild($pageTopMargin);
 
 			$pageLeftMargin = $doc->createAttribute("leftmargin");
-			$pageLeftMargin->appendChild( $doc->createTextNode("10") );
+			$pageLeftMargin->appendChild( $doc->createTextNode("25") );
 			$page->appendChild($pageLeftMargin);
 
 			$pageRightMargin = $doc->createAttribute("rightmargin");
