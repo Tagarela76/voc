@@ -147,71 +147,29 @@ class CDepartment extends Controller {
 		}
 		$this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
 
-
-		//	qty product indicator department
-		$timeProductGauge = new SpentTimeGauge($this->db);
-		$timeProductGauge->setDepartmentId($departmentDetails['department_id']);
-		$timeProductGauge->setFacilityId($facilityDetails['facility_id']);
-		$timeProductGauge->load();
-		
-		$productTime = $timeProductGauge->getCurrentUsage();
-		
-		
-		$qtyProductGauge = new QtyProductGauge($this->db);
-		$qtyProductGauge->setDepartmentId($departmentDetails['department_id']);
-		$qtyProductGauge->setFacilityId($facilityDetails['facility_id']);
-		$qtyProductGauge->load();
-		$departmentId = $qtyProductGauge->getFacilityId();
-		
-		$productQty = $qtyProductGauge->getCurrentUsage();
-		$unitType = new Unittype($this->db);
-		$qtyPeriod = $qtyProductGauge->getPeriod();
-		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty, $qtyPeriod);
-		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
-		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
-		// insert nox indicator bar into tpl
-		if ($qtyProductGauge->getLimit() != 0) {
-			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-		}
+		$departmentClass = new VWM\Hierarchy\Department($this->db,$departmentDetails['department_id']);
+			
+			
+			$allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
+			
+			$departmentGauges = array();
+			$gaugeTypeNames = Gauge::getGaugeTypes();
+			$unittype = new Unittype($this->db);
+			foreach($allDepartmentAvailableGauges as $departmentGauge){
+				$unitType = $departmentGauge->getUnitType();
+				
+				if($departmentGauge->getGaugeType() == 4){
+					$departmentGauge->setUnitTypeName('');
+				}else{
+					$departmentGauge->setUnitTypeName($unittype->getNameByID($unitType));
+				}
+				$departmentGauges[] = $departmentGauge;
+			}
+			
+		$this->smarty->assign("departmentGauges", $departmentGauges);
 		
 		
-		// insert time indicator bar into tpl 
-		$productTime = $timeProductGauge->getCurrentUsage();
 		
-		$unittype = new Unittype($this->db);
-		$unitType = $timeProductGauge->getUnitType();
-		$unitType = $unittype->getNameByID($unitType);
-		
-		
-		$this->smarty->assign('unitType', $unitType);
-		
-		$timePeriod = $timeProductGauge->getPeriod();
-		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime, $timePeriod);
-		
-		if ($timeProductGauge->getLimit()!=0) {
-			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-		}
-
-		// nox gauge
-		$noxGauge = new NoxGauge($this->db);
-		$noxGauge->setDepartmentId($departmentDetails['department_id']);
-		$noxGauge->setFacilityId($facilityDetails['facility_id']);
-		$noxGauge->load();
-		
-		$noxPeriod = $noxGauge->getPeriod();
-		if ($noxGauge->getLimit()!=0) {
-			$this->setNoxIndicator($noxGauge->getLimit(), $noxGauge->getCurrentUsage(), $noxPeriod);
-			$this->insertTplBlock('tpls/noxIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-		}
-
-
-		$departmentList[$i]['nox_gauge'] = array(
-			'currentUsage' => round( $noxGauge->getCurrentUsage(), 2),
-			'limit' => $noxGauge->getLimit(),
-			'pxCount' => round(200 *  $noxGauge->getCurrentUsage()
-					/ $noxGauge->getLimit()),
-			'unitType'=>''
-		);
 		
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
@@ -323,77 +281,7 @@ class CDepartment extends Controller {
 				$departmentList[$i]["valid"] = "valid";
 			}
 
-			//	set gauge foreach department
-			/*$currentUsage = $department->getCurrentUsage();
-			$limit = $department->getMonthlyLimit();
-			$pxCount = round(200 * $currentUsage / $limit);
-			if ($pxCount > 200) {
-				$pxCount = 200;
-			}
-			$departmentList[$i]['gauge'] = array(
-				'currentUsage' => round($currentUsage, 2),
-				'vocLimit' => $limit,
-				'pxCount' => $pxCount
-			);
-			*/
 			
-			//Time Gauge
-			/*$timeGauge = new SpentTimeGauge($this->db);
-			$timeGauge->setDepartmentId($departmentList[$i]['id']);
-			$timeGauge->setFacilityId($facilityDetails['facility_id']);
-			$timeGauge->load();
-			
-			$currentTimeUsage = $timeGauge->getCurrentUsage();
-			
-
-			$timeLimit = $timeGauge->getLimit();			
-			$pxTimeCount = round(200 * $currentTimeUsage / $timeLimit);			
-			$departmentList[$i]['time_gauge'] = array(
-				'currentUsage' => round($currentTimeUsage, 2),
-				'timeLimit' => $timeLimit,
-				'pxCount' => $pxTimeCount,
-				'unitType'=>$unitType
-				
-			);*/
-			
-			// qtyDetails
-			/*$qtyProductGauge = new QtyProductGauge($this->db);
-			$qtyProductGauge->setDepartmentId($departmentList[$i]['id']);
-			$qtyProductGauge->setFacilityId($facilityDetails['facility_id']);
-			$qtyProductGauge->load();
-			$currentQtyUsage = $qtyProductGauge->getCurrentUsage();
-			$qtyLimit = $qtyProductGauge->getLimit();
-			
-			$unitType = $qtyProductGauge->getUnitType();
-			$unittype = new Unittype($this->db);
-			$unitType = $unittype->getNameByID($unitType);
-			
-			$pxQtyCount = round(200 * $currentQtyUsage / $qtyLimit);
-			$departmentList[$i]['qty_gauge'] = array(
-				'currentUsage' => round($currentQtyUsage, 2),
-				'qtyLimit' => $qtyLimit,
-				'pxCount' => $pxQtyCount,
-				'unitType'=>$unitType
-			);
-
-			// nox gauge
-			$noxGauge = new NoxGauge($this->db);			
-			$noxGauge->setDepartmentId($departmentList[$i]['id']);
-			$noxGauge->setFacilityId($facilityDetails['facility_id']);
-			$noxGauge->load();			
-			//var_dump($noxGauge->getPeriodName());die();
-			$departmentList[$i]['nox_gauge'] = array(
-				'currentUsage' => round( $noxGauge->getCurrentUsage(), 2),
-				'limit' => $noxGauge->getLimit(),
-				'pxCount' => round(200 *  $noxGauge->getCurrentUsage()
-						/ $noxGauge->getLimit()),
-				'unitType'=>''
-			);
-
-
-			//	sum total usage
-			$totalUsage += $currentUsage;*/
-			/***********************************************/
 			//Create gauges for departments
 			$departmentClass = new VWM\Hierarchy\Department($this->db,$departmentList[$i]['id']);
 			
@@ -414,7 +302,7 @@ class CDepartment extends Controller {
 				$departmentGauges[] = $departmentGauge;
 			}
 			$departmentList[$i]['gauges'] = $departmentGauges;
-			//var_dump($departmentList[$i]['gauges'][3]->getCurrentUsage());die();
+			
 		}
 		
 		$this->smarty->assign("childCategoryItems", $departmentList);
@@ -428,42 +316,27 @@ class CDepartment extends Controller {
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources', $cssSources);
 
-		//	qty product indicator facillity
 		
-		$qtyProductGauge = new QtyProductGauge($this->db, $facilityDetails['facility_id']);
-		$productQty = $qtyProductGauge->getCurrentUsage();
-		$unitType = new Unittype($this->db);
-		$qtyPeriod = $qtyProductGauge->getPeriod();
-		$this->setQtyProductIndicator($qtyProductGauge->getLimit(), $productQty, $qtyPeriod);
-		$productQtyUnitType = $unitType->getNameByID($qtyProductGauge->getUnitType());
-		$this->smarty->assign('productQtyUnitType', $productQtyUnitType);
-		// insert nox indicator bar into tpl
-		if ($qtyProductGauge->getLimit() != 0) {
-			$this->insertTplBlock('tpls/qtyProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-		}
+		$facilityClass = new VWM\Hierarchy\Facility($this->db, $facilityDetails['facility_id']);
+			
+			
+			$allFacilityAvailableGauges = $facilityClass->getAllAvailableGauges();
+			
+			$facilityGauges = array();
+			$gaugeTypeNames = Gauge::getGaugeTypes();
+			$unittype = new Unittype($this->db);
+			foreach($allFacilityAvailableGauges as $facilityGauge){
+				$unitType = $facilityGauge->getUnitType();
+				
+				if($facilityGauge->getGaugeType() == 4){
+					$facilityGauge->setUnitTypeName('');
+				}else{
+					$facilityGauge->setUnitTypeName($unittype->getNameByID($unitType));
+				}
+				$facilityGauges[] = $facilityGauge;
+			}
 		
-		$timeProductGauge = new SpentTimeGauge($this->db);
-		$timeProductGauge->setFacilityId($facilityDetails['facility_id']);
-		$timeProductGauge->load();
-		
-		$productTime = $timeProductGauge->getCurrentUsage();
-		
-		$unittype = new Unittype($this->db);
-		$unitType = $timeProductGauge->getUnitType();
-		$unitType = $unittype->getNameByID($unitType);
-		
-		$unitTypeConverter = new UnitTypeConverter($this->db);
-		$productTime = $unitTypeConverter->convertDefaultTime($productTime, $unitType);
-		$this->smarty->assign('unitType', $unitType);
-		
-		// insert time indicator bar into tpl 
-		$timePeriod = $timeProductGauge->getPeriod();
-		$this->setTimeProductIndicator($timeProductGauge->getLimit(), $productTime, $timePeriod);
-		if ($timeProductGauge->getLimit()!=0) {
-			$this->insertTplBlock('tpls/timeProductIndicator.tpl', self::INSERT_AFTER_NOX_GAUGE);
-		}
-		
-		
+		$this->smarty->assign("departmentGauges", $facilityGauges);
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
 		$this->smarty->assign('pagination', $pagination);

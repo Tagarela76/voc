@@ -206,19 +206,26 @@
 							{if $request.category == 'department' || ($request.category == 'facility' && $request.bookmark == 'department')}
 							<div class="button_float_right">
 								<table>
-									{if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
+									{*if $request.category == 'department' || $request.category == 'facility' && $request.bookmark != 'inventory'}
 										{include file="tpls:tpls/vocIndicator.tpl" emissionLog='true'}
 									{/if}
 									{*INSERT_AFTER_NOX_GAUGE*}
 									{*Stupid Smarty does not support class constants*}
 									{*blocksToInsert.4 is equal to Controller::INSERT_AFTER_VOC_GAUGE*}
-									{if $blocksToInsert.4|@count > 0}
+									{*if $blocksToInsert.4|@count > 0}
 										{foreach from=$blocksToInsert.4 item="blockPath"}
 											{include file="tpls:$blockPath"}
 										{/foreach}
-									{/if}
+									{/if*}
+									
 									{*/INSERT_AFTER_NOX_GAUGE*}
 									</table>
+									<table style="height: 100%; width: 450px;">
+										{foreach from=$departmentGauges item=gauge}
+												{include file="tpls:tpls/gaugeIndicators.tpl"}
+										{/foreach}
+									</table>
+									
 							</div>
 							{/if}
 						</div>

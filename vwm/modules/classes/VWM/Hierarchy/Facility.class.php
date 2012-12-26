@@ -3,6 +3,11 @@
 namespace VWM\Hierarchy;
 
 use VWM\Framework\Model;
+use VWM\Apps\Gauge\Entity\Gauge;
+use VWM\Apps\Gauge\Entity\SpentTimeGauge;
+use VWM\Apps\Gauge\Entity\QtyProductGauge;
+use VWM\Apps\Gauge\Entity\NoxGauge;
+use VWM\Apps\Gauge\Entity\VocGauge;
 
 
 class Facility extends Model {
@@ -62,6 +67,7 @@ class Facility extends Model {
 	protected $departments;
 
 	const TABLE_NAME = 'facility';
+	const TABLE_GAUGE = 'product_gauge';
 	
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
@@ -416,6 +422,38 @@ class Facility extends Model {
 		}
 
 		return $this->departments;
+	}
+	
+	public function getAllAvailableGauges(){
+		$sql = "SELECT gauge_type FROM " . self::TABLE_GAUGE . " WHERE `limit`<>0 AND department_id is NULL AND facility_id=".$this->db->sqltext($this->getFacilityId());
+		$this->db->query($sql);
+		$rows = $this->db->fetch_all_array();
+
+		$gauges = array();
+		foreach ($rows as $row) {
+			switch ($row["gauge_type"]) {
+				case Gauge::QUANTITY_GAUGE:
+					$gauge = new QtyProductGauge($this->db);
+					break;
+				case Gauge::TIME_GAUGE:
+					$gauge = new SpentTimeGauge($this->db);
+					break;
+				case Gauge::VOC_GAUGE:
+					$gauge = new VocGauge($this->db);
+					break;
+				case Gauge::NOX_GAUGE:
+					$gauge = new NoxGauge($this->db);
+					break;
+				default:
+					break;
+			}
+			$gauge->setDepartmentId($this->department_id);
+			$gauge->setFacilityId($this->facility_id);
+			$gauge->load();
+
+			$gauges[] = $gauge;
+		}
+		return $gauges;
 	}
 }
 
