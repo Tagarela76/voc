@@ -8,7 +8,10 @@ class Facility extends FacilityProperties {
 	private $trashRecord;
 	private $parentTrashRecord;
 
+	
 	public $searchCriteria = array();
+	
+	const TB_PROCESS = 'process';
 	//	Methods
 	
 	function __construct($db) {
@@ -871,6 +874,25 @@ class Facility extends FacilityProperties {
 		" WHERE facility_id=".$this->db->sqltext($facilityId);
 		$this->db->query($sql);
 	}
+	
+	/*
+	 * get all processe
+	 * 
+	 * return array of objects 
+	 */
+	public function getProcessList($facilityId){
+		$sql = "SELECT * ".
+				"FROM ".self::TB_PROCESS.
+				" WHERE facility_id=".$facilityId." AND ".
+				"process_type=0";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$processList = $this->db->fetch_all();
+		return $processList;
+	}
+	
 	/* public function getProductQuantityInFacility($facilityId, $monthly = 0) {
         $month = 'MONTH(CURRENT_DATE)';
         $year = 'YEAR(CURRENT_DATE)';

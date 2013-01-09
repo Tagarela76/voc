@@ -3,6 +3,8 @@
 class UnitTypeConverter {
 
 	private $defaultType = "us gallon";
+	private $defaultTime = "min";
+	const BOXCOUNT = 100;
 
     function UnitTypeConverter($defaultType = "us gallon") {
     	$this->defaultType = $defaultType;
@@ -411,6 +413,56 @@ class UnitTypeConverter {
 				break;
 		}
 		return $time;
+	}
+	
+	public function convertDefaultCount($count, $type) {
+		switch ($type) {
+			case "each":
+				break;
+			case "pr":
+				$count = $count*2;
+				break;
+			case "box":
+				$count = $count*100;
+				break;
+		}
+		return $count;
+	}
+	
+	public function convertTimeFromTo($from, $to, $value){
+		// default time in minutes
+		$defaultTime = $this->convertDefaultTime($value, $from);
+		switch ($to) {
+			case "min":
+				$time = $defaultTime;
+				break;
+			case "hour":
+				$time = $defaultTime/60;
+				break;
+			case "days":
+				$time = $defaultTime/1440;
+				break;
+		}
+		return $time;
+		
+	}
+	
+	public function convertCountFromTo($from, $to, $value){
+		$defaultCount = $this->convertDefaultCount($value, $from);
+		switch ($to) {
+			case "each":
+				$count = $defaultCount;
+				break;
+			case "pr":
+				$count = $defaultCount/2;
+				break;
+			case "box":
+				$count = $defaultCount/  self::BOXCOUNT;
+				break;
+			default;
+				break;
+		}
+		return $count;
 	}
 }
 ?>
