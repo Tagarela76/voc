@@ -108,19 +108,19 @@ class CProduct extends Controller {
 				$exporter->value = $this->getFromRequest('filterValue');
 			}
 			$widths = array(
-				'product_id' => '7',
-				'supplier_id' => '20',
-				'product_nr' => '13',
+				'product_id' => '8',
+				'supplier' => '20',
+				'product_nr' => '10',
 				'name' => '28',
 				'coating' => '10',
 				'voclx' => '6',
 				'vocwx' => '6',
-				'percent_volatile_weight' => 5,
-				'percent_volatile_volume' => 5
+				'percent_volatile_weight' => 6,
+				'percent_volatile_volume' => 6
 			);
 			$header = array(
 				'product_id' => 'ID Number',
-				'supplier_id' => 'Supplier',
+				'supplier' => 'Supplier',
 				'product_nr' => 'Product No',
 				'name' => 'Product Name',
 				'coating' => 'Coating',
