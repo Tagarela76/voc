@@ -783,7 +783,9 @@ class validateCSV {
 						trim($libraryType) != "PAINT PRODUCTS" && 
 						trim($libraryType) != "paint products" &&
                         trim($libraryType) != "POWDER COATING" && 
-						trim($libraryType) != "powder coating") {
+						trim($libraryType) != "powder coating" &&
+                        trim($libraryType) != "FUEL PRODUCTS" && 
+                        trim($libraryType) != "fuel products") {
 					$comments .= "	Product Library type is undefined. Row " . $row . ".\n";
 					break;
 				}
