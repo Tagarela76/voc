@@ -7,9 +7,11 @@ class VocGauge extends Gauge {
 	protected $currentUsage;
 
 	const GAUGE_TYPE_NAME = 'VOC';
+	const VOC_PRIORITY = 1;
 
 	public function __construct(\db $db) {
 		$this->db = $db;
+		$this->gauge_priority = self::VOC_PRIORITY;
 		$this->gauge_type = self::VOC_GAUGE;
 	}
 

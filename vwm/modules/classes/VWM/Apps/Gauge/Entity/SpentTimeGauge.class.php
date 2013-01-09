@@ -6,9 +6,11 @@ class SpentTimeGauge extends Gauge {
 
 	const TABLE_NAME = 'product_gauge';
 	const GAUGE_TYPE_NAME = 'Time Spent';
+	const TIME_PRIORITY = 2;
 
 	public function __construct(\db $db, $facilityId = null) {
 		$this->db = $db;
+		$this->gauge_priority = self::TIME_PRIORITY;
 		$this->modelName = 'timeProductGauge';
 		$this->gauge_type = Gauge::TIME_GAUGE;
 		if (isset($facilityId)) {

@@ -62,6 +62,11 @@ abstract class Gauge extends Model {
 	 */
 	protected $pxCount;
 	
+	/*
+	 * 
+	 */
+	protected $gauge_priority;
+	
     const PERIOD_MONTHLY = 0;
 	const PERIOD_ANNUALLY= 1;
 	const QUANTITY_GAUGE = 1;
@@ -72,6 +77,11 @@ abstract class Gauge extends Model {
 
 	const TABLE_NAME = 'product_gauge';
 
+	public function getGaugePriority() {
+		return $this->gauge_priority;
+	}
+
+	
 	public function getId() {
 		return $this->id;
 	}
