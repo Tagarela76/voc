@@ -35,39 +35,39 @@
 
 		{if $childCategoryItems|@count > 0}
 			{foreach from=$childCategoryItems item=facility}
-				<tr class="hov_company border_users_l border_users_b" height="10px">
-					<td >
+				<tr class="hov_company" height="10px">
+					<td class="border_users_b border_users_l">
 						<input type="checkbox" value="{$facility.id}" name="id[]">
 					</td>
-					<td>
+					<td class="border_users_b border_users_l">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
 								{$facility.id}
 							</div>
 						</a>
 					</td>
-					<td>
+					<td class="border_users_b border_users_l">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
 								{$facility.name|escape}
 							</div>
 						</a>
 					</td>					
-					<td>
+					<td class="border_users_b border_users_l">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
 								{$facility.address|escape},&nbsp;{$facility.contact|escape}&nbsp({$facility.phone|escape})
 							</div>
 						</a>
 					</td>
-					<td>
+					<td class="border_users_b border_users_l" >
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
 								{$facility.stateName|escape}
 							</div>
 						</a>
 					</td>
-					<td class="border_users_r" style="width:390px;">
+					<td class="border_users_b border_users_l border_users_r" style="width:390px;">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 						<table style="border-width: 0px;">													
 								{include file="tpls:tpls/vocIndicator.tpl" currentUsage=$facility.gauge.currentUsage
