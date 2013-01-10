@@ -104,7 +104,7 @@
 	<tr>
 
 		<td>
-		<select name="companyID" onchange="getFacility(value);">
+		<select name="companyID" onchange="getFacility(value);hideButton();">
 			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
 			{section name=i loop=$companyList}
 				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
@@ -297,8 +297,8 @@
 					var content_0 = '<option value="All facilities">All facilities</option>';
 					content = content_0 + content;
 					$("select[name='facilityID']").append(content);
-					$("input#assign2facility").css("display","inline-block");
-					$("input#unassign2facility").css("display","inline-block");
+					//$("input#assign2facility").css("display","inline-block");
+					//$("input#unassign2facility").css("display","inline-block");
 				} else {
 					$("select[name='facilityID']").attr('disabled', 'disabled');
 					$("input#assign2facility").css("display","none");
@@ -307,7 +307,9 @@
 			}
 		}
 			function hideButton(){
-				if($("#facilityID :selected").val()=='All facilities'){
+				
+				if($("#facilityID :selected").val() == 'All facilities'
+						|| $("#facilityID :selected").val() == undefined){
 					$('#assign2facility').hide();
 					$('#unassign2facility').hide();
 					}else{
