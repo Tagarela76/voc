@@ -4,7 +4,7 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-abstract class Resource extends Model {
+class Resource extends Model {
 	/*
 	 * step id
 	 * @var int
@@ -38,7 +38,7 @@ abstract class Resource extends Model {
 	
 	/*
 	 * resource type id
-	 * @var int
+	 * @var int (TIME = 1, VOLUME = 2, COUNT=3)
 	 */
 	protected $resource_type_id;
 	
@@ -87,12 +87,20 @@ abstract class Resource extends Model {
 	
 	const TABLE_NAME = 'resource';
 	
-	//const ResourceId = new array('TIME', 'WEIGHT', 'COUNT');
+	
 	
 	const TIME = 1;
 	const VOLUME = 2;
 	const COUNT = 3;
 	
+	
+	public function __construct(\db $db, $Id = null) {
+		$this->db = $db;
+		if (isset($Id)) {
+			$this->setId($Id);
+			$this->load();
+		}
+	}
 	
 	public function getId() {
 		return $this->id;

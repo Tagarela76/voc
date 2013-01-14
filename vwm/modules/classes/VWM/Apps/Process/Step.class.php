@@ -4,7 +4,7 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-abstract class Step extends Model {
+class Step extends Model {
 	/*
 	 * step id
 	 * @var int
@@ -31,8 +31,24 @@ abstract class Step extends Model {
 	 */
 	protected $process_template_id;
 	
+	/*
+	 * @var int
+	 */
+	protected $total_spent_time=0;
 	
 	const TABLE_NAME = 'step';
+	const RESOURCE_TABLE = 'resource';
+	const TIME = 1;
+	const VOLUME = 2;
+	const COUNT = 3;
+	
+	public function __construct(\db $db, $Id = null) {
+		$this->db = $db;
+		if (isset($Id)) {
+			$this->setId($Id);
+			$this->load();
+		}
+	}
 	
 	public function getId() {
 		return $this->id;
@@ -65,6 +81,10 @@ abstract class Step extends Model {
 		$this->process_template_id = $process_template_id;
 	}
 
+	public function getTotalSpentTime() {
+		$this->calculateTotalSpentTime();
+		return $this->total_spent_time;
+	}
 	
 	public function load() {
 		if (is_null($this->getId())) {
@@ -81,6 +101,39 @@ abstract class Step extends Model {
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+	}
+	
+	private function calculateTotalSpentTime(){
+		$resources = $this->getResources();
+		$totalSpentTime = 0;
+		foreach($resources as $resource){
+			
+			if($resource->getResourceTypeId()==self::TIME){
+				$unitTypeConvector = new \UnitTypeConverter($this->db);
+				$unitType = new \Unittype($this->db);
+				$unittypeName = $unitType->getNameByID($resource->getUnittypeId());
+				$qty = $unitTypeConvector->convertDefaultTime($resource->getQty(), $unittypeName);
+				$totalSpentTime+=$qty;
+			}
+		}
+		$this->total_spent_time = $totalSpentTime;
+	}
+	
+	public function getResources(){
+		$sql = "SELECT * FROM " . self::RESOURCE_TABLE .
+				" WHERE step_id = {$this->db->sqltext($this->getId())}";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$resourcesDetails = $this->db->fetch_all_array();
+		$resources = array();
+		foreach ($resourcesDetails as $resourceDetails) {
+			$resource = new Resource($this->db);
+			$resource->initByArray($resourceDetails);
+			$resources[] = $resource;
+		}
+		return $resources;
 	}
 
 	

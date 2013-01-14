@@ -65,7 +65,7 @@ class AutomotiveWorkOrder extends WorkOrder {
      */
     protected function insert() {
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin) 
+		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin, process_id) 
 				VALUES ( 
 				'" . $this->db->sqltext($this->getNumber()) . "'
 				, '" . $this->db->sqltext($this->getDescription()) . "'
@@ -73,6 +73,7 @@ class AutomotiveWorkOrder extends WorkOrder {
 				, '" . $this->db->sqltext($this->getFacilityId()) . "'	
 				, '" . $this->db->sqltext($this->getStatus()) . "'	
 				, '" . $this->db->sqltext($this->getVin()) . "'	
+				, '" . $this->db->sqltext($this->getProcessID()) . "'	
 				)";
 		$this->db->query($query); 
 		$id = $this->db->getLastInsertedID();

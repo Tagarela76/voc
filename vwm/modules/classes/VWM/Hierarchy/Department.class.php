@@ -326,7 +326,7 @@ class Department extends Model {
 		}
 
 		if (!$this->db->query($query)) {
-			throw new Exception('SQL query failed.');
+			throw new \Exception('SQL query failed.');
 		}
 		
 		$rows = $this->db->fetch_all_array();

@@ -3,7 +3,7 @@
 {*if $emissionLog=='true'}{include file="tpls:tpls/emissionLogPopup.tpl" }{/if*}
 
 <tr>
-	<td  style="padding: 0px;">
+	<td  style="padding: 0px;" class="">
 		<div class="gauge_text"> VOC </div>
 	</td>
 

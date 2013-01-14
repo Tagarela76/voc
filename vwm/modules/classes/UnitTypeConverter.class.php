@@ -406,10 +406,10 @@ class UnitTypeConverter {
 			case "min":
 				break;
 			case "hour":
-				$time = $time/60;
+				$time = $time*60;
 				break;
 			case "days":
-				$time = $time/1440;
+				$time = $time*1440;
 				break;
 		}
 		return $time;
