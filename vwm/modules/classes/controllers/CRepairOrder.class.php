@@ -3,6 +3,9 @@ use VWM\Label\CompanyLevelLabel;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
 use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
+use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\ProcessTemplate;
+use VWM\Apps\Process\StepInstance;
 
 class CRepairOrder extends Controller {
 
@@ -222,16 +225,26 @@ class CRepairOrder extends Controller {
 		
         $this->smarty->assign('data', $workOrder);
         $post = $this->getFromPost();
-
+		
+		//Get all Process
+		$processList = $facility->getProcessList($facilityDetails['facility_id']);
+		
+		$this->smarty->assign('processList', $processList);
+		
 		if (count($post) > 0) { 
 
             $facilityID = $post['facility_id'];
             $woDepartments_id = $post['woDepartments_id'];
+			$woProcessId = $post['woProcessId'];
             $workOrder->setNumber($post['number']);
             $workOrder->setCustomer_name($post['repairOrderCustomerName']);
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
-            $workOrder->setFacilityId($facilityID); 
+            $workOrder->setFacilityId($facilityID);
+			$workOrder->setProcessID($woProcessId);
+			
+			
+			
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
@@ -239,8 +252,21 @@ class CRepairOrder extends Controller {
 			if(count($violationList) == 0 && $woDepartments_id != '') {
 				$this->db->beginTransaction();
 				
-				$woID = $workOrder->save();                 
-                if (!empty($departmentIds)) {
+				$woID = $workOrder->save();
+				
+				//save process
+				/*$process = new ProcessTemplate($this->db);
+				$process->setId($woProcessId);
+				$process->load();
+
+				$woProcess = new ProcessInstance($this->db);
+				$woProcess->setFacilityId($facilityDetails['facility_id']);
+				$woProcess->setName($process->getName());
+				$woProcess->setWorkOrderId($woID);
+				$woProcess->save();*/
+
+				if (!empty($departmentIds)) {
+					
                     // add empty mix for each facility department
                     $mixOptimized = new MixOptimized($this->db);
                     $mixOptimized->description = $post["number"];
@@ -248,6 +274,19 @@ class CRepairOrder extends Controller {
                     $mixOptimized->iteration = 0;
                     $mixOptimized->facility_id = $facilityID; 
                     $mixOptimized->department_id = $departmentIds[0];
+					
+					//create new mix with process 
+					if($woProcessId!=''){
+						$process = new ProcessTemplate($this->db);
+						$process->setId($woProcessId);
+						$process->load();
+						$process->setCurrentStepNumber(1);
+						$step = $process->getCurrentStep();
+						$mixOptimized->spent_time = $step->getTotalSpentTime();
+						$mixOptimized->setStepId($step->getId());
+						$resources = $step->getResources();
+						$mixOptimized->notes = $resources[0]->getDescription();
+					}
                     $mixOptimized->save();
                 }
                 // set department to wo
@@ -282,6 +321,9 @@ class CRepairOrder extends Controller {
 		
         $this->smarty->assign('woDepartments', $woDepartments_id);
 
+		
+
+		
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
         $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()

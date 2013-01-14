@@ -40,7 +40,12 @@ abstract class WorkOrder extends Model {
 	 * @var string 
 	 */
 	protected $status;
-    
+	
+	/*
+	 * @var int
+	 */
+    protected $process_id;
+			
 	public $url;
     
     public function getId() {
@@ -89,6 +94,14 @@ abstract class WorkOrder extends Model {
 
     public function setStatus($status) {
         $this->status = $status;
+    }
+	
+	 public function getProcessID() {
+        return $this->process_id;
+    }
+
+    public function setProcessID($processId) {
+        $this->process_id = $processId;
     }
         
     /**

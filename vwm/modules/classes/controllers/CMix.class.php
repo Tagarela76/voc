@@ -5,6 +5,8 @@ use VWM\Label\CompanyLevelLabel;
 use VWM\Label\CompanyLabelManager;
 use VWM\ManageColumns\BrowseCategoryEntity;
 use VWM\ManageColumns\DisplayColumnsSettings;
+use VWM\Apps\Process\Process;
+use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 
 class CMix extends Controller {
 
@@ -547,7 +549,7 @@ class CMix extends Controller {
 			}
 
 
-			if (is_array($mixList) && count($mixList) > 0 && !is_null($this->getFromRequest('export'))) {
+			if (is_array($mixList) && count($mixList) > 0 && !is_null($this->getFromRequest('export'))) { 
 				//	EXPORT THIS PAGE
 				$exporter = new Exporter(Exporter::PDF);
 				$exporter->company = $companyDetails['name'];
@@ -1847,7 +1849,7 @@ class CMix extends Controller {
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
 		$data->recycle = $mix->recycle;
-
+ 
 		//	do I need to add work order suffix?
 		$repairOrderIteration = 0;
 		$mixParentID = $this->getFromRequest('parentMixID');
@@ -1860,8 +1862,25 @@ class CMix extends Controller {
 		// this mix was added to WO , add suffix ?
 		$repairOrderId = $this->getFromRequest('repairOrderId');
 
+		
+		//get procces for mix
+		$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+        $industryTypeId = $companyNew->getIndustryType();
+		
+		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
+		$processId = $workOrder->getProcessID();
+		$process = new Process($this->db, $processId);
+		$stepNumber = count($workOrder->getMixes())+1;
+		$process->setCurrentStepNumber($stepNumber);
+		$step = $process->getCurrentStep();
+		$data->spent_time = $step->getTotalSpentTime();
+		$resources = $step->getResources();
+		$data->notes = $resources[0]->getDescription();
+		
+		
 		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
+		$this->smarty->assign('stepID', $step->getId());
 		$this->smarty->assign('repairOrderId', $repairOrderId);
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
