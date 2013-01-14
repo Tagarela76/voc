@@ -39,6 +39,11 @@
 					Status
 				</div>
 			</td>
+			<td>
+				<div class="users_header_blue">
+					<div>Process</div>
+				</div>
+			</td>
             {if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
                 <td>
                     <div class="users_header_blue_r">
@@ -79,6 +84,13 @@
 				<a href="{$repairOrder->url}">
 					<div style="width:100%;">
 						{$repairOrder->status|escape}
+					</div>
+				</a>
+			</td>
+			<td style="width:250px;" class="border_users_b border_users_l border_users_r">
+				<a href="{$repairOrder->url}">
+					<div style="width:100%;">
+						{$repairOrder->getRepairOrderProcessName()}
 					</div>
 				</a>
 			</td>

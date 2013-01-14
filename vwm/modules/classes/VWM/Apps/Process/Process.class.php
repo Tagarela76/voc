@@ -10,7 +10,7 @@ class Process extends Model {
 	 * @var int
 	 */
 
-	protected $id;
+	protected $id = NULL;
 	/*
 	 * process facility_id
 	 * @var int
@@ -113,6 +113,9 @@ class Process extends Model {
 		$this->initByArray($row);
 	}
 
+	
+	
+	
 	/**
 	 * function for getting all Steps in process
 	 */
@@ -152,6 +155,46 @@ class Process extends Model {
 		return $step;
 	}
 
+	protected function _insert() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'" : "NULL";
+	
+		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
+				"facility_id, name, last_update_time, work_order_id" .
+				") VALUES(" .
+				"{$this->db->sqltext($this->getFacilityId())}," .
+				"'{$this->db->sqltext($this->getName())}'," .
+				"{$lastUpdateTime}, " .
+				"'{$this->db->sqltext($this->getWorkOrderId())}'" .
+				")";
+		$response = $this->db->exec($sql);
+		if ($response) {
+			$this->setId($this->db->getLastInsertedID());
+			return $this->getId();
+		} else {
+			return false;
+		}
+	}
+
+	protected function _update() {
+		$lastUpdateTime = ($this->getLastUpdateTime())
+				? "'{$this->getLastUpdateTime()}'" : "NULL";
+
+		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
+				"facility_id={$this->db->sqltext($this->getFacilityId())}, " .
+				"name='{$this->db->sqltext($this->getName())}', " .
+				"work_order_id='{$this->db->sqltext($this->getWorkOrderId())}', " .
+				"last_update_time={$lastUpdateTime} " .
+				"WHERE id={$this->db->sqltext($this->getId())}";
+
+		$response = $this->db->exec($sql);
+		if ($response) {
+			return $this->getId();
+		} else {
+			return false;
+		}
+	}
+	
 }
 
 ?>

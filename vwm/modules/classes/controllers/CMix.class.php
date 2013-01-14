@@ -1868,19 +1868,27 @@ class CMix extends Controller {
         $industryTypeId = $companyNew->getIndustryType();
 		
 		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
-		$processId = $workOrder->getProcessID();
-		$process = new Process($this->db, $processId);
-		$stepNumber = count($workOrder->getMixes())+1;
-		$process->setCurrentStepNumber($stepNumber);
-		$step = $process->getCurrentStep();
-		$data->spent_time = $step->getTotalSpentTime();
-		$resources = $step->getResources();
-		$data->notes = $resources[0]->getDescription();
+		$process = $workOrder->getProcess();
 		
+		if (!is_null($process->getId())) {
+			
+			$stepNumber = count($workOrder->getMixes()) + 1;
+			$process->setCurrentStepNumber($stepNumber);
+			$step = $process->getCurrentStep();
+
+
+			$data->spent_time = $step->getTotalSpentTime();
+
+			$resources = $step->getResources();
+			if ($resources) {
+				$data->notes = $resources[0]->getDescription();
+			}
+			$this->smarty->assign('stepID', $step->getId());
+		}
 		
 		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
-		$this->smarty->assign('stepID', $step->getId());
+		
 		$this->smarty->assign('repairOrderId', $repairOrderId);
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);

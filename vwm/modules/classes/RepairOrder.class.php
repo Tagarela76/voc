@@ -47,8 +47,10 @@ class RepairOrder extends Model {
 	public $vin;
 	
 	public $url;
-
-	function __construct(db $db, $repairOrderId = null) {
+	
+	public $process_id = null;
+    
+    function __construct(db $db, $repairOrderId = null) {
 		$this->db = $db;
 		$this->modelName = 'repairOrder';
 
@@ -57,7 +59,9 @@ class RepairOrder extends Model {
 			$this->_load();
 		}
 	}
-
+	
+	
+	
 	/**
 	 * add work order
 	 * @return int 
@@ -215,6 +219,15 @@ class RepairOrder extends Model {
 			return (isset($results)) ? $results : false;
 		} else
 			return false;
+	}
+	
+	public function getRepairOrderProcessName(){
+		if(is_null($this->process_id)){
+			return false;
+		}
+		$process = new \VWM\Apps\Process\Process($this->db, $this->process_id);
+		return $process->getName();
+		
 	}
 
 }

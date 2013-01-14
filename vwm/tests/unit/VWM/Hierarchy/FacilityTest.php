@@ -10,6 +10,7 @@ class FacilityTest extends DbTestCase {
 		Company::TABLE_NAME,
 		Facility::TABLE_NAME,
 		Department::TABLE_NAME,
+		Facility::TB_PROCESS
 	);
 	
 	public function testSave() {
@@ -94,6 +95,26 @@ class FacilityTest extends DbTestCase {
 		$this->assertCount(2, $departments);
 		$this->assertEquals(new Department($this->db, 1), $departments[0]);
 	}
+	
+	public function testGetProcessList(){
+		$facitilyId = 1;
+		$facility = new Facility($this->db, $facitilyId);
+		$processList = $facility->getProcessList();
+		
+		$sql = "SELECT * ".
+				"FROM ".Facility::TB_PROCESS.
+				" WHERE facility_id=".$facitilyId;
+		$this->db->query($sql);
+		$processTestList = $this->db->fetch_all();
+		
+		$count = count($processList);
+		for($i=0; $i<$count; $i++){
+			$this->assertEquals($processTestList[$i]->name, $processList[$i]->getName());
+			$this->assertEquals($processTestList[$i]->id, $processList[$i]->getId());
+			$this->assertEquals($processTestList[$i]->facility_id, $processList[$i]->getFacilityId());
+		}
+		
+	} 
 
 }
 
