@@ -7,9 +7,11 @@ class NoxGauge extends Gauge {
 
 	protected $currentUsage;
 	const GAUGE_TYPE_NAME = 'NOx';
+	const NOX_PRIORITY = 0;
 
 	public function __construct(\db $db) {
 		$this->db = $db;
+		$this->gauge_priority = self::NOX_PRIORITY;
 		$this->gauge_type = self::NOX_GAUGE;
 	}
 

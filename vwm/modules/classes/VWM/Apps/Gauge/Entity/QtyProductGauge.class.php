@@ -7,9 +7,11 @@ use VWM\Framework\Model;
 class QtyProductGauge extends Gauge {
 
 	const GAUGE_TYPE_NAME = 'Product\'s Quantity';
+	const QTY_PRIORITY = 3;
 
 	public function __construct(\db $db, $facilityId = null) {
 		$this->db = $db;
+		$this->gauge_priority = self::QTY_PRIORITY;
 		$this->modelName = 'QtyProductGauge';
 		$this->gauge_type = Gauge::QUANTITY_GAUGE;
 		if (isset($facilityId)) {

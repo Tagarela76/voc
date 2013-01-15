@@ -104,13 +104,13 @@
 	<tr>
 
 		<td>
-		<select name="companyID" onchange="getFacility(value);">
+		<select name="companyID" onchange="getFacility(value);hideButton();">
 			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
 			{section name=i loop=$companyList}
 				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
 			{/section}
 		</select>
-		<select name="facilityID" disabled="disabled"></select>
+		<select name="facilityID" id="facilityID" disabled="disabled" onchange="hideButton()"></select>
 
 		{if $request.category != 'product'}
 		<select name="supplierID">
@@ -122,11 +122,12 @@
 		{/if}
 		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
 		<br>
+		
 		{if $itemsCount > 0}
 			{if $currentCompany == 0}
-		<input type="button" class="button" name="subaction" value="Assign to company" onclick="submitFunc('browseCategory','Assign to company')">
+				<input id='productAssign' type="button" class="button" name="subaction" value="Assign to company" onclick="submitFunc('browseCategory','Assign to company')" >
 		{else}
-		<input type="button" class="button" name="subaction" value="Unassign product(s)" onclick="submitFunc('browseCategory','Unassign product(s)')" >{/if}
+		<input id='productAssign' type="button" class="button" name="subaction" value="Unassign product(s)" onclick="submitFunc('browseCategory','Unassign product(s)')" >{/if}
 		{/if}
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		{if $itemsCount > 0}
@@ -257,6 +258,8 @@
 		$(document).ready(function() {
 			$("select[name='companyID']").change();
 			$("select[name='facilityID'] option[value='"+$("input#current_facility").val()+"']").attr("selected", "selected");
+			$('#assign2facility').hide();
+			$('#unassign2facility').hide();
 		});
 
 		function submitFunc(action,subaction) {
@@ -294,8 +297,8 @@
 					var content_0 = '<option value="All facilities">All facilities</option>';
 					content = content_0 + content;
 					$("select[name='facilityID']").append(content);
-					$("input#assign2facility").css("display","inline-block");
-					$("input#unassign2facility").css("display","inline-block");
+					//$("input#assign2facility").css("display","inline-block");
+					//$("input#unassign2facility").css("display","inline-block");
 				} else {
 					$("select[name='facilityID']").attr('disabled', 'disabled');
 					$("input#assign2facility").css("display","none");
@@ -303,5 +306,16 @@
 				}
 			}
 		}
+			function hideButton(){
+				
+				if($("#facilityID :selected").val() == 'All facilities'
+						|| $("#facilityID :selected").val() == undefined){
+					$('#assign2facility').hide();
+					$('#unassign2facility').hide();
+					}else{
+						$('#assign2facility').show();
+					$('#unassign2facility').show();
+						}
+				}
 	</script>
 {/literal}

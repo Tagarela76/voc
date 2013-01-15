@@ -24,8 +24,6 @@ abstract class Mapper {
 	}
 	
 	/**
-	 * TODO: fit 80 symbols
-	 * 
 	 * Maps CSV columns to real properties
 	 * @param string $pathToCsv
 	 * @return array of objects
@@ -38,7 +36,8 @@ abstract class Mapper {
 		$header = $csvHelper->getTableHeader();
 		// now let's do actual mapping
 		$mappedData = array();
-		for ($i=0;$i<count($header[1]);$i++) {
+
+		/*for ($i=0;$i<count($header[1]);$i++) {
 			$mapping = $this->getMap();
 			foreach ($mapping as $mapKey => $mapHeader) {
 				if( ($header[1][$i] != "" && in_array(strtoupper(trim($header[0][$i])), $mapHeader) && in_array(strtoupper(trim($header[1][$i])), $mapHeader)) || 
@@ -47,7 +46,19 @@ abstract class Mapper {
 				}
 			}
 			
-		} 
+		} */
+		
+		$map = $this->getMap();		
+		foreach ($header as $columnIndex => $columnName) {
+			foreach ($map as $fieldKey => $fieldNames) {
+				if(in_array($columnName, $fieldNames)) {
+					//match
+					$mappedData[$fieldKey] = $columnIndex;
+					continue;
+				}				
+			}
+		}
+		
 		$this->mappedData = $mappedData;
 	}
 }

@@ -246,6 +246,10 @@ class bulkUploader {
 					case "detailing":	
 						$productLibraryTypes[] = "3";
 						break;	
+                    case "FUEL PRODUCTS":
+					case "fuel products":	
+						$productLibraryTypes[] = "4";
+						break;
                     case "POWDER COATING":
 					case "powder coating":	
 						$productLibraryTypes[] = "5";

@@ -163,8 +163,9 @@ class CDepartment extends Controller {
 				}else{
 					$departmentGauge->setUnitTypeName($unittype->getNameByID($unitType));
 				}
-				$departmentGauges[] = $departmentGauge;
+				$departmentGauges[$departmentGauge->getGaugePriority()] = $departmentGauge;
 			}
+			ksort($departmentGauges);
 			
 		$this->smarty->assign("departmentGauges", $departmentGauges);
 		
@@ -194,6 +195,7 @@ class CDepartment extends Controller {
 
 		$department = new VWM\Hierarchy\Department($this->db);
 		$department->setFacilityId($this->getFromRequest("facilityID"));
+		
 		$this->smarty->assign('department', $department);
 
 		$woLabel = $department->getFacility()
@@ -222,7 +224,7 @@ class CDepartment extends Controller {
 		}
 		$department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
 		$this->smarty->assign('department', $department);
-
+//var_dump($department);die();
 		$woLabel = $department->getFacility()
 				->getCompany()
 				->getIndustryType()
@@ -299,8 +301,9 @@ class CDepartment extends Controller {
 				}else{
 					$departmentGauge->setUnitTypeName($unittype->getNameByID($unitType));
 				}
-				$departmentGauges[] = $departmentGauge;
+				$departmentGauges[$departmentGauge->getGaugePriority()] = $departmentGauge;
 			}
+			ksort($departmentGauges);
 			$departmentList[$i]['gauges'] = $departmentGauges;
 			
 		}
@@ -333,9 +336,10 @@ class CDepartment extends Controller {
 				}else{
 					$facilityGauge->setUnitTypeName($unittype->getNameByID($unitType));
 				}
-				$facilityGauges[] = $facilityGauge;
+				$facilityGauges[$facilityGauge->getGaugePriority()] = $facilityGauge;
 			}
-		
+			ksort($facilityGauges);
+		//var_dump($facilityGauges);die();
 		$this->smarty->assign("departmentGauges", $facilityGauges);
 		//	set tpl
 		$this->smarty->assign('tpl', 'tpls/departmentList.tpl');
