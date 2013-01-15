@@ -44,7 +44,7 @@ abstract class WorkOrder extends Model {
 	/*
 	 * @var int
 	 */
-    protected $process_id;
+    protected $process_id = null;
 			
 	public $url;
     
@@ -136,6 +136,11 @@ abstract class WorkOrder extends Model {
 			$mixes[] = $mix;
 		}
 		return $mixes;
+	}
+	
+	public function getProcess(){
+		$process = new \VWM\Apps\Process\Process($this->db, $this->getProcessID());
+		return $process;
 	}
 }
 ?>

@@ -6,18 +6,23 @@ use VWM\Framework\Test\DbTestCase;
 
 class StepTest extends DbTestCase {
 
+	const TB_STEP = 'step';
+	const TB_PROCESS='process';
+	const TB_RESOURCE = 'resource';
+	const TB_UNITTYPE = 'unittype';
+	
 	public $fixtures = array(
-		TB_PROCESS, TB_STEP, TB_RESOURCE, TB_UNITTYPE
+		self::TB_PROCESS, self::TB_STEP, self::TB_RESOURCE, self::TB_UNITTYPE
 	);
 
-	const TB_RESOURCE = 'resource';
+	
 	public function testGetResources() {
-		$StepId = 1;
-		$step = new Step($this->db, $StepId);
+		$stepId = 1;
+		$step = new Step($this->db, $stepId);
 		$resources = $step->getResources();
 
 		$sql = "SELECT * FROM " . self::TB_RESOURCE .
-				" WHERE step_id = ".$StepId;
+				" WHERE step_id = ".$stepId;
 		$this->db->query($sql);
 
 		$result = $this->db->fetch_all_array();
@@ -43,8 +48,8 @@ class StepTest extends DbTestCase {
 	}
 	
 	public function testGetTotalSpentTime() {
-		$StepId = 1;
-		$step = new Step($this->db, $StepId);
+		$stepId = 1;
+		$step = new Step($this->db, $stepId);
 		$totalSpentTime = $step->getTotalSpentTime();
 		
 		$sql = "SELECT qty FROM ".self::TB_RESOURCE." WHERE unittype_id IN (38,39,40)";
@@ -57,6 +62,41 @@ class StepTest extends DbTestCase {
 		}
 		$this->assertEquals($totalTime, $totalSpentTime);
 		
+	}
+	
+	public function testSave(){
+		$processId = 1;
+		$stepNumber= 1;
+		$step = new Step($this->db);
+		$step->setProcessId($processId);
+		$step->setNumber($stepNumber);
+		
+		$stepID = $step->save();
+		
+		$sql = "SELECT * FROM ".self::TB_STEP." ".
+				"WHERE id=".$stepID;
+		$this->db->query($sql);
+		$result = $this->db->fetch_all_array();
+		$this->assertEquals($step->getId(), $result[0]['id']);
+		$this->assertEquals($step->getNumber(), $result[0]['number']);
+		$this->assertEquals($step->getProcessId(), $result[0]['process_id']);
+		
+		
+		//test Update
+		$newProcessId = 2;
+		$newNumber= 2;
+		$step->setProcessId($newProcessId);
+		$step->setNumber($newNumber);
+		$step->save();
+		
+		$sql = "SELECT * FROM ".self::TB_STEP." ".
+				"WHERE id=".$stepID;
+		$this->db->query($sql);
+		$result = $this->db->fetch_all_array();
+		
+		$this->assertEquals($step->getId(), $result[0]['id']);
+		$this->assertEquals($step->getNumber(), $result[0]['number']);
+		$this->assertEquals($step->getProcessId(), $result[0]['process_id']);
 	}
 
 	

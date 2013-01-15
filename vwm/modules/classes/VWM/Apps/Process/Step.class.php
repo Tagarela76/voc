@@ -29,11 +29,7 @@ class Step extends Model {
 	 * step number
 	 * @var int
 	 */
-	protected $process_template_id;
 	
-	/*
-	 * @var int
-	 */
 	protected $total_spent_time=0;
 	
 	const TABLE_NAME = 'step';
@@ -71,14 +67,6 @@ class Step extends Model {
 
 	public function setProcessId($process_id) {
 		$this->process_id = $process_id;
-	}
-
-	public function getProcessTemplateId() {
-		return $this->process_template_id;
-	}
-
-	public function setProcessTemplateId($process_template_id) {
-		$this->process_template_id = $process_template_id;
 	}
 
 	public function getTotalSpentTime() {
@@ -134,6 +122,41 @@ class Step extends Model {
 			$resources[] = $resource;
 		}
 		return $resources;
+	}
+	
+	protected function _insert() {
+
+		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
+				"number, process_id, last_update_time" .
+				") VALUES(" .
+				"{$this->db->sqltext($this->getNumber())}," .
+				"'{$this->db->sqltext($this->getProcessId())}'," .
+				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
+				")";
+		$response = $this->db->exec($sql);
+		if ($response) {
+			$this->setId($this->db->getLastInsertedID());
+			return $this->getId();
+		} else {
+			return false;
+		}
+	}
+
+	protected function _update() {
+		$lastUpdateTime = $this->getLastUpdateTime();
+
+		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
+				"number={$this->db->sqltext($this->getNumber())}, " .
+				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
+				"last_update_time='{$lastUpdateTime}' " .
+				"WHERE id={$this->db->sqltext($this->getId())}";
+
+		$response = $this->db->exec($sql);
+		if ($response) {
+			return $this->getId();
+		} else {
+			return false;
+		}
 	}
 
 	

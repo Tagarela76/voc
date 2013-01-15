@@ -68,6 +68,7 @@ class Facility extends Model {
 
 	const TABLE_NAME = 'facility';
 	const TABLE_GAUGE = 'product_gauge';
+	const TB_PROCESS = 'process';
 	
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
@@ -455,6 +456,27 @@ class Facility extends Model {
 		}
 		return $gauges;
 	}
+	
+	/**
+	 * @return \VWM\Apps\Process\Process[]
+	 */
+	public function getProcessList(){
+		$sql = "SELECT id ".
+				"FROM ".self::TB_PROCESS.
+				" WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$processListId = $this->db->fetch_all();
+		foreach ($processListId as $processId){
+			$processList[] = new \VWM\Apps\Process\Process($this->db, $processId->id);
+		}
+		return $processList;
+	}
+	
+	
+	
 }
 
 ?>
