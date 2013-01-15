@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `process` (
   `work_order_id` int(255) DEFAULT NULL,
   `last_update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8_genereal_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `step` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `step` (
   `process_id` int(255) DEFAULT NULL,
   `process_template_id` int(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8_genereal_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE IF NOT EXISTS `resource` (
@@ -29,10 +29,10 @@ CREATE TABLE IF NOT EXISTS `resource` (
   `rate` float NOT NULL,
   `rate_unittype_id` int(255) NOT NULL,
   `rate_qty` int(255) NOT NULL DEFAULT '1',
-  `step_id` int(255) DEFAULT NULL,
-  `step_template_id` int(255) DEFAULT NULL,
+  `step_id` int(255) DEFAULT NULL,  
+  `last_update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8_genereal_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `unittype` (
 `unittype_id` ,
