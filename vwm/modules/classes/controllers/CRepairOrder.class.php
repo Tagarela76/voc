@@ -255,7 +255,8 @@ class CRepairOrder extends Controller {
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
-			$violationList = $workOrder->validate(); 
+			$violationList = $workOrder->validate();
+			
 			if(count($violationList) == 0 && $woDepartments_id != '') {
 				$this->db->beginTransaction();
 				
@@ -282,8 +283,10 @@ class CRepairOrder extends Controller {
 						$mixOptimized->setStepId($step->getId());
 						$resources = $step->getResources();
 						$mixOptimized->notes = $resources[0]->getDescription();
+					}					
+                    if(!$mixOptimized->save()) {
+						throw new Exception("Failed to save Mix");
 					}
-                    $mixOptimized->save();
                 }
                 // set department to wo
                 $woDepartments_id = explode(",", $woDepartments_id);
