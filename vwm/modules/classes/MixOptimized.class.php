@@ -26,7 +26,7 @@ class MixOptimized extends Model {
 	public $waste_percent;
 	public $recycle_percent;
 	public $notes;
-	protected $step_id = null;	
+		
 	
 	/**
 	 * Working Order iteration number. Default is 0
@@ -189,10 +189,6 @@ class MixOptimized extends Model {
 		$this->department = $department;
 	}
 
-	public function setStepId($step_id) {
-		$this->step_id = $step_id;
-	}
-	
 	public function setFacility(Facility $facility) {
 		$this->facility = $facility;
 	}
@@ -212,10 +208,6 @@ class MixOptimized extends Model {
 		return $this->company;
 	}
 	
-	public function getStepId() {
-		return	$this->step_id;
-	}
-
 	public function getDepartment() {
 		if (!isset($this->department)) {
 			$this->loadDepartment();
@@ -673,14 +665,11 @@ class MixOptimized extends Model {
 				? $this->db->sqltext($this->wo_id) 
 				: "NULL";
 
-		$stepId = ($this->step_id !== null) 
-				? $this->db->sqltext($this->step_id) 
-				: "NULL";
 		
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, spent_time, " .
 					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id, last_update_time, wo_id, step_id) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time, wo_id) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -698,8 +687,7 @@ class MixOptimized extends Model {
 						"{$this->db->sqltext($this->iteration)}, " .
 						"{$parentID}, " .
 						" NOW(), " .
-						" {$repairOrderId}, " .
-						" {$stepId} " .	
+						" {$repairOrderId} " .
 						") "; 
 
 		return $query;
