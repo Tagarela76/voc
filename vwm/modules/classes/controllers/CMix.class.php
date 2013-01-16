@@ -622,7 +622,7 @@ class CMix extends Controller {
 					$mixObj["r_o_description"] = $repairOrder->description;
 				}
 				if (in_array("add_job", $mixColumn4Display)) {
-					$mixObj["add_job"] = (!$mix->hasChild)? 
+					$mixObj["add_job"] = (!$mix->hasChild && $mix->wo_id)?
 					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') . 
 						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
 							title='Add child job'>add</a> &nbsp" : "";
