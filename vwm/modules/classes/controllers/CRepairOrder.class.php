@@ -280,7 +280,6 @@ class CRepairOrder extends Controller {
 						$process->setCurrentStepNumber(1);
 						$step = $process->getCurrentStep();
 						$mixOptimized->spent_time = $step->getTotalSpentTime();
-						$mixOptimized->setStepId($step->getId());
 						$resources = $step->getResources();
 						$mixOptimized->notes = $resources[0]->getDescription();
 					}					
