@@ -1166,8 +1166,17 @@ class CMix extends Controller {
 		$mix->waste = $jwaste;
 		$mix->debug = $debug;
 		$mix->recycle = $jrecycle;
-
+		$mix->setWoId(777);
+		
+		//Create Repair Order
+		$repairOrder = new RepairOrder($this->db);
+		$repairOrderManager = new RepairOrderManager($this->db);
+		$repairOrder->setNumber($mix->getDescription());
+		$repairOrder->setFacilityId($facilityID);
+		$woId = $repairOrder->save();
+		$mix->setWoId($woId);
 		$newMixID = $mix->save($isMWS, $optMix);
+		$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		if (!$newMixID) {
 			echo "Failed to save Mix. Please contact system administrator";
 			exit;
