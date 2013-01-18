@@ -35,7 +35,7 @@ switch(VERSION)
 				define ('DB_NAME', 'voc_test');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
-				define ('DB_PASS', 'zcfd15121510');
+				define ('DB_PASS', 'developer');
 				//actionMsdsUploader
 				define ('PATH_BRIDGE_XML', '../bridge/bridge.xml');
 				define ('PATH_BRIDGE_XML_SCHEMA', '../bridge/bridge.xsd');
@@ -295,7 +295,7 @@ define ('TB_EQUIPMENT_LIGHTING_BULB_TYPE', 'equipment_lighting_bulb_type');
 define ('TB_WORK_ORDER', 'work_order');
 
 define ('TB_PFP_TYPES', 'pfp_types');
-
+define ('TB_WO2DEPARTMENT', 'wo2department');
 define ('TB_SALES_BROCHURE', 'sales_brochure');
 define ('TB_REMINDER', 'reminder');
 define ('TB_REMIND2USER', 'remind2user');
@@ -413,4 +413,7 @@ define ('REMIND_SENDER', 'noReply');
 define ('XML_FILE_REVIEWED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULES_UNDER_REVIEW.xml');
 define ('XML_FILE_COMPLETED_RULES', 'http://www.reginfo.gov/public/do/XMLViewFileAction?f=EO_RULE_COMPLETED_30_DAYS.xml');
 define ('MYSQL_DATE_FORMAT', 'Y-m-d');
+define ('MYSQL_DATETIME_FORMAT', 'Y-m-d H:i:s');
+define ('TB_PFP_2_DEPARTMENT', 'pfp_type2department');
+
 ?>
