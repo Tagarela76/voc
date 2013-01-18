@@ -1877,15 +1877,16 @@ class CMix extends Controller {
 			$stepNumber = count($workOrder->getMixes()) + 1;
 			$process->setCurrentStepNumber($stepNumber);
 			$step = $process->getCurrentStep();
-
-
-			$data->spent_time = $step->getTotalSpentTime();
-
-			$resources = $step->getResources();
-			if ($resources) {
-				$data->notes = $resources[0]->getDescription();
-			}
-			$this->smarty->assign('stepID', $step->getId());
+			if($step) {
+				$data->spent_time = $step->getTotalSpentTime();
+				$resources = $step->getResources();
+				if ($resources) {
+					$data->notes = $resources[0]->getDescription();
+				}
+				$this->smarty->assign('stepID', $step->getId());
+			} else {
+				// that is ok, just continue
+			}					
 		}
 
 		

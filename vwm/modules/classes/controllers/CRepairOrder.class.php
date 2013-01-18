@@ -287,6 +287,10 @@ class CRepairOrder extends Controller {
 				$this->db->beginTransaction();
 				
 				$woID = $workOrder->save();
+				if(!$woID) {
+					$this->db->rollbackTransaction();
+					throw new Exception("Failed to save Work Order");
+				}
 				
 				if (!empty($departmentIds)) {
 					
