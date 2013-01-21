@@ -624,7 +624,7 @@ class CMix extends Controller {
 					$mixObj["r_o_description"] = $repairOrder->description;
 				}
 				if (in_array("add_job", $mixColumn4Display)) {
-					$mixObj["add_job"] = (!$mix->hasChild)? 
+					$mixObj["add_job"] = (!$mix->hasChild && $mix->wo_id)?
 					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') . 
 						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
 							title='Add child job'>add</a> &nbsp" : "";
@@ -1168,8 +1168,17 @@ class CMix extends Controller {
 		$mix->waste = $jwaste;
 		$mix->debug = $debug;
 		$mix->recycle = $jrecycle;
-
+		$mix->setWoId(777);
+		
+		//Create Repair Order
+		$repairOrder = new RepairOrder($this->db);
+		$repairOrderManager = new RepairOrderManager($this->db);
+		$repairOrder->setNumber($mix->getDescription());
+		$repairOrder->setFacilityId($facilityID);
+		$woId = $repairOrder->save();
+		$mix->setWoId($woId);
 		$newMixID = $mix->save($isMWS, $optMix);
+		$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		if (!$newMixID) {
 			echo "Failed to save Mix. Please contact system administrator";
 			exit;

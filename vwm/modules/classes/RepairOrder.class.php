@@ -47,10 +47,9 @@ class RepairOrder extends Model {
 	public $vin;
 	
 	public $url;
-	
-	public $process_id = null;
-    
-    function __construct(db $db, $repairOrderId = null) {
+
+
+	public function __construct(db $db, $repairOrderId = null) {
 		$this->db = $db;
 		$this->modelName = 'repairOrder';
 
@@ -59,8 +58,72 @@ class RepairOrder extends Model {
 			$this->_load();
 		}
 	}
-	
-	
+
+
+	public function getId() {
+		return $this->id;
+	}
+
+	public function setId($id) {
+		$this->id = $id;
+	}
+
+	public function getNumber() {
+		return $this->number;
+	}
+
+	public function setNumber($number) {
+		$this->number = $number;
+	}
+
+	public function getDescription() {
+		return $this->description;
+	}
+
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+
+	public function getCustomerName() {
+		return $this->customer_name;
+	}
+
+	public function setCustomerName($customer_name) {
+		$this->customer_name = $customer_name;
+	}
+
+	public function getFacilityId() {
+		return $this->facility_id;
+	}
+
+	public function setFacilityId($facility_id) {
+		$this->facility_id = $facility_id;
+	}
+
+	public function getStatus() {
+		return $this->status;
+	}
+
+	public function setStatus($status) {
+		$this->status = $status;
+	}
+
+	public function getVin() {
+		return $this->vin;
+	}
+
+	public function setVin($vin) {
+		$this->vin = $vin;
+	}
+
+	public function getUrl() {
+		return $this->url;
+	}
+
+	public function setUrl($url) {
+		$this->url = $url;
+	}
+
 	
 	/**
 	 * add work order

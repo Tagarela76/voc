@@ -200,6 +200,15 @@ class MixOptimized extends Model {
 	public function setTrashRecord(iTrash $trashRecord) {
 		$this->trashRecord = $trashRecord;
 	}
+	
+	public function setWoId($wo_id) {
+		$this->wo_id = $wo_id;
+	}
+	
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+	
 
 	public function getCompany() {
 		if (!isset($this->company)) {
@@ -213,6 +222,14 @@ class MixOptimized extends Model {
 			$this->loadDepartment();
 		}
 		return $this->department;
+	}
+	
+	public function getWoId() {
+		return $this->wo_id;
+	}
+	
+	public function getDescription() {
+		return $this->description;
 	}
 
 	public function getFacility() {
@@ -254,7 +271,15 @@ class MixOptimized extends Model {
 		}
 	}
 
-	/**
+	public function getDepartmentId() {
+		return $this->department_id;
+	}
+
+	public function setDepartmentId($department_id) {
+		$this->department_id = $department_id;
+	}
+
+		/**
 	 * Add or Edit this mix
 	 *
 	 */
