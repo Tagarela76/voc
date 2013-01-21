@@ -11,45 +11,35 @@
 <table cellspacing="0" cellpadding="0" width="100%" style="margin:10px 0 0 0;">
 	<tr>
 		<td align="center" class="bookmark_fon">
-			<table cellspacing="0" cellpadding="0" height="100%" class="bookmarks_big" style="margin-left:20px;">
+			<table cellspacing="0" cellpadding="0" height="100%" class="bookmarks_big" align='right'>
 				<tr>
 					<td align="right">
-						<div id="slider1">
-							<a class="buttons prev" href="#"><img src="images/slider-left-arrow.gif" width="16px" height="10px" title="Previous"/></a>
-							<div class="viewport">
-								<ul class="overview">
-									<li>  
-										<a href="admin.php?action=browseCategory&category=bulkUploader&bookmark=bulkUploader" style="text-decoration: none; color: #333333;">
-											{if $bookmark != "bulkUploader"}
-												<div class="deactiveBookmark_big">
-													<div class="deactiveBookmark_right_big">
-											{else}
-												<div class = "activeBookmark_big">
-													<div class = "activeBookmark_right_big">
-											{/if}
-												BULK UPLOADER
-												</div>
-											</div>
-										</a>
-									</li>
-									<li>  
-										<a href="admin.php?action=browseCategory&category=bulkUploader&bookmark=processUploader" style="text-decoration: none; color: #333333;">
-											{if $bookmark != "processUploader"}
-												<div class="deactiveBookmark_big">
-													<div class="deactiveBookmark_right_big">
-											{else}
-												<div class = "activeBookmark_big">
-													<div class = "activeBookmark_right_big">
-											{/if}
-													PROCESS
-												</div>
-											</div>
-										</a>
-									</li>
-								</ul>
-							</div>
-							<a class="buttons next" href="#"><img src="images/slider-right-arrow.gif" width="16px" height="10px" title="Next"/></a>
-						</div>
+							<a href="admin.php?action=browseCategory&category=bulkUploader&bookmark=bulkUploader" style="text-decoration: none; color: #333333;">
+								{if $bookmark != "bulkUploader"}
+									<div class="deactiveBookmark_big">
+										<div class="deactiveBookmark_right_big">
+								{else}
+									<div class = "activeBookmark_big">
+										<div class = "activeBookmark_right_big">
+								{/if}
+										BULK UPLOADER
+										</div>
+									</div>
+							</a>
+					</td>
+					<td align="right">
+						<a href="admin.php?action=browseCategory&category=bulkUploader&bookmark=processUploader" style="text-decoration: none; color: #333333;">
+							{if $bookmark != "processUploader"}
+								<div class="deactiveBookmark_big">
+									<div class="deactiveBookmark_right_big">
+							{else}
+								<div class = "activeBookmark_big">
+									<div class = "activeBookmark_right_big">
+							{/if}
+									PROCESS
+									</div>
+								</div>
+						</a>
 					</td>
 				</tr>
 				<tr height="19">

@@ -70,6 +70,7 @@ class StepTest extends DbTestCase {
 		$step = new Step($this->db);
 		$step->setProcessId($processId);
 		$step->setNumber($stepNumber);
+		$step->setDescription('description');
 		
 		$stepID = $step->save();
 		
@@ -98,7 +99,6 @@ class StepTest extends DbTestCase {
 		$this->assertEquals($step->getNumber(), $result[0]['number']);
 		$this->assertEquals($step->getProcessId(), $result[0]['process_id']);
 	}
-
 	
 }
 

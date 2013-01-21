@@ -19,26 +19,42 @@
 				<td>Input file</td><td><input name="inputFile" type="file"><br>
 			</tr>		
 			<tr>
-				<td>FacilityId</td><td><input name="facilityID" type="text" value="" id='facilityID'></td>
-			</tr>
-			<!--<tr>
-				<td>Work Order Id</td><td><input name="woID" type="text" value="" id='woID'></td>
+				<td>Company</td>
+				<td>
+					<select id="selectCompany" name="facilityID" onchange="getFacilityList()">
+						{foreach from=$companyList item=company}
+							<option value='{$company.id}'>
+								{$company.name}
+							</option>
+						{/foreach}
+					</select>
+				</td>
 			</tr>
 			<tr>
-				<td>Update items</td><td><input name="update" type="checkbox" value="update" checked></td>
-			</tr>-->
+				<td>Facility</td>
+				<td>
+					<select id="selectFacility" name="facilityID">
+						{if isset($facilityList)}
+							{foreach from=$facilityList item=facility}
+								<option value='{$facility.facility_id}'>
+									{$facility.name}
+								</option>
+							{/foreach}
+						{/if}
+					</select>
+					<div id='facError' class="error_text" style="display:none">Error</div>
+				</td>
+			</tr>
 			<tr>
 				<td></td><td><div id="wait" style="none"></div></td>
 			</tr>
 			<tr>
 				<td></td>
 				<td>
-					<input type="button" value="Start" onClick="Check()"/>
+					<input type="submit" value="Start" id='saveButton'/>
 				</td>
 			</tr>
 		</table>
-		{*<input type='hidden' name='action' value='bulkUpload'>
-		<input type='hidden' name='categoryID' value='bulkUploader'>*}
 	</form>
 
 
@@ -53,34 +69,3 @@
 </tr>
 </table>
 
-{*/shadow_table*}
-
-{literal}
-			<SCRIPT language=JavaScript title="check">
-							
-				function Check(){
-					var facilityId, woID;
-					
-					facilityId = /^[0-9]+$/.test($('#facilityID').val());
-					/*woID = /^[0-9, '']+$/.test($('#woID').val());
-						
-						if($('#woID').val()==''){
-							woID = true;
-							}*/
-					
-					if (facilityId){
-						
-							if (form.inputFile.value.substr(-3,3)=='csv') {
-								form.submit();
-							} else {
-								document.getElementById('wait').innerHTML="Input file should be CSV format.";
-								document.getElementById('wait').style.display="block";					
-							}
-					} else {
-						document.getElementById('wait').innerHTML="Check input data.";
-						document.getElementById('wait').style.display="block";
-					}		
-				}
-			
-			</SCRIPT>
-{/literal}

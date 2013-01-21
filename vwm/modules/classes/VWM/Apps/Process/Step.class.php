@@ -32,6 +32,24 @@ class Step extends Model {
 	
 	protected $total_spent_time=0;
 	
+	/*
+	 * option
+	 * $var boolean
+	 */
+	protected $optional = 1;
+	
+	/*
+	 * description
+	 * @var string
+	 */
+	protected $description;
+	
+	/*
+	 * resources
+	 * @var array of objects
+	 */
+	protected $init_resources = array();
+	
 	const TABLE_NAME = 'step';
 	const RESOURCE_TABLE = 'resource';
 	const TIME = 1;
@@ -46,7 +64,23 @@ class Step extends Model {
 		}
 	}
 	
-	public function getId() {
+	public function getOptional() {
+		return $this->optional;
+	}
+
+	public function setOptional($optional) {
+		$this->optional = $optional;
+	}
+
+	public function getDescription() {
+		return $this->description;
+	}
+
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+
+		public function getId() {
 		return $this->id;
 	}
 
@@ -54,6 +88,18 @@ class Step extends Model {
 		$this->id = $id;
 	}
 
+	/**
+	 *get and set resources for initialization
+	 * @return type array
+	 */
+	public function getInitResources() {
+		return $this->init_resources;
+	}
+
+	public function setInitResources($init_resources) {
+		$this->init_resources = $init_resources;
+	}
+	
 	public function getNumber() {
 		return $this->number;
 	}
@@ -127,13 +173,16 @@ class Step extends Model {
 	protected function _insert() {
 
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
-				"number, process_id, last_update_time" .
+				"number, process_id, last_update_time, description, optional" .
 				") VALUES(" .
 				"{$this->db->sqltext($this->getNumber())}," .
 				"'{$this->db->sqltext($this->getProcessId())}'," .
-				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
+				"'{$this->db->sqltext($this->getLastUpdateTime())}'," .
+				"'{$this->db->sqltext($this->getDescription())}'," .
+				"'{$this->db->sqltext($this->getOptional())}'" .
 				")";
 		$response = $this->db->exec($sql);
+		
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
 			return $this->getId();
@@ -148,6 +197,8 @@ class Step extends Model {
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"number={$this->db->sqltext($this->getNumber())}, " .
 				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
+				"optional='{$this->db->sqltext($this->getOptional())}', " .
+				"description='{$this->db->sqltext($this->getDescription())}', " .
 				"last_update_time='{$lastUpdateTime}' " .
 				"WHERE id={$this->db->sqltext($this->getId())}";
 
