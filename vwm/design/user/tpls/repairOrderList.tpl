@@ -41,7 +41,7 @@
 			</td>
 			<td>
 				<div class="users_header_blue">
-					<div>Process</div>
+					Process
 				</div>
 			</td>
             {if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
@@ -109,7 +109,7 @@
 
 	{*BEGIN	EMPTY LIST*}
 	<tr>
-		<td colspan="5"class="border_users_l border_users_r" align="center">
+		<td colspan="6"class="border_users_l border_users_r" align="center">
 			No {$repairOrderLabel} in the list
 		</td>
 	</tr>
@@ -119,7 +119,7 @@
 <tr>
 	<td class="users_u_bottom ">
 	</td>
-	<td colspan="5" bgcolor="" height="30" class="users_u_bottom_r">
+	<td colspan="6" bgcolor="" height="30" class="users_u_bottom_r">
 	</td>
 </tr>
 </table>

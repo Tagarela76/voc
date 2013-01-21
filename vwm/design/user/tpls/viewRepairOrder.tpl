@@ -122,7 +122,7 @@
 							Paint costs:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							$ {$mixTotalPrice|escape}
+							${$mixTotalPrice|escape}
 						</td>
 					</tr>
 					
@@ -149,7 +149,7 @@
 							Total:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							${$totalCoast}
+							<b>${$totalCoast}</b>
 						</td>
 					</tr>
 					
@@ -158,7 +158,13 @@
 							Spent time:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							{$spentTime} min
+							{$mixTotalSpentTime|escape} min
+						</td>
+					</tr>
+					<tr>
+						<td class="users_u_bottom" height="20">
+						</td>
+						<td class="users_u_bottom_r">
 						</td>
 					</tr>
 					
