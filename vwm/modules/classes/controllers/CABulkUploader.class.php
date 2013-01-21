@@ -4,6 +4,8 @@ use VWM\Import\Gom\GomUploaderMapper;
 use VWM\Import\Gom\GomUploaderEntityBuilder;
 use VWM\Import\Pfp\PfpUploaderMapper;
 use VWM\Import\Pfp\PfpUploaderEntityBuilder;
+use VWM\Import\Process\ProcessUploaderMapper;
+use VWM\Import\Process\ProcessUploaderEntityBuilder;
 
 
 class CABulkUploader extends Controller {
@@ -22,6 +24,10 @@ class CABulkUploader extends Controller {
 	}
 
 	private function actionBrowseCategory() {
+		$bookmark = $this->getFromRequest('bookmark');
+		if (is_null($bookmark)){
+			$bookmark = 'bulkUploader';
+		}
 		$title = new Titles($this->smarty);
 		$title->titleBulkUploaderSettings();
 
@@ -33,12 +39,26 @@ class CABulkUploader extends Controller {
 
 		$this->smarty->assign('doNotShowControls', true);
 		//	TODO: internal js script left there
-		//$smarty->display("tpls:bulkUploader.tpl");
+		
 		$jsSources = array("modules/js/checkBoxes.js",
-			"modules/js/reg_country_state.js");
+			"modules/js/reg_country_state.js",
+			"modules/js/bulkUploader.js");
 
+		switch ($bookmark){
+			case 'bulkUploader':
+				$this->smarty->assign('tpl', 'tpls/bulkUploader.tpl');
+				break;
+			case 'processUploader';
+				$facility = new VWM\Hierarchy\Facility($this->db);
+				$companyList = $company->getCompanyList();
+				$this->smarty->assign('companyList', $companyList);
+				$this->smarty->assign('tpl', 'tpls/processBulkUploader.tpl');
+				break;
+			default :
+				throw new Exception('there is no such uploader');
+		}
+		$this->smarty->assign('bookmark', $bookmark);
 		$this->smarty->assign('jsSources', $jsSources);
-		$this->smarty->assign('tpl', 'tpls/bulkUploader.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
 
@@ -441,6 +461,121 @@ class CABulkUploader extends Controller {
 
 		return $products;
 	}
+	
+	protected function actionBrowseCategoryProcessNew() {
+		$input = array(
+			"maxNumber" => $this->getFromPost('facilityID'),
+		);
+		
+		//	form submitted
+		if ($_FILES['inputFile']['error'] != 0) {
+			throw new Exception('error of file number ' . $_FILES['inputFile']['error']);
+		}
+
+		if ($_FILES['inputFile']['type'] != 'text/csv') {
+			throw new Exception('Input file should be CSV format');
+		}
+		$facilityID = $this->getFromPost('facilityID');
+
+		//Validate CSV file
+		$input['inputFile'] = $_FILES['inputFile']['tmp_name'];
+		$input['realFileName'] = basename($_FILES['inputFile']['name']);
+		
+		$validation = new validateCSV($this->db);
+		$validation->validateProcess($input); // array from csv
+		
+		
+		$errorCnt = count($validation->getProcessError());
+		$correctCnt = count($validation->getProcessCorrect());
+		$total = $errorCnt + $correctCnt;
+		$percent = round($errorCnt * 100 / ($correctCnt + $errorCnt), 2);
+		//
+		$processesErrorsNames = implode(',', $validation->getProcessError());
+		
+		$errorLog = $validation->errorComments;
+		$errorLog .= "	Percent of errors is " . $percent . "\n";
+		
+		$errorLog .= "Errors in processes: ".$processesErrorsNames;
+		
+
+		$validationLogFile = fopen(DIR_PATH_LOGS . "validation.log", "a");
+		fwrite($validationLogFile, $errorLog);
+		fclose($validationLogFile);
+		
+		$processesErrorsNames = explode(',', $processesErrorsNames);
+		
+		//SAVE new Processes
+			//	path to the uploaded file
+		$tmpName = $_FILES['inputFile']['tmp_name'];
+
+		$mapper = new ProcessUploaderMapper();
+		$mapper->doMapping($tmpName);
+
+		$eb = new ProcessUploaderEntityBuilder($this->db, $mapper);
+		$eb->buildEntities($tmpName);
+		$processes = $eb->getProcesses();
+		$processAction = array(
+			"savedProcesses"=>array(),
+			"notSavedProcess"=>array(),
+			"updateProcess"=>array()
+		);
+		
+		foreach ($processes as $process) {
+			$processName = $process->getName();
+			
+			//check process for errors
+			if( in_array($processName, $processesErrorsNames)){
+				$processAction['notSavedProcess'][] = $processName;
+				continue;
+			}
+			
+			$process->setFacilityId($facilityID);
+			//check is process exist
+			$processId = $process->getProcessIdByNameAndFacilityId();
+			if ($processId){
+				//update process
+				$process->setId($processId);
+				$process->deleteProcessSteps();
+				$processAction['updateProcess'][] = $processName;
+			}else{
+				//insert process
+				$processAction['savedProcesses'][] = $processName;
+			}
+			$processId = $process->save();
+			$steps = array();
+			$steps = $process->getProcessSteps();
+
+			foreach ($steps as $step) {
+				$step->setProcessId($processId);
+				$stepId = $step->save();
+				$resources = $step->getInitResources();
+
+				foreach ($resources as $resource) {
+					$resource->setStepId($stepId);
+					$resource->save();
+				}
+			}
+		}
+		
+		
+			$title = new Titles($this->smarty);
+			$title->titleBulkUploadResults();
+			
+			$processesErrorsNames = implode('<br />', $processesErrorsNames);
+			
+			$this->smarty->assign('processAction', $processAction);
+			$this->smarty->assign('errorCnt', $errorCnt);
+			$this->smarty->assign('correctCnt', $correctCnt);
+			$this->smarty->assign('total', $total);
+			$this->smarty->assign('processErrorNames', $processesErrorsNames);
+			$this->smarty->assign('errorComents', nl2br($validation->errorComments));
+			$this->smarty->assign('tpl', "tpls/uploadProcessResults.tpl");
+			$this->smarty->display("tpls:index.tpl");
+
+
+
+	}
+
 
 }
 

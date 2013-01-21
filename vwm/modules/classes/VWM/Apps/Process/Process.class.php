@@ -15,7 +15,7 @@ class Process extends Model {
 	 * process facility_id
 	 * @var int
 	 */
-	protected $facility_id;
+	protected $facility_id = NULL;
 	/*
 	 * process name
 	 * @var string
@@ -36,9 +36,16 @@ class Process extends Model {
 	 * @var int
 	 */
 	protected $current_step_number;
+	
+	/*
+	 * process steps
+	 * $var array of objects
+	 */
+	protected $process_steps = array();
 
 	const TABLE_NAME = 'process';
 	const STEP_TABLE = 'step';
+	const RESOURCE_TABLE = 'resource';
 
 	public function __construct(\db $db, $Id = null) {
 		$this->db = $db;
@@ -56,6 +63,19 @@ class Process extends Model {
 		$this->process_type = $process_type;
 	}
 
+	/**
+	 *get and set steps for initialization
+	 * @return type array
+	 */
+	
+	public function getProcessSteps() {
+		return $this->process_steps;
+	}
+
+	public function setProcessSteps($process_steps) {
+		$this->process_steps = $process_steps;
+	}
+	
 	public function getWorkOrderId() {
 		return $this->work_order_id;
 	}
@@ -190,6 +210,61 @@ class Process extends Model {
 		$response = $this->db->exec($sql);
 		if ($response) {
 			return $this->getId();
+		} else {
+			return false;
+		}
+	}
+	
+	public function getProcessIdByNameAndFacilityId($facilityId = NULL, $name = NULL) {
+		if (is_null($facilityId)) {
+			$facilityId = $this->getFacilityId();
+		}
+		if (is_null($name)) {
+			$name = $this->getName();
+		}
+		
+		if (is_null($facilityId)) {
+			return false;
+		}
+
+		$sql = "SELECT id FROM " . self::TABLE_NAME . " " .
+				"WHERE facility_id = {$this->db->sqltext($facilityId)} " .
+				"AND name = '{$this->db->sqltext($name)}' LIMIT 1";
+
+		$this->db->query($sql);
+		
+		
+		$row = $this->db->fetch(0);
+		
+		if(is_null($row->id)){
+			return false;
+		}else{
+			return $row->id;
+		}
+	}
+	
+	/**
+	 * function for deleting process step
+	 * @param int $processId 
+	 */
+	public function deleteProcessSteps($processId = NULL) {
+
+		if (is_null($processId)) {
+			$processId = $this->getId();
+		}
+
+		if (is_null($processId)) {
+			return false;
+		}
+		
+		$sql = "DELETE FROM s,r ".
+				"USING ".self::STEP_TABLE." s ".
+				"LEFT JOIN ".self::RESOURCE_TABLE." r ". 
+				"ON s.id = r.step_id ".
+				"WHERE s.process_id = {$this->db->sqltext($processId)}";
+		$response = $this->db->exec($sql);
+		if ($response) {
+			return true;
 		} else {
 			return false;
 		}

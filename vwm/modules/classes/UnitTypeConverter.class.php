@@ -450,7 +450,7 @@ class UnitTypeConverter {
 	public function convertCountFromTo($from, $to, $value){
 		$defaultCount = $this->convertDefaultCount($value, $from);
 		switch ($to) {
-			case "each":
+			case "ea":
 				$count = $defaultCount;
 				break;
 			case "pr":

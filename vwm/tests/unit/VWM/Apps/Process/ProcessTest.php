@@ -94,6 +94,25 @@ class ProcessTest extends DbTestCase {
 		$this->assertEquals($process->getWorkOrderId(), $result[0]['work_order_id']);
 	}
 	
+	public function testGetCurrentStep() {
+		$processId = 2;
+		$stepNumber = 1;
+		$process = new Process($this->db, $processId);
+		$process->setCurrentStepNumber($stepNumber);
+		$step = $process->getCurrentStep();
+		$sql = "SELECT * FROM " . self::TB_STEP . " " .
+				"WHERE process_id = {$processId} " .
+				"AND number = {$stepNumber} " .
+				"LIMIT 1";
+		$this->db->query($sql);
+		$result = $this->db->fetch_all_array();
+		
+		$this->assertEquals($step->getId(), $result[0]['id']);
+		$this->assertEquals($step->getNumber(), $result[0]['number']);
+		$this->assertEquals($step->getOptional(), $result[0]['optional']);
+		$this->assertEquals($step->getDescription(), $result[0]['description']);
+	}
+	
 	
 }
 ?>

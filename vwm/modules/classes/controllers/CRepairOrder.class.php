@@ -78,8 +78,34 @@ class CRepairOrder extends Controller {
 				$company->getIndustryType()->id);
 		
 		
+		//get process information
+		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
+		$processId = $wo->getProcessID();
+		$process = new Process($this->db, $processId);
+		$steps = $process->getSteps();
+		$materialCoat = 0;
+		$laborCoast = 0;
+		$totalCoast = 0;
+		$spentTime = 0;
+		
+		foreach ($steps as $step){
+			$spentTime += $step->getTotalSpentTime();
+			$resources = $step->getResources();
+				foreach($resources as $resource){
+					$materialCoat += $resource->getMaterialCost();
+					$laborCoast += $resource->getLaborCost();
+					$totalCoast += $resource->getTotalCost();
+				}
+		}
+		
+		
+		
+		
+        $this->smarty->assign('materialCoat', $materialCoat);
+		$this->smarty->assign('spentTime', $spentTime);
+		$this->smarty->assign('laborCoast', $laborCoast);
+		$this->smarty->assign('totalCoast', $totalCoast);
         $this->smarty->assign('instanceOfWorkOrder', $workOrder);
-           		
         $this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
         $this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");

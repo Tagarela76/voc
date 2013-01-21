@@ -122,6 +122,7 @@ class Resource extends Model {
 	}
 
 	public function setRate($rate) {
+		$rate = $this->validateCount($rate);
 		$this->rate = $rate;
 	}
 
@@ -130,6 +131,7 @@ class Resource extends Model {
 	}
 
 	public function setQty($qty) {
+		$qty = $this->validateCount($qty);
 		$this->qty = $qty;
 	}
 
@@ -189,6 +191,7 @@ class Resource extends Model {
 	}
 
 	public function setRateQty($rate_qty) {
+		$rate_qty = $this->validateCount($rate_qty);
 		$this->rate_qty = $rate_qty;
 	}
 
@@ -200,13 +203,13 @@ class Resource extends Model {
 		$this->step_id = $step_id;
 	}
 
-	public function getStepTemplateId() {
+	/*public function getStepTemplateId() {
 		return $this->step_template_id;
 	}
 
 	public function setStepTemplateId($step_template_id) {
 		$this->step_template_id = $step_template_id;
-	}
+	}*/
 
 		public function load() {
 		if (is_null($this->getId())) {
@@ -267,12 +270,14 @@ class Resource extends Model {
 				$this->setLaborCost($laborCost);
 				break;
 			default :
+				throw new \Exception('unccorect resource type');
 				break;
 		}
 				
 	}
 	
 	protected function _insert() {
+		
 		if ($this->total_cost === NULL) {
 			$this->calculateTotalCost();
 		}
@@ -283,15 +288,15 @@ class Resource extends Model {
 				"step_id, last_update_time" .
 				") VALUES(" .
 				"'{$this->db->sqltext($this->getDescription())}'," .
-				"{$this->db->sqltext($this->getQty())}," .
+				"'{$this->db->sqltext($this->getQty())}' ," .
 				"{$this->db->sqltext($this->getUnittypeId())}," .
 				"{$this->db->sqltext($this->getResourceTypeId())}," .
 				"{$this->db->sqltext($this->getLaborCost())}," .
 				"{$this->db->sqltext($this->getMaterialCost())}," .
 				"{$this->db->sqltext($this->getTotalCost())}," .
-				"{$this->db->sqltext($this->getRate())}," .
+				"'{$this->db->sqltext($this->getRate())}'," .
 				"{$this->db->sqltext($this->getRateUnittypeId())}," .
-				"{$this->db->sqltext($this->getRateQty())}," .
+				"'{$this->db->sqltext($this->getRateQty())}'," .
 				"{$this->db->sqltext($this->getStepId())}," .
 				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
 				")";
@@ -331,6 +336,12 @@ class Resource extends Model {
 		} else {
 			return false;
 		}
+		
+	}
+	
+	private function validateCount($value){
+		$value = ereg_replace(',', '.', $value);
+		return $value;
 	}
 	
 }

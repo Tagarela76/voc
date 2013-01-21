@@ -7,6 +7,8 @@ use VWM\ManageColumns\BrowseCategoryEntity;
 use VWM\ManageColumns\DisplayColumnsSettings;
 use VWM\Apps\Process\Process;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
+use VWM\Apps\Process\ProcessInstance;
+
 
 class CMix extends Controller {
 
@@ -1895,6 +1897,7 @@ class CMix extends Controller {
 				// that is ok, just continue
 			}					
 		}
+
 		
 		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);

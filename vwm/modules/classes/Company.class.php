@@ -7,6 +7,7 @@ class Company {
 	private $db;
 	private $trashRecord;
 	
+	const TB_FACILITY = 'facility';
 	
 	
 	function Company($db) {	//	Constructor
@@ -398,6 +399,13 @@ class Company {
 		$this->db->query($sql);
         $companyIds = $this->db->fetch_all_array(); 
         return $companyIds;
+	}
+	
+	public function getAllFacilityList(){
+		$sql = "SELECT * FROM ".self::TB_FACILITY;
+		$this->db->query($sql);
+		$facilityList = $this->db->fetch_all_array();
+		return $facilityList;
 	}
 }
 ?>

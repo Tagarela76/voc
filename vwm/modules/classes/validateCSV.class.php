@@ -8,8 +8,36 @@ class validateCSV {
 	public $productsError;
 	public $productsCorrect;
 	public $errorComments;
+	
+	protected $processError = array();
+	protected $processCorrect = array();
+	
 
-	function validateCSV($db) {
+	public function getProcessError() {
+		return $this->processError;
+	}
+
+	public function setProcessError($processError) {
+		$this->processError[] = $processError;
+	}
+
+	public function getProcessCorrect() {
+		return $this->processCorrect;
+	}
+
+	public function setProcessCorrect($processCorrect) {
+		$this->processCorrect[] = $processCorrect;
+	}
+	
+
+		const TB_UNIT_TYPE = 'unittype';
+		const UNIT_TYPE = 7;
+		const RATE_UNIT_TYPE = 9;
+		const QTY = 6;
+		const RATE = 8;
+
+
+			function validateCSV($db) {
 		$this->db=$db;
 
 		$this->productsError = array();
@@ -1785,7 +1813,125 @@ class validateCSV {
 		return $result;
 
 	}
+	
+	public function validateProcess($input) {
+		$CSVPath = $input['inputFile'];
+		
+		//last row
+		$file = fopen($CSVPath, "a");
 
+		fwrite($file, ";;;;;;;;;;;;;;;;;;;;;;;;\n");
+		fclose($file);
+
+		$file = fopen($CSVPath, "r");
+
+		$error = "";
+		$this->errorComments = "--------------------------------\n";
+		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
+
+		$currentRow = 0;
+		$headerEndsRow = 3;
+		//	here we'll store rows for single pfp
+		$currentProcessName = '';
+		$isErrorInCurrentProcess = false;
+		
+		$i = 0;
+		
+		while ($dat = fgetcsv($file, 1000, ";")) {
+			$currentRow++;$i++;
+			
+			if ($currentRow < $headerEndsRow) {
+				//	skip first $headerEndsRow rows
+				continue;
+			}
+
+			$data = $this->trimAll($dat);
+
+			//	check empty row
+			if($this->isEmptyRow($data)){
+				continue;
+			}
+			
+			//get a process in which the error 
+			
+			if($data[0]!=''){
+				
+				if($isErrorInCurrentProcess){
+					$this->setProcessError($currentProcessName);
+					$isErrorInCurrentProcess = false;
+				}elseif($currentProcessName!=''){
+					$this->setProcessCorrect($currentProcessName);
+				}
+				
+				$currentProcessName = $data[0];
+				
+			}
+			
+			$currRowComments = $this->processDataCheck($data, $currentRow);
+
+			if ($currRowComments != "") {
+				$this->errorComments .= $currRowComments;
+				$isErrorInCurrentProcess = true;
+			}
+		}
+		//get last process
+		if ($isErrorInCurrentProcess) {
+			$this->setProcessError($currentProcessName);
+		} else {
+			$this->setProcessCorrect($currentProcessName);
+		}
+
+		fclose($file);
+	}
+
+	
+	private function processDataCheck($data,$row){
+		$comments = "";
+		
+		//Check Rate Unit Type
+		if ($data[self::RATE_UNIT_TYPE] == '') {
+			$comments.="You haven't entered Rate unit type. Row " . $row . "\n";
+		} else {
+			$query = "SELECT unittype_id FROM ".self::TB_UNIT_TYPE." ".
+					 "WHERE name = '".$data[self::RATE_UNIT_TYPE]."'";
+			$this->db->query($query);
+			if ($this->db->num_rows() == 0) {
+				$comments .= "Rate unit type with name : " . $data[self::RATE_UNIT_TYPE] . " doesn't exist. Row " . $row . ".\n";
+			}
+		}
+		
+		//Check Unit Type
+		if ($data[self::UNIT_TYPE] == '') {
+			$comments.="You haven't entered Unit Type. Row " . $row . "\n";
+		} else {
+			$query = "SELECT unittype_id FROM ".self::TB_UNIT_TYPE." ".
+					 "WHERE name = '".$data[self::UNIT_TYPE]."'";
+			$this->db->query($query);
+			if ($this->db->num_rows() == 0) {
+				$comments .= "Rate unit type with name : " . $data[self::UNIT_TYPE] . " doesn't exist. Row " . $row . ".\n";
+			}
+		}
+		
+		//check QTY
+		if ($data[self::QTY] ==''){
+			$comments.="You haven't entered QTY. Row " . $row . "\n";
+		}else{
+			if (!Validation::isFloat($data[self::QTY])) {
+				$comments.="QTY ".$data[self::QTY]." is not a number. Row " . $row . "\n";
+			}
+		}
+		
+		//check RATE
+		if ($data[self::RATE] ==''){
+			$comments.="You haven't entered QTY. Row " . $row . "\n";
+		}else{
+			if (!Validation::isFloat($data[self::RATE])) {
+				$comments.="Rate ".$data[self::RATE]." is not a number. Row " . $row . "\n";
+			}
+		}
+		
+		return $comments;
+	}
 
 }
 
