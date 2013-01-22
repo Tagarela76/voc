@@ -50,15 +50,17 @@ class IndustrialWorkOrder extends WorkOrder {
      * @return int
      */
     protected function insert() {
+		$query = "INSERT INTO " . TB_WORK_ORDER . " SET " .
+				"number = '{$this->db->sqltext($this->getNumber())}', " .
+				"description='{$this->db->sqltext($this->getDescription())}', " .
+				"customer_name='{$this->db->sqltext($this->getCustomer_name())}', " .
+				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
+				"status = '{$this->db->sqltext($this->getStatus())}', " .
+				"vin = '{$this->db->sqltext($this->getVin())}'";
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status) 
-				VALUES ( 
-				'" . $this->db->sqltext($this->getNumber()) . "'
-				, '" . $this->db->sqltext($this->getDescription()) . "'
-				, '" . $this->db->sqltext($this->getCustomer_name()) . "'
-				, '" . $this->db->sqltext($this->getFacilityId()) . "'	
-				, '" . $this->db->sqltext($this->getStatus()) . "'	
-				)";
+		if ($this->getProcessID() != null) {
+			$query.=", process_id = '{$this->db->sqltext($this->getProcessID())}'";
+		}
 		$this->db->query($query); 
 		$id = $this->db->getLastInsertedID();
 		$this->setId($id);

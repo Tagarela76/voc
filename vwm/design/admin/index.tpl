@@ -47,6 +47,8 @@
 													{include file="tpls:tpls/bookmarkSales.tpl"}
 												{elseif $request.category == 'requests'}
 													{include file="tpls:tpls/bookmarksRequests.tpl"}
+												{elseif $request.category == 'bulkUploader'}
+													{include file="tpls:tpls/bookmarksBulkUploaders.tpl"}
 												{/if}
 											{/if}
 

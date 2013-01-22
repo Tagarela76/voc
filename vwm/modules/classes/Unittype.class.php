@@ -598,6 +598,20 @@ class Unittype {
 			return $this->db->fetch_array(0);
 		}
 	}
+	
+	public function getTypeNameById($typeId){
+		$query = "SELECT type_desc FROM " . TB_TYPE . " WHERE type_id=" . $this->db->sqltext($typeId);
+		$this->db->query($query);
+		return ($this->db->num_rows() > 0) ? $this->db->fetch(0)->type_desc : false;
+	}
+	
+	public function getUnitTypeIdByName($typeName){
+		$query = "SELECT unittype_id FROM ".TB_UNITTYPE." ".
+				 "WHERE name = '{$this->db->sqltext($typeName)}'";
+		$this->db->query($query);
+		$id = $this->db->fetch(0);
+		return $id->unittype_id;
+	}
 
 }
 

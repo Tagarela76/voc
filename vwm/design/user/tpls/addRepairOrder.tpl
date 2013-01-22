@@ -119,8 +119,24 @@
                         {*/ERROR*}						    
                         {/if}
                     {/foreach}					    						
-				</td>					
+				</td>	
 			</tr>
+			
+			<!SELECT Process-->
+			<tr class="border_users_b border_users_r">
+				<td height="20" class="border_users_l">
+					Select Process:
+				</td>
+				<td>
+					<select name = 'woProcessId'>
+						{foreach from=$processList item='process'}
+						<option value='{$process->id}'>{$process->name}</option>
+						{/foreach}
+					</select>
+					<!--<input type='hidden' name='woProcessId' id='woProcessId' value="{$processList[0]->id}"/>-->
+				</td>
+			</tr>
+			
             {/if}
 			{if $request.parent_category == 'facility'}
 			<tr height="10px">

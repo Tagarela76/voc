@@ -55,16 +55,37 @@ class CsvHelper {
 	
 	/**
 	 * @param int $rowCount row count in the table header. By default is 2
+	 * @param bool $glue shoud method glue text in the whole column. For example,
+	 * row[0] is "Unit", row[1] is "Type". glue true will return "Unit Type"
 	 * @return array
 	 */
-	public function getTableHeader($rowCount = 2) {
+	public function getTableHeader($rowCount = 2, $glue = true) {		
+		$rows = array();
+		$columnCount = 0;
 
-		$header = array();
 		for($i=0;$i<$rowCount;$i++) {
-			$header[] = $this->readCsvRow();
+			$row = $this->readCsvRow();
+			//	get max column count
+			$columnCount = (count($row) > $columnCount) ? count($row) : $columnCount;
+			$rows[] = $row;
 		}
-		
-		return $header;
+
+		if($glue) {
+			$columns = array();
+			$output = array();
+			//	group by columns
+			foreach ($rows as $row) {
+				for($i=0;$i<$columnCount;$i++) {
+					$columns[$i][] = $row[$i];
+				}
+			}
+			foreach ($columns as $column) {
+				$output[] = trim(implode(' ', $column));
+			}
+			return $output;
+		} else {
+			return $rows;
+		}
 	}
 	
 	public function getFileContent() {

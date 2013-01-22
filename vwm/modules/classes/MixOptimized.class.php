@@ -27,6 +27,7 @@ class MixOptimized extends Model {
 	public $recycle_percent;
 	public $notes;
 		
+	
 	/**
 	 * Working Order iteration number. Default is 0
 	 * Common use case - append as suffix to {@link description}
@@ -215,7 +216,7 @@ class MixOptimized extends Model {
 		}
 		return $this->company;
 	}
-
+	
 	public function getDepartment() {
 		if (!isset($this->department)) {
 			$this->loadDepartment();
@@ -689,10 +690,11 @@ class MixOptimized extends Model {
 				? $this->db->sqltext($this->wo_id) 
 				: "NULL";
 
+		
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, spent_time, " .
 					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id, last_update_time, wo_id ) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time, wo_id) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -710,7 +712,7 @@ class MixOptimized extends Model {
 						"{$this->db->sqltext($this->iteration)}, " .
 						"{$parentID}, " .
 						" NOW(), " .
-						" {$repairOrderId} " .		
+						" {$repairOrderId} " .
 						") "; 
 
 		return $query;

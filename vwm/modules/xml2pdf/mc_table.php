@@ -126,6 +126,7 @@ function NbLines($w,$txt)
 				//Save the current position
 				$x=$this->GetX();
 				$y=$this->GetY();
+				
 				//Draw the border
 				$this->SetFont('Arial','B',8);
 				$this->Rect($x,$y,$w,$specHeight,($fill)?'DF':'D');
@@ -152,21 +153,29 @@ function NbLines($w,$txt)
 			//Put the position to the right of the global cell
 			$this->SetXY($x+$w,$y-5);
 		} else {
+//			var_dump($td);die();
 			$w=$this->widths[$i];
 			$a=isset($this->aligns[$i]) ? $this->aligns[$i] : 'L';
+			
 			//Save the current position
 			$x=$this->GetX();
 			$y=$this->GetY();
+			
 			//Draw the border
 			$this->Rect($x,$y,$w,$h,($fill)?'DF':'D');			
 			//Print the text
 		//	$this->MultiCell($w,5,$td,0,$a);
 		    $this->Cell($w,5,$td,0,0,$a);
 			//Put the position to the right of the cell
+			
 			$this->SetXY($x+$w,$y);
-		}
+		} 
+		
 	}
+	//var_dump($h);die();
 	//Go to the next line
+	//var_dump($h);die();
+	
 	$this->Ln($h);
 /*
 	//Calculate the height of the row

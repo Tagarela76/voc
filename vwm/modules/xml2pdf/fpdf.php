@@ -979,7 +979,8 @@ function SetXY($x,$y)
 }
 
 function Output($file='',$download=false)
-{
+{					
+
 	//Output PDF to file or browser
 	global $HTTP_ENV_VARS;
 

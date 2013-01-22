@@ -60,6 +60,7 @@ class SpentTimeGauge extends Gauge {
 		$unitType = $unittype->getNameByID($this->unit_type);
 		$unitTypeConverter = new \UnitTypeConverter($this->db);
 		$spentTime = $unitTypeConverter->convertDefaultTime($spentTime, $unitType);
+		
 		return  round($spentTime, 2);
 	}
 }
