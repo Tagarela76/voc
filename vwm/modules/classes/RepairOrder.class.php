@@ -125,16 +125,7 @@ class RepairOrder extends Model {
 	}
 
 	
-	
-	public function getId() {
-		return $this->id;
-	}
-
-	public function setId($id) {
-		$this->id = $id;
-	}
-
-		/**
+	/**
 	 * add work order
 	 * @return int 
 	 */
