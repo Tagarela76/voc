@@ -150,7 +150,7 @@
 							Total:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							<b>${$totalCoast}</b>
+							<b>${$mixTotalPrice|escape}</b>
 						</td>
 					</tr>
 
