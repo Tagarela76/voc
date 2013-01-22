@@ -84,24 +84,7 @@
         </td>
     </tr>
     {/foreach}
-	<tr class="hov_company"	height="10px">
-        <td class="border_users_l border_users_b border_users_r" colspan="5">
-			<div></div>
-        </td>
-		<td class="border_users_b border_users_r">
-            <div>
-				{if $mixTotalSpentTime}
-                <b> Total: </b>{$mixTotalSpentTime|escape} min
-				{/if}
-				&nbsp;
-            </div>
-        </td>
-		<td class="border_users_b border_users_r">
-            <div>
-                <b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
-            </div>
-        </td>
-    </tr>
+	
     <tr>
         <td colspan="7" class="border_users_l border_users_r">
             &nbsp;
