@@ -1881,13 +1881,12 @@ class CMix extends Controller {
 		
 		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
 		
-		
 		if($mixParentID) {
 			$parentMix = new MixOptimized($this->db, $mixParentID);
 			$repairOrderIteration = $parentMix->iteration + 1;
 			$data->description = $parentMix->generateNextIterationDescription();
 		}else{
-			$data->description = $workOrder->getDescription();
+			$data->description = $workOrder->getNumber();
 		}
 		
 		$process = $workOrder->getProcess();
