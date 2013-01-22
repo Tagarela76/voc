@@ -23,6 +23,7 @@ class CRepairOrder extends Controller {
 			$categoryId = $this->getFromRequest('departmentID');
 			$department = new VWM\Hierarchy\Department($this->db, $categoryId);
 			$facility = $department->getFacility();
+			//$this->smarty->assign('departmentID', $this->getFromRequest('departmentID'));
 		} elseif($this->getFromRequest('facilityID')) {
 			$category = 'facility';
 			$categoryId = $this->getFromRequest('facilityID');
@@ -44,7 +45,7 @@ class CRepairOrder extends Controller {
 			//TODO: this is not correct
 			$mix->price = $mix->getMixPrice();
 			$mixTotalPrice += $mix->price;
-			$mixTotalSpentTime += $mix->spent_time;			
+			$mixTotalSpentTime += $mix->spent_time;
 		}
 				
         $companyLevelLabel = new CompanyLevelLabel($this->db);
@@ -99,7 +100,25 @@ class CRepairOrder extends Controller {
 		}
 		
 		
+		//get url for adding mix to Repair Order
+		//get last mix
+		$urlMixAdd = "'?action=addItem&category=mix".
+					"&repairOrderId=" . $repairOrder->getId().
+					"&departmentID=" .$departmentId;
+
+		if ($mixes && !$mix->hasChild) {
+			$urlMixAdd .= "&parentMixID=" . $mix->mix_id;
+		}
+		if($this->getFromRequest('facilityID')){
+			$urlMixAdd .= "&facilityID=" .$this->getFromRequest('facilityID');
+		}		
+		$urlMixAdd .="'";
 		
+		$this->smarty->assign('urlMixAdd', $urlMixAdd);
+		
+		 $jsSources = array(
+            'modules/js/viewRepairOrder.js');
+        $this->smarty->assign('jsSources', $jsSources);
 		
         $this->smarty->assign('materialCoat', $materialCoat);
 		$this->smarty->assign('spentTime', $spentTime);
@@ -276,8 +295,6 @@ class CRepairOrder extends Controller {
 				$workOrder->setProcessID($woProcessId);
 			}
 			
-			
-			
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
@@ -292,7 +309,7 @@ class CRepairOrder extends Controller {
 					throw new Exception("Failed to save Work Order");
 				}
 				
-				if (!empty($departmentIds)) {
+				/*if (!empty($departmentIds)) {
 					
                     // add empty mix for each facility department
                     $mixOptimized = new MixOptimized($this->db);
@@ -321,7 +338,7 @@ class CRepairOrder extends Controller {
 						$this->db->rollbackTransaction();
 						throw new Exception("Failed to save Mix");
 					}
-                }
+                }*/
                 // set department to wo
                 $woDepartments_id = explode(",", $woDepartments_id);
                 $repairOrderManager = new RepairOrderManager($this->db);

@@ -8,7 +8,7 @@
 	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 <div style="padding:7px;">
-	<table align="center" cellpadding="0" cellspacing="0">
+	<table style='width: 98%' align="center" cellpadding="0" cellspacing="0">
         <!--<tr class="users_top_yellowgreen">
             <td class="users_u_top_yellowgreen" width="27%" height="30">
                 <span>View </span>
@@ -18,7 +18,8 @@
         </tr>-->
 		<tr>
             <td width="50%" valign="top" style="padding:0 2px 0 5px">
-				<table class="users" style="width: 700px;" align="center" cellpadding="0" cellspacing="0">
+
+				<table class="users" align="center" cellpadding="0" cellspacing="0">
 					<tr class="users_top_yellowgreen users_u_top_size">
 						<td class="users_u_top_yellowgreen" width="37%" height="30">
 							<span>View {$repairOrderLabel}</span>
@@ -106,9 +107,9 @@
 					</tr>
 				</table>
 			<td>
-				
-				
-			 <td width="50%" valign="top" style="padding:0 2px 0 5px">
+
+
+			<td width="50%" valign="top" style="padding:0 2px 0 5px">
 				<table class="users" align="center" cellpadding="0" cellspacing="0">
 					<tr class="users_top_yellowgreen users_u_top_size">
 						<td class="users_u_top_yellowgreen" width="37%" height="30">
@@ -125,7 +126,7 @@
 							${$mixTotalPrice|escape}
 						</td>
 					</tr>
-					
+
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Material costs:
@@ -134,7 +135,7 @@
 							${$materialCoat}
 						</td>
 					</tr>
-					
+
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Labor costs:
@@ -143,7 +144,7 @@
 							${$laborCoast}
 						</td>
 					</tr>
-					
+
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Total:
@@ -152,7 +153,7 @@
 							<b>${$totalCoast}</b>
 						</td>
 					</tr>
-					
+
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Spent time:
@@ -167,14 +168,23 @@
 						<td class="users_u_bottom_r">
 						</td>
 					</tr>
-					
 				</table>
-			<td>
-			
-		</tr>
 
+			<td>
+
+		</tr>
+		<tr>
+			<td>
+				<div  style="margin: 10px 0 0 25px; width: 100%">
+					<input class='button' type="button" value="Add New Mix" onclick="document.location.href={$urlMixAdd}">
+				</div>
+			</td>
+		</tr>
 	</table>
+	
+
     <div align="right">
     </div>    
 </div>            
 {include file="tpls:tpls/repairOrderMixList.tpl"}
+
