@@ -1868,11 +1868,8 @@ class CMix extends Controller {
 		//	do I need to add work order suffix?
 		$repairOrderIteration = 0;
 		$mixParentID = $this->getFromRequest('parentMixID');
-		if($mixParentID) {
-			$parentMix = new MixOptimized($this->db, $mixParentID);
-			$repairOrderIteration = $parentMix->iteration + 1;
-			$data->description = $parentMix->generateNextIterationDescription();
-		}
+		
+		
 		
 		// this mix was added to WO , add suffix ?
 		$repairOrderId = $this->getFromRequest('repairOrderId');
@@ -1883,11 +1880,25 @@ class CMix extends Controller {
         $industryTypeId = $companyNew->getIndustryType();
 		
 		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
+		
+		
+		if($mixParentID) {
+			$parentMix = new MixOptimized($this->db, $mixParentID);
+			$repairOrderIteration = $parentMix->iteration + 1;
+			$data->description = $parentMix->generateNextIterationDescription();
+		}else{
+			$data->description = $workOrder->getDescription();
+		}
+		
 		$process = $workOrder->getProcess();
 		
 		if (!is_null($process->getId())) {
-			
-			$stepNumber = count($workOrder->getMixes()) + 1;
+			$stepCount = $workOrder->getMixes();
+			if($stepCount){
+				$stepNumber = count($stepCount)+1;
+			}else{
+				$stepNumber=1;
+			}
 			$process->setCurrentStepNumber($stepNumber);
 			$step = $process->getCurrentStep();
 			if($step) {
