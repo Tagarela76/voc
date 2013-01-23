@@ -252,7 +252,8 @@ class UnitTypeConverter {
     	return $value;
     }
 
-    public function fromDefaultWeight($value, $destinationType){
+	
+	public function fromDefaultWeight($value, $destinationType){
     	switch ($destinationType){
     		//case "lb":
     		//	$value=2.204622622*$value;
@@ -403,7 +404,7 @@ class UnitTypeConverter {
 
 	public function convertDefaultTime($time, $type) {
 		switch ($type) {
-			case "min":
+			case "mins":
 				break;
 			case "hour":
 				$time = $time*60;
@@ -411,19 +412,40 @@ class UnitTypeConverter {
 			case "days":
 				$time = $time*1440;
 				break;
+			default:
+				throw new Exception('Unit type Converter error: we can not convert from '.$type.' to'.' min');
+				break;
 		}
 		return $time;
 	}
 	
 	public function convertDefaultCount($count, $type) {
 		switch ($type) {
-			case "each":
+			case "ea":
 				break;
-			case "pr":
+			case "pr.":
 				$count = $count*2;
 				break;
 			case "box":
 				$count = $count*100;
+				break;
+			default:
+				throw new Exception('Unit type Converter error: we can not convert from '.$type.' to'.' each');
+				break;
+		}
+		return $count;
+	}
+	
+	public function convertDefaultDistance($count, $type){
+		//default distance is meters
+		switch ($type) {
+			case "M":
+				break;
+			case "LF":
+				$count = $count*0.3048;
+				break;
+			default:
+				throw new Exception('we can not convert from '.$type.' to'.' meters');
 				break;
 		}
 		return $count;
@@ -433,7 +455,7 @@ class UnitTypeConverter {
 		// default time in minutes
 		$defaultTime = $this->convertDefaultTime($value, $from);
 		switch ($to) {
-			case "min":
+			case "mins":
 				$time = $defaultTime;
 				break;
 			case "hour":
@@ -442,24 +464,37 @@ class UnitTypeConverter {
 			case "days":
 				$time = $defaultTime/1440;
 				break;
+			default :
+				throw new Exception('convertTimeFromTo error: can not convert '.$from.' to minutes');
+				break;
 		}
 		return $time;
 		
 	}
 	
 	public function convertCountFromTo($from, $to, $value){
-		$defaultCount = $this->convertDefaultCount($value, $from);
 		switch ($to) {
 			case "ea":
+				$defaultCount = $this->convertDefaultCount($value, $from);
 				$count = $defaultCount;
 				break;
-			case "pr":
+			case "pr.":
+				$defaultCount = $this->convertDefaultCount($value, $from);
 				$count = $defaultCount/2;
 				break;
 			case "box":
+				$defaultCount = $this->convertDefaultCount($value, $from);
 				$count = $defaultCount/  self::BOXCOUNT;
 				break;
+			case "LF":
+				$defaultDistance = $this->convertDefaultDistance($value, $from);
+				$count = $defaultDistance/0.3048;
+				break;
+			case "M":
+				$defaultDistance = $this->convertDefaultDistance($value, $from);
+				$count = $defaultDistance;
 			default;
+				throw new Exception('can not convert '.$from.'to '.$to);
 				break;
 		}
 		return $count;

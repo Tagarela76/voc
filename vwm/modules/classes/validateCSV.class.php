@@ -31,10 +31,10 @@ class validateCSV {
 	
 
 		const TB_UNIT_TYPE = 'unittype';
-		const UNIT_TYPE = 7;
-		const RATE_UNIT_TYPE = 9;
-		const QTY = 6;
-		const RATE = 8;
+		const UNIT_TYPE = 6;
+		const RATE_UNIT_TYPE = 10;
+		const QTY = 8;
+		const RATE = 7;
 
 
 			function validateCSV($db) {
@@ -1830,7 +1830,7 @@ class validateCSV {
 		$this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
 
 		$currentRow = 0;
-		$headerEndsRow = 3;
+		$headerEndsRow = 4;
 		//	here we'll store rows for single pfp
 		$currentProcessName = '';
 		$isErrorInCurrentProcess = false;
@@ -1867,6 +1867,10 @@ class validateCSV {
 				
 			}
 			
+			/*if($currentRow==4){
+				die(var_dump($data));
+			}*/
+			
 			$currRowComments = $this->processDataCheck($data, $currentRow);
 
 			if ($currRowComments != "") {
@@ -1889,17 +1893,18 @@ class validateCSV {
 		$comments = "";
 		
 		//Check Rate Unit Type
-		if ($data[self::RATE_UNIT_TYPE] == '') {
-			$comments.="You haven't entered Rate unit type. Row " . $row . "\n";
-		} else {
-			$query = "SELECT unittype_id FROM ".self::TB_UNIT_TYPE." ".
-					 "WHERE name = '".$data[self::RATE_UNIT_TYPE]."'";
-			$this->db->query($query);
-			if ($this->db->num_rows() == 0) {
-				$comments .= "Rate unit type with name : " . $data[self::RATE_UNIT_TYPE] . " doesn't exist. Row " . $row . ".\n";
+		if (!is_null($data[self::RATE_UNIT_TYPE])) {
+			if($data[self::RATE_UNIT_TYPE] != '') {
+				$query = "SELECT unittype_id FROM " . self::TB_UNIT_TYPE . " " .
+						"WHERE name = '" . $data[self::RATE_UNIT_TYPE] . "'";
+				$this->db->query($query);
+				if ($this->db->num_rows() == 0) {
+					$comments .= "Rate unit type with name : " . $data[self::RATE_UNIT_TYPE] . " doesn't exist. Row " . $row . ".\n";
+				}
 			}
+		} else {
+			$comments .= "Rate unit type doesn't exist. Row " . $row . ".\n";
 		}
-		
 		//Check Unit Type
 		if ($data[self::UNIT_TYPE] == '') {
 			$comments.="You haven't entered Unit Type. Row " . $row . "\n";
@@ -1911,7 +1916,6 @@ class validateCSV {
 				$comments .= "Rate unit type with name : " . $data[self::UNIT_TYPE] . " doesn't exist. Row " . $row . ".\n";
 			}
 		}
-		
 		//check QTY
 		if ($data[self::QTY] ==''){
 			$comments.="You haven't entered QTY. Row " . $row . "\n";
@@ -1920,7 +1924,6 @@ class validateCSV {
 				$comments.="QTY ".$data[self::QTY]." is not a number. Row " . $row . "\n";
 			}
 		}
-		
 		//check RATE
 		if ($data[self::RATE] ==''){
 			$comments.="You haven't entered QTY. Row " . $row . "\n";
@@ -1929,7 +1932,6 @@ class validateCSV {
 				$comments.="Rate ".$data[self::RATE]." is not a number. Row " . $row . "\n";
 			}
 		}
-		
 		return $comments;
 	}
 
