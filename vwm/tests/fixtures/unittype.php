@@ -38,8 +38,10 @@ return array(
 	array('name' => 'pcs', 'unittype_desc' => 'Pieces', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6'),
 	array('name' => 'pr.', 'unittype_desc' => 'Pair', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6'),
 	array('name' => 'box', 'unittype_desc' => 'box', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6'),
-	array('name' => 'min', 'unittype_desc' => 'min', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
+	array('name' => 'mins', 'unittype_desc' => 'min', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
 	array('name' => 'hour', 'unittype_desc' => 'hour', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
 	array('name' => 'days', 'unittype_desc' => 'days', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
-	array('name' => 'each', 'unittype_desc' => 'each', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6')
+	array('name' => 'each', 'unittype_desc' => 'each', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6'),
+	array('name' => 'LF', 'unittype_desc' => 'linear feet', 'formula' => NULL, 'type_id' => '3', 'system' => 'metric', 'unit_class_id' => '2'),
+	array('name' => 'LS', 'unittype_desc' => 'Lump Sum', 'formula' => NULL, 'type_id' => '7', 'system' => 'USA', 'unit_class_id' => '6')
 );

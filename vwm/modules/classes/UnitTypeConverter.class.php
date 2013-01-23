@@ -413,7 +413,7 @@ class UnitTypeConverter {
 				$time = $time*1440;
 				break;
 			default:
-				throw new Exception('Unit type Converter error: we can not convert from '.$type.' to'.' min');
+				throw new Exception('Unit type Converter error: we can not convert from '.$type.' to'.' mins');
 				break;
 		}
 		return $time;
