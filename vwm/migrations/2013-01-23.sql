@@ -23,3 +23,6 @@ INSERT INTO  `voc`.`unittype` (
 VALUES (
 NULL ,  'LS',  'Lump Sum', NULL ,  '7',  'USA',  '6'
 );
+
+UPDATE  `unittype` SET  `name` =  'mins' WHERE  `unittype`.`unittype_id` =38;
+UPDATE  `unittype` SET  `name` =  'pr.' WHERE  `unittype`.`unittype_id` =36;
