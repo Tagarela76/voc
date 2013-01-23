@@ -82,29 +82,32 @@ class CRepairOrder extends Controller {
 		//get process information
 		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
 		$processId = $wo->getProcessID();
-		$process = new Process($this->db, $processId);
-		$steps = $process->getSteps();
-		$materialCoat = 0;
-		$laborCoast = 0;
-		$totalCoast = 0;
-		$spentTime = 0;
-		
-		$mixCount = count($mixes);
-		//var_dump($mixCount);die();
-		//foreach ($steps as $step ){
-		for($i=0;$i<$mixCount;$i++){
-			$spentTime += $steps[$i]->getTotalSpentTime();
-			$resources = $steps[$i]->getResources();
-				foreach($resources as $resource){
+		$isHaveProcess = false;
+		if (!is_null($processId)) {
+			$isHaveProcess = true;
+			$process = new Process($this->db, $processId);
+			$steps = $process->getSteps();
+			$materialCoat = 0;
+			$laborCoast = 0;
+			$totalCoast = 0;
+			$spentTime = 0;
+
+			$mixCount = count($mixes);
+
+			for ($i = 0; $i < $mixCount; $i++) {
+				$spentTime += $steps[$i]->getTotalSpentTime();
+				$resources = $steps[$i]->getResources();
+				foreach ($resources as $resource) {
 					$materialCoat += $resource->getMaterialCost();
 					$laborCoast += $resource->getLaborCost();
 					$totalCoast += $resource->getTotalCost();
 				}
+			}
+
+			$totalCoast = $materialCoat + $laborCoast + $mixTotalPrice;
+		}else{
+			$totalCoast = $mixTotalPrice;
 		}
-		
-		$totalCoast = $materialCoat+$laborCoast+$mixTotalPrice;
-		
-		
 		//get url for adding mix to Repair Order
 		//get last mix
 		$urlMixAdd = "'?action=addItem&category=mix".
@@ -135,6 +138,7 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('mixList', $mixes);
 		
+		$this->smarty->assign('isHaveProcess', $isHaveProcess);
 		$this->smarty->assign('processName', $repairOrder->getRepairOrderProcessName());
 		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
