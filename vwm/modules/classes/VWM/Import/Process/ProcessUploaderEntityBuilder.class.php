@@ -50,10 +50,10 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 		$steps = array();
 		$resourses = array();
 		$resourseType = array(
-			"Labor"=>1,
+			"LABOR"=>1,
 			"GOM"=>3,
-			"Coating"=>2,
-			"Waste"=>2
+			"PAINT PRODUCT"=>2,
+			"WASTE"=>2
 		);
 
 		foreach ($fileData as $data) {
@@ -68,12 +68,16 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					&& $data[$this->mapper->mappedData['qty']] == ''
 					&& $data[$this->mapper->mappedData['unitType']] == ''
 					&& $data[$this->mapper->mappedData['rate']] == ''
+					&& $data[$this->mapper->mappedData['cost']] == ''
 					&& $data[$this->mapper->mappedData['rateUnitType']] == '') {
 				continue;
 			}
 
-			
-			
+			//if rate Unit type is empty we take default type
+			if($data[$this->mapper->mappedData['rateUnitType']] == ''){
+				$data[$this->mapper->mappedData['rateUnitType']] = $data[$this->mapper->mappedData['unitType']];
+			}
+
 			if ($data[$this->mapper->mappedData['processName']] != '') {
 
 				
@@ -92,7 +96,9 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					$rateTypeName = mb_strtolower($data[$this->mapper->mappedData['rateUnitType']]);
 
 					$unitType = $unittype->getUnitTypeIdByName($typeDescription);
+			
 					$rateUnitType = $unittype->getUnitTypeIdByName($rateTypeName);
+					
 					/*if (is_null($rateUnitType)) {
 						throw new \Exception('There is no such type as ' . $rateTypeName);
 					}*/
@@ -103,6 +109,10 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					$resource->setRateUnittypeId($rateUnitType);
 					$resource->setDescription($data[$this->mapper->mappedData['resourceDescription']]);
 					$resource->setResourceTypeId($resourseType[$data[$this->mapper->mappedData['processType']]]);
+					if($data[$this->mapper->mappedData['cost']]!='' || is_null($data[$this->mapper->mappedData['cost']])){
+						$resource->setTotalCost($data[$this->mapper->mappedData['cost']]);
+					}
+					
 					$resourses[] = $resource;
 					continue;
 				}
@@ -150,9 +160,11 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 			$resource->setUnittypeId($unitType);
 			$resource->setRateUnittypeId($rateUnitType);
 			$resource->setDescription($data[$this->mapper->mappedData['resourceDescription']]);
-			
-			
 			$resource->setResourceTypeId($resourseType[$data[$this->mapper->mappedData['processType']]]);
+			
+			if ($data[$this->mapper->mappedData['cost']] != '' || is_null($data[$this->mapper->mappedData['cost']])) {
+				$resource->setTotalCost($data[$this->mapper->mappedData['cost']]);
+			}
 			$resourses[] = $resource;
 		}
 		

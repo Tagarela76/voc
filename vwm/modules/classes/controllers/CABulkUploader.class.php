@@ -481,6 +481,7 @@ class CABulkUploader extends Controller {
 		$input['inputFile'] = $_FILES['inputFile']['tmp_name'];
 		$input['realFileName'] = basename($_FILES['inputFile']['name']);
 		
+		
 		$validation = new validateCSV($this->db);
 		$validation->validateProcess($input); // array from csv
 		
@@ -551,6 +552,7 @@ class CABulkUploader extends Controller {
 				$resources = $step->getInitResources();
 
 				foreach ($resources as $resource) {
+					
 					$resource->setStepId($stepId);
 					$resource->save();
 				}

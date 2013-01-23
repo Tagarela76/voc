@@ -89,15 +89,20 @@ class CRepairOrder extends Controller {
 		$totalCoast = 0;
 		$spentTime = 0;
 		
-		foreach ($steps as $step){
-			$spentTime += $step->getTotalSpentTime();
-			$resources = $step->getResources();
+		$mixCount = count($mixes);
+		//var_dump($mixCount);die();
+		//foreach ($steps as $step ){
+		for($i=0;$i<$mixCount;$i++){
+			$spentTime += $steps[$i]->getTotalSpentTime();
+			$resources = $steps[$i]->getResources();
 				foreach($resources as $resource){
 					$materialCoat += $resource->getMaterialCost();
 					$laborCoast += $resource->getLaborCost();
 					$totalCoast += $resource->getTotalCost();
 				}
 		}
+		
+		$totalCoast = $materialCoat+$laborCoast+$mixTotalPrice;
 		
 		
 		//get url for adding mix to Repair Order

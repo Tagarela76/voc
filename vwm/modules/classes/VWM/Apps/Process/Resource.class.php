@@ -11,88 +11,83 @@ class Resource extends Model {
 	 */
 
 	protected $id;
-	
+
 	/*
 	 * description 
 	 * @var string
 	 */
 	protected $description;
-	
+
 	/*
 	 * rate
 	 * @var float
 	 */
 	protected $rate;
-	
+
 	/*
 	 * qty
 	 * @var float
 	 */
 	protected $qty;
-	
+
 	/*
 	 * unittype_id
 	 * @var float
 	 */
 	protected $unittype_id;
-	
+
 	/*
 	 * resource type id
 	 * @var int (TIME = 1, VOLUME = 2, COUNT=3)
 	 */
 	protected $resource_type_id;
-	
+
 	/*
 	 * labor_cost
 	 * @var float
 	 */
-	protected $labor_cost=0;
-	
+	protected $labor_cost = 0;
+
 	/*
 	 * material_cost
 	 * @var float
 	 */
-	protected $material_cost=0;
-	
+	protected $material_cost = 0;
+
 	/*
 	 * total_cost
 	 * @var float
 	 */
-	protected $total_cost=NULL;
-	
+	protected $total_cost = NULL;
+
 	/*
 	 * rate_unittype_id
 	 * @var float
 	 */
 	protected $rate_unittype_id;
-	
+
 	/*
 	 * rate_qty
 	 * @var int
 	 */
-	protected $rate_qty=1;
-	
+	protected $rate_qty = 1;
+
 	/*
 	 * step id
 	 * @var int
 	 */
 	protected $step_id;
-	
+
 	/*
 	 * step_template_id
 	 * @var int
 	 */
-	
-	
+
 	const TABLE_NAME = 'resource';
-	
-	
-	
 	const TIME = 1;
 	const VOLUME = 2;
-	const COUNT = 3;
-	
-	
+	const GOM = 3;
+
 	public function __construct(\db $db, $Id = null) {
 		$this->db = $db;
 		if (isset($Id)) {
@@ -100,7 +95,7 @@ class Resource extends Model {
 			$this->load();
 		}
 	}
-	
+
 	public function getId() {
 		return $this->id;
 	}
@@ -168,14 +163,14 @@ class Resource extends Model {
 	}
 
 	public function getTotalCost() {
-		if($this->total_cost===NULL){
+		if ($this->total_cost === NULL) {
 			$this->calculateTotalCost();
-		} 
+		}
 		return $this->total_cost;
 	}
 
-	private function setTotalCost($total_cost) {
-		$this->total_cost = $total_cost;
+	public function setTotalCost($total_cost) {
+		$this->total_cost = $this->validateCount($total_cost);
 	}
 
 	public function getRateUnittypeId() {
@@ -203,15 +198,7 @@ class Resource extends Model {
 		$this->step_id = $step_id;
 	}
 
-	/*public function getStepTemplateId() {
-		return $this->step_template_id;
-	}
-
-	public function setStepTemplateId($step_template_id) {
-		$this->step_template_id = $step_template_id;
-	}*/
-
-		public function load() {
+	public function load() {
 		if (is_null($this->getId())) {
 			return false;
 		}
@@ -228,56 +215,63 @@ class Resource extends Model {
 		$this->initByArray($row);
 	}
 
-	public function calculateTotalCost(){
-		if($this->material_cost==0 && $this->labor_cost==0){
+	public function calculateTotalCost() {
+
+		if ($this->material_cost == 0 && $this->labor_cost == 0) {
 			$this->countCost();
 		}
-		$total_cost = $this->material_cost+$this->labor_cost;
+		$total_cost = $this->material_cost + $this->labor_cost;
 		$this->setTotalCost($total_cost);
 	}
-	
-	
+
 	/**
 	 * function for calculate labor or material cost for certain unit type
 	 */
-	public function countCost(){
+	public function countCost() {
 		$unitTypeConvector = new \UnitTypeConverter($this->db);
 		$unitType = new \Unittype($this->db);
 		$from = $unitType->getNameByID($this->unittype_id);
 		$to = $unitType->getNameByID($this->rate_unittype_id);
-		$value =  $this->qty;
-		
+		$value = $this->qty;
+
 		switch ($this->resource_type_id) {
 			case self::TIME:
 				$qty = $unitTypeConvector->convertTimeFromTo($from, $to, $value);
-				$rate =  $this->getRate();
+				$rate = $this->getRate();
 				$rateQty = $this->getRateQty();
-				$laborCost = ($qty*$rate)/$rateQty;
+				$laborCost = ($qty * $rate) / $rateQty;
 				$this->setLaborCost($laborCost);
 				break;
 			case self::VOLUME:
-				$qty = $unitTypeConvector->convertFromTo($value, $from, $to);
-				$rate =  $this->getRate();
+				if ($to == 'LS' || $from == 'LS') {
+					$qty = $value;
+				} else {
+					$qty = $unitTypeConvector->convertFromTo($value, $from, $to);
+				}
+				$rate = $this->getRate();
 				$rateQty = $this->getRateQty();
-				$laborCost = ($qty*$rate)/$rateQty;
+				$laborCost = ($qty * $rate) / $rateQty;
 				$this->setMaterialCost($laborCost);
 				break;
-			case self::COUNT:
-				$qty = $unitTypeConvector->convertCountFromTo($from, $to, $value);
-				$rate =  $this->getRate();
+			case self::GOM:
+				if ($to == 'LS' || $from == 'LS') {
+					$qty = $value;
+				} else {
+					$qty = $unitTypeConvector->convertCountFromTo($from, $to, $value);
+				}
+				$rate = $this->getRate();
 				$rateQty = $this->getRateQty();
-				$laborCost = ($qty*$rate)/$rateQty;
+				$laborCost = ($qty * $rate) / $rateQty;
 				$this->setLaborCost($laborCost);
 				break;
 			default :
 				throw new \Exception('unccorect resource type');
 				break;
 		}
-				
 	}
-	
+
 	protected function _insert() {
-		
+
 		if ($this->total_cost === NULL) {
 			$this->calculateTotalCost();
 		}
@@ -300,6 +294,7 @@ class Resource extends Model {
 				"{$this->db->sqltext($this->getStepId())}," .
 				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
 				")";
+
 		$response = $this->db->exec($sql);
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
@@ -336,14 +331,13 @@ class Resource extends Model {
 		} else {
 			return false;
 		}
-		
 	}
-	
-	private function validateCount($value){
+
+	private function validateCount($value) {
 		$value = ereg_replace(',', '.', $value);
 		return $value;
 	}
-	
+
 }
 
 ?>
