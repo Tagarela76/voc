@@ -8,12 +8,15 @@ use VWM\Apps\Process\StepInstance;
 
 class CRepairOrder extends Controller {
 
-    public function __construct ($smarty, $xnyo, $db, $user, $action) {
+	const TIME = 1;
+
+	public function __construct ($smarty, $xnyo, $db, $user, $action) {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
         $this->category = 'repairOrder';
         $this->parent_category = 'facility';
     }
 
+	
     protected function actionViewDetails() {
 
 		$params = array("bookmark" => "repairOrder");
@@ -99,10 +102,13 @@ class CRepairOrder extends Controller {
 				for ($i = 0; $i < $mixCount; $i++) {
 					$spentTime += $steps[$i]->getTotalSpentTime();
 					$resources = $steps[$i]->getResources();
+					$spentTime = $mixes[$i]->spent_time;
 					foreach ($resources as $resource) {
 						$materialCoat += $resource->getMaterialCost();
-						$laborCoast += $resource->getLaborCost();
-						$totalCoast += $resource->getTotalCost();
+						if($resource->getResourceTypeId() == self::TIME){
+							$laborCoast += $spentTime * $resource->getRate();
+						}
+						//$totalCoast += $resource->getTotalCost();
 					}
 				}
 			}
