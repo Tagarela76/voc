@@ -83,6 +83,7 @@ class CRepairOrder extends Controller {
 		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
 		$processId = $wo->getProcessID();
 		$isHaveProcess = false;
+		
 		if (!is_null($processId)) {
 			$isHaveProcess = true;
 			$process = new Process($this->db, $processId);
@@ -93,19 +94,20 @@ class CRepairOrder extends Controller {
 			$spentTime = 0;
 
 			$mixCount = count($mixes);
-
-			for ($i = 0; $i < $mixCount; $i++) {
-				$spentTime += $steps[$i]->getTotalSpentTime();
-				$resources = $steps[$i]->getResources();
-				foreach ($resources as $resource) {
-					$materialCoat += $resource->getMaterialCost();
-					$laborCoast += $resource->getLaborCost();
-					$totalCoast += $resource->getTotalCost();
+			
+			if ($mixes) {
+				for ($i = 0; $i < $mixCount; $i++) {
+					$spentTime += $steps[$i]->getTotalSpentTime();
+					$resources = $steps[$i]->getResources();
+					foreach ($resources as $resource) {
+						$materialCoat += $resource->getMaterialCost();
+						$laborCoast += $resource->getLaborCost();
+						$totalCoast += $resource->getTotalCost();
+					}
 				}
 			}
-
 			$totalCoast = $materialCoat + $laborCoast + $mixTotalPrice;
-		}else{
+		} else {
 			$totalCoast = $mixTotalPrice;
 		}
 		//get url for adding mix to Repair Order
