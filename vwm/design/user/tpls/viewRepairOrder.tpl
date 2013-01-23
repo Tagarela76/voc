@@ -126,25 +126,25 @@
 							${$mixTotalPrice|escape}
 						</td>
 					</tr>
-
-					<tr>
-						<td class="border_users_l border_users_b" height="20">
-							Material costs:
-						</td>
-						<td class="border_users_l border_users_b border_users_r">
-							${$materialCoat}
-						</td>
-					</tr>
-
-					<tr>
-						<td class="border_users_l border_users_b" height="20">
-							Labor costs:
-						</td>
-						<td class="border_users_l border_users_b border_users_r">
-							${$laborCoast}
-						</td>
-					</tr>
-
+					{if $isHaveProcess}
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Material costs:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+								${$materialCoat}
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="border_users_l border_users_b" height="20">
+								Labor costs:
+							</td>
+							<td class="border_users_l border_users_b border_users_r">
+								${$laborCoast}
+							</td>
+						</tr>
+					{/if}
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Total:
