@@ -109,9 +109,9 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					$resource->setRateUnittypeId($rateUnitType);
 					$resource->setDescription($data[$this->mapper->mappedData['resourceDescription']]);
 					$resource->setResourceTypeId($resourseType[$data[$this->mapper->mappedData['processType']]]);
-					if($data[$this->mapper->mappedData['cost']]!='' || is_null($data[$this->mapper->mappedData['cost']])){
+					/*if($data[$this->mapper->mappedData['cost']]!='' || is_null($data[$this->mapper->mappedData['cost']])){
 						$resource->setTotalCost($data[$this->mapper->mappedData['cost']]);
-					}
+					}*/
 					
 					$resourses[] = $resource;
 					continue;
@@ -162,9 +162,9 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 			$resource->setDescription($data[$this->mapper->mappedData['resourceDescription']]);
 			$resource->setResourceTypeId($resourseType[$data[$this->mapper->mappedData['processType']]]);
 			
-			if ($data[$this->mapper->mappedData['cost']] != '' || is_null($data[$this->mapper->mappedData['cost']])) {
+			/*if ($data[$this->mapper->mappedData['cost']] != '' || is_null($data[$this->mapper->mappedData['cost']])) {
 				$resource->setTotalCost($data[$this->mapper->mappedData['cost']]);
-			}
+			}*/
 			$resourses[] = $resource;
 		}
 		
