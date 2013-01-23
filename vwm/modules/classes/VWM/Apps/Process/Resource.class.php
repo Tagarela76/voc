@@ -262,7 +262,7 @@ class Resource extends Model {
 				$rate = $this->getRate();
 				$rateQty = $this->getRateQty();
 				$laborCost = ($qty * $rate) / $rateQty;
-				$this->setLaborCost($laborCost);
+				$this->setMaterialCost($laborCost);
 				break;
 			default :
 				throw new \Exception('unccorect resource type');
