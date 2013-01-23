@@ -9,6 +9,7 @@ use VWM\Apps\Process\StepInstance;
 class CRepairOrder extends Controller {
 
 	const TIME = 1;
+	const GOM = 3;
 
 	public function __construct ($smarty, $xnyo, $db, $user, $action) {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
@@ -104,7 +105,9 @@ class CRepairOrder extends Controller {
 					$resources = $steps[$i]->getResources();
 					$spentTime = $mixes[$i]->spent_time;
 					foreach ($resources as $resource) {
-						$materialCoat += $resource->getMaterialCost();
+						if($resource->getResourceTypeId() == self::GOM){
+							$materialCoat += $resource->getMaterialCost();
+						}
 						if($resource->getResourceTypeId() == self::TIME){
 							$laborCoast += $spentTime * $resource->getRate();
 						}
