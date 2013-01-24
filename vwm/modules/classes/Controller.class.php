@@ -743,10 +743,13 @@ class Controller {
             case 'facility':
                 $facility = new Facility($this->db);
                 $facilityDetails = $facility->getFacilityDetails($request['id']);
+				$facilityID = $request['id'];
                 $companyID = $facilityDetails['company_id'];
                 break;
             case 'department':
                 $company = new Company($this->db);
+				$department = new \VWM\Hierarchy\Department($this->db, $request['id']);
+				$facilityID = $department->getFacilityId();
                 $companyID = $company->getCompanyIDbyDepartmentID($request['id']);
                 break;
         }
@@ -773,7 +776,8 @@ class Controller {
             'db' => $this->db,
             'reportType' => $reportType,
             'companyID' => $companyID,
-            'request' => $request
+            'request' => $request,
+			'facilityID'=>$facilityID,
         );
 
         $result = $mReport->prepareSendReport($params);
@@ -782,7 +786,7 @@ class Controller {
         foreach ($result as $key => $data) {
             $this->smarty->assign($key, $data);
         }
-
+ 
         //	set js scripts
         $jsSources = array(
             'modules/js/reports.js',
