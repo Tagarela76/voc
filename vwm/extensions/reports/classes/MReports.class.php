@@ -59,7 +59,20 @@ class MReports {
 	    // getting rule list
 	    $rule = new Rule($db);
 	    //$rulesList = $rule->getRuleListFromMix($request['category'], $request['id']);
-		$rulesList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID);
+		
+		 switch ($params['request']['category']) {
+            case 'company':
+				$rulesList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID);
+                break;
+            case 'facility':
+                $rulesList = $rule->getCustomizedRuleList($_SESSION['user_id'],false, $params['facilityID']);
+                break;
+            case 'department':
+				$rulesList = $rule->getCustomizedRuleList($_SESSION['user_id'],false,$params['facilityID']);
+                break;
+        }
+		
+
 
 	    $result["rules"] = $rulesList;
 
