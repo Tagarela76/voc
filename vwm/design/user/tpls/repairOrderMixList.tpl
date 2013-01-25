@@ -3,9 +3,14 @@
  <div style="padding:7px;">
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr class="users_top_yellowgreen users_u_top_size">
-            <td class="users_u_top_yellowgreen" width="10%" height="30">
+            <td class="users_u_top_yellowgreen" width="5%" height="30">
                 <div style='width:10%;  color:white;'>
                     Mix ID
+                </div>
+            </td>
+			<td class="border_users_b" width="5%" height="30">
+                <div style='width:10%;  color:white;'>
+                    Step Number
                 </div>
             </td>
 			<td class="border_users_b" width="10%">
@@ -18,12 +23,12 @@
                     Description
                 </div>
             </td>
-            <td class="border_users_b" width="15%">
+            <td class="border_users_b" width="5%">
                 <div style='color:white;'>
                     VOC
                 </div>
             </td>
-            <td class="border_users_b" width="15%">
+            <td class="border_users_b" width="10%">
                     <div style='color:white;'>
                         Creation Date
                     </div>
@@ -33,18 +38,39 @@
                         Spray/spent time in minutes
                     </div>
             </td>
-			<td class="users_u_top_r_yellowgreen" width="20%">
+			<td class="border_users_b" width="7%">
+				<div style='color:white;'>
+					Material cost
+				</div>
+			</td>
+			<td class="border_users_b" width="7%">
+				<div style='color:white;'>
+					Labor cost
+				</div>
+			</td>
+			<td class="border_users_b" width="7%">
                     <div style='width:20%;  color:white;'>
                         Price
+                    </div>
+            </td>
+			<td class="users_u_top_r_yellowgreen" width="9%">
+                    <div style='width:20%;  color:white;'>
+                        Total cost
                     </div>
             </td>
         </tr>
     {*BEGIN LIST*}
     {foreach from=$mixList item=mix}
+	{assign var="index" value=$mix->mix_id}
     <tr class="hov_company"	height="10px">
         <td class="border_users_l border_users_b border_users_r" >
             <div>
                 {$mix->mix_id|escape} &nbsp;
+            </div>
+        </td>
+		<td class="border_users_l border_users_b border_users_r" >
+            <div>
+                {$mixesCosts[$index].StepNumber|escape} &nbsp;
             </div>
         </td>
 		<td class="border_users_b border_users_r">
@@ -79,7 +105,22 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
+                {$mixesCosts[$index].materialCost}&nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
+                {$mixesCosts[$index].laborCost}&nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
                 $ {$mix->price|escape} &nbsp;
+            </div>
+        </td>
+		<td class="border_users_b border_users_r">
+            <div>
+               <b>{$mixesCosts[$index].totalCost}&nbsp;</b>
             </div>
         </td>
     </tr>
@@ -103,13 +144,13 @@
         </td>
     </tr>-->
     <tr>
-        <td colspan="7" class="border_users_l border_users_r">
+        <td colspan="11" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
     {*END LIST*}
     <tr>
-        <td class="users_u_bottom" colspan="6" height="15">
+        <td class="users_u_bottom" colspan="10" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>

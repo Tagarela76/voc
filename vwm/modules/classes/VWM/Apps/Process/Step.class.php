@@ -146,7 +146,7 @@ class Step extends Model {
 				$unitTypeConvector = new \UnitTypeConverter($this->db);
 				$unitType = new \Unittype($this->db);
 				$unittypeName = $unitType->getNameByID($resource->getUnittypeId());
-				$qty = $unitTypeConvector->convertDefaultTime($resource->getQty(), $unittypeName);
+				$qty = $unitTypeConvector->convertToDefaultTime($resource->getQty(), $unittypeName);
 				$totalSpentTime+=$qty;
 			}
 		}

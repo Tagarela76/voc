@@ -58,6 +58,12 @@ function CMix() {
 		this.wo_id = repairOrderId;
 	}
 	
+	
+	this.setStepId = function(StepId) {
+		this.step_id = StepId;
+	}
+	
+	
 	//Convert Wastes to JSON format sting
 	this.toJson = function() {
 		var encoded = $.toJSON(this);

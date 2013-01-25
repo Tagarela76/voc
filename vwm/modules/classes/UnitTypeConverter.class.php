@@ -402,7 +402,40 @@ class UnitTypeConverter {
 
     }
 
-	public function convertDefaultTime($time, $type) {
+	/**
+	 *
+	 * @param int|float $value to convert
+	 * @param string $type we need to convert for
+	 * @return int|float
+	 * @throws Exception 
+	 */
+	
+	public function convertDefaultTime($time, $toType){
+		
+		switch ($toType) {
+			case "mins":
+				break;
+			case "hour":
+				$time = $time/60;
+				break;
+			case "days":
+				$time = $time/1440;
+				break;
+			default:
+				throw new Exception('Unit type Converter error: we can not convert from '.$type.' to'.' mins');
+				break;
+		}
+		return $time;
+	}
+	
+	/**
+	 *
+	 * @param int|float $value to convert
+	 * @param string $type from we need to convert
+	 * @return int|float
+	 * @throws Exception 
+	 */
+	public function convertToDefaultTime($time, $type) {
 		switch ($type) {
 			case "mins":
 				break;
@@ -453,7 +486,7 @@ class UnitTypeConverter {
 	
 	public function convertTimeFromTo($from, $to, $value){
 		// default time in minutes
-		$defaultTime = $this->convertDefaultTime($value, $from);
+		$defaultTime = $this->convertToDefaultTime($value, $from);
 		switch ($to) {
 			case "mins":
 				$time = $defaultTime;

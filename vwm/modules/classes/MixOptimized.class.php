@@ -69,6 +69,7 @@ class MixOptimized extends Model {
 	public $dateFormatForCalendar;
 	public $dateFormat;
 	public $debug;
+	public $step_id = NULL;
 	
 	/**
 	 * work order id
@@ -89,7 +90,13 @@ class MixOptimized extends Model {
 	 * @var RepairOrder
 	 */
 	private $repairOrder = false;
-
+	
+	/**
+	 * mix may have material and labor costs if he have been conected with step
+	 * @var array 
+	 */
+	private $mixCosts;
+	
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
 	const MIX_IS_EXPIRED = 'expired';
@@ -103,7 +110,7 @@ class MixOptimized extends Model {
 			$this->_load();
 		}
 	}
-
+	
 	/**
 	 *
 	 * Overvrite get property if property is not exists or private.
@@ -279,7 +286,23 @@ class MixOptimized extends Model {
 		$this->department_id = $department_id;
 	}
 
-		/**
+	public function getStepId() {
+		return $this->step_id;
+	}
+
+	public function setStepId($step_id) {
+		$this->step_id = $step_id;
+	}
+
+	public function getMixCosts() {
+		return $this->mixCosts;
+	}
+
+	public function setMixCosts($mixCosts) {
+		$this->mixCosts = $mixCosts;
+	}
+
+				/**
 	 * Add or Edit this mix
 	 *
 	 */
@@ -686,12 +709,15 @@ class MixOptimized extends Model {
 		$repairOrderId = ($this->wo_id !== null) 
 				? $this->db->sqltext($this->wo_id) 
 				: "NULL";
+		$stepId = ($this->getStepId() !== null) 
+				? $this->db->sqltext($this->getStepId()) 
+				: "NULL";
 
 		
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, spent_time, " .
 					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id, last_update_time, wo_id) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time, wo_id, step_id) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -709,7 +735,8 @@ class MixOptimized extends Model {
 						"{$this->db->sqltext($this->iteration)}, " .
 						"{$parentID}, " .
 						" NOW(), " .
-						" {$repairOrderId} " .
+						" {$repairOrderId}, " .
+						" {$stepId} " .
 						") "; 
 
 		return $query;
