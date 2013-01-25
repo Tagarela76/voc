@@ -85,7 +85,7 @@
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
 							<div align="left">
-								&nbsp; {$woDepartments}
+								&nbsp; {$woDepartments|escape}
 							</div>
 						</td>
 					</tr>
@@ -95,7 +95,7 @@
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
 							<div align="left">
-								&nbsp; {$processName}
+								&nbsp; {$processName|escape}
 							</div>
 						</td>
 					</tr>
@@ -132,7 +132,7 @@
 								Material costs:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								${$materialCoat}
+								${$materialCoat|escape}
 							</td>
 						</tr>
 						
@@ -141,7 +141,7 @@
 								Labor costs:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								${$laborCoast}
+								${$laborCoast|escape}
 							</td>
 						</tr>
 					{/if}
@@ -150,7 +150,7 @@
 							Total:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							<b>${$totalCoast}</b>
+							<b>${$totalCoast|escape}</b>
 						</td>
 					</tr>
 
@@ -174,14 +174,28 @@
 
 		</tr>
 		<tr>
-			<td>
+			<td style="width: 100px">
 				<div  style="margin: 10px 0 0 25px; width: 100%">
-					<input class='button' type="button" value="Add New Mix" onclick="document.location.href={$urlMixAdd}">
+					<input class='button' type="button" value="Add New Mix" onclick="document.location.href=$('#urlMixAdd').val()">
+						
+					{if $isHaveProcess}
+						<select name='availableSteps' id='availableSteps' value='0' onchange="addstepToUrl();">
+							<option>
+								No Process
+							</option>
+							{foreach from=$availableSteps item=step}
+								<option id='{$step->getId()}' name='{$step->getId()}' value='{$step->getId()}'>
+									Step{$step->getNumber()}
+									{*$step->getDescription()*}
+								</option>
+							{/foreach}
+						</select>
+					{/if}
 				</div>
 			</td>
 		</tr>
 	</table>
-	
+	<input type='hidden' value='{$urlMixAdd}' id='urlMixAdd'>
 
     <div align="right">
     </div>    

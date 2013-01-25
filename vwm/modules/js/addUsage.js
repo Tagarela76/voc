@@ -345,7 +345,8 @@ function initRecycle() {
 		mixObj.setNotes($("#notes").val());
 
 		mixObj.setIteration($("#repairOrderIteration").val());
-		mixObj.setParentID($("#mixParentID").val()); 
+		mixObj.setParentID($("#mixParentID").val());
+		mixObj.setStepId($("#StepID").val());
 		if ($("#repairOrderId").val() != '') {
 			mixObj.setRepairOrderId($("#repairOrderId").val());
 		}
@@ -406,7 +407,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{
+      			{console.log(response);
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";

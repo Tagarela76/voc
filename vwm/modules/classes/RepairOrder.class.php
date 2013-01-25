@@ -48,8 +48,10 @@ class RepairOrder extends Model {
 	
 	public $url;
 	
-	public $process_id;
+	public $process_id = NULL;
 
+	const TB_MIX = 'mix';
+	const TB_STEP = 'step';
 
 	public function __construct(db $db, $repairOrderId = null) {
 		$this->db = $db;
@@ -301,6 +303,31 @@ class RepairOrder extends Model {
 		
 		$process = new \VWM\Apps\Process\Process($this->db, $this->process_id);
 		return $process->getName();
+		
+	}
+	
+	/**
+	 *function for getting step ids for Repair Order  which have been already used
+	 */
+	public function getUsedStepIds(){
+		
+		if (is_null($this->getProcessId())){
+			return false;
+		}
+		
+		$ids = array();
+		$query = "SELECT s.id FROM ".  self::TB_STEP." s ".
+				"LEFT JOIN ".self::TB_MIX." m ".
+				"ON s.id=m.step_id WHERE ".
+				"s.process_id = {$this->db->sqltext($this->getProcessId())} AND ".
+				"m.wo_id = {$this->db->sqltext($this->getId())}";
+		$this->db->query($query);
+		$result = $this->db->fetch_all_array();
+		
+		foreach ($result as $r){
+			$ids[] = $r['id'];
+		}
+		return $ids;
 		
 	}
 

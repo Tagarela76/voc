@@ -828,6 +828,7 @@ function createSelectUnittypeClass(id) {
     <input id='mixParentID' type='hidden' name='mixParentID' value='{$mixParentID}'/>
     <input id='repairOrderId' type='hidden' name='repairOrderId' value='{$repairOrderId}'/>
     <input id='woIteration' type='hidden' name='woIteration' value='{$woIteration}'/>
+	<input id='StepID' type='hidden' name='StepID' value='{$stepID}'/>
 
     {if $request.action eq "addItem"}
         <input type='hidden' name='department_id' value='{$request.departmentID}'>

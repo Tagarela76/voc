@@ -4,7 +4,7 @@ use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
 use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
 use \VWM\Apps\Process\Process;
-use VWM\Apps\Process\StepInstance;
+use VWM\Apps\Process\Step;
 
 class CRepairOrder extends Controller {
 
@@ -41,6 +41,7 @@ class CRepairOrder extends Controller {
 
         $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));                
 
+		
 		// get child mixes		  
         $mixTotalPrice = 0;
 		$mixTotalSpentTime = 0;
@@ -89,9 +90,21 @@ class CRepairOrder extends Controller {
 		$isHaveProcess = false;
 		
 		if (!is_null($processId)) {
+			
+			$availableSteps = array();
 			$isHaveProcess = true;
 			$process = new Process($this->db, $processId);
 			$steps = $process->getSteps();
+				//get allowable steps for current Repair Order
+					$usedStepIds = $repairOrder->getUsedStepIds();
+					foreach ($steps as $step){
+						if(!in_array($step->getId(), $usedStepIds)){
+							$availableSteps[] = $step;
+						}
+					}
+					
+					$this->smarty->assign('availableSteps', $availableSteps);
+					
 			$materialCoat = 0;
 			$laborCoast = 0;
 			$totalCoast = 0;
@@ -99,29 +112,43 @@ class CRepairOrder extends Controller {
 
 			$mixCount = count($mixes);
 			
-			if ($mixes) {
-				for ($i = 0; $i < $mixCount; $i++) {
-					$spentTime += $steps[$i]->getTotalSpentTime();
-					$resources = $steps[$i]->getResources();
-					$spentTime = $mixes[$i]->spent_time;
+			foreach ($mixes as $mix) {
+				$mixCosts = array(
+					"materialCost" => 0,
+					"laborCost" => 0,
+					"totalCost" => 0,
+					"StepNumber"=>'--',
+				);
+				if (!is_null($mix->getStepId())) {
+					$step = new Step($this->db, $mix->getStepId());
+					$resources = $step->getResources();
+					$spentTime = $mix->spent_time;
+					$timeResourceCount = 0;
 					foreach ($resources as $resource) {
-						if($resource->getResourceTypeId() == self::GOM){
+						if ($resource->getResourceTypeId() == self::GOM) {
+							$mixCosts['materialCost'] = $resource->getMaterialCost();
 							$materialCoat += $resource->getMaterialCost();
 						}
-						if($resource->getResourceTypeId() == self::TIME){
+						if ($resource->getResourceTypeId() == self::TIME && $timeResourceCount==0) {
 							$laborCoast += $spentTime * $resource->getRate();
+							$mixCosts['laborCost'] = $spentTime * $resource->getRate();
+							$timeResourceCount = 1;
 						}
-						//$totalCoast += $resource->getTotalCost();
 					}
+					$mixCosts['StepNumber'] = $step->getNumber();
 				}
+					$mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
+					$mixesCosts[$mix->mix_id] = $mixCosts;
 			}
+			
 			$totalCoast = $materialCoat + $laborCoast + $mixTotalPrice;
 		} else {
 			$totalCoast = $mixTotalPrice;
 		}
-		//get url for adding mix to Repair Order
+		
+		//get url for adding mix to Repair Order button
 		//get last mix
-		$urlMixAdd = "'?action=addItem&category=mix".
+		$urlMixAdd = "?action=addItem&category=mix".
 					"&repairOrderId=" . $repairOrder->getId().
 					"&departmentID=" .$departmentId;
 
@@ -130,8 +157,9 @@ class CRepairOrder extends Controller {
 		}
 		if($this->getFromRequest('facilityID')){
 			$urlMixAdd .= "&facilityID=" .$this->getFromRequest('facilityID');
-		}		
-		$urlMixAdd .="'";
+		}
+		// set stepID = 0 if mix do not conect with step
+		$urlMixAdd .="&stepID=0";
 		
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
 		
@@ -154,6 +182,7 @@ class CRepairOrder extends Controller {
 		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
 		$this->smarty->assign('mixTotalSpentTime', $mixTotalSpentTime);
+		$this->smarty->assign('mixesCosts', $mixesCosts);
                 
         //set tpl
         $this->smarty->assign('tpl', 'tpls/viewRepairOrder.tpl');

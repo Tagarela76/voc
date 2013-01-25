@@ -8,6 +8,7 @@ use VWM\ManageColumns\DisplayColumnsSettings;
 use VWM\Apps\Process\Process;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\Step;
 
 
 class CMix extends Controller {
@@ -968,6 +969,7 @@ class CMix extends Controller {
 
 	protected function actionAddItemAjax() {
 		$form = $_REQUEST; 
+		
 //$debug = true;
 		if ($form['debug']) {
 			$debug = true;
@@ -1095,7 +1097,10 @@ class CMix extends Controller {
 		$mix = $this->buildMix($jmix);
 		$mix->facility_id = $facilityID;
 		$mix->isMWS = $isMWS;
-
+		if($jmix->step_id!=''){
+			$mix->setStepId($jmix->step_id);
+		}
+		
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
@@ -1107,6 +1112,7 @@ class CMix extends Controller {
 
 	protected function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null) {
 //$debug =true;
+		
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
 			$params = array(
@@ -1183,6 +1189,7 @@ class CMix extends Controller {
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		}
+		
 		$newMixID = $mix->save($isMWS, $optMix);
 		
 		if (!$newMixID) {
@@ -1795,6 +1802,7 @@ class CMix extends Controller {
 	protected function showAdd($departmentID) {
 
 		$request = $this->getFromRequest();
+		
 		$request['id'] = $departmentID;
 		$request['parent_category'] = $this->parent_category;
 
@@ -1860,6 +1868,11 @@ class CMix extends Controller {
 		$mix->iniRecycle(false, $unittypeListDefault);
 		$mix->department_id = $departmentID;
 		$mix->creation_time = strtotime("now");
+		
+		if($request['stepID']!=0){
+			$mix->setStepId($request['stepID']);
+		}
+		
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
@@ -1869,12 +1882,9 @@ class CMix extends Controller {
 		$repairOrderIteration = 0;
 		$mixParentID = $this->getFromRequest('parentMixID');
 		
-		
-		
 		// this mix was added to WO , add suffix ?
 		$repairOrderId = $this->getFromRequest('repairOrderId');
 
-		
 		//get procces for mix
 		$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
         $industryTypeId = $companyNew->getIndustryType();
@@ -1890,16 +1900,9 @@ class CMix extends Controller {
 		}
 		
 		$process = $workOrder->getProcess();
-		
-		if (!is_null($process->getId())) {
-			$stepCount = $workOrder->getMixes();
-			if($stepCount){
-				$stepNumber = count($stepCount)+1;
-			}else{
-				$stepNumber=1;
-			}
-			$process->setCurrentStepNumber($stepNumber);
-			$step = $process->getCurrentStep();
+				
+		if (!is_null($process->getId()) && $request['stepID']!=0) {
+			$step = new \VWM\Apps\Process\Step($this->db, $request['stepID']);
 			if($step) {
 				$data->spent_time = $step->getTotalSpentTime();
 				$resources = $step->getResources();
