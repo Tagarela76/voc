@@ -50,7 +50,7 @@
 			</td>
 			<td class="border_users_b" width="7%">
                     <div style='width:20%;  color:white;'>
-                        Price
+                        Paint costs
                     </div>
             </td>
 			<td class="users_u_top_r_yellowgreen" width="9%">
@@ -105,22 +105,22 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-                {$mixesCosts[$index].materialCost}&nbsp;
+                ${$mixesCosts[$index].materialCost}&nbsp;
             </div>
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-                {$mixesCosts[$index].laborCost}&nbsp;
+                ${$mixesCosts[$index].laborCost}&nbsp;
             </div>
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-                $ {$mix->price|escape} &nbsp;
+                ${$mix->price|escape} &nbsp;
             </div>
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-               <b>{$mixesCosts[$index].totalCost}&nbsp;</b>
+               <b>${$mixesCosts[$index].totalCost}&nbsp;</b>
             </div>
         </td>
     </tr>
