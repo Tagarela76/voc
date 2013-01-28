@@ -5,7 +5,7 @@
                 <tr>
 					{if $permissions.data.view}
                     <td>
-                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=pfpLibrary&tab=all">{if $request.bookmark != "pfpLibrary"}
+                        <a href="?action=browseCategory&category=department&id={$request.id}&bookmark=pfpLibrary&tab=all&pfpType=0">{if $request.bookmark != "pfpLibrary"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
                                     PFP Library

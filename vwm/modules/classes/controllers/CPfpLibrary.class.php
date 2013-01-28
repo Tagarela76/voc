@@ -27,10 +27,16 @@ class CPfpLibrary extends Controller {
 				
 		$department = new \VWM\Hierarchy\Department($this->db, $departmentDetails['department_id']);
 		$pfpTypes = $department->getPfpTypes();
+		
 		$selectedPfpType = $this->getFromRequest('pfpType');
+		if($selectedPfpType=='0'){
+			$selectedPfpType = $pfpTypes[0]->id;
+		}
+		
 		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
 		$this->smarty->assign('allUrl', $allUrl);
 		$this->smarty->assign("pfpTypes", $pfpTypes);
+		
 		$this->smarty->assign("selectedPfpType", $selectedPfpType);
 		$this->smarty->assign("productCategory", $productCategory);
 		

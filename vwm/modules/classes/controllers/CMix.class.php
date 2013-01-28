@@ -1453,7 +1453,7 @@ class CMix extends Controller {
 
 	protected function addEdit($action, $departmentID) {
 		$form = $this->getFromPost();
-
+		
 		/** protecting from xss * */
 		foreach ($form as $key => $value) {
 			$form[$key] = Reform::HtmlEncode($value);
@@ -1464,32 +1464,41 @@ class CMix extends Controller {
 		$facility = new Facility($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 		
-		$selectedPfpType = $this->getFromRequest("selectedPfpType");
-		$this->smarty->assign('selectedPfpType', $selectedPfpType);
-		
 		$pfpmanager = new PFPManager($this->db);
-		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);		
-		$this->smarty->assign("pfps", json_encode($pfps));
+		
+		
 		
 		$currentPfpType = new PfpTypes($this->db);
 		$currentPfpType->id = 0;
 		$currentPfpType->name = 'all';
 		$currentPfpType->facility_id = 0;
-		$this->smarty->assign('currentPfpType', $currentPfpType);
+		
 
 		//$department = new Department($this->db);
 		$department = new \VWM\Hierarchy\Department($this->db, $departmentID);
 		$facilityID = $department->getFacilityId();
 		$pfpTypes = $department->getPfpTypes();
 		
+		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);		
+		
+		$this->smarty->assign("pfps", json_encode($pfps));
+		
+		$selectedPfpType = $this->getFromRequest("selectedPfpType");
+		if(is_null($selectedPfpType)){
+			$selectedPfpType = $pfpTypes[0]->name;
+		}
+		
+		$this->smarty->assign('selectedPfpType', $selectedPfpType);
+		$this->smarty->assign('currentPfpType', $currentPfpType);
 		$this->smarty->assign('pfpTypes', $pfpTypes);
+		
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		foreach ($moduleMap as $key => $module) {
 			$showModules[$key] = $this->user->checkAccess($key, $companyID);
 		}
 		$this->smarty->assign('show', $showModules);
-		//var_dump($showModules);
+
 
 		if ($this->isModuleWasteStream($companyID)) { //	OK, this company has access to waste streams module, so let's setup..
 			$isMWS = true;
@@ -1639,13 +1648,9 @@ class CMix extends Controller {
 			echo "<h1>Set department_id: {$optMix->department_id}</h1>";
 		}
 
-
-
 		if (isset($optMix)) {
 			$mix->mix_id = $optMix->mix_id;
 		}
-
-
 
 		$validationRes['summary'] = true;
 		$validation = new Validation($this->db);

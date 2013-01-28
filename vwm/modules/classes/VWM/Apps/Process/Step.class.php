@@ -16,7 +16,7 @@ class Step extends Model {
 	 * step number
 	 * @var int
 	 */
-	protected $number;
+	protected $number = 0;
 
 		/*
 	 * step id

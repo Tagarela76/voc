@@ -100,6 +100,7 @@ function createSelectUnittypeClass(id) {
 	
 {literal}
 	var page = new AddMixPage();
+	var firstPfpTypeId = {/literal}'{$pfpTypes[0]->id}'{literal};
 		
 	$(document).ready(function() {		
 		page.pfpManager.currentPfpType = {
@@ -107,19 +108,23 @@ function createSelectUnittypeClass(id) {
 			"name":"{/literal}{$currentPfpType->name}{literal}",
 			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
 		};
+				
 		page.pfpManager.pfpLists.push({	
 			"type":page.pfpManager.currentPfpType,
 			"pfps":{/literal}{$pfps}{literal}
 		});
-		
-		page.pfpManager.renderPfpList();			
+		page.pfpManager.renderPfpList();	
+			
+		//openPfpGroup for first element to make it default
+		if(firstPfpTypeId!=''){
+			page.pfpManager.openPfpGroup(firstPfpTypeId, $('.active_link'));
+		}
+			
 	});
 {/literal}
 </script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js"></script>
-
-
 
 
 <div style="padding:7px;" >
