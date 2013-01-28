@@ -41,13 +41,13 @@ function PfpManager() {
 		var returnPfpList = [];
 		
 		// check probably list is already loaded
+		
 		for(key in this.pfpLists) {			
 			if(this.pfpLists[key].type.id == pfpType.id) {
 				// we found it				
 				return this.pfpLists[key].pfps;
 			}
 		}
-		
 		$.ajax({
 			url: "?action=loadBriefPfps&category=pfpTypes",
 			async: false,
@@ -65,7 +65,8 @@ function PfpManager() {
 	
 	
 	this.renderPfpList = function() {
-		var pfps = this.getPfpsByType(this.currentPfpType);		
+		var pfps = this.getPfpsByType(this.currentPfpType);
+		
 		var html = '';
 		for (key in pfps) {
 			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'" name="pfp_row">';
@@ -85,11 +86,13 @@ function PfpManager() {
 	}
 	
 	this.openPfpGroup = function(pfpGroupId, linkElement) {
+		
 		this.currentPfpType = {
 			'id':pfpGroupId,
 			'name':'',
-			'facility_id':0
+			'facility_id':0 
 		};
+		
 		this.renderPfpList();
 		
 		// reset active links
@@ -208,6 +211,7 @@ $(document).ready(function() {
 				$("#errorAddProduct").css("display","none");
 			}
 		});
+		
 });
 
 function loadPFPDetails(pfp_id) {
@@ -407,7 +411,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{console.log(response);
+      			{
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -1531,4 +1535,9 @@ function initRecycle() {
 		table.appendChild(tbody);
 
 		return table;
+	}
+	
+	
+	function is_null(mixed_var){ 
+    return ( mixed_var === 'undefined' );
 	}

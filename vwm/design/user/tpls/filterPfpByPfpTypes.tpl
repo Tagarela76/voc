@@ -1,4 +1,5 @@
 <div style="text-align: center;">
+	
 	{if $pfpTypes|count > 0}
 		<div class="link_bookmark">
 		{if $selectedPfpType}

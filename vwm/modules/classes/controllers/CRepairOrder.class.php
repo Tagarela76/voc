@@ -95,6 +95,7 @@ class CRepairOrder extends Controller {
 			$isHaveProcess = true;
 			$process = new Process($this->db, $processId);
 			$steps = $process->getSteps();
+			
 				//get allowable steps for current Repair Order
 					$usedStepIds = $repairOrder->getUsedStepIds();
 					foreach ($steps as $step){
@@ -102,8 +103,8 @@ class CRepairOrder extends Controller {
 							$availableSteps[] = $step;
 						}
 					}
-					
-					$this->smarty->assign('availableSteps', $availableSteps);
+				
+			$this->smarty->assign('availableSteps', $availableSteps);
 					
 			$materialCoat = 0;
 			$laborCoast = 0;
@@ -160,6 +161,20 @@ class CRepairOrder extends Controller {
 		}
 		// set stepID = 0 if mix do not conect with step
 		$urlMixAdd .="&stepID=0";
+		//sort mixes
+		$mixList = array();
+		$stepsCount = count($steps);
+		
+		foreach ($mixes as $mix){
+			if (!is_null($mix->getStepId())) {
+				$step = new Step($this->db, $mix->getStepId());
+				$stepNumber = $step->getNumber();
+			}else{
+				$stepNumber = $stepsCount + $mix->mix_id;
+			}
+			$mixList[$stepNumber] = $mix;
+		}
+		ksort($mixList);
 		
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
 		
@@ -175,7 +190,7 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
         $this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
-        $this->smarty->assign('mixList', $mixes);
+        $this->smarty->assign('mixList', $mixList);
 		
 		$this->smarty->assign('isHaveProcess', $isHaveProcess);
 		$this->smarty->assign('processName', $repairOrder->getRepairOrderProcessName());
