@@ -297,14 +297,14 @@
                         <input type="button" value="Set" onclick="categoryUnittype.manageUnittype.openDialog(); return false;">
                 </td>
             </tr>
-			<!--<tr>
+			<tr>
                 <td class="border_users_l border_users_b us_gray" height="23px">
                     Default AP Methods:
                 </td>
                 <td class="border_users_r border_users_l border_users_b">                    
                         <input type="button" value="Set" onclick="apMethod.manageAPMethod.openDialog(); return false;">                    
                 </td>
-            </tr>-->
+            </tr>
 			<tr>
 				<td class="users_u_bottom">
 			   	</td>

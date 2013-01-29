@@ -429,6 +429,31 @@ class Company extends Model {
 
 		return $unittypes;
 	}
+	
+	public function getDefaultAPMethod(){
+		
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
+		$query.= " AND apm.apmethod_id=def.id_of_subject";
+		$query.=" AND def.subject='apmethod'";
+		$query.=" AND def.object='" .self::CATEGORY."'";
+		
+		$this->db->query($query);
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);				
+				$apmethod=array (
+					'apmethod_id'			=>	$data->apmethod_id,
+					'description'			=>	$data->apmethod_desc
+				);	
+				$apmethods[]=$apmethod;				
+			}
+		}else{
+			return false;
+		} 
+		
+		return $apmethods;
+	}
     
 }
 

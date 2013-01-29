@@ -237,8 +237,13 @@
 			$facility->setVocAnnualLimit($_POST["voc_annual_limit"]);
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
+			
 			$facilityUnitType = ($_POST["unittype"]);
 			$facilityUnitType = explode(',',$facilityUnitType);
+			
+			//default ap method type
+			$facilityAPMethod = ($_POST["apMethods"]);
+			$facilityAPMethod = explode(',',$facilityAPMethod);
 			
 			
 			$violationList = $facility->validate();		
@@ -249,8 +254,12 @@
 				}
 					
 				//save facility Unit type
-					$unittype = new Unittype($db);
-					$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+				$unittype = new Unittype($db);
+				$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+					
+				//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($facilityAPMethod, $categoty, $result);
 					
 				//   CREATE ACO
 				$gacl_api = new gacl_api();

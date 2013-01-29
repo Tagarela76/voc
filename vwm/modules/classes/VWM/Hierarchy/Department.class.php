@@ -495,16 +495,15 @@ class Department extends Model {
 		return $unittypes;
 	}
 	
-	/*public function getDefaultAPMethod(){
+	public function getDefaultAPMethod(){
 		
 		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
-		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object=".(int)$companyID;
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getDepartmentId())}";
 		$query.= " AND apm.apmethod_id=def.id_of_subject";
 		$query.=" AND def.subject='apmethod'";
+		$query.=" AND def.object='" .self::CATEGORY."'";
+		
 		$this->db->query($query);
-		
-		
-		
 		if ($this->db->num_rows()) {
 			for ($j=0; $j < $this->db->num_rows(); $j++) {
 				$data=$this->db->fetch($j);				
@@ -514,10 +513,13 @@ class Department extends Model {
 				);	
 				$apmethods[]=$apmethod;				
 			}
+		}else{
+			$facility = $this->getFacility();
+			$apmethods = $facility->getDefaultAPMethod();
 		} 
 		
 		return $apmethods;
-	}*/
+	}
 }
 
 ?>

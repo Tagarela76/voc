@@ -228,6 +228,7 @@ class DepartmentTest extends DbTestCase {
 				"WHERE def.object = 'department' " .
 				"AND def.id_of_object = {$this->db->sqltext($departmentId)} " .
 				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
 		$this->db->query($query);
@@ -274,6 +275,7 @@ class DepartmentTest extends DbTestCase {
 				"WHERE def.object = 'facility' " .
 				"AND def.id_of_object = {$this->db->sqltext($facilityId)} " .
 				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
 		$this->db->query($query);
@@ -323,6 +325,7 @@ class DepartmentTest extends DbTestCase {
 				"WHERE def.object = 'company' " .
 				"AND def.id_of_object = {$this->db->sqltext($companyId)} " .
 				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
 		$this->db->query($query);

@@ -1825,8 +1825,8 @@ class CMix extends Controller {
 		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
 		
 		$apmethodObject = new Apmethod($this->db);
-		//$APMethod = $department->getDefaultAPMethod();
-		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
+		$APMethod = $department->getDefaultAPMethod();
+		//$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}
