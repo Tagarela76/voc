@@ -657,9 +657,11 @@ class Unittype {
 
 
 		$this->db->query($query);
-
+		//delete this check for some time
+		$deleteCheck = 1;
+		
 		// select unit types for which has already created products
-		if ($this->db->num_rows()) {
+		if ($this->db->num_rows() && $deleteCheck!=1) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
 				$unittype[$i] = $data->unittype_id;

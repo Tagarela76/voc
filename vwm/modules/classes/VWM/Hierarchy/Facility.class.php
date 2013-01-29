@@ -510,6 +510,7 @@ class Facility extends Model {
 				 "WHERE def.object = '" .self::CATEGORY."' ".
 				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
 				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
+				 "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
 		
 		$this->db->query($query);

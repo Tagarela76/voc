@@ -237,7 +237,17 @@ class CFacility extends Controller {
 		$facility = new Facility($this->db);
 		$facilityDetails = $facility->getFacilityDetails($this->getFromRequest('id'), true);
 		$this->smarty->assign('data', $facilityDetails);
-
+		
+		$unitType = new Unittype($this->db);
+		$unittype =  $unitType->getDefaultCategoryUnitTypeList($this->getFromRequest('id'), $this->category);
+		$unittype = implode(',', $unittype);
+		$this->smarty->assign("unittype", $unittype);
+		
+		$apmethodObject = new Apmethod($this->db);
+		$defaultAPMethodList = $apmethodObject->getDefaultCategoryApmethodlist($this->getFromRequest('id'), $this->category);
+		$defaultAPMethodList = implode(',', $defaultAPMethodList);
+		$this->smarty->assign("defaultAPMethodList", $defaultAPMethodList);
+		
 		$registration = new Registration($this->db);
 		$this->smarty->assign("country", $registration->getCountryList());
 		$country = new Country($this->db);

@@ -206,6 +206,8 @@ class CDepartment extends Controller {
 				->getLabelText();
 		$this->smarty->assign('woLabel',$woLabel);
 
+		
+		
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
@@ -245,10 +247,21 @@ class CDepartment extends Controller {
 		$this->setListCategoriesLeftNew($this->category, $department->getDepartmentId());
 		$this->setPermissionsNew('viewDepartment');
 
+		$unitType = new Unittype($this->db);
+		$unittype =  $unitType->getDefaultCategoryUnitTypeList($this->getFromRequest('id'), $this->category);
+		$unittype = implode(',', $unittype);
+		
+		$apmethodObject = new Apmethod($this->db);
+		$defaultAPMethodList = $apmethodObject->getDefaultCategoryApmethodlist($this->getFromRequest('id'), $this->category);
+		$defaultAPMethodList = implode(',', $defaultAPMethodList);
+		$this->smarty->assign("defaultAPMethodList", $defaultAPMethodList);
+		
+		$this->smarty->assign("unittype", $unittype);
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
 			'modules/js/PopupWindow.js',
+			'modules/js/checkBoxes.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js',

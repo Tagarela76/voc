@@ -66,8 +66,14 @@
 			$facility->setVocAnnualLimit($_POST["voc_annual_limit"]);
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
+			
+			//default unit type
 			$facilityUnitType = ($_POST["unittype"]);
 			$facilityUnitType = explode(',',$facilityUnitType);
+			
+			//default ap method type
+			$facilityAPMethod = ($_POST["apMethods"]);
+			$facilityAPMethod = explode(',',$facilityAPMethod);
 			
 			$violationList = $facility->validate();		
 			if(count($violationList) == 0) {
@@ -80,6 +86,10 @@
 					$unittype = new Unittype($db);
 					$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
 					
+				//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($facilityAPMethod, $categoty, $result);
+				
 				//	TODO: WHY???!
 				// clear jobber array
 				foreach ($_POST["jobber"] as $jobberPost) {

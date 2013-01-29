@@ -405,7 +405,7 @@ if ($checkResult['shouldPay']) {
 		$unitTypelist = $unitType->getClassesOfUnits();
 		$classlist = $unitType->getAllClassesOfUnitTypes();
 		if (!isset($defaultUnitTypelist)) {
-			$defaultUnitTypelist = $unitType->getDefaultUnitTypelist($companyDetails['company_id']);
+			$defaultUnitTypelist = $unitType->getDefaultCategoryUnitTypeList($companyDetails['company_id'], $this->category);
 		}
 
 		//Get APMethods list

@@ -468,6 +468,7 @@ class Department extends Model {
 				 "WHERE def.object = '" .self::CATEGORY."' ".
 				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
 				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
+			     "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
 		
 		$this->db->query($query);
@@ -493,6 +494,30 @@ class Department extends Model {
 
 		return $unittypes;
 	}
+	
+	/*public function getDefaultAPMethod(){
+		
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object=".(int)$companyID;
+		$query.= " AND apm.apmethod_id=def.id_of_subject";
+		$query.=" AND def.subject='apmethod'";
+		$this->db->query($query);
+		
+		
+		
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);				
+				$apmethod=array (
+					'apmethod_id'			=>	$data->apmethod_id,
+					'description'			=>	$data->apmethod_desc
+				);	
+				$apmethods[]=$apmethod;				
+			}
+		} 
+		
+		return $apmethods;
+	}*/
 }
 
 ?>

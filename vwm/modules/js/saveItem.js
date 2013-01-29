@@ -8,6 +8,8 @@ function saveDepartmentDetails()
 	var dep_share_wo=$('#share_wo').attr('checked');	
 	var dep_action=$('input:hidden[name=action]').attr('value');
 	var unittype = $('#unittype').val();
+	var apMethods = $('#apMethods').val();
+	
 	if (dep_action == 'addItem') 
 	{		
 		var id=$('input:hidden[name=facility_id]').attr('value');
@@ -29,11 +31,13 @@ function saveDepartmentDetails()
 			"action":dep_action,
 			"share_wo": dep_share_wo ? 1 : 0,
 			"id":id,
-			"unittype": unittype
+			"unittype": unittype,
+			"apMethods":apMethods
+			
 		},      			
 		dataType: "html",
 		success: function (response) 
-		{   
+		{   console.log(response);
 			jsonResponse=eval("("+response+")");		      																
 			answer(jsonResponse);										
 		}        		   			   	
@@ -174,6 +178,7 @@ function saveFacilityDetails()
 	var client_facility_id = $('#addEditFacilityForm input[name="client_facility_id"]').val();
 	var action=document.addFacility.action.value;
 	var unittype = $('#unittype').val();
+	var apMethods = $('#apMethods').val();
 	
 	
 	if (action == 'addItem') {		
@@ -216,11 +221,13 @@ function saveFacilityDetails()
 			"jobber[]":jobber,
 			"action":action,
 			"id":id,
-			"unittype":unittype
+			"unittype":unittype,
+			"apMethods":apMethods
 		},      			
 		dataType: "html",
 		success: 	function (response) 
 		{   
+			
 			jsonResponse=eval("("+response+")");
 			answer(jsonResponse);										
 		}        		   			   	

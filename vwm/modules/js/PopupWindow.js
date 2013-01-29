@@ -1290,7 +1290,78 @@ function ManageUnittype() {
 	};
 }
 
+//AP Methods
 
+function ManageAPMethod() {
+	this.divId = 'manageApMethodsContainer';
+	this.isLoaded = false;
+
+	this.iniDialog = function(divId) {
+		divId = typeof divId !== 'undefined' ? divId : this.divId;
+		if(divId !== this.divId) {
+			this.divId = divId;
+		}
+
+		var that = this;
+		$("#"+divId).dialog({
+			width: 550,
+			height: 600,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog('close');
+					that.isLoaded = false;
+				},
+				'Save': function() {
+					that.save();
+				}
+			}
+		});
+	}
+
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
+
+	this.loadContent = function() {
+		var that = this;
+		$.ajax({
+			url: "?action=loadAPMethods",
+			data: {id: apMethod.Id,
+				   category: apMethod.category},
+			type: "POST",
+			dataType: "html",
+			success: function (response) {
+				
+				$("#"+that.divId).html(response);
+				that.isLoaded = true;
+      		}
+		});
+	};
+	
+	this.save = function() {
+		var that = this;
+		var apMethods='';
+		var apMethodsData = document.getElementById("apmethod_data");
+
+		$('input[id^=APMethodID]').each(function(el) {
+			if ($(this).attr('checked')) {
+				apMethods+=$(this).attr('value')+',';
+			}
+		});
+		$('#apMethods').val(apMethods);
+		that.isLoaded = false;
+		$("#"+that.divId).dialog('close'); 
+		that.divId.isLoaded = false;
+	};
+}
 
 function CategoryUnittype() {
 	this.manageUnittype = new ManageUnittype();
@@ -1299,11 +1370,20 @@ function CategoryUnittype() {
 	this.departmentId = false;
 }
 
+function APMethods() {
+	this.manageAPMethod = new ManageAPMethod();
+	this.Id = false;
+	this.category = false;
+}
+
 //	global settings object
 var categoryUnittype;
+var apMethod;
 
 $(function() {
 	//	ini global object
+	apMethod = new APMethods();
+	apMethod.manageAPMethod.iniDialog();
 	categoryUnittype = new CategoryUnittype();
 	categoryUnittype.manageUnittype.iniDialog();
 	

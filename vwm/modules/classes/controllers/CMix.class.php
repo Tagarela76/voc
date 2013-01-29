@@ -1821,8 +1821,11 @@ class CMix extends Controller {
 		$equipment = new Equipment($this->db);
 		$equipmentList = $equipment->getEquipmentList($departmentID);
 		$this->smarty->assign('equipment', $equipmentList);
-
+		
+		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
+		
 		$apmethodObject = new Apmethod($this->db);
+		//$APMethod = $department->getDefaultAPMethod();
 		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
@@ -1863,7 +1866,7 @@ class CMix extends Controller {
 		$unittype = new Unittype($this->db);
 		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 		
-		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
+		
 		$department->setUnitTypeClass($unitTypeClass);
 		$unittypeListDefault = $department->getUnitTypeList();
 		

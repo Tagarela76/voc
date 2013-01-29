@@ -2,8 +2,10 @@
 <script type="text/javascript">
 	$(function() {
 		//	global settings object defined at settings.js
-		categoryUnittype.Id ='{/literal} {$data.facility_id} {literal}';
+		categoryUnittype.Id ='{/literal}{$data.facility_id}{literal}';
 		categoryUnittype.category = 'facility';
+		apMethod.Id = '{/literal}{$data.facility_id}{literal}';
+		apMethod.category = 'facility';
 	});
 </script>
 {/literal}
@@ -295,6 +297,14 @@
                         <input type="button" value="Set" onclick="categoryUnittype.manageUnittype.openDialog(); return false;">
                 </td>
             </tr>
+			<!--<tr>
+                <td class="border_users_l border_users_b us_gray" height="23px">
+                    Default AP Methods:
+                </td>
+                <td class="border_users_r border_users_l border_users_b">                    
+                        <input type="button" value="Set" onclick="apMethod.manageAPMethod.openDialog(); return false;">                    
+                </td>
+            </tr>-->
 			<tr>
 				<td class="users_u_bottom">
 			   	</td>
@@ -410,7 +420,8 @@ Note: Different jobbers can't supply the same products!
 		
 </div>
 				
-<input type = 'hidden' id='unittype' name = 'unittype'>
+				<input type = 'hidden' id='unittype' name = 'unittype' value="{$unittype}">
+				<input type = 'hidden' id='apMethods' name = 'apMethods' value="{$defaultAPMethodList}">
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}		
 
 
@@ -429,3 +440,4 @@ Note: Different jobbers can't supply the same products!
 
 
 <div id="manageUnitTypeContainer" title="Manage Facility Unit Type Settings" style="display:none;">Loading ...</div>
+<div id="manageApMethodsContainer" title="Manage AP Methods Settings" style="display:none;">Loading ...</div>
