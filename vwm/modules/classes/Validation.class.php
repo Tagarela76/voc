@@ -238,7 +238,7 @@ class Validation {
 					$query = "SELECT * FROM `nox` WHERE description='" . $itemName . "' and nox_id!=" . $itemID . " " . $sql;
 				}
 				break;
-				
+
 			case 'repairOrder':
 				if ($parrentID != 'none') {
 					$query = "SELECT * FROM " . TB_WORK_ORDER . " WHERE number='" . $itemName . "' and facility_id=" . $parrentID;
@@ -247,7 +247,7 @@ class Validation {
 					return false;
 				}
 				break;
-                
+
             case 'pfpTypes':
 				if ($parrentID != 'none') {
 					$query = "SELECT * FROM " . TB_PFP_TYPES . " WHERE name='" . $itemName . "' and facility_id=" . $parrentID;
@@ -255,8 +255,8 @@ class Validation {
 					echo "Error: unsigned parametr <b>parrentID</b> <br>";
 					return false;
 				}
-				break;    
-                
+				break;
+
 		}
 
 
@@ -1324,7 +1324,7 @@ class Validation {
 				$result['summary'] = 'false';
 			}
 		}
-		
+
 		if (isset($data['product_pricing'])) {
 			if ($this->check_price($data['product_pricing'])) {
 				$result['product_pricing'] = 'success';
@@ -2213,7 +2213,7 @@ class Validation {
 
 			}
 		}
-		
+
 		return $result;
 	}
 
@@ -2274,7 +2274,7 @@ class Validation {
 
 		return $result;
 	}
-	
+
 	public function validateRegDataRepairOrder(RepairOrder $repairOrder) {
 
 		$result = array();
@@ -2291,7 +2291,7 @@ class Validation {
 
 		return $result;
 	}
-    
+
     public function validateRegDataPfpType(PfpTypes $pfpTypes) {
 
 		$result = array();
@@ -2304,18 +2304,11 @@ class Validation {
 			} else {
 				$result['pfpType'] = 'success';
 			}
-            $query = "SELECT * FROM " . TB_PFP_TYPES . " WHERE name='{$this->db->sqltext($pfpTypes->name)}' and facility_id={$this->db->sqltext($pfpTypes->facility_id)} ";
-            $this->db->query($query);
-            if ($this->db->num_rows() > 9) {
-                $result['pfpTypeCount'] = 'failed';
-				$result['summary'] = 'false';
-			} else {
-				$result['pfpTypeCount'] = 'success';
-			}
+			
 		}
 		return $result;
 	}
-	
+
 	function check_price($comp_weight) {
 		$comp_weight = trim($comp_weight);
 		$parametrs = array('min' => 0, 'max' => 9999999999999, 'decimal' => ',.');
