@@ -51,7 +51,21 @@ class Company extends Model {
     public function getCompanyId() {
         return $this->company_id;
     }
-
+	
+	/*
+	 * name of unit_class for getUnitTypeList function
+	 * USAWght for default
+	 * @var string 
+	 */
+	protected $unitTypeClass = 'USAWght';
+	
+	const TB_UNITTYPE = 'unittype';
+	const TB_DEFAULT = '`default`';
+	const TB_TYPE = 'type';
+	const TB_UNITCLASS = 'unit_class';
+	const CATEGORY = 'company';
+	
+	
 	/**	 
 	 * @return \IndustryType
 	 * @throws \Exception
@@ -215,6 +229,14 @@ class Company extends Model {
     public function setLastUpdateTime($lastUpdateTime) {
         $this->last_update_time = $lastUpdateTime;
     }
+	
+	public function getUnitTypeClass() {
+		return $this->unitTypeClass;
+	}
+
+	public function setUnitTypeClass($unitTypeClass) {
+		$this->unitTypeClass = $unitTypeClass;
+	}
 
     public function __construct(\db $db, $id = null) {
 		$this->db = $db;
@@ -367,6 +389,70 @@ class Company extends Model {
 			$industryTypes[] = $industryType;
 		}
 		return $industryTypes;
+	}
+	
+	public function getUnitTypeList() {
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getCompanyId())} ".
+				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
+				 "AND def.subject = 'unittype' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unittype;
+			}
+		} else {
+			return false;
+		}
+
+		return $unittypes;
+	}
+	
+	public function getDefaultAPMethod(){
+		
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
+		$query.= " AND apm.apmethod_id=def.id_of_subject";
+		$query.=" AND def.subject='apmethod'";
+		$query.=" AND def.object='" .self::CATEGORY."'";
+		
+		$this->db->query($query);
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);				
+				$apmethod=array (
+					'apmethod_id'			=>	$data->apmethod_id,
+					'description'			=>	$data->apmethod_desc
+				);	
+				$apmethods[]=$apmethod;				
+			}
+		}else{
+			return false;
+		} 
+		
+		return $apmethods;
 	}
     
 }

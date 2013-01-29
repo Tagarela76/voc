@@ -1129,6 +1129,41 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		}
 	}
 
+	public function actionLoadUnitType() {
+		$facilityId = $this->getFromPost('facilityId');
+		$category = $this->getFromPost('category');
+
+		//	Get UnitType list
+		$unitType = new Unittype($this->db);
+		$unitTypelist = $unitType->getClassesOfUnits();
+		$classlist = $unitType->getAllClassesOfUnitTypes();
+		if (!isset($defaultUnitTypelist)) {
+			$defaultUnitTypelist = $unitType->getDefaultCategoryUnitTypeList($facilityId, $category);
+		}
+		$this->smarty->assign('defaultUnitTypelist', $defaultUnitTypelist);
+		$this->smarty->assign('classlist', $classlist);
+		$this->smarty->assign('unitTypelist', $unitTypelist);
+		echo $this->smarty->fetch('tpls/selectDefaultUnitTypes.tpl');
+	}
+
+	public function actionLoadAPMethods() {
+		
+		$id = $this->getFromPost('id');
+		$category = $this->getFromPost('category');
+		
+		$company = new Company($this->db);
+
+		$apmethodObject = new Apmethod($this->db);
+		$APMethodList = $apmethodObject->getApmethodList();
+
+		$defaultAPMethodList = $apmethodObject->getDefaultCategoryApmethodlist($id, $category);
+		
+		
+		$this->smarty->assign('APMethodList', $APMethodList);
+		$this->smarty->assign('defaultAPMethodlist', $defaultAPMethodList);
+		echo $this->smarty->fetch('tpls/selectDefaultAPMethods.tpl');
+	}
+
 }
 
 ?>

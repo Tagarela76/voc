@@ -1,3 +1,15 @@
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global settings object defined at settings.js
+		categoryUnittype.Id ='{/literal}{$data.facility_id}{literal}';
+		categoryUnittype.category = 'facility';
+		apMethod.Id = '{/literal}{$data.facility_id}{literal}';
+		apMethod.category = 'facility';
+	});
+</script>
+{/literal}
+
 <div id="notifyContainer">
 	{if $color eq "green"}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
@@ -276,7 +288,23 @@
                             {*/ERROR*}				
 
                 </td>
-            </tr>						
+            </tr>
+			 <tr>
+                <td class="border_users_l border_users_b us_gray" height="23px">
+                    Default UnitType:
+                </td>
+                <td class="border_users_r border_users_l border_users_b">
+                        <input type="button" value="Set" onclick="categoryUnittype.manageUnittype.openDialog(); return false;">
+                </td>
+            </tr>
+			<tr>
+                <td class="border_users_l border_users_b us_gray" height="23px">
+                    Default AP Methods:
+                </td>
+                <td class="border_users_r border_users_l border_users_b">                    
+                        <input type="button" value="Set" onclick="apMethod.manageAPMethod.openDialog(); return false;">                    
+                </td>
+            </tr>
 			<tr>
 				<td class="users_u_bottom">
 			   	</td>
@@ -307,6 +335,7 @@
                             </td>
 
                         </tr>
+						
                         <tr>
                             <td colspan="2"  style="padding:0px;border-bottom:0px;">
 							
@@ -390,7 +419,9 @@ Note: Different jobbers can't supply the same products!
 		</table>						
 		
 </div>
-
+				
+				<input type = 'hidden' id='unittype' name = 'unittype' value="{$unittype}">
+				<input type = 'hidden' id='apMethods' name = 'apMethods' value="{$defaultAPMethodList}">
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}		
 
 
@@ -406,3 +437,7 @@ Note: Different jobbers can't supply the same products!
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js"></script>
 {*END OF SETTINGS*}
+
+
+<div id="manageUnitTypeContainer" title="Manage Facility Unit Type Settings" style="display:none;">Loading ...</div>
+<div id="manageApMethodsContainer" title="Manage AP Methods Settings" style="display:none;">Loading ...</div>

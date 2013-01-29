@@ -351,6 +351,7 @@ if ($checkResult['shouldPay']) {
 
 				$unittype = new Unittype($this->db);
 				$unittype->setDefaultUnitTypelist($form['unitTypeID'], $this->category, $this->getFromRequest('id'));
+				
 				$apmethod = new Apmethod($this->db);
 				$apmethod->setDefaultAPMethodlist($form['APMethodID'], $this->category, $this->getFromRequest('id'));
 
@@ -404,7 +405,7 @@ if ($checkResult['shouldPay']) {
 		$unitTypelist = $unitType->getClassesOfUnits();
 		$classlist = $unitType->getAllClassesOfUnitTypes();
 		if (!isset($defaultUnitTypelist)) {
-			$defaultUnitTypelist = $unitType->getDefaultUnitTypelist($companyDetails['company_id']);
+			$defaultUnitTypelist = $unitType->getDefaultCategoryUnitTypeList($companyDetails['company_id'], $this->category);
 		}
 
 		//Get APMethods list

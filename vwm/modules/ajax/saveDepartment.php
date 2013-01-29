@@ -24,7 +24,7 @@
 	//	filter action var	
 	$xnyo->filter_post_var('action', 'text');
 	$action = $_POST['action'];
-	
+	$categoty = 'department';
 	//	logged in?	
 	$user = new User($db, $xnyo, $access, $auth);
 	if (!$user->isLoggedIn()) {
@@ -39,6 +39,8 @@
 			$xnyo->filter_post_var("voc_annual_limit", "text");
 			$xnyo->filter_post_var("name", "text");
 			$xnyo->filter_post_var("share_wo", "text");
+			$xnyo->filter_post_var("unittype", "text");
+			$xnyo->filter_post_var("apMethods", "text");
 
 			$regData = array(
 				"department_id"	=>	$_POST["id"],
@@ -47,6 +49,14 @@
 				"voc_annual_limit"		=>	$_POST["voc_annual_limit"],
 				"share_wo"		=> $_POST["share_wo"]
 			);						
+			
+			$departmentUnitType = $_POST["unittype"];
+			$departmentUnitType = explode(',',$departmentUnitType);
+			
+			
+			//default ap method type
+			$departmentAPMethods = ($_POST["apMethods"]);
+			$departmentAPMethods = explode(',',$departmentAPMethods);
 			
 			$departmentObj = new Department($db);
 			$validate = new Validation($db);
@@ -67,7 +77,14 @@
 				//	setter injection
 				$departmentObj->setTrashRecord(new Trash($db));
 								
-				$departmentObj->setDepartmentDetails($regData);				
+				$result = $departmentObj->setDepartmentDetails($regData);
+				//save department Unit type
+					$unittype = new Unittype($db);
+					$unittype->setDefaultCategoryUnitTypelist($departmentUnitType, $categoty, $result);
+					
+				//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($departmentAPMethods, $categoty, $result);
 			}
 			
 			echo json_encode($validateStatus);
@@ -82,6 +99,8 @@
 			$xnyo->filter_post_var("voc_annual_limit", "text");
 			$xnyo->filter_post_var("share_wo", "text");
 			$xnyo->filter_post_var("share_wo", "text");
+			$xnyo->filter_post_var("unittype", "text");
+			$xnyo->filter_post_var("apMethods", "text");
 
 			$departments = new Department($db);			
 			
@@ -93,6 +112,13 @@
 				"creater_id"	=>	$_SESSION['user_id'],
 				"share_wo"		=> $_POST["share_wo"]
 			);
+			
+			$departmentUnitType = $_POST["unittype"];
+			$departmentUnitType = explode(',',$departmentUnitType);
+			
+			//default ap method type
+			$departmentAPMethods = ($_POST["apMethods"]);
+			$departmentAPMethods = explode(',',$departmentAPMethods);
 			
 			$validation = new Validation($db);
 			$validStatus = $validation->validateRegData($departmentData);
@@ -106,7 +132,15 @@
 				//	setter injection
 				$departments->setTrashRecord(new Trash($db));
 							
-				$departments->addNewDepartment($departmentData);
+				$result = $departments->addNewDepartment($departmentData);
+				
+				//save department Unit type
+					$unittype = new Unittype($db);
+					$unittype->setDefaultCategoryUnitTypelist($departmentUnitType, $categoty, $result);
+					
+					//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($departmentAPMethods, $categoty, $result);
 			}
 			
 			echo json_encode($validStatus);			

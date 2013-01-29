@@ -29,6 +29,7 @@
 	//	filter action var	
 	$xnyo->filter_post_var('action', 'text');
 	$action = $_POST['action'];
+	$categoty = 'facility';
 	
 	//	logged in?	
 	$user = new User($db, $xnyo, $access, $auth);
@@ -66,12 +67,29 @@
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
 			
+			//default unit type
+			$facilityUnitType = ($_POST["unittype"]);
+			$facilityUnitType = explode(',',$facilityUnitType);
+			
+			//default ap method type
+			$facilityAPMethod = ($_POST["apMethods"]);
+			$facilityAPMethod = explode(',',$facilityAPMethod);
+			
 			$violationList = $facility->validate();		
 			if(count($violationList) == 0) {
 				$result = $facility->save();
+				
 				if(!$result) {
 					throw new Exception('Failed to save facility');
 				}
+				//save facility Unit type
+					$unittype = new Unittype($db);
+					$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+					
+				//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($facilityAPMethod, $categoty, $result);
+				
 				//	TODO: WHY???!
 				// clear jobber array
 				foreach ($_POST["jobber"] as $jobberPost) {
@@ -220,13 +238,29 @@
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
 			
+			$facilityUnitType = ($_POST["unittype"]);
+			$facilityUnitType = explode(',',$facilityUnitType);
+			
+			//default ap method type
+			$facilityAPMethod = ($_POST["apMethods"]);
+			$facilityAPMethod = explode(',',$facilityAPMethod);
+			
+			
 			$violationList = $facility->validate();		
 			if(count($violationList) == 0) {
 				$result = $facility->save();
 				if(!$result) {
 					throw new Exception('Failed to save facility');
 				}
-								
+					
+				//save facility Unit type
+				$unittype = new Unittype($db);
+				$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+					
+				//save facility ap methods
+				$apmethod = new Apmethod($db);
+				$apmethod->setDefaultCategoryAPMethodlist($facilityAPMethod, $categoty, $result);
+					
 				//   CREATE ACO
 				$gacl_api = new gacl_api();
 				$acoID = $gacl_api->add_object('access', "facility_".$facility->getFacilityId(), "facility_".$facility->getFacilityId(), 0, 0, 'ACO');

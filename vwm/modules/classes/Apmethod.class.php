@@ -2,9 +2,12 @@
 
 class Apmethod {
 	
+	/**
+	 * @var db
+	 */
 	private $db;
 	
-	function Apmethod($db) {
+	function Apmethod(db $db) {
 		$this->db=$db;
 	}
 	
@@ -188,6 +191,88 @@ class Apmethod {
 		$this->db->query($query);
 		$row = $this->db->fetch_array(0);
 		return $row['cnt'];
+	}
+	
+	public function getDefaultCategoryApmethodlist($id, $category) {
+		//$this->db->select_db(DB_NAME);
+		$query ="SELECT * FROM ".TB_DEFAULT." ".
+				"WHERE id_of_object={$this->db->sqltext($id)}"." ".
+				"AND subject='apmethod' ".
+				"AND object = '{$this->db->sqltext($category)}'";
+				
+		$this->db->query($query);
+		
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);			
+				$apmethod[$j]=$data->id_of_subject;					
+			}
+		}
+		
+		return $apmethod;
+	}
+	
+	public function setDefaultCategoryAPMethodlist($apmethodID, $categoryName, $id) {
+		
+		$this->deleteDefaultCategoryApmethod($categoryName, $id);
+				
+		$query = "SELECT ".TB_APMETHOD.".apmethod_id FROM ".TB_APMETHOD." WHERE ".TB_APMETHOD.".apmethod_id IN ".
+					"(SELECT DISTINCT apmethod_id  FROM ".TB_USAGE." WHERE ".TB_USAGE.".department_id IN ".
+    						"(SELECT department_id FROM ".TB_DEPARTMENT." WHERE ".TB_DEPARTMENT.".facility_id IN ".
+     							"(SELECT facility_id FROM ".TB_FACILITY." WHERE ".TB_FACILITY.".company_id='".$id."')))";
+     	
+     	
+     	$this->db->query($query);
+     	
+		//delete this check for some time
+		$deleteCheck = 1;
+     	// select AP Methods for which has already created products
+     	if ($this->db->num_rows() && $deleteCheck!=1) {
+			for ($i=0; $i < $this->db->num_rows(); $i++) {
+				$data=$this->db->fetch($i);
+				$apmethod[$i]=$data->apmethod_id;					
+			}
+		}
+		
+		// insert unit types that exist but are not marked
+		$i = 0;
+		$j = 0;
+		$flag = 0;
+		while ($apmethod[$j]) {
+			while ($apmethodID[$i]) {
+				if (trim($apmethodID[$i])!='') {
+					if ($apmethod[$j] == $apmethodID[$i]) {
+						$flag = 1;
+					}
+					$i++;
+				}
+			}
+			if ($flag == 0) {
+				$this->insertDefaultApmethod('apmethod', $apmethod[$j], $categoryName, $id);
+			}
+			$i = 0;
+			$j++;
+			$flag = 0;
+		}
+		
+		// insert marked unit types
+		$i = 0;
+		while ($apmethodID[$i]) {
+			if (trim($apmethodID[$i]) != '') {
+				$this->insertDefaultApmethod('apmethod', $apmethodID[$i], $categoryName, $id);
+				$i++;
+			}
+		}
+	}
+	
+	private function deleteDefaultCategoryApmethod($category, $id) {
+		
+		$query = "DELETE FROM ".TB_DEFAULT." ". 
+				 "WHERE `id_of_object` = '{$this->db->sqltext($id)}' ". 
+				 "AND object='{$this->db->sqltext($category)}' ".
+		         "AND subject='apmethod'"; 
+		
+		$this->db->query($query);
 	}
 }
 ?>

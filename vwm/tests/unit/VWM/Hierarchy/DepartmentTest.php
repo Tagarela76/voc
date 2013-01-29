@@ -19,6 +19,10 @@ class DepartmentTest extends DbTestCase {
 		TB_PFP,
 		TB_PFP_TYPES,
 		\PfpTypes::TB_PFP_2_DEPARTMENT,
+		TB_DEFAULT,
+		TB_TYPE,
+		TB_UNITCLASS,
+		
 	);
 
 	public function testInitByArray() {
@@ -196,6 +200,153 @@ class DepartmentTest extends DbTestCase {
 		}
 
 		$this->assertEquals($expectedPfpTypes, $pfpTypes);
+	}
+	
+	public function testGetUnitTypes(){
+		// test gettint department Unit type
+		$departmentUnitType = array(1,2,3);
+		$unitTypeClass = 'USAWght';
+		$categoty = 'department';
+		$departmentId = 1;
+		
+		$department = new Department($this->db, $departmentId);
+		$department->setUnitTypeClass($unitTypeClass);
+		$unittype = new \Unittype($this->db);
+		$unittype->setDefaultCategoryUnitTypelist($departmentUnitType, $categoty, $departmentId);
+		$departmentUnitTypes = $department->getUnitTypeList();
+		
+		//get unit type
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.system " .
+				"FROM " . TB_UNITTYPE . " ut " .
+				"INNER JOIN " . TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = 'department' " .
+				"AND def.id_of_object = {$this->db->sqltext($departmentId)} " .
+				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
+				"ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unitType = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unitType;
+			}
+		}
+		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
+		$this->assertEquals($unittypes, $departmentUnitTypes);
+		
+		//test getting facility unittype
+		$facilityUnitType = array(4,9);
+		$categoty = 'facility';
+		$facilityId = 1;
+		$departmentId = 2;
+		$unitTypeClass = 'MetricVlm';
+		$department = new Department($this->db, $departmentId);
+		$department->setUnitTypeClass($unitTypeClass);
+		
+		$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $facilityId);
+		$department->setFacilityId($facilityId);
+		$departmentUnitTypes = $department->getUnitTypeList();
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.system " .
+				"FROM " . TB_UNITTYPE . " ut " .
+				"INNER JOIN " . TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = 'facility' " .
+				"AND def.id_of_object = {$this->db->sqltext($facilityId)} " .
+				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
+				"ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+		$unittypes = array();
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unitType = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unitType;
+			}
+		}
+		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
+		$this->assertEquals($unittypes, $departmentUnitTypes);
+		
+		//test getting company unittype
+		$companyUnitType = array(38,39);
+		$categoty = 'company';
+		$unitTypeClass = 'Time';
+		$departmentId = 3;
+		$facilityId = 2;
+		$companyId = 1;
+		
+		$department = new Department($this->db, $departmentId);
+		$department->setUnitTypeClass($unitTypeClass);
+		
+		$unittype->setDefaultCategoryUnitTypelist($companyUnitType, $categoty, $companyId);
+		$department->setFacilityId($facilityId);
+		$department->getFacility()->setCompanyId($companyId);
+		$companyUnitTypes = $department->getUnitTypeList();
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.system " .
+				"FROM " . TB_UNITTYPE . " ut " .
+				"INNER JOIN " . TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = 'company' " .
+				"AND def.id_of_object = {$this->db->sqltext($companyId)} " .
+				"AND uc.name = '{$unitTypeClass}' " .
+				"AND def.subject = 'unittype' ".
+				"ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+		$unittypes = array();
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unitType = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unitType;
+			}
+		}
+		$this->assertEquals(count($unittypes), count($companyUnitTypes));
+		$this->assertEquals($unittypes, $companyUnitTypes);
+		
 	}
 }
 

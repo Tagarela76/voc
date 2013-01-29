@@ -11,6 +11,7 @@ use VWM\Apps\Process\ProcessInstance;
 use VWM\Apps\Process\Step;
 
 
+
 class CMix extends Controller {
 
 	function CMix($smarty, $xnyo, $db, $user, $action) {
@@ -1820,9 +1821,12 @@ class CMix extends Controller {
 		$equipment = new Equipment($this->db);
 		$equipmentList = $equipment->getEquipmentList($departmentID);
 		$this->smarty->assign('equipment', $equipmentList);
-
+		
+		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
+		
 		$apmethodObject = new Apmethod($this->db);
-		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
+		$APMethod = $department->getDefaultAPMethod();
+		//$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}
@@ -1861,13 +1865,16 @@ class CMix extends Controller {
 
 		$unittype = new Unittype($this->db);
 		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		$unittypeListDefault = $unittype->getUnittypeListDefaultByCompanyId($companyID, $unitTypeClass);
-
+		
+		
+		$department->setUnitTypeClass($unitTypeClass);
+		$unittypeListDefault = $department->getUnitTypeList();
+		
 		if (empty($unittypeListDefault)) {
 			$unittypeListDefault = $unittype->getUnittypeListDefault($unitTypeClass);
 		}
+		
 		$data->unitTypeClass = $unitTypeClass;
-
 		$mix = new MixOptimized($this->db);
 		$mix->iniWaste(false, $unittypeListDefault);
 		$mix->iniRecycle(false, $unittypeListDefault);
@@ -1925,6 +1932,7 @@ class CMix extends Controller {
 		$this->smarty->assign('mixParentID', $mixParentID);
 		
 		$this->smarty->assign('repairOrderId', $repairOrderId);
+		
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 	}

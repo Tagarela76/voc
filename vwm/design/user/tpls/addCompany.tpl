@@ -7,6 +7,7 @@
 {if $color eq "blue"}
 {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
+
 <div class="padd7">
     <form method='POST' action='{$sendFormAction}'>
         <table class="users addCompany" cellpadding="0" cellspacing="0" align="center">
