@@ -29,7 +29,15 @@
 			Name:
         </td>
         <td class="border_users_b border_users_r">
-			{$pfpTypes->name}
+			{$pfpTypes->name|escape}
+        </td>
+    </tr>
+	<tr class="hov_company" height="10px">
+        <td class="border_users_b border_users_l border_users_r" >
+			Departments are allowed to use this PFP Group:
+        </td>
+        <td class="border_users_b border_users_r">
+			{$pfpDepartmentsName|escape}
         </td>
     </tr>
     <tr>
@@ -58,7 +66,7 @@
 						params: { {/literal}
 						facilityID :'{$request.facilityID}{literal}',
 						id:'{/literal}{$request.id}{literal}',
-						category:'{/literal}{$request.category}{literal}',	
+						category:'{/literal}{$request.category}{literal}',
 						pfpTypes:'{/literal}{$request.pfpGroup}{literal}'},
 						deferRequestBy:300
 					};
@@ -71,22 +79,22 @@
 </div>
 
 {if $isAllPFP}
-	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type('assign')"> 
+	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Assign" onclick="assignPFP2Type('assign')">
 {else}
 	&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="button" name="action" value="Unassign" onclick="assignPFP2Type('unassign')">
-{/if}	
+{/if}
 <div class="link_bookmark" style="float:right;">
 	{if $isAllPFP}
 		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group"> Group </a> <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all" class="active_link"> All </a>
 	{else}
 		<a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=group" class="active_link"> Group </a>  <a href="?action=viewDetails&category=pfpTypes&id={$pfpTypes->id}&facilityID={$smarty.request.facilityID}&pfpGroup=all"> All </a>
-	{/if}	
+	{/if}
 </div>
     <input type="hidden" id="pfptypeID" name="pfptypeID" value="{$pfpTypes->id}" />
     <input type="hidden" id="facilityID" name="facilityID" value="{$smarty.request.facilityID}" />
 {*PAGINATION*}
 {include file="tpls:tpls/pagination.tpl"}
-{*/PAGINATION*}   
+{*/PAGINATION*}
 <table class="users" height="200" cellspacing="0" cellpadding="0" align="center" id = "pfpContainer">
     <tr class="users_top" height="27px">
         <td class="users_u_top" width="60px">
