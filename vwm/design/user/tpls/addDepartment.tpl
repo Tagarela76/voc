@@ -1,3 +1,13 @@
+{literal}
+<script type="text/javascript">
+	$(function() {
+		//	global settings object defined at settings.js
+		categoryUnittype.Id = '{/literal} {$department->getDepartmentId()} {literal}';
+		categoryUnittype.category = 'department';
+	});
+</script>
+{/literal}
+
 <div id="notifyContainer">
 	{if $color eq "green"}
 		{include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
@@ -66,6 +76,15 @@
 				</td>					
 			</tr>
 
+			<tr>
+                <td class="border_users_l border_users_b us_gray" height="23px">
+                    Default UnitType:
+                </td>
+                <td class="border_users_r border_users_l border_users_b">
+                        <input type="button" value="Set" onclick="categoryUnittype.manageUnittype.openDialog(); return false;">
+                </td>
+            </tr>
+			
 			<tr class="border_users_b border_users_r">
 				<td height="20" class="border_users_l">
 					Share {$woLabel}:
@@ -109,6 +128,7 @@
 		{if $request.action eq "edit"}
 			<input type="hidden" name="id" value="{$request.id}">
 		{/if}
+		
 		</form>
 						</td>
 			</tr>
@@ -116,3 +136,11 @@
 </div>
 
 {include file="tpls:tpls/pleaseWait.tpl" text=$pleaseWaitReason}	
+
+<input type = 'hidden' id='unittype' name = 'unittype'>
+{*JQUERY POPUP SETTINGS*}
+<link href="modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css"/>
+
+{*END OF SETTINGS*}
+
+<div id="manageUnitTypeContainer" title="Manage Department Unit Type Settings" style="display:none;">Loading ...</div>

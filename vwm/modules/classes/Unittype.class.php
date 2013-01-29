@@ -288,6 +288,27 @@ class Unittype {
 		return $unittype;
 	}
 
+	/*
+	 * get default unit type list for category
+	 */
+	public function getDefaultCategoryUnitTypeList($id, $category) {
+		$query = "SELECT * FROM " . TB_DEFAULT ." ".
+				"WHERE id_of_object=" . (int) $id." ".
+				"AND subject='unittype'"." ".
+				"AND object = '".$category."'";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($j = 0; $j < $this->db->num_rows(); $j++) {
+				$data = $this->db->fetch($j);
+				$unittype[$j] = $data->id_of_subject;
+			}
+		}
+
+		return $unittype;
+	}
+
 	public function setDefaultUnitTypelist($unitTypeID, $categoryName, $companyID) {
 
 		$this->deleteDefaultUnitType($companyID);
@@ -340,13 +361,14 @@ class Unittype {
 
 		$query = "DELETE FROM " . TB_DEFAULT . " WHERE `id_of_object` = '" . $companyID . "'";
 		$query.= " AND subject='unittype'";
+		
 		$this->db->query($query);
 	}
 
-	private function insertDefaultUnitType($unittypeName, $unittypeID, $companyName, $companyID) {
+	private function insertDefaultUnitType($unittypeName, $unittypeID, $companyName, $categotyID) {
 		//$this->db->select_db(DB_NAME);
 		$query = "INSERT INTO " . TB_DEFAULT . " (subject, id_of_subject, object, id_of_object) " .
-				"VALUES ('" . $unittypeName . "', " . (int) $unittypeID . ", '" . $companyName . "', " . (int) $companyID . ")";
+				"VALUES ('" . $unittypeName . "', " . (int) $unittypeID . ", '" . $companyName . "', " . (int) $categotyID . ")";
 		$this->db->query($query);
 	}
 
@@ -611,6 +633,65 @@ class Unittype {
 		$this->db->query($query);
 		$id = $this->db->fetch(0);
 		return $id->unittype_id;
+	}
+	
+	
+		private function deleteDefaultCategoryUnitType($category, $companyID) {
+
+		$query = "DELETE FROM " . TB_DEFAULT . " WHERE `id_of_object` = '" . $companyID . "' ".
+				"AND object='".$category."' ".
+				"AND subject='unittype'";
+		
+		$this->db->query($query);
+	}
+	
+	public function setDefaultCategoryUnitTypelist($unitTypeID, $categoryName, $categoryID) {
+
+		$this->deleteDefaultCategoryUnitType($categoryName,$categoryID);
+
+		$query = "SELECT " . TB_UNITTYPE . ".unittype_id FROM " . TB_UNITTYPE . " WHERE " . TB_UNITTYPE . ".system <> 'NULL' AND " . TB_UNITTYPE . ".unittype_id IN " .
+				"(SELECT DISTINCT unit_type FROM " . TB_MIXGROUP . " WHERE " . TB_MIXGROUP . ".mix_id IN " .
+				"(SELECT mix_id FROM " . TB_USAGE . " WHERE " . TB_USAGE . ".department_id IN " .
+				"(SELECT department_id FROM " . TB_DEPARTMENT . " WHERE " . TB_DEPARTMENT . ".facility_id IN " .
+				"(SELECT facility_id FROM " . TB_FACILITY . " WHERE " . TB_FACILITY . ".company_id='" . $categoryID . "'))))";
+
+
+		$this->db->query($query);
+
+		// select unit types for which has already created products
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype[$i] = $data->unittype_id;
+			}
+		}
+
+		// insert unit types that exist but are not marked
+		$i = 0;
+		$j = 0;
+		$flag = 0;
+		while ($unittype[$j]) {
+			while ($unitTypeID[$i]) {
+				if ($unittype[$j] == $unitTypeID[$i]) {
+					$flag = 1;
+				}
+				$i++;
+			}
+			if ($flag == 0) {
+				$this->insertDefaultUnitType('unittype', $unittype[$j], $categoryName, $categoryID);
+			}
+			$i = 0;
+			$j++;
+			$flag = 0;
+		}
+
+		// insert marked unit types
+		$i = 0;
+		
+		while ($unitTypeID[$i]) {
+			$this->insertDefaultUnitType('unittype', $unitTypeID[$i], $categoryName, $categoryID);
+			$i++;
+		}
 	}
 
 }

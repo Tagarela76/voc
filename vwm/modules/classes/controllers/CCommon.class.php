@@ -1128,6 +1128,24 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 				break;
 		}
 	}
+	
+	
+	public function actionLoadUnitType() {
+		$facilityId = $this->getFromPost('facilityId');
+		$category = $this->getFromPost('category');
+		
+		//	Get UnitType list
+		$unitType = new Unittype($this->db);
+		$unitTypelist = $unitType->getClassesOfUnits();
+		$classlist = $unitType->getAllClassesOfUnitTypes();
+		if (!isset($defaultUnitTypelist)) {
+			$defaultUnitTypelist = $unitType->getDefaultCategoryUnitTypeList($facilityId, $category);
+		}
+		$this->smarty->assign('defaultUnitTypelist', $defaultUnitTypelist);
+		$this->smarty->assign('classlist', $classlist);
+		$this->smarty->assign('unitTypelist', $unitTypelist);
+		echo $this->smarty->fetch('tpls/selectDefaultUnitTypes.tpl');
+	}
 
 }
 

@@ -29,10 +29,22 @@ class Department extends Model {
 	 * @var \PfpTypes[]
 	 */
 	protected $pfpTypes;
-
+	
+	/*
+	 * name of unit_class for getUnitTypeList function
+	 * USAWght for default
+	 * @var string 
+	 */
+	protected $unitTypeClass = 'USAWght';
+	
 	public $searchCriteria = array();
 
 	const TABLE_NAME = 'department';
+	const TB_UNITTYPE = 'unittype';
+	const TB_DEFAULT = '`default`';
+	const TB_TYPE = 'type';
+	const TB_UNITCLASS = 'unit_class';
+	const CATEGORY = 'department';
 
 	public function __construct(\db $db, $departmentId = null) {
 		$this->db = $db;
@@ -112,7 +124,16 @@ class Department extends Model {
 	public function setShareWo($shareWo) {
 		$this->share_wo = $shareWo;
 	}
+	
+	public function getUnitTypeClass() {
+		return $this->unitTypeClass;
+	}
 
+	public function setUnitTypeClass($unitTypeClass) {
+		$this->unitTypeClass = $unitTypeClass;
+	}
+
+	
 	public function getGauge($gaugeType) {
 		switch ($gaugeType) {
 			case Gauge::QUANTITY_GAUGE:
@@ -431,6 +452,46 @@ class Department extends Model {
 		}
 
 		return $this->pfpTypes;
+	}
+	
+	public function getUnitTypeList() {
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
+				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unittype;
+			}
+		} else {
+			$facility = $this->getFacility();
+			$facility->setUnitTypeClass($this->getUnitTypeClass());
+			$unittypes = $facility->getUnitTypeList();
+		}
+
+		return $unittypes;
 	}
 }
 

@@ -14,7 +14,11 @@ class CompanyTest extends DbTestCase {
         TB_INDUSTRY_TYPE2LABEL,
         TB_COMPANY2INDUSTRY_TYPE,
         TB_BROWSE_CATEGORY_ENTITY,
-        TB_DISPLAY_COLUMNS_SETTINGS
+        TB_DISPLAY_COLUMNS_SETTINGS,
+		TB_DEFAULT,
+		TB_TYPE,
+		TB_UNITCLASS,
+		TB_UNITTYPE,
 	);
     
 	public function testSave() {
@@ -98,6 +102,7 @@ class CompanyTest extends DbTestCase {
         $repairOrderLabel = $company->getIndustryType()->getLabelManager()
 				->getLabel($repairOrderLabelId)->getLabelText();
         $this->assertTrue($repairOrderLabel == "Work Order Label");
+		
     }
     
     public function testGetDisplayColumnsManager() {
@@ -108,6 +113,53 @@ class CompanyTest extends DbTestCase {
         $mixDisplayColumnsValue = $company->getIndustryType()->getDisplayColumnsManager()->getDisplayColumnsSettings($browseCategory)->getValue();
         $this->assertTrue($mixDisplayColumnsValue == "Product Name,Description,R/O Description,Contact,R/O VIN number,VOC,Creation Date");
     }
+	
+	public function testGetUnitTypes(){
+		$companyUnitType = array(1,2,3);
+		$unitTypeClass = 'USAWght';
+		$categoty = 'company';
+		$companyId = 1;
+		
+		$company = new Company($this->db, $companyId);
+		$company->setUnitTypeClass($unitTypeClass);
+		$unittype = new \Unittype($this->db);
+		$unittype->setDefaultCategoryUnitTypelist($companyUnitType, $categoty, $companyId);
+		$companyUnitTypes = $company->getUnitTypeList();
+		
+		//get unit type
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.system " .
+				"FROM " . TB_UNITTYPE . " ut " .
+				"INNER JOIN " . TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = 'company' " .
+				"AND def.id_of_object = {$this->db->sqltext($companyId)} " .
+				"AND uc.name = '{$unitTypeClass}' " .
+				"ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unittype;
+			}
+		}
+		$this->assertEquals(count($unittypes), count($companyUnitTypes));
+		$this->assertEquals($unittypes, $companyUnitTypes);
+	}
 }
 
 ?>

@@ -82,7 +82,7 @@ function setDefaultValues(o,values) {
 // These functions add useful functionality to built-in objects
 Array.prototype.contains = function(o) {
 	var i,l;
-	if (!(l = this.length)) { return false; }
+	if (!(l = this.length)) {return false;}
 	for (i=0; i<l; i++) {
 		if (o==this[i]) {
 			return true;
@@ -98,7 +98,7 @@ var DOM = (function() {
 	
 	// Get a parent tag with a given nodename
 	dom.getParentByTagName = function(o,tagNames) {
-		if(o==null) { return null; }
+		if(o==null) {return null;}
 		if (isArray(tagNames)) {
 			tagNames = map("return $_.toUpperCase()",tagNames);
 			while (o=o.parentNode) {
@@ -205,9 +205,9 @@ var CSS = (function(){
 
 	// Convert an RGB string in the form "rgb (255, 255, 255)" to "#ffffff"
 	css.rgb2hex = function(rgbString) {
-		if (typeof(rgbString)!="string" || !defined(rgbString.match)) { return null; }
+		if (typeof(rgbString)!="string" || !defined(rgbString.match)) {return null;}
 		var result = rgbString.match(/^\s*rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*/);
-		if (result==null) { return rgbString; }
+		if (result==null) {return rgbString;}
 		var rgb = +result[1] << 16 | +result[2] << 8 | +result[3];
 		var hex = "";
 		var digits = "0123456789abcdef";
@@ -215,14 +215,14 @@ var CSS = (function(){
 			hex = digits.charAt(rgb&0xf)+hex; 
 			rgb>>>=4; 
 		} 
-		while(hex.length<6) { hex='0'+hex; }
+		while(hex.length<6) {hex='0'+hex;}
 		return "#" + hex;
 	};
 
 	// Convert hyphen style names like border-width to camel case like borderWidth
 	css.hyphen2camel = function(property) {
-		if (!defined(property) || property==null) { return null; }
-		if (property.indexOf("-")<0) { return property; }
+		if (!defined(property) || property==null) {return null;}
+		if (property.indexOf("-")<0) {return property;}
 		var str = "";
 		var c = null;
 		var l = property.length;
@@ -235,7 +235,7 @@ var CSS = (function(){
 	
 	// Determine if an object or class string contains a given class.
 	css.hasClass = function(obj,className) {
-		if (!defined(obj) || obj==null || !RegExp) { return false; }
+		if (!defined(obj) || obj==null || !RegExp) {return false;}
 		var re = new RegExp("(^|\\s)" + className + "(\\s|$)");
 		if (typeof(obj)=="string") {
 			return re.test(obj);
@@ -248,20 +248,20 @@ var CSS = (function(){
 	
 	// Add a class to an object
 	css.addClass = function(obj,className) {
-		if (typeof(obj)!="object" || obj==null || !defined(obj.className)) { return false; }
+		if (typeof(obj)!="object" || obj==null || !defined(obj.className)) {return false;}
 		if (obj.className==null || obj.className=='') { 
 			obj.className = className; 
 			return true; 
 		}
-		if (css.hasClass(obj,className)) { return true; }
+		if (css.hasClass(obj,className)) {return true;}
 		obj.className = obj.className + " " + className;
 		return true;
 	};
 	
 	// Remove a class from an object
 	css.removeClass = function(obj,className) {
-		if (typeof(obj)!="object" || obj==null || !defined(obj.className) || obj.className==null) { return false; }
-		if (!css.hasClass(obj,className)) { return false; }
+		if (typeof(obj)!="object" || obj==null || !defined(obj.className) || obj.className==null) {return false;}
+		if (!css.hasClass(obj,className)) {return false;}
 		var re = new RegExp("(^|\\s+)" + className + "(\\s+|$)");
 		obj.className = obj.className.replace(re,' ');
 		return true;
@@ -269,7 +269,7 @@ var CSS = (function(){
 	
 	// Fully replace a class with a new one
 	css.replaceClass = function(obj,className,newClassName) {
-		if (typeof(obj)!="object" || obj==null || !defined(obj.className) || obj.className==null) { return false; }
+		if (typeof(obj)!="object" || obj==null || !defined(obj.className) || obj.className==null) {return false;}
 		css.removeClass(obj,className);
 		css.addClass(obj,newClassName);
 		return true;
@@ -277,7 +277,7 @@ var CSS = (function(){
 	
 	// Get the currently-applied style of an object
 	css.getStyle = function(o, property) {
-		if (o==null) { return null; }
+		if (o==null) {return null;}
 		var val = null;
 		var camelProperty = css.hyphen2camel(property);
 		// Handle "float" property as a special case
@@ -311,7 +311,7 @@ var CSS = (function(){
 
 	// Set a style on an object
 	css.setStyle = function(o, property, value) {
-		if (o==null || !defined(o.style) || !defined(property) || property==null || !defined(value)) { return false; }
+		if (o==null || !defined(o.style) || !defined(property) || property==null || !defined(value)) {return false;}
 		if (property=="float") {
 			o.style["cssFloat"] = value;
 			o.style["styleFloat"] = value;
@@ -412,8 +412,8 @@ var Event = (function(){
 	// --------------------------------------------------------------------
 	ev.cancelBubble = function(e) {
 		e = ev.resolve(e);
-		if (typeof(e.stopPropagation)=="function") { e.stopPropagation(); } 
-		if (defined(e.cancelBubble)) { e.cancelBubble = true; }
+		if (typeof(e.stopPropagation)=="function") {e.stopPropagation();} 
+		if (defined(e.cancelBubble)) {e.cancelBubble = true;}
 	};
 	ev.stopPropagation = ev.cancelBubble;
 
@@ -421,8 +421,8 @@ var Event = (function(){
 	// --------------------------------------------------------------------
 	ev.preventDefault = function(e) {
 		e = ev.resolve(e);
-		if (typeof(e.preventDefault)=="function") { e.preventDefault(); } 
-		if (defined(e.returnValue)) { e.returnValue = false; }
+		if (typeof(e.preventDefault)=="function") {e.preventDefault();} 
+		if (defined(e.returnValue)) {e.returnValue = false;}
 	};
 	
 	return ev;
@@ -539,8 +539,8 @@ var Screen = (function() {
 })();var Sort = (function(){
 	var sort = {};
 	sort.AlphaNumeric = function(a,b) {
-		if (a==b) { return 0; }
-		if (a<b) { return -1; }
+		if (a==b) {return 0;}
+		if (a<b) {return -1;}
 		return 1;
 	};
 
@@ -550,7 +550,7 @@ var Screen = (function() {
 		if (typeof(val)!="number") {
 			if (typeof(val)=="string") {
 				val = parseFloat(val.replace(/,/g,''));
-				if (isNaN(val) || val==null) { val=0; }
+				if (isNaN(val) || val==null) {val=0;}
 			}
 			else {
 				val = 0;
@@ -564,7 +564,7 @@ var Screen = (function() {
 	};
 
 	sort.IgnoreCaseConversion = function(val) {
-		if (val==null) { val=""; }
+		if (val==null) {val="";}
 		return (""+val).toLowerCase();
 	};
 
@@ -589,8 +589,8 @@ var Screen = (function() {
 			// inner util function to convert 2-digit years to 4
 			function fixYear(yr) {
 				yr = +yr;
-				if (yr<50) { yr += 2000; }
-				else if (yr<100) { yr += 1900; }
+				if (yr<50) {yr += 2000;}
+				else if (yr<100) {yr += 1900;}
 				return yr;
 			};
 			var ret;
@@ -747,7 +747,7 @@ var Position = (function() {
 	// =================================================
 	pos.getCenter = function(o) {
 		var c = this.get(o);
-		if (c==null) { return null; }
+		if (c==null) {return null;}
 		c.left = c.left + (c.width/2);
 		c.top = c.top + (c.height/2);
 		return c;
@@ -817,8 +817,8 @@ Popup.show = function(divObject, referenceObject, position, options, modal) {
 		popup = new Popup();
 		popup.destroyDivOnHide = true;
 	}
-	if (defined(referenceObject)) { popup.reference = DOM.resolve(referenceObject); }
-	if (defined(position)) { popup.position = position; }
+	if (defined(referenceObject)) {popup.reference = DOM.resolve(referenceObject);}
+	if (defined(position)) {popup.position = position;}
 	if (defined(options) && options!=null && typeof(options)=="object") {
 		for (var i in options) {
 			popup[i] = options[i];
@@ -1030,7 +1030,7 @@ Popup.prototype.setPosition = function() {
 			var h = m[2];
 
 			var ref = this.reference;
-			if (ref==null) { ref = Screen.getBody(); }
+			if (ref==null) {ref = Screen.getBody();}
 			var p = Position.get(ref);
 			var refTop = p.top;
 			var refLeft = p.left;
@@ -1044,26 +1044,26 @@ Popup.prototype.setPosition = function() {
 			var scrollTop = Screen.getScrollTop();
 
 			// Set vertical position relative to reference object
-			if (v=="above") { this.setTop(refTop-height+this.offsetTop); }
-			else if (v=="top") { this.setTop(refTop+this.offsetTop); }
-			else if (v=="center") { this.setTop(refTop+(refHeight/2)-(height/2)+this.offsetTop); }
-			else if (v=="bottom") { this.setTop(refTop+refHeight-height+this.offsetTop); }
-			else if (v=="below") { this.setTop(refTop+refHeight+this.offsetTop); }
+			if (v=="above") {this.setTop(refTop-height+this.offsetTop);}
+			else if (v=="top") {this.setTop(refTop+this.offsetTop);}
+			else if (v=="center") {this.setTop(refTop+(refHeight/2)-(height/2)+this.offsetTop);}
+			else if (v=="bottom") {this.setTop(refTop+refHeight-height+this.offsetTop);}
+			else if (v=="below") {this.setTop(refTop+refHeight+this.offsetTop);}
 
 			// Set horizontal position relative to reference object
-			if (h=="adjacent-left") { this.setLeft(refLeft-width+this.offsetLeft); }
-			else if (h=="left") { this.setLeft(refLeft+this.offsetLeft); }
-			else if (h=="center") { this.setLeft(refLeft+(refWidth/2)-(width/2)+this.offsetLeft); }
-			else if (h=="right") { this.setLeft(refLeft+refWidth-width+this.offsetLeft); }
-			else if (h=="adjacent-right") { this.setLeft(refLeft+refWidth+this.offsetLeft); }
+			if (h=="adjacent-left") {this.setLeft(refLeft-width+this.offsetLeft);}
+			else if (h=="left") {this.setLeft(refLeft+this.offsetLeft);}
+			else if (h=="center") {this.setLeft(refLeft+(refWidth/2)-(width/2)+this.offsetLeft);}
+			else if (h=="right") {this.setLeft(refLeft+refWidth-width+this.offsetLeft);}
+			else if (h=="adjacent-right") {this.setLeft(refLeft+refWidth+this.offsetLeft);}
 		}
 	}
 	else if (this.top==null && this.left==null) {
 		this.center();
 	}
 	else {
-		if (this.top==null) { this.top=0; }
-		if (this.left==null) { this.left=0; }
+		if (this.top==null) {this.top=0;}
+		if (this.left==null) {this.left=0;}
 		this.div.style.top = this.top+this.offsetTop+"px";
 		this.div.style.left = this.left+this.offsetLeft+"px";
 	}
@@ -1142,7 +1142,7 @@ Popup.prototype.addScreen = function() {
 		this.screen.style.backgroundColor = this.screenColor;
 		this.screen.className=Popup.screenClass;;
 		CSS.setStyle(this.screen,"opacity",this.screenOpacity);
-		this.screen.onclick = function(e) { Event.cancelBubble(Event.resolve(e)); }
+		this.screen.onclick = function(e) {Event.cancelBubble(Event.resolve(e));}
 	}
 	if (this.screenIframeShim==null) {
 		this.screenIframeShim = this.createIframe();
@@ -1198,8 +1198,8 @@ Popup.prototype.fitToScreen = function() {
 Popup.prototype.center = function() {
 	var left = DOM.getOuterWidth(this.div);
 	var top = DOM.getOuterHeight(this.div);
-	if (isNaN(left)) { left=0; }
-	if (isNaN(top)) { top=0; }	
+	if (isNaN(left)) {left=0;}
+	if (isNaN(top)) {top=0;}	
 	var clientW = Screen.getViewportWidth();
 	var clientH = Screen.getViewportHeight();
 	if (clientW!=null && clientH!=null) {
@@ -1212,4 +1212,101 @@ Popup.prototype.center = function() {
 	this.div.style.top = top+this.offsetTop+"px";
 	this.div.style.left = left+this.offsetLeft+"px";
 };
+
+
+//--------------------------------------------------------------------------
+//Default Unittype Window for Facility
+function ManageUnittype() {
+	this.divId = 'manageUnitTypeContainer';
+	this.isLoaded = false;
+
+	this.iniDialog = function(divId) {
+		divId = typeof divId !== 'undefined' ? divId : this.divId;
+		if(divId !== this.divId) {
+			this.divId = divId;
+		}
+
+		var that = this;
+		$("#"+divId).dialog({
+			width: 550,
+			height: 500,
+			autoOpen: false,
+			resizable: true,
+			dragable: true,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog('close');
+					that.isLoaded = false;
+				},
+				'Save': function() {
+					that.save();
+				}
+			}
+		});
+	}
+
+	this.openDialog = function() {
+		$('#'+this.divId).dialog('open');
+		if(!this.isLoaded) {
+			this.loadContent();
+		}
+		return false;
+	}
+
+	this.loadContent = function() {
+		var that = this;
+		$.ajax({
+			url: "?action=loadUnitType",
+			data: {facilityId: categoryUnittype.Id,
+				   category: categoryUnittype.category},
+			type: "POST",
+			dataType: "html",
+			success: function (response) {
+				
+				$("#"+that.divId).html(response);
+				that.isLoaded = true;
+      		}
+		});
+	};
+	
+	this.save = function() {
+		var that = this;
+		var unittype='';
+		var unittypeData = document.getElementById("unittype_data");
+		
+		//unittypeData.innerHTML = "";
+		$('input[id^=unitTypeID]').each(function(el) {
+			if ($(this).attr('checked')) {
+				unittype+=$(this).attr('value')+',';
+			//var checkInput = '<input type="checkbox" name="' + $(this).attr('name') + '" id="' + $(this).attr('name') + '" value="' + $(this).attr('value') + '" checked />';
+				
+			}
+		});
+		$('#unittype').val(unittype);
+		that.isLoaded = false;
+		$("#"+that.divId).dialog('close'); 
+		that.divId.isLoaded = false;
+	};
+}
+
+
+
+function CategoryUnittype() {
+	this.manageUnittype = new ManageUnittype();
+	this.category = false;
+	this.Id = false;
+	this.departmentId = false;
+}
+
+//	global settings object
+var categoryUnittype;
+
+$(function() {
+	//	ini global object
+	categoryUnittype = new CategoryUnittype();
+	categoryUnittype.manageUnittype.iniDialog();
+	
+});
+
 

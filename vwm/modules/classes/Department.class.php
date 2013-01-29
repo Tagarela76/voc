@@ -258,7 +258,12 @@ class Department extends DepartmentProperties {
 
 		$query.="WHERE department_id=".$departmentData["department_id"];
 
-		$this->db->query($query);
+		$result = $this->db->query($query);
+		if($result) {			
+			return $departmentData["department_id"];
+		} else {
+			return false;
+		}
 
 	}
 

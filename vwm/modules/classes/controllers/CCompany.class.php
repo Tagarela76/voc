@@ -351,6 +351,7 @@ if ($checkResult['shouldPay']) {
 
 				$unittype = new Unittype($this->db);
 				$unittype->setDefaultUnitTypelist($form['unitTypeID'], $this->category, $this->getFromRequest('id'));
+				
 				$apmethod = new Apmethod($this->db);
 				$apmethod->setDefaultAPMethodlist($form['APMethodID'], $this->category, $this->getFromRequest('id'));
 

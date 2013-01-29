@@ -30,3 +30,12 @@ UPDATE  `unittype` SET  `name` =  'ea' WHERE  `unittype`.`unittype_id` =40;
 INSERT INTO `unittype` (`name`, `unittype_desc`, `formula`, `type_id`, `system`, `unit_class_id`) VALUES ('pr click', 'pr click', NULL, 2, NULL, 1);
 
 ALTER TABLE  `mix` ADD  `step_id` INT( 255 ) NULL DEFAULT NULL;
+
+INSERT INTO  `unit_class` (
+`id` ,
+`name` ,
+`description`
+)
+VALUES (
+NULL ,  'Time',  'Time'
+);

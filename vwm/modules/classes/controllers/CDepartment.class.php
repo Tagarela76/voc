@@ -209,7 +209,14 @@ class CDepartment extends Controller {
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
-			'modules/js/PopupWindow.js'
+			'modules/js/PopupWindow.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js',
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 
@@ -223,6 +230,7 @@ class CDepartment extends Controller {
 			throw new Exception('deny');
 		}
 		$department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
+		
 		$this->smarty->assign('department', $department);
 //var_dump($department);die();
 		$woLabel = $department->getFacility()
@@ -240,7 +248,15 @@ class CDepartment extends Controller {
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
-			'modules/js/PopupWindow.js'
+			'modules/js/PopupWindow.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js',
+			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js',
+			
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 

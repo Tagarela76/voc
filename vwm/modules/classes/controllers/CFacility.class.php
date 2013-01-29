@@ -268,7 +268,7 @@ class CFacility extends Controller {
 			'modules/js/saveItem.js',
 			'modules/js/PopupWindow.js',
 			'modules/js/addJobberPopups.js',
-			'modules/js/checkBoxes.js'
+			'modules/js/checkBoxes.js',
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 

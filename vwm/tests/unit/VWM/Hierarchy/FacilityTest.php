@@ -10,7 +10,11 @@ class FacilityTest extends DbTestCase {
 		Company::TABLE_NAME,
 		Facility::TABLE_NAME,
 		Department::TABLE_NAME,
-		Facility::TB_PROCESS
+		Facility::TB_PROCESS,
+		TB_DEFAULT,
+		TB_TYPE,
+		TB_UNITCLASS,
+		TB_UNITTYPE,
 	);
 	
 	public function testSave() {
@@ -114,7 +118,54 @@ class FacilityTest extends DbTestCase {
 			$this->assertEquals($processTestList[$i]->facility_id, $processList[$i]->getFacilityId());
 		}
 		
-	} 
+	}
+	
+	public function testGetUnitTypes(){
+		$facilityUnitType = array(1,2,3);
+		$unitTypeClass = 'USAWght';
+		$categoty = 'facility';
+		$facilityId = 1;
+		
+		$facility = new Facility($this->db, $facilityId);
+		$facility->setUnitTypeClass($unitTypeClass);
+		$unittype = new \Unittype($this->db);
+		$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $facilityId);
+		$facilityUnitTypes = $facility->getUnitTypeList();
+		
+		//get unit type
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.system " .
+				"FROM " . TB_UNITTYPE . " ut " .
+				"INNER JOIN " . TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = 'facility' " .
+				"AND def.id_of_object = {$this->db->sqltext($facilityId)} " .
+				"AND uc.name = '{$unitTypeClass}' " .
+				"ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unittype;
+			}
+		}
+		$this->assertEquals(count($unittypes), count($facilityUnitTypes));
+		$this->assertEquals($unittypes, $facilityUnitTypes);
+	}
 
 }
 

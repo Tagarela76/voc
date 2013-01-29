@@ -7,6 +7,7 @@ function saveDepartmentDetails()
 	var dep_annual_limit=$('#departmentAnnualLimit').attr('value');
 	var dep_share_wo=$('#share_wo').attr('checked');	
 	var dep_action=$('input:hidden[name=action]').attr('value');
+	var unittype = $('#unittype').val();
 	if (dep_action == 'addItem') 
 	{		
 		var id=$('input:hidden[name=facility_id]').attr('value');
@@ -27,7 +28,8 @@ function saveDepartmentDetails()
 			"voc_annual_limit":dep_annual_limit,
 			"action":dep_action,
 			"share_wo": dep_share_wo ? 1 : 0,
-			"id":id
+			"id":id,
+			"unittype": unittype
 		},      			
 		dataType: "html",
 		success: function (response) 
@@ -171,7 +173,9 @@ function saveFacilityDetails()
 	var title=document.addFacility.title.value;
 	var client_facility_id = $('#addEditFacilityForm input[name="client_facility_id"]').val();
 	var action=document.addFacility.action.value;
-		
+	var unittype = $('#unittype').val();
+	
+	
 	if (action == 'addItem') {		
 		var id=document.addFacility.company_id.value;
 	} 	
@@ -211,7 +215,8 @@ function saveFacilityDetails()
 			"client_facility_id":client_facility_id,
 			"jobber[]":jobber,
 			"action":action,
-			"id":id
+			"id":id,
+			"unittype":unittype
 		},      			
 		dataType: "html",
 		success: 	function (response) 

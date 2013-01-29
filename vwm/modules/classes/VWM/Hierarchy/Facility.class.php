@@ -65,10 +65,23 @@ class Facility extends Model {
 	 * @var VWM\Hierarchy\Department[]
 	 */
 	protected $departments;
+	
+	/*
+	 * name of unit_class for getUnitTypeList function
+	 * USAWght for default
+	 * @var string 
+	 */
+	protected $unitTypeClass = 'USAWght';
+	
 
 	const TABLE_NAME = 'facility';
 	const TABLE_GAUGE = 'product_gauge';
 	const TB_PROCESS = 'process';
+	const TB_UNITTYPE = 'unittype';
+	const TB_DEFAULT = '`default`';
+	const TB_TYPE = 'type';
+	const TB_UNITCLASS = 'unit_class';
+	const CATEGORY = 'facility';
 	
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
@@ -258,7 +271,15 @@ class Facility extends Model {
 		$this->last_update_time = $last_update_time;
 	}
 
-	/**
+	public function getUnitTypeClass() {
+		return $this->unitTypeClass;
+	}
+
+	public function setUnitTypeClass($unitTypeClass) {
+		$this->unitTypeClass = $unitTypeClass;
+	}
+
+		/**
 	 * Saves facility into database
 	 * @return int|bool object id or false on failure
 	 */
@@ -348,8 +369,8 @@ class Facility extends Model {
 				"last_update_time={$lastUpdateTime} " .
 				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";	
 		
-		$r = $this->db->exec($sql);
-		if($r) {			
+		$result = $this->db->exec($sql);
+		if($result) {			
 			return $this->getFacilityId();
 		} else {
 			return false;
@@ -473,6 +494,46 @@ class Facility extends Model {
 			$processList[] = new \VWM\Apps\Process\Process($this->db, $processId->id);
 		}
 		return $processList;
+	}
+	
+	public function getUnitTypeList() {
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
+				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system
+				);
+				$unittypes[] = $unittype;
+			}
+		} else {
+			$company = $this->getCompany();
+			$company->setUnitTypeClass($this->getUnitTypeClass());
+			$unittypes = $company->getUnitTypeList();
+		}
+
+		return $unittypes;
 	}
 	
 	

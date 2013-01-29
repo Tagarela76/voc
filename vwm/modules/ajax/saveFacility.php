@@ -29,6 +29,7 @@
 	//	filter action var	
 	$xnyo->filter_post_var('action', 'text');
 	$action = $_POST['action'];
+	$categoty = 'facility';
 	
 	//	logged in?	
 	$user = new User($db, $xnyo, $access, $auth);
@@ -65,13 +66,20 @@
 			$facility->setVocAnnualLimit($_POST["voc_annual_limit"]);
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
+			$facilityUnitType = ($_POST["unittype"]);
+			$facilityUnitType = explode(',',$facilityUnitType);
 			
 			$violationList = $facility->validate();		
 			if(count($violationList) == 0) {
 				$result = $facility->save();
+				
 				if(!$result) {
 					throw new Exception('Failed to save facility');
 				}
+				//save facility Unit type
+					$unittype = new Unittype($db);
+					$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+					
 				//	TODO: WHY???!
 				// clear jobber array
 				foreach ($_POST["jobber"] as $jobberPost) {
@@ -219,6 +227,9 @@
 			$facility->setVocAnnualLimit($_POST["voc_annual_limit"]);
 			$facility->setVocLimit($_POST["voc_limit"]);
 			$facility->setZip($_POST["zip"]);	
+			$facilityUnitType = ($_POST["unittype"]);
+			$facilityUnitType = explode(',',$facilityUnitType);
+			
 			
 			$violationList = $facility->validate();		
 			if(count($violationList) == 0) {
@@ -226,7 +237,11 @@
 				if(!$result) {
 					throw new Exception('Failed to save facility');
 				}
-								
+					
+				//save facility Unit type
+					$unittype = new Unittype($db);
+					$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $result);
+					
 				//   CREATE ACO
 				$gacl_api = new gacl_api();
 				$acoID = $gacl_api->add_object('access', "facility_".$facility->getFacilityId(), "facility_".$facility->getFacilityId(), 0, 0, 'ACO');
