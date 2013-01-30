@@ -97,29 +97,29 @@ function createSelectUnittypeClass(id) {
     return sel;
 }
 {/literal}
-	
+
 {literal}
 	var page = new AddMixPage();
 	var firstPfpTypeId = {/literal}'{$pfpTypes[0]->id}'{literal};
-		
-	$(document).ready(function() {		
+
+	$(document).ready(function() {
 		page.pfpManager.currentPfpType = {
 			"id":"{/literal}{$currentPfpType->id}{literal}",
 			"name":"{/literal}{$currentPfpType->name}{literal}",
 			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
 		};
-				
-		page.pfpManager.pfpLists.push({	
+
+		page.pfpManager.pfpLists.push({
 			"type":page.pfpManager.currentPfpType,
 			"pfps":{/literal}{$pfps}{literal}
 		});
-		page.pfpManager.renderPfpList();	
-			
+		page.pfpManager.renderPfpList();
+
 		//openPfpGroup for first element to make it default
 		if(firstPfpTypeId!=''){
 			page.pfpManager.openPfpGroup(firstPfpTypeId, $('.active_link'));
 		}
-			
+
 	});
 {/literal}
 </script>
@@ -196,7 +196,7 @@ function createSelectUnittypeClass(id) {
                     {/literal}
                 </td>
             </tr>
-			
+
 			<tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">
                    Spray/spent time in minutes:
@@ -213,7 +213,7 @@ function createSelectUnittypeClass(id) {
                                 {*/ERORR*}
                             {/if}
                         {/if}
-                    </div>     
+                    </div>
 					<script type="text/javascript">
 						$("#spentTime").numeric();
 						{literal}
@@ -226,7 +226,7 @@ function createSelectUnittypeClass(id) {
 								slide: function( event, ui ) {
 									$( "#spentTime" ).val(ui.value);
 								}
-							});							
+							});
 						});
 						{/literal}
 					</script>
@@ -267,7 +267,7 @@ function createSelectUnittypeClass(id) {
                     <div class="floatleft">
                         <select name="selectEquipment" id="selectEquipment">
                             {section name=i loop=$equipment}
-                                <option value='{$equipment[i].equipment_id}' {if $equipment[i].equipment_id eq $data->equipment}selected="selected"{/if}> {$equipment[i].equip_desc} </option>
+                                <option value='{$equipment[i].equipment_id}' {if $equipment[i].equipment_id eq $data->equipment_id}selected="selected"{/if}> {$equipment[i].equip_desc} </option>
                             {/section}
                         </select>
 
@@ -346,25 +346,25 @@ function createSelectUnittypeClass(id) {
 
                             <select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >
                                 {section name=j loop=$typeEx}
-                            {if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-                    {if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-            {if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
-    {if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
-{/section}
-<!-- 'percent' eq $data->waste.unittypeClass or  -->
-<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
-</select>
-<input type="hidden" id="company" value="{$companyID}">
-<input type="hidden" id="companyEx" value="{$companyEx}">
-</div>
-<div class="floatleft padd_left">
-    <select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$companyID}, {$companyEx})">
-        {section name=i loop=$data->waste.unitTypeList}
-            <option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>
-        {/section}
-    </select>
-</div>
+									{if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
+									{if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
+									{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
+									{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
+									{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
+								{/section}
+								<!-- 'percent' eq $data->waste.unittypeClass or  -->
+								<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
+							</select>
+							<input type="hidden" id="company" value="{$companyID}">
+							<input type="hidden" id="companyEx" value="{$companyEx}">
+						</div>
+						<div class="floatleft padd_left">
+							<select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$companyID}, {$companyEx})">
+							{section name=i loop=$data->waste.unitTypeList}
+								<option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>
+							{/section}
+							</select>
+						</div>
 
 {*ajax-preloader*}
 <div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
@@ -638,27 +638,27 @@ function createSelectUnittypeClass(id) {
 </div>
 <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
     {if $pfps|count > 0}
-		
+
         {if $pfpTypes|count > 0}
             <div class="link_bookmark">
 			{if $selectedPfpType}
 				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
 			{else}
 				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
-			{/if}	
-			
+			{/if}
+
             {foreach from=$pfpTypes item=pfpType}
                 {if $pfpType->name == $selectedPfpType}
                     <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
                 {else}
-                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a> 
+                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a>
 
                 {/if}
-                
-            {/foreach}    
+
+            {/foreach}
             </div>
-        {/if}    
-		
+        {/if}
+
 		{include file="tpls:tpls/_briefPfpList.tpl"}
     {else}
         You do not have any preformulated products yet
@@ -689,8 +689,8 @@ function createSelectUnittypeClass(id) {
 				</div>
 				<div style="float: left;">
 					&nbsp; {$vocUnitType}
-				</div>	
-			</div>	
+				</div>
+			</div>
             <input type="hidden" name="voc" value="{$data->voc}">
         </td>
     </tr>
@@ -855,7 +855,7 @@ function createSelectUnittypeClass(id) {
         //		for(i=0; i<count; i++) {
         //			window.document.onload = getUnittypes(document.getElementById('selectUnittypeClass_'+i), document.getElementById('company').value, document.getElementById('companyEx').value);
         //		}
-        </script>		
+        </script>
     {/literal}
 {/if}
 {literal}
@@ -871,6 +871,6 @@ function createSelectUnittypeClass(id) {
 				//right: -250
 			});
 		});
-		
+
 	</script>
-{/literal}		
+{/literal}
