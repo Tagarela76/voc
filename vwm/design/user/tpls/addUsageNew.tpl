@@ -351,6 +351,7 @@ function createSelectUnittypeClass(id) {
             {if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
     {if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
 {if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
+{if 'Time' eq $typeEx[j]}<option value='Time' {if 'Time' eq $data->waste.unittypeClass}selected="selected"{/if}>Time</option>{/if}
 {/section}
 <!-- 'percent' eq $data->waste.unittypeClass or  -->
 <option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>

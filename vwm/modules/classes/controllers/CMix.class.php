@@ -2277,6 +2277,60 @@ class CMix extends Controller {
 
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
+		
+		$companyEx = 1;
+		if (!$unitTypeEx) {
+			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
+			$companyEx = 0;
+		}
+
+		$k = 1;
+		$count = 1;
+		$flag = 1;
+		$typeEx = Array();
+
+		// 80% of U.S. customers use the system USAWeight, so make it default
+		//$usWgt = Array('OZS', 'LBS', 'GRAIN', 'CWT');
+		$usWgt = Array('7', '2', '12', '20');
+		for ($ii = 0; $ii < count($unitTypeEx); $ii++) {
+			for ($jj = 0; $jj < count($usWgt); $jj++) {
+				if ($unitTypeEx[$ii]['unittype_id'] == $usWgt[$jj]) {
+					$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$ii]['unittype_id']);
+				}
+			}
+		}
+		
+		if ($typeEx[0] == '') {
+			$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+		}
+
+		while ($unitTypeEx[$k]) {
+			$idn = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$k]['unittype_id']);
+
+			for ($j = 0; $j < $count; $j++) {
+				
+				if ($idn == $typeEx[$j]) {
+					$flag = 0;
+					break;
+				}
+			}
+			if ($flag) {
+				
+				$typeEx[$count] = $idn;
+				$count++;
+			}
+			$k++;
+			$flag = 1;
+		}
+
+		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
+	}
+	
+	/*protected function getDefaultTypesAndUnitTypes($companyID) {
+
+		$cUnitTypeEx = new Unittype($this->db);
+		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
+		
 		$companyEx = 1;
 		if (!$unitTypeEx) {
 			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
@@ -2320,7 +2374,7 @@ class CMix extends Controller {
 		}
 
 		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
-	}
+	}*/
 
 	protected function getDefaultApMethod($companyID) {
 

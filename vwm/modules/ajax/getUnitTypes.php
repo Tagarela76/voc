@@ -53,6 +53,10 @@
                     $sqlSystem = "'metric'";
                     $sqlTypedesc = "('Weight')";
                     break;
+				case 'Time':
+                    $sqlSystem = "'time'";
+                    $sqlTypedesc = "('Time')";
+                    break;
             }
             $queryData = "SELECT ut.unittype_id, ut.name FROM ".TB_UNITTYPE." ut, ".TB_TYPE." t " .
 			  "WHERE ut.type_id = t.type_id " .
@@ -89,7 +93,11 @@
                 case 'AllOther':
                     $sqlSystem = "'metric'";
                     $sqlTypedesc = "('Other')";
-                    break;				
+                    break;
+				 case 'Time':
+                    $sqlSystem = "'time'";
+                    $sqlTypedesc = "('Time')";
+                    break;
             }
             $queryData = "SELECT ut.unittype_id, ut.name FROM ".TB_UNITTYPE." ut, ".TB_TYPE." t " .
 			  "WHERE ut.type_id = t.type_id " .
