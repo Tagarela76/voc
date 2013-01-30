@@ -473,23 +473,20 @@ class MixOptimized extends Model {
 			return false;
 		}
 		$mixID = $this->db->getLastInsertedID();
-
-		//	now we are saving mix products
-		// we can save mix without do it if this mix is work order
-		if (!isset($this->wo_id) || $this->iteration != 0) { 
-			if ($this->products && is_array($this->products) && count($this->products) > 0) {
-				$insertProductsQuery = $this->getInsertProductsQuery($mixID);
-				if (!$this->db->query($insertProductsQuery)) {
-					$this->db->rollbackTransaction();
-					return false;
-				}
-			} else {
-				//	we should not save mix without products
+		
+		if ($this->products && is_array($this->products) && count($this->products) > 0) {
+			$insertProductsQuery = $this->getInsertProductsQuery($mixID);
+			if (!$this->db->query($insertProductsQuery)) {
 				$this->db->rollbackTransaction();
 				return false;
 			}
+		} else {
+			//	we should not save mix without products
+			$this->db->rollbackTransaction();
+			return false;
 		}
-		
+
+
 		$this->db->commitTransaction();
 
 		$this->mix_id = $mixID;

@@ -6,25 +6,25 @@ class PfpTypes {
 
 	/**
 	 *
-	 * @var int 
+	 * @var int
 	 */
 	public $id;
 
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $name;
 
 	/**
 	 *
-	 * @var int 
+	 * @var int
 	 */
 	public $facility_id;
 
 	/**
 	 * db connection
-	 * @var db 
+	 * @var db
 	 */
 	private $db;
 	/*
@@ -33,7 +33,6 @@ class PfpTypes {
 	public $departments;
 	public $searchCriteria = array();
 
-	const PFP_TYPES_LIMIT = 10;
 
 	function __construct(db $db, $pfpTypeId = null) {
 		$this->db = $db;
@@ -48,7 +47,7 @@ class PfpTypes {
 
 	/**
 	 * add pfp type
-	 * @return int 
+	 * @return int
 	 */
 	public function save() {
 		if($this->id && !is_null($this->id)){
@@ -56,7 +55,7 @@ class PfpTypes {
 		}else{
 			$this->_insert();
 		}
-		
+
 	}
 
 	private function _saveDepartmentPFP() {
@@ -69,13 +68,13 @@ class PfpTypes {
 				" WHERE  pfp_type_id={$this->db->sqltext($this->id)}";
 		$this->db->query($query);
 		//Insert
-		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_type_id, department_id) 
+		$query = "INSERT INTO " . self::TB_PFP_2_DEPARTMENT . "(pfp_type_id, department_id)
 				  VALUES (" .
 				"{$this->db->sqltext($this->id)}, " .
 				"{$this->db->sqltext($this->departments[0]->getDepartmentId())})";
 
 		for ($i = 1; $i < count($this->departments); $i++) {
-			$query .= ",( 
+			$query .= ",(
 				'" . $this->db->sqltext($this->id) . "'
                 , " . $this->db->sqltext($this->departments[$i]->getDepartmentId()) . "
 				)";
@@ -85,45 +84,21 @@ class PfpTypes {
 	}
 
 	private function _insert(){
-		// Is unique ?
-		$query = "SELECT * FROM " . TB_PFP_TYPES .
-				" WHERE name ='{$this->db->sqltext($this->name)}'
-                  AND facility_id = {$this->db->sqltext($this->facility_id)}";
-		$this->db->query($query);
-		/* if ($this->db->num_rows() > 0) {
-		  return false;
-		  } */
-		// we should limit pfp type's count (10 types)
-		$facility = new Facility($this->db);
-		if ($facility->getPfpTypesCount($this->db->sqltext($this->facility_id)) > self::PFP_TYPES_LIMIT) {
-			return false;
-		}
-		$query = "INSERT INTO " . TB_PFP_TYPES . "(name, facility_id) 
-				VALUES ( 
+
+		$query = "INSERT INTO " . TB_PFP_TYPES . "(name, facility_id)
+				VALUES (
 				'" . $this->db->sqltext($this->name) . "'
                 , " . $this->db->sqltext($this->facility_id) . "
 				)";
-		
+
 		$this->db->query($query);
 		$pfpTypeId = $this->db->getLastInsertedID();
 		$this->id = $pfpTypeId;
 		$this->_saveDepartmentPFP();
 		return $this->id;
 	}
-	
+
 	private function _update(){
-		$query = "SELECT * FROM " . TB_PFP_TYPES .
-				" WHERE name ='{$this->db->sqltext($this->name)}'
-                  AND facility_id = {$this->db->sqltext($this->facility_id)}";
-		$this->db->query($query);
-		/* if ($this->db->num_rows() > 0) {
-		  return false;
-		  } */
-		// we should limit pfp type's count (10 types)
-		$facility = new Facility($this->db);
-		if ($facility->getPfpTypesCount($this->db->sqltext($this->facility_id)) > self::PFP_TYPES_LIMIT) {
-			return false;
-		}
 		$query = "UPDATE " . TB_PFP_TYPES . " SET ".
 				"name='{$this->db->sqltext($this->name)}'".
 				" WHERE id=".$this->id;
@@ -220,7 +195,7 @@ class PfpTypes {
 		if (!isset($this->id)) {
 			return false;
 		}
-		$sql = "SELECT * 
+		$sql = "SELECT *
 				FROM " . TB_PFP_TYPES . "
 				 WHERE id=" . $this->db->sqltext($this->id);
 		$this->db->query($sql);

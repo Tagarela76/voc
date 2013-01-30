@@ -471,8 +471,9 @@ class CABulkUploader extends Controller {
 		if ($_FILES['inputFile']['error'] != 0) {
 			throw new Exception('error of file number ' . $_FILES['inputFile']['error']);
 		}
-
-		if ($_FILES['inputFile']['type'] != 'text/csv') {
+		
+		if (!in_array($_FILES['inputFile']['type'],
+				array('text/comma-separated-values', 'text/csv'))) {
 			throw new Exception('Input file should be CSV format');
 		}
 		$facilityID = $this->getFromPost('facilityID');
