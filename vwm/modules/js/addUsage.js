@@ -26,25 +26,25 @@ function Pfp() {
 	this.id;
 	this.description;
 	this.company_id;
-	this.type_id;	
+	this.type_id;
 }
 
 
 function PfpManager() {
 	this.defaultPfpType = new PfpType(0);
-	this.pfpLists = [];	
+	this.pfpLists = [];
 	this.currentPfpType;
 	this.pfpDetails = [];
-	
+
 	this.getPfpsByType = function(pfpType) {
 		var that = this;
 		var returnPfpList = [];
-		
+
 		// check probably list is already loaded
-		
-		for(key in this.pfpLists) {			
+
+		for(key in this.pfpLists) {
 			if(this.pfpLists[key].type.id == pfpType.id) {
-				// we found it				
+				// we found it
 				return this.pfpLists[key].pfps;
 			}
 		}
@@ -54,19 +54,19 @@ function PfpManager() {
 			data: {pfpTypeId: this.currentPfpType.id},
 			type: "GET",
 			dataType: "json",
-			success: function (pfpList) {				
-				that.pfpLists.push(pfpList);		
-				returnPfpList = pfpList.pfps;				
+			success: function (pfpList) {
+				that.pfpLists.push(pfpList);
+				returnPfpList = pfpList.pfps;
       		}
 		});
-		
+
 		return returnPfpList;
 	}
-	
-	
+
+
 	this.renderPfpList = function() {
 		var pfps = this.getPfpsByType(this.currentPfpType);
-		
+
 		var html = '';
 		for (key in pfps) {
 			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'" name="pfp_row">';
@@ -76,32 +76,32 @@ function PfpManager() {
 			html +=		'<td colspan="4" style="text-align:center;">';
 			html +=			'<img src="images/ajax-loader.gif" class="preloader" />';
 			html +=		'</td>';
-			html +=	'</tr>';                                   
-		}						
-		
+			html +=	'</tr>';
+		}
+
 		// update table
-		$('.pfpList tbody').html(html);	
-		
+		$('.pfpList tbody').html(html);
+
 		this.enableOnClickListener();
 	}
-	
+
 	this.openPfpGroup = function(pfpGroupId, linkElement) {
-		
+
 		this.currentPfpType = {
 			'id':pfpGroupId,
 			'name':'',
-			'facility_id':0 
+			'facility_id':0
 		};
-		
+
 		this.renderPfpList();
-		
+
 		// reset active links
 		$('.active_link').removeClass('active_link');
-		
+
 		// activate new one
 		$(linkElement).addClass('active_link');
 	}
-	
+
 	//TODO: needs rewrite
 	this.enableOnClickListener = function() {
 		var that = this;
@@ -111,7 +111,7 @@ function PfpManager() {
 
 			$("table[name='pfp_details_products']").remove();
 			var id = $(this).attr('id');
-			
+
 			if(typeof $.browser.msie != "undefined" && $.browser.msie == true) {
 				$("#"+id+"_details").css("display","block");
 			} else {
@@ -121,26 +121,26 @@ function PfpManager() {
 			$("#"+id+"_details .preloader").css("display","block");
 			loadPFPDetails(id);
 			//	this is not ready yet
-			//this.renderPfpList(id);			
+			//this.renderPfpList(id);
 		});
 	}
-	
-	
+
+
 	this.getPpf = function(id) {
 		// check probably list is already loaded
-		for(key in this.pfpDetails) {			
+		for(key in this.pfpDetails) {
 			if(this.pfpDetails[key].pfpId == id) {
-				// we found it				
+				// we found it
 				return this.pfpDetails[key].pfp;
 			}
-		}		
+		}
 		var pfp;
 		var that = this;
-		
+
 		var urlData = {
-			"action" : "getPFPDetailsAjax", 
-			"category" : "mix", 
-			"departmentID": departmentID, 
+			"action" : "getPFPDetailsAjax",
+			"category" : "mix",
+			"departmentID": departmentID,
 			"pfp_id" : id
 		};
 		$.ajax({
@@ -152,17 +152,17 @@ function PfpManager() {
 			success: function (response) {
 				that.pfpDetails.push({
 					"id":response.id,
-					"pfp":response.pfp	
+					"pfp":response.pfp
 				});
-				pfp = response.pfp;  				
-  			}					
+				pfp = response.pfp;
+  			}
 		});
-				
+
 		return pfp;
 	}
-	
+
 	this.renderPfpDetails = function(id) {
-		var pfp = that.getPpf(id);					
+		var pfp = that.getPpf(id);
 		$("#"+pfp.id+"_details .preloader").css("display","none");
   		$("#"+pfp.id).attr('class','pfpListItemSelected');
 	}
@@ -171,7 +171,7 @@ function PfpManager() {
 // END OF OOP VERSION
 
 
-$(document).ready(function() {	
+$(document).ready(function() {
 
 		if(noMWS == true) {
 			initNoMWS();
@@ -211,7 +211,7 @@ $(document).ready(function() {
 				$("#errorAddProduct").css("display","none");
 			}
 		});
-		
+
 });
 
 function loadPFPDetails(pfp_id) {
@@ -386,7 +386,7 @@ function initRecycle() {
 			$("#recycleValidError").css("display","none");
 		}
 
-		mix = getMix(); 
+		mix = getMix();
 
 		if(noMWS != true){
 			waste = wasteStreamsCollection.toJson();
@@ -785,7 +785,7 @@ function initRecycle() {
 
 
 		isPFP = typeof(pfp) != 'undefined' ? true : false;
-
+		isRange = typeof(isRange) != 'undefined' ? false : true;
 
 		if(isPFP == true) {
 
@@ -1536,8 +1536,8 @@ function initRecycle() {
 
 		return table;
 	}
-	
-	
-	function is_null(mixed_var){ 
+
+
+	function is_null(mixed_var){
     return ( mixed_var === 'undefined' );
 	}
