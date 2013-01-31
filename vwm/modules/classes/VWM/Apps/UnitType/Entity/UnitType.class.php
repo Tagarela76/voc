@@ -22,9 +22,18 @@ class UnitType extends Model {
 	protected $system;
 
 	protected $unit_class_id;
-	
-	protected $type_desc;
-	
+
+	/**
+	 * @var Type
+	 */
+	protected $type;
+
+	/**
+	 * @var UnitClass
+	 */
+	protected $unitClass;
+
+	const TABLE_NAME = '`unittype`';
 
 	public function getUnitTypeId() {
 		return $this->unittype_id;
@@ -81,17 +90,65 @@ class UnitType extends Model {
 	public function setUnitClassId($unit_class_id) {
 		$this->unit_class_id = $unit_class_id;
 	}
-	
-	public function getTypeDesc() {
-		return $this->type_desc;
+
+	/**
+	 * @return Type
+	 */
+	public function getType() {
+		if($this->type) {
+			return $this->type;
+		}
+
+		if(!$this->getTypeId()) {
+			throw new \Exception("You cannot get type without type id");
+		}
+
+		$type = new Type($this->db);
+		$type->setTypeId($this->getTypeId());
+		if(!$type->load()) {
+			return false;
+		}
+		$this->setType($type);
+
+		return $this->type;
 	}
 
-	public function setTypeDesc($type_desc) {
-		$this->type_desc = $type_desc;
+	public function setType(Type $type) {
+		$this->type = $type;
 	}
-	
-	
-	
+
+	/**
+	 *
+	 * @return UnitClass
+	 */
+	public function getUnitClass() {
+
+		if($this->unitClass) {
+			return $this->unitClass;
+		}
+
+		if(!$this->getUnitClassId()) {
+			throw new \Exception("You cannot get type without type id");
+		}
+
+		$unitClass = new UnitClass($this->db);
+		$unitClass->setId($this->getUnitClassId());
+		if(!$unitClass->load()) {
+			return false;
+		}
+		$this->setUnitClass($unitClass);
+
+		return $this->unitClass;
+	}
+
+	public function setUnitClass($unitClass) {
+		$this->unitClass = $unitClass;
+	}
+
+
+	public function save() {
+		throw new \Exception('You cannot add/edit this entity');
+	}
 
 
 }

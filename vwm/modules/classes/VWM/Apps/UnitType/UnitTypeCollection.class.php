@@ -2,6 +2,8 @@
 
 namespace VWM\Apps\UnitType;
 
+use VWM\Apps\UnitType\Entity\UnitType;
+
 /**
  * Unit Type Collection class
  */
@@ -13,7 +15,7 @@ class UnitTypeCollection {
 	protected $unitTypes = array();
 
 	protected $unitTypeClases = array();
-	
+
 	protected $unitTypeNames = array();
 
 	public function getUnitTypes() {
@@ -31,7 +33,7 @@ class UnitTypeCollection {
 	public function setUnitTypeClases($unitTypeClases) {
 		$this->unitTypeClases = $unitTypeClases;
 	}
-	
+
 	public function getUnitTypeNames() {
 		return $this->unitTypeNames;
 	}
@@ -39,7 +41,7 @@ class UnitTypeCollection {
 	public function setUnitTypeNames($unitTypeNames) {
 		$this->unitTypeNames = $unitTypeNames;
 	}
-	
+
 	public function getUnitTypeClassesByUnitTypeName($name){
 		$unittype = array();
 		$unitTypeClasses = $this->getUnitTypeClases();
@@ -49,11 +51,36 @@ class UnitTypeCollection {
 			}
 		}
 		return $unittype;
-		
+
+	}
+
+	/**
+	 * Ini collection by UnitType[]
+	 * @param type $unitTypeList
+	 */
+	public function initByUnitTypeList($unitTypeList) {
+		$this->setUnitTypes($unitTypeList);
+
+
+		foreach($unitTypeList as $unitType) {
+			// weight? volume?
+			$type = array(
+				'unittype_id' => $unitType->getUnitTypeId(),
+				'type_id' => $unitType->getTypeId(),
+				'name' => $unitType->getName()
+			);
+			$unitTypes[] = $type;
+//r_dump($unitTypes);
+			if(!in_array($unitType->getName(), $unitTypesName)){
+				$unitTypesName[] = $unitType->getName();
+			}
+		}
+		$unitTypeCollection->setUnitTypeClases($unittypes);
+		$unitTypeCollection->setUnitTypes($unitTypeList);
+		$unitTypeCollection->setUnitTypeNames($unitTypesName);
 	}
 
 
-	
 
 }
 

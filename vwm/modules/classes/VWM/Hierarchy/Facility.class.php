@@ -11,47 +11,47 @@ use VWM\Apps\Gauge\Entity\VocGauge;
 
 
 class Facility extends Model {
-	
+
 	protected $facility_id;
-	
+
 	protected $company_id;
-	
+
 	protected $name;
-	
+
 	protected $epa;
-	
+
 	protected $address;
-	
+
 	protected $city;
-			
+
 	protected $zip;
-	
+
 	protected $county;
-	
+
 	protected $state;
-	
+
 	protected $country;
-	
+
 	protected $phone;
-	
+
 	protected $fax;
-	
+
 	protected $email;
-	
+
 	protected $contact;
-	
+
 	protected $title;
-	
+
 	protected $creater_id;
-	
+
 	protected $voc_limit;
-	
+
 	protected $voc_annual_limit;
-	
+
 	protected $gcg_id;
-			
+
 	protected $monthly_nox_limit;
-	
+
 	protected $client_facility_id;
 
 	protected $last_update_time;
@@ -65,14 +65,14 @@ class Facility extends Model {
 	 * @var VWM\Hierarchy\Department[]
 	 */
 	protected $departments;
-	
+
 	/*
 	 * name of unit_class for getUnitTypeList function
 	 * USAWght for default
-	 * @var string 
+	 * @var string
 	 */
 	protected $unitTypeClass = 'USAWght';
-	
+
 
 	const TABLE_NAME = 'facility';
 	const TABLE_GAUGE = 'product_gauge';
@@ -82,11 +82,11 @@ class Facility extends Model {
 	const TB_TYPE = 'type';
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'facility';
-	
+
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = "Facility";
-		
+
 		if($id !== null) {
 			$this->setFacilityId($id);
 			if(!$this->_load()) {
@@ -94,7 +94,7 @@ class Facility extends Model {
 			}
 		}
 	}
-	
+
 	public function getFacilityId() {
 		return $this->facility_id;
 	}
@@ -283,24 +283,24 @@ class Facility extends Model {
 	 * Saves facility into database
 	 * @return int|bool object id or false on failure
 	 */
-	public function save() {		
+	public function save() {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
+
 		if($this->getFacilityId()) {
 			return $this->_update();
 		} else {
 			return $this->_insert();
 		}
 	}
-	
+
 	protected function _insert() {
-		$clientFacilityId = ($this->getClientFacilityId()) 
-				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
-				: "NULL";						
+		$clientFacilityId = ($this->getClientFacilityId())
+				? "'{$this->db->sqltext($this->getClientFacilityId())}'"
+				: "NULL";
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-		
+
 		$sql = "INSERT INTO ".TB_FACILITY." (" .
 				"epa, company_id, name, address, city, zip, county, state, " .
 				"country, phone, fax, email, contact, title, creater_id, " .
@@ -324,35 +324,35 @@ class Facility extends Model {
 				"'{$this->db->sqltext($this->getCreaterId())}', " .
 				"{$this->db->sqltext($this->getVocLimit())}, " .
 				"{$this->db->sqltext($this->getVocAnnualLimit())}, " .
-				"{$this->db->sqltext($this->getGcgId())}, " .				
+				"{$this->db->sqltext($this->getGcgId())}, " .
 				"{$this->db->sqltext($this->getMonthlyNoxLimit())}, " .
 				"{$clientFacilityId}, " .
 				"{$lastUpdateTime} " .
 				")";
 		$r = $this->db->exec($sql);
 		if($r) {
-			$this->setFacilityId($this->db->getLastInsertedID());	
+			$this->setFacilityId($this->db->getLastInsertedID());
 			return $this->getFacilityId();
 		} else {
 			return false;
 		}
-		
-		
+
+
 	}
-	
+
 	protected function _update() {
-		$clientFacilityId = ($this->getClientFacilityId()) 
-				? "'{$this->db->sqltext($this->getClientFacilityId())}'" 
-				: "NULL";						
+		$clientFacilityId = ($this->getClientFacilityId())
+				? "'{$this->db->sqltext($this->getClientFacilityId())}'"
+				: "NULL";
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "UPDATE ".TB_FACILITY." SET " .
 				"epa='{$this->db->sqltext($this->getEpa())}', " .
 				"voc_limit={$this->db->sqltext($this->getVocLimit())}, " .
 				"voc_annual_limit={$this->db->sqltext($this->getVocAnnualLimit())}, " .
-				"name='{$this->db->sqltext($this->getName())}', " .				
+				"name='{$this->db->sqltext($this->getName())}', " .
 				"address='{$this->db->sqltext($this->getAddress())}', "	.
 				"city='{$this->db->sqltext($this->getCity())}', " .
 				"zip='{$this->db->sqltext($this->getZip())}', " .
@@ -367,32 +367,32 @@ class Facility extends Model {
 				"title='{$this->db->sqltext($this->getTitle())}', "	.
 				"client_facility_id={$clientFacilityId}, " .
 				"last_update_time={$lastUpdateTime} " .
-				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";	
-		
+				"WHERE facility_id={$this->db->sqltext($this->getFacilityId())}";
+
 		$result = $this->db->exec($sql);
-		if($result) {			
+		if($result) {
 			return $this->getFacilityId();
 		} else {
 			return false;
 		}
-	}		
-	
-	
+	}
+
+
 	private function _load() {
 		if(!$this->getFacilityId()) {
 			throw new \Exception('Facility ID should be set before calling this method');
 		}
-		
+
 		$sql = "SELECT * FROM ".TB_FACILITY." " .
 				"WHERE facility_id = {$this->db->sqltext($this->getFacilityId())}";
 		$this->db->query($sql);
 		if($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		$row = $this->db->fetch_array(0);
 		$this->initByArray($row);
-		
+
 		return true;
 	}
 
@@ -445,7 +445,7 @@ class Facility extends Model {
 
 		return $this->departments;
 	}
-	
+
 	public function getAllAvailableGauges(){
 		$sql = "SELECT gauge_type FROM " . self::TABLE_GAUGE . " WHERE `limit`<>0 AND department_id is NULL AND facility_id=".$this->db->sqltext($this->getFacilityId());
 		$this->db->query($sql);
@@ -477,7 +477,7 @@ class Facility extends Model {
 		}
 		return $gauges;
 	}
-	
+
 	/**
 	 * @return \VWM\Apps\Process\Process[]
 	 */
@@ -495,11 +495,11 @@ class Facility extends Model {
 		}
 		return $processList;
 	}
-	
+
 	public function getOldUnitTypeList() {
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.system " .
-				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "FROM " . self::TB_UNITTYPE ." ut ".
 				 "INNER JOIN " . self::TB_TYPE ." t ".
 				 "ON ut.type_id = t.type_id ".
 				 "INNER JOIN " . self::TB_DEFAULT ." def ".
@@ -510,9 +510,9 @@ class Facility extends Model {
 				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
 				 "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
-		
+
 		$this->db->query($query);
-				 
+
 		if ($this->db->num_rows()) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
@@ -534,41 +534,41 @@ class Facility extends Model {
 
 		return $unittypes;
 	}
-	
-	public function getDefaultAPMethod(){
-		
-		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
+
+	public function getDefaultAPMethodList(){
+
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc";
 		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getFacilityId())}";
 		$query.= " AND apm.apmethod_id=def.id_of_subject";
 		$query.=" AND def.subject='apmethod'";
 		$query.=" AND def.object='" .self::CATEGORY."'";
-		
+
 		$this->db->query($query);
 		if ($this->db->num_rows()) {
 			for ($j=0; $j < $this->db->num_rows(); $j++) {
-				$data=$this->db->fetch($j);				
+				$data=$this->db->fetch($j);
 				$apmethod=array (
 					'apmethod_id'			=>	$data->apmethod_id,
 					'description'			=>	$data->apmethod_desc
-				);	
-				$apmethods[]=$apmethod;				
+				);
+				$apmethods[]=$apmethod;
 			}
 		}else{
 			$company = $this->getCompany();
-			$apmethods = $company->getDefaultAPMethod();
-		} 
-		
+			$apmethods = $company->getDefaultAPMethodList();
+		}
+
 		return $apmethods;
 	}
 	public function getUnitTypeList() {
-		
+
 		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
 		$unitTypesName = array();
 		$unitTypes = array();
-		
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.system, uc.name " .
-				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "FROM " . self::TB_UNITTYPE ." ut ".
 				 "INNER JOIN " . self::TB_TYPE ." t ".
 				 "ON ut.type_id = t.type_id ".
 				 "INNER JOIN " . self::TB_DEFAULT ." def ".
@@ -579,9 +579,9 @@ class Facility extends Model {
 				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
 				 "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
-		
+
 		$this->db->query($query);
-				 
+
 		if ($this->db->num_rows()) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
@@ -594,7 +594,7 @@ class Facility extends Model {
 			return $company->getUnitTypeList();
 		}
 
-		
+
 		foreach($unittypes as $unitType){
 				$type = array(
 				'unittype_id' => $unitType->getUnitTypeId(),
@@ -606,16 +606,16 @@ class Facility extends Model {
 					$unitTypesName[] = $unitType->getName();
 				}
 		}
-		
+
 		$unitTypeCollection->setUnitTypeClases($unittypes);
 		$unitTypeCollection->setUnitTypes($unitTypes);
 		$unitTypeCollection->setUnitTypeNames($unitTypesName);
-		
+
 		return $unitTypeCollection;
 	}
-	
-	
-	
+
+
+
 }
 
 ?>

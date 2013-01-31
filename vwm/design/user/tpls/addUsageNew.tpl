@@ -97,43 +97,42 @@ $(function()
 
     return sel;
 }*/
-	
+
 	function createSelectUnittypeClass(id) {
     sel = $("<select>").attr("id",id);
-		
+
 	{/literal}
 		{foreach from=$unittypeListDefault->getUnitTypeNames() item=unitTypeName}
 			sel.append("<option>{$unitTypeName}</option>");
 		{/foreach}
 	{literal}
-	
+
     return sel;
 }
-		
+
 {/literal}
-	
+
 {literal}
 	var page = new AddMixPage();
 	var firstPfpTypeId = {/literal}'{$pfpTypes[0]->id}'{literal};
-		
-	$(document).ready(function() {		
-		page.pfpManager.currentPfpType = {
-			"id":"{/literal}{$currentPfpType->id}{literal}",
-			"name":"{/literal}{$currentPfpType->name}{literal}",
-			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
-		};
-				
-		page.pfpManager.pfpLists.push({	
-			"type":page.pfpManager.currentPfpType,
-			"pfps":{/literal}{$pfps}{literal}
-		});
-		page.pfpManager.renderPfpList();	
-			
+
+	$(document).ready(function() {
 		//openPfpGroup for first element to make it default
-		if(firstPfpTypeId!=''){
+		if(firstPfpTypeId != ''){
 			page.pfpManager.openPfpGroup(firstPfpTypeId, $('.active_link'));
+		} else {
+			page.pfpManager.currentPfpType = {
+				"id":"{/literal}{$currentPfpType->id}{literal}",
+				"name":"{/literal}{$currentPfpType->name}{literal}",
+				"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
+			};
+
+			page.pfpManager.pfpLists.push({
+				"type":page.pfpManager.currentPfpType,
+				"pfps":{/literal}{$pfps}{literal}
+			});
+			page.pfpManager.renderPfpList();
 		}
-			
 	});
 {/literal}
 </script>
@@ -210,7 +209,7 @@ $(function()
                     {/literal}
                 </td>
             </tr>
-			
+
 			<tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">
                    Spray/spent time in minutes:
@@ -227,7 +226,7 @@ $(function()
                                 {*/ERORR*}
                             {/if}
                         {/if}
-                    </div>     
+                    </div>
 					<script type="text/javascript">
 						$("#spentTime").numeric();
 						{literal}
@@ -240,7 +239,7 @@ $(function()
 								slide: function( event, ui ) {
 									$( "#spentTime" ).val(ui.value);
 								}
-							});							
+							});
 						});
 						{/literal}
 					</script>
@@ -350,10 +349,10 @@ $(function()
                         </div>
                     </td>
                 </tr>
-				
-				
-				
-				
+
+
+
+
 				<tr>
                     <td class="border_users_l border_users_b border_users_r" height="20">
                         Waste unit type :
@@ -369,8 +368,8 @@ $(function()
 							</select>
 							<input type="hidden" id="company" value="{$companyID}">
 							<input type="hidden" id="companyEx" value="{$unittypeListDefault->getUnitTypes()}">
-							
-							
+
+
 						</div>
 						<div class="floatleft padd_left">
 							<select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$departmentID}, {$companyEx})">
@@ -379,17 +378,17 @@ $(function()
 								{/foreach}
 							</select>
 						</div>
-							
+
 						{*ajax-preloader*}
 						<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
 							<img src='images/ajax-loader.gif' height=16  style="float:left;">
 						</div>
 					</td>
 				</tr>
-				
-				
-				
-				
+
+
+
+
                <!-- <tr>
                     <td class="border_users_l border_users_b border_users_r" height="20">
                         Waste unit type :
@@ -615,7 +614,7 @@ $(function()
                 </td>
             </tr>
 
-			
+
             <tr>
                 <td class="border_users_l border_users_b border_users_r">
                     Unit type :
@@ -697,27 +696,27 @@ $(function()
 </div>
 <div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
     {if $pfps|count > 0}
-		
+
         {if $pfpTypes|count > 0}
             <div class="link_bookmark">
 			{if $selectedPfpType}
 				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
 			{else}
 				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
-			{/if}	
-			
+			{/if}
+
             {foreach from=$pfpTypes item=pfpType}
                 {if $pfpType->name == $selectedPfpType}
                     <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
                 {else}
-                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a> 
+                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a>
 
                 {/if}
-                
-            {/foreach}    
+
+            {/foreach}
             </div>
-        {/if}    
-		
+        {/if}
+
 		{include file="tpls:tpls/_briefPfpList.tpl"}
     {else}
         You do not have any preformulated products yet
@@ -748,8 +747,8 @@ $(function()
 				</div>
 				<div style="float: left;">
 					&nbsp; {$vocUnitType}
-				</div>	
-			</div>	
+				</div>
+			</div>
             <input type="hidden" name="voc" value="{$data->voc}">
         </td>
     </tr>
@@ -914,7 +913,7 @@ $(function()
         //		for(i=0; i<count; i++) {
         //			window.document.onload = getUnittypes(document.getElementById('selectUnittypeClass_'+i), document.getElementById('company').value, document.getElementById('companyEx').value);
         //		}
-        </script>		
+        </script>
     {/literal}
 {/if}
 {literal}
@@ -930,6 +929,6 @@ $(function()
 				//right: -250
 			});
 		});
-		
+
 	</script>
-{/literal}		
+{/literal}
