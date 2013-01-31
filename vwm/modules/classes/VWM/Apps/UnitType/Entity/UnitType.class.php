@@ -22,6 +22,9 @@ class UnitType extends Model {
 	protected $system;
 
 	protected $unit_class_id;
+	
+	protected $type_desc;
+	
 
 	public function getUnitTypeId() {
 		return $this->unittype_id;
@@ -78,6 +81,17 @@ class UnitType extends Model {
 	public function setUnitClassId($unit_class_id) {
 		$this->unit_class_id = $unit_class_id;
 	}
+	
+	public function getTypeDesc() {
+		return $this->type_desc;
+	}
+
+	public function setTypeDesc($type_desc) {
+		$this->type_desc = $type_desc;
+	}
+	
+	
+	
 
 
 }

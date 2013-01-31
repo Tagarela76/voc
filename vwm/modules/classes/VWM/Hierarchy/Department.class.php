@@ -9,6 +9,7 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
 
+
 class Department extends Model {
 
 	protected $department_id;
@@ -456,8 +457,11 @@ class Department extends Model {
 	
 	public function getUnitTypeList() {
 		
+		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
+		$unitTypesName = array();
+		$unitTypes = array();
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
-				 "ut.unittype_desc, ut.system " .
+				 "ut.unittype_desc, ut.system, uc.name " .
 				 "FROM " . self::TB_UNITTYPE ." ut ". 
 				 "INNER JOIN " . self::TB_TYPE ." t ".
 				 "ON ut.type_id = t.type_id ".
@@ -467,7 +471,6 @@ class Department extends Model {
 				 "ON ut.unit_class_id = uc.id ".
 				 "WHERE def.object = '" .self::CATEGORY."' ".
 				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
-				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
 			     "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
 		
@@ -476,23 +479,33 @@ class Department extends Model {
 		if ($this->db->num_rows()) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
-				$unittype = array(
-					'unittype_id' => $data->unittype_id,
-					'description' => $data->name,
-					'type_id' => $data->type_id,
-					'type' => $data->type_desc,
-					'unittype_desc' => $data->unittype_desc,
-					'system' => $data->system
-				);
+				
+				$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
+				$unittype->initByArray($data);
 				$unittypes[] = $unittype;
+				
 			}
 		} else {
 			$facility = $this->getFacility();
-			$facility->setUnitTypeClass($this->getUnitTypeClass());
-			$unittypes = $facility->getUnitTypeList();
+			return $facility->getUnitTypeList();
 		}
-
-		return $unittypes;
+		foreach($unittypes as $unitType){
+				$type = array(
+				'unittype_id' => $unitType->getUnitTypeId(),
+				'type_id' => $unitType->getTypeId(),
+				'name' => $unitType->getName()
+				);
+				$unitTypes[] = $type;
+				if(!in_array($unitType->getName(), $unitTypesName)){
+					$unitTypesName[] = $unitType->getName();
+				}
+		}
+		$unitTypeCollection->setUnitTypeClases($unittypes);
+		$unitTypeCollection->setUnitTypes($unitTypes);
+		$unitTypeCollection->setUnitTypeNames($unitTypesName);
+		
+		return $unitTypeCollection;
+		
 	}
 	
 	public function getDefaultAPMethod(){
@@ -519,6 +532,54 @@ class Department extends Model {
 		} 
 		
 		return $apmethods;
+	}
+	
+	
+	public function getOldUnitTypeList() {
+		
+		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
+		$unitTypesName = array();
+		$unitTypes = array();
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system, uc.name " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
+			     "AND def.subject = 'unittype' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				
+				$unittype = array(
+					'unittype_id' => $data->unittype_id,
+					'description' => $data->name,
+					'type_id' => $data->type_id,
+					'type' => $data->type_desc,
+					'unittype_desc' => $data->unittype_desc,
+					'system' => $data->system,
+					'name' => $data->name
+				);
+				$unittypes[] = $unittype;
+				
+			}
+		} else {
+			$facility = $this->getFacility();
+			$facility->setUnitTypeClass($this->getUnitTypeClass());
+			$unittypes = $facility->getOldUnitTypeList();
+		}
+		
+		
+		return $unittypes;
 	}
 }
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace VWM\Apps\UnitType\Entity;
+namespace VWM\Apps\UnitType;
 
 /**
- * Unit Type Collection Entity class
+ * Unit Type Collection class
  */
 class UnitTypeCollection {
 
@@ -13,6 +13,8 @@ class UnitTypeCollection {
 	protected $unitTypes = array();
 
 	protected $unitTypeClases = array();
+	
+	protected $unitTypeNames = array();
 
 	public function getUnitTypes() {
 		return $this->unitTypes;
@@ -29,7 +31,29 @@ class UnitTypeCollection {
 	public function setUnitTypeClases($unitTypeClases) {
 		$this->unitTypeClases = $unitTypeClases;
 	}
+	
+	public function getUnitTypeNames() {
+		return $this->unitTypeNames;
+	}
 
+	public function setUnitTypeNames($unitTypeNames) {
+		$this->unitTypeNames = $unitTypeNames;
+	}
+	
+	public function getUnitTypeClassesByUnitTypeName($name){
+		$unittype = array();
+		$unitTypeClasses = $this->getUnitTypeClases();
+		foreach($unitTypeClasses as $unitTypeClass){
+			if($unitTypeClass->getName()==$name){
+				$unittype[] = $unitTypeClass;
+			}
+		}
+		return $unittype;
+		
+	}
+
+
+	
 
 }
 

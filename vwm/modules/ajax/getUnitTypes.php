@@ -29,9 +29,23 @@
 	$companyEx = $_GET['companyEx'];
 	
 	$db->select_db(DB_NAME);
-        
+	
+	$department = new \VWM\Hierarchy\Department($db, $companyID);
+	$unittypeListDefault = $department->getUnitTypeList();
+	
+	$unitTypeClasses = $unittypeListDefault->getUnitTypeClassesByUnitTypeName($sysType);
+	
+	$data = array();
+	foreach($unitTypeClasses as $unitType){
+		$type = array(
+			'unittype_id'=>$unitType->getUnitTypeId(),
+			'name'=>$unitType->getUnitTypeDesc()
+		);
+		$data[] = $type;
+	}
+       
         //this function change unittype if CompanyEx
-        function setsql_1($sysType, $companyID){
+       /* function setsql_1($sysType, $companyID){
             switch ($sysType) {
                 case 'USALiquid':
                     $sqlSystem = "'USA'";
@@ -119,7 +133,8 @@
             $query = setsql_2($sysType, $companyID);	
             $db->query($query);
 	}
-        
-        $data=$db->fetch_all_array();
+
+        $data=$db->fetch_all_array();*/
+		         
         echo json_encode($data);	
 ?>

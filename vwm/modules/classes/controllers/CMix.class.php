@@ -358,8 +358,6 @@ class CMix extends Controller {
 	}
 
 	protected function actionDeletePFPItem() {
-		//var_dump($_GET);
-
 		$departmentID = $this->getFromRequest("departmentID");
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
@@ -1867,17 +1865,22 @@ class CMix extends Controller {
 		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 		
 		
-		$department->setUnitTypeClass($unitTypeClass);
-		$unittypeListDefault = $department->getUnitTypeList();
 		
-		if (empty($unittypeListDefault)) {
+		$unittypeListDefault = $department->getUnitTypeList();
+		$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
+		
+		//old function for getting Old Unit Type
+		$unittypeOldListDefault = $department->getOldUnitTypeList();
+		
+		
+		/*if (empty($unittypeListDefault)) {
 			$unittypeListDefault = $unittype->getUnittypeListDefault($unitTypeClass);
-		}
+		}*/
 		
 		$data->unitTypeClass = $unitTypeClass;
 		$mix = new MixOptimized($this->db);
-		$mix->iniWaste(false, $unittypeListDefault);
-		$mix->iniRecycle(false, $unittypeListDefault);
+		$mix->iniWaste(false, $unittypeOldListDefault);
+		$mix->iniRecycle(false, $unittypeOldListDefault);
 		$mix->department_id = $departmentID;
 		$mix->creation_time = strtotime("now");
 		
@@ -1932,9 +1935,9 @@ class CMix extends Controller {
 		$this->smarty->assign('mixParentID', $mixParentID);
 		
 		$this->smarty->assign('repairOrderId', $repairOrderId);
-		
+		$this->smarty->assign('departmentID', $departmentID);
 		$this->smarty->assign('data', $data);
-		$this->smarty->assign('unittype', $unittypeListDefault);
+		$this->smarty->assign('unittype', $unittypeOldListDefault);
 	}
 
 	protected function getClearDataForAddItem() {
@@ -1985,6 +1988,12 @@ class CMix extends Controller {
 		$companyEx = $res['companyEx'];
 		$unitTypeEx = $res['unitTypeEx'];
 
+		
+		$department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
+		$unittypeListDefault = $department->getUnitTypeList();
+		$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
+		$this->smarty->assign('departmentID', $optMix->department_id);
+		
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
@@ -2277,7 +2286,6 @@ class CMix extends Controller {
 
 		$cUnitTypeEx = new Unittype($this->db);
 		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
-		
 		$companyEx = 1;
 		if (!$unitTypeEx) {
 			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
@@ -2299,7 +2307,6 @@ class CMix extends Controller {
 				}
 			}
 		}
-		
 		if ($typeEx[0] == '') {
 			$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 		}
@@ -2308,14 +2315,12 @@ class CMix extends Controller {
 			$idn = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$k]['unittype_id']);
 
 			for ($j = 0; $j < $count; $j++) {
-				
 				if ($idn == $typeEx[$j]) {
 					$flag = 0;
 					break;
 				}
 			}
 			if ($flag) {
-				
 				$typeEx[$count] = $idn;
 				$count++;
 			}
@@ -2325,56 +2330,6 @@ class CMix extends Controller {
 
 		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
 	}
-	
-	/*protected function getDefaultTypesAndUnitTypes($companyID) {
-
-		$cUnitTypeEx = new Unittype($this->db);
-		$unitTypeEx = $cUnitTypeEx->getUnitTypeExist($companyID);
-		
-		$companyEx = 1;
-		if (!$unitTypeEx) {
-			$unitTypeEx = $cUnitTypeEx->getClassesOfUnits();
-			$companyEx = 0;
-		}
-
-		$k = 1;
-		$count = 1;
-		$flag = 1;
-		$typeEx = Array();
-
-		// 80% of U.S. customers use the system USAWeight, so make it default
-		//$usWgt = Array('OZS', 'LBS', 'GRAIN', 'CWT');
-		$usWgt = Array('7', '2', '12', '20');
-		for ($ii = 0; $ii < count($unitTypeEx); $ii++) {
-			for ($jj = 0; $jj < count($usWgt); $jj++) {
-				if ($unitTypeEx[$ii]['unittype_id'] == $usWgt[$jj]) {
-					$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$ii]['unittype_id']);
-				}
-			}
-		}
-		if ($typeEx[0] == '') {
-			$typeEx[0] = $cUnitTypeEx->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		}
-
-		while ($unitTypeEx[$k]) {
-			$idn = $cUnitTypeEx->getUnittypeClass($unitTypeEx[$k]['unittype_id']);
-
-			for ($j = 0; $j < $count; $j++) {
-				if ($idn == $typeEx[$j]) {
-					$flag = 0;
-					break;
-				}
-			}
-			if ($flag) {
-				$typeEx[$count] = $idn;
-				$count++;
-			}
-			$k++;
-			$flag = 1;
-		}
-
-		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
-	}*/
 
 	protected function getDefaultApMethod($companyID) {
 

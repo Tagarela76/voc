@@ -411,7 +411,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{
+      			{ 
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -561,6 +561,7 @@ function initRecycle() {
 		} else if (sel.name == 'selectWasteUnittypeClass') {
 			$("#selectWasteUnittype").empty();
 			$('#selectWasteUnittypePreloader').css('display','block');
+			
 			if(sysType.length > 0){
 				$.ajax({
       			url: "modules/ajax/getUnitTypes.php",
@@ -569,9 +570,10 @@ function initRecycle() {
 	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
-	      			{
+	      			{	
 	      				writeUnittype(response,'selectWasteUnittype');
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
+						
 						calculateVOC();
 	      			}
 				});
@@ -895,7 +897,7 @@ function initRecycle() {
 
 					elUnittypeClass.change( {"productID" : productID} ,function(eventObject) {
 
-						getUnittypes(document.getElementById($(this).attr("name")), companyId, companyEx);
+						getUnittypes(document.getElementById($(this).attr("name")), departmentId, companyEx);
 						setProductUnittype(eventObject.data.productID);
 						setProductUnittypeClass(eventObject.data.productID);
 
@@ -947,7 +949,7 @@ function initRecycle() {
                     }
 
 
-					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), companyId, companyEx);
+					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), departmentId, companyEx);
 
 
 				}

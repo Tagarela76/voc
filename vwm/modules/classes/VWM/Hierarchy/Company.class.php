@@ -393,6 +393,82 @@ class Company extends Model {
 	
 	public function getUnitTypeList() {
 		
+		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
+		$unitTypesName = array();
+		$unitTypes = array();
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system, uc.name " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getCompanyId())} ".
+				 "AND def.subject = 'unittype' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
+				$unittype->initByArray($data);
+				$unittypes[] = $unittype;
+			}
+		} else {
+			return false;
+		}
+
+		foreach($unittypes as $unitType){
+				$type = array(
+				'unittype_id' => $unitType->getUnitTypeId(),
+				'type_id' => $unitType->getTypeId(),
+				'name' => $unitType->getName()
+				);
+				$unitTypes[] = $type;
+				if(!in_array($unitType->getName(), $unitTypesName)){
+					$unitTypesName[] = $unitType->getName();
+				}
+		}
+		$unitTypeCollection->setUnitTypeClases($unittypes);
+		$unitTypeCollection->setUnitTypes($unitTypes);
+		$unitTypeCollection->setUnitTypeNames($unitTypesName);
+		
+		return $unitTypeCollection;
+	}
+	
+	public function getDefaultAPMethod(){
+		
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
+		$query.= " AND apm.apmethod_id=def.id_of_subject";
+		$query.=" AND def.subject='apmethod'";
+		$query.=" AND def.object='" .self::CATEGORY."'";
+		
+		$this->db->query($query);
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);				
+				$apmethod=array (
+					'apmethod_id'			=>	$data->apmethod_id,
+					'description'			=>	$data->apmethod_desc
+				);	
+				$apmethods[]=$apmethod;				
+			}
+		}else{
+			return false;
+		} 
+		
+		return $apmethods;
+	}
+	
+	public function getOldUnitTypeList() {
+		
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.system " .
 				 "FROM " . self::TB_UNITTYPE ." ut ". 
@@ -421,6 +497,7 @@ class Company extends Model {
 					'unittype_desc' => $data->unittype_desc,
 					'system' => $data->system
 				);
+				
 				$unittypes[] = $unittype;
 			}
 		} else {
@@ -428,31 +505,6 @@ class Company extends Model {
 		}
 
 		return $unittypes;
-	}
-	
-	public function getDefaultAPMethod(){
-		
-		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
-		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
-		$query.= " AND apm.apmethod_id=def.id_of_subject";
-		$query.=" AND def.subject='apmethod'";
-		$query.=" AND def.object='" .self::CATEGORY."'";
-		
-		$this->db->query($query);
-		if ($this->db->num_rows()) {
-			for ($j=0; $j < $this->db->num_rows(); $j++) {
-				$data=$this->db->fetch($j);				
-				$apmethod=array (
-					'apmethod_id'			=>	$data->apmethod_id,
-					'description'			=>	$data->apmethod_desc
-				);	
-				$apmethods[]=$apmethod;				
-			}
-		}else{
-			return false;
-		} 
-		
-		return $apmethods;
 	}
     
 }

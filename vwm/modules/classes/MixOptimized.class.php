@@ -1052,6 +1052,7 @@ class MixOptimized extends Model {
 			$quantitySum += $unitTypeConverter->convertToDefault($product->quantity, $unitTypeDetails['description'], $product->getDensity(), $densityType);
 		}
 		// sum total waste
+		
 		if ($isMWS) {
 			$totalWasteValue = 0;
 			foreach ($this->waste as $w) {
@@ -1059,6 +1060,7 @@ class MixOptimized extends Model {
 			}
 		} else {
 			$totalWasteValue = $this->waste['value'];
+			
 		}
 		// sum total waste
 		if ($isMWS) {

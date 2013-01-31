@@ -496,8 +496,7 @@ class Facility extends Model {
 		return $processList;
 	}
 	
-	public function getUnitTypeList() {
-		
+	public function getOldUnitTypeList() {
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.system " .
 				 "FROM " . self::TB_UNITTYPE ." ut ". 
@@ -509,12 +508,11 @@ class Facility extends Model {
 				 "ON ut.unit_class_id = uc.id ".
 				 "WHERE def.object = '" .self::CATEGORY."' ".
 				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
-				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
 				 "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
 		
 		$this->db->query($query);
-
+				 
 		if ($this->db->num_rows()) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
 				$data = $this->db->fetch($i);
@@ -531,7 +529,7 @@ class Facility extends Model {
 		} else {
 			$company = $this->getCompany();
 			$company->setUnitTypeClass($this->getUnitTypeClass());
-			$unittypes = $company->getUnitTypeList();
+			$unittypes = $company->getOldUnitTypeList();
 		}
 
 		return $unittypes;
@@ -561,6 +559,59 @@ class Facility extends Model {
 		} 
 		
 		return $apmethods;
+	}
+	public function getUnitTypeList() {
+		
+		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
+		$unitTypesName = array();
+		$unitTypes = array();
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.system, uc.name " .
+				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getFacilityId())} ".
+				 "AND def.subject = 'unittype' ".
+				 "ORDER BY ut.unittype_id";
+		
+		$this->db->query($query);
+				 
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch($i);
+				$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
+				$unittype->initByArray($data);
+				$unittypes[] = $unittype;
+			}
+		} else {
+			$company = $this->getCompany();
+			return $company->getUnitTypeList();
+		}
+
+		
+		foreach($unittypes as $unitType){
+				$type = array(
+				'unittype_id' => $unitType->getUnitTypeId(),
+				'type_id' => $unitType->getTypeId(),
+				'name' => $unitType->getName()
+				);
+				$unitTypes[] = $type;
+				if(!in_array($unitType->getName(), $unitTypesName)){
+					$unitTypesName[] = $unitType->getName();
+				}
+		}
+		
+		$unitTypeCollection->setUnitTypeClases($unittypes);
+		$unitTypeCollection->setUnitTypes($unitTypes);
+		$unitTypeCollection->setUnitTypeNames($unitTypesName);
+		
+		return $unitTypeCollection;
 	}
 	
 	

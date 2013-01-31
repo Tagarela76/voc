@@ -13,6 +13,7 @@
 <script type="text/javascript">
 
 var companyId="{$companyID}";
+var departmentId ="{$departmentID}"
 var companyEx="{$companyEx}";
 var recycle = new Object();
     {if $show.waste_streams != true}
@@ -78,7 +79,7 @@ $(function()
 }
 );
 
-function createSelectUnittypeClass(id) {
+/*function createSelectUnittypeClass(id) {
     sel = $("<select>").attr("id",id);
 
     {/literal}
@@ -95,7 +96,20 @@ function createSelectUnittypeClass(id) {
 {literal}
 
     return sel;
+}*/
+	
+	function createSelectUnittypeClass(id) {
+    sel = $("<select>").attr("id",id);
+		
+	{/literal}
+		{foreach from=$unittypeListDefault->getUnitTypeNames() item=unitTypeName}
+			sel.append("<option>{$unitTypeName}</option>");
+		{/foreach}
+	{literal}
+	
+    return sel;
 }
+		
 {/literal}
 	
 {literal}
@@ -336,7 +350,47 @@ function createSelectUnittypeClass(id) {
                         </div>
                     </td>
                 </tr>
-                <tr>
+				
+				
+				
+				
+				<tr>
+                    <td class="border_users_l border_users_b border_users_r" height="20">
+                        Waste unit type :
+                    </td>
+
+                    <td class="border_users_r border_users_b">
+						{assign var="type" value=$unittypeListDefault->getUnitTypeNames()}
+                        <div class="floatleft">
+							<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$departmentID}, {$companyEx})" >
+								{foreach from=$unittypeListDefault->getUnitTypeNames() item=unitTypeName}
+									<option>{$unitTypeName}</option>
+								{/foreach}
+							</select>
+							<input type="hidden" id="company" value="{$companyID}">
+							<input type="hidden" id="companyEx" value="{$unittypeListDefault->getUnitTypes()}">
+							
+							
+						</div>
+						<div class="floatleft padd_left">
+							<select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$departmentID}, {$companyEx})">
+								{foreach from=$unittypeListDefault->getUnitTypeClassesByUnitTypeName($type.0) item=unitTypeClass}
+									<option value='{$unitTypeClass->getUnitTypeId()}' >{$unitTypeClass->getUnitTypeDesc()}</option>
+								{/foreach}
+							</select>
+						</div>
+							
+						{*ajax-preloader*}
+						<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
+							<img src='images/ajax-loader.gif' height=16  style="float:left;">
+						</div>
+					</td>
+				</tr>
+				
+				
+				
+				
+               <!-- <tr>
                     <td class="border_users_l border_users_b border_users_r" height="20">
                         Waste unit type :
                     </td>
@@ -353,7 +407,7 @@ function createSelectUnittypeClass(id) {
 {if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
 {if 'Time' eq $typeEx[j]}<option value='Time' {if 'Time' eq $data->waste.unittypeClass}selected="selected"{/if}>Time</option>{/if}
 {/section}
-<!-- 'percent' eq $data->waste.unittypeClass or  -->
+
 <option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
 </select>
 <input type="hidden" id="company" value="{$companyID}">
@@ -372,7 +426,10 @@ function createSelectUnittypeClass(id) {
     <img src='images/ajax-loader.gif' height=16  style="float:left;">
 </div>
 </td>
-</tr>
+</tr>-->
+
+
+
 </table>
 {/if}
 {*SET RECYCLE*}
@@ -558,6 +615,7 @@ function createSelectUnittypeClass(id) {
                 </td>
             </tr>
 
+			
             <tr>
                 <td class="border_users_l border_users_b border_users_r">
                     Unit type :
