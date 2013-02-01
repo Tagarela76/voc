@@ -243,6 +243,8 @@ class Unittype {
 			return 'MetricVlm';
 		} elseif ($unittype['system'] == 'metric' && $unittype['type'] == 'Weight') {
 			return 'MetricWght';
+		} elseif ($unittype['system'] == 'time' && $unittype['type'] == 'Time') {
+			return 'Time';
 		}
 	}
 

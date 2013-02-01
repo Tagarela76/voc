@@ -411,7 +411,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{
+      			{ 
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -534,7 +534,7 @@ function initRecycle() {
 			});
 	}
 
-	function getUnittypes(sel, companyID, companyEx) {
+	function getUnittypes(sel, departmentId, companyEx) {
 		var sysType=$(sel).attr('value');
 
 		var productAddedIdx;
@@ -548,7 +548,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -561,17 +561,19 @@ function initRecycle() {
 		} else if (sel.name == 'selectWasteUnittypeClass') {
 			$("#selectWasteUnittype").empty();
 			$('#selectWasteUnittypePreloader').css('display','block');
+			
 			if(sysType.length > 0){
 				$.ajax({
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
-	      			{
+	      			{	
 	      				writeUnittype(response,'selectWasteUnittype');
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
+						
 						calculateVOC();
 	      			}
 				});
@@ -583,7 +585,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -600,7 +602,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -617,7 +619,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -635,7 +637,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -655,7 +657,7 @@ function initRecycle() {
       			url: "modules/ajax/getUnitTypes.php",
       			type: "GET",
 	      		async: false,
-	      		data: {"sysType":sysType,"companyID":companyID,"companyEx":companyEx},
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
@@ -895,7 +897,7 @@ function initRecycle() {
 
 					elUnittypeClass.change( {"productID" : productID} ,function(eventObject) {
 
-						getUnittypes(document.getElementById($(this).attr("name")), companyId, companyEx);
+						getUnittypes(document.getElementById($(this).attr("name")), departmentId, companyEx);
 						setProductUnittype(eventObject.data.productID);
 						setProductUnittypeClass(eventObject.data.productID);
 
@@ -947,7 +949,7 @@ function initRecycle() {
                     }
 
 
-					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), companyId, companyEx);
+					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), departmentId, companyEx);
 
 
 				}

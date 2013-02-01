@@ -26,8 +26,8 @@ class MixOptimized extends Model {
 	public $waste_percent;
 	public $recycle_percent;
 	public $notes;
-		
-	
+
+
 	/**
 	 * Working Order iteration number. Default is 0
 	 * Common use case - append as suffix to {@link description}
@@ -41,14 +41,14 @@ class MixOptimized extends Model {
 	 * @var int
 	 */
 	public $parent_id;
-	
+
 	/**
 	 * Time spent on mix in minutes
-	 * @var int 
+	 * @var int
 	 */
 	public $spent_time;
 
-	
+
 	public $url;
 	public $rule;
 	public $facility_id;
@@ -70,10 +70,10 @@ class MixOptimized extends Model {
 	public $dateFormat;
 	public $debug;
 	public $step_id = NULL;
-	
+
 	/**
 	 * work order id
-	 * @var int 
+	 * @var int
 	 */
 	public $wo_id;
 
@@ -84,19 +84,19 @@ class MixOptimized extends Model {
 	 * @var boolean
 	 */
 	public $hasChild = false;
-	
-	
-	/**	 
+
+
+	/**
 	 * @var RepairOrder
 	 */
 	private $repairOrder = false;
-	
+
 	/**
 	 * mix may have material and labor costs if he have been conected with step
-	 * @var array 
+	 * @var array
 	 */
 	private $mixCosts;
-	
+
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
 	const MIX_IS_EXPIRED = 'expired';
@@ -110,7 +110,7 @@ class MixOptimized extends Model {
 			$this->_load();
 		}
 	}
-	
+
 	/**
 	 *
 	 * Overvrite get property if property is not exists or private.
@@ -207,15 +207,15 @@ class MixOptimized extends Model {
 	public function setTrashRecord(iTrash $trashRecord) {
 		$this->trashRecord = $trashRecord;
 	}
-	
+
 	public function setWoId($wo_id) {
 		$this->wo_id = $wo_id;
 	}
-	
+
 	public function setDescription($description) {
 		$this->description = $description;
 	}
-	
+
 
 	public function getCompany() {
 		if (!isset($this->company)) {
@@ -223,18 +223,18 @@ class MixOptimized extends Model {
 		}
 		return $this->company;
 	}
-	
+
 	public function getDepartment() {
 		if (!isset($this->department)) {
 			$this->loadDepartment();
 		}
 		return $this->department;
 	}
-	
+
 	public function getWoId() {
 		return $this->wo_id;
 	}
-	
+
 	public function getDescription() {
 		return $this->description;
 	}
@@ -309,7 +309,7 @@ class MixOptimized extends Model {
 	public function save($isMWS = false, $mix = null) {
 
 		//check mix products for duplication
-		if($this->doesProductsHaveDuplications()) {			
+		if($this->doesProductsHaveDuplications()) {
 			return false;
 		}
 
@@ -343,7 +343,7 @@ class MixOptimized extends Model {
 	 * @param type $mix - not in use???
 	 * @return int|boolean mix id or false on failure
 	 */
-	private function updateMix($isMWS, $mix) { 
+	private function updateMix($isMWS, $mix) {
 		$this->db->beginTransaction();
 
 		//	save to trash_bin
@@ -370,16 +370,16 @@ class MixOptimized extends Model {
 		$updateMixQuery = $this->getUpdateMixQuery();
 		$deleteProductsQuery = $this->getDeleteProductsQuery();
 
-		if ($this->products && is_array($this->products) && count($this->products) > 0) {			
-			$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);			
+		if ($this->products && is_array($this->products) && count($this->products) > 0) {
+			$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);
 		} else {
 			// we can update mix without do it if this mix is work order
-			if (!isset($this->wo_id) || $this->iteration != 0) { 
+			if (!isset($this->wo_id) || $this->iteration != 0) {
 				//	no sense t save mix without products
 				$this->db->rollbackTransaction();
 				return false;
 			}
-		}		
+		}
 
 		if(!$this->db->query($updateMixQuery)) {
 			$this->db->rollbackTransaction();
@@ -391,14 +391,14 @@ class MixOptimized extends Model {
 				return false;
 			}
 		}
-		  
+
 		if (!is_null($insertProductsQuery)) {
 			if(!$this->db->query($insertProductsQuery)) {
 				$this->db->rollbackTransaction();
 				return false;
 			}
 		}
-		
+
 
 		$this->db->commitTransaction();
 		return $this->mix_id;
@@ -419,10 +419,10 @@ class MixOptimized extends Model {
 	 * @return string
 	 */
 	private function getUpdateMixQuery() {
-		$spentTime = (!empty($this->spent_time)) 
-				? $this->db->sqltext($this->spent_time) 
+		$spentTime = (!empty($this->spent_time))
+				? $this->db->sqltext($this->spent_time)
 				: "NULL";
-		
+
 		$query = "UPDATE " . TB_USAGE . " SET ";
 		$query .= "equipment_id={$this->db->sqltext($this->equipment_id)}, ";
 		$query .= "apmethod_id=" . ((empty($this->apmethod_id)) ? "NULL" : "{$this->db->sqltext($this->apmethod_id)}") . ", ";
@@ -473,7 +473,7 @@ class MixOptimized extends Model {
 			return false;
 		}
 		$mixID = $this->db->getLastInsertedID();
-		
+
 		if ($this->products && is_array($this->products) && count($this->products) > 0) {
 			$insertProductsQuery = $this->getInsertProductsQuery($mixID);
 			if (!$this->db->query($insertProductsQuery)) {
@@ -630,7 +630,7 @@ class MixOptimized extends Model {
 
 		//	we'll put SQL for each product here
 		$queryProducts = array();
-		foreach ($this->products as $product) {			
+		foreach ($this->products as $product) {
 			$type = $unittype->isWeightOrVolume($product->unittypeDetails['unittype_id']);
 			if ($type == 'weight') {
 				/* Get value by weight */
@@ -650,7 +650,7 @@ class MixOptimized extends Model {
 					$value = "'" . $this->db->sqltext($value) . "'";
 				}
 			}
-			
+
 			$ratio = (isset($product->ratio_to_save)) ? $this->db->sqltext($product->ratio_to_save) : 'NULL';
 			$queryProducts[] = " ({$this->db->sqltext($mixID)}, " .
 								"{$this->db->sqltext($product->product_id)}, " .
@@ -680,40 +680,40 @@ class MixOptimized extends Model {
 		$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
 		$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
 
-		$creation_time = isset($this->creation_time) 
-				? $this->db->sqltext($this->creation_time) 
+		$creation_time = isset($this->creation_time)
+				? $this->db->sqltext($this->creation_time)
 				: time();
-		
-		$spentTime = (!empty($this->spent_time)) 
-				? $this->db->sqltext($this->spent_time) 
+
+		$spentTime = (!empty($this->spent_time))
+				? $this->db->sqltext($this->spent_time)
 				: "NULL";
 
-		$apmethod_id = isset($this->apmethod_id) 
-				? "{$this->db->sqltext($this->apmethod_id)}" 
+		$apmethod_id = isset($this->apmethod_id)
+				? "{$this->db->sqltext($this->apmethod_id)}"
 				: "NULL";
-		$exempt_rule = !empty($this->exempt_rule) 
-				? "'{$this->db->sqltext($this->exempt_rule)}'" 
+		$exempt_rule = !empty($this->exempt_rule)
+				? "'{$this->db->sqltext($this->exempt_rule)}'"
 				: "NULL";
-		$waste_percent = isset($this->waste_percent) 
-				? "{$this->db->sqltext($this->waste_percent)}" 
+		$waste_percent = isset($this->waste_percent)
+				? "{$this->db->sqltext($this->waste_percent)}"
 				: "NULL";
-		$recycle_percent = isset($this->recycle_percent) 
-				? "{$this->db->sqltext($this->recycle_percent)}" 
+		$recycle_percent = isset($this->recycle_percent)
+				? "{$this->db->sqltext($this->recycle_percent)}"
 				: "NULL";
-		$notes = !empty($this->notes) 
-				? "'{$this->db->sqltext($this->notes)}'" 
+		$notes = !empty($this->notes)
+				? "'{$this->db->sqltext($this->notes)}'"
 				: "NULL";
-		$parentID = ($this->parent_id !== null) 
-				? $this->db->sqltext($this->parent_id) 
+		$parentID = ($this->parent_id !== null)
+				? $this->db->sqltext($this->parent_id)
 				: "NULL";
-		$repairOrderId = ($this->wo_id !== null) 
-				? $this->db->sqltext($this->wo_id) 
+		$repairOrderId = ($this->wo_id !== null)
+				? $this->db->sqltext($this->wo_id)
 				: "NULL";
-		$stepId = ($this->getStepId() !== null) 
-				? $this->db->sqltext($this->getStepId()) 
+		$stepId = ($this->getStepId() !== null)
+				? $this->db->sqltext($this->getStepId())
 				: "NULL";
 
-		
+
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, spent_time, " .
 					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
@@ -737,7 +737,7 @@ class MixOptimized extends Model {
 						" NOW(), " .
 						" {$repairOrderId}, " .
 						" {$stepId} " .
-						") "; 
+						") ";
 
 		return $query;
 	}
@@ -1052,6 +1052,7 @@ class MixOptimized extends Model {
 			$quantitySum += $unitTypeConverter->convertToDefault($product->quantity, $unitTypeDetails['description'], $product->getDensity(), $densityType);
 		}
 		// sum total waste
+
 		if ($isMWS) {
 			$totalWasteValue = 0;
 			foreach ($this->waste as $w) {
@@ -1059,6 +1060,7 @@ class MixOptimized extends Model {
 			}
 		} else {
 			$totalWasteValue = $this->waste['value'];
+
 		}
 		// sum total waste
 		if ($isMWS) {
@@ -1521,9 +1523,9 @@ class MixOptimized extends Model {
 		$uniqueProductIDs = array_unique($productIDs);
 		return (count($productIDs) != count($uniqueProductIDs));
 	}
-	
+
 	public function getMixPrice() {
-		
+
 		$inventoryManager = new InventoryManager($this->db);
 		$query="SELECT m.mix_id,m.description, mg.product_id,p.product_nr, mg.quantity_lbs, d.name, pp .jobber_id, pp .unittype, pp .price, p.product_pricing as price_by_manufacturer, p.price_unit_type as unit_type_by_manufacturer
 				FROM mix m, mixgroup mg, department d, product p
@@ -1533,31 +1535,31 @@ class MixOptimized extends Model {
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
-				
-		$this->db->query($query);		
-		$resultData = $this->db->fetch_all();		
+
+		$this->db->query($query);
+		$resultData = $this->db->fetch_all();
 		$price = 0;
-		foreach ($resultData as $data) {  
+		foreach ($resultData as $data) {
 			// if supllier doesn't set price we get manufacturer price
 			if ( is_null($data->price) || $data->price == '0.00') {
 				$data->price = $data->price_by_manufacturer;
-			} 
+			}
 			// if supllier doesn't set unit type we get manufacturer unit type
 			if ( is_null($data->unittype) ) {
 				$data->unittype = $data->unit_type_by_manufacturer;
 			}
-			$unittype2price = $inventoryManager->convertUnitTypeFromTo($data); 
+			$unittype2price = $inventoryManager->convertUnitTypeFromTo($data);
 
 			if ($unittype2price){
 				$price += $data->quantity_lbs * ( $data->price / $unittype2price['usage'] ); // qty (always in lbsp * price for one product unit / price for one lbsp
 			}
 		}
 		$mixPrice = number_format($price, 2, '.', '');
-		
+
 		return $mixPrice;
 	}
-	
-	
+
+
 	/**
 	 * Get mix's Work Order
 	 * @return boolean|RepairOrder
@@ -1567,15 +1569,15 @@ class MixOptimized extends Model {
 			//	this mix does not have a Work Order at all
 			return false;
 		}
-		
+
 		if(!$this->repairOrder) {
-			$this->repairOrder = new RepairOrder($this->db, $this->wo_id);			
+			$this->repairOrder = new RepairOrder($this->db, $this->wo_id);
 		}
-		
+
 		return $this->repairOrder;
 	}
-	
-	
+
+
 	public function setRepairOrder(RepairOrder $repairOrder) {
 		$this->repairOrder = $repairOrder;
 	}

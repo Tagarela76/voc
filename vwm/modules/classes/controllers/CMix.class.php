@@ -358,8 +358,6 @@ class CMix extends Controller {
 	}
 
 	protected function actionDeletePFPItem() {
-		//var_dump($_GET);
-
 		$departmentID = $this->getFromRequest("departmentID");
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
@@ -1460,39 +1458,30 @@ class CMix extends Controller {
 			$form[$key] = Reform::HtmlEncode($value);
 		}
 
-		/** show modules * */
 		$company = new Company($this->db);
-		$facility = new Facility($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
 
-		$pfpmanager = new PFPManager($this->db);
-
-
-
-		$currentPfpType = new PfpTypes($this->db);
-		$currentPfpType->id = 0;
-		$currentPfpType->name = 'all';
-		$currentPfpType->facility_id = 0;
-
-
-		//$department = new Department($this->db);
 		$department = new \VWM\Hierarchy\Department($this->db, $departmentID);
 		$facilityID = $department->getFacilityId();
+
+		//	get all available pfp types
 		$pfpTypes = $department->getPfpTypes();
 
-		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);
-
+		//	get all pfps assigned (does not depend from pfpType)
+		$pfpmanager = new PFPManager($this->db);
+		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0);
 		$this->smarty->assign("pfps", json_encode($pfps));
 
+		//	if user did not specified pfp type use the first one if exist
 		$selectedPfpType = $this->getFromRequest("selectedPfpType");
-		if(is_null($selectedPfpType)){
+		if(is_null($selectedPfpType) && count($pfpTypes) > 0) {
 			$selectedPfpType = $pfpTypes[0]->name;
 		}
 
 		$this->smarty->assign('selectedPfpType', $selectedPfpType);
-		$this->smarty->assign('currentPfpType', $currentPfpType);
 		$this->smarty->assign('pfpTypes', $pfpTypes);
 
+		//	detect which modules are active
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		foreach ($moduleMap as $key => $module) {
@@ -1500,14 +1489,15 @@ class CMix extends Controller {
 		}
 		$this->smarty->assign('show', $showModules);
 
-
-		if ($this->isModuleWasteStream($companyID)) { //	OK, this company has access to waste streams module, so let's setup..
+		if ($this->isModuleWasteStream($companyID)) {
+			 //	OK, this company has access to waste streams module, so let's setup..
 			$isMWS = true;
 		} else {
 			$isMWS = false;
 		}
 
-		/** Mix need to create only if edit. when add new mix or product - mix is not created yet * */
+		// Mix need to create only if edit. when add new mix or product -
+		// mix is not created yet
 		if ($action == "edit" or $action == "EditAddItem") {
 			$mixID = $this->getFromRequest("id");
 			$optMix = new MixOptimized($this->db, $mixID);
@@ -1537,7 +1527,8 @@ class CMix extends Controller {
 			$optMix->iniWaste($isMWS); // TODO: Доделать если MWS выключен
 			$optMix->iniRecycle($isMWS);
 		}
-		//Init all wastes list for smarty
+
+		//	Init all wastes list for smarty
 		if ($isMWS) {
 			$result = $this->prepare4MixAdd((count($form) > 0) /* IsForm */, $facilityID, $companyID);
 			foreach ($result as $key => $value) {
@@ -1549,8 +1540,27 @@ class CMix extends Controller {
 			}
 		}
 
-		if (count($form) > 0) {
 
+		$equipment = new Equipment($this->db);
+		$equipmentList = $equipment->getEquipmentList($departmentID);
+		$this->smarty->assign('equipment', $equipmentList);
+
+		$aPMethodList = $department->getDefaultAPMethodList();
+		$this->smarty->assign('APMethod', $aPMethodList);
+
+		$rule = new Rule($this->db);
+		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'],
+				$companyID, $department->getFacilityId(), $department->getDepartmentId());
+		$this->smarty->assign('rules', $customizedRuleList);
+
+
+		//	Getting Product list
+		// TODO: move this to upper level because this list is used on both add and edit
+		$productsListGrouped = $this->getProductsListGrouped($companyID);
+		$this->smarty->assign('products', $productsListGrouped);
+
+		//	if form was submited
+		if (count($form) > 0) {
 			switch ($action) {
 				case "edit":
 					$this->confirmSaveMix($form, $storagesFailed, $isMWS, $optMix, $checkIsUnique = false);
@@ -1566,7 +1576,6 @@ class CMix extends Controller {
 					break;
 			}
 		} else {
-
 			switch ($action) {
 				case "edit":
 					$this->showEdit($optMix, $isMWS);
@@ -1803,82 +1812,55 @@ class CMix extends Controller {
 
 	/**
 	 * Prepares everything when showing add mix page
-	 * @param int $departmentID
+	 * @param int $departmentId
 	 */
-	protected function showAdd($departmentID) {
+	protected function showAdd($departmentId) {
 
 		$request = $this->getFromRequest();
 
-		$request['id'] = $departmentID;
+		$request['id'] = $departmentId;
 		$request['parent_category'] = $this->parent_category;
 
-		$department = new Department($this->db);
-		$departmentDetails = $department->getDepartmentDetails($departmentID);
+		$department = new VWM\Hierarchy\Department($this->db, $departmentId);
+		$companyId = $department->getFacility()->getCompanyId();
 
-		$company = new Company($this->db);
-		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
-
-		$equipment = new Equipment($this->db);
-		$equipmentList = $equipment->getEquipmentList($departmentID);
-		$this->smarty->assign('equipment', $equipmentList);
-
-		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
-
-		$apmethodObject = new Apmethod($this->db);
-		$APMethod = $department->getDefaultAPMethod();
-		//$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
-		if (!isset($APMethod) or empty($APMethod)) {
-			$APMethod = $apmethodObject->getApmethodList(null);
-		}
-
-		//	Get rule list
-		$rule = new Rule($this->db);
-		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID, $departmentDetails['facility_id'], $departmentID);
-
-		$this->smarty->assign('rules', $customizedRuleList);
-
-		//	Getting Product list
-		$productsListGrouped = $this->getProductsListGrouped($companyID);
-
-		$this->smarty->assign('products', $productsListGrouped);
-
-		$product = new Product($this->db);
-		$productInfo = $product->getProductInfoInMixes($productList[0]['product_id']);
-
-		$res = $this->getDefaultTypesAndUnitTypes($companyID);
-		$typeEx = $res['typeEx'];
-		$companyEx = $res['companyEx'];
-		$unitTypeEx = $res['unitTypeEx'];
-
-		$this->smarty->assign('typeEx', $typeEx);
-		$this->smarty->assign('jsTypeEx', json_encode($typeEx));
-		$this->smarty->assign('unitTypeEx', $unitTypeEx);
-		$this->smarty->assign('companyEx', $companyEx);
-		$this->smarty->assign('companyID', $companyID);
-
-		$this->smarty->assign('APMethod', $APMethod);
-		$this->smarty->assign('defaultAPMethod', $defaultAPMethod);
+		//	Unit types
+		$unitTypes = $department->getUnitTypeList();
+		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
+		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
+		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
 
 		$data = $this->getClearDataForAddItem();
-		$data->product_desc = $productInfo['desc'];
-		$data->coating = $productInfo['coat'];
 
+		// TMP SOLUTION
+		//function for gettin unittypes by ajax after new class seleted by user
+		$unitTypeEx = $uManager->getUnitTypeEx($unitTypes);
+		if (!$unitTypeEx) {
+			$companyEx = 0;
+		}else{
+			$companyEx = 1;
+		}
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('companyEx', $companyEx);
+
+		//old function for getting Old Unit Type
 		$unittype = new Unittype($this->db);
 		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
 
-
 		$department->setUnitTypeClass($unitTypeClass);
-		$unittypeListDefault = $department->getUnitTypeList();
+		$unittypeOldListDefault = $department->getOldUnitTypeList();
 
-		if (empty($unittypeListDefault)) {
-			$unittypeListDefault = $unittype->getUnittypeListDefault($unitTypeClass);
-		}
-
-		$data->unitTypeClass = $unitTypeClass;
 		$mix = new MixOptimized($this->db);
-		$mix->iniWaste(false, $unittypeListDefault);
-		$mix->iniRecycle(false, $unittypeListDefault);
-		$mix->department_id = $departmentID;
+		$mix->iniWaste(false, $unittypeOldListDefault);
+
+		// TMP SOLUTION
+		//	rewrite umnittypes
+		$mix->waste['unittypeClass'] = $groupedUnitClasses[0]->getName();
+		$mix->waste['unitTypeList'] = $groupedUnitClasses[0]->getUnitTypes();
+
+		$mix->iniRecycle(false, $unittypeOldListDefault);
+		$mix->department_id = $department->getDepartmentId();
 		$mix->creation_time = strtotime("now");
 
 		if($request['stepID']!=0){
@@ -1898,7 +1880,7 @@ class CMix extends Controller {
 		$repairOrderId = $this->getFromRequest('repairOrderId');
 
 		//get procces for mix
-		$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+		$companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
         $industryTypeId = $companyNew->getIndustryType();
 
 		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
@@ -1932,12 +1914,14 @@ class CMix extends Controller {
 		$this->smarty->assign('mixParentID', $mixParentID);
 
 		$this->smarty->assign('repairOrderId', $repairOrderId);
-
+		$this->smarty->assign('departmentID', $department->getDepartmentId());
+		$this->smarty->assign('companyID', $companyId);
 		$this->smarty->assign('data', $data);
-		$this->smarty->assign('unittype', $unittypeListDefault);
+		$this->smarty->assign('unittype', $unittypeOldListDefault);
 	}
 
 	protected function getClearDataForAddItem() {
+		//$data = new MixOptimized($this->db);
 		$data->voc = '0.00';
 		$data->voclx = '0.00';
 		$data->vocwx = '0.00';
@@ -1955,9 +1939,6 @@ class CMix extends Controller {
 	protected function showEdit(MixOptimized $optMix, $isMWS) {
 		$optMix->setTrashRecord(new Trash($this->db));
 		//	Get rule list
-		$rule = new Rule($this->db);
-		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $optMix->company->company_id, $optMix->facility_id, $optMix->department_id);
-		$this->smarty->assign('rules', $customizedRuleList);
 
 		/** Collect unittypeDetails for smarty * */
 		foreach ($optMix->products as $p) {
@@ -1967,11 +1948,6 @@ class CMix extends Controller {
 
 		$mixCalcError = $optMix->calculateCurrentUsage();
 
-		$equipment = new Equipment($this->db);
-		$equipmentList = $equipment->getEquipmentList($optMix->department_id);
-
-		$productsListGrouped = $this->getProductsListGrouped($optMix->company->company_id);
-
 		$unittypeList = $this->getUnitTypeList($optMix->company->company_id);
 
 		$apmethodObject = new Apmethod($this->db);
@@ -1980,17 +1956,34 @@ class CMix extends Controller {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}
 
-		$res = $this->getDefaultTypesAndUnitTypes($optMix->company->company_id);
-		$typeEx = $res['typeEx'];
-		$companyEx = $res['companyEx'];
-		$unitTypeEx = $res['unitTypeEx'];
+
+		$department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
+		//$unittypeListDefault = $department->getUnitTypeList();
+
+		//	Unit types
+		$unitTypes = $department->getUnitTypeList();
+		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
+		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
+		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
+
+
+		$unitTypeEx = $uManager->getUnitTypeEx($unitTypes);
+		if (!$unitTypeEx) {
+			$companyEx = 0;
+		}else{
+			$companyEx = 1;
+		}
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('companyEx', $companyEx);
+
+		//$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
+		$this->smarty->assign('departmentID', $optMix->department_id);
 
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
 		$this->smarty->assign('data', $optMix);
-		$this->smarty->assign('equipment', $equipmentList);
-		$this->smarty->assign('products', $productsListGrouped);
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount', count($optMix->products));
 		$this->smarty->assign('productsAdded', $optMix->products);
@@ -2322,7 +2315,7 @@ class CMix extends Controller {
 		return Array("typeEx" => $typeEx, "companyEx" => $companyEx, "unitTypeEx" => $unitTypeEx);
 	}
 
-	protected function getDefaultApMethod($companyID) {
+	protected function getDefaultAPMethodList($companyID) {
 
 		$apmethodObject = new Apmethod($this->db);
 		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);

@@ -5,68 +5,70 @@ namespace VWM\Hierarchy;
 use VWM\Framework\Model;
 
 class Company extends Model {
-    
+
     protected $company_id;
-    
+
     protected $name;
-    
+
     protected $address;
-    
+
     protected $city;
-    
+
     protected $zip;
-    
+
     protected $county;
-    
+
     protected $state;
-    
+
     protected $phone;
-    
+
     protected $fax;
-    
+
     protected $email;
-    
+
     protected $contact;
-    
+
     protected $title;
-    
+
     protected $creater_id;
-    
+
     protected $country;
-    
+
     protected $gcg_id;
-    
+
     protected $creation_date;
-    
+
     protected $voc_unittype_id;
-    
+
     protected $date_format_id;
-    
+
     protected $last_update_time;
-    
+
     protected $industryType;
+	
+	protected $unitTypes;
 
 	const TABLE_NAME = 'company';
-    
+
     public function getCompanyId() {
         return $this->company_id;
     }
-	
+
 	/*
 	 * name of unit_class for getUnitTypeList function
 	 * USAWght for default
-	 * @var string 
+	 * @var string
 	 */
 	protected $unitTypeClass = 'USAWght';
-	
+
 	const TB_UNITTYPE = 'unittype';
 	const TB_DEFAULT = '`default`';
 	const TB_TYPE = 'type';
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'company';
-	
-	
-	/**	 
+
+
+	/**
 	 * @return \IndustryType
 	 * @throws \Exception
 	 */
@@ -75,7 +77,7 @@ class Company extends Model {
 			throw new \Exception('Company ID should be set before calling this method');
 		}
         if (!$this->industryType) {
-            $industryTypes = $this->getIndustryTypes(); 
+            $industryTypes = $this->getIndustryTypes();
             return $industryTypes[0];
         } else {
             return $this->industryType;
@@ -229,7 +231,7 @@ class Company extends Model {
     public function setLastUpdateTime($lastUpdateTime) {
         $this->last_update_time = $lastUpdateTime;
     }
-	
+
 	public function getUnitTypeClass() {
 		return $this->unitTypeClass;
 	}
@@ -241,7 +243,7 @@ class Company extends Model {
     public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = "Company";
-		
+
 		if($id !== null) {
 			$this->setCompanyId($id);
 			if(!$this->_load()) {
@@ -249,30 +251,30 @@ class Company extends Model {
 			}
 		}
 	}
-    
+
     private function _load() {
 		if(!$this->getCompanyId()) {
 			throw new \Exception('Company ID should be set before calling this method');
 		}
-		
+
 		$sql = "SELECT * FROM ".TB_COMPANY." " .
 				"WHERE company_id = {$this->db->sqltext($this->getCompanyId())}";
 		$this->db->query($sql);
 		if($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		$row = $this->db->fetch_array(0);
 		$this->initByArray($row);
-		
+
 		return true;
 	}
-    
+
     /**
      * Insert company to data base| update company data in data base
      * @return int
      */
-    public function save() {		
+    public function save() {
 
 		if($this->getCompanyId()) {
 			return $this->_update();
@@ -280,17 +282,17 @@ class Company extends Model {
 			return $this->_insert();
 		}
 	}
-    
+
     /**
      * Insert company to data base
      * @return int
      */
     protected function _insert() {
-					
+
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-		
+
 		$sql = "INSERT INTO ".TB_COMPANY." (" .
 				"name, address, city, zip, county, state, " .
 				"phone, fax, email, contact, title, creater_id, " .
@@ -315,28 +317,28 @@ class Company extends Model {
 				"{$this->db->sqltext($this->getVocUnittypeId())}, " .
 				"{$this->db->sqltext($this->getDateFormatId())}, " .
 				"{$lastUpdateTime} " .
-				")"; 
+				")";
 		$result = $this->db->exec($sql);
 		if($result) {
-			$this->setCompanyId($this->db->getLastInsertedID());	
+			$this->setCompanyId($this->db->getLastInsertedID());
 			return $this->getCompanyId();
 		} else {
 			return false;
 		}
-		
-		
+
+
 	}
-    
+
     /**
      * Update company
      * @return int
      */
     protected function _update() {
-					
+
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "UPDATE ".TB_COMPANY." SET " .
 				"name='{$this->db->sqltext($this->getName())}', " .
 				"address='{$this->db->sqltext($this->getAddress())}', " .
@@ -357,25 +359,25 @@ class Company extends Model {
 				"voc_unittype_id={$this->db->sqltext($this->getVocUnittypeId())}, "	.
 				"date_format_id={$this->db->sqltext($this->getDateFormatId())}, "	.
 				"last_update_time={$lastUpdateTime} " .
-				"WHERE company_id={$this->db->sqltext($this->getCompanyId())}";	
-		
+				"WHERE company_id={$this->db->sqltext($this->getCompanyId())}";
+
 		$result = $this->db->exec($sql);
-		if($result) {			
+		if($result) {
 			return $this->getCompanyId();
 		} else {
 			return false;
 		}
 	}
-    
+
     public function getIndustryTypes() {
-        
+
         if(!$this->getCompanyId()) {
 			throw new \Exception('Company ID should be set before calling this method');
 		}
-        
-		$sql = "SELECT * " . 
+
+		$sql = "SELECT * " .
                " FROM " . TB_COMPANY2INDUSTRY_TYPE .
-			   " WHERE company_id={$this->db->sqltext($this->getCompanyId())}"; 
+			   " WHERE company_id={$this->db->sqltext($this->getCompanyId())}";
 		$this->db->query($sql);
         if($this->db->num_rows() == 0) {
 			$industryType = new \IndustryType($this->db, 3); // default value (industrial)
@@ -390,12 +392,95 @@ class Company extends Model {
 		}
 		return $industryTypes;
 	}
-	
+
 	public function getUnitTypeList() {
 		
+		if ($this->unitTypes) {
+			return $this->unitTypes;
+		}
+
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				 "ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
+				 "uc.description ucDescription " .
+				 "FROM " . self::TB_UNITTYPE ." ut ".
+				 "INNER JOIN " . self::TB_TYPE ." t ".
+				 "ON ut.type_id = t.type_id ".
+				 "INNER JOIN " . self::TB_DEFAULT ." def ".
+				 "ON ut.unittype_id = def.id_of_subject ".
+				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
+				 "ON ut.unit_class_id = uc.id ".
+				 "WHERE def.object = '" .self::CATEGORY."' ".
+				 "AND def.id_of_object = {$this->db->sqltext($this->getCompanyId())} ".
+				 "AND def.subject = 'unittype' ".
+				 "ORDER BY ut.unittype_id";
+
+		$this->db->query($query);
+
+		$unitTypes = array();
+		if ($this->db->num_rows()) {
+			for ($i = 0; $i < $this->db->num_rows(); $i++) {
+				$data = $this->db->fetch_array($i);
+
+				$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
+				$unittype->initByArray($data);
+
+				$type = new \VWM\Apps\UnitType\Entity\Type($this->db);
+				$type->initByArray($data);
+				$unittype->setType($type);
+
+				$class = new \VWM\Apps\UnitType\Entity\UnitClass($this->db);
+				$class->initByArray($data);
+				$class->setName($data['ucName']);
+				$class->setDescription($data['ucDescription']);
+				$unittype->setUnitClass($class);
+
+				$unitTypes[] = $unittype;
+
+			}
+		} else {
+			return false;
+		}
+
+		$this->unitTypes = $unitTypes;
+		return $unitTypes;
+	}
+
+	/**
+	 * Get company's AP methods.
+	 * @return array company's default AP methods or all AP's if defaults are
+	 * not set
+	 */
+	public function getDefaultAPMethodList() {
+
+		$query ="SELECT apm.apmethod_id, apm.apmethod_desc";
+		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
+		$query.= " AND apm.apmethod_id=def.id_of_subject";
+		$query.=" AND def.subject='apmethod'";
+		$query.=" AND def.object='" .self::CATEGORY."'";
+
+		$this->db->query($query);
+		if ($this->db->num_rows()) {
+			for ($j=0; $j < $this->db->num_rows(); $j++) {
+				$data=$this->db->fetch($j);
+				$apmethod=array (
+					'apmethod_id'			=>	$data->apmethod_id,
+					'description'			=>	$data->apmethod_desc
+				);
+				$apmethods[]=$apmethod;
+			}
+		} else {
+			$apmethodObject = new Apmethod($this->db);
+			$apmethods = $apmethodObject->getApmethodList(null);
+		}
+
+		return $apmethods;
+	}
+
+	public function getOldUnitTypeList() {
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.system " .
-				 "FROM " . self::TB_UNITTYPE ." ut ". 
+				 "FROM " . self::TB_UNITTYPE ." ut ".
 				 "INNER JOIN " . self::TB_TYPE ." t ".
 				 "ON ut.type_id = t.type_id ".
 				 "INNER JOIN " . self::TB_DEFAULT ." def ".
@@ -407,7 +492,7 @@ class Company extends Model {
 				 "AND uc.name = '{$this->db->sqltext($this->getUnitTypeClass())}' ".
 				 "AND def.subject = 'unittype' ".
 				 "ORDER BY ut.unittype_id";
-		
+
 		$this->db->query($query);
 
 		if ($this->db->num_rows()) {
@@ -421,6 +506,7 @@ class Company extends Model {
 					'unittype_desc' => $data->unittype_desc,
 					'system' => $data->system
 				);
+
 				$unittypes[] = $unittype;
 			}
 		} else {
@@ -429,32 +515,7 @@ class Company extends Model {
 
 		return $unittypes;
 	}
-	
-	public function getDefaultAPMethod(){
-		
-		$query ="SELECT apm.apmethod_id, apm.apmethod_desc"; 
-		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getCompanyId())}";
-		$query.= " AND apm.apmethod_id=def.id_of_subject";
-		$query.=" AND def.subject='apmethod'";
-		$query.=" AND def.object='" .self::CATEGORY."'";
-		
-		$this->db->query($query);
-		if ($this->db->num_rows()) {
-			for ($j=0; $j < $this->db->num_rows(); $j++) {
-				$data=$this->db->fetch($j);				
-				$apmethod=array (
-					'apmethod_id'			=>	$data->apmethod_id,
-					'description'			=>	$data->apmethod_desc
-				);	
-				$apmethods[]=$apmethod;				
-			}
-		}else{
-			return false;
-		} 
-		
-		return $apmethods;
-	}
-    
+
 }
 
 ?>
