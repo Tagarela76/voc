@@ -1873,7 +1873,6 @@ class CMix extends Controller {
 		if($request['stepID']!=0){
 			$mix->setStepId($request['stepID']);
 		}
-//var_dump($mix->waste);die();
 		
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
@@ -1979,8 +1978,18 @@ class CMix extends Controller {
 
 
 		$department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
-		$unittypeListDefault = $department->getUnitTypeList();
-		$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
+		//$unittypeListDefault = $department->getUnitTypeList();
+		
+		
+		//	Unit types
+		$unitTypes = $department->getUnitTypeList();
+		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
+		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
+		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
+		
+		
+		//$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
 		$this->smarty->assign('departmentID', $optMix->department_id);
 
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
