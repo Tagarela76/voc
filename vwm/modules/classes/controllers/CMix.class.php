@@ -1540,6 +1540,25 @@ class CMix extends Controller {
 			}
 		}
 
+		
+		$equipment = new Equipment($this->db);
+		$equipmentList = $equipment->getEquipmentList($departmentID);
+		$this->smarty->assign('equipment', $equipmentList);
+		
+		$aPMethodList = $department->getDefaultAPMethodList();
+		$this->smarty->assign('APMethod', $aPMethodList);
+		
+		$rule = new Rule($this->db);
+		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'],
+				$companyID, $department->getFacilityId(), $department->getDepartmentId());
+		$this->smarty->assign('rules', $customizedRuleList);
+		
+		
+		//	Getting Product list
+		// TODO: move this to upper level because this list is used on both add and edit
+		$productsListGrouped = $this->getProductsListGrouped($companyID);
+		$this->smarty->assign('products', $productsListGrouped);
+		
 		//	if form was submited
 		if (count($form) > 0) {
 			switch ($action) {
@@ -1802,30 +1821,11 @@ class CMix extends Controller {
 		$request['id'] = $departmentId;
 		$request['parent_category'] = $this->parent_category;
 
-		// TODO: move this to upper level because this list is used on both add and edit
-		$equipment = new Equipment($this->db);
-		$equipmentList = $equipment->getEquipmentList($departmentId);
-		$this->smarty->assign('equipment', $equipmentList);
-
 		$department = new VWM\Hierarchy\Department($this->db, $departmentId);
 		$companyId = $department->getFacility()->getCompanyId();
 
-		//	load default AP methods
-		// TODO: move this to upper level because this list is used on both add and edit
-		$aPMethodList = $department->getDefaultAPMethodList();
-		$this->smarty->assign('APMethod', $aPMethodList);
 
-		//	Get rule list
-		// TODO: move this to upper level because this list is used on both add and edit
-		$rule = new Rule($this->db);
-		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'],
-				$companyId, $department->getFacilityId(), $department->getDepartmentId());
-		$this->smarty->assign('rules', $customizedRuleList);
-
-		//	Getting Product list
-		// TODO: move this to upper level because this list is used on both add and edit
-		$productsListGrouped = $this->getProductsListGrouped($companyId);
-		$this->smarty->assign('products', $productsListGrouped);
+		
 
 		//	Unit types
 		$unitTypes = $department->getUnitTypeList();
@@ -1946,9 +1946,6 @@ class CMix extends Controller {
 	protected function showEdit(MixOptimized $optMix, $isMWS) {
 		$optMix->setTrashRecord(new Trash($this->db));
 		//	Get rule list
-		$rule = new Rule($this->db);
-		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $optMix->company->company_id, $optMix->facility_id, $optMix->department_id);
-		$this->smarty->assign('rules', $customizedRuleList);
 
 		/** Collect unittypeDetails for smarty * */
 		foreach ($optMix->products as $p) {
@@ -1958,11 +1955,6 @@ class CMix extends Controller {
 
 		$mixCalcError = $optMix->calculateCurrentUsage();
 
-		$equipment = new Equipment($this->db);
-		$equipmentList = $equipment->getEquipmentList($optMix->department_id);
-
-		$productsListGrouped = $this->getProductsListGrouped($optMix->company->company_id);
-
 		$unittypeList = $this->getUnitTypeList($optMix->company->company_id);
 
 		$apmethodObject = new Apmethod($this->db);
@@ -1971,15 +1963,9 @@ class CMix extends Controller {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}
 
-		$res = $this->getDefaultTypesAndUnitTypes($optMix->company->company_id);
-		$typeEx = $res['typeEx'];
-		$companyEx = $res['companyEx'];
-		$unitTypeEx = $res['unitTypeEx'];
-
-
+		
 		$department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
 		//$unittypeListDefault = $department->getUnitTypeList();
-		
 		
 		//	Unit types
 		$unitTypes = $department->getUnitTypeList();
@@ -1989,6 +1975,15 @@ class CMix extends Controller {
 		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
 		
 		
+		$unitTypeEx = $uManager->getUnitTypeEx($unitTypes);
+		if (!$unitTypeEx) {
+			$companyEx = 0;
+		}else{
+			$companyEx = 1;
+		}
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('companyEx', $companyEx);
+		
 		//$this->smarty->assign('unittypeListDefault', $unittypeListDefault);
 		$this->smarty->assign('departmentID', $optMix->department_id);
 
@@ -1996,8 +1991,6 @@ class CMix extends Controller {
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
 		$this->smarty->assign('data', $optMix);
-		$this->smarty->assign('equipment', $equipmentList);
-		$this->smarty->assign('products', $productsListGrouped);
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount', count($optMix->products));
 		$this->smarty->assign('productsAdded', $optMix->products);
