@@ -10,13 +10,13 @@ function unitTypeListWithoutPollutions(id)
 
 	var unittypeList= new Array();
 
-	var selectedClassValue=$('select[name=selectWasteUnittypeClassWithoutPollutions_'+id+'] option:selected').attr('value');
+	var selectedClassValue=$('select[name=selectWasteUnittypeClassWithoutPollutions_'+id+'] option:selected').html();
 
 	$.ajax({
-      		url: "modules/ajax/wasteStreams.php",
+      		url: "modules/ajax/getUnitTypes.php",
       		type: "POST",
       		async: false,
-      		data: {"action":"unittypeList","companyId":companyId,"companyEx":companyEx ,"selectedClassValue":selectedClassValue},
+      		data: {"departmentId":departmentId,"sysType":selectedClassValue},
       		dataType: "html",
       		success: function (UTList) {
 
@@ -91,19 +91,19 @@ function selectOptions2UnitTypeClasses()
 			switch(unitTypeClasses[i])
 			{
 				case 'USALiquid':
-					className='USA liquid';
+					className='USA Liquid';
 					break;
 				case 'USADry':
-					className='USA dry';
+					className='USA Dry';
 					break;
 				case 'USAWght':
-					className='USA weight';
+					className='USA Weight';
 					break;
 				case 'MetricVlm':
-					className='Metric volume';
+					className='Metric Volume';
 					break;
 				case 'MetricWght':
-					className='Metric weight';
+					className='Metric Weight';
 					break;
 			}
 			strOptions+=

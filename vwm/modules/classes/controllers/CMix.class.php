@@ -1594,7 +1594,7 @@ class CMix extends Controller {
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
 			'modules/js/mixObj.js?rev=jun22',
-			'modules/js/addUsage.js?rev=jan30',
+			'modules/js/addUsage.js?rev=feb01-1',
 			'modules/js/Utils.js?rev=sep06',
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);

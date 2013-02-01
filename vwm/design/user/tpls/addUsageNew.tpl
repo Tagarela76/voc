@@ -79,7 +79,7 @@ $(function()
 }
 );
 
-function createSelectUnittypeClass(id) {
+/*function createSelectUnittypeClass(id) {
     sel = $("<select>").attr("id",id);
 
     {/literal}
@@ -92,16 +92,37 @@ function createSelectUnittypeClass(id) {
 	{literal}
 
     return sel;
-}
+}*/
 
 
 
-	function createSelectUnittypeClass(id) {
+	function createSelectUnittypeClass(id, unitTypeClassName) {
+	unitTypeClassName = typeof(unitTypeClassName) != 'undefined' ? unitTypeClassName : false;
     sel = $("<select>").attr("id",id);
 
+	if (unitTypeClassName) {
+		{/literal}{foreach from=$groupedUnitClasses item=unitClass}{literal}
+
+		if(unitTypeClassName == '{/literal}{$unitClass->getName()}{literal}') {
+			var option = "<option";
+			option += " selected=selected ";
+			option += ">{/literal}{$unitClass->getDescription()}{literal}</option>";
+			sel.append(option);
+		}
+
+		{/literal}{/foreach}{literal}
+	}
+
 	{/literal}
-		{foreach from=$groupedUnitClasses item=unitClass}
-			sel.append("<option>{$unitClass->getDescription()}</option>	");
+		{foreach from=$groupedUnitClasses item=unitClass}{literal}
+			if (unitTypeClassName) {
+				if(unitTypeClassName != '{/literal}{$unitClass->getName()}{literal}') {
+					sel.append("<option>{/literal}{$unitClass->getDescription()}{literal}</option>	");
+				}
+			} else {
+				sel.append("<option>{/literal}{$unitClass->getDescription()}{literal}</option>	");
+			}
+		{/literal}
 		{/foreach}
 	{literal}
 

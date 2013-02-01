@@ -35,7 +35,7 @@ class UnitTypeManager {
 		return $output;
 
 	}
-	
+
 	/**
 	 *  get UnitTypeEx by unit type list
 	 * @param $unitTypeList[]
@@ -52,7 +52,7 @@ class UnitTypeManager {
 		}
 		return $unitsTypeEx;
 	}
-	
+
 	/**
 	 * get Unit Type List By Unit Type Class
 	 * @param string $unitClass
@@ -66,6 +66,7 @@ class UnitTypeManager {
 				$unitTypes[] = $unitType;
 			}
 		}
+
 		return $unitTypes;
 	}
 

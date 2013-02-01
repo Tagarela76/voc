@@ -411,7 +411,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{ 
+      			{
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -561,7 +561,7 @@ function initRecycle() {
 		} else if (sel.name == 'selectWasteUnittypeClass') {
 			$("#selectWasteUnittype").empty();
 			$('#selectWasteUnittypePreloader').css('display','block');
-			
+
 			if(sysType.length > 0){
 				$.ajax({
       			url: "modules/ajax/getUnitTypes.php",
@@ -570,10 +570,10 @@ function initRecycle() {
 	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
 	      		dataType: "html",
 	      		success: function (response)
-	      			{	
+	      			{
 	      				writeUnittype(response,'selectWasteUnittype');
 	      				waste.unittype = $("#selectWasteUnittype").attr('value');
-						
+
 						calculateVOC();
 	      			}
 				});
@@ -785,7 +785,6 @@ function initRecycle() {
 
 	function addProduct(productID, quantity, unittypeId, unittypeClass,pfp, isPrimary, ratio, isRange) {
 
-
 		isPFP = typeof(pfp) != 'undefined' ? true : false;
 		isRange = typeof(isRange) != 'undefined' ? false : true;
 
@@ -888,7 +887,7 @@ function initRecycle() {
 
 					tr.append(tdQuantity);
 
-					elUnittypeClass = createSelectUnittypeClass("product_selectUnittypeClass_"+productID);
+					elUnittypeClass = createSelectUnittypeClass("product_selectUnittypeClass_"+productID, unittypeClass);
 
 					elUnittypeClass.attr("name","product_selectUnittypeClass_"+productID);
 

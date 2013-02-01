@@ -1,6 +1,6 @@
 <?php
-	
-	chdir('../..');	
+
+	chdir('../..');
 
 	require('config/constants.php');
 	require_once ('modules/xnyo/xnyo.class.php');
@@ -10,31 +10,31 @@
 
 	//	Include Class Autoloader
 	require_once('modules/classAutoloader.php');
-	
+
 	$xnyo = new Xnyo;
-	
+
 	$xnyo->database_type	= DB_TYPE;
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
-	
+
 	$xnyo->start();
-	
+
 	$xnyo->filter_get_var('sysType', 'text');
+	$xnyo->filter_post_var('sysType', 'text');
 	$xnyo->filter_get_var('departmentId', 'text');
+	$xnyo->filter_post_var('departmentId', 'text');
 	$xnyo->filter_get_var('companyEx', 'text');
-	
-	$sysType = $_GET['sysType'];
-	$departmentId = $_GET['departmentId'];
-	$companyEx = $_GET['companyEx'];
-	
+
+	$sysType = $_REQUEST['sysType'];
+	$departmentId = $_REQUEST['departmentId'];
+
 	$db->select_db(DB_NAME);
-	
+
 	$department = new \VWM\Hierarchy\Department($db, $departmentId);
 	$unitTypes = $department->getUnitTypeList();
 	$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($db);
 	$unitTypeClasses = $uManager->getUnitTypeListByUnitClass($sysType, $unitTypes);
-	
 	$data = array();
 	foreach($unitTypeClasses as $unitType){
 		$type = array(
@@ -43,8 +43,8 @@
 		);
 		$data[] = $type;
 	}
-       
-       
-			         
-        echo json_encode($data);	
+
+
+
+        echo json_encode($data);
 ?>
