@@ -469,7 +469,7 @@ class Company extends Model {
 				$apmethods[]=$apmethod;
 			}
 		} else {
-			$apmethodObject = new Apmethod($this->db);
+			$apmethodObject = new \Apmethod($this->db);
 			$apmethods = $apmethodObject->getApmethodList(null);
 		}
 
