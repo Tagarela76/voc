@@ -1477,6 +1477,7 @@ class CMix extends Controller {
 		if(is_null($selectedPfpType) && count($pfpTypes) > 0) {
 			$selectedPfpType = $pfpTypes[0]->name;
 		}
+		
 		$this->smarty->assign('selectedPfpType', $selectedPfpType);
 		$this->smarty->assign('pfpTypes', $pfpTypes);
 
@@ -1830,22 +1831,38 @@ class CMix extends Controller {
 		$unitTypes = $department->getUnitTypeList();
 		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
 		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
+		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
+
 
 		$data = $this->getClearDataForAddItem();
 
+
+		// TMP SOLUTION
+		//function for gettin unittypes by ajax after new class seleted by user
+		$unitTypeEx = $uManager->getUnitTypeEx($unitTypes);
+		if (!$unitTypeEx) {
+			$companyEx = 0;
+		}else{
+			$companyEx = 1;
+		}
+		$this->smarty->assign('unitTypeEx', $unitTypeEx);
+		$this->smarty->assign('companyEx', $companyEx);
+		
 		//old function for getting Old Unit Type
+		$unittype = new Unittype($this->db);
+		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
+		$department->setUnitTypeClass($unitTypeClass);
 		$unittypeOldListDefault = $department->getOldUnitTypeList();
-
-
-		/*if (empty($unittypeListDefault)) {
-			$unittypeListDefault = $unittype->getUnittypeListDefault($unitTypeClass);
-		}*/
-
+		
+		
 
 		$mix = new MixOptimized($this->db);
 		$mix->iniWaste(false, $unittypeOldListDefault);
+		
 		// TMP SOLUTION
 		//	rewrite umnittypes
+		//var_dump($groupedUnitClasses[0]->getUnitTypes());die();
 		$mix->waste['unittypeClass'] = $groupedUnitClasses[0]->getName();
 		$mix->waste['unitTypeList'] = $groupedUnitClasses[0]->getUnitTypes();
 		
@@ -1856,7 +1873,8 @@ class CMix extends Controller {
 		if($request['stepID']!=0){
 			$mix->setStepId($request['stepID']);
 		}
-
+//var_dump($mix->waste);die();
+		
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;

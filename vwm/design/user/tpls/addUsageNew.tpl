@@ -79,36 +79,37 @@ $(function()
 }
 );
 
-/*function createSelectUnittypeClass(id) {
+function createSelectUnittypeClass(id) {
     sel = $("<select>").attr("id",id);
-
+		
     {/literal}
-
-    //sel.attr('onchange','getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();');
-
-    {section name=j loop=$typeEx}
-{if 'USAWght' eq $typeEx[j]}sel.append("<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA weight</option>");{/if}
-{if 'USALiquid' eq $typeEx[j]}sel.append("<option value='USALiquid' {if 'USALiquid' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA liquid</option>");{/if}
-{if 'USADry' eq $typeEx[j]}sel.append("<option value='USADry' {if 'USADry' eq $data->waste->unitTypeClass}selected='selected'{/if}>USA dry</option>");{/if}
-{if 'MetricVlm' eq $typeEx[j]}sel.append("<option value='MetricVlm' {if 'MetricVlm' eq $data->waste->waste->unitTypeClass}selected='selected'{/if}>Metric volume</option>");{/if}
-{if 'MetricWght' eq $typeEx[j]}sel.append("<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected='selected'{/if}>Metric weight</option>");{/if}
-{/section}
-{literal}
-
+		
+		sel.attr('onchange','getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();');
+		
+	{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+		sel.append("<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->waste->unitTypeClass}selected='selected'{/if}>{$unitType->getUnitTypeDesc()}</option>");
+	{/foreach}
+	{literal}
+		
     return sel;
-}*/
+}
+
+
 
 	function createSelectUnittypeClass(id) {
     sel = $("<select>").attr("id",id);
 
 	{/literal}
-		{foreach from=$unittypeListDefault->getUnitTypeNames() item=unitTypeName}
-			sel.append("<option>{$unitTypeName}</option>");
+		{foreach from=$groupedUnitClasses item=unitClass}
+			sel.append("<option>{$unitClass->getDescription()}</option>	");
 		{/foreach}
 	{literal}
 
     return sel;
 }
+	
+																	
+	
 
 {/literal}
 
@@ -118,20 +119,22 @@ $(function()
 
 	$(document).ready(function() {
 		//openPfpGroup for first element to make it default
-		if(firstPfpTypeId != ''){
+			
+		page.pfpManager.currentPfpType = {
+			"id":"{/literal}{$currentPfpType->id}{literal}",
+			"name":"{/literal}{$currentPfpType->name}{literal}",
+			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
+		};
+			
+		page.pfpManager.pfpLists.push({	
+			"type":page.pfpManager.currentPfpType,
+			"pfps":{/literal}{$pfps}{literal}
+		});
+		page.pfpManager.renderPfpList();	
+			
+		//openPfpGroup for first element to make it default
+		if(firstPfpTypeId!=''){
 			page.pfpManager.openPfpGroup(firstPfpTypeId, $('.active_link'));
-		} else {
-			page.pfpManager.currentPfpType = {
-				"id":"{/literal}{$currentPfpType->id}{literal}",
-				"name":"{/literal}{$currentPfpType->name}{literal}",
-				"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
-			};
-
-			page.pfpManager.pfpLists.push({
-				"type":page.pfpManager.currentPfpType,
-				"pfps":{/literal}{$pfps}{literal}
-			});
-			page.pfpManager.renderPfpList();
 		}
 	});
 {/literal}
@@ -358,23 +361,19 @@ $(function()
                         Waste unit type :
                     </td>
 
-                    <td class="border_users_r border_users_b">
-						{assign var="type" value=$unittypeListDefault->getUnitTypeNames()}
+                    <td class="border_users_r border_users_b">						
                         <div class="floatleft">
 							<select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$departmentID}, {$companyEx})" >
-								{foreach from=$unittypeListDefault->getUnitTypeNames() item=unitTypeName}
-									<option>{$unitTypeName}</option>
+								{foreach from=$groupedUnitClasses item=unitClass}
+									<option>{$unitClass->getDescription()}</option>									
 								{/foreach}
-							</select>
-							<input type="hidden" id="company" value="{$companyID}">
-							<input type="hidden" id="companyEx" value="{$unittypeListDefault->getUnitTypes()}">
-
-
+								<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
+							</select>							
 						</div>
 						<div class="floatleft padd_left">
 							<select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$departmentID}, {$companyEx})">
-								{foreach from=$unittypeListDefault->getUnitTypeClassesByUnitTypeName($type.0) item=unitTypeClass}
-									<option value='{$unitTypeClass->getUnitTypeId()}' >{$unitTypeClass->getUnitTypeDesc()}</option>
+								{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+									<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
 								{/foreach}
 							</select>
 						</div>
@@ -385,50 +384,6 @@ $(function()
 						</div>
 					</td>
 				</tr>
-
-
-
-
-               <!-- <tr>
-                    <td class="border_users_l border_users_b border_users_r" height="20">
-                        Waste unit type :
-                    </td>
-
-                    <td class="border_users_r border_users_b">
-                        <div class="floatleft">
-
-                            <select name="selectWasteUnittypeClass" id="selectWasteUnittypeClass" onchange="getUnittypes(document.getElementById('selectWasteUnittypeClass'), {$companyID}, {$companyEx})" >
-                                {section name=j loop=$typeEx}
-                            {if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-                    {if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-            {if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
-    {if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
-{if 'Time' eq $typeEx[j]}<option value='Time' {if 'Time' eq $data->waste.unittypeClass}selected="selected"{/if}>Time</option>{/if}
-{/section}
-
-<option value='percent' {if $data->waste.unittypeClass == '%'}selected="selected"{/if}>%</option>
-</select>
-<input type="hidden" id="company" value="{$companyID}">
-<input type="hidden" id="companyEx" value="{$companyEx}">
-</div>
-<div class="floatleft padd_left">
-    <select name="selectWasteUnittype" id="selectWasteUnittype" onchange="getUnittypes(document.getElementById('selectWasteUnittype'), {$companyID}, {$companyEx})">
-        {section name=i loop=$data->waste.unitTypeList}
-            <option value='{$data->waste.unitTypeList[i].unittype_id}' {if $data->waste.unitTypeList[i].unittype_id eq $data->waste.unittypeID}selected="selected"{/if}>{$data->waste.unitTypeList[i].description}</option>
-        {/section}
-    </select>
-</div>
-
-{*ajax-preloader*}
-<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
-    <img src='images/ajax-loader.gif' height=16  style="float:left;">
-</div>
-</td>
-</tr>-->
-
-
-
 </table>
 {/if}
 {*SET RECYCLE*}
@@ -474,8 +429,6 @@ $(function()
         </td>
     </tr>
 
-
-
     <tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
         <td class="border_users_l border_users_b border_users_r" height="20">
             Recycle unit type :
@@ -484,28 +437,20 @@ $(function()
         <td class="border_users_r border_users_b">
             <div class="floatleft">
 
-                <select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$companyID}, {$companyEx})" >
-                    {section name=j loop=$typeEx}
-                {if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-        {if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA dry</option>{/if}
-{if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>USA weight</option>{/if}
-{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->recycle.unittypeClass}selected="selected"{/if}>Metric weight</option>{/if}
-{/section}
-<!-- 'percent' eq $data->waste.unittypeClass or  -->
-<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
-</select>
-<input type="hidden" id="company" value="{$companyID}">
-<input type="hidden" id="companyEx" value="{$companyEx}">
-</div>
-<div class="floatleft padd_left">
-    <select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$companyID}, {$companyEx})">
-        {section name=i loop=$data->recycle.unitTypeList}
-            <option value='{$data->recycle.unitTypeList[i].unittype_id}' {if $data->recycle.unitTypeList[i].unittype_id eq $data->recycle.unittypeID}selected="selected"{/if}>{$data->recycle.unitTypeList[i].description}</option>
-        {/section}
-    </select>
-</div>
-
+                <select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$departmentID}, {$companyEx})" >
+                   {foreach from=$groupedUnitClasses item=unitClass}
+						<option>{$unitClass->getDescription()}</option>
+				   {/foreach}				
+						<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
+				</select>
+			</div>
+			<div class="floatleft padd_left">
+				<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$departmentID}, {$companyEx})">
+					{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+						<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
+					{/foreach}					
+				</select>
+			</div>
 
 <div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
     <img src='images/ajax-loader.gif' height=16  style="float:left;">
@@ -621,34 +566,29 @@ $(function()
                 </td>
                 <td class="border_users_r border_users_b">
                     <div class="floatleft">
-                        <select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$companyID}, {$companyEx}); checkUnittypeWeightWarning();">
-
-                            {section name=j loop=$typeEx}
-                        {if 'USALiquid' eq $typeEx[j]}<option value='USALiquid' {if 'USALiquid' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA liquid</option>{/if}
-                {if 'USADry' eq $typeEx[j]}<option value='USADry' {if 'USADry' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA dry</option>{/if}
-        {if 'USAWght' eq $typeEx[j]}<option value='USAWght' {if 'USAWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>USA weight</option>{/if}
-{if 'MetricVlm' eq $typeEx[j]}<option value='MetricVlm' {if 'MetricVlm' eq $data->waste->waste->unitTypeClass}selected="selected"{/if}>Metric volume</option>{/if}
-{if 'MetricWght' eq $typeEx[j]}<option value='MetricWght' {if 'MetricWght' eq $data->waste->unitTypeClass}selected="selected"{/if}>Metric weight</option>{/if}
-{/section}
-</select>
-</div>
-<div class="floatleft padd_left">
-    <select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
-
-        {section name=i loop=$unittype}
-            <option value='{$unittype[i].unittype_id}' {if $unittype[i].unittype_id eq $data->waste->unittypeID}selected="selected"{/if}> {$unittype[i].description}</option>
-        {/section}
-    </select>
-</div>
-<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
-
-{*ajax-preloader*}
-<div id="selectUnittypePreloader" class="floatleft padd_left" style="display:none">
-    <img src='images/ajax-loader.gif' height=16  style="float:left;">
-</div>
-
-</td>
-</tr>
+						<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();">
+							
+							{foreach from=$groupedUnitClasses item=unitClass}
+								<option>{$unitClass->getDescription()}</option>
+							{/foreach}				
+						</select>
+					</div>
+					<div class="floatleft padd_left">
+						<select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
+							{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+								<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
+							{/foreach}	
+						</select>
+					</div>
+					<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
+						
+					{*ajax-preloader*}
+					<div id="selectUnittypePreloader" class="floatleft padd_left" style="display:none">
+						<img src='images/ajax-loader.gif' height=16  style="float:left;">
+					</div>
+						
+				</td>
+			</tr>
 
 <tr>
     <td class="border_users_l border_users_b border_users_r">

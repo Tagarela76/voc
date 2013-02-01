@@ -21,19 +21,19 @@
 	$xnyo->start();
 	
 	$xnyo->filter_get_var('sysType', 'text');
-	$xnyo->filter_get_var('companyID', 'text');
+	$xnyo->filter_get_var('departmentId', 'text');
 	$xnyo->filter_get_var('companyEx', 'text');
 	
 	$sysType = $_GET['sysType'];
-	$companyID = $_GET['companyID'];
+	$departmentId = $_GET['departmentId'];
 	$companyEx = $_GET['companyEx'];
 	
 	$db->select_db(DB_NAME);
 	
-	$department = new \VWM\Hierarchy\Department($db, $companyID);
-	$unittypeListDefault = $department->getUnitTypeList();
-	
-	$unitTypeClasses = $unittypeListDefault->getUnitTypeClassesByUnitTypeName($sysType);
+	$department = new \VWM\Hierarchy\Department($db, $departmentId);
+	$unitTypes = $department->getUnitTypeList();
+	$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($db);
+	$unitTypeClasses = $uManager->getUnitTypeListByUnitClass($sysType, $unitTypes);
 	
 	$data = array();
 	foreach($unitTypeClasses as $unitType){

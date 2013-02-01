@@ -72,6 +72,12 @@ class Facility extends Model {
 	 * @var string
 	 */
 	protected $unitTypeClass = 'USAWght';
+	
+	/**
+	 * Default or all unittypes available for facility
+	 * @var \VWM\Apps\UnitType\Entity\UnitType[]
+	 */
+	protected $unitTypes;
 
 
 	const TABLE_NAME = 'facility';
@@ -562,12 +568,13 @@ class Facility extends Model {
 	}
 	public function getUnitTypeList() {
 
-		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
-		$unitTypesName = array();
-		$unitTypes = array();
-
+		if($this->unitTypes) {
+			return $this->unitTypes;
+		}
+		
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
-				 "ut.unittype_desc, ut.system, uc.name " .
+				 "ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
+				 "uc.description ucDescription " .
 				 "FROM " . self::TB_UNITTYPE ." ut ".
 				 "INNER JOIN " . self::TB_TYPE ." t ".
 				 "ON ut.type_id = t.type_id ".
@@ -582,36 +589,37 @@ class Facility extends Model {
 
 		$this->db->query($query);
 
+		$unitTypes = array();
 		if ($this->db->num_rows()) {
 			for ($i = 0; $i < $this->db->num_rows(); $i++) {
-				$data = $this->db->fetch($i);
+				$data = $this->db->fetch_array($i);
+
 				$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
 				$unittype->initByArray($data);
-				$unittypes[] = $unittype;
+
+				$type = new \VWM\Apps\UnitType\Entity\Type($this->db);
+				$type->initByArray($data);
+				$unittype->setType($type);
+
+				$class = new \VWM\Apps\UnitType\Entity\UnitClass($this->db);
+				$class->initByArray($data);
+				$class->setName($data['ucName']);
+				$class->setDescription($data['ucDescription']);
+				$unittype->setUnitClass($class);
+
+				$unitTypes[] = $unittype;
+
 			}
 		} else {
+			//	failed to load defaults by department,
+			//	so load them from facility
 			$company = $this->getCompany();
 			return $company->getUnitTypeList();
 		}
 
 
-		foreach($unittypes as $unitType){
-				$type = array(
-				'unittype_id' => $unitType->getUnitTypeId(),
-				'type_id' => $unitType->getTypeId(),
-				'name' => $unitType->getName()
-				);
-				$unitTypes[] = $type;
-				if(!in_array($unitType->getName(), $unitTypesName)){
-					$unitTypesName[] = $unitType->getName();
-				}
-		}
-
-		$unitTypeCollection->setUnitTypeClases($unittypes);
-		$unitTypeCollection->setUnitTypes($unitTypes);
-		$unitTypeCollection->setUnitTypeNames($unitTypesName);
-
-		return $unitTypeCollection;
+		$this->unitTypes = $unitTypes;
+		return $unitTypes;
 	}
 
 

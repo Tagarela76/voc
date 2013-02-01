@@ -70,7 +70,7 @@ class UnitTypeCollection {
 				'name' => $unitType->getName()
 			);
 			$unitTypes[] = $type;
-//r_dump($unitTypes);
+
 			if(!in_array($unitType->getName(), $unitTypesName)){
 				$unitTypesName[] = $unitType->getName();
 			}
