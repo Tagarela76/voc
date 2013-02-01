@@ -438,7 +438,9 @@ class Company extends Model {
 
 			}
 		} else {
-			return false;
+			
+			$unitType = new \VWM\Apps\UnitType\Entity\UnitType($this->db);
+			return $unitType->getDefaultUnitType();
 		}
 
 		$this->unitTypes = $unitTypes;

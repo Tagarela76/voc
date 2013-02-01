@@ -1826,6 +1826,7 @@ class CMix extends Controller {
 
 		//	Unit types
 		$unitTypes = $department->getUnitTypeList();
+		
 		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
 		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
 		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);

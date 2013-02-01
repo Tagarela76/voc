@@ -22,6 +22,8 @@ class UnitType extends Model {
 	protected $system;
 
 	protected $unit_class_id;
+	
+	
 
 	/**
 	 * @var Type
@@ -32,8 +34,16 @@ class UnitType extends Model {
 	 * @var UnitClass
 	 */
 	protected $unitClass;
+	
+	
 
 	const TABLE_NAME = '`unittype`';
+	const TB_TYPE = 'type';
+	const TB_UNITCLASS = 'unit_class';
+	
+	public function __construct(\db $db) {
+		$this->db = $db;
+	}
 
 	public function getUnitTypeId() {
 		return $this->unittype_id;
@@ -149,7 +159,45 @@ class UnitType extends Model {
 	public function save() {
 		throw new \Exception('You cannot add/edit this entity');
 	}
+	
+	/**
+	 * function for getting defoult unit type
+	 * return array 
+	 */
+	public function getDefaultUnitType() {
+		
+		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
+				"ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
+				"uc.description ucDescription " .
+				"FROM " . self::TABLE_NAME . " ut " .
+				"INNER JOIN " . self::TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . self::TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"ORDER BY ut.unittype_id";
+		$this->db->query($query);
 
+		$unitTypes = array();
+		for ($i = 0; $i < $this->db->num_rows(); $i++) {
+			$data = $this->db->fetch_array($i);
+
+			$unittype = new \VWM\Apps\UnitType\Entity\UnitType();
+			$unittype->initByArray($data);
+
+			$type = new \VWM\Apps\UnitType\Entity\Type($this->db);
+			$type->initByArray($data);
+			$unittype->setType($type);
+
+			$class = new \VWM\Apps\UnitType\Entity\UnitClass($this->db);
+			$class->initByArray($data);
+			$class->setName($data['ucName']);
+			$class->setDescription($data['ucDescription']);
+			$unittype->setUnitClass($class);
+
+			$unitTypes[] = $unittype;
+		}
+		return $unitTypes;
+	}
 
 }
 
