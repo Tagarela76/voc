@@ -1,6 +1,7 @@
 
 // OOP VERSION
 
+// global access point
 function AddMixPage() {
 	this.pfpManager = new PfpManager();
 	this.utils = new Utils();
@@ -10,11 +11,8 @@ function PfpType(id) {
 	this.id = id;
 	this.name = 'all';
 	this.facility_id = 0;
-}
 
-function PfpList(type, pfps) {
-	this.type = type;
-	this.pfps = pfps;
+    this.pfps = [];
 }
 
 function PfpDetails() {
@@ -29,24 +27,34 @@ function Pfp() {
 	this.type_id;
 }
 
-
+// main class to manage pfps - kinda controller
 function PfpManager() {
+    // which pfp type is opend by default
+    // PfpType instance
 	this.defaultPfpType = new PfpType(0);
-	this.pfpLists = [];
+
+    // pfptype lists ever loaded
+    // PfpType[] instance
+    this.pfpTypes = [];
+
+    // pfp type which is active at this moment
+    // PfpType instance
 	this.currentPfpType;
+
 	this.pfpDetails = [];
 
-	this.getPfpsByType = function(pfpType) {
-		var that = this;
+    // load PFPs by current pfp type
+    // pickup from memory (this.pfpTypes) if needed
+    this.getCurrentPfps = function() {
+        var that = this;
 		var returnPfpList = [];
 
 		// check probably list is already loaded
-
-		for(key in this.pfpLists) {
-			if(this.pfpLists[key].type.id == pfpType.id) {
-				// we found it
-				return this.pfpLists[key].pfps;
-			}
+		for(key in this.pfpTypes) {
+            if (this.pfpTypes[key].id == this.currentPfpType.id) {
+                // we found it
+				return this.pfpTypes[key].pfps;
+            }
 		}
 		$.ajax({
 			url: "?action=loadBriefPfps&category=pfpTypes",
@@ -54,18 +62,24 @@ function PfpManager() {
 			data: {pfpTypeId: this.currentPfpType.id},
 			type: "GET",
 			dataType: "json",
-			success: function (pfpList) {
-				that.pfpLists.push(pfpList);
-				returnPfpList = pfpList.pfps;
+			success: function (result) {
+                // create pfpType object
+                var pfpType = new PfpType;
+                for(key in result) {
+                    if (result.hasOwnProperty(key)) pfpType[key] = result[key];
+                }
+                // add to memory for future reuse
+				that.pfpTypes.push(pfpType);
+				returnPfpList = pfpType.pfps;
       		}
 		});
 
 		return returnPfpList;
-	}
+    }
 
-
+    // draw PFP list by currentPfpType
 	this.renderPfpList = function() {
-		var pfps = this.getPfpsByType(this.currentPfpType);
+        var pfps = this.getCurrentPfps();
 
 		var html = '';
 		for (key in pfps) {
@@ -87,11 +101,8 @@ function PfpManager() {
 
 	this.openPfpGroup = function(pfpGroupId, linkElement) {
 
-		this.currentPfpType = {
-			'id':pfpGroupId,
-			'name':'',
-			'facility_id':0
-		};
+		this.currentPfpType = new PfpType();
+        this.currentPfpType.id = pfpGroupId;
 
 		this.renderPfpList();
 
@@ -536,7 +547,7 @@ function initRecycle() {
 
 	function getUnittypes(sel, departmentId, companyEx) {
 		var sysType = $(sel).children('option:selected').val();
-		
+
 
 		var productAddedIdx;
 		if (sel.name.substring(0,20) == 'selectUnittypeClass_') {

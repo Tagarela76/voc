@@ -22,6 +22,8 @@ class PfpTypes {
 	 */
 	public $facility_id;
 
+    public $pfps = array();
+
 	/**
 	 * db connection
 	 * @var db
@@ -218,6 +220,10 @@ class PfpTypes {
 	 * @return boolean|PFP[]
 	 */
 	public function getPfpProducts(Pagination $pagination = null) {
+        if($this->pfps) {
+            return $this->pfps;
+        }
+
 		$query = "SELECT * FROM " . TB_PFP . " pfp " .
 				"JOIN " . TB_PFP2PFP_TYPES . " pfp2t ON pfp.id = pfp2t.pfp_id " .
 				"WHERE pfp2t.pfp_type_id = {$this->db->sqltext($this->id)}";
@@ -248,6 +254,7 @@ class PfpTypes {
 			$pfp = $pfpManager->getPfp($row["id"]);
 			$pfpProducts[] = $pfp;
 		}
+        $this->pfps = $pfpProducts;
 		return $pfpProducts;
 	}
 

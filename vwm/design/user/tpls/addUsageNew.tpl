@@ -133,20 +133,19 @@ $(function()
 
 {literal}
 	var page = new AddMixPage();
-	var firstPfpTypeId = {/literal}'{$pfpTypes[0]->id}'{literal};
 
 	$(document).ready(function() {
-		//openPfpGroup for first element to make it default
-		page.pfpManager.currentPfpType = {
-			"id":"{/literal}{$currentPfpType->id}{literal}",
-			"name":"{/literal}{$currentPfpType->name}{literal}",
-			"facility_id":"{/literal}{$currentPfpType->facility_id}{literal}"
-		};
+        var firstPfpTypeId = {/literal}'{$pfpTypes[0]->id}'{literal};
 
-		page.pfpManager.pfpLists.push({
-			"type":page.pfpManager.currentPfpType,
-			"pfps":{/literal}{$pfps}{literal}
-		});
+		//openPfpGroup for first element to make it default
+        var pfpType = new PfpType();
+        pfpType.id = "{/literal}{$currentPfpType->id}{literal}";
+        pfpType.name = "{/literal}{$currentPfpType->name}{literal}";
+        pfpType.facility_id = "{/literal}{$currentPfpType->facility_id}{literal}";
+        pfpType.pfps = {/literal}{$pfps}{literal};
+		page.pfpManager.currentPfpType = pfpType;
+
+        page.pfpManager.pfpTypes.push(page.pfpManager.currentPfpType);
 		page.pfpManager.renderPfpList();
 
 		//openPfpGroup for first element to make it default
