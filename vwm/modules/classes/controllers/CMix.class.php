@@ -452,7 +452,7 @@ class CMix extends Controller {
 			$url = preg_replace("/\&page=\d*/","", $url);
 			$url = preg_replace("/\&sort=\d*/","", $url);
 
-			$mixCount = $mixManager->countMixesInFacility($departmentDetails['facility_id']);
+			$mixCount = $departmentNew->getCountMix();
 
 			if ($this->getFromRequest('export')) {
 				$pagination = null;

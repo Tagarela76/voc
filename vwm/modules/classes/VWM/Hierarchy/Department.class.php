@@ -403,6 +403,7 @@ class Department extends Model {
 
 	public function getCountMix() {
 		$query = "SELECT count(*) mixCount FROM " . TB_USAGE . " m " .
+                " LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
 				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
 				"WHERE m.department_id =" . $this->db->sqltext($this->department_id) . " " .
 				"OR j.department_id=" . $this->db->sqltext($this->department_id);
@@ -420,6 +421,7 @@ class Department extends Model {
 			$query .= ") ";
 		}
 
+        //$query.= " GROUP BY m.mix_id";
 
 		if (!$this->db->query($query)) {
 			throw new Exception('SQL query failed.');
