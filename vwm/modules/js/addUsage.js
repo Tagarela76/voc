@@ -535,7 +535,8 @@ function initRecycle() {
 	}
 
 	function getUnittypes(sel, departmentId, companyEx) {
-		var sysType=$(sel).attr('value');
+		var sysType = $(sel).children('option:selected').val();
+		
 
 		var productAddedIdx;
 		if (sel.name.substring(0,20) == 'selectUnittypeClass_') {
