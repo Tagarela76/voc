@@ -61,8 +61,9 @@ function PfpManager() {
 			async: false,
 			data: {pfpTypeId: this.currentPfpType.id},
 			type: "GET",
-			dataType: "json",
+			dataType: "html",
 			success: function (result) {
+				
                 // create pfpType object
                 var pfpType = new PfpType;
                 for(key in result) {
@@ -80,7 +81,7 @@ function PfpManager() {
     // draw PFP list by currentPfpType
 	this.renderPfpList = function() {
         var pfps = this.getCurrentPfps();
-
+//console.log(pfps);
 		var html = '';
 		for (key in pfps) {
 			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'" name="pfp_row">';
@@ -422,7 +423,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{
+      			{ console.log(response);
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -673,7 +674,7 @@ function initRecycle() {
 	      		dataType: "html",
 	      		success: function (response)
 	      			{
-
+						
 	      				writeUnittype(response,"product_selectUnittype_"+productAddedIdx);
 
 	      				productUnittype = products.getProduct(productAddedIdx).selectUnittype;
@@ -681,6 +682,36 @@ function initRecycle() {
 	      				selector = "#product_selectUnittype_"+productAddedIdx;
 
 						$(selector).val(productUnittype).attr("selected",true);
+	      			}
+				});
+
+
+			}
+		}
+		else if(sel.name.substring(0,40) == "product_proprietary_selectUnittypeClass_") {
+
+
+			productAddedIdx = sel.name.substring(40);
+
+			$("#product_proprietary_selectUnittype_"+productAddedIdx).empty();
+
+			if(sysType.length > 0){
+				$.ajax({
+      			url: "modules/ajax/getUnitTypes.php",
+      			type: "GET",
+	      		async: false,
+	      		data: {"sysType":sysType,"departmentId":departmentId,"companyEx":companyEx},
+	      		dataType: "html",
+	      		success: function (response)
+	      			{
+
+	      				writeUnittype(response,"product_proprietary_selectUnittype_"+productAddedIdx);
+
+	      				/*productUnittype = products.getProduct(productAddedIdx).selectUnittype;
+
+	      				selector = "#product_proprietary_selectUnittype_"+productAddedIdx;
+
+						$(selector).val(productUnittype).attr("selected",true);*/
 	      			}
 				});
 
@@ -729,11 +760,12 @@ function initRecycle() {
 	var selectedProducts = new Array();
 
 	var products = new CProductCollectionObj();
+	
 
 	var currentSelectedPFP = null;
 	var currentSelectedPFP_descr = null;
 
-	function addPFPProducts(pfp_products,pfp_id,pfp_description) {
+	function addPFPProducts(pfp_products,pfp_id,pfp_description, pfpIsProprieraty) {
 		yes = true;
 
 		// base product should be always on top
@@ -752,17 +784,23 @@ function initRecycle() {
 			}
 		}
 
-		if(yes == true) {
 
-			var selectUnittypeClass = $("#selectUnittypeClass").val();
-			var selectUnittype = $("#selectUnittype").val();
+		if(pfpIsProprieraty == 0){
+			if(yes == true) {
 
-			currentSelectedPFP = pfp_id;
-			currentSelectedPFP_descr = pfp_description;
+				var selectUnittypeClass = $("#selectUnittypeClass").val();
+				var selectUnittype = $("#selectUnittype").val();
 
-			for(i=0; i<pfp_products.length; i++) {
-				addProduct(pfp_products[i].productID, 0, selectUnittype, selectUnittypeClass, true, pfp_products[i].isPrimary, pfp_products[i].ratio, pfp_products[i].isRange);
+				currentSelectedPFP = pfp_id;
+				currentSelectedPFP_descr = pfp_description;
+			
+				for(i=0; i<pfp_products.length; i++) {
+					addProduct(pfp_products[i].productID, 0, selectUnittype, selectUnittypeClass, true, pfp_products[i].isPrimary, pfp_products[i].ratio, pfp_products[i].isRange);
+				}
 			}
+		}else{
+			//get proprietary pfps
+			addProprietaryProduct(pfp_products, 0, selectUnittypeClass);
 		}
 
 	}
@@ -810,6 +848,9 @@ function initRecycle() {
 
 		$('#addProductPreloader').css('display', 'block');
 		$("#addProductsContainer").css('display','block');
+		$("#addedProprietaryProducts").css('display','none');
+		$("#addedProducts").css('display','block');
+		
 
 		$.ajax({
       		url: "modules/ajax/saveMix.php",
@@ -959,14 +1000,10 @@ function initRecycle() {
                         $("#addedProducts").find("tbody").prepend( tr );
                     }
 
-
 					getUnittypes(document.getElementById(elUnittypeClass.attr('id')), departmentId, companyEx);
 
-
 				}
-
 				calculateVOC();
-
       		}
 		});
 	}
@@ -1554,3 +1591,153 @@ function initRecycle() {
 	function is_null(mixed_var){
     return ( mixed_var === 'undefined' );
 	}
+
+/**
+ * create add proprietary product usage template
+ * 
+ * @var int
+ */
+function addProprietaryProduct(pfp_products, quantity, unittypeClass){
+	// textbox for quantity
+	var productID = pfp_products[0].productID
+	var text;
+	$("#addedProducts").css('display','none');
+	$("#addedProprietaryProducts").css('display','block');
+	
+	// create <tr> tag
+	proprietaryTR = $("<tr>").attr({
+		id:"product_proprietary_row"
+	});
+					
+	//create first <td> tag
+	td = $("<td>").attr({
+		"class":"border_users_r border_users_b border_users_l"
+	});
+	td.append('Enter the quantity of product usage');
+	//add <td> to <tr> tag
+	proprietaryTR.append( td );
+
+
+	//create textbox for Quantity
+	td = $("<td>").attr({
+		"class":"border_users_r border_users_b"
+	});
+	text = $("<input>").attr("type","text").attr("id","product_proprietary" + productID + "_quantity").val(quantity).numeric();
+	
+	//calculate voc on text change
+	text.change( {
+		"pfpProducts" : pfp_products
+	} ,function(eventObject) {
+		//setProprietaryProductQuantity(eventObject.data.pfpProducts);
+		//if(currentSelectedPFP != null){
+			calculateQuantityInPFPProprietaryProducts(eventObject.data.pfpProducts);
+		//}
+		//calculateVOC();
+	
+	});
+	
+	td.append(text);
+	proprietaryTR.append( td );
+	
+	
+	//create select unit type for proprietary product usage
+	td = $("<td>").attr({
+		"class":"border_users_r border_users_b"
+	});
+	
+	//get unittypes for unitType list
+	elUnittypeClass = createSelectUnittypeClass("product_proprietary_selectUnittypeClass_"+productID, unittypeClass);
+
+	elUnittypeClass.attr("name","product_proprietary_selectUnittypeClass_"+productID);
+
+	product = products.getProduct(productID);
+	elUnittypeClass.attr('value',product.unittypeClass);
+
+	elUnittypeClass.change( {
+		"productID" : productID
+	} ,function(eventObject) {
+
+		getUnittypes(document.getElementById($(this).attr("name")), departmentId, companyEx);
+		setProductUnittype(eventObject.data.productID);
+		setProductUnittypeClass(eventObject.data.productID);
+
+		if(currentSelectedPFP != null){
+			changeUnittypesInAllProducts(productID);
+		}
+
+		calculateVOC();
+	});
+
+	td.append(elUnittypeClass);
+	
+	//get types for unitType List
+	elUnittypeId = $("<select>");
+	id = 'product_proprietary_selectUnittype_'+productID;
+
+
+	elUnittypeId.attr('id',id).attr('name',id);
+	elUnittypeId.change({
+		"productID" : productID
+	}, function(eventObject){
+		setProductUnittype(eventObject.data.productID);
+
+		if(currentSelectedPFP != null){
+			changeUnittypesInAllProducts(productID);
+		}
+
+		calculateVOC();
+	});
+
+
+	td.append(elUnittypeId);
+					
+	proprietaryTR.append( td );
+	
+	//add <tr> to proprietary product usage table
+	
+	$("#product_proprietary_row").remove();
+	$("#addedProprietaryProducts").find("tbody").append( proprietaryTR );
+	
+	getUnittypes(document.getElementById(elUnittypeClass.attr('id')), departmentId, companyEx);
+	calculateVOC();
+}
+
+function setProprietaryProductQuantity(pfpProducts){
+//productProprietary = $("#product_proprietary_selectUnittypeClass_"+pfpProducts[0].productID).val();
+}
+
+
+function calculateQuantityInPFPProprietaryProducts(pfpProducts){
+	
+	var i = 0;
+	var quantity = $("#product_proprietary" + pfpProducts[0].productID + "_quantity").val();
+	var selectUnittypeClass = $("#selectUnittypeClass").val();
+	var selectUnittype = $("#selectUnittype").val();
+	
+	//get qyantity for all products
+	var ratio = 0;
+	for(i=0; i<pfpProducts.length; i++){
+		primaryProduct = pfpProducts[i];
+		//get product ratio
+		if(primaryProduct.ratio > 0) {
+			delitel = primaryProduct.ratio;
+		} else {
+			delitel = 1;
+		}
+		// get common ratio
+		ratio += delitel;
+	}
+	
+	//ratio for 1 unit
+	unitRatio =  ratio/quantity;
+	
+	for(i=0; i<pfpProducts.length; i++){
+		//get product quantity for each product
+		pfpProducts[i].quantity = unitRatio * quantity/pfpProducts[i].ratio;
+		
+		products.addPFPProduct(pfpProducts[i].productID, pfpProducts[i].quantity, selectUnittype, selectUnittypeClass,pfpProducts[i].ratio,pfpProducts[i].isPrimary,pfpProducts[i].isRange);
+	
+	}
+	calculateVOC();
+	
+}

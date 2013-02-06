@@ -1,0 +1,1 @@
+ALTER TABLE  `pfp2product` ADD  `isProprietary` TINYINT( 1 ) NOT NULL DEFAULT  '0'

@@ -17,6 +17,7 @@ class PFP
     private $products;
     
     public $type_id;
+	public $isProprietary;
 
 	function __construct($PFPProductsArray) {
 		$this->products = $PFPProductsArray;

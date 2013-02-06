@@ -608,11 +608,17 @@ class PFPManager {
 			$PFPProductsArray[] = $prodtmp;
 		}
 
-		//var_dump($PFPProductsArray);
-		$pfp = new PFP($PFPProductsArray);
+		//old pfp function
+		/*$pfp = new PFP($PFPProductsArray);
 		$pfp->setID($pfpArray['id']);
 		$pfp->setDescription($pfpArray['description']);
-		$pfp->products = $PFPProductsArray;
+		$pfp->products = $PFPProductsArray;*/
+		
+		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+		$pfp->setId($id);
+		$pfp->load();
+		//$pfp->setDescription($pfpArray['description']);
+		$pfp->setProducts($PFPProductsArray);
 
 		return $pfp;
 	}

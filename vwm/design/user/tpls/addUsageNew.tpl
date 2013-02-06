@@ -12,50 +12,50 @@
 
 <script type="text/javascript">
 
-var companyId="{$companyID}";
-var departmentId ="{$departmentID}"
-var companyEx="{$companyEx}";
-var recycle = new Object();
+	var companyId="{$companyID}";
+	var departmentId ="{$departmentID}"
+	var companyEx="{$companyEx}";
+	var recycle = new Object();
     {if $show.waste_streams != true}
 
 
 
-var waste = new Object();
+		var waste = new Object();
 
 
-var noMWS = true;
+		var noMWS = true;
     {else}
-var noMWS = false;
+		var noMWS = false;
     {/if}
 
     {if $smarty.request.departmentID}
-var departmentID = {$smarty.request.departmentID};
+		var departmentID = {$smarty.request.departmentID};
     {else}
-var departmentID = {$data->department_id};
+		var departmentID = {$data->department_id};
     {/if}
 
-var unittypes = new Array();
+		var unittypes = new Array();
 
-    {section name=i loop=$unittype}
-    un = new Array({$unittype[i].unittype_id},'{$unittype[i].description}');
-    unittypes.push(un);
+		{section name=i loop=$unittype}
+		un = new Array({$unittype[i].unittype_id},'{$unittype[i].description}');
+		unittypes.push(un);
     {/section}
 
     {if $smarty.request.action == 'edit'}
-var editForm = true;
-var isPfp = ({$data->isPfp} == 1) ? true : false;
-var mixID = '{$smarty.request.id}';
-var mixDescription = '{$data->description|escape:'quotes'}';
+		var editForm = true;
+		var isPfp = ({$data->isPfp} == 1) ? true : false;
+		var mixID = '{$smarty.request.id}';
+		var mixDescription = '{$data->description|escape:'quotes'}';
     {else}
-var editForm = false;
-var isPfp = false;
+		var editForm = false;
+		var isPfp = false;
     {/if}
 
     {literal}
 $(function()
 {
     {/literal}
-    //Products load
+		//Products load
     {foreach from=$data->products item=p}
 
         {literal}
@@ -101,7 +101,7 @@ $(function()
     sel = $("<select>").attr("id",id);
 
 	if (unitTypeClassName) {
-		{/literal}{foreach from=$groupedUnitClasses item=unitClass}{literal}
+	{/literal}{foreach from=$groupedUnitClasses item=unitClass}{literal}
 
 		if(unitTypeClassName == '{/literal}{$unitClass->getName()}{literal}') {
 			var option = "<option";
@@ -110,11 +110,11 @@ $(function()
 			sel.append(option);
 		}
 
-		{/literal}{/foreach}{literal}
+	{/literal}{/foreach}{literal}
 	}
 
 	{/literal}
-		{foreach from=$groupedUnitClasses item=unitClass}{literal}
+	{foreach from=$groupedUnitClasses item=unitClass}{literal}
 			if (unitTypeClassName) {
 				if(unitTypeClassName != '{/literal}{$unitClass->getName()}{literal}') {
 					sel.append("<option>{/literal}{$unitClass->getDescription()}{literal}</option>	");
@@ -123,15 +123,15 @@ $(function()
 				sel.append("<option>{/literal}{$unitClass->getDescription()}{literal}</option>	");
 			}
 		{/literal}
-		{/foreach}
+	{/foreach}
 	{literal}
 
     return sel;
 }
 
-{/literal}
+	{/literal}
 
-{literal}
+	{literal}
 	var page = new AddMixPage();
 
 	$(document).ready(function() {
@@ -153,7 +153,7 @@ $(function()
 			page.pfpManager.openPfpGroup(firstPfpTypeId, $('.active_link'));
 		}
 	});
-{/literal}
+	{/literal}
 </script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"></script>
 <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js"></script>
@@ -231,7 +231,7 @@ $(function()
 
 			<tr>
                 <td class="border_users_l border_users_b border_users_r" height="20">
-                   Spray/spent time in minutes:
+					Spray/spent time in minutes:
                 </td>
                 <td class="border_users_r border_users_b">
                     <div align="left" >
@@ -401,354 +401,354 @@ $(function()
 					</td>
 				</tr>
 
-</table>
-{/if}
-{*SET RECYCLE*}
-<table class="users" cellpadding="0" cellspacing="0" align="center">
-    <tr class="users_u_top_size users_top_lightgray" >
-        <td colspan="2"><div id='recycle'>Set recycle </div></td>
-    </tr>
+			</table>
+		{/if}
+		{*SET RECYCLE*}
+		<table class="users" cellpadding="0" cellspacing="0" align="center">
+			<tr class="users_u_top_size users_top_lightgray" >
+				<td colspan="2"><div id='recycle'>Set recycle </div></td>
+			</tr>
 
-    <tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
-        <td class="border_users_l border_users_b border_users_r" width="30%" height="20" >
-            Recycle value:
-        </td>
-        <td class="border_users_r border_users_b" >
-            <div align="left" >
-                <input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}">
-                {if $validStatus.summary eq 'false'}
-                    {if $validStatus.waste.value eq 'failed'}
-                        {*ERORR*}
-                        <div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-                            <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be a positive number.</font></div>
-                            {*/ERORR*}
-                        {/if}
-                        {if $validStatus.waste.percent eq 'failed'}
-                            {*ERORR*}
-                        <div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-                            <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be less than products total value.</font></div>
-                            {*/ERORR*}
-                        {/if}
-                        {if $validStatus.waste.convert eq 'failed'}
-                            {*ERORR*}
-                        <div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
-                            <font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate recycle for mix. Please enter valid recycle value in % or set density for all products used in mix. VOC was calculated with recycle = 0.</font></div>
-                            {*/ERORR*}
-                        {/if}
-                    {/if}
-                <script type="text/javascript">
-                            $("#recycleValue").numeric();
-                </script>
+			<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
+				<td class="border_users_l border_users_b border_users_r" width="30%" height="20" >
+					Recycle value:
+				</td>
+				<td class="border_users_r border_users_b" >
+					<div align="left" >
+						<input type="text" id="recycleValue" name="recycleValue" value="{$data->recycle.value}">
+						{if $validStatus.summary eq 'false'}
+							{if $validStatus.waste.value eq 'failed'}
+								{*ERORR*}
+								<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be a positive number.</font></div>
+									{*/ERORR*}
+								{/if}
+								{if $validStatus.waste.percent eq 'failed'}
+									{*ERORR*}
+								<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Please enter valid recycle value. VOC was calculated with recycle = 0. Recycle value must be less than products total value.</font></div>
+									{*/ERORR*}
+								{/if}
+								{if $validStatus.waste.convert eq 'failed'}
+									{*ERORR*}
+								<div style="width:680px;margin:2px 0px 0px 5px;" align="left"><img src='design/user/img/alert1.gif' height=16  style="float:left;">
+									<font style="float:left;vertical-align:bottom;color:red;margin:1px 0px 0px 5px;">Error! Can't calculate recycle for mix. Please enter valid recycle value in % or set density for all products used in mix. VOC was calculated with recycle = 0.</font></div>
+									{*/ERORR*}
+								{/if}
+							{/if}
+						<script type="text/javascript">
+							$("#recycleValue").numeric();
+						</script>
 
-            </div>
+					</div>
 
-            <div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>
-        </td>
-    </tr>
+					<div class="error_img"  id="recycleValidError" style="display:none;"><span class="error_text" >The number should not exceed one hundred! </span></div>
+				</td>
+			</tr>
 
-    <tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
-        <td class="border_users_l border_users_b border_users_r" height="20">
-            Recycle unit type :
-        </td>
+			<tr class="recycleview" {if $smarty.request.action==addItem} style="display:none"{/if}>
+				<td class="border_users_l border_users_b border_users_r" height="20">
+					Recycle unit type :
+				</td>
 
-        <td class="border_users_r border_users_b">
-            <div class="floatleft">
+				<td class="border_users_r border_users_b">
+					<div class="floatleft">
 
-                <select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$departmentID}, {$companyEx})" >
-                   {foreach from=$groupedUnitClasses item=unitClass}
-						<option>{$unitClass->getDescription()}</option>
-				   {/foreach}
-						<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
-				</select>
-			</div>
-			<div class="floatleft padd_left">
-				<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$departmentID}, {$companyEx})">
-					{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
-						<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
-					{/foreach}
-				</select>
-			</div>
-
-<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
-    <img src='images/ajax-loader.gif' height=16  style="float:left;">
-</div>
-</td>
-</tr>
-
-</table>
-
-{literal}
-    <script>
-        $("#recycle").click(function () {
-        $(".recycleview").slideToggle("slow");
-        });
-    </script>
-{/literal}
-
-{*/WASTE*}
-
-
-{*ADDPRODUCT*}
-{literal}
-    <script>
-    $(document).ready(function() {
-      $("#tabs").tabs();
-      $("#tabs").tabs( "select" , "fragment-2" )
-    });
-    </script>
-    <div id="tabs" style="width:98%;margin:0px 0px  0px 10px;" align="center">
-        <ul>
-            <li><a href="#fragment-1"><span>Single Product</span></a></li>
-            <li><a href="#fragment-2"><span>Pre-formulated products</span></a></li>
-        </ul>
-        <div id="fragment-1" style=" padding:0px;">
-        {/literal}
-        <table class="users" style="width:100%;" cellpadding="0" cellspacing="0" align="center" >
-            <tr class="users_u_top_size users_top_lightgray" >
-                <td colspan="2">Add product</td>
-            </tr>
-
-
-            <tr>
-                <td class="border_users_l border_users_b border_users_r" width="30%">
-                    Product :
-                </td>
-                <td class="border_users_r border_users_b">
-                    <div class="floatleft">
-
-                        {*NICE PRODUCT LIST*}
-                        <select name="selectProduct" id="selectProduct" class="addInventory">
-                            <!-- <option selected="selected" >Select Product</option> -->
-                            {if $products}
-                                {foreach from=$products item=productsArr key=supplier}
-                                    <optgroup label="{$supplier}">
-                                        {section name=i loop=$productsArr}
-                                            {assign var=isAdded value=0}
-                                            {section name=j loop=$productsAdded}
-                                                {if $productsAdded[j]->product_id eq $productsArr[i].product_id}
-                                                    {assign var=isAdded value=1}
-                                                {/if}
-                                            {/section}
-                                            {if $isAdded eq 0}
-                                                <option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data->product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>
-                                            {else}
-                                                <option value='{$productsArr[i].product_id}' disabled="disabled"> {$productsArr[i].formattedProduct} </option>
-                                            {/if}
-                                        {/section}
-                                    </optgroup>
-                                {/foreach}
-                            {else}
-                                <option value='0'> no products </option>
-                            {/if}
-                        </select>
-                        {*NICE PRODUCT LIST*}
-
-                    </div>
-                    {if $validStatus.summary eq 'false'}
-                        {if $validStatus.products eq 'noProducts'}
-                            {*ERORR*}
-                            <div class="error_img"><span class="error_text">No products in the mix!</span></div>
-                            {*/ERORR*}
-                        {/if}
-                    {/if}
-                </td>
-            </tr>
-
-            <tr>
-                <td class="border_users_l border_users_b border_users_r">
-                    Quantity :
-                </td>
-                <td class="border_users_r border_users_b">
-                    <div class="floatleft" ><input id="quantity" type='text' name='quantity' value='{$data->quantity}'></div>
-                    <script type="text/javascript">
-                                $("#quantity").numeric();
-                    </script>
-
-                    {if $validStatus.summary eq 'false'}
-                        {if $validStatus.quantity eq 'failed'}
-
-                            {*ERORR*}
-                            <div class="error_img"><span class="error_text">Error!</span></div>
-                            {*/ERORR*}
-                        {/if}
-                    {/if}
-
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="border_users_l border_users_b border_users_r">
-                    Unit type :
-                </td>
-                <td class="border_users_r border_users_b">
-                    <div class="floatleft">
-						<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();">
-
+						<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$departmentID}, {$companyEx})" >
 							{foreach from=$groupedUnitClasses item=unitClass}
 								<option>{$unitClass->getDescription()}</option>
 							{/foreach}
+							<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
 						</select>
 					</div>
 					<div class="floatleft padd_left">
-						<select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
+						<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$departmentID}, {$companyEx})">
 							{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
 								<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
 							{/foreach}
 						</select>
 					</div>
-					<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
 
-					{*ajax-preloader*}
-					<div id="selectUnittypePreloader" class="floatleft padd_left" style="display:none">
+					<div id="selectWasteUnittypePreloader" class="floatleft padd_left" style="display:none">
 						<img src='images/ajax-loader.gif' height=16  style="float:left;">
 					</div>
-
 				</td>
 			</tr>
 
-<tr>
-    <td class="border_users_l border_users_b border_users_r">
-        Product description :
-    </td>
-    <td class="border_users_r border_users_b">
-    <div class="floatleft"> <!-- 	<input type='text' id='product_desc' value='{$data->description}' readonly> -->
-            <span id="product_desc"></span>
-        </div>
-        {*ajax-preloader*}
-        <div id="product_descPreloader" class="floatleft padd_left" style="display:none">
-            <img src='images/ajax-loader.gif' height=16  style="float:left;">
-        </div>
-    </td>
-</tr>
+		</table>
 
-<tr>
-    <td class="border_users_l border_users_b border_users_r">
-        Coating type :
-    </td>
-    <td class="border_users_r border_users_b">
-    <div class="floatleft"> <!-- 	<input type='text' id='coating' value='{$data->coating}' readonly> -->
-            <span id="coating"></span>
-        </div>
-        {*ajax-preloader*}
-        <div id="coatingPreloader" class="floatleft padd_left" style="display:none">
-            <img src='images/ajax-loader.gif' height=16  style="float:left;">
-        </div>
-    </td>
-</tr>
-<tr>
-    <td class="border_users_l border_users_b border_users_r">
-        &nbsp;<div class="error_img" id="errorAddProduct" style="display:none;"><span class="error_text"></span></div>
-    </td>
-    <td class="border_users_r border_users_b">
-        <div align="left" class="buttonpadd">
-            <input type='button' class="button" value='Add product to list' onclick="addProduct2List()">
+		{literal}
+			<script>
+				$("#recycle").click(function () {
+				$(".recycleview").slideToggle("slow");
+				});
+			</script>
+		{/literal}
 
-        </div>
-
-    </td>
-</tr>
-</table>
-
-</div>
-<div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
-    {if $pfps|count > 0}
-
-        {if $pfpTypes|count > 0}
-            <div class="link_bookmark">
-			{if $selectedPfpType}
-				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
-			{else}
-				<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
-			{/if}
-
-            {foreach from=$pfpTypes item=pfpType}
-                {if $pfpType->name == $selectedPfpType}
-                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
-                {else}
-                    <a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a>
-
-                {/if}
-
-            {/foreach}
-            </div>
-        {/if}
-
-		{include file="tpls:tpls/_briefPfpList.tpl"}
-    {else}
-        You do not have any preformulated products yet
-    {/if}
+		{*/WASTE*}
 
 
-</div>
-</div>
-<!--  <div  style="width:200px; display:none; height:200px; position:absolute; background-color:Green; left:250px; top:500px;">
-            details
-      </div>
--->
-{*/ADDPRODUCT*}
+		{*ADDPRODUCT*}
+		{literal}
+			<script>
+			$(document).ready(function() {
+			  $("#tabs").tabs();
+			  $("#tabs").tabs( "select" , "fragment-2" )
+			});
+			</script>
+			<div id="tabs" style="width:98%;margin:0px 0px  0px 10px;" align="center">
+				<ul>
+					<li><a href="#fragment-1"><span>Single Product</span></a></li>
+					<li><a href="#fragment-2"><span>Pre-formulated products</span></a></li>
+				</ul>
+				<div id="fragment-1" style=" padding:0px;">
+				{/literal}
+				<table class="users" style="width:100%;" cellpadding="0" cellspacing="0" align="center" >
+					<tr class="users_u_top_size users_top_lightgray" >
+						<td colspan="2">Add product</td>
+					</tr>
 
-{*MIXLIMITS*}
-<table class="users"  width="100%" cellpadding="0" cellspacing="0" align="center">
-    <tr class="users_u_top_size users_top_lightgray" >
-        <td colspan="2">Emissions</td>
-    </tr>
-    <tr>
-        <td class="border_users_l border_users_b border_users_r" height="20" width="30%">
-            VOC:
-        </td>
-        <td class="border_users_r border_users_b">
-			<div>
-				<div style="float: left;">
-					<div id="VOC">{$data->voc}</div>
-				</div>
-				<div style="float: left;">
-					&nbsp; {$vocUnitType}
-				</div>
+
+					<tr>
+						<td class="border_users_l border_users_b border_users_r" width="30%">
+							Product :
+						</td>
+						<td class="border_users_r border_users_b">
+							<div class="floatleft">
+
+								{*NICE PRODUCT LIST*}
+								<select name="selectProduct" id="selectProduct" class="addInventory">
+									<!-- <option selected="selected" >Select Product</option> -->
+									{if $products}
+										{foreach from=$products item=productsArr key=supplier}
+											<optgroup label="{$supplier}">
+												{section name=i loop=$productsArr}
+													{assign var=isAdded value=0}
+													{section name=j loop=$productsAdded}
+														{if $productsAdded[j]->product_id eq $productsArr[i].product_id}
+															{assign var=isAdded value=1}
+														{/if}
+													{/section}
+													{if $isAdded eq 0}
+														<option value='{$productsArr[i].product_id}' {if $productsArr[i].product_id eq $data->product_id}selected="selected"{/if}> {$productsArr[i].formattedProduct} </option>
+													{else}
+														<option value='{$productsArr[i].product_id}' disabled="disabled"> {$productsArr[i].formattedProduct} </option>
+													{/if}
+												{/section}
+											</optgroup>
+										{/foreach}
+									{else}
+										<option value='0'> no products </option>
+									{/if}
+								</select>
+								{*NICE PRODUCT LIST*}
+
+							</div>
+							{if $validStatus.summary eq 'false'}
+								{if $validStatus.products eq 'noProducts'}
+									{*ERORR*}
+									<div class="error_img"><span class="error_text">No products in the mix!</span></div>
+									{*/ERORR*}
+								{/if}
+							{/if}
+						</td>
+					</tr>
+
+					<tr>
+						<td class="border_users_l border_users_b border_users_r">
+							Quantity :
+						</td>
+						<td class="border_users_r border_users_b">
+							<div class="floatleft" ><input id="quantity" type='text' name='quantity' value='{$data->quantity}'></div>
+							<script type="text/javascript">
+								$("#quantity").numeric();
+							</script>
+
+							{if $validStatus.summary eq 'false'}
+								{if $validStatus.quantity eq 'failed'}
+
+									{*ERORR*}
+									<div class="error_img"><span class="error_text">Error!</span></div>
+									{*/ERORR*}
+								{/if}
+							{/if}
+
+						</td>
+					</tr>
+
+
+					<tr>
+						<td class="border_users_l border_users_b border_users_r">
+							Unit type :
+						</td>
+						<td class="border_users_r border_users_b">
+							<div class="floatleft">
+								<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();">
+
+									{foreach from=$groupedUnitClasses item=unitClass}
+										<option>{$unitClass->getDescription()}</option>
+									{/foreach}
+								</select>
+							</div>
+							<div class="floatleft padd_left">
+								<select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
+									{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+										<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
+									{/foreach}
+								</select>
+							</div>
+							<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
+
+							{*ajax-preloader*}
+							<div id="selectUnittypePreloader" class="floatleft padd_left" style="display:none">
+								<img src='images/ajax-loader.gif' height=16  style="float:left;">
+							</div>
+
+						</td>
+					</tr>
+
+					<tr>
+						<td class="border_users_l border_users_b border_users_r">
+							Product description :
+						</td>
+						<td class="border_users_r border_users_b">
+						<div class="floatleft"> <!-- 	<input type='text' id='product_desc' value='{$data->description}' readonly> -->
+								<span id="product_desc"></span>
+							</div>
+							{*ajax-preloader*}
+							<div id="product_descPreloader" class="floatleft padd_left" style="display:none">
+								<img src='images/ajax-loader.gif' height=16  style="float:left;">
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="border_users_l border_users_b border_users_r">
+							Coating type :
+						</td>
+						<td class="border_users_r border_users_b">
+						<div class="floatleft"> <!-- 	<input type='text' id='coating' value='{$data->coating}' readonly> -->
+								<span id="coating"></span>
+							</div>
+							{*ajax-preloader*}
+							<div id="coatingPreloader" class="floatleft padd_left" style="display:none">
+								<img src='images/ajax-loader.gif' height=16  style="float:left;">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="border_users_l border_users_b border_users_r">
+							&nbsp;<div class="error_img" id="errorAddProduct" style="display:none;"><span class="error_text"></span></div>
+						</td>
+						<td class="border_users_r border_users_b">
+							<div align="left" class="buttonpadd">
+								<input type='button' class="button" value='Add product to list' onclick="addProduct2List()">
+
+							</div>
+
+						</td>
+					</tr>
+				</table>
+
 			</div>
-            <input type="hidden" name="voc" value="{$data->voc}">
-        </td>
-    </tr>
-    {*
-    <tr>
-    <td class="border_users_l border_users_b border_users_r" height="20">
-    VOCLX:
-    </td>
-    <td class="border_users_r border_users_b">
-    <div align="left" >{$data->voclx}</div>
-    <input type="hidden" name="voclx" value="{$data->voclx}">
-    </td>
-    </tr>
+			<div id="fragment-2" style="height:200px;overflow: auto;padding:0px;">
+				{if $pfps|count > 0}
 
-    <tr>
-    <td class="border_users_l border_users_b border_users_r" height="20">
-    VOCWX:
-    </td>
-    <td class="border_users_r border_users_b">
-    <div align="left" >{$data->vocwx}</div>
-    <input type="hidden" name="vocwx" value="{$data->vocwx}">
-    </td>
-    </tr>*}
-    <tr>
-        <td class="border_users_l border_users_b border_users_r" height="20">
-            Daily limit exceeded:
-        </td>
-        <td class="border_users_r border_users_b">
-            <div align="left" id="dailyLimitExceeded">
-        {if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
-    </div>
+					{if $pfpTypes|count > 0}
+						<div class="link_bookmark">
+							{if $selectedPfpType}
+								<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;"> all </a>
+							{else}
+								<a href="#" onclick="page.pfpManager.openPfpGroup(0, this);return false;" class="active_link"> all </a>
+							{/if}
 
-</td>
-</tr>
+							{foreach from=$pfpTypes item=pfpType}
+								{if $pfpType->name == $selectedPfpType}
+									<a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;" class="active_link"> {$pfpType->name} </a>
+								{else}
+									<a href="#" onclick="page.pfpManager.openPfpGroup({$pfpType->id}, this);return false;"> {$pfpType->name} </a>
 
-<tr>
-    <td class="border_users_l border_users_b border_users_r" height="20">
-        Department limit exceeded:
-    </td>
-    <td class="border_users_r border_users_b">
-        <div align="left" id="departmentLimitExceeded">
-    {if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
-</div>
+								{/if}
+
+							{/foreach}
+						</div>
+					{/if}
+
+					{include file="tpls:tpls/_briefPfpList.tpl"}
+				{else}
+					You do not have any preformulated products yet
+				{/if}
+
+
+			</div>
+		</div>
+		<!--  <div  style="width:200px; display:none; height:200px; position:absolute; background-color:Green; left:250px; top:500px;">
+					details
+			  </div>
+		-->
+		{*/ADDPRODUCT*}
+
+		{*MIXLIMITS*}
+		<table class="users"  width="100%" cellpadding="0" cellspacing="0" align="center">
+			<tr class="users_u_top_size users_top_lightgray" >
+				<td colspan="2">Emissions</td>
+			</tr>
+			<tr>
+				<td class="border_users_l border_users_b border_users_r" height="20" width="30%">
+					VOC:
+				</td>
+				<td class="border_users_r border_users_b">
+					<div>
+						<div style="float: left;">
+							<div id="VOC">{$data->voc}</div>
+						</div>
+						<div style="float: left;">
+							&nbsp; {$vocUnitType}
+						</div>
+					</div>
+					<input type="hidden" name="voc" value="{$data->voc}">
+				</td>
+			</tr>
+			{*
+			<tr>
+			<td class="border_users_l border_users_b border_users_r" height="20">
+			VOCLX:
+			</td>
+			<td class="border_users_r border_users_b">
+			<div align="left" >{$data->voclx}</div>
+			<input type="hidden" name="voclx" value="{$data->voclx}">
+			</td>
+			</tr>
+		
+			<tr>
+			<td class="border_users_l border_users_b border_users_r" height="20">
+			VOCWX:
+			</td>
+			<td class="border_users_r border_users_b">
+			<div align="left" >{$data->vocwx}</div>
+			<input type="hidden" name="vocwx" value="{$data->vocwx}">
+			</td>
+			</tr>*}
+			<tr>
+				<td class="border_users_l border_users_b border_users_r" height="20">
+					Daily limit exceeded:
+				</td>
+				<td class="border_users_r border_users_b">
+					<div align="left" id="dailyLimitExceeded">
+				{if $dailyLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
+			</div>
+
+		</td>
+	</tr>
+
+	<tr>
+		<td class="border_users_l border_users_b border_users_r" height="20">
+			Department limit exceeded:
+		</td>
+		<td class="border_users_r border_users_b">
+			<div align="left" id="departmentLimitExceeded">
+		{if $departmentLimitExceeded == true}<b>YES!!!</b>{else}no{/if}
+	</div>
 
 </td>
 </tr>
@@ -791,7 +791,7 @@ $(function()
 {*/MIXLIMITS*}
 
 <div align="right" class="buttonpadd">
-<!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
+	<!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
     {if $request.action eq "edit"}
         <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
     {else}
@@ -801,39 +801,55 @@ $(function()
 </div>
 
 
-<div class="padd7" style="display:none;" id="addProductsContainer">
-    <table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" >
-        <thead>
-            <tr class="users_u_top_size users_top_lightgray">
-                <td  class="border_users_l"   width="10%" > Select</td>
-                <td>Supplier</td>
-                <td>Product NR</td>
-                <td>Description</td>
-                <td>Quantity</td>
-                <td class="border_users_r">Unit type</td>
-            </tr>
-        </thead>
-        <tbody>
+<div class="padd7" id="addProductsContainer">
+	<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" style="display:none;">
+		<thead>
+			<tr class="users_u_top_size users_top_lightgray">
+				<td  class="border_users_l"   width="10%" > Select</td>
+				<td>Supplier</td>
+				<td>Product NR</td>
+				<td>Description</td>
+				<td>Quantity</td>
+				<td class="border_users_r">Unit type</td>
+			</tr>
+		</thead>
+		<tbody>
 
-        </tbody>
-        <tfoot>
-            <tr class="">
-                <td class="users_u_bottom" height="20">Select:
-                    <a href="#" onclick="selectAllProducts(true); return false;">All</a>
-                    <a href="#" onclick="selectAllProducts(false);return false;">None</a>
-                </td>
-                <td colspan="6" class="users_u_bottom_r">
+		</tbody>
+		<tfoot>
+			<tr class="">
+				<td class="users_u_bottom" height="20">Select:
+					<a href="#" onclick="selectAllProducts(true); return false;">All</a>
+					<a href="#" onclick="selectAllProducts(false);return false;">None</a>
+				</td>
+				<td colspan="6" class="users_u_bottom_r">
 
-                    <a href="#" onclick="clearSelectedProducts(); return false">Remove selected products from the list</a>
-                    {if $debug}
-                        <a href="#" onclick="alert(products.toJson()); return false;">Display Products</a>
-                    {/if}
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+					<a href="#" onclick="clearSelectedProducts(); return false">Remove selected products from the list</a>
+					{if $debug}
+						<a href="#" onclick="alert(products.toJson()); return false;">Display Products</a>
+					{/if}
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+				
+				
+				
+				
+<!--Add Proprietary Products-->
 
+	<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProprietaryProducts" style="display:none;">
+		<thead>
+			<tr class="users_u_top_size users_top_lightgray">
+				<td>Description</td>
+				<td>Quantity</td>
+				<td class="border_users_r">Unit type</td>
+			</tr>
+		</thead>
+		<tbody>
 
+		</tbody>
+	</table>
 
 
     {if $request.action eq "addItem"}

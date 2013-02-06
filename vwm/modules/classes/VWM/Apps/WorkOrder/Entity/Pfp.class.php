@@ -11,6 +11,8 @@ class Pfp extends Model {
 	protected $company_id;
 	protected $creator_id;
 	protected $last_update_time;
+	protected $isProprietary;
+	protected $products;
 
 	const TABLE_NAME = 'preformulated_products';
 
@@ -58,11 +60,23 @@ class Pfp extends Model {
 		$this->last_update_time = $last_update_time;
 	}
 
-
 	public function getProducts() {
-		
+		return $this->products;
 	}
 
+	public function setProducts($products) {
+		$this->products = $products;
+	}
+
+	public function getIsProprietary() {
+		return $this->isProprietary;
+	}
+
+	public function setIsProprietary($isProprietary) {
+		$this->isProprietary = $isProprietary;
+	}
+
+		
 
 	protected function _insert() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
@@ -94,6 +108,22 @@ class Pfp extends Model {
 		} else {
 			return false;
 		}
+	}
+	
+	
+	public function load() {
+		if (is_null($this->getId())) {
+			return false;
+		}
+
+		$sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE id =" .
+				$this->db->sqltext($this->getId());
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$row = $this->db->fetch(0);
+		$this->initByArray($row);
 	}
 
 	

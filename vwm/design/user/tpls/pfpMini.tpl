@@ -1,10 +1,12 @@
 <table class="pfpListItemSelected" style="width:100%;" name="pfp_details_products" cellpadding="0" cellspacing="0">
-<tr>
-	<td>Supplier</td>
-	<td>Product NR</td>
-	<td>Description</td>
-	<td>Ratio</td>
-</tr>
+	<tr>
+		<td>Supplier</td>
+		<td>Product NR</td>
+		<td>Description</td>
+		{if $pfp->getIsProprietary()!=1}
+			<td>Ratio</td>
+		{/if}
+	</tr>
 {assign var=i value=1}
 {assign var="pfpProducts" value=$pfp->getProducts()}
 {foreach from=$pfpProducts item=product}
@@ -13,7 +15,7 @@
 	<td>{$product->product_nr}</td>
 	<td>{$product->name}</td>
 	<td>
-		{if $product->isRange()}
+		{if $product->isRange() && $pfp->getIsProprietary()!=1}
 			{assign var="split_range" value="-"|explode:$product->getRangeRatio()}
 			<select style="width: 45px;" class="selectRange" id="prod_range_{$i-1}{*$product->product_id*}">
 				{section name=range start=$split_range[0] loop=$split_range[1]+1}
@@ -55,6 +57,7 @@ pfp_products = [];
 	
 pfp_id = {$pfp->getId()};
 pfp_descr = '{$pfp->getDescription()}';
+pfpIsProprieraty = {$pfp->getIsProprietary()}
 {literal}
 
 var ratioSelect = $("select.selectRange");
@@ -67,7 +70,7 @@ if (ratioSelect) {
 }
 	
 $("#pfp_"+pfp_id).click({ "pfp_products" : pfp_products, "pfp_id" : pfp_id, "pfp_descr" : pfp_descr}, function(e){
-	addPFPProducts(e.data.pfp_products, e.data.pfp_id, e.data.pfp_descr);
+	addPFPProducts(e.data.pfp_products, e.data.pfp_id, e.data.pfp_descr, pfpIsProprieraty);
 });
 {/literal}
 </script>
