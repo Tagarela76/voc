@@ -11,7 +11,7 @@ class Pfp extends Model {
 	protected $company_id;
 	protected $creator_id;
 	protected $last_update_time;
-	protected $isProprietary;
+	protected $is_proprietary;
 	protected $products;
 
 	const TABLE_NAME = 'preformulated_products';
@@ -69,11 +69,11 @@ class Pfp extends Model {
 	}
 
 	public function getIsProprietary() {
-		return $this->isProprietary;
+		return $this->is_proprietary;
 	}
 
 	public function setIsProprietary($isProprietary) {
-		$this->isProprietary = $isProprietary;
+		$this->is_proprietary = $isProprietary;
 	}
 
 		
