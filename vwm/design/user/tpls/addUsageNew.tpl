@@ -52,6 +52,7 @@
     {/if}
 
     {literal}
+		var uManager = new UnitTypeManager();
 $(function()
 {
     {/literal}
@@ -73,26 +74,45 @@ $(function()
 
     {/foreach}
 
+
+	// get unittype List
+	
+	{foreach from=$groupedUnitClasses item=unitClass}
+		{literal}
+		var uClass = new UnitClass();
+			
+		//unit types array
+		uClass.unitTypes = [];
+		//unitClasses array
+		
+			
+		uClass.name = {/literal}'{$unitClass->getName()}'{literal};
+		uClass.id = {/literal}{$unitClass->getId()}{literal};
+		uClass.description = {/literal}'{$unitClass->getDescription()}'{literal};
+			
+		{/literal}
+			{assign var='unitTypes' value=$unitClass->getUnitTypes()}
+		
+		{foreach from=$unitTypes item=unitType}
+			{literal}
+			var uType = new UnitType();
+			uType.name = '{/literal}{$unitType->getUnitTypeDesc()}{literal}';
+			uType.id = {/literal}{$unitType->getUnitTypeId()}{literal};
+				
+			uClass.unitTypes.push(uType);
+			{/literal}						
+		{/foreach}
+		{literal}
+			
+		uManager.groupedUnitClasses.push(uClass);
+			
+		{/literal}
+	{/foreach}
     {literal}
-
-
+		
 }
 );
 
-/*function createSelectUnittypeClass(id) {
-    sel = $("<select>").attr("id",id);
-
-    {/literal}
-
-		sel.attr('onchange','getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();');
-
-	{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
-		sel.append("<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->waste->unitTypeClass}selected='selected'{/if}>{$unitType->getUnitTypeDesc()}</option>");
-	{/foreach}
-	{literal}
-
-    return sel;
-}*/
 
 
 
@@ -800,7 +820,9 @@ $(function()
 
 </div>
 
-
+<div id='addProprietaryProductContainer' >
+</div>
+	
 <div class="padd7" id="addProductsContainer">
 	<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" style="display:none;">
 		<thead>

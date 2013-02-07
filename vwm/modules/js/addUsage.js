@@ -43,6 +43,62 @@ function PfpProduct() {
     this.unittype_id;
 }
 
+function UnitType(){
+	this.name;
+	this.id;
+}
+
+function UnitClass(){
+	this.name;
+	this.id;
+	this.description;
+	this.unitTypes = [];
+}
+
+function UnitTypeManager(){
+	
+
+	this.groupedUnitClasses = [];
+	/*
+	 *name of current Class
+	 *@string
+	 */
+	this.currentClassName;
+	
+	
+	var that = this;
+	
+	/**
+	 * function for getting Unit Type By Class
+	 * return UnitType[] 
+	 **/
+	this.getUnitTypeByClass = function(){
+		
+		var length = that.groupedUnitClasses.length;
+		for(var i=0; i<length; i++){
+			if(that.groupedUnitClasses[i].description == that.currentClassName){
+				return that.groupedUnitClasses[i].unitTypes;
+				break;
+			}
+		}
+	}
+	
+this.getProprietaryUnitType = function(select){
+		var html;
+		var unitTypes = uManager.getUnitTypeByClass(that.currentClassName)
+		var length = unitTypes.length;
+		for(var i=0; i<length; i++){
+			html+='<option value="'+unitTypes[i].id+'">';
+			html+=unitTypes[i].name;
+			html+='</option>';
+		}
+		select.empty();
+		select.append(html);
+	}
+	
+
+}
+
 // main class to manage pfps - kinda controller
 function PfpManager() {
     // which pfp type is opend by default
@@ -164,6 +220,11 @@ function PfpManager() {
     }
 
     this.renderProprietaryPfpForm = function() {
+		
+		var countOfUnitClasses = uManager.groupedUnitClasses.length;
+		//get first types
+		var countType = uManager.groupedUnitClasses[0].unitTypes.length;
+		
         var html = '<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProprietaryProducts" style="display: block;">';
 		html += '<thead>';
 		html += '   <tr class="users_u_top_size users_top_lightgray">';
@@ -173,115 +234,54 @@ function PfpManager() {
 		html +=	'</tr>';
 		html += '</thead>';
 		html += '<tbody>';
+		html+= '	<tr id="product_proprietary_row">';
+		html+= '		<td class="border_users_r border_users_b border_users_l">';
+		html+= '			Enter the quantity of product usage';
+		html+= '		</td >';
+		html+= '		<td class="border_users_r border_users_b">';
+		html+= '			<input type="number" min="0" id ="proprieratyProductQuantity">';
+		html+= '		</td >';
+		html+= '		<td class="border_users_r border_users_b">';
+		html+= '<select  id="proprietaryUnitClass">';
+			for(var i=0; i<countOfUnitClasses; i++){
+				html+='<option value="'+uManager.groupedUnitClasses[i].description+'">';
+				html+=uManager.groupedUnitClasses[i].description;
+				html+='</option>';
+			}
+		html+='</select>';
+		html+= '<select id="proprietaryUnitTypes">';
+		
+			for(var i=0; i<countType; i++){
+				html+='<option value="'+uManager.groupedUnitClasses[0].unitTypes[i].id+'">';
+				html+=uManager.groupedUnitClasses[0].unitTypes[i].name;
+				html+='</option>';
+			}
+		html+='</select>';
+		html+= '		</td >';
+		html+= '	</tr>';
         html += '</tbody>';
         html += '</table>';
-
-        $("#product_proprietary_row").remove();
-        $("#addedProprietaryProducts").find("tbody").append(html);
-        return true;
-        // stopped here
-
-        var productID = 1;
-        var text;
-        $("#addedProducts").css('display', 'none');
-        $("#addedProprietaryProducts").css('display', 'block');
-
-        // create <tr> tag
-        proprietaryTR = $("<tr>").attr({
-            id: "product_proprietary_row"
-        });
-
-        //create first <td> tag
-        td = $("<td>").attr({
-            "class": "border_users_r border_users_b border_users_l"
-        });
-        td.append('Enter the quantity of product usage');
-        //add <td> to <tr> tag
-        proprietaryTR.append(td);
-
-
-        //create textbox for Quantity
-        td = $("<td>").attr({
-            "class": "border_users_r border_users_b"
-        });
-        text = $("<input>").attr("type", "text").attr("id", "product_proprietary" + productID + "_quantity").val(quantity).numeric();
-
-        //calculate voc on text change
-        text.change({
-            "pfpProducts": pfp_products
+		
+		
+		$('#addProprietaryProductContainer').append(html);
+		
+		// add event for change Unit Class
+		$('#proprietaryUnitClass').change({
         }, function(eventObject) {
-            //setProprietaryProductQuantity(eventObject.data.pfpProducts);
-            //if(currentSelectedPFP != null){
-            calculateQuantityInPFPProprietaryProducts(eventObject.data.pfpProducts);
-            //}
-            //calculateVOC();
-
+			uManager.currentClassName = $('#proprietaryUnitClass').val();
+			uManager.getProprietaryUnitType($('#proprietaryUnitTypes'));
         });
-
-        td.append(text);
-        proprietaryTR.append(td);
-
-
-        //create select unit type for proprietary product usage
-        td = $("<td>").attr({
-            "class": "border_users_r border_users_b"
-        });
-
-        //get unittypes for unitType list
-        elUnittypeClass = createSelectUnittypeClass("product_proprietary_selectUnittypeClass_" + productID, unittypeClass);
-
-        elUnittypeClass.attr("name", "product_proprietary_selectUnittypeClass_" + productID);
-
-        product = products.getProduct(productID);
-        elUnittypeClass.attr('value', product.unittypeClass);
-
-        elUnittypeClass.change({
-            "productID": productID
+		
+		
+		//add event for change product Quantity
+        $('#proprieratyProductQuantity').change({
+            
         }, function(eventObject) {
-
-            getUnittypes(document.getElementById($(this).attr("name")), departmentId, companyEx);
-            setProductUnittype(eventObject.data.productID);
-            setProductUnittypeClass(eventObject.data.productID);
-
-            if (currentSelectedPFP != null) {
-                changeUnittypesInAllProducts(productID);
-            }
-
-            calculateVOC();
+			page.pfpManager.calculateVocByTotalPfpQuantity();
+            //calculateQuantityInPFPProprietaryProducts(eventObject.data.pfpProducts);
+		   
         });
-
-        td.append(elUnittypeClass);
-
-        //get types for unitType List
-        elUnittypeId = $("<select>");
-        id = 'product_proprietary_selectUnittype_' + productID;
-
-
-        elUnittypeId.attr('id', id).attr('name', id);
-        elUnittypeId.change({
-            "productID": productID
-        }, function(eventObject) {
-            setProductUnittype(eventObject.data.productID);
-
-            if (currentSelectedPFP != null) {
-                changeUnittypesInAllProducts(productID);
-            }
-
-            calculateVOC();
-        });
-
-
-        td.append(elUnittypeId);
-
-        proprietaryTR.append(td);
-
-        //add <tr> to proprietary product usage table
-
-        $("#product_proprietary_row").remove();
-        $("#addedProprietaryProducts").find("tbody").append(proprietaryTR);
-
-        getUnittypes(document.getElementById(elUnittypeClass.attr('id')), departmentId, companyEx);
-        calculateVOC();
+		
     }
 
 	this.getPfp = function(id) {
@@ -329,6 +329,47 @@ function PfpManager() {
     this.displayProprietaryPfpDetails = function(pfpProducts) {
         console.log(pfpProducts);
     }
+	
+	/*
+	 *function for calculate voc for proprietary pfp
+	 */
+	this.calculateVocByTotalPfpQuantity = function(){
+		
+		var i = 0;
+		var quantity = $("#proprieratyProductQuantity").val();
+		
+		var selectUnittypeClass = $("#proprietaryUnitClass").val();
+		var selectUnittype = $("#proprietaryUnitTypes").val();
+		var pfpProducts = this.productsOnPreview;
+		//get qyantity for all products
+		var ratio = 0;
+		
+		for(i=0; i<pfpProducts.length; i++){
+			primaryProduct = pfpProducts[i];
+			//get product ratio
+			if(primaryProduct.ratio > 0) {
+				delitel = parseFloat(primaryProduct.ratio);
+			} else {
+				delitel = 1;
+			}
+			// get common ratio
+			ratio += delitel;
+		}
+
+		//ratio for 1 unit
+		unitRatio =  ratio/quantity;
+		products.products = [];
+		for(i=0; i<pfpProducts.length; i++){
+			//get product quantity for each product
+			pfpProducts[i].quantity = pfpProducts[i].ratio/unitRatio;
+
+			products.addPFPProduct(pfpProducts[i].product_id, pfpProducts[i].quantity, selectUnittype, selectUnittypeClass,pfpProducts[i].ratio,pfpProducts[i].isPrimary,pfpProducts[i].isRange);
+
+		}
+		calculateVOC();
+	}
+	
+	
 }
 
 // END OF OOP VERSION
@@ -574,7 +615,7 @@ function initRecycle() {
 			data: urlData,
 			dataType: "html",
       		success: function (response)
-      			{ console.log(response);
+      			{
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
@@ -1753,6 +1794,9 @@ function initRecycle() {
  */
 function addProprietaryProduct(pfp_products, quantity, unittypeClass){
 	// textbox for quantity
+	
+	console.log(UnitTypeManager);
+	
 	var productID = pfp_products[0].productID
 	var text;
 	$("#addedProducts").css('display','none');
@@ -1856,11 +1900,6 @@ function addProprietaryProduct(pfp_products, quantity, unittypeClass){
 	calculateVOC();
 }
 
-function setProprietaryProductQuantity(pfpProducts){
-//productProprietary = $("#product_proprietary_selectUnittypeClass_"+pfpProducts[0].productID).val();
-}
-
-
 function calculateQuantityInPFPProprietaryProducts(pfpProducts){
 
 	var i = 0;
@@ -1889,9 +1928,10 @@ function calculateQuantityInPFPProprietaryProducts(pfpProducts){
 		//get product quantity for each product
 		pfpProducts[i].quantity = unitRatio * quantity/pfpProducts[i].ratio;
 
-		products.addPFPProduct(pfpProducts[i].productID, pfpProducts[i].quantity, selectUnittype, selectUnittypeClass,pfpProducts[i].ratio,pfpProducts[i].isPrimary,pfpProducts[i].isRange);
+		products.addPFPProduct(pfpProducts[i].product_id, pfpProducts[i].quantity, selectUnittype, selectUnittypeClass,pfpProducts[i].ratio,pfpProducts[i].isPrimary,pfpProducts[i].isRange);
 
 	}
 	calculateVOC();
 
 }
+
