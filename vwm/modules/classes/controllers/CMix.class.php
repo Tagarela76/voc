@@ -1590,12 +1590,12 @@ class CMix extends Controller {
 			//TODO: why? tooltip will be injected with special object
 			'modules/js/jquery.simpletip-1.3.1.pack.js',
 			'modules/js/flot/jquery.flot.js',
-			'modules/js/mixValidator.js?rev=jun22',
-			'modules/js/productObj.js',
-			'modules/js/productCollection.js',
-			'modules/js/mixObj.js?rev=jun22',
-			'modules/js/addUsage.js?rev=feb04',
-			'modules/js/Utils.js?rev=sep06',
+			'modules/js/mixValidator.js?rev=feb07',
+			'modules/js/productObj.js?rev=feb07',
+			'modules/js/productCollection.js?rev=feb07',
+			'modules/js/mixObj.js?rev=feb07',
+			'modules/js/addUsage.js?rev=feb07',
+			'modules/js/Utils.js?rev=feb07',
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);
 
@@ -1954,7 +1954,7 @@ class CMix extends Controller {
 
 		$apmethodObject = new Apmethod($this->db);
         $department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
-		$APMethod = $department->getDefaultAPMethod();
+		$APMethod = $department->getDefaultAPMethodList();
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}

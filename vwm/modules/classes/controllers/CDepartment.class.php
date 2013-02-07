@@ -85,7 +85,7 @@ class CDepartment extends Controller {
 		$this->setListCategoriesLeftNew($this->getFromRequest('category'), $this->getFromRequest('id'), $this->paramsForListLeft);
 		$this->setNavigationUpNew($this->getFromRequest('category'), $this->getFromRequest('id'));
 		$this->setPermissionsNew('viewDepartment');
-		
+
 		$this->smarty->assign("department", new VWM\Hierarchy\Department(
 				$this->db, $this->getFromRequest('id')));
 		$this->smarty->assign('backUrl', '?action=browseCategory&category=department&id=' . $this->getFromRequest("id") . '&bookmark=mix');
@@ -118,7 +118,7 @@ class CDepartment extends Controller {
 		$date = getdate();
 		$this->smarty->assign('curYear', $date['year']);
 
-		//	voc indicator 
+		//	voc indicator
 		$departments->initializeByID($this->getFromRequest('id'));
 		$usage = $departments->getCurrentUsage();
 
@@ -148,16 +148,16 @@ class CDepartment extends Controller {
 		$this->smarty->assign('displayNoxEmissionsTab', $displayNoxEmissionsTab);
 
 		$departmentClass = new VWM\Hierarchy\Department($this->db,$departmentDetails['department_id']);
-			
-			
+
+
 			$allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
-			
+
 			$departmentGauges = array();
 			$gaugeTypeNames = Gauge::getGaugeTypes();
 			$unittype = new Unittype($this->db);
 			foreach($allDepartmentAvailableGauges as $departmentGauge){
 				$unitType = $departmentGauge->getUnitType();
-				
+
 				if($departmentGauge->getGaugeType() == 4){
 					$departmentGauge->setUnitTypeName('');
 				}else{
@@ -166,12 +166,12 @@ class CDepartment extends Controller {
 				$departmentGauges[$departmentGauge->getGaugePriority()] = $departmentGauge;
 			}
 			ksort($departmentGauges);
-			
+
 		$this->smarty->assign("departmentGauges", $departmentGauges);
-		
-		
-		
-		
+
+
+
+
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -195,7 +195,7 @@ class CDepartment extends Controller {
 
 		$department = new VWM\Hierarchy\Department($this->db);
 		$department->setFacilityId($this->getFromRequest("facilityID"));
-		
+
 		$this->smarty->assign('department', $department);
 
 		$woLabel = $department->getFacility()
@@ -206,8 +206,8 @@ class CDepartment extends Controller {
 				->getLabelText();
 		$this->smarty->assign('woLabel',$woLabel);
 
-		
-		
+
+
 		//	set js scripts
 		$jsSources = array(
 			'modules/js/saveItem.js',
@@ -233,7 +233,7 @@ class CDepartment extends Controller {
 			throw new Exception('deny');
 		}
 		$department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
-		
+
 		$this->smarty->assign('department', $department);
 //var_dump($department);die();
 		$woLabel = $department->getFacility()
@@ -251,18 +251,18 @@ class CDepartment extends Controller {
 		$unitType = new Unittype($this->db);
 		$unittype =  $unitType->getDefaultCategoryUnitTypeList($this->getFromRequest('id'), $this->category);
 		$unittype = implode(',', $unittype);
-		
+
 		$apmethodObject = new Apmethod($this->db);
 		$defaultAPMethodList = $apmethodObject->getDefaultCategoryApmethodlist($this->getFromRequest('id'), $this->category);
 		$defaultAPMethodList = implode(',', $defaultAPMethodList);
 		$this->smarty->assign("defaultAPMethodList", $defaultAPMethodList);
-		
+
 		$this->smarty->assign("unittype", $unittype);
 		//	set js scripts
 		$jsSources = array(
-			'modules/js/saveItem.js',
-			'modules/js/PopupWindow.js',
-			'modules/js/checkBoxes.js',
+			'modules/js/saveItem.js?rev=feb07',
+			'modules/js/PopupWindow.js?rev=feb07',
+			'modules/js/checkBoxes.js?rev=feb07',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js',
@@ -270,7 +270,7 @@ class CDepartment extends Controller {
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js',
 			'modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js',
-			
+
 		);
 		$this->smarty->assign('jsSources', $jsSources);
 
@@ -299,7 +299,7 @@ class CDepartment extends Controller {
 		$pagination->url = "?action=browseCategory&category=" . $this->getFromRequest("category") . "&id=" . $this->getFromRequest("id") . "&bookmark=" . $this->getFromRequest("bookmark");
 		$departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr, $sortStr);
 
-		
+
 		for ($i = 0; $i < count($departmentList); $i++) {
 			$url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . "&bookmark=mix";
 			$departmentList[$i]['url'] = $url;
@@ -313,19 +313,19 @@ class CDepartment extends Controller {
 				$departmentList[$i]["valid"] = "valid";
 			}
 
-			
+
 			//Create gauges for departments
 			$departmentClass = new VWM\Hierarchy\Department($this->db,$departmentList[$i]['id']);
-			
-			
+
+
 			$allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
-			
+
 			$departmentGauges = array();
 			$gaugeTypeNames = Gauge::getGaugeTypes();
 			$unittype = new Unittype($this->db);
 			foreach($allDepartmentAvailableGauges as $departmentGauge){
 				$unitType = $departmentGauge->getUnitType();
-				
+
 				if($departmentGauge->getGaugeType() == 4){
 					$departmentGauge->setUnitTypeName('');
 				}else{
@@ -335,9 +335,9 @@ class CDepartment extends Controller {
 			}
 			ksort($departmentGauges);
 			$departmentList[$i]['gauges'] = $departmentGauges;
-			
+
 		}
-		
+
 		$this->smarty->assign("childCategoryItems", $departmentList);
 		//	voc indicator
 		//	set js scripts
@@ -349,18 +349,18 @@ class CDepartment extends Controller {
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		$this->smarty->assign('cssSources', $cssSources);
 
-		
+
 		$facilityClass = new VWM\Hierarchy\Facility($this->db, $facilityDetails['facility_id']);
-			
-			
+
+
 			$allFacilityAvailableGauges = $facilityClass->getAllAvailableGauges();
-			
+
 			$facilityGauges = array();
 			$gaugeTypeNames = Gauge::getGaugeTypes();
 			$unittype = new Unittype($this->db);
 			foreach($allFacilityAvailableGauges as $facilityGauge){
 				$unitType = $facilityGauge->getUnitType();
-				
+
 				if($facilityGauge->getGaugeType() == 4){
 					$facilityGauge->setUnitTypeName('');
 				}else{
