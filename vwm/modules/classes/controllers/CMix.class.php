@@ -173,13 +173,13 @@ class CMix extends Controller {
 	protected function actionGetPFPDetailsAjax() {
 		$manager = new PFPManager($this->db);
 		$pfp = $manager->getPFP($this->getFromRequest("pfp_id"));
-		
+
 		//	uncomment this code when return JSON
 		/*$output = new stdClass();
 		$output->id = $pfp->id;
 		$output->pfp = $pfp;
 		echo json_encode($output);*/
-		
+
 		$this->smarty->assign("pfp", $pfp);
 		echo $this->smarty->fetch("tpls/pfpMini.tpl");
 		exit;
@@ -419,7 +419,7 @@ class CMix extends Controller {
 		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
 	}
 
-	/**	 
+	/**
 	 * bookmarkDMix($vars)
 	 * @vars $vars array of variables: $moduleMap, $departmentDetails, $facilityDetails, $companyDetails
 	 */
@@ -428,7 +428,7 @@ class CMix extends Controller {
 			header("Location: {$_SERVER['REQUEST_URI']}&tab=mixes");
 		}
 		extract($vars);
-		
+
 		if ($tab == "pfp") {
 			$this->bookmarkDpfp($vars);
 		} else {
@@ -441,7 +441,7 @@ class CMix extends Controller {
 			$filterStr = $this->filterList('mix', $dateFormat);
 
 			$mixManager = new MixManager($this->db, $this->getFromRequest('id'));
-			$departmentNew = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));			
+			$departmentNew = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
 
 			//	set search criteria
 			if (!is_null($this->getFromRequest('q'))) {
@@ -491,11 +491,11 @@ class CMix extends Controller {
                 $mixFiltered = array(); // array for new mix list
                 $repairOrderManager = new RepairOrderManager($this->db);
                 foreach ($mixList as $mix) {
-                    $acceptedDepartments = $repairOrderManager->getDepartmentsByWo($mix->wo_id); 
+                    $acceptedDepartments = $repairOrderManager->getDepartmentsByWo($mix->wo_id);
                     if (!$acceptedDepartments) {
                         // accept in all departments
                         $mixFiltered[] = $mix;
-                    } else { 
+                    } else {
                         if (in_array($departmentDetails['department_id'], $acceptedDepartments)) {
                             $mixFiltered[] = $mix;
                         }
@@ -539,7 +539,7 @@ class CMix extends Controller {
 						}
 					}
 
-					$mix->getHasChild(); 
+					$mix->getHasChild();
 				}
 
 				//save to cache
@@ -553,7 +553,7 @@ class CMix extends Controller {
 			}
 
 
-			if (is_array($mixList) && count($mixList) > 0 && !is_null($this->getFromRequest('export'))) { 
+			if (is_array($mixList) && count($mixList) > 0 && !is_null($this->getFromRequest('export'))) {
 				//	EXPORT THIS PAGE
 				$exporter = new Exporter(Exporter::PDF);
 				$exporter->company = $companyDetails['name'];
@@ -593,7 +593,7 @@ class CMix extends Controller {
 				die();
 				return ;
 			}
-			// I need get company's industry type 
+			// I need get company's industry type
             // we should get browse category entity for mix
 			$browseCategoryEntity = new BrowseCategoryEntity($this->db);
 			$browseCategoryMix = $browseCategoryEntity->getBrowseCategoryMix();
@@ -622,14 +622,14 @@ class CMix extends Controller {
                 $mixFormatObj = array();
                 $mixObj = array();
                 $widths = array();
-				// create new mix object	
+				// create new mix object
 				$repairOrder = $mix->getRepairOrder();
                 if (in_array("r_o_description", $mixColumn4Display)) {
 					$mixObj["r_o_description"] = $repairOrder->description;
 				}
 				if (in_array("add_job", $mixColumn4Display)) {
 					$mixObj["add_job"] = (!$mix->hasChild && $mix->wo_id)?
-					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') . 
+					"<a href='?action=addItem&category=mix&departmentID=" . $this->getFromRequest('id') .
 						"&parentMixID=" . $mix->mix_id . "&repairOrderId=" . $mix->wo_id . "'
 							title='Add child job'>add</a> &nbsp" : "";
 				}
@@ -641,7 +641,7 @@ class CMix extends Controller {
                             $productName = $item->name;
                         }
                     }
-					$mixObj["product_name"] = $productName; 
+					$mixObj["product_name"] = $productName;
 				}
 				if (in_array("description", $mixColumn4Display)) {
 					$mixObj["description"] = $mix->description;
@@ -656,13 +656,13 @@ class CMix extends Controller {
 					$mixObj["voc"] = $mix->voc;
 				}
                 if (in_array("unit_type", $mixColumn4Display)) {
-					$mixObj["unit_type"] = $vocUnitType; 
+					$mixObj["unit_type"] = $vocUnitType;
 				}
 				if (in_array("creation_date", $mixColumn4Display)) {
-					$mixObj["creation_date"] = $mix->creation_time; 
+					$mixObj["creation_date"] = $mix->creation_time;
 				}
 				if (in_array("spent_time", $mixColumn4Display)) {
-					$mixObj["spent_time"] = $mix->spent_time; 
+					$mixObj["spent_time"] = $mix->spent_time;
 				}
                 // sort values
                 foreach ($mixColumn4Display as $columnId) {
@@ -670,23 +670,23 @@ class CMix extends Controller {
                     $widths[] = $widths4column["$columnId"];
                 }
 				$mixObjList["mixObject"] = $mixFormatObj;
-				$mixObjList["valid"] = $mix->valid; 
+				$mixObjList["valid"] = $mix->valid;
 				$mixObjList["url"] = $mix->url; // it is fix value (always display
 				$mixObjList["mix_id"] = $mix->mix_id; // it is fix value (always display
 				$mixFormatObjList[] = $mixObjList;
 			}
-       
+
             $mixColumn4DisplayFormat = array();
             foreach ($mixColumn4Display as $columnId) {
                 $mixColumn4DisplayFormat[] = $company->getIndustryType()->getLabelManager()->getLabel($columnId)->getLabelText();
             }
-       
+
 
 			$this->smarty->assign('widths', $widths);
 			$this->smarty->assign('columnCount', count($mixColumn4DisplayFormat));
 			$this->smarty->assign('mixColumn4Display', $mixColumn4DisplayFormat);
 			$this->smarty->assign('mixFormatObjList', $mixFormatObjList);
-			
+
 			$this->smarty->assign('vocUnitType', $vocUnitType);
 			$this->smarty->assign('childCategoryItems', $mixList);
 			//set js scripts
@@ -828,7 +828,7 @@ class CMix extends Controller {
 			var_dump($_REQUEST);
 		}
 
-		$form = $_REQUEST;		
+		$form = $_REQUEST;
 
 		if (!isset($form['id'])) {
 			echo json_encode(array('mix_error' => 'No mix ID!!'));
@@ -924,7 +924,7 @@ class CMix extends Controller {
 				//echo "<p>Waste stream validation failed</p>";
 			}
 		}
-		
+
 		if (!isset($form['mix']) || !$this->validateInputMix($form['mix'])) {
 			echo json_encode(array('mix_error' => 'Mix error!'));
 			exit;
@@ -969,8 +969,8 @@ class CMix extends Controller {
 	}
 
 	protected function actionAddItemAjax() {
-		$form = $_REQUEST; 
-		
+		$form = $_REQUEST;
+
 //$debug = true;
 		if ($form['debug']) {
 			$debug = true;
@@ -1101,7 +1101,7 @@ class CMix extends Controller {
 		if($jmix->step_id!=''){
 			$mix->setStepId($jmix->step_id);
 		}
-		
+
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
@@ -1113,7 +1113,7 @@ class CMix extends Controller {
 
 	protected function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null) {
 //$debug =true;
-		
+
 		if ($isMWS) {
 			//here we calculate total waste for voc calculations
 			$params = array(
@@ -1178,7 +1178,7 @@ class CMix extends Controller {
 		$mix->debug = $debug;
 		$mix->recycle = $jrecycle;
 		//$mix->setWoId(777);
-		
+
 		//Create Repair Order if not exist
 		if (is_null($mix->getWoId())) {
 			$repairOrder = new RepairOrder($this->db);
@@ -1190,9 +1190,9 @@ class CMix extends Controller {
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		}
-		
+
 		$newMixID = $mix->save($isMWS, $optMix);
-		
+
 		if (!$newMixID) {
 			echo "Failed to save Mix. Please contact system administrator";
 			exit;
@@ -1255,7 +1255,7 @@ class CMix extends Controller {
 	protected function buildMix($m) {
 
 		$optMix = new MixOptimized($this->db);
-		
+
 		$optMix->department_id = $_REQUEST['departmentID'];
 		$optMix->equipment_id = $m->equipment;
 		$optMix->description = $m->description;
@@ -1293,8 +1293,8 @@ class CMix extends Controller {
 		$basemix->unittypeClass = $formMix->selectUnittypeClass;
 	}
 
-	protected function validateInputMix($m) {				
-		$m = json_decode($m);				
+	protected function validateInputMix($m) {
+		$m = json_decode($m);
 		if (empty($m->description) || empty($m->creationTime)) {
 			return false;
 		}
@@ -1320,7 +1320,7 @@ class CMix extends Controller {
 		return empty($productConflitcs) ? true : $productConflitcs;
 	}
 
-	protected function actionAddItem() {		
+	protected function actionAddItem() {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
@@ -1454,7 +1454,7 @@ class CMix extends Controller {
 
 	protected function addEdit($action, $departmentID) {
 		$form = $this->getFromPost();
-		
+
 		/** protecting from xss * */
 		foreach ($form as $key => $value) {
 			$form[$key] = Reform::HtmlEncode($value);
@@ -1464,35 +1464,35 @@ class CMix extends Controller {
 		$company = new Company($this->db);
 		$facility = new Facility($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
-		
+
 		$pfpmanager = new PFPManager($this->db);
-		
-		
-		
+
+
+
 		$currentPfpType = new PfpTypes($this->db);
 		$currentPfpType->id = 0;
 		$currentPfpType->name = 'all';
 		$currentPfpType->facility_id = 0;
-		
+
 
 		//$department = new Department($this->db);
 		$department = new \VWM\Hierarchy\Department($this->db, $departmentID);
 		$facilityID = $department->getFacilityId();
 		$pfpTypes = $department->getPfpTypes();
-		
-		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);		
-		
+
+		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0, $selectedPfpType);
+
 		$this->smarty->assign("pfps", json_encode($pfps));
-		
+
 		$selectedPfpType = $this->getFromRequest("selectedPfpType");
 		if(is_null($selectedPfpType)){
 			$selectedPfpType = $pfpTypes[0]->name;
 		}
-		
+
 		$this->smarty->assign('selectedPfpType', $selectedPfpType);
 		$this->smarty->assign('currentPfpType', $currentPfpType);
 		$this->smarty->assign('pfpTypes', $pfpTypes);
-		
+
 		$ms = new ModuleSystem($this->db);
 		$moduleMap = $ms->getModulesMap();
 		foreach ($moduleMap as $key => $module) {
@@ -1604,28 +1604,28 @@ class CMix extends Controller {
 		if ($_GET['debug']) {
 			$this->smarty->assign('debug', true);
 		}
-		
+
 		// i want to add tooltip plugin
 		$libraryInjection = new LibraryInjection($this->smarty);
-		$libraryInjection->injectToolTip(); 
-		
+		$libraryInjection->injectToolTip();
+
 		//TODO: inject libraries like this
 		// $this->getLibraryInjection()->injectToolTip();
-		
+
 		// Repair order or Working Order
         $companyLevelLabel = new CompanyLevelLabel($this->db);
-        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();     
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
         $companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
-        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText(); 
-            
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-		
+
 		// for displaying voc unit type
 		$unittype = new Unittype($this->db);
 		$companyDetails = $company->getCompanyDetails($companyID);
 		$vocUnitType = $unittype->getNameByID($companyDetails["voc_unittype_id"]);
 		$this->smarty->assign('vocUnitType', $vocUnitType);
-		$this->smarty->assign('sendFormAction', 
+		$this->smarty->assign('sendFormAction',
 				'?action=' . $action . '&category=' . $this->category . (($action == 'addItem') ? '&departmentID=' . $departmentID : '&id=' . $this->getFromRequest('id')));
 		$this->smarty->assign('tpl', 'tpls/addUsageNew.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -1808,7 +1808,7 @@ class CMix extends Controller {
 	protected function showAdd($departmentID) {
 
 		$request = $this->getFromRequest();
-		
+
 		$request['id'] = $departmentID;
 		$request['parent_category'] = $this->parent_category;
 
@@ -1821,9 +1821,9 @@ class CMix extends Controller {
 		$equipment = new Equipment($this->db);
 		$equipmentList = $equipment->getEquipmentList($departmentID);
 		$this->smarty->assign('equipment', $equipmentList);
-		
+
 		$department = new VWM\Hierarchy\Department($this->db, $departmentID);
-		
+
 		$apmethodObject = new Apmethod($this->db);
 		$APMethod = $department->getDefaultAPMethod();
 		//$APMethod = $apmethodObject->getDefaultApmethodDescriptions($companyID);
@@ -1834,7 +1834,7 @@ class CMix extends Controller {
 		//	Get rule list
 		$rule = new Rule($this->db);
 		$customizedRuleList = $rule->getCustomizedRuleList($_SESSION['user_id'], $companyID, $departmentDetails['facility_id'], $departmentID);
-		
+
 		$this->smarty->assign('rules', $customizedRuleList);
 
 		//	Getting Product list
@@ -1865,44 +1865,44 @@ class CMix extends Controller {
 
 		$unittype = new Unittype($this->db);
 		$unitTypeClass = $unittype->getUnittypeClass($unitTypeEx[0]['unittype_id']);
-		
-		
+
+
 		$department->setUnitTypeClass($unitTypeClass);
 		$unittypeListDefault = $department->getUnitTypeList();
-		
+
 		if (empty($unittypeListDefault)) {
 			$unittypeListDefault = $unittype->getUnittypeListDefault($unitTypeClass);
 		}
-		
+
 		$data->unitTypeClass = $unitTypeClass;
 		$mix = new MixOptimized($this->db);
 		$mix->iniWaste(false, $unittypeListDefault);
 		$mix->iniRecycle(false, $unittypeListDefault);
 		$mix->department_id = $departmentID;
 		$mix->creation_time = strtotime("now");
-		
+
 		if($request['stepID']!=0){
 			$mix->setStepId($request['stepID']);
 		}
-		
+
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
 		$data->recycle = $mix->recycle;
- 
+
 		//	do I need to add work order suffix?
 		$repairOrderIteration = 0;
 		$mixParentID = $this->getFromRequest('parentMixID');
-		
+
 		// this mix was added to WO , add suffix ?
 		$repairOrderId = $this->getFromRequest('repairOrderId');
 
 		//get procces for mix
 		$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
         $industryTypeId = $companyNew->getIndustryType();
-		
+
 		$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $repairOrderId);
-		
+
 		if($mixParentID) {
 			$parentMix = new MixOptimized($this->db, $mixParentID);
 			$repairOrderIteration = $parentMix->iteration + 1;
@@ -1910,9 +1910,9 @@ class CMix extends Controller {
 		}else{
 			$data->description = $workOrder->getNumber();
 		}
-		
+
 		$process = $workOrder->getProcess();
-				
+
 		if (!is_null($process->getId()) && $request['stepID']!=0) {
 			$step = new \VWM\Apps\Process\Step($this->db, $request['stepID']);
 			if($step) {
@@ -1924,15 +1924,15 @@ class CMix extends Controller {
 				$this->smarty->assign('stepID', $step->getId());
 			} else {
 				// that is ok, just continue
-			}					
+			}
 		}
 
-		
+
 		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
-		
+
 		$this->smarty->assign('repairOrderId', $repairOrderId);
-		
+
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeListDefault);
 	}
@@ -1975,7 +1975,8 @@ class CMix extends Controller {
 		$unittypeList = $this->getUnitTypeList($optMix->company->company_id);
 
 		$apmethodObject = new Apmethod($this->db);
-		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($optMix->company->company_id);
+        $department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
+		$APMethod = $department->getDefaultAPMethod();
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}
