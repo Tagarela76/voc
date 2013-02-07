@@ -373,12 +373,9 @@ class MixOptimized extends Model {
 		if ($this->products && is_array($this->products) && count($this->products) > 0) {
 			$insertProductsQuery = $this->getInsertProductsQuery($this->mix_id);
 		} else {
-			// we can update mix without do it if this mix is work order
-			if (!isset($this->wo_id) || $this->iteration != 0) {
-				//	no sense t save mix without products
-				$this->db->rollbackTransaction();
-				return false;
-			}
+			//	no sense t save mix without products
+			$this->db->rollbackTransaction();
+			return false;
 		}
 
 		if(!$this->db->query($updateMixQuery)) {

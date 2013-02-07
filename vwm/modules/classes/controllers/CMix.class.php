@@ -1470,9 +1470,9 @@ class CMix extends Controller {
 		//	get all pfps assigned (does not depend from pfpType)
 		$pfpmanager = new PFPManager($this->db);
 		$pfps = $pfpmanager->getListAssigned($companyID, null, null, 0, 0);
+
 		$this->smarty->assign("pfps", json_encode($pfps));
 
-		//	if user did not specified pfp type use the first one if exist
 		$selectedPfpType = $this->getFromRequest("selectedPfpType");
 		if(is_null($selectedPfpType) && count($pfpTypes) > 0) {
 			$selectedPfpType = $pfpTypes[0]->name;
@@ -1917,6 +1917,7 @@ class CMix extends Controller {
 		$this->smarty->assign('repairOrderId', $repairOrderId);
 		$this->smarty->assign('departmentID', $department->getDepartmentId());
 		$this->smarty->assign('companyID', $companyId);
+
 		$this->smarty->assign('data', $data);
 		$this->smarty->assign('unittype', $unittypeOldListDefault);
 	}
@@ -1952,7 +1953,8 @@ class CMix extends Controller {
 		$unittypeList = $this->getUnitTypeList($optMix->company->company_id);
 
 		$apmethodObject = new Apmethod($this->db);
-		$APMethod = $apmethodObject->getDefaultApmethodDescriptions($optMix->company->company_id);
+        $department = new \VWM\Hierarchy\Department($this->db, $optMix->department_id);
+		$APMethod = $department->getDefaultAPMethod();
 		if (!isset($APMethod) or empty($APMethod)) {
 			$APMethod = $apmethodObject->getApmethodList(null);
 		}

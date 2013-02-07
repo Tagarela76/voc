@@ -137,6 +137,7 @@ $(function()
 
 	$(document).ready(function() {
 		//openPfpGroup for first element to make it default
+
 		page.pfpManager.currentPfpType = {
 			"id":"{/literal}{$currentPfpType->id}{literal}",
 			"name":"{/literal}{$currentPfpType->name}{literal}",
