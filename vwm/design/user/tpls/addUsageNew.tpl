@@ -16,6 +16,7 @@
 	var departmentId ="{$departmentID}"
 	var companyEx="{$companyEx}";
 	var recycle = new Object();
+	
     {if $show.waste_streams != true}
 
 

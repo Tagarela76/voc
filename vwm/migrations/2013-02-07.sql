@@ -1,0 +1,1 @@
+ALTER TABLE  `mix` ADD  `pfp_id` INT( 255 ) NULL DEFAULT NULL

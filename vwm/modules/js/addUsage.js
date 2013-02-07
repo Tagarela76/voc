@@ -64,6 +64,7 @@ function UnitTypeManager(){
 	 *@string
 	 */
 	this.currentClassName;
+	this.currentTypeId;
 	
 	
 	var that = this;
@@ -74,10 +75,10 @@ function UnitTypeManager(){
 	 **/
 	this.getUnitTypeByClass = function(){
 		
-		var length = that.groupedUnitClasses.length;
+		var length = this.groupedUnitClasses.length;
 		for(var i=0; i<length; i++){
-			if(that.groupedUnitClasses[i].description == that.currentClassName){
-				return that.groupedUnitClasses[i].unitTypes;
+			if(this.groupedUnitClasses[i].description == this.currentClassName){
+				return this.groupedUnitClasses[i].unitTypes;
 				break;
 			}
 		}
@@ -85,7 +86,7 @@ function UnitTypeManager(){
 	
 this.getProprietaryUnitType = function(select){
 		var html;
-		var unitTypes = uManager.getUnitTypeByClass(that.currentClassName)
+		var unitTypes = uManager.getUnitTypeByClass(this.currentClassName)
 		var length = unitTypes.length;
 		for(var i=0; i<length; i++){
 			html+='<option value="'+unitTypes[i].id+'">';
@@ -95,6 +96,13 @@ this.getProprietaryUnitType = function(select){
 		select.empty();
 		select.append(html);
 	}
+	
+this.setUnitClassToProduct = function(){
+	var length = products.products.length;
+	for (var i=0;i<length; i++){
+		products.products[i].selectUnittype = this.currentTypeId;
+	}
+}
 	
 
 }
@@ -270,6 +278,8 @@ function PfpManager() {
         }, function(eventObject) {
 			uManager.currentClassName = $('#proprietaryUnitClass').val();
 			uManager.getProprietaryUnitType($('#proprietaryUnitTypes'));
+			uManager.setUnitClassToProduct();
+			page.pfpManager.calculateVocByTotalPfpQuantity();
         });
 		
 		
@@ -278,9 +288,17 @@ function PfpManager() {
             
         }, function(eventObject) {
 			page.pfpManager.calculateVocByTotalPfpQuantity();
-            //calculateQuantityInPFPProprietaryProducts(eventObject.data.pfpProducts);
-		   
         });
+		
+		$('#proprietaryUnitTypes').change({
+            
+        }, function(eventObject) {
+			uManager.currentTypeId = $('#proprietaryUnitTypes').val();
+			uManager.setUnitClassToProduct();
+			page.pfpManager.calculateVocByTotalPfpQuantity();
+        });
+		
+		
 		
     }
 
@@ -555,6 +573,8 @@ function initRecycle() {
 		mixObj.setIteration($("#repairOrderIteration").val());
 		mixObj.setParentID($("#mixParentID").val());
 		mixObj.setStepId($("#StepID").val());
+		
+		mixObj.setPfpId(pfp_id);
 		if ($("#repairOrderId").val() != '') {
 			mixObj.setRepairOrderId($("#repairOrderId").val());
 		}
@@ -616,6 +636,7 @@ function initRecycle() {
 			dataType: "html",
       		success: function (response)
       			{
+					
       				if(response == 'DONE') {
       					if( true) {
       						document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";

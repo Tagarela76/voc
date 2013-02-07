@@ -179,7 +179,7 @@ class CMix extends Controller {
 		$output->id = $pfp->id;
 		$output->pfp = $pfp;
 		echo json_encode($output);*/
-
+		
 		$this->smarty->assign("pfp", $pfp);
 		echo $this->smarty->fetch("tpls/pfpMini.tpl");
 		exit;
@@ -1099,7 +1099,9 @@ class CMix extends Controller {
 		if($jmix->step_id!=''){
 			$mix->setStepId($jmix->step_id);
 		}
-
+		
+		$mix->setPfpId($jmix->pfpId);
+		
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
@@ -1188,7 +1190,7 @@ class CMix extends Controller {
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		}
-
+		
 		$newMixID = $mix->save($isMWS, $optMix);
 
 		if (!$newMixID) {

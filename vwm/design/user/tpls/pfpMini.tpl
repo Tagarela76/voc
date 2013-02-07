@@ -46,7 +46,9 @@
 <script type="text/javascript">
     $(function()
     {
-
+		
+		
+		pfp_id = '{/literal}{$pfp->getId()}{literal}';
         page.pfpManager.productsOnPreview = [];
 
         {/literal}{foreach from=$pfpProducts item=product}{literal}
@@ -64,6 +66,8 @@
         $("#pfp_"+"{/literal}{$pfp->getId()}{literal}").click(function(e) {
             page.pfpManager.onClickSelectPreformulatedProducts();
         });
+			
+			
 
     });
 </script>
@@ -110,3 +114,4 @@ $("#pfp_"+pfp_id).click({ "pfp_products" : pfp_products, "pfp_id" : pfp_id, "pfp
 {/literal}
 </script>
 {/if}
+
