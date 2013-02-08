@@ -437,7 +437,6 @@ class CMix extends Controller {
 			$dateFormat = $chain->getFromTypeController('getFormat');
 			$sortStr = $this->sortList('mix', 2);
 			$filterStr = $this->filterList('mix', $dateFormat);
-
 			$mixManager = new MixManager($this->db, $this->getFromRequest('id'));
 			$departmentNew = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
 
@@ -452,7 +451,7 @@ class CMix extends Controller {
 			$url = preg_replace("/\&page=\d*/","", $url);
 			$url = preg_replace("/\&sort=\d*/","", $url);
 
-			$mixCount = $departmentNew->getCountMix();
+			$mixCount = $departmentNew->getCountMix($filterStr);
 
 			if ($this->getFromRequest('export')) {
 				$pagination = null;
@@ -481,7 +480,7 @@ class CMix extends Controller {
 				$mixHover = new Hover();
 
 				//$mixList = $mixManager->getMixListInFacility($departmentDetails['facility_id'], $pagination, $filterStr);
-				$mixList = $departmentNew->getMixList($pagination);
+				$mixList = $departmentNew->getMixList($pagination, $filterStr);
 				if (!$mixList) {
 					$mixList = array();
 				}
