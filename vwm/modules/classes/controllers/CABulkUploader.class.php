@@ -89,6 +89,7 @@ class CABulkUploader extends Controller {
 						foreach ($products as $key => $product) {
 							$products[$key] = $this->convertOzRatioToVolume($product);
 						}
+						
 						$products = $this->convertFromCumulativeQty($products);
 					}
 
@@ -453,11 +454,28 @@ class CABulkUploader extends Controller {
 	}
 
 
+	
+	
 	private function convertFromCumulativeQty($products) {
+		$productsCount = count($products);
+		$i=0;
+		while($i!=($productsCount-1)){
+			$products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i+1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
+			$i++;
+			$products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+		}
+		return $products;
+	}
+	
+	/*
+	 * old code
+	 */
+	private function oldConvertFromCumulativeQty($products) {
 		$productsCount = count($products);
 
 		for($i = 0; $i < $productsCount; $i++ ) {
 			if ($i > 0) {
+				
 				$cumulativeQty = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i-1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
 				$products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $cumulativeQty;
 			}

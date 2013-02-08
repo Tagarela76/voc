@@ -211,7 +211,7 @@ class bulkUploader4PFP {
 					", " .$ratio_to_original.
 					", {$productIDS[$i]}, {$pfp_id}, {$primary})";
 			$this->db->query($sql);
-//var_dump($sql);die();
+
 			$primary = 0;
 		}
 		return $actionLog;

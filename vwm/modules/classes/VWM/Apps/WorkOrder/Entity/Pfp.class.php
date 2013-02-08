@@ -184,6 +184,25 @@ class Pfp extends Model {
 		}
 		
 	}
+	
+	public function getProductsCount(){
+		return count($this->getProducts());
+	}
+	
+	
+	public function getRatio($htmlFormatting) {
+		
+		$products = $this->getProducts();
+		
+        foreach ($products as $product) {
+            if($product->isPrimary() && $htmlFormatting){
+                $res[] = "<b>".$product->getRatio()."</b>";
+            } else {
+                $res[] = $product->getRatio();
+            }
+        }
+		return implode(':', $res);
+	}
 
 	
 }
