@@ -75,15 +75,17 @@ class bulkUploader4PFP {
 			$productRATIOSToOriginal = array();
 			
 			$products = $pfp->getProducts();
+			
 			for ($i = 0; $i < count($products); $i++) {
 
 				$sql = "SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'";
 				$this->db->query($sql);
 				$r = $this->db->fetch(0);
-
+				
 				if (empty($r)) {
 					$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist
+					
 					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 1) {
 						$productIDS[] = $r->product_id;
 						$productRATIOS[] = $products[$i][self::PRODUCTRATIO_INDEX];
@@ -189,8 +191,11 @@ class bulkUploader4PFP {
 		
 
 		$actionLog .= "Deleting old prducts from PFP " . $description . "\n";
-		$this->db->query("DELETE FROM pfp2product WHERE preformulated_products_id={$pfp_id}");
-
+		$sql ="DELETE FROM pfp2product ".
+			  "WHERE preformulated_products_id={$this->db->sqltext($pfp_id)}";
+			  
+		$this->db->query($sql);
+		
 		$primary = 1;
 		for ($i = 0; $i < count($productIDS); $i++) {
 			$actionLog .= "	Updating product in TB_ pfp2product " . $productIDS[$i] . "\n";
@@ -206,7 +211,7 @@ class bulkUploader4PFP {
 					", " .$ratio_to_original.
 					", {$productIDS[$i]}, {$pfp_id}, {$primary})";
 			$this->db->query($sql);
-
+//var_dump($sql);die();
 			$primary = 0;
 		}
 		return $actionLog;

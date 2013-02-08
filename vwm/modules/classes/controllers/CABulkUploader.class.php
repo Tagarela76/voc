@@ -85,6 +85,7 @@ class CABulkUploader extends Controller {
 					$products = $validation->productsCorrect[$j]->getProducts();
 					
 					if (!$this->isVolumeRatio($products[0])) {
+						
 						foreach ($products as $key => $product) {
 							$products[$key] = $this->convertOzRatioToVolume($product);
 						}
@@ -96,9 +97,11 @@ class CABulkUploader extends Controller {
 						//	keep ratio as 1
 					} else {
 						$products = $this->calcRatioVolume($products);
+						
 					}
 					
 					$validation->productsCorrect[$j]->setProducts($products);
+					
 				}
 			}
 			
