@@ -80,7 +80,9 @@ class validateCSV {
 
 			//	pfp's are splitted by empty row
 			if ($this->isEmptyRow($data)) {
+				
 				if (count($currentPfp) > 0) {
+					
 
 					if($isErrorInCurrentPfp) {
 						$this->productsError[] = $currentPfp;
@@ -119,6 +121,7 @@ class validateCSV {
 
 	private function pfpDataCheck($data,$row){
 		$comments = "";
+		
 		if ($data[2]) {
 			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
 
@@ -133,11 +136,6 @@ class validateCSV {
 				return $comments;
 			}
 
-			//	check for cumulative "344.32"
-			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
-				return $comments;
-			}
-
 			//	check for range "5-10%"
 			if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
 				return $comments;
@@ -147,7 +145,17 @@ class validateCSV {
 			if (bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
 				return $comments;
 			}
+			
+			// check ip correct
+			if (!bulkUploader4PFP::isProprietary($data[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
+				$comments .= "incorrect IP :  Row " . $row . ".\n";
+			}
 
+			//	check for cumulative "344.32"
+			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
+				return $comments;
+			}
+			
 			//	no, it's just a validation error
 			$comments .= "Product with ID : " . $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] . " has validation error at Ratio. Row " . $row . ".\n";
 		}

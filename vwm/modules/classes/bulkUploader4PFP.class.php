@@ -13,6 +13,7 @@ class bulkUploader4PFP {
 	private $hazardousObj;
 	private $ruleObj;
 	private $companyID;
+	private $is_proprietary = 0;
 	//private $compType = 'VOC';
 
 	public $productsError;
@@ -21,12 +22,22 @@ class bulkUploader4PFP {
 	public $updatedCnt;
 	public $validationResult;
 	public $actions;
+	
 
 	const PRODUCTNR_INDEX = 2;
 	const PRODUCTRATIO_INDEX = 4;
 	const PRODUCTUNITTYPE_INDEX = 5;
 	const PRODUCTNAME_INDEX = 3;
+	const INTELLECTUAL_PROPRIETARY = 6;
 
+	public function getIsProprietary() {
+		return $this->is_proprietary;
+	}
+
+	public function setIsProprietary($is_proprietary) {
+		$this->is_proprietary = $is_proprietary;
+	}
+	
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
 		
 		$pfpArray = $validate->productsCorrect;
@@ -36,6 +47,7 @@ class bulkUploader4PFP {
 		$this->hazardousObj = new Hazardous($db);
 		$this->ruleObj = new Rule($db);
 		$this->companyID = (empty($input['companyID'])) ? 0 : $input['companyID'];
+		
 
 //    	//$this->db->select_db(DB_NAME);
 
@@ -55,13 +67,17 @@ class bulkUploader4PFP {
 		//exec($creatBackup);
 		
 		foreach ($pfpArray as $products) {
+		
 			$productIDS = array();
 			$productRATIOS = array();
 			$productRATIOSTo = array();
 			$productRATIOSFromOriginal = array();
 			$productRATIOSToOriginal = array();
 		//	$description = '/ ';
-
+			// set pfp intellectual proprietary
+			$this->setIsProprietary($this->convertPfpIProprietary($products[0][self::INTELLECTUAL_PROPRIETARY]));
+			
+			
 			for ($i = 0; $i < count($products); $i++) {
 
 				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'");
@@ -130,15 +146,30 @@ class bulkUploader4PFP {
 		$this->actions = str_replace("	", "&nbsp;&nbsp;", $this->actions);
 	}
 
+	
 	//--------------private functions-------------------------------------
 
-	private function insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
+	
+
+		private function insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
 		if (!isset($description)) {
 			$description = microtime();
 		}
 		$actionLog .= "	Adding pfp " . $description . "\n";
 
-		$sql = "INSERT INTO preformulated_products  (description,company_id,creater_id, last_update_time) VALUES ('" . $description . "',{$companyID},NULL, NOW())";
+		$sql = "INSERT INTO preformulated_products  ".
+				"(description, ".
+				"company_id, ".
+				"creater_id, ".
+				"last_update_time, ". 
+				"is_proprietary) ".
+				"VALUES ".
+				"('{$this->db->sqltext($description)}', ".
+				"{$this->db->sqltext($companyID)}, ".
+				"NULL, ".
+				" NOW(), ".
+				"{$this->db->sqltext($this->getIsProprietary())})";
+				
 		$this->db->query($sql);
 
 		$this->db->query("SELECT id FROM preformulated_products WHERE description = '" . $description . "'");
@@ -179,10 +210,15 @@ class bulkUploader4PFP {
 		$pfp_id = $r->id;
 
 		$actionLog .= "	Updating pfp " . $description . "\n";
-		if ($companyID != 0) {
-			$sql = "UPDATE preformulated_products SET company_id= " . $companyID . ", last_update_time = NOW() WHERE id=" . $pfp_id . "";
+		
+			$sql = "UPDATE preformulated_products SET ".
+					"company_id = {$this->db->sqltext($companyID)}, ".
+					"is_proprietary = {$this->db->sqltext($this->getIsProprietary())}, ".
+					"last_update_time = NOW() ".
+					"WHERE id = {$this->db->sqltext($pfp_id)}";
+					
 			$this->db->query($sql);
-
+		if ($companyID != 0) {
 			$sql = "INSERT INTO pfp2company (pfp_id ,company_id) VALUES (" . $pfp_id . ", " . $companyID . ")";
 			$this->db->query($sql);
 		}
@@ -230,6 +266,38 @@ class bulkUploader4PFP {
 		return in_array(trim(strtoupper($ratioField)), $possibleValues);
 
 	}
+	
+	public static function isProprietary($isProprietary) {
+		$possibleValues = array('1', 'IP', '', '0');
+		return in_array(trim(strtoupper($isProprietary)), $possibleValues);
+
+	}
+	
+	/**
+	 * function for converting pfps intellectual proprietary to boolean type
+	 * @string isProprietary
+	 * return bool 
+	 */
+	private function convertPfpIProprietary($isProprietary=0){
+		//correct values
+		
+		if($isProprietary == '1' || $isProprietary == '0'){
+			$this->setIsProprietary($isProprietary);
+			return $isProprietary;
+		}
+		elseif($isProprietary == 'IP'){
+			$this->setIsProprietary(1);
+			return 1;
+		}
+		elseif(trim($isProprietary == '')){
+			$this->setIsProprietary(0);
+			return 0;
+		}else{
+			return false;
+		}
+		
+	}
+	
 
 }
 
