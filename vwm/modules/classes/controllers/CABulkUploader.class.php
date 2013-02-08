@@ -78,29 +78,30 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv
-
 			
 			if ($validation->productsCorrect) {
 				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
 			
+					$products = $validation->productsCorrect[$j]->getProducts();
 					
-					if (!$this->isVolumeRatio($validation->productsCorrect[$j][0])) {
-						foreach ($validation->productsCorrect[$j] as $key => $product) {
-							$validation->productsCorrect[$j][$key] = $this->convertOzRatioToVolume($product);
+					if (!$this->isVolumeRatio($products[0])) {
+						foreach ($products as $key => $product) {
+							$products[$key] = $this->convertOzRatioToVolume($product);
 						}
-						$validation->productsCorrect[$j] = $this->convertFromCumulativeQty($validation->productsCorrect[$j]);
+						$products = $this->convertFromCumulativeQty($products);
 					}
 
-					if (count($validation->productsCorrect[$j]) == 1) {
+					if (count($products) == 1) {
 						// RDU or RTS
 						//	keep ratio as 1
 					} else {
-						$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);
+						$products = $this->calcRatioVolume($products);
 					}
-
+					
+					$validation->productsCorrect[$j]->setProducts($products);
 				}
 			}
-
+			
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
 			$errorCnt = count($validation->productsError);

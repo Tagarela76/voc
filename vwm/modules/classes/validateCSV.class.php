@@ -69,25 +69,52 @@ class validateCSV {
 		//	here we'll store rows for single pfp
 		$currentPfp = array();
 		$isErrorInCurrentPfp = false;
+		
+		
+		//i for test 
+		$i=0;
+		
 		while ($dat = fgetcsv($file, 1000, ";")) {
+			$i++;
+			
 			$currentRow++;
 			if ($currentRow < $headerEndsRow) {
 				//	skip first $headerEndsRow rows
 				continue;
 			}
 
+			// get pfp Details if exist
+			
+				//var_dump($this->productsCorrect);die();
+			
+				if(!empty($dat[1])){
+					
+					$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+					$pfp->setIsProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY]);
+					$pfp->setDescription($dat[bulkUploader4PFP::PRODUCTNAME_INDEX]);
+					$pfp->setCompanyId($input['companyID']);
+					// check ip correct
+					if (!bulkUploader4PFP::isProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
+							$this->errorComments .= "incorrect IP :  Row " . $currentRow . ".\n";
+							$isErrorInCurrentPfp = true;
+						}	
+					continue;
+				}
+				
+			
 			$data = $this->trimAll($dat);
-
+			
 			//	pfp's are splitted by empty row
 			if ($this->isEmptyRow($data)) {
 				
-				if (count($currentPfp) > 0) {
+				if (count($currentPfp) > 0 && isset($pfp)) {
 					
 
 					if($isErrorInCurrentPfp) {
 						$this->productsError[] = $currentPfp;
 					} else {
-						$this->productsCorrect[] = $currentPfp;
+						$pfp->setProducts($currentPfp);
+						$this->productsCorrect[] = $pfp;
 					}
 
 					//	reset
@@ -146,11 +173,6 @@ class validateCSV {
 				return $comments;
 			}
 			
-			// check ip correct
-			if (!bulkUploader4PFP::isProprietary($data[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
-				$comments .= "incorrect IP :  Row " . $row . ".\n";
-			}
-
 			//	check for cumulative "344.32"
 			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
 				return $comments;

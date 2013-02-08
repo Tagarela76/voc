@@ -11,10 +11,11 @@ class Pfp extends Model {
 	protected $company_id;
 	protected $creator_id;
 	protected $last_update_time;
-	protected $is_proprietary;
+	protected $is_proprietary = 0;
 	protected $products;
 
 	const TABLE_NAME = 'preformulated_products';
+	const TABLE_PFP2COMPANY = 'pfp2company';
 
 	public function __construct(\db $db) {
 		$this->db = $db;
@@ -73,21 +74,41 @@ class Pfp extends Model {
 	}
 
 	public function setIsProprietary($isProprietary) {
-		$this->is_proprietary = $isProprietary;
+		$isProprietary = $this->convertPfpIProprietary($isProprietary);
+		if($isProprietary){
+			$this->is_proprietary = $isProprietary;
+		}else{
+			return $isProprietary;
+		}
 	}
 
 		
 
 	protected function _insert() {
+		
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 				
-		$sql = "INSERT INTO " . self::TABLE_NAME . " " .
-				"(description, last_update_time) VALUES (".
-				"'{$this->db->sqltext($this->getDescription())}', {$lastUpdateTime})";
+		$sql = "INSERT INTO " . self::TABLE_NAME .
+				"(description, company_id, creater_id, last_update_time, is_proprietary" .
+				") VALUES (" .
+				"'{$this->db->sqltext($this->getDescription())}', " .
+				"{$this->db->sqltext($this->getCompanyId())}, " .
+				"NULL, " .
+				"{$lastUpdateTime}, " .
+				"{$this->db->sqltext($this->getIsProprietary())})";				
 		$response = $this->db->exec($sql);
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
+			
+			if ($this->getCompanyId() != 0) {
+				$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
+					"(pfp_id ,company_id" .
+					") VALUES (" . 
+					"{$this->db->sqltext($this->getId())}, " . 
+					"{$this->db->sqltext($this->getCompanyId())})";
+				$this->db->query($sql);
+			}
 			return $this->getId();
 		} else {
 			return false;
@@ -98,12 +119,27 @@ class Pfp extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
-		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
-				"description = '{$this->db->sqltext($this->getDescription())}', " .
-				"last_update_time = {$lastUpdateTime} " .
-				"WHERE id = {$this->db->sqltext($this->getId())}";
+		$sql = "UPDATE preformulated_products SET ".
+					"company_id = {$this->db->sqltext($this->getCompanyId())}, ".
+					"is_proprietary = {$this->db->sqltext($this->getIsProprietary())}, ".
+					"last_update_time = {$lastUpdateTime} ".
+					"WHERE id = {$this->db->sqltext($this->getId())}";
+					
 		$response = $this->db->exec($sql);
 		if ($response) {
+			if ($this->getCompanyId() != 0) {
+				$sql = "SELECT * FROM ". self::TABLE_PFP2COMPANY .
+						"WHERE company_id = {$this->db->sqltext($this->getCompanyId())}";
+				$response = $this->db->exec($sql);	
+				if (!$response) {
+					$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
+							"(pfp_id ,company_id" .
+							") VALUES (" .
+							"{$this->db->sqltext($this->getId())}, " .
+							"{$this->db->sqltext($this->getCompanyId())})";
+					$this->db->query($sql);
+				}
+			}
 			return $this->getId();
 		} else {
 			return false;
@@ -124,6 +160,29 @@ class Pfp extends Model {
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+	}
+	
+	
+	/**
+	 * function for converting pfps intellectual proprietary to boolean type
+	 * @string isProprietary
+	 * return bool 
+	 */
+	private function convertPfpIProprietary($isProprietary=0){
+		//correct values
+		
+		if($isProprietary == '1' || $isProprietary == '0'){
+			return $isProprietary;
+		}
+		elseif($isProprietary == 'IP'){
+			return 1;
+		}
+		elseif(trim($isProprietary == '')){
+			return 0;
+		}else{
+			return false;
+		}
+		
 	}
 
 	

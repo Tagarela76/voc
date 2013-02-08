@@ -66,21 +66,19 @@ class bulkUploader4PFP {
 		$creatBackup = "mysqldump -h " . DB_HOST . " -u " . DB_USER . " --password=" . DB_PASS . " " . DB_NAME . " > " . $sqlFile;
 		//exec($creatBackup);
 		
-		foreach ($pfpArray as $products) {
+		foreach ($pfpArray as $pfp) {
 		
 			$productIDS = array();
 			$productRATIOS = array();
 			$productRATIOSTo = array();
 			$productRATIOSFromOriginal = array();
 			$productRATIOSToOriginal = array();
-		//	$description = '/ ';
-			// set pfp intellectual proprietary
-			$this->setIsProprietary($this->convertPfpIProprietary($products[0][self::INTELLECTUAL_PROPRIETARY]));
 			
-			
+			$products = $pfp->getProducts();
 			for ($i = 0; $i < count($products); $i++) {
 
-				$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'");
+				$sql = "SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'";
+				$this->db->query($sql);
 				$r = $this->db->fetch(0);
 
 				if (empty($r)) {
@@ -112,19 +110,22 @@ class bulkUploader4PFP {
 			}//end for
 
 			if (count($products) == count($productIDS)) { // all products exists
-				if ($description != '') {
-					$this->db->query("SELECT description FROM preformulated_products WHERE description = '" . $description . "'");
+				if ($pfp->getDescription() != '') {
+					$sql = "SELECT id FROM preformulated_products WHERE description = '" . $pfp->getDescription() . "' LIMIT 1";
+					$this->db->query($sql);
 					$r = $this->db->fetch(0);
-					if (empty($r)) {
-						$actionLog .= $this->insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $description);
+					
+					if (!$r->id) {
+						$actionLog .= $this->insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 						$this->insertedCnt++;
-					} elseif (isset($r->description)) { //pfp exist
+					} else { //pfp exist
+						$pfp->setId($r->id);
 						if (!empty($input['update'])) {
-							$actionLog .= "	PFP " . $r->description . " already exists. Update items: YES.\n";
-							$actionLog .= $this->updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $r->description);
+							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: YES.\n";
+							$actionLog .= $this->updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 							$this->updatedCnt++;
 						} else {
-							$actionLog .= "	PFP " . $r->description . " already exists. Update items: NO.\n";
+							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: NO.\n";
 						}
 					}
 				} else {
@@ -151,34 +152,13 @@ class bulkUploader4PFP {
 
 	
 
-		private function insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
-		if (!isset($description)) {
-			$description = microtime();
-		}
-		$actionLog .= "	Adding pfp " . $description . "\n";
+		private function insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $pfp) {
+		/*if (!isset($pfp->getDescription())) {
+			$pfp->setDescription(microtime());
+		}*/
+		$actionLog .= "	Adding pfp " . $pfp->getDescription() . "\n";
 
-		$sql = "INSERT INTO preformulated_products  ".
-				"(description, ".
-				"company_id, ".
-				"creater_id, ".
-				"last_update_time, ". 
-				"is_proprietary) ".
-				"VALUES ".
-				"('{$this->db->sqltext($description)}', ".
-				"{$this->db->sqltext($companyID)}, ".
-				"NULL, ".
-				" NOW(), ".
-				"{$this->db->sqltext($this->getIsProprietary())})";
-				
-		$this->db->query($sql);
-
-		$this->db->query("SELECT id FROM preformulated_products WHERE description = '" . $description . "'");
-		$r = $this->db->fetch(0);
-		$pfp_id = $r->id;
-		if ($companyID != 0) {
-			$sql = "INSERT INTO pfp2company (pfp_id ,company_id) VALUES (" . $pfp_id . ", " . $companyID . ")";
-			$this->db->query($sql);
-		}
+		$pfp_id = $pfp->save();
 		$primary = 1;
 		for ($i = 0; $i < count($productIDS); $i++) {
 			$actionLog .= "	Adding product to TB_ pfp2product " . $productIDS[$i] . "\n";
@@ -200,28 +180,13 @@ class bulkUploader4PFP {
 		return $actionLog;
 	}
 
-	private function updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $description) {
-
-		$this->db->query("SELECT id FROM preformulated_products WHERE description = '" . $description . "'");
-		if ($this->db->num_rows() == 0) {
-			throw new Exception("Cannot update PFP ".$description);
-		}
-		$r = $this->db->fetch(0);
-		$pfp_id = $r->id;
-
-		$actionLog .= "	Updating pfp " . $description . "\n";
+	private function updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $companyID, $pfp) {
 		
-			$sql = "UPDATE preformulated_products SET ".
-					"company_id = {$this->db->sqltext($companyID)}, ".
-					"is_proprietary = {$this->db->sqltext($this->getIsProprietary())}, ".
-					"last_update_time = NOW() ".
-					"WHERE id = {$this->db->sqltext($pfp_id)}";
-					
-			$this->db->query($sql);
-		if ($companyID != 0) {
-			$sql = "INSERT INTO pfp2company (pfp_id ,company_id) VALUES (" . $pfp_id . ", " . $companyID . ")";
-			$this->db->query($sql);
-		}
+		$pfp_id = $pfp->getId();
+		
+		$actionLog .= "	Updating pfp " . $pfp->getDescription() . "\n";
+		$pfp->save();
+		
 
 		$actionLog .= "Deleting old prducts from PFP " . $description . "\n";
 		$this->db->query("DELETE FROM pfp2product WHERE preformulated_products_id={$pfp_id}");
