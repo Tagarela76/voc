@@ -1977,6 +1977,17 @@ class CMix extends Controller {
 		}else{
 			$companyEx = 1;
 		}
+		
+		$manager = new PFPManager($this->db);
+		$pfp = $manager->getPFP($optMix->mix_id);
+		//get Total Quantity for proprietary pfp
+		$totalQuantity = 0;
+		foreach($optMix->products as $product){
+			$totalQuantity += $product->quantity;
+		}
+		
+		$this->smarty->assign('pfp', $pfp);
+		$this->smarty->assign('totalQuantity', $totalQuantity);
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('companyEx', $companyEx);
 
@@ -1986,6 +1997,7 @@ class CMix extends Controller {
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
+		
 		$this->smarty->assign('data', $optMix);
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount', count($optMix->products));

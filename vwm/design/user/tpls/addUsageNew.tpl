@@ -16,6 +16,7 @@
 	var departmentId ="{$departmentID}"
 	var companyEx="{$companyEx}";
 	var recycle = new Object();
+	var isProprietary = 0
 	
     {if $show.waste_streams != true}
 
@@ -44,9 +45,12 @@
 
     {if $smarty.request.action == 'edit'}
 		var editForm = true;
+		var pfp_id = "{$pfp->getId()}";
 		var isPfp = ({$data->isPfp} == 1) ? true : false;
 		var mixID = '{$smarty.request.id}';
 		var mixDescription = '{$data->description|escape:'quotes'}';
+		isProprietary = {$pfp->getIsProprietary()};
+		
     {else}
 		var editForm = false;
 		var isPfp = false;
@@ -56,28 +60,10 @@
 		var uManager = new UnitTypeManager();
 $(function()
 {
-    {/literal}
-		//Products load
-    {foreach from=$data->products item=p}
-
-        {literal}
-        if (isPfp) {
-        {/literal}
-            currentSelectedPFP = true;
-            addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
-        {literal}
-        } else {
-        {/literal}
-            addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
-        {literal}
-        }
-        {/literal}
-
-    {/foreach}
-
-
-	// get unittype List
 	
+    {/literal}
+		
+	// get unittype List
 	{foreach from=$groupedUnitClasses item=unitClass}
 		{literal}
 		var uClass = new UnitClass();
@@ -109,13 +95,32 @@ $(function()
 			
 		{/literal}
 	{/foreach}
-    {literal}
 		
+		//Products load
+		{literal}
+		if(isProprietary == 0){
+		{/literal}
+    {foreach from=$data->products item=p}
+
+        {literal}
+			if (isPfp) {
+			{/literal}
+				currentSelectedPFP = true;
+				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
+			{literal}
+			} else {
+			{/literal}
+				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
+			{literal}
+			 }
+        {/literal}
+    {/foreach}
+    {literal}
+	}else{
+		page.pfpManager.renderProprietaryPfpForm('{/literal}{$totalQuantity}', '{$data->products.0->unit_type}'{literal});
+	}
 }
 );
-
-
-
 
 	function createSelectUnittypeClass(id, unitTypeClassName) {
 	unitTypeClassName = typeof(unitTypeClassName) != 'undefined' ? unitTypeClassName : false;

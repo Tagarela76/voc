@@ -227,9 +227,10 @@ function PfpManager() {
         this.renderProprietaryPfpForm();
     }
 
-    this.renderProprietaryPfpForm = function() {
+    this.renderProprietaryPfpForm = function(quantity, unitType) {
 		
 		var countOfUnitClasses = uManager.groupedUnitClasses.length;
+		
 		//get first types
 		var countType = uManager.groupedUnitClasses[0].unitTypes.length;
 		
@@ -247,7 +248,7 @@ function PfpManager() {
 		html+= '			Enter the quantity of product usage';
 		html+= '		</td >';
 		html+= '		<td class="border_users_r border_users_b">';
-		html+= '			<input type="number" min="0" id ="proprieratyProductQuantity">';
+		html+= '			<input type="number" min="0" id ="proprieratyProductQuantity" value="'+quantity+'">';
 		html+= '		</td >';
 		html+= '		<td class="border_users_r border_users_b">';
 		html+= '<select  id="proprietaryUnitClass">';
@@ -260,7 +261,7 @@ function PfpManager() {
 		html+= '<select id="proprietaryUnitTypes">';
 		
 			for(var i=0; i<countType; i++){
-				html+='<option value="'+uManager.groupedUnitClasses[0].unitTypes[i].id+'">';
+				html+='<option value="'+uManager.groupedUnitClasses[0].unitTypes[i].id+'" id="'+uManager.groupedUnitClasses[0].unitTypes[i].id+'">';
 				html+=uManager.groupedUnitClasses[0].unitTypes[i].name;
 				html+='</option>';
 			}
@@ -298,7 +299,11 @@ function PfpManager() {
 			page.pfpManager.calculateVocByTotalPfpQuantity();
         });
 		
-		
+		if(unitType == undefined){
+			//nothing to do
+		}else{
+			$('#proprietaryUnitTypes').val(unitType);
+		}
 		
     }
 
@@ -345,7 +350,7 @@ function PfpManager() {
 
     // pfpProducts[]
     this.displayProprietaryPfpDetails = function(pfpProducts) {
-        console.log(pfpProducts);
+        
     }
 	
 	/*
@@ -1816,7 +1821,7 @@ function initRecycle() {
 function addProprietaryProduct(pfp_products, quantity, unittypeClass){
 	// textbox for quantity
 	
-	console.log(UnitTypeManager);
+	
 	
 	var productID = pfp_products[0].productID
 	var text;
@@ -1850,7 +1855,7 @@ function addProprietaryProduct(pfp_products, quantity, unittypeClass){
 		//setProprietaryProductQuantity(eventObject.data.pfpProducts);
 		//if(currentSelectedPFP != null){
 			calculateQuantityInPFPProprietaryProducts(eventObject.data.pfpProducts);
-		//}
+		//}addProprietaryProduct
 		//calculateVOC();
 
 	});
