@@ -163,7 +163,7 @@ function PfpManager() {
     // draw PFP list by currentPfpType
 	this.renderPfpList = function() {
         var pfps = this.getCurrentPfps();
-//console.log(pfps);
+
 		var html = '';
 		for (key in pfps) {
 			html += '<tr id="'+page.utils.escapeHTML(pfps[key].id)+'" name="pfp_row">';
@@ -220,6 +220,7 @@ function PfpManager() {
 	}
 
     this.onClickSelectPreformulatedProducts = function() {
+		//addProprietaryProductContainer
         if(this.productsOnPreview.length == 0) {
             alert("No products to add");
             return false;
@@ -229,6 +230,9 @@ function PfpManager() {
 
     this.renderProprietaryPfpForm = function(quantity, unitType) {
 		
+		if(quantity == undefined){
+			quantity =0;
+		}
 		var countOfUnitClasses = uManager.groupedUnitClasses.length;
 		
 		//get first types
@@ -273,6 +277,9 @@ function PfpManager() {
 		
 		
 		$('#addProprietaryProductContainer').append(html);
+		
+		currentSelectedPFP = pfp_id;
+		currentSelectedPFP_descr = pfp_descr;
 		
 		// add event for change Unit Class
 		$('#proprietaryUnitClass').change({
@@ -349,8 +356,18 @@ function PfpManager() {
 	}
 
     // pfpProducts[]
-    this.displayProprietaryPfpDetails = function(pfpProducts) {
-        
+    this.displayProprietaryPfpDetails = function() {
+		if(currentSelectedPFP != null) {
+			yes = confirm("Pre-formulated-products is already loaded from \""+currentSelectedPFP_descr+"\". Do you want clear products list and load products from pre-formulated-products \"" + pfp_descr+"\"?");
+			if(yes == true) {
+				clearProductsList();
+				currentSelectedPFP = null;
+				currentSelectedPFP_descr = null;
+			}else{
+				return;
+			}
+		}
+     this.renderProprietaryPfpForm();   
     }
 	
 	/*
@@ -1018,7 +1035,7 @@ function initRecycle() {
 					addProduct(pfp_products[i].productID, 0, selectUnittype, selectUnittypeClass, true, pfp_products[i].isPrimary, pfp_products[i].ratio, pfp_products[i].isRange);
 				}
 			}
-		}else{
+		}else{ 
 			//get proprietary pfps
 			//addProprietaryProduct(pfp_products, 0, selectUnittypeClass);
             page.pfpManager.displayProprietaryPfpDetails(pfp_products);
@@ -1051,6 +1068,8 @@ function initRecycle() {
 			$("#product_row_" + id).remove();
 			products.removeProduct(id);
 		}
+		$('#addedProprietaryProducts').remove();
+		$('#addedProducts').hide();
 		calculateVOC();
 	}
 

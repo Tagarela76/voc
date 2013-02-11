@@ -49,6 +49,7 @@
 		
 		
 		pfp_id = '{/literal}{$pfp->getId()}{literal}';
+		pfp_descr = '{/literal}{$pfp->getDescription()}{literal}';
         page.pfpManager.productsOnPreview = [];
 
         {/literal}{foreach from=$pfpProducts item=product}{literal}
@@ -64,7 +65,9 @@
         {/literal}{/foreach}{literal}
 
         $("#pfp_"+"{/literal}{$pfp->getId()}{literal}").click(function(e) {
-            page.pfpManager.onClickSelectPreformulatedProducts();
+            //page.pfpManager.onClickSelectPreformulatedProducts();
+				page.pfpManager.displayProprietaryPfpDetails();
+				//currentSelectedPFP = this.id.substr(4);
         });
 			
 			
