@@ -92,10 +92,10 @@ class CMix extends Controller {
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest('departmentID'));
 		$companyDetails = $company->getCompanyDetails($companyID);
-		
+
 		//check isProprietary pfp
 		$pfp_id = $mixOptimized->getPfpId();
-		
+
 		if(isset($pfp_id)){
 			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
 			$pfp->setId($pfp_id);
@@ -105,13 +105,13 @@ class CMix extends Controller {
 			foreach ($mixOptimized->getProducts() as $product){
 				$total += $product->quantity;
 			}
-			
-			$this->smarty->assign('total', $total);	
+
+			$this->smarty->assign('total', $total);
 		}else{
 			$isProprietary = 0;
 		}
 		//var_dump($isProprietary);die();
-		
+
 		$this->smarty->assign('isProprietary', $isProprietary);
 		$this->smarty->assign('companyDetails', $companyDetails);
 		$this->smarty->assign('unittypeObj', $unittype);
@@ -200,7 +200,7 @@ class CMix extends Controller {
 		$output->id = $pfp->id;
 		$output->pfp = $pfp;
 		echo json_encode($output);*/
-		
+
 		$this->smarty->assign("pfp", $pfp);
 		echo $this->smarty->fetch("tpls/pfpMini.tpl");
 		exit;
@@ -1120,9 +1120,9 @@ class CMix extends Controller {
 		if($jmix->step_id!=''){
 			$mix->setStepId($jmix->step_id);
 		}
-		
+
 		$mix->setPfpId($jmix->pfpId);
-		
+
 		$mix->products = $this->buildProducts($jproducts);
 		$mix->getEquipment();
 		$mix->getFacility();
@@ -1211,7 +1211,7 @@ class CMix extends Controller {
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		}
-		
+
 		$newMixID = $mix->save($isMWS, $optMix);
 
 		if (!$newMixID) {
@@ -1582,16 +1582,16 @@ class CMix extends Controller {
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
 		$this->smarty->assign('products', $productsListGrouped);
 
-		
+
 		if(!is_null($optMix)){
 			$manager = new PFPManager($this->db);
 			$pfp = $manager->getPFP($optMix->getPfpId());
 		}else{
 			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
 		}
-		
+
 		$this->smarty->assign('pfp', $pfp);
-		
+
 		//	if form was submited
 		if (count($form) > 0) {
 			switch ($action) {
@@ -1626,8 +1626,8 @@ class CMix extends Controller {
 			'modules/js/mixValidator.js?rev=jun22',
 			'modules/js/productObj.js',
 			'modules/js/productCollection.js',
-			'modules/js/mixObj.js?rev=jun22',
-			'modules/js/addUsage.js?rev=feb01-1',
+			'modules/js/mixObj.js?rev=feb11',
+			'modules/js/addUsage.js?rev=feb11',
 			'modules/js/Utils.js?rev=sep06',
 			'modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js');
 		$this->smarty->assign('jsSources', $jsSources);
@@ -1859,7 +1859,7 @@ class CMix extends Controller {
 
 		//	Unit types
 		$unitTypes = $department->getUnitTypeList();
-		
+
 		$uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
 		$groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
 		$this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
@@ -2008,16 +2008,16 @@ class CMix extends Controller {
 		}else{
 			$companyEx = 1;
 		}
-		
-		
+
+
 		//get Total Quantity for proprietary pfp
 		$totalQuantity = 0;
 		foreach($optMix->products as $product){
 			$totalQuantity += $product->quantity;
 		}
-		
-		
-		
+
+
+
 		$this->smarty->assign('totalQuantity', $totalQuantity);
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('companyEx', $companyEx);
@@ -2028,7 +2028,7 @@ class CMix extends Controller {
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
-		
+
 		$this->smarty->assign('data', $optMix);
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount', count($optMix->products));
