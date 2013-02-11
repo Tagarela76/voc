@@ -596,8 +596,10 @@ function initRecycle() {
 		mixObj.setIteration($("#repairOrderIteration").val());
 		mixObj.setParentID($("#mixParentID").val());
 		mixObj.setStepId($("#StepID").val());
-		
-		mixObj.setPfpId(pfp_id);
+	
+        if (typeof(pfp_id) != "undefined") {
+        	mixObj.setPfpId(pfp_id);
+        }
 		if ($("#repairOrderId").val() != '') {
 			mixObj.setRepairOrderId($("#repairOrderId").val());
 		}
