@@ -238,16 +238,17 @@ function PfpManager() {
 		//get first types
 		var countType = uManager.groupedUnitClasses[0].unitTypes.length;
 		
-        var html = '<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProprietaryProducts" style="display: block;">';
+        var html = '<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProprietaryProducts" width="100%">';
 		html += '<thead>';
-		html += '   <tr class="users_u_top_size users_top_lightgray">';
-        html +=	'       <td>Description</td>';
-        html += '       <td>Quantity</td>';
-		html += '<td class="border_users_r">Unit type</td>';
+		
+		html += '   <tr class="users_u_top_size users_top_lightgray" >';
+        html +=	'       <td >Description</td>';
+        html += '       <td >Quantity</td>';
+		html += '<td class="border_users_r" >Unit type</td>';
 		html +=	'</tr>';
 		html += '</thead>';
 		html += '<tbody>';
-		html+= '	<tr id="product_proprietary_row">';
+		html+= '	<tr id="product_proprietary_row"  width="100%">';
 		html+= '		<td class="border_users_r border_users_b border_users_l">';
 		html+= '			Enter the quantity of product usage';
 		html+= '		</td >';
