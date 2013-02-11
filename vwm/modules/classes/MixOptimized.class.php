@@ -70,6 +70,7 @@ class MixOptimized extends Model {
 	public $dateFormat;
 	public $debug;
 	public $step_id = NULL;
+	public $pfp_id = NULL;
 
 	/**
 	 * work order id
@@ -302,7 +303,15 @@ class MixOptimized extends Model {
 		$this->mixCosts = $mixCosts;
 	}
 
-				/**
+	public function getPfpId() {
+		return $this->pfp_id;
+	}
+
+	public function setPfpId($pfp_id) {
+		$this->pfp_id = $pfp_id;
+	}
+
+					/**
 	 * Add or Edit this mix
 	 *
 	 */
@@ -419,6 +428,10 @@ class MixOptimized extends Model {
 		$spentTime = (!empty($this->spent_time))
 				? $this->db->sqltext($this->spent_time)
 				: "NULL";
+		
+		$pfpId = ($this->getPfpId() !== null)
+				? $this->db->sqltext($this->getPfpId())
+				: "NULL";
 
 		$query = "UPDATE " . TB_USAGE . " SET ";
 		$query .= "equipment_id={$this->db->sqltext($this->equipment_id)}, ";
@@ -436,6 +449,7 @@ class MixOptimized extends Model {
 		$query .= "spent_time = {$spentTime}, ";
 		$query .= "iteration = {$this->db->sqltext($this->iteration)}, ";
 		$query .= "parent_id = " . ((empty($this->parent_id)) ? "NULL" : $this->db->sqltext($this->parent_id)) . ", ";
+		$query .= "pfp_id = {$pfpId}, ";
 		$query .= "last_update_time = NOW() ";
 		$query .= " WHERE mix_id ={$this->db->sqltext($this->mix_id)}";
 		return $query;
@@ -676,6 +690,7 @@ class MixOptimized extends Model {
 		$this->voclx = isset($this->voclx) ? $this->voclx : "0.00";
 		$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
 		$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
+		
 
 		$creation_time = isset($this->creation_time)
 				? $this->db->sqltext($this->creation_time)
@@ -709,12 +724,15 @@ class MixOptimized extends Model {
 		$stepId = ($this->getStepId() !== null)
 				? $this->db->sqltext($this->getStepId())
 				: "NULL";
+		$pfpId = ($this->getPfpId() !== null)
+				? $this->db->sqltext($this->getPfpId())
+				: "NULL";
 
 
 		$query = "INSERT INTO " . TB_USAGE . " (equipment_id, department_id, " .
 					"description, voc, voclx, vocwx, creation_time, spent_time, " .
 					"rule_id, apmethod_id, exempt_rule, notes, waste_percent, " .
-					"recycle_percent, iteration, parent_id, last_update_time, wo_id, step_id) VALUES (" .
+					"recycle_percent, iteration, parent_id, last_update_time, wo_id, step_id, pfp_id) VALUES (" .
 						"{$this->db->sqltext($this->equipment_id)}, " .
 						"{$this->db->sqltext($this->department_id)}, " .
 						"'{$this->db->sqltext($this->description)}', " .
@@ -733,7 +751,8 @@ class MixOptimized extends Model {
 						"{$parentID}, " .
 						" NOW(), " .
 						" {$repairOrderId}, " .
-						" {$stepId} " .
+						" {$stepId}, " .
+						" {$pfpId} " .
 						") ";
 
 		return $query;

@@ -19,7 +19,7 @@ class PFPTest extends Testing\DbTestCase {
 
         //  check the product order
         //  primary should be always on top
-        $this->assertTrue($products[0]->product_nr == '470C0191');
+        $this->assertTrue($products[0]->product_nr == '17-033-A');
     }
 
     public function testGetRatio() {
@@ -27,10 +27,10 @@ class PFPTest extends Testing\DbTestCase {
         $pfp = $manager->getPFP(1);
 
         $ratio = $pfp->getRatio();
-        $this->assertTrue($ratio == "<b>1</b>:3:4");
+        $this->assertTrue($ratio == "3:1:4");
 
         $ratio = $pfp->getRatio(false);
-        $this->assertTrue($ratio == "1:3:4");
+        $this->assertTrue($ratio == "3:1:4");
     }
         
 }

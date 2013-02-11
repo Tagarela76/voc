@@ -15,6 +15,13 @@ function CProductCollectionObj() {
 
 	this.addPFPProduct = function(productID, quantity, selectUnittype, unittypeCLass, ratio, isPrimary, isRange) {
 
+		if(isPrimary == undefined){
+			isPrimary=false
+		}
+
+		if(isRange == undefined){
+			isRange= false
+		}
 
 		product = new CProductObj(productID, quantity, selectUnittype, unittypeCLass);
 		product.ratio = ratio;
@@ -54,6 +61,7 @@ function CProductCollectionObj() {
 
 	//Convert Wastes to JSON format sting
 	this.toJson = function() {
+		
 		var encoded = $.toJSON(this.products);
 
 		return encoded;

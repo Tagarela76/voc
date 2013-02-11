@@ -36,7 +36,7 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; {$pfp->getProductsCount()} 
+                               &nbsp; {$pfp->getProductsCount()}
                             </div>
                         </td>
                     </tr>

@@ -1,0 +1,1 @@
+ALTER TABLE  `preformulated_products` ADD  `is_proprietary` TINYINT( 1 ) NOT NULL DEFAULT  '0';

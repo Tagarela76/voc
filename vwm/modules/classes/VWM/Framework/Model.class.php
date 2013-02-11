@@ -5,24 +5,24 @@ use Symfony\Component\Validator\Validation;
 
 
 abstract class Model {
-	
-	/**	 
+
+	/**
 	 * @var \db - xnyo databse
 	 */
 	protected $db;
 
 	protected $modelName = "";
-	
+
 	protected $validationGroup;
-		
-	protected $last_update_time;	
+
+	protected $last_update_time;
 
 	/**
 	 * @var \Symfony\Component\Validator\Validator;
 	 */
 	private $validator;
-	
-	
+
+
 	public function getLastUpdateTime() {
 		return $this->last_update_time;
 	}
@@ -30,12 +30,12 @@ abstract class Model {
 	public function setLastUpdateTime($lastUpdateTime) {
 		$this->last_update_time = $lastUpdateTime;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Overvrite get property if property is not exists or private.
-	 * @param unknown_type $name - property name. method call method 
-	 * get_%property_name%, if method does not exists - return property value; 
+	 * @param unknown_type $name - property name. method call method
+	 * get_%property_name%, if method does not exists - return property value;
 	 */
 	public function __get($name) {
 		if (method_exists($this, "get_" . $name)) {
@@ -50,8 +50,8 @@ abstract class Model {
 	}
 
 	/**
-	 * 
-	 * Overvrive set property. If property reload function set_%property_name% 
+	 *
+	 * Overvrive set property. If property reload function set_%property_name%
 	 * exists - call it. Else - do nothing. Keep OOP =)
 	 * @param unknown_type $name - name of property
 	 * @param unknown_type $value - value to set
@@ -61,21 +61,21 @@ abstract class Model {
 		if (method_exists($this, "set_" . $name)) {
 			$methodName = "set_" . $name;
 			$this->$methodName($value);
-		}		
+		}
 	}
 
-	/** 	 	 
+	/**
 	 * @param string model name
 	 * @return \Symfony\Component\Validator\Validator
 	 */
 	protected function getValidator($name) {
 		//	we prefer absolute path
 		if(defined('site_path')) {
-			$path = site_path . "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+			$path = site_path . "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;
 		} else {
-			$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;	
+			$path = "modules" . DIRSEP . "resources" . DIRSEP . "validation" . DIRSEP;
 		}
-		
+
 		if ($this->validator === null) {
 			$this->validator = Validation::createValidatorBuilder()
 					->addYamlMapping($path . $name . '.yml')
@@ -85,25 +85,25 @@ abstract class Model {
 		return $this->validator;
 	}
 
-	/** 	 
+	/**
 	 * @return Symfony\Component\Validator\ConstraintViolationList
 	 */
 	public function validate($modelName = false) {
 		if (!$modelName) {
 			$modelName = $this->modelName;
 		}
-		
+
 		if($this->validationGroup) {
 			return $this->getValidator($modelName)->validate(
-				$this, 
+				$this,
 				array($this->validationGroup));
-		} else {			
+		} else {
 			return $this->getValidator($modelName)->validate($this);
 		}
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Ini object by properties array in key=>value format
 	 * @param array $array
@@ -117,35 +117,35 @@ abstract class Model {
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type string
 	 */
 	public function setValidationGroup($validationGroup) {
 		$this->validationGroup = $validationGroup;
 	}
-	
+
 	/**
-	 * Saves model to database	 
+	 * Saves model to database
 	 */
-	public function save() {	
+	public function save() {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
+
 		if($this->getId()) {
 			return $this->_update();
 		} else {
 			return $this->_insert();
 		}
 	}
-	
+
 	/**
 	 * Should be implemented by children
 	 */
 	protected function _insert() {
 		throw new \Exception("Insert should be implemented by child");
 	}
-	
+
 	/**
 	 * Should be implemented by children
 	 */

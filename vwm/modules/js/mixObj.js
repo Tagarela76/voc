@@ -63,6 +63,10 @@ function CMix() {
 		this.step_id = StepId;
 	}
 	
+	this.setPfpId = function(PfpId) {
+		this.pfpId = PfpId;
+	}
+	
 	
 	//Convert Wastes to JSON format sting
 	this.toJson = function() {

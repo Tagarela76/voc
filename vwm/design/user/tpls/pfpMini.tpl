@@ -1,10 +1,12 @@
 <table class="pfpListItemSelected" style="width:100%;" name="pfp_details_products" cellpadding="0" cellspacing="0">
-<tr>
-	<td>Supplier</td>
-	<td>Product NR</td>
-	<td>Description</td>
-	<td>Ratio</td>
-</tr>
+	<tr>
+		<td>Supplier</td>
+		<td>Product NR</td>
+		<td>Description</td>
+		{if $pfp->getIsProprietary() != 1}
+			<td>Ratio</td>
+		{/if}
+	</tr>
 {assign var=i value=1}
 {assign var="pfpProducts" value=$pfp->getProducts()}
 {foreach from=$pfpProducts item=product}
@@ -12,8 +14,10 @@
 	<td>{$i}. {$product->supplier}</td>
 	<td>{$product->product_nr}</td>
 	<td>{$product->name}</td>
+    {if $pfp->getIsProprietary() != 1}
 	<td>
-		{if $product->isRange()}
+
+		{if $product->isRange() }
 			{assign var="split_range" value="-"|explode:$product->getRangeRatio()}
 			<select style="width: 45px;" class="selectRange" id="prod_range_{$i-1}{*$product->product_id*}">
 				{section name=range start=$split_range[0] loop=$split_range[1]+1}
@@ -24,6 +28,7 @@
 			{$product->getRatio()}
 		{/if}
 	</td>
+    {/if}
 </tr>
 {assign var=i value=$i+1}
 {/foreach}
@@ -34,8 +39,47 @@
 	</td>
 </tr>
 </table>
+
+{if $pfp->getIsProprietary() == 1}
+{literal}
+
 <script type="text/javascript">
-	
+    $(function()
+    {
+		
+		
+		pfp_id = '{/literal}{$pfp->getId()}{literal}';
+		pfp_descr = '{/literal}{$pfp->getDescription()}{literal}';
+        page.pfpManager.productsOnPreview = [];
+
+        {/literal}{foreach from=$pfpProducts item=product}{literal}
+        var product = new PfpProduct();
+        product.is_primary = '{/literal}{$product->isPrimary()}{literal}';
+        product.supplier_name = '{/literal}{$product->supplier}{literal}';
+        product.is_range = '{/literal}{$product->isRange()}{literal}';
+        product.product_nr = '{/literal}{$product->product_nr}{literal}';
+        product.product_id = '{/literal}{$product->product_id}{literal}';
+        product.ratio = '{/literal}{$product->getRatio()}{literal}';
+
+        page.pfpManager.productsOnPreview.push(product);
+        {/literal}{/foreach}{literal}
+
+        $("#pfp_"+"{/literal}{$pfp->getId()}{literal}").click(function(e) {
+            //page.pfpManager.onClickSelectPreformulatedProducts();
+				page.pfpManager.displayProprietaryPfpDetails();
+				//currentSelectedPFP = this.id.substr(4);
+        });
+			
+			
+
+    });
+</script>
+
+{/literal}
+{else}
+{*old way - fix in future*}
+<script type="text/javascript">
+
 pfp_products = [];
 {assign var=jj value=0}
 {assign var="pfpProducts" value=$pfp->getProducts()}
@@ -52,9 +96,10 @@ pfp_products = [];
 	pfp_products.push(pr);
 {assign var=jj value=$jj+1}
 {/foreach}
-	
+
 pfp_id = {$pfp->getId()};
 pfp_descr = '{$pfp->getDescription()}';
+pfpIsProprieraty = {$pfp->getIsProprietary()}
 {literal}
 
 var ratioSelect = $("select.selectRange");
@@ -65,9 +110,11 @@ if (ratioSelect) {
 		});
 	}
 }
-	
+
 $("#pfp_"+pfp_id).click({ "pfp_products" : pfp_products, "pfp_id" : pfp_id, "pfp_descr" : pfp_descr}, function(e){
-	addPFPProducts(e.data.pfp_products, e.data.pfp_id, e.data.pfp_descr);
+	addPFPProducts(e.data.pfp_products, e.data.pfp_id, e.data.pfp_descr, pfpIsProprieraty);
 });
 {/literal}
 </script>
+{/if}
+

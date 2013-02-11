@@ -592,7 +592,7 @@ class PFPManager {
 		//echo "<br/>$getProductsQuery";
 		$this->db->query($getProductsQuery);
 		$products = $this->db->fetch_all_array();
-		//var_dump($products);
+		//var_dump($getProductsQuery);die();
 		foreach ($products as $p) {
 			$prodtmp = new PFPProduct($this->db);
 			$prodtmp->setRatio($p['ratio']);
@@ -608,11 +608,17 @@ class PFPManager {
 			$PFPProductsArray[] = $prodtmp;
 		}
 
-		//var_dump($PFPProductsArray);
-		$pfp = new PFP($PFPProductsArray);
+		//old pfp function
+		/*$pfp = new PFP($PFPProductsArray);
 		$pfp->setID($pfpArray['id']);
 		$pfp->setDescription($pfpArray['description']);
-		$pfp->products = $PFPProductsArray;
+		$pfp->products = $PFPProductsArray;*/
+		
+		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+		$pfp->setId($id);
+		$pfp->load();
+		//$pfp->setDescription($pfpArray['description']);
+		$pfp->setProducts($PFPProductsArray);
 
 		return $pfp;
 	}

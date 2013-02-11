@@ -78,27 +78,34 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv
-
-
+			
 			if ($validation->productsCorrect) {
 				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
-					if (!$this->isVolumeRatio($validation->productsCorrect[$j][0])) {
-						foreach ($validation->productsCorrect[$j] as $key => $product) {
-							$validation->productsCorrect[$j][$key] = $this->convertOzRatioToVolume($product);
+			
+					$products = $validation->productsCorrect[$j]->getProducts();
+					
+					if (!$this->isVolumeRatio($products[0])) {
+						
+						foreach ($products as $key => $product) {
+							$products[$key] = $this->convertOzRatioToVolume($product);
 						}
-						$validation->productsCorrect[$j] = $this->convertFromCumulativeQty($validation->productsCorrect[$j]);
+						
+						$products = $this->convertFromCumulativeQty($products);
 					}
 
-					if (count($validation->productsCorrect[$j]) == 1) {
+					if (count($products) == 1) {
 						// RDU or RTS
 						//	keep ratio as 1
 					} else {
-						$validation->productsCorrect[$j] = $this->calcRatioVolume($validation->productsCorrect[$j]);
+						$products = $this->calcRatioVolume($products);
+						
 					}
-
+					
+					$validation->productsCorrect[$j]->setProducts($products);
+					
 				}
 			}
-
+			
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
 			$errorCnt = count($validation->productsError);
@@ -142,7 +149,7 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validateGOM($input);
-			//var_dump($validation->productsCorrect);die();
+			
 			$bu = new bulkUploader4GOM($this->db, $input, $validation);
 
 			$errorCnt = count($validation->productsError);
@@ -447,11 +454,28 @@ class CABulkUploader extends Controller {
 	}
 
 
+	
+	
 	private function convertFromCumulativeQty($products) {
+		$productsCount = count($products);
+		$i=0;
+		while($i!=($productsCount-1)){
+			$products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i+1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
+			$i++;
+			$products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+		}
+		return $products;
+	}
+	
+	/*
+	 * old code
+	 */
+	private function oldConvertFromCumulativeQty($products) {
 		$productsCount = count($products);
 
 		for($i = 0; $i < $productsCount; $i++ ) {
 			if ($i > 0) {
+				
 				$cumulativeQty = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i-1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
 				$products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $cumulativeQty;
 			}

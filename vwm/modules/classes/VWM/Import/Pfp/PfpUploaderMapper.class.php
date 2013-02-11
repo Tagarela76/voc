@@ -11,6 +11,7 @@ class PfpUploaderMapper extends \VWM\Import\Mapper {
 			"productName" => array('PRODUCT NAME/COLOR'),
 			"ratio" => array('MIX RATIO'),
 			"unitType" => array('UNIT TYPE'),
+			"IP" => array('IP'),
 		);
 	}
 }
