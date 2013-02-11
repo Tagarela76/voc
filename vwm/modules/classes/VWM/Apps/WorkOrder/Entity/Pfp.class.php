@@ -6,13 +6,13 @@ use VWM\Framework\Model;
 
 class Pfp extends Model {
 
-	protected $id;
-	protected $description;
-	protected $company_id;
-	protected $creator_id;
-	protected $last_update_time;
-	protected $is_proprietary = 0;
-	protected $products;
+	public $id;
+	public $description;
+	public $company_id;
+	public $creator_id;
+	public $last_update_time;
+	public $is_proprietary = 0;
+	public $products;
 
 	const TABLE_NAME = 'preformulated_products';
 	const TABLE_PFP2COMPANY = 'pfp2company';
@@ -82,13 +82,13 @@ class Pfp extends Model {
 		}
 	}
 
-		
+
 
 	protected function _insert() {
-		
+
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
-				
+
 		$sql = "INSERT INTO " . self::TABLE_NAME .
 				"(description, company_id, creater_id, last_update_time, is_proprietary" .
 				") VALUES (" .
@@ -96,16 +96,16 @@ class Pfp extends Model {
 				"{$this->db->sqltext($this->getCompanyId())}, " .
 				"NULL, " .
 				"{$lastUpdateTime}, " .
-				"{$this->db->sqltext($this->getIsProprietary())})";				
+				"{$this->db->sqltext($this->getIsProprietary())})";
 		$response = $this->db->exec($sql);
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
-			
+
 			if ($this->getCompanyId() != 0) {
 				$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
 					"(pfp_id ,company_id" .
-					") VALUES (" . 
-					"{$this->db->sqltext($this->getId())}, " . 
+					") VALUES (" .
+					"{$this->db->sqltext($this->getId())}, " .
 					"{$this->db->sqltext($this->getCompanyId())})";
 				$this->db->query($sql);
 			}
@@ -124,13 +124,13 @@ class Pfp extends Model {
 					"is_proprietary = {$this->db->sqltext($this->getIsProprietary())}, ".
 					"last_update_time = {$lastUpdateTime} ".
 					"WHERE id = {$this->db->sqltext($this->getId())}";
-					
+
 		$response = $this->db->exec($sql);
 		if ($response) {
 			if ($this->getCompanyId() != 0) {
 				$sql = "SELECT * FROM ". self::TABLE_PFP2COMPANY .
 						"WHERE company_id = {$this->db->sqltext($this->getCompanyId())}";
-				$response = $this->db->exec($sql);	
+				$response = $this->db->exec($sql);
 				if (!$response) {
 					$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
 							"(pfp_id ,company_id" .
@@ -145,8 +145,8 @@ class Pfp extends Model {
 			return false;
 		}
 	}
-	
-	
+
+
 	public function load() {
 		if (is_null($this->getId())) {
 			return false;
@@ -161,16 +161,16 @@ class Pfp extends Model {
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
 	}
-	
-	
+
+
 	/**
 	 * function for converting pfps intellectual proprietary to boolean type
 	 * @string isProprietary
-	 * return bool 
+	 * return bool
 	 */
 	private function convertPfpIProprietary($isProprietary=0){
 		//correct values
-		
+
 		if($isProprietary == '1' || $isProprietary == '0'){
 			return $isProprietary;
 		}
@@ -182,18 +182,18 @@ class Pfp extends Model {
 		}else{
 			return false;
 		}
-		
+
 	}
-	
+
 	public function getProductsCount(){
 		return count($this->getProducts());
 	}
-	
-	
+
+
 	public function getRatio($htmlFormatting) {
-		
+
 		$products = $this->getProducts();
-		
+
         foreach ($products as $product) {
             if($product->isPrimary() && $htmlFormatting){
                 $res[] = "<b>".$product->getRatio()."</b>";
@@ -204,7 +204,7 @@ class Pfp extends Model {
 		return implode(':', $res);
 	}
 
-	
+
 }
 
 ?>
