@@ -16,11 +16,10 @@
 	var departmentId ="{$departmentID}"
 	var companyEx="{$companyEx}";
 	var recycle = new Object();
+	var isProprietary
+	
 	
     {if $show.waste_streams != true}
-
-
-
 		var waste = new Object();
 
 
@@ -44,9 +43,14 @@
 
     {if $smarty.request.action == 'edit'}
 		var editForm = true;
+		var pfp_id = "{$pfp->getId()}";
 		var isPfp = ({$data->isPfp} == 1) ? true : false;
 		var mixID = '{$smarty.request.id}';
 		var mixDescription = '{$data->description|escape:'quotes'}';
+		
+		var pfp_descr = mixDescription;
+		
+		
     {else}
 		var editForm = false;
 		var isPfp = false;
@@ -56,28 +60,12 @@
 		var uManager = new UnitTypeManager();
 $(function()
 {
-    {/literal}
-		//Products load
-    {foreach from=$data->products item=p}
-
-        {literal}
-        if (isPfp) {
-        {/literal}
-            currentSelectedPFP = true;
-            addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
-        {literal}
-        } else {
-        {/literal}
-            addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
-        {literal}
-        }
-        {/literal}
-
-    {/foreach}
-
-
-	// get unittype List
 	
+	var isProprietary = {/literal}{$pfp->getIsProprietary()};{literal}
+		
+    {/literal}
+		
+	// get unittype List
 	{foreach from=$groupedUnitClasses item=unitClass}
 		{literal}
 		var uClass = new UnitClass();
@@ -109,13 +97,45 @@ $(function()
 			
 		{/literal}
 	{/foreach}
-    {literal}
 		
+		//Products load
+		{literal}
+		if(isProprietary == '0'){
+		{/literal}
+    {foreach from=$data->products item=p}
+
+        {literal}
+			if (isPfp) {
+			{/literal}
+				currentSelectedPFP = true;
+				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
+			{literal}
+			} else {
+			{/literal}
+				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}');
+			{literal}
+			 }
+        {/literal}
+    {/foreach}
+    {literal}
+	}else{
+		
+	{/literal}{foreach from=$pfp->getProducts() item=product}{literal}
+        var product = new PfpProduct();
+        product.is_primary = '{/literal}{$product->isPrimary()}{literal}';
+        product.supplier_name = '{/literal}{$product->supplier}{literal}';
+        product.is_range = '{/literal}{$product->isRange()}{literal}';
+        product.product_nr = '{/literal}{$product->product_nr}{literal}';
+        product.product_id = '{/literal}{$product->product_id}{literal}';
+        product.ratio = '{/literal}{$product->getRatio()}{literal}';
+			
+        page.pfpManager.productsOnPreview.push(product);
+	{/literal}{/foreach}{literal}
+		page.pfpManager.renderProprietaryPfpForm('{/literal}{$totalQuantity}', '{$data->products.0->unit_type}'{literal});
+		page.pfpManager.calculateVocByTotalPfpQuantity();
+	}
 }
 );
-
-
-
 
 	function createSelectUnittypeClass(id, unitTypeClassName) {
 	unitTypeClassName = typeof(unitTypeClassName) != 'undefined' ? unitTypeClassName : false;
@@ -820,7 +840,7 @@ $(function()
     {/if}
 
 </div>
-
+<!--Add Proprietary Products-->
 <div id='addProprietaryProductContainer' >
 </div>
 	
@@ -856,25 +876,6 @@ $(function()
 		</tfoot>
 	</table>
 				
-				
-				
-				
-<!--Add Proprietary Products-->
-
-	<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProprietaryProducts" style="display:none;">
-		<thead>
-			<tr class="users_u_top_size users_top_lightgray">
-				<td>Description</td>
-				<td>Quantity</td>
-				<td class="border_users_r">Unit type</td>
-			</tr>
-		</thead>
-		<tbody>
-
-		</tbody>
-	</table>
-
-
     {if $request.action eq "addItem"}
         {section name=i loop=$productCount}
             <input type='hidden' name='quantity_{$smarty.section.i.index}' value='{$productsAdded[i]->quantity}'>

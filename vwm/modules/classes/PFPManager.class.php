@@ -592,7 +592,7 @@ class PFPManager {
 		//echo "<br/>$getProductsQuery";
 		$this->db->query($getProductsQuery);
 		$products = $this->db->fetch_all_array();
-		//var_dump($products);
+		//var_dump($getProductsQuery);die();
 		foreach ($products as $p) {
 			$prodtmp = new PFPProduct($this->db);
 			$prodtmp->setRatio($p['ratio']);

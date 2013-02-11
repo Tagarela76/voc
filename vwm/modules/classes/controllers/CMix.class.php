@@ -1561,6 +1561,16 @@ class CMix extends Controller {
 		$productsListGrouped = $this->getProductsListGrouped($companyID);
 		$this->smarty->assign('products', $productsListGrouped);
 
+		
+		if(!is_null($optMix)){
+			$manager = new PFPManager($this->db);
+			$pfp = $manager->getPFP($optMix->getPfpId());
+		}else{
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+		}
+		
+		$this->smarty->assign('pfp', $pfp);
+		
 		//	if form was submited
 		if (count($form) > 0) {
 			switch ($action) {
@@ -1977,6 +1987,17 @@ class CMix extends Controller {
 		}else{
 			$companyEx = 1;
 		}
+		
+		
+		//get Total Quantity for proprietary pfp
+		$totalQuantity = 0;
+		foreach($optMix->products as $product){
+			$totalQuantity += $product->quantity;
+		}
+		
+		
+		
+		$this->smarty->assign('totalQuantity', $totalQuantity);
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('companyEx', $companyEx);
 
@@ -1986,6 +2007,7 @@ class CMix extends Controller {
 		$this->smarty->assign('repairOrderIteration', $optMix->iteration);
 		$this->smarty->assign('mixParentID', $optMix->parent_id);
 
+		
 		$this->smarty->assign('data', $optMix);
 		$this->smarty->assign('unittype', $unittypeList);
 		$this->smarty->assign('productCount', count($optMix->products));
