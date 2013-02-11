@@ -841,19 +841,19 @@ $(function()
 
 </div>
 <!--Add Proprietary Products-->
-<div id='addProprietaryProductContainer' >
+<div id='addProprietaryProductContainer' width='100%'>
 </div>
 	
 <div class="padd7" id="addProductsContainer">
 	<table class="users" align="center" cellspacing="0" cellpadding="0" id="addedProducts" style="display:none;">
 		<thead>
 			<tr class="users_u_top_size users_top_lightgray">
-				<td  class="border_users_l"   width="10%" > Select</td>
-				<td>Supplier</td>
-				<td>Product NR</td>
-				<td>Description</td>
-				<td>Quantity</td>
-				<td class="border_users_r">Unit type</td>
+				<td   class="border_users_l"> Select</td>
+				<td width="10%">Supplier</td>
+				<td width="20%">Product NR</td>
+				<td width="20%">Description</td>
+				<td width="20%" >Quantity</td>
+				<td class="border_users_r" width="30%">Unit type</td>
 			</tr>
 		</thead>
 		<tbody>
