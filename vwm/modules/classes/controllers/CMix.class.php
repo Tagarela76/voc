@@ -92,6 +92,27 @@ class CMix extends Controller {
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($this->getFromRequest('departmentID'));
 		$companyDetails = $company->getCompanyDetails($companyID);
+		
+		//check isProprietary pfp
+		$pfp_id = $mixOptimized->getPfpId();
+		
+		if(isset($pfp_id)){
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+			$pfp->setId($pfp_id);
+			$pfp->load();
+			$isProprietary = $pfp->getIsProprietary();
+			$total = 0;
+			foreach ($mixOptimized->getProducts() as $product){
+				$total += $product->quantity;
+			}
+			
+			$this->smarty->assign('total', $total);	
+		}else{
+			$isProprietary = 0;
+		}
+		//var_dump($isProprietary);die();
+		
+		$this->smarty->assign('isProprietary', $isProprietary);
 		$this->smarty->assign('companyDetails', $companyDetails);
 		$this->smarty->assign('unittypeObj', $unittype);
 		$this->smarty->assign('dailyLimitExceeded', $mixOptimizedValidatorResponce->isDailyLimitExceeded());

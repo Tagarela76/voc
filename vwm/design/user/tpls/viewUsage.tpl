@@ -280,16 +280,33 @@
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$product->quantity}
+								{if $isProprietary == 0}
+									&nbsp; {$product->quantity}
+								{/if}
                             </div>
                         </td>
                         <td class=" border_users_b border_users_r">
                             <div align="left">
+								{if $isProprietary == 0}
                                 &nbsp; {$product->unittypeDetails.name}
+								{/if}
                             </div>
                         </td>
                     </tr>
                     {/foreach}
+					{if $isProprietary == 1}
+						<tr class="border_users_l border_users_b " height="20" width="50%">
+							<td colspan="3">
+								 <b>Total</b>
+							</td>
+							<td class=" border_users_b border_users_r">
+								 <b>{$total}</b>
+							</td>
+							<td>
+								<b>{$usage->products[0]->unittypeDetails.name}</b>
+							</td>
+						</tr>
+					{/if}
                 </table>
             </td>
         </tr>
