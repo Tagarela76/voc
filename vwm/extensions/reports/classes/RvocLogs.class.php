@@ -367,9 +367,20 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 
 					foreach($mixesByDay as $mix)
 					{
-
+						//get pfp proprietary for understanding if we need display current quantity
+						$isProprietary = 0;
+						$pfpId = $mix->getPfpId();
+						if(!is_null($pfpId)){
+							$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+							$pfp->setId($pfpId);
+							$pfp->load();
+							$isProprietary = $pfp->getIsProprietary();
+							
+						}
+						
 						//$mix['creationTime'] = str_replace('-','/',$mix['creationTime']);
 						foreach ($mix->products as $product) {
+							
 								$cnt++;
 								$productTag = $doc->createElement("product" );
 
@@ -415,9 +426,15 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 								$qtyRatio[]= $qty*100;
 								$vocwx[]= $product->vocwx;
 
+								// not dispaly quantity if pfp is proprietary
+								if ($isProprietary == 1) {
+									$qty = 'IP';	
+								}
+						
 								$quantityTag->appendChild(
-									$doc->createTextNode($qty)
-								);
+											$doc->createTextNode($qty)
+									);
+								
 								$productTag->appendChild( $quantityTag );
 								$voc = $mix->voc;					//	move down
 								$exemptRule = $mix->exempt_rule;	//	move down
