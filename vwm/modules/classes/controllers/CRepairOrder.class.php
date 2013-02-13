@@ -3,8 +3,10 @@ use VWM\Label\CompanyLevelLabel;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
 use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
-use \VWM\Apps\Process\Process;
-use VWM\Apps\Process\Step;
+use VWM\Apps\Process\ProcessTemplate;
+use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\StepTemplate;
+use VWM\Apps\Process\StepInstance;
 
 class CRepairOrder extends Controller {
 
@@ -86,20 +88,30 @@ class CRepairOrder extends Controller {
 		
 		//get process information
 		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
-		$processId = $wo->getProcessID();
+		$processId = $wo->getProcessTemplateID();
 		$isHaveProcess = false;
 		
 		if (!is_null($processId)) {
-			
+		//get default steps for work order by process Template Id	
 			$availableSteps = array();
 			$isHaveProcess = true;
-			$process = new Process($this->db, $processId);
+			$process = new ProcessTemplate($this->db, $processId);
+			//get all available steps
 			$steps = $process->getSteps();
 			
+			//get used steps
+			$processInstance = $wo->getProcessInstance();
+			$stepsInstance = $processInstance->getSteps();
+			
+			//create array of steps numbers
+			$usedStepNumbers = array();
+			foreach($stepsInstance as $stepInstance){
+				$usedStepNumbers[] = $stepInstance->getNumber();
+			}
+			
 				//get allowable steps for current Repair Order
-					$usedStepIds = $repairOrder->getUsedStepIds();
 					foreach ($steps as $step){
-						if(!in_array($step->getId(), $usedStepIds)){
+						if(!in_array($step->getNumber(), $usedStepNumbers)){
 							$availableSteps[] = $step;
 						}
 					}
@@ -120,12 +132,16 @@ class CRepairOrder extends Controller {
 					"totalCost" => 0,
 					"StepNumber"=>'--',
 				);
+				
 				if (!is_null($mix->getStepId())) {
-					$step = new Step($this->db, $mix->getStepId());
+					$step = new StepInstance($this->db, $mix->getStepId());
 					$resources = $step->getResources();
+					
 					$spentTime = $mix->spent_time;
 					$timeResourceCount = 0;
+					
 					foreach ($resources as $resource) {
+						
 						if ($resource->getResourceTypeId() == self::GOM) {
 							$mixCosts['materialCost'] = $resource->getMaterialCost();
 							$materialCoat += $resource->getMaterialCost();
@@ -140,9 +156,10 @@ class CRepairOrder extends Controller {
 				}
 					$mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
 					$mixesCosts[$mix->mix_id] = $mixCosts;
-			}
+			}//die();
 			
 			$totalCoast = $materialCoat + $laborCoast + $mixTotalPrice;
+			$this->smarty->assign('processName', $processInstance->getName());
 		} else {
 			$totalCoast = $mixTotalPrice;
 		}
@@ -167,7 +184,7 @@ class CRepairOrder extends Controller {
 		
 		foreach ($mixes as $mix){
 			if (!is_null($mix->getStepId())) {
-				$step = new Step($this->db, $mix->getStepId());
+				$step = new StepInstance($this->db, $mix->getStepId());
 				$stepNumber = $step->getNumber();
 			}else{
 				$stepNumber = $stepsCount + $mix->mix_id;
@@ -193,7 +210,7 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('mixList', $mixList);
 		
 		$this->smarty->assign('isHaveProcess', $isHaveProcess);
-		$this->smarty->assign('processName', $repairOrder->getRepairOrderProcessName());
+		//$this->smarty->assign('processName', $repairOrder->getRepairOrderProcessName());
 		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
 		$this->smarty->assign('mixTotalSpentTime', $mixTotalSpentTime);
@@ -341,7 +358,7 @@ class CRepairOrder extends Controller {
 		//Get all Process
 		$newFacility = new \VWM\Hierarchy\Facility($this->db, $facilityDetails['facility_id']);
 		$processList = $newFacility->getProcessList();
-		array_unshift($processList, new Process($this->db));
+		array_unshift($processList, new ProcessTemplate($this->db));
 		
 		$this->smarty->assign('processList', $processList);
 		
@@ -355,8 +372,10 @@ class CRepairOrder extends Controller {
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
+			
+			
 			if ($woProcessId != '') {
-				$workOrder->setProcessID($woProcessId);
+				$workOrder->setProcessTemplateID($woProcessId);
 			}
 			
             if ($workOrder instanceof AutomotiveWorkOrder) {
@@ -368,42 +387,20 @@ class CRepairOrder extends Controller {
 				$this->db->beginTransaction();
 				
 				$woID = $workOrder->save();
+				if ($woProcessId != '' && $woID) {
+				//initialize process Templale
+					$processTemplate = new ProcessTemplate($this->db, $woProcessId);
+				//create process Instance for Wo
+					$processTemplate->setWorkOrderId($woID);
+					$processTemplate->createProcessInstance();
+				}
+
 				if(!$woID) {
 					$this->db->rollbackTransaction();
 					throw new Exception("Failed to save Work Order");
 				}
 				
-				/*if (!empty($departmentIds)) {
-					
-                    // add empty mix for each facility department
-                    $mixOptimized = new MixOptimized($this->db);
-                    $mixOptimized->description = $post["number"];
-                    $mixOptimized->wo_id = $woID;
-                    $mixOptimized->iteration = 0;
-                    $mixOptimized->facility_id = $facilityID; 
-                    $mixOptimized->department_id = $departmentIds[0];
-					
-					//create new mix with process 
-					if ($woProcessId != '') {
-						$process = new \VWM\Apps\Process\Process($this->db);
-						$process->setId($woProcessId);
-						$process->load();
-						$process->setCurrentStepNumber(1);
-						$step = $process->getCurrentStep();
-						if(!$step) {
-							$this->db->rollbackTransaction();
-							throw new Exception("Failed to get current step");
-						}
-						$mixOptimized->spent_time = $step->getTotalSpentTime();
-						$resources = $step->getResources();
-						$mixOptimized->notes = $resources[0]->getDescription();
-					}					
-                    if(!$mixOptimized->save()) {
-						$this->db->rollbackTransaction();
-						throw new Exception("Failed to save Mix");
-					}
-                }*/
-                // set department to wo
+				// set department to wo
                 $woDepartments_id = explode(",", $woDepartments_id);
                 $repairOrderManager = new RepairOrderManager($this->db);
                 // i should unset all departments from wo at first
@@ -515,6 +512,10 @@ class CRepairOrder extends Controller {
         foreach ($this->itemID as $ID) {
 
             $repairOrder = new RepairOrder($this->db, $ID);
+			//delete process
+			$processInstance = $repairOrder->getProcessInstance();
+			$processInstance->deleteCurrentProcess();
+			
             $facilityId = $repairOrder->facility_id;
             // get work order mix id, we check if work order already has any mixes
             $mixOptimized = new MixOptimized($this->db);

@@ -52,6 +52,7 @@ class RepairOrder extends Model {
 
 	const TB_MIX = 'mix';
 	const TB_STEP = 'step';
+	const TB_PROCESS_INSTANCE = 'process_instance';
 
 	public function __construct(db $db, $repairOrderId = null) {
 		$this->db = $db;
@@ -301,7 +302,7 @@ class RepairOrder extends Model {
 			return false;
 		}
 		
-		$process = new \VWM\Apps\Process\Process($this->db, $this->process_id);
+		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->process_id);
 		return $process->getName();
 		
 	}
@@ -309,7 +310,7 @@ class RepairOrder extends Model {
 	/**
 	 *function for getting step ids for Repair Order  which have been already used
 	 */
-	public function getUsedStepIds(){
+	/*public function getUsedStepIds(){
 		
 		if (is_null($this->getProcessId())){
 			return false;
@@ -328,6 +329,20 @@ class RepairOrder extends Model {
 			$ids[] = $r['id'];
 		}
 		return $ids;
+		
+	}*/
+	
+	public function getProcessInstance(){
+		$sql = "SELECT id FROM ".self::TB_PROCESS_INSTANCE." ".
+			   "WHERE work_order_id = {$this->db->sqltext($this->getId())} LIMIT 1";
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$result = $this->db->fetch(0);
+		$processInstance = new \VWM\Apps\Process\ProcessInstance($this->db, $result->id);
+		
+		return $processInstance;
 		
 	}
 

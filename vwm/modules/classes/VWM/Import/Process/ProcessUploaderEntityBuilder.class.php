@@ -83,11 +83,11 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 				
 				if (!isset($currentProcess)) {
 					//create first Process
-					$currentProcess = new Process($this->db);
+					$currentProcess = new ProcessTemplate($this->db);
 					
 					$currentProcess->setName($data[$this->mapper->mappedData['processName']]);
 					//create first step
-					$step = new Step($this->db);
+					$step = new StepTemplate($this->db);
 					$step->setDescription($data[$this->mapper->mappedData['stepDescription']]);
 					$step->setNumber($data[$this->mapper->mappedData['stepNumber']]);
 			
@@ -102,7 +102,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					/*if (is_null($rateUnitType)) {
 						throw new \Exception('There is no such type as ' . $rateTypeName);
 					}*/
-					$resource = new Resource($this->db);
+					$resource = new ResourceTemplate($this->db);
 					$resource->setQty($data[$this->mapper->mappedData['qty']]);
 					$resource->setRate($data[$this->mapper->mappedData['rate']]);
 					$resource->setUnittypeId($unitType);
@@ -121,7 +121,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 				$steps[] = $step;
 				$currentProcess->setProcessSteps($steps);
 				$processes[] = $currentProcess;
-				$currentProcess = new Process($this->db);
+				$currentProcess = new ProcessTemplate($this->db);
 				//initialization process
 				$currentProcess->setName($data[$this->mapper->mappedData['processName']]);
 				$steps = array();
@@ -137,7 +137,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					$steps[] = $step;
 				}
 				$resourses = array();
-				$step = new Step($this->db);
+				$step = new StepTemplate($this->db);
 				
 				$step->setNumber($data[$this->mapper->mappedData['stepNumber']]);
 				$step->setDescription($data[$this->mapper->mappedData['stepDescription']]);
@@ -154,7 +154,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 				throw new \Exception('There is no such type as '.$rateTypeName);
 			}*/
 			
-			$resource = new Resource($this->db);
+			$resource = new ResourceTemplate($this->db);
 			$resource->setQty($data[$this->mapper->mappedData['qty']]);
 			$resource->setRate($data[$this->mapper->mappedData['rate']]);
 			$resource->setUnittypeId($unitType);

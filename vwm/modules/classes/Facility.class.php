@@ -876,7 +876,7 @@ class Facility extends FacilityProperties {
 	}
 	
 	/**
-	 * @return \VWM\Apps\Process\Process[]
+	 * @return \VWM\Apps\Process\ProcessTemplate[]
 	 */
 	public function getProcessList($facilityId){
 		$sql = "SELECT id ".
@@ -889,7 +889,7 @@ class Facility extends FacilityProperties {
 		}
 		$processListId = $this->db->fetch_all();
 		foreach ($processListId as $processId){
-			$processList[] = new \VWM\Apps\Process\Process($this->db, $processId->id);
+			$processList[] = new \VWM\Apps\Process\ProcessTemplate($this->db, $processId->id);
 		}
 		return $processList;
 	}

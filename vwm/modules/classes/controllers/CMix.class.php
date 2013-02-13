@@ -8,7 +8,8 @@ use VWM\ManageColumns\DisplayColumnsSettings;
 use VWM\Apps\Process\Process;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\Process\ProcessInstance;
-use VWM\Apps\Process\Step;
+use VWM\Apps\Process\ProcessTemplate;
+use VWM\Apps\Process\StepInstance;
 
 
 
@@ -21,8 +22,16 @@ class CMix extends Controller {
 	}
 
 	protected function actionConfirmDelete() {
-		foreach ($this->itemID as $ID) {
-			$mix = new MixOptimized($this->db, $ID);
+		
+		foreach ($this->itemID as $Id) {
+			$mix = new MixOptimized($this->db, $Id);
+			//delete Process steps for mix
+			$stepId = $mix->getStepId();
+			if($stepId){
+				$step = new StepInstance($this->db, $stepId);
+				$step->deleteCurrentStepInstance();
+				
+			}
 			$mix->delete();
 		}
 		header("Location: ?action=browseCategory&category=department&id=" . $mix->department_id . "&bookmark=mix&notify=" . (count($this->itemID) > 1 ? "32" : "33" ));
@@ -1209,10 +1218,34 @@ class CMix extends Controller {
 
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
+		} elseif($mix->getStepId()) {
+			//save new step for work order
+			//create work order
+			$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+			$industryTypeId = $companyNew->getIndustryType();
+			$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $mix->getWoId());
+			//initialize process
+			$processInstance = $workOrder->getProcessInstance();
+
+			//create current step
+			$stepTemplate = new \VWM\Apps\Process\StepTemplate($this->db, $mix->getStepId());
+			$resourceTemplates = $stepTemplate->getResources();
+			$stepInstance = $stepTemplate->createInstanceStep($processInstance->getId());
+			//create resources for current step
+			foreach ($resourceTemplates as $resourceTemplate) {
+				$resourceTemplate->setStepId($stepInstance->getId());
+				//set current time to resource
+				if ($resourceTemplate->getResourceTypeId() == VWM\Apps\Process\ResourceInstance::TIME) {
+					$resourceTemplate->setQty($mix->spent_time);
+				}
+				$resourceTemplate->createInstanceResource();
+			}
+
+			$mix->setStepId($stepInstance->getId());
 		}
-
+		
 		$newMixID = $mix->save($isMWS, $optMix);
-
+		//var_dump($resourceTemplate); die();
 		if (!$newMixID) {
 			echo "Failed to save Mix. Please contact system administrator";
 			exit;
@@ -1929,7 +1962,7 @@ class CMix extends Controller {
 		$process = $workOrder->getProcess();
 
 		if (!is_null($process->getId()) && $request['stepID']!=0) {
-			$step = new \VWM\Apps\Process\Step($this->db, $request['stepID']);
+			$step = new \VWM\Apps\Process\StepTemplate($this->db, $request['stepID']);
 			if($step) {
 				$data->spent_time = $step->getTotalSpentTime();
 				$resources = $step->getResources();

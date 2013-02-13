@@ -4,7 +4,7 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-class Resource extends Model {
+abstract class Resource extends Model {
 	/*
 	 * step id
 	 * @var int
@@ -83,7 +83,7 @@ class Resource extends Model {
 	 * @var int
 	 */
 
-	const TABLE_NAME = 'resource';
+	const TABLE_NAME = 'resource_template';
 	const TIME = 1;
 	const VOLUME = 2;
 	const GOM = 3;
@@ -198,146 +198,7 @@ class Resource extends Model {
 		$this->step_id = $step_id;
 	}
 
-	public function load() {
-		if (is_null($this->getId())) {
-			return false;
-		}
-		$sql = "SELECT * " .
-				"FROM " . self::TABLE_NAME . " " .
-				"WHERE id = {$this->db->sqltext($this->getId())} " .
-				"LIMIT 1";
-
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$this->initByArray($row);
-	}
-
-	public function calculateTotalCost() {
-
-		if ($this->material_cost == 0 && $this->labor_cost == 0) {
-			$this->countCost();
-		}
-		$total_cost = $this->material_cost + $this->labor_cost;
-		$this->setTotalCost($total_cost);
-	}
-
-	/**
-	 * function for calculate labor or material cost for certain unit type
-	 */
-	public function countCost() {
-		$unitTypeConvector = new \UnitTypeConverter($this->db);
-		$unitType = new \Unittype($this->db);
-		$from = $unitType->getNameByID($this->unittype_id);
-		$to = $unitType->getNameByID($this->rate_unittype_id);
-		$value = $this->qty;
-
-		switch ($this->resource_type_id) {
-			case self::TIME:
-				$qty = $unitTypeConvector->convertTimeFromTo($from, $to, $value);
-				$rate = $this->getRate();
-				$rateQty = $this->getRateQty();
-				$laborCost = ($qty * $rate) / $rateQty;
-				$this->setLaborCost($laborCost);
-				break;
-			case self::VOLUME:
-				if ($to == 'LS' || $from == 'LS') {
-					$qty = $value;
-				} else {
-					$qty = $unitTypeConvector->convertFromTo($value, $from, $to);
-				}
-				$rate = $this->getRate();
-				$rateQty = $this->getRateQty();
-				$laborCost = ($qty * $rate) / $rateQty;
-				$this->setMaterialCost($laborCost);
-				break;
-			case self::GOM:
-				if ($to == 'LS' || $from == 'LS') {
-					$qty = $value;
-				} else {
-					$qty = $unitTypeConvector->convertCountFromTo($from, $to, $value);
-				}
-				$rate = $this->getRate();
-				$rateQty = $this->getRateQty();
-				$laborCost = ($qty * $rate) / $rateQty;
-				$this->setMaterialCost($laborCost);
-				break;
-			default :
-				throw new \Exception('unccorect resource type');
-				break;
-		}
-	}
-
-	protected function _insert() {
-
-		if ($this->total_cost === NULL) {
-			$this->calculateTotalCost();
-		}
-
-		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
-				"description, qty, unittype_id, resource_type_id, labor_cost, " .
-				"material_cost, total_cost, rate, rate_unittype_id, rate_qty, " .
-				"step_id, last_update_time" .
-				") VALUES(" .
-				"'{$this->db->sqltext($this->getDescription())}'," .
-				"'{$this->db->sqltext($this->getQty())}' ," .
-				"{$this->db->sqltext($this->getUnittypeId())}," .
-				"{$this->db->sqltext($this->getResourceTypeId())}," .
-				"{$this->db->sqltext($this->getLaborCost())}," .
-				"{$this->db->sqltext($this->getMaterialCost())}," .
-				"{$this->db->sqltext($this->getTotalCost())}," .
-				"'{$this->db->sqltext($this->getRate())}'," .
-				"{$this->db->sqltext($this->getRateUnittypeId())}," .
-				"'{$this->db->sqltext($this->getRateQty())}'," .
-				"{$this->db->sqltext($this->getStepId())}," .
-				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
-				")";
-
-		$response = $this->db->exec($sql);
-		if ($response) {
-			$this->setId($this->db->getLastInsertedID());
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
-
-	protected function _update() {
-		if ($this->total_cost === NULL) {
-			$this->calculateTotalCost();
-		}
-		$lastUpdateTime = $this->getLastUpdateTime();
-
-		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
-				"description='{$this->db->sqltext($this->getDescription())}', " .
-				"qty={$this->db->sqltext($this->getQty())}, " .
-				"unittype_id={$this->db->sqltext($this->getUnittypeId())}, " .
-				"resource_type_id={$this->db->sqltext($this->getResourceTypeId())}, " .
-				"labor_cost={$this->db->sqltext($this->getLaborCost())}, " .
-				"material_cost={$this->db->sqltext($this->getMaterialCost())}, " .
-				"total_cost={$this->db->sqltext($this->getTotalCost())}, " .
-				"rate={$this->db->sqltext($this->getRate())}, " .
-				"rate_unittype_id={$this->db->sqltext($this->getRateUnittypeId())}, " .
-				"rate_qty={$this->db->sqltext($this->getRateQty())}, " .
-				"step_id={$this->db->sqltext($this->getStepId())}, " .
-				"last_update_time='{$lastUpdateTime}' " .
-				"WHERE id={$this->db->sqltext($this->getId())}";
-
-		$response = $this->db->exec($sql);
-		if ($response) {
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
-
-	private function validateCount($value) {
-		$value = ereg_replace(',', '.', $value);
-		return $value;
-	}
-
+	
 }
 
 ?>
