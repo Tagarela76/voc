@@ -132,7 +132,7 @@
 								Material costs:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								${$materialCoat|escape}
+								${$materialCoast|escape}
 							</td>
 						</tr>
 						

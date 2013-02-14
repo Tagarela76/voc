@@ -292,7 +292,7 @@ class ResourceInstance extends Resource {
 				"{$this->db->sqltext($this->getRateUnittypeId())}," .
 				"'{$this->db->sqltext($this->getRateQty())}'," .
 				"{$this->db->sqltext($this->getStepId())}," .
-				"'{$this->db->sqltext($this->getLastUpdateTime())}'" .
+				"NOW()" .
 				")";
 
 		$response = $this->db->exec($sql);
@@ -308,7 +308,7 @@ class ResourceInstance extends Resource {
 		if ($this->total_cost === NULL) {
 			$this->calculateTotalCost();
 		}
-		$lastUpdateTime = $this->getLastUpdateTime();
+		
 
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
@@ -322,7 +322,7 @@ class ResourceInstance extends Resource {
 				"rate_unittype_id={$this->db->sqltext($this->getRateUnittypeId())}, " .
 				"rate_qty={$this->db->sqltext($this->getRateQty())}, " .
 				"step_id={$this->db->sqltext($this->getStepId())}, " .
-				"last_update_time='{$lastUpdateTime}' " .
+				"last_update_time=NOW() " .
 				"WHERE id={$this->db->sqltext($this->getId())}";
 
 		$response = $this->db->exec($sql);

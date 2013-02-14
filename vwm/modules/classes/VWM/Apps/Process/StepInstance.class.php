@@ -110,16 +110,18 @@ class StepInstance extends Step {
 	}
 
 	protected function _insert() {
-
+	
+		
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"number, process_id, last_update_time, description, optional" .
 				") VALUES(" .
 				"{$this->db->sqltext($this->getNumber())}," .
 				"'{$this->db->sqltext($this->getProcessId())}'," .
-				"'{$this->db->sqltext($this->getLastUpdateTime())}'," .
+				"NOW()," .
 				"'{$this->db->sqltext($this->getDescription())}'," .
 				"'{$this->db->sqltext($this->getOptional())}'" .
 				")";
+		
 		$response = $this->db->exec($sql);
 
 		if ($response) {
@@ -131,14 +133,13 @@ class StepInstance extends Step {
 	}
 
 	protected function _update() {
-		$lastUpdateTime = $this->getLastUpdateTime();
 
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"number={$this->db->sqltext($this->getNumber())}, " .
 				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
 				"optional='{$this->db->sqltext($this->getOptional())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
-				"last_update_time='{$lastUpdateTime}' " .
+				"last_update_time=NOW() " .
 				"WHERE id={$this->db->sqltext($this->getId())}";
 
 		$response = $this->db->exec($sql);

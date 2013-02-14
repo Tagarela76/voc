@@ -29,15 +29,13 @@ class ProcessInstance extends Process {
 	}
 	
 	protected function _insert() {
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
 	
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"facility_id, name, last_update_time, work_order_id" .
 				") VALUES(" .
 				"{$this->db->sqltext($this->getFacilityId())}," .
 				"'{$this->db->sqltext($this->getName())}'," .
-				"{$lastUpdateTime}, " .
+				"NOW(), " .
 				"'{$this->db->sqltext($this->getWorkOrderId())}'" .
 				")";
 		$response = $this->db->exec($sql);
@@ -50,14 +48,12 @@ class ProcessInstance extends Process {
 	}
 
 	protected function _update() {
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"facility_id={$this->db->sqltext($this->getFacilityId())}, " .
 				"name='{$this->db->sqltext($this->getName())}', " .
 				"work_order_id='{$this->db->sqltext($this->getWorkOrderId())}', " .
-				"last_update_time={$lastUpdateTime} " .
+				"last_update_time=NOW() " .
 				"WHERE id={$this->db->sqltext($this->getId())}";
 
 		$response = $this->db->exec($sql);

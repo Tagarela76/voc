@@ -122,7 +122,7 @@ class CRepairOrder extends Controller {
 				
 			$this->smarty->assign('availableSteps', $availableSteps);
 					
-			$materialCoat = 0;
+			$materialCoast = 0;
 			$laborCoast = 0;
 			$totalCoast = 0;
 			$spentTime = 0;
@@ -149,7 +149,7 @@ class CRepairOrder extends Controller {
 						
 						if ($resource->getResourceTypeId() == self::GOM) {
 							$mixCosts['materialCost'] = $resource->getMaterialCost();
-							$materialCoat += $resource->getMaterialCost();
+							$materialCoast += $resource->getMaterialCost();
 						}
 						if ($resource->getResourceTypeId() == self::TIME && $timeResourceCount==0) {
 							$laborCoast += $spentTime * $resource->getRate();
@@ -163,7 +163,7 @@ class CRepairOrder extends Controller {
 					$mixesCosts[$mix->mix_id] = $mixCosts;
 			}//die();
 			
-			$totalCoast = $materialCoat + $laborCoast + $mixTotalPrice;
+			
 			$this->smarty->assign('processName', $processInstance->getName());
 		} else {
 			$totalCoast = $mixTotalPrice;
@@ -238,9 +238,15 @@ class CRepairOrder extends Controller {
 			$mixList[$emptyMixStep->getNumber()] = $mix;
 			$mixCosts['stepNumber'] = $emptyMixStep->getNumber();
 			$mixesCosts[$mix->mix_id] = $mixCosts;
+			//get prices for work order
+			$mixTotalSpentTime+=$mix->spent_time;
+			$materialCoast+=$mixCosts["materialCost"];
+			$laborCoast+=$mixCosts["laborCost"];
+			
 			
 		}
-		
+		$totalCoast += $materialCoast + $laborCoast + $mixTotalPrice;
+		//var_dump($totalCoast);die();
 		ksort($mixList);
 		
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
@@ -249,7 +255,7 @@ class CRepairOrder extends Controller {
             'modules/js/viewRepairOrder.js');
         $this->smarty->assign('jsSources', $jsSources);
 		
-        $this->smarty->assign('materialCoat', $materialCoat);
+        $this->smarty->assign('materialCoast', $materialCoast);
 		$this->smarty->assign('spentTime', $spentTime);
 		$this->smarty->assign('laborCoast', $laborCoast);
 		$this->smarty->assign('totalCoast', $totalCoast);
@@ -817,7 +823,6 @@ class CRepairOrder extends Controller {
 		
 		$stepTemplate = new StepTemplate($this->db, $stepId);
 		$stepTemplateResources = $stepTemplate->getResources();
-		
 		$stepInstance = $stepTemplate->createInstanceStep($processInstanceId);
 		if ($stepInstance) {
 			foreach ($stepTemplateResources as $stepTemplateResource) {
