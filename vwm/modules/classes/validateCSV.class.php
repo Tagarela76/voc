@@ -88,6 +88,7 @@ class validateCSV {
 				//var_dump($this->productsCorrect);die();
 			
 				if(!empty($dat[1])){
+
 					$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
 					$pfp->setIsProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY]);
 					$pfp->setDescription($dat[bulkUploader4PFP::PRODUCTNAME_INDEX]);
@@ -96,6 +97,7 @@ class validateCSV {
 					if (!bulkUploader4PFP::isProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
 							$this->errorComments .= "incorrect IP :  Row " . $currentRow . ".\n";
 							$isErrorInCurrentPfp = true;
+
 						}
 					if($dat[4]==''){
 						continue;
@@ -369,6 +371,7 @@ class validateCSV {
 					if ($data[35] == ''){
 						$data[35] = '0';
 					}
+
 					
 					// unit type clear
 					$data[39] = trim($data[39]); 
@@ -419,6 +422,7 @@ class validateCSV {
 					$unitType = $unitTypeClass->getUnittypeByName($unitType);
 					$unitType = $unitType['unittype_id']; // get unit type id
 					
+
 					//	product processing
 					$product = array (
 						"productID" => $data[0],
