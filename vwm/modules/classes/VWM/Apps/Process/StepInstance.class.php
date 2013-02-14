@@ -9,7 +9,7 @@ class StepInstance extends Step {
 	 * step id
 	 * @var int
 	 */
-
+	
 	protected $process_id;
 
 	/*
@@ -76,6 +76,7 @@ class StepInstance extends Step {
 	private function calculateTotalSpentTime() {
 		$resources = $this->getResources();
 		$totalSpentTime = 0;
+		
 		foreach ($resources as $resource) {
 
 			if ($resource->getResourceTypeId() == self::TIME) {
@@ -85,6 +86,7 @@ class StepInstance extends Step {
 				$qty = $unitTypeConvector->convertToDefaultTime($resource->getQty(), $unittypeName);
 				$totalSpentTime+=$qty;
 			}
+			
 		}
 		$this->total_spent_time = $totalSpentTime;
 	}
@@ -93,6 +95,7 @@ class StepInstance extends Step {
 		$sql = "SELECT * FROM " . self::RESOURCE_TABLE .
 				" WHERE step_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
+		
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}

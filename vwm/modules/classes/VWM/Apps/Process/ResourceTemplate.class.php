@@ -338,7 +338,16 @@ class ResourceTemplate extends Resource {
 		return $value;
 	}
 	
-	public function createInstanceResource(){
+	public function createInstanceResource($stepId = null){
+		
+		if(is_null($stepId)){
+			$stepId = $this->getStepId();
+		}
+		
+		if(is_null($stepId)){
+			return false;
+		}
+		
 		$resource = new ResourceInstance($this->db);
 		$resource->setDescription($this->getDescription());
 		$resource->setQty($this->getQty());
@@ -349,7 +358,7 @@ class ResourceTemplate extends Resource {
 		$resource->setRate($this->getRate());
 		$resource->setRateUnittypeId($this->getRateUnittypeId());
 		$resource->setRateQty($this->getRateQty());
-		$resource->setStepId($this->getStepId());
+		$resource->setStepId($stepId);
 		
 		$resourceInstanceId = $resource->save();
 		

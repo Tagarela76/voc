@@ -48,7 +48,7 @@ class RepairOrder extends Model {
 	
 	public $url;
 	
-	public $process_id = NULL;
+	public $process_template_id = NULL;
 
 	const TB_MIX = 'mix';
 	const TB_STEP = 'step';
@@ -73,12 +73,12 @@ class RepairOrder extends Model {
 		$this->id = $id;
 	}
 
-	public function getProcessId() {
-		return $this->process_id;
+	public function getProcessTemplateId() {
+		return $this->process_template_id;
 	}
 
-	public function setProcessId($process_id) {
-		$this->process_id = $process_id;
+	public function setProcessTemplateId($process_id) {
+		$this->process_template_id = $process_id;
 	}
 	
 	public function getNumber() {
@@ -298,11 +298,11 @@ class RepairOrder extends Model {
 	}
 	
 	public function getRepairOrderProcessName(){
-		if(is_null($this->getProcessId())){
+		if(is_null($this->getProcessTemplateId())){
 			return false;
 		}
 		
-		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->process_id);
+		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->getProcessTemplateId());
 		return $process->getName();
 		
 	}

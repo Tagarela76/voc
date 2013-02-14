@@ -79,7 +79,7 @@ class ProcessInstance extends Process {
 		$stepsDetails = $this->db->fetch_all_array();
 		$steps = array();
 		foreach ($stepsDetails as $stepDetails) {
-			$step = new StepTemplate($this->db);
+			$step = new StepInstance($this->db);
 			$step->initByArray($stepDetails);
 			$steps[] = $step;
 		}

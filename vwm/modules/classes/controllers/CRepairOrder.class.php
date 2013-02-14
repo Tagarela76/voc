@@ -48,11 +48,13 @@ class CRepairOrder extends Controller {
         $mixTotalPrice = 0;
 		$mixTotalSpentTime = 0;
         $mixes = $repairOrder->getMixes(); 
+		
 		foreach ($mixes as $mix) {
 			//TODO: this is not correct
 			$mix->price = $mix->getMixPrice();
 			$mixTotalPrice += $mix->price;
 			$mixTotalSpentTime += $mix->spent_time;
+			
 		}
 				
         $companyLevelLabel = new CompanyLevelLabel($this->db);
@@ -105,11 +107,13 @@ class CRepairOrder extends Controller {
 			
 			//create array of steps numbers
 			$usedStepNumbers = array();
+			
+			
 			foreach($stepsInstance as $stepInstance){
 				$usedStepNumbers[] = $stepInstance->getNumber();
 			}
 			
-				//get allowable steps for current Repair Order
+				//get all available steps for current Repair Order
 					foreach ($steps as $step){
 						if(!in_array($step->getNumber(), $usedStepNumbers)){
 							$availableSteps[] = $step;
@@ -130,7 +134,8 @@ class CRepairOrder extends Controller {
 					"materialCost" => 0,
 					"laborCost" => 0,
 					"totalCost" => 0,
-					"StepNumber"=>'--',
+					"stepNumber"=>'--',
+					"stepEmpty"=>false
 				);
 				
 				if (!is_null($mix->getStepId())) {
@@ -152,7 +157,7 @@ class CRepairOrder extends Controller {
 							$timeResourceCount = 1;
 						}
 					}
-					$mixCosts['StepNumber'] = $step->getNumber();
+					$mixCosts['stepNumber'] = $step->getNumber();
 				}
 					$mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
 					$mixesCosts[$mix->mix_id] = $mixCosts;
@@ -181,16 +186,61 @@ class CRepairOrder extends Controller {
 		//sort mixes
 		$mixList = array();
 		$stepsCount = count($steps);
+		//array of not empty mixs
+		$mixStepsIds = array();
 		
 		foreach ($mixes as $mix){
 			if (!is_null($mix->getStepId())) {
 				$step = new StepInstance($this->db, $mix->getStepId());
 				$stepNumber = $step->getNumber();
+				$mixStepsIds[] = $step->getId();
 			}else{
 				$stepNumber = $stepsCount + $mix->mix_id;
 			}
 			$mixList[$stepNumber] = $mix;
 		}
+		
+		//get empty steps
+		$emptyMixSteps = array();
+		foreach($stepsInstance as $stepsInstance){
+			if(!in_array($stepsInstance->getId(), $mixStepsIds)){
+				$emptyMixSteps[] = $stepsInstance;
+			}
+		}
+		
+		// create empty steps for display
+		
+		foreach($emptyMixSteps as $emptyMixStep){
+			$mixCosts = array(
+				"materialCost" => 0,
+				"laborCost" => 0,
+				"totalCost" => 0,
+				"stepNumber" => '--',
+				"stepEmpty"=>true
+			);
+			$mix = new MixOptimized($this->db);
+			$mix->mix_id = $emptyMixStep->getId();
+			$mix->setDepartmentId($departmentId);
+			$time = $emptyMixStep->getLastUpdateTime();
+			$time = explode('-', $time);
+			$time = mktime(0,0,0,$time[1],$time[2],$time[0]);
+			$mix->set_creation_time($time);
+			$mix->setDescription($emptyMixStep->getDescription());
+			$mix->spent_time = $emptyMixStep->getTotalSpentTime();
+			
+			//get labor, material and total cost
+			$emptyStepResources = $emptyMixStep->getResources();
+			foreach($emptyStepResources as $emptyStepResource){
+				$mixCosts["materialCost"] += $emptyStepResource->getMaterialCost();
+				$mixCosts["laborCost"] += $emptyStepResource->getLaborCost();
+			}
+			$mixCosts["totalCost"] = $mixCosts["materialCost"] + $mixCosts["laborCost"];
+			$mixList[$emptyMixStep->getNumber()] = $mix;
+			$mixCosts['stepNumber'] = $emptyMixStep->getNumber();
+			$mixesCosts[$mix->mix_id] = $mixCosts;
+			
+		}
+		
 		ksort($mixList);
 		
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
@@ -207,10 +257,10 @@ class CRepairOrder extends Controller {
         $this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
         $this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
+		$this->smarty->assign('processInstanceId', $processInstance->getId());
         $this->smarty->assign('mixList', $mixList);
 		
 		$this->smarty->assign('isHaveProcess', $isHaveProcess);
-		//$this->smarty->assign('processName', $repairOrder->getRepairOrderProcessName());
 		$this->smarty->assign('repairOrder', $repairOrder);
 		$this->smarty->assign('mixTotalPrice', $mixTotalPrice);
 		$this->smarty->assign('mixTotalSpentTime', $mixTotalSpentTime);
@@ -758,6 +808,28 @@ class CRepairOrder extends Controller {
 
 		echo $response;
     }
+	
+	protected function actionAddStepWithOutMix(){
+		$responce = '';
+		
+		$stepId = $this->getFromPost('stepId');
+		$processInstanceId = $this->getFromPost('processInstanceId');
+		
+		$stepTemplate = new StepTemplate($this->db, $stepId);
+		$stepTemplateResources = $stepTemplate->getResources();
+		
+		$stepInstance = $stepTemplate->createInstanceStep($processInstanceId);
+		if ($stepInstance) {
+			foreach ($stepTemplateResources as $stepTemplateResource) {
+				$stepTemplateResource->createInstanceResource($stepInstance->getId());
+			}
+			$responce = 1;
+		} else {
+			$responce = 0;
+		}
+		
+		echo $responce;
+	}
 
 }
 

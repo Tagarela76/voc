@@ -5,7 +5,37 @@ function addstepToUrl(){
 	url = url.substr(0, count);
 	url += '&stepID='+step;
 	$('#urlMixAdd').val(url);
-	console.log(url.indexOf('&stepID'));
+	
+}
+
+function addStepWithOutMix(){
+	var step = $('#availableSteps option:selected').val();
+	var processInstanceId = $('#processInstanceId').val();
+	
+	if(step=='No Process'){
+		alert('select process step');
+	}else{
+		$.ajax({
+			url: "?action=addStepWithOutMix&category=repairOrder",
+			async: false,
+			data: {
+				"stepId":step,
+				"processInstanceId":processInstanceId
+			},
+			type: "POST",
+			success: function (result) {
+				if(result == 1){
+					window.location.reload();
+					
+				}else{
+					alert('fail to save step.Try again please.');
+				}
+			//	generateNotify('ololo', 'blue');
+             
+			}
+		});
+	}
+
 }
 
 
