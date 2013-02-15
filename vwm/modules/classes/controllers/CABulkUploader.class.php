@@ -108,8 +108,11 @@ class CABulkUploader extends Controller {
 			
 			$bu = new bulkUploader4PFP($this->db, $input, $validation);
 
-			$errorCnt = count($validation->productsError);
-			$correctCnt = count($validation->productsCorrect);
+			/*$errorCnt = count($validation->productsError);
+			$correctCnt = count($validation->productsCorrect);*/
+			$errorCnt = $bu->productsError;
+			$correctCnt = $bu->productsCorrect;
+			
 			$total = $errorCnt + $correctCnt;
 			$percent = round($errorCnt * 100 / ($correctCnt + $errorCnt), 2);
 			//

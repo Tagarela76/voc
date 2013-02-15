@@ -40,6 +40,8 @@ class bulkUploader4PFP {
 	
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
 		
+		$pfpCorrect = count($validate->productsError);
+		$pfpErrors = 0;
 		$pfpArray = $validate->productsCorrect;
 		$this->db = $db;
 
@@ -120,23 +122,33 @@ class bulkUploader4PFP {
 					if (!$r->id) {
 						$actionLog .= $this->insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 						$this->insertedCnt++;
+						$pfpCorrect++;
 					} else { //pfp exist
 						$pfp->setId($r->id);
 						if (!empty($input['update'])) {
 							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: YES.\n";
 							$actionLog .= $this->updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 							$this->updatedCnt++;
+							$pfpCorrect++;
 						} else {
 							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: NO.\n";
+							$pfpErrors++;
 						}
 					}
+					
 				} else {
 					$actionLog .= " PFP with products hasn't description. \n";
+					$pfpErrors++;
 				}
 				$description = '/ ';
+			}else{
+				$pfpErrors++;
 			}
 		}//end foreach
-
+		//get pfps errors count
+		$this->productsCorrect = $pfpCorrect;
+		$this->productsError = $pfpErrors;
+		
 		$actionLog .= "--------------------------------\n";
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of " . $input['realFileName'] . " is successfuly finished.\n";
 		$actionLog .= "	Number of inserted pfps is " . $this->insertedCnt . "\n";
