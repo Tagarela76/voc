@@ -40,16 +40,6 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="" height="20">
-                            Ratio:
-                        </td>
-                        <td class="">
-                            <div align="left">
-                                &nbsp; {$pfp->getRatio()} 
-                            </div>
-                        </td>
-                    </tr>
                     
                 </table>
             </td>
@@ -92,7 +82,7 @@
                                 {if $pfp->getIsProprietary() != 1}
                                     &nbsp; {$product->getRatio()}
                                 {else}
-                                    &nbp;IP
+                                    &nbsp;IP
                                 {/if}
                             </div>
                         </td>
