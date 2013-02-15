@@ -16,7 +16,7 @@ class IndustrialWorkOrderTest extends DbTestCase {
 	public function testSave() {		
 		
         $industrialWO = new IndustrialWorkOrder($this->db);
-        $industrialWO->setCustomer_name("Tom Smith");
+        $industrialWO->setCustomerName("Tom Smith");
         $industrialWO->setDescription("test wo");
         $industrialWO->setFacilityId("1");
         $industrialWO->setNumber("wo nubmer");
@@ -37,9 +37,9 @@ class IndustrialWorkOrderTest extends DbTestCase {
 		
 		//UPDATE
         $industrialWOUpdated = new IndustrialWorkOrder($this->db, $expectedId);
-		$industrialWOUpdated->setCustomer_name("Lukas Smith");
+		$industrialWOUpdated->setCustomerName("Lukas Smith");
 		$industrialWOUpdated->save();
-		$updatedCustomer = $industrialWOUpdated->getCustomer_name();
+		$updatedCustomer = $industrialWOUpdated->getCustomerName();
 		$this->assertEquals("Lukas Smith", $updatedCustomer);
 		$sql = "SELECT * FROM ".  TB_WORK_ORDER." WHERE id = {$expectedId}";
 		$this->db->query($sql);

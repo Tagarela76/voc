@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `process_instance` (
   `work_order_id` int(255) DEFAULT NULL,
   `last_update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `step_instance` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `step_instance` (
   `description` varchar(2000) DEFAULT NULL,
   `optional` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2437 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2437 ;
 
 CREATE TABLE IF NOT EXISTS `resource_instance` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -38,10 +38,16 @@ CREATE TABLE IF NOT EXISTS `resource_instance` (
   `step_id` int(255) DEFAULT NULL,
   `last_update_time` date NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7870 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7870 ;
 
 
-ALTER TABLE  `work_order` CHANGE  `process_id`  `process_template_id` INT( 11 ) NULL DEFAULT NULL
+ALTER TABLE  `work_order` CHANGE  `process_id`  `process_template_id` INT( 11 ) NULL DEFAULT NULL;
 
-ALTER TABLE  `step_template` CHANGE  `process_id`  `process_template_id` INT( 255 ) NULL DEFAULT NULL
+ALTER TABLE  `step_template` CHANGE  `process_id`  `process_template_id` INT( 255 ) NULL DEFAULT NULL;
+
+ALTER TABLE resource_template CONVERT TO CHARACTER SET utf8;
+
+ALTER TABLE step_template CONVERT TO CHARACTER SET utf8;
+
+ALTER TABLE process_template CONVERT TO CHARACTER SET utf8;
 

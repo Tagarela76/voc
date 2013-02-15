@@ -28,8 +28,8 @@ class CMix extends Controller {
 			//delete Process steps for mix
 			$stepId = $mix->getStepId();
 			if($stepId){
-				$step = new StepInstance($this->db, $stepId);
-				$step->deleteCurrentStepInstance();
+				$stepInstance = new StepInstance($this->db, $stepId);
+				$stepInstance->delete();
 				
 			}
 			$mix->delete();
@@ -1231,6 +1231,7 @@ class CMix extends Controller {
 			$stepTemplate = new \VWM\Apps\Process\StepTemplate($this->db, $mix->getStepId());
 			$resourceTemplates = $stepTemplate->getResources();
 			$stepInstance = $stepTemplate->createInstanceStep($processInstance->getId());
+			$stepInstance->save();
 			//create resources for current step
 			foreach ($resourceTemplates as $resourceTemplate) {
 				$resourceTemplate->setStepId($stepInstance->getId());
@@ -1238,7 +1239,8 @@ class CMix extends Controller {
 				if ($resourceTemplate->getResourceTypeId() == VWM\Apps\Process\ResourceInstance::TIME) {
 					$resourceTemplate->setQty($mix->spent_time);
 				}
-				$resourceTemplate->createInstanceResource();
+				$resourceInstance = $resourceTemplate->createInstanceResource();
+				$resourceInstance->save();
 			}
 
 			$mix->setStepId($stepInstance->getId());

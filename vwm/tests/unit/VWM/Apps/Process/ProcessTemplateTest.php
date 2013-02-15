@@ -16,47 +16,28 @@ class ProcessTemplateTest extends DbTestCase {
 		self::TB_STEP
 	);
 
-	 public function testGetSteps() {
+	public function testGetSteps() {
 
-	  $woProcessId = 2;
-	  $process = new ProcessTemplate($this->db, $woProcessId);
-	  $steps = $process->getSteps();
+		$woProcessId = 2;
+		$process = new ProcessTemplate($this->db, $woProcessId);
+		$steps = $process->getSteps();
 
-	  $sql = "SELECT * FROM " .  self::TB_STEP .
-	  " WHERE process_id = 2";
-	  $this->db->query($sql);
+		$sql = "SELECT * FROM " . self::TB_STEP .
+				" WHERE process_id = ".$woProcessId;
+		$this->db->query($sql);
 
-	  $result = $this->db->fetch_all_array();
+		$result = $this->db->fetch_all_array();
 
-	  $count = count($result);
+		$count = count($result);
 
-	  $this->assertEquals($count, count($steps));
+		$this->assertEquals($count, count($steps));
 
-	  for($i=0;$i<$count;$i++){
-	  $this->assertEquals($steps[$i]->getNumber(), $result[$i]['number']);
-	  $this->assertEquals($steps[$i]->getProcessId(), $result[$i]['process_id']);
-	  $this->assertEquals($steps[$i]->getId(), $result[$i]['id']);
-	  }
-	  //$this->assertEquals($process->getWorkOrderId(), $row['work_order_id']);
-
-	  } 
-
-	/* public function testCurrentStep(){
-	  $woProcessId = 2;
-	  $stepNumber = 1;
-	  $process = new ProcessTemplate($this->db, $woProcessId);
-	  $process->setCurrentStepNumber($stepNumber);
-	  $step = $process->getCurrentStep();
-
-	  $sql = "SELECT * FROM " . self::TB_STEP .
-	  " WHERE process_id = ".$woProcessId." AND number = ".$stepNumber." LIMIT 1";
-	  $this->db->query($sql);
-	  $result = $this->db->fetch(0);
-
-	  $this->assertEquals($step->getId(), $result->id);
-	  $this->assertEquals($step->getNumber(), $result->number);
-	  $this->assertEquals($step->getProcessId(), $result->process_id);
-	  } */
+		for ($i = 0; $i < $count; $i++) {
+			$this->assertEquals($steps[$i]->getNumber(), $result[$i]['number']);
+			$this->assertEquals($steps[$i]->getProcessId(), $result[$i]['process_id']);
+			$this->assertEquals($steps[$i]->getId(), $result[$i]['id']);
+		}
+	}
 
 	public function testSave() {
 		$facilityId = 100;
@@ -95,32 +76,16 @@ class ProcessTemplateTest extends DbTestCase {
 		$this->assertEquals($process->getWorkOrderId(), $result[0]['work_order_id']);
 	}
 
-	/* public function testGetCurrentStep() {
-	  $processId = 2;
-	  $stepNumber = 1;
-	  $process = new ProcessTemplate($this->db, $processId);
-	  $process->setCurrentStepNumber($stepNumber);
-	  $step = $process->getCurrentStep();
-	  $sql = "SELECT * FROM " . self::TB_STEP . " " .
-	  "WHERE process_id = {$processId} " .
-	  "AND number = {$stepNumber} " .
-	  "LIMIT 1";
-	  $this->db->query($sql);
-	  $result = $this->db->fetch_all_array();
-
-	  $this->assertEquals($step->getId(), $result[0]['id']);
-	  $this->assertEquals($step->getNumber(), $result[0]['number']);
-	  $this->assertEquals($step->getOptional(), $result[0]['optional']);
-	  $this->assertEquals($step->getDescription(), $result[0]['description']);
-	  } */
+	
 
 	public function testCreateProcessInstance() {
 		$processTemplateId = 1;
 		$processTemplate = new ProcessTemplate($this->db, $processTemplateId);
 		$processInstanse = $processTemplate->createProcessInstance();
+		$processInstanse->save();
 
 		$sql = "SELECT * FROM " . self::TB_PROCESS_INSTANCE . " " .
-				"WHERE id=".$processInstanse->getId();
+				"WHERE id=" . $processInstanse->getId();
 		$this->db->query($sql);
 		$result = $this->db->fetch_all_array();
 

@@ -3,6 +3,8 @@
 namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Model;
+use VWM\Apps\Process\ProcessTemplate;
+use VWM\Apps\Process\ProcessInstance;
 
 abstract class WorkOrder extends Model {
 
@@ -73,11 +75,11 @@ abstract class WorkOrder extends Model {
 		$this->description = $description;
 	}
 
-	public function getCustomer_name() {
+	public function getCustomerName() {
 		return $this->customer_name;
 	}
 
-	public function setCustomer_name($customer_name) {
+	public function setCustomerName($customer_name) {
 		$this->customer_name = $customer_name;
 	}
 
@@ -97,11 +99,11 @@ abstract class WorkOrder extends Model {
 		$this->status = $status;
 	}
 
-	public function getProcessTemplateID() {
+	public function getProcessTemplateId() {
 		return $this->process_template_id;
 	}
 
-	public function setProcessTemplateID($processId) {
+	public function setProcessTemplateId($processId) {
 		$this->process_template_id = $processId;
 	}
 
@@ -141,7 +143,7 @@ abstract class WorkOrder extends Model {
 	}
 
 	public function getProcess() {
-		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->getProcessTemplateID());
+		$process = new ProcessTemplate($this->db, $this->getProcessTemplateId());
 		return $process;
 	}
 	
@@ -153,7 +155,7 @@ abstract class WorkOrder extends Model {
 			return false;
 		}
 		$result = $this->db->fetch(0);
-		$processInstance = new \VWM\Apps\Process\ProcessInstance($this->db, $result->id);
+		$processInstance = new ProcessInstance($this->db, $result->id);
 		
 		return $processInstance;
 		

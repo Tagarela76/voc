@@ -4,15 +4,14 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-class ProcessTemplate extends Process {
-	
-	
+class ProcessTemplate extends Process
+{
 	const TABLE_NAME = 'process_template';
 	const STEP_TABLE = 'step_template';
 	const RESOURCE_TABLE = 'resource_template';
 
-	
-	public function load() {
+	public function load()
+	{
 		if (is_null($this->getId())) {
 			return false;
 		}
@@ -28,13 +27,13 @@ class ProcessTemplate extends Process {
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
 	}
-	
-	
+
 	/**
 	 * function for getting all Steps in process
+	 * @return boolean|\VWM\Apps\Process\StepTemplate[] 
 	 */
-
-	public function getSteps() {
+	public function getSteps()
+	{
 		$sql = "SELECT * FROM " . self::STEP_TABLE .
 				" WHERE process_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
@@ -48,31 +47,14 @@ class ProcessTemplate extends Process {
 			$step->initByArray($stepDetails);
 			$steps[] = $step;
 		}
+
 		return $steps;
 	}
 
-	/**
-	 * function for getting Current Step in process
-	 */
+	protected function _insert()
+	{
+		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
-	/*public function getCurrentStep() {
-		$sql = "SELECT id FROM " . self::STEP_TABLE . " " .
-				"WHERE process_id = {$this->db->sqltext($this->getId())} " .
-				"AND number = {$this->db->sqltext($this->getCurrentStepNumber())} " .
-				"LIMIT 1";
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$step = new StepTemplate($this->db, $row->id);
-		return $step;
-	}*/
-
-	protected function _insert() {
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
-	
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"facility_id, name, last_update_time, work_order_id" .
 				") VALUES(" .
@@ -90,9 +72,9 @@ class ProcessTemplate extends Process {
 		}
 	}
 
-	protected function _update() {
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
+	protected function _update()
+	{
+		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"facility_id={$this->db->sqltext($this->getFacilityId())}, " .
@@ -108,16 +90,25 @@ class ProcessTemplate extends Process {
 			return false;
 		}
 	}
-	//Bulk Uploader
-	public function getProcessIdByNameAndFacilityId($facilityId = NULL, $name = NULL) {
+
+	/**
+	 * function for getting Process Id by name and Facility Id
+	 * 
+	 * @param type $facilityId
+	 * @param type $name
+	 * 
+	 * @return boolean 
+	 */
+	public function getProcessIdByNameAndFacilityId($facilityId = null, $name = null)
+	{
 		if (is_null($facilityId)) {
 			$facilityId = $this->getFacilityId();
 		}
 		if (is_null($name)) {
 			$name = $this->getName();
 		}
-		
-		if (is_null($facilityId)) {
+
+		if (is_null($facilityId) && is_null($name)) {
 			return false;
 		}
 
@@ -126,23 +117,24 @@ class ProcessTemplate extends Process {
 				"AND name = '{$this->db->sqltext($name)}' LIMIT 1";
 
 		$this->db->query($sql);
-		
-		
+
+
 		$row = $this->db->fetch(0);
-		
-		if(is_null($row->id)){
+
+		if (is_null($row->id)) {
 			return false;
-		}else{
+		} else {
 			return $row->id;
 		}
 	}
-	
+
 	/**
 	 * function for deleting process step
 	 * @param int $processId 
+	 * @return boolean
 	 */
-	public function deleteProcessSteps($processId = NULL) {
-
+	public function deleteProcessSteps($processId = null)
+	{
 		if (is_null($processId)) {
 			$processId = $this->getId();
 		}
@@ -150,11 +142,11 @@ class ProcessTemplate extends Process {
 		if (is_null($processId)) {
 			return false;
 		}
-		
-		$sql = "DELETE FROM s,r ".
-				"USING ".self::STEP_TABLE." s ".
-				"LEFT JOIN ".self::RESOURCE_TABLE." r ". 
-				"ON s.id = r.step_id ".
+
+		$sql = "DELETE FROM s,r " .
+				"USING " . self::STEP_TABLE . " s " .
+				"LEFT JOIN " . self::RESOURCE_TABLE . " r " .
+				"ON s.id = r.step_id " .
 				"WHERE s.process_id = {$this->db->sqltext($processId)}";
 		$response = $this->db->exec($sql);
 		if ($response) {
@@ -163,24 +155,20 @@ class ProcessTemplate extends Process {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * function for creating process instance for Work Order
-	 * @var int
-	 * return processInstance 
+	 * @return \VWM\Apps\Process\ProcessInstance
 	 */
-	public function createProcessInstance(){
+	public function createProcessInstance()
+	{
 		$processInstance = new ProcessInstance($this->db);
 		$processInstance->setFacilityId($this->getFacilityId());
 		$processInstance->setName($this->getName());
 		$processInstance->setWorkOrderId($this->getWorkOrderId());
-		$processInstanceId = $processInstance->save();
-		if($processInstanceId){
-			return $processInstance;
-		}else{
-			return false;
-		}
+		return $processInstance;
 	}
+
 }
 
 ?>

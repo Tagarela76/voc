@@ -54,13 +54,12 @@ class ProcessInstanceTest extends DbTestCase {
 	}
 	
 	public function testGetSteps() {
-
 	  $woProcessId = 2;
 	  $process = new ProcessInstance($this->db, $woProcessId);
 	  $steps = $process->getSteps();
 
 	  $sql = "SELECT * FROM " .  self::TB_STEP .
-	  " WHERE process_id = 2";
+	  " WHERE process_id = ".$woProcessId;
 	  $this->db->query($sql);
 
 	  $result = $this->db->fetch_all_array();

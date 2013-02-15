@@ -54,12 +54,12 @@ class IndustrialWorkOrder extends WorkOrder {
 		$query = "INSERT INTO " . self::TABLE_NAME . " SET " .
 				"number = '{$this->db->sqltext($this->getNumber())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
-				"customer_name='{$this->db->sqltext($this->getCustomer_name())}', " .
+				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
 				"status = '{$this->db->sqltext($this->getStatus())}'";
 				//"vin = '{$this->db->sqltext($this->getVin())}'";
 
-		if ($this->getProcessTemplateID() != null) {
+		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
 		}
 		$this->db->query($query); 
@@ -77,7 +77,7 @@ class IndustrialWorkOrder extends WorkOrder {
 		$query = "UPDATE " . self::TABLE_NAME . "
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
-						customer_name='" . $this->db->sqltext($this->getCustomer_name()) . "',	
+						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',	
 						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
 						status='" . $this->db->sqltext($this->getStatus()) . "'
 					WHERE id= " . $this->db->sqltext($this->getId());

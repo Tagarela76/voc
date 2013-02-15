@@ -4,34 +4,16 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-class StepTemplate extends Step {
-	/*
-	 * step id
-	 * @var int
-	 */
-	protected $process_id;
-
-	/*
-	 * step number
-	 * @var int
-	 */
-	protected $total_spent_time = 0;
-
-	/*
-	 * resources
-	 * @var array of objects
-	 */
-	protected $init_resources = array();
-
+class StepTemplate extends Step
+{
 	const TABLE_NAME = 'step_template';
 	const RESOURCE_TABLE = 'resource_template';
 	const TIME = 1;
 	const VOLUME = 2;
 	const COUNT = 3;
 
-	
-
-	public function load() {
+	public function load()
+	{
 		if (is_null($this->getId())) {
 			return false;
 		}
@@ -52,32 +34,17 @@ class StepTemplate extends Step {
 	 * get and set resources for initialization
 	 * @return type array
 	 */
-	public function getInitResources() {
-		return $this->init_resources;
-	}
-
-	public function setInitResources($init_resources) {
-		$this->init_resources = $init_resources;
-	}
-
-	public function getProcessId() {
-		return $this->process_id;
-	}
-
-	public function setProcessId($process_id) {
-		$this->process_id = $process_id;
-	}
-
-	public function getTotalSpentTime() {
+	public function getTotalSpentTime()
+	{
 		$this->calculateTotalSpentTime();
 		return $this->total_spent_time;
 	}
 
-	private function calculateTotalSpentTime() {
+	private function calculateTotalSpentTime()
+	{
 		$resources = $this->getResources();
 		$totalSpentTime = 0;
 		foreach ($resources as $resource) {
-
 			if ($resource->getResourceTypeId() == self::TIME) {
 				$unitTypeConvector = new \UnitTypeConverter($this->db);
 				$unitType = new \Unittype($this->db);
@@ -89,7 +56,12 @@ class StepTemplate extends Step {
 		$this->total_spent_time = $totalSpentTime;
 	}
 
-	public function getResources() {
+	/**
+	 * function for getting step resources 
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate 
+	 */
+	public function getResources()
+	{
 		$sql = "SELECT * FROM " . self::RESOURCE_TABLE .
 				" WHERE step_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
@@ -106,8 +78,8 @@ class StepTemplate extends Step {
 		return $resources;
 	}
 
-	protected function _insert() {
-
+	protected function _insert()
+	{
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"number, process_id, last_update_time, description, optional" .
 				") VALUES(" .
@@ -127,7 +99,8 @@ class StepTemplate extends Step {
 		}
 	}
 
-	protected function _update() {
+	protected function _update()
+	{
 		$lastUpdateTime = $this->getLastUpdateTime();
 
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
@@ -145,23 +118,21 @@ class StepTemplate extends Step {
 			return false;
 		}
 	}
-	
-	public function createInstanceStep($processInstanceId = null) {
+
+	/**
+	 * function for creating step instance by step template
+	 * @param type $processInstanceId
+	 * @return \VWM\Apps\Process\StepInstance 
+	 */
+	public function createInstanceStep($processInstanceId = null)
+	{
 		$step = new StepInstance($this->db);
 		$step->setNumber($this->getNumber());
 		$step->setProcessId($processInstanceId);
 		$step->setDescription($this->getDescription());
 		$step->setOptional($this->getOptional());
-		$stepInstanceId = $step->save();
-		
-		//save resources
-		if ($stepInstanceId) {
-			return $step;
-		} else {
-			return false;
-		}
+
+		return $step;
 	}
-
 }
-
 ?>

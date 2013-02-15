@@ -4,59 +4,24 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
-class StepInstance extends Step {
-	/*
-	 * step id
-	 * @var int
-	 */
-	
-	protected $process_id;
-
-	/*
-	 * step number
-	 * @var int
-	 */
-	protected $total_spent_time = 0;
-
-	/*
-	 * resources
-	 * @var array of objects
-	 */
-	protected $init_resources = array();
-
+class StepInstance extends Step
+{
 	const TABLE_NAME = 'step_instance';
 	const RESOURCE_TABLE = 'resource_instance';
 	const TIME = 1;
 	const VOLUME = 2;
 	const COUNT = 3;
 
-	/**
-	 * get and set resources for initialization
-	 * @return type array
-	 */
-	public function getInitResources() {
-		return $this->init_resources;
-	}
+	protected $resources = array();
 
-	public function setInitResources($init_resources) {
-		$this->init_resources = $init_resources;
-	}
-
-	public function getProcessId() {
-		return $this->process_id;
-	}
-
-	public function setProcessId($process_id) {
-		$this->process_id = $process_id;
-	}
-
-	public function getTotalSpentTime() {
+	public function getTotalSpentTime()
+	{
 		$this->calculateTotalSpentTime();
 		return $this->total_spent_time;
 	}
 
-	
-	public function load() {
+	public function load()
+	{
 		if (is_null($this->getId())) {
 			return false;
 		}
@@ -72,13 +37,16 @@ class StepInstance extends Step {
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
 	}
-	
-	private function calculateTotalSpentTime() {
+
+	/**
+	 * calculate total spent time 
+	 */
+	private function calculateTotalSpentTime()
+	{
 		$resources = $this->getResources();
 		$totalSpentTime = 0;
-		
-		foreach ($resources as $resource) {
 
+		foreach ($resources as $resource) {
 			if ($resource->getResourceTypeId() == self::TIME) {
 				$unitTypeConvector = new \UnitTypeConverter($this->db);
 				$unitType = new \Unittype($this->db);
@@ -86,16 +54,26 @@ class StepInstance extends Step {
 				$qty = $unitTypeConvector->convertToDefaultTime($resource->getQty(), $unittypeName);
 				$totalSpentTime+=$qty;
 			}
-			
 		}
 		$this->total_spent_time = $totalSpentTime;
 	}
 
-	public function getResources() {
+	/**
+	 * function for getting step resources
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate[] 
+	 */
+	public function getResources($stepId = null)
+	{
+		if (!empty($this->resources)) {
+			return $this->resources;
+		}
+		if (is_null($stepId)) {
+			$stepId = $this->getId();
+		}
 		$sql = "SELECT * FROM " . self::RESOURCE_TABLE .
-				" WHERE step_id = {$this->db->sqltext($this->getId())}";
+				" WHERE step_id = {$this->db->sqltext($stepId)}";
 		$this->db->query($sql);
-		
+
 		if ($this->db->num_rows() == 0) {
 			return false;
 		}
@@ -106,12 +84,12 @@ class StepInstance extends Step {
 			$resource->initByArray($resourceDetails);
 			$resources[] = $resource;
 		}
+		$this->resources = $resources;
 		return $resources;
 	}
 
-	protected function _insert() {
-	
-		
+	protected function _insert()
+	{
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"number, process_id, last_update_time, description, optional" .
 				") VALUES(" .
@@ -121,7 +99,7 @@ class StepInstance extends Step {
 				"'{$this->db->sqltext($this->getDescription())}'," .
 				"'{$this->db->sqltext($this->getOptional())}'" .
 				")";
-		
+
 		$response = $this->db->exec($sql);
 
 		if ($response) {
@@ -132,8 +110,8 @@ class StepInstance extends Step {
 		}
 	}
 
-	protected function _update() {
-
+	protected function _update()
+	{
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"number={$this->db->sqltext($this->getNumber())}, " .
 				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
@@ -149,8 +127,14 @@ class StepInstance extends Step {
 			return false;
 		}
 	}
-	
-	public function deleteCurrentStepInstance($stepId = null){
+
+	/**
+	 * delete current step with its resources
+	 * @param type $stepId
+	 * @return boolean 
+	 */
+	public function delete($stepId = null)
+	{
 		if (is_null($stepId)) {
 			$stepId = $this->getId();
 		}
@@ -158,10 +142,10 @@ class StepInstance extends Step {
 		if (is_null($stepId)) {
 			return false;
 		}
-		
-		$sql = "DELETE s,r FROM ".self::TABLE_NAME." s ".
-				"LEFT JOIN ".self::RESOURCE_TABLE." r ". 
-				"ON s.id = r.step_id ".
+
+		$sql = "DELETE s,r FROM " . self::TABLE_NAME . " s " .
+				"LEFT JOIN " . self::RESOURCE_TABLE . " r " .
+				"ON s.id = r.step_id " .
 				"WHERE s.id = {$this->db->sqltext($stepId)}";
 		$response = $this->db->exec($sql);
 		if ($response) {

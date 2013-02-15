@@ -48,7 +48,7 @@ class StepTemplateTest extends DbTestCase {
 		}
 	}
 	
-	/*public function testGetTotalSpentTime() {
+	public function testGetTotalSpentTime() {
 		$stepId = 1;
 		$step = new StepTemplate($this->db, $stepId);
 		$totalSpentTime = $step->getTotalSpentTime();
@@ -63,7 +63,7 @@ class StepTemplateTest extends DbTestCase {
 		}
 		$this->assertEquals($totalTime, $totalSpentTime);
 		
-	}*/
+	}
 	
 	public function testSave(){
 		$processId = 1;
@@ -106,7 +106,7 @@ class StepTemplateTest extends DbTestCase {
 		//$stepProcessInstance = 1;
 		$stepTemplate = new StepTemplate($this->db, $stepTemplateId);
 		$stepInstanse = $stepTemplate->createInstanceStep($stepTemplate->getProcessId());
-
+		$stepInstanse->save();
 		$sql = "SELECT * FROM " . self::TB_STEP_INSTANCE . " " .
 				"WHERE id=".$stepInstanse->getId();
 		$this->db->query($sql);

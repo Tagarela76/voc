@@ -15,8 +15,6 @@ class ResourceTemplateTest extends DbTestCase {
 	public $fixtures = array(
 		self::TB_PROCESS, self::TB_STEP, self::TB_RESOURCE, self::TB_UNITTYPE
 	);
-
-	
 	
 	public function testSave(){
 		$resource = new ResourceTemplate($this->db);
@@ -30,7 +28,6 @@ class ResourceTemplateTest extends DbTestCase {
 		$resource->setResourceTypeId(1);
 		$resourceID = $resource->save();
 		
-		
 		$sql = "SELECT * FROM ".self::TB_RESOURCE." ".
 				"WHERE id=".$resourceID;
 		$this->db->query($sql);
@@ -41,8 +38,6 @@ class ResourceTemplateTest extends DbTestCase {
 		$this->assertEquals($resource->getQty(), $result[0]['qty']);
 		$this->assertEquals($resource->getDescription(), $result[0]['description']);
 		$this->assertEquals($resource->getRate(), $result[0]['rate']);
-		
-		
 		
 		//test Update
 		$resource->setDescription('description2');
@@ -59,14 +54,13 @@ class ResourceTemplateTest extends DbTestCase {
 		$this->assertEquals($resource->getQty(), $result[0]['qty']);
 		$this->assertEquals($resource->getDescription(), $result[0]['description']);
 		$this->assertEquals($resource->getRate(), $result[0]['rate']);
-		
 	}
 	
 	public function testCreateInstanceResource(){
 		$resourceTemplateId = 1;
 		$resourceTemplate = new ResourceTemplate($this->db, $resourceTemplateId);
 		$resourceInstanse = $resourceTemplate->createInstanceResource();
-
+		$resourceInstanse->save();
 		$sql = "SELECT * FROM " . self::TB_RESOURCE_INSTANCE . " " .
 				"WHERE id=".$resourceInstanse->getId();
 		$this->db->query($sql);
@@ -80,10 +74,7 @@ class ResourceTemplateTest extends DbTestCase {
 		$this->assertEquals($resourceInstanse->getQty(), $result[0]['qty']);
 		$this->assertEquals($resourceInstanse->getDescription(), $result[0]['description']);
 		$this->assertEquals($resourceInstanse->getRate(), $result[0]['rate']);
-		
 	}
-
-	
 }
 
 ?>
