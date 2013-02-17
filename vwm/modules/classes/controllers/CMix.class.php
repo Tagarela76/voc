@@ -484,7 +484,7 @@ class CMix extends Controller {
 
 			//	Try to get mix list from cache
 			$mixList = false;
-			$cache = VOCApp::get_instance()->getCache();
+			$cache = VOCApp::getInstance()->getCache();
 			$key = md5('mixListByFacility'.$_SERVER["QUERY_STRING"]);
 			if ($cache) {
 				$mixList = $cache->get($key);

@@ -67,7 +67,9 @@ class Department extends Model
 		$this->db = $db;
 		if (isset($departmentId)) {
 			$this->setDepartmentId($departmentId);
-			$this->load();
+			if (!$this->load()) {
+               throw new Exception('404');
+            }
 		}
 	}
 
@@ -182,7 +184,7 @@ class Department extends Model
 		$gauge->setDepartmentId($this->department_id);
 		$gauge->setFacilityId($this->facility_id);
 		$gauge->load();
-        
+
 		return $gauge;
 	}
 
@@ -630,6 +632,7 @@ class Department extends Model
             return $this->pfpsGyant;
         }
 
+        
         // temporary wrapper
         $pfpManager = new \PFPManager($this->db);
         $this->pfpsGyant = $pfpManager->getListAllowed($this->getFacility()->getCompanyId(), $pagination, null, $industryType, $supplierId);

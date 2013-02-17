@@ -29,7 +29,7 @@ $xnyo->load_plugin('auth');
 $xnyo->logout_redirect_url = '../voc_web_manager.html';
 
 //  Start VOC app
-VOCApp::get_instance()->setDB($db);
+VOCApp::getInstance()->setDB($db);
 
 
 
@@ -59,9 +59,9 @@ try {
 		$loggingManager->MakeLog($_GET, $_POST, $_SESSION['user_id']);
 
 		//	also update all needed info for VOCApp
-		VOCApp::get_instance()->setUserID($_SESSION['user_id']);
+		VOCApp::getInstance()->setUserID($_SESSION['user_id']);
 		$companyID = ($_SESSION['auth']['company_id']) ? $_SESSION['auth']['company_id'] : 0;	//	0 is for SuperUser
-		VOCApp::get_instance()->setCustomerID($companyID);
+		VOCApp::getInstance()->setCustomerID($companyID);
 	}
 
 	if (!isset($_GET["action"])) {
@@ -75,7 +75,7 @@ try {
 			}
 
 			$user = new User($db, $xnyo, $access, $auth);
-            VOCApp::get_instance()->setUser($user);
+            VOCApp::getInstance()->setUser($user);
 
 
 			if (!($user->isLoggedIn()) && !($_POST["action"] == 'auth' || $_POST["action"] == "msdsUploaderMain")) {
@@ -236,7 +236,7 @@ try {
 
 		//$smarty->assign("action", $_GET["action"]);
 		$user = new User($db, $xnyo, $access, $auth);
-        VOCApp::get_instance()->setUser($user);
+        VOCApp::getInstance()->setUser($user);
 
 		// Filter for free access to class
 		if (!$user->isLoggedIn() && $_GET["action"] != 'auth'

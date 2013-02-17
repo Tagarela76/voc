@@ -735,7 +735,7 @@ class PFPManager {
 		$pfps = array(); //Array of objects PFP
 
 		//	try to read from cache
-		$cache = VOCApp::get_instance()->getCache();
+		$cache = VOCApp::getInstance()->getCache();
 		$key = md5('query'.$query);
 		if ($cache) {
 			$pfps = $cache->get($key);

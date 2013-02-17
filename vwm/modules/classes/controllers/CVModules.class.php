@@ -34,7 +34,7 @@ class CVModules extends Controller {
         
         $currentCurrency = $billing->getCurrencyByCustomer($customerID);
         $this->smarty->assign("currentCurrency",$currentCurrency);
-        $dateFormat = VOCApp::get_instance()->getDateFormat();
+        $dateFormat = VOCApp::getInstance()->getDateFormat();
 
         if (isset($_GET['total']) && ($_GET['total'] == 'delete')) {
             //Delete Module
@@ -145,7 +145,7 @@ class CVModules extends Controller {
             $this->smarty->assign("plans",$plans);
             $this->smarty->assign("oldPlans",$oldModulePlans);
             $this->smarty->assign("plan_ids",json_encode($ids));
-            $this->smarty->assign("start",$plan_start->format(VOCApp::get_instance()->getDateFormat()));
+            $this->smarty->assign("start",$plan_start->format(VOCApp::getInstance()->getDateFormat()));
             $this->smarty->assign("areYouSureAction","apply module plan");
 
 
@@ -182,7 +182,7 @@ class CVModules extends Controller {
         } else {
             $plans = json_decode($_POST['changeTo']);
             $start_date = $_POST['startDate'];
-            $start_date_dt = DateTime::createFromFormat(VOCApp::get_instance()->getDateFormat(), $start_date);
+            $start_date_dt = DateTime::createFromFormat(VOCApp::getInstance()->getDateFormat(), $start_date);
             //var_dump($start_date_dt);
             //exit;
             

@@ -36,7 +36,7 @@ if (isset($_SESSION['user_id'])){
 	if (!isset($_GET["action"])) {
 		if (isset($_POST["action"])) {
 			$user = new User($db, $xnyo, $access, $auth);
-            VOCApp::get_instance()->setUser($user);
+            VOCApp::getInstance()->setUser($user);
 
 			if ((!($user->isLoggedIn()) || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 4) && $_POST["action"] != 'auth') {
 				header ('Location: '.$xnyo->logout_redirect_url.'?error=auth');
@@ -73,7 +73,7 @@ if (isset($_SESSION['user_id'])){
 		
 		$smarty->assign("action", $_GET["action"]);
 		$user=new User($db, $xnyo, $access, $auth);
-        VOCApp::get_instance()->setUser($user);
+        VOCApp::getInstance()->setUser($user);
 		if (!($user->isLoggedIn()) || $user->getUserAccessLevelIDByAccessname($_SESSION["accessname"]) != 4) {		
 			header ('Location: '.$xnyo->logout_redirect_url.'?error=timeout');
 		}

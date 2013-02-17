@@ -97,7 +97,7 @@ class CVMyBillingPlan extends Controller {
 /* Next billing plan */
 if ($customer->next_billing_id != null){
         $dt = new DateTime();
-        $dateFormat = VOCApp::get_instance()->getDateFormat();
+        $dateFormat = VOCApp::getInstance()->getDateFormat();
 		
 		$futurePlan = get_object_vars($Nextbilling);
 		$futurePlan['total'] = $customerPlan['price'] + $customerPlan['one_time_charge'];
