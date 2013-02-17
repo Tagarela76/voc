@@ -358,8 +358,8 @@ class CNox extends Controller {
 						$burnerDetails["manufacturer_name"] = $manufacturer["name"];
 						$noxList[$i]['burner'] = $burnerDetails;
 
-						$noxList[$i]['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['start_time']);
-						$noxList[$i]['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxList[$i]['end_time']);
+						$noxList[$i]['start_time'] = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxList[$i]['start_time']);
+						$noxList[$i]['end_time'] = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxList[$i]['end_time']);
 						$departmentDetails = $department->getDepartmentDetails($noxList[$i]['department_id']);
 						$noxList[$i]['department_name'] = $departmentDetails["name"];
 					}
@@ -496,8 +496,8 @@ class CNox extends Controller {
 		}
 
 		$noxEmission = new NoxEmission($this->db, $noxEmissionDetails);
-		$noxEmission->start_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
-		$noxEmission->end_time = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
+		$noxEmission->start_time = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxEmission->get_start_time());
+		$noxEmission->end_time = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxEmission->get_end_time());
 
 		$manager->calculateNox($noxEmission);
 
@@ -505,7 +505,7 @@ class CNox extends Controller {
 
 		$this->smarty->assign('noxEmission', $noxEmission);
 		$this->smarty->assign('burnerDetails', $burnerDetails);
-		$this->smarty->assign('dateFormat', VOCApp::get_instance()->getDateFormat()."  g:i:s");
+		$this->smarty->assign('dateFormat', VOCApp::getInstance()->getDateFormat()."  g:i:s");
 		$this->smarty->assign('tpl', 'tpls/viewNoxEmission.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
@@ -616,8 +616,8 @@ class CNox extends Controller {
 
 		$this->smarty->assign('dataChain', new TypeChain(null, 'date', $this->db, $companyID, 'company'));
 
-		$noxEmissionDetails['start_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['start_time']);
-		$noxEmissionDetails['end_time'] = date(VOCApp::get_instance()->getDateFormat() . " g:i:s", $noxEmissionDetails['end_time']);
+		$noxEmissionDetails['start_time'] = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxEmissionDetails['start_time']);
+		$noxEmissionDetails['end_time'] = date(VOCApp::getInstance()->getDateFormat() . " g:i:s", $noxEmissionDetails['end_time']);
 		
 		$countNoxSartTime = strlen($noxEmissionDetails['start_time']);
 		$noxEmissionDetails['start_time'] = substr(trim($noxEmissionDetails['start_time']), 0, $countNoxSartTime-3);

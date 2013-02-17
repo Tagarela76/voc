@@ -1161,7 +1161,7 @@ class Controller {
 				$departments = new Department($this->db);
 
 				$moreThanOneDepartmentAssigned = false;
-				$groups = VOCApp::get_instance()
+				$groups = VOCApp::getInstance()
 					->getAccessControl()
 					->getUserGroups($_SESSION['accessname']);
 				// standart is one for level (Department Level)

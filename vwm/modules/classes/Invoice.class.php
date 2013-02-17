@@ -898,10 +898,10 @@ class Invoice {
 					$flag = false;
 
 					if ($convertDates) {
-						$invoiceDetails['generationDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['generationDate'], false);
-						$invoiceDetails['suspensionDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['suspensionDate'], false);
-						$invoiceDetails['periodStartDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodStartDate'], false);
-						$invoiceDetails['periodEndDate'] = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodEndDate'], false);
+						$invoiceDetails['generationDate'] = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['generationDate'], false);
+						$invoiceDetails['suspensionDate'] = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['suspensionDate'], false);
+						$invoiceDetails['periodStartDate'] = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodStartDate'], false);
+						$invoiceDetails['periodEndDate'] = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($invoiceDetails['periodEndDate'], false);
 					}
 				}
 

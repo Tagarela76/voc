@@ -141,6 +141,7 @@ class DepartmentTest extends DbTestCase {
 
         // company 1 has 2 available pfps
         $this->assertCount(2, $pfps);
+        $this->assertEquals($pfps[0], new \VWM\Apps\WorkOrder\Entity\Pfp($this->db, 1));
     }
 
 	public function testSave(){

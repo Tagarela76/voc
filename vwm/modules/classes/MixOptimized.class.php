@@ -1519,7 +1519,7 @@ class MixOptimized extends Model {
 		$this->db->exec($sql);
 
 		//	remove everything from cache
-		$cache = VOCApp::get_instance()->getCache();
+		$cache = VOCApp::getInstance()->getCache();
 		if ($cache) {
 			$cache->flush();
 		}
