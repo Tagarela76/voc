@@ -79,13 +79,11 @@ class bulkUploader4PFP {
 			$productRATIOSToOriginal = array();
 			
 			$products = $pfp->getProducts();
-			
-			for ($i = 0; $i < count($products); $i++) {
-
+			$productCount = count($products);
+			for ($i = 0; $i < $productCount; $i++) {
 				$sql = "SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'";
 				$this->db->query($sql);
 				$r = $this->db->fetch(0);
-				
 				if (empty($r)) {
 					$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist
@@ -111,10 +109,11 @@ class bulkUploader4PFP {
 						
 					} else {
 						$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " has ratio less than 1 \n";
+						//delete product wich has ratio less than 1; But we still must save pfp;
+						unset($products[$i]);
 					}
 				}
 			}//end for
-
 			if (count($products) == count($productIDS)) { // all products exists
 				if ($pfp->getDescription() != '') {
 					$sql = "SELECT id FROM preformulated_products WHERE description = '" . $pfp->getDescription() . "' LIMIT 1";
