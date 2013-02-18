@@ -25,7 +25,7 @@ class DateTimeValidator extends ConstraintValidator {
 	 * @param \Symfony\Component\Validator\Constraint $constraint
 	 */
 	public function isValid($value, Constraint $constraint) {
-		$format = \VOCApp::get_instance()->getDateFormat();
+		$format = \VOCApp::getInstance()->getDateFormat();
 		$format .= " H:i";		
 		if(!\VWM\Framework\Utils\DateTime::createFromFormat($format, $value)) {
 			$this->setMessage($constraint->message,

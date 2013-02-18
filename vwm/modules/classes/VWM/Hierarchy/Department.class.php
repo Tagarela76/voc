@@ -9,8 +9,8 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
 
-
-class Department extends Model {
+class Department extends Model
+{
 
 	protected $department_id;
 	protected $name;
@@ -21,8 +21,7 @@ class Department extends Model {
 	protected $share_wo;
 
 	/**
-	 *
-	 * @var Facility
+	 * @var \VWM\Hierarchy\Facility
 	 */
 	protected $facility;
 
@@ -31,8 +30,13 @@ class Department extends Model {
 	 */
 	protected $pfpTypes;
 
-	/*
-	 * name of unit_class for getUnitTypeList function
+    /**
+     * @var \VWM\Apps\WorkOrder\Entity\Pfp[]
+     */
+    protected $pfpsGyant;
+
+	/**
+	 * Name of unit_class for getUnitTypeList function
 	 * USAWght for default
 	 * @var string
 	 */
@@ -53,16 +57,29 @@ class Department extends Model {
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'department';
 
-	public function __construct(\db $db, $departmentId = null) {
+    /**
+     * Constructor
+     * @param \db $db
+     * @param int $departmentId to load
+     */
+	public function __construct(\db $db, $departmentId = null)
+    {
 		$this->db = $db;
 		if (isset($departmentId)) {
 			$this->setDepartmentId($departmentId);
-			$this->load();
+			if (!$this->load()) {
+               throw new Exception('404');
+            }
 		}
 	}
 
+    /**
+     * Load Department by already set department id
+     * @return boolean did load was successful?
+     */
 	public function load() {
 		if (is_null($this->getDepartmentId())) {
+
 			return false;
 		}
 
@@ -70,10 +87,13 @@ class Department extends Model {
 				$this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		if ($this->db->num_rows() == 0) {
+
 			return false;
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+
+        return true;
 	}
 
 	public function getDepartmentId() {
@@ -140,7 +160,12 @@ class Department extends Model {
 		$this->unitTypeClass = $unitTypeClass;
 	}
 
-
+    /**
+     * Get gauge by type
+     * @param int $gaugeType
+     * @return \VWM\Apps\Gauge\Entity\Gauge|boolean one of the Gauge child
+     * or false
+     */
 	public function getGauge($gaugeType) {
 		switch ($gaugeType) {
 			case Gauge::QUANTITY_GAUGE:
@@ -150,14 +175,16 @@ class Department extends Model {
 				$gauge = new SpentTimeGauge($this->db);
 				break;
 			case Gauge::VOC_GAUGE:
-				break;
 			default:
+
+                return false;
 				break;
 		}
 
 		$gauge->setDepartmentId($this->department_id);
 		$gauge->setFacilityId($this->facility_id);
 		$gauge->load();
+
 		return $gauge;
 	}
 
@@ -593,6 +620,25 @@ class Department extends Model {
 
 		return $unittypes;
 	}
+
+    /**
+     * Get all Gyant PFPs
+     * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
+     */
+    public function getPfpsGyant(\Pagination $pagination = null, $industryType = 0, $supplierId = 0)
+    {
+        if ($this->pfpsGyant) {
+
+            return $this->pfpsGyant;
+        }
+
+        
+        // temporary wrapper
+        $pfpManager = new \PFPManager($this->db);
+        $this->pfpsGyant = $pfpManager->getListAllowed($this->getFacility()->getCompanyId(), $pagination, null, $industryType, $supplierId);
+
+        return $this->pfpsGyant;
+    }
 }
 
 ?>

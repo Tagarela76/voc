@@ -80,7 +80,7 @@ try {
 			$action = 'main';
 		}
 
-        VOCApp::get_instance()->setUser($user);
+        VOCApp::getInstance()->setUser($user);
         
 		$smarty->assign("accessname", $xnyo->user['username']);
 

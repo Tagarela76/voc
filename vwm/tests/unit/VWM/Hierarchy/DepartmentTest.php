@@ -19,10 +19,14 @@ class DepartmentTest extends DbTestCase {
 		TB_PFP,
 		TB_PFP_TYPES,
 		\PfpTypes::TB_PFP_2_DEPARTMENT,
+        TB_PFP2COMPANY,
+        TB_SUPPLIER,
+        TB_PRODUCT,
+        TB_PFP2PRODUCT,
 		TB_DEFAULT,
 		TB_TYPE,
 		TB_UNITCLASS,
-		
+
 	);
 
 	public function testInitByArray() {
@@ -71,23 +75,23 @@ class DepartmentTest extends DbTestCase {
 		$rows = $this->db->fetch_all_array();
 		$rowsCount = $this->db->num_rows();
 		$gaugeTypes=array();
-		
+
 		foreach($rows as $row){
 			$gaugeTypes[] = $row['gauge_type'];
 		}
-		
+
 		$department = new Department($this->db, 1);
 		$allGauges = $department->getAllAvailableGauges();
 		$allGaugesCount = count($allGauges);
-		
+
 		$this->assertEquals($allGaugesCount, $rowsCount);
 		foreach ($allGaugesCount as $key => $value){
 			$this->assertTrue(in_array($value, $gaugeTypes));
 		}
-		
-		
+
+
 	}
-	
+
 	public function testCountRepairOrderInDepartment(){
 		$departmentId = 1;
 		$sql = "SELECT * FROM " . TB_WORK_ORDER . " w ".
@@ -97,11 +101,11 @@ class DepartmentTest extends DbTestCase {
 		$this->db->query($sql);
 		$rowsCount = $this->db->num_rows();
 		$department = new Department($this->db, 1);
-		
+
 		$countRepairOrderInDepartment = $department->countRepairOrderInDepartment();
 		$this->assertEquals($countRepairOrderInDepartment, $rowsCount);
 	}
-	
+
 	public function testGetRepairOrderInDepartment(){
 		$departmentId = 1;
 		$sql = "SELECT * FROM " . TB_WORK_ORDER . " w ".
@@ -111,11 +115,11 @@ class DepartmentTest extends DbTestCase {
 		$this->db->query($sql);
 		$departmentRepairOrder = $this->db->fetch_all();
 		$department = new Department($this->db, 1);
-		
+
 		$departmentList = $department->getRepairOrdersList();
 		$this->assertEquals(count($departmentList), 1);
 		//$this->assertEquals($departmentList,  $departmentRepairOrder);
-		
+
 	}
 
 	public function testGetFacility() {
@@ -127,6 +131,19 @@ class DepartmentTest extends DbTestCase {
 		$this->assertEquals($facilityExpected, $facilityActual);
 	}
 
+    /**
+     * Gyant Pre Formulated Products
+     */
+    public function testGetPfpsGyant()
+    {
+        $department = new Department($this->db, 1);
+        $pfps = $department->getPfpsGyant();
+
+        // company 1 has 2 available pfps
+        $this->assertCount(2, $pfps);
+        $this->assertEquals($pfps[0], new \VWM\Apps\WorkOrder\Entity\Pfp($this->db, 1));
+    }
+
 	public function testSave(){
 		$department = new Department($this->db);
 		$department->setFacilityId('1');
@@ -135,30 +152,30 @@ class DepartmentTest extends DbTestCase {
 		$department->setVocLimit('100.00');
 		$department->setVocAnnualLimit('100.00');
 		$department->setCreaterId('1');
-		
-		
+
+
 		$expectedId = 4;
 		$result = $department->save();
 		$this->assertEquals($expectedId, $result);
-		
+
 		$sql = "SELECT * FROM ".TB_DEPARTMENT." WHERE department_id = {$result}";
 		$this->db->query($sql);
 		$row = $this->db->fetch_array(0);
 		$departmentActual = new Department($this->db);
 		$departmentActual->initByArray($row);
 		$this->assertEquals($department, $departmentActual);
-		
-		
+
+
 		//check update
-		
+
 		$department->setCreaterId('2');
 		$department->setShareWo('0');
 		$result=$department->save();
-		
+
 		$newDepartment = new Department($this->db, 4);
 		$this->assertEquals($newDepartment->getShareWo(), 0);
 		$this->assertEquals($newDepartment->getCreaterId(), 2);
-		
+
 	}
 	public function testGetCountMix(){
 		$department = new Department($this->db, 1);
@@ -168,7 +185,7 @@ class DepartmentTest extends DbTestCase {
 	public function testGetMixList(){
 		/*$pagination = new Pagination(1);
 		$pagination->url = "#";*/
-		
+
 		$departmentId =1;
 		$query = "SELECT * FROM ". TB_USAGE ." m ".
 				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
@@ -201,20 +218,20 @@ class DepartmentTest extends DbTestCase {
 
 		$this->assertEquals($expectedPfpTypes, $pfpTypes);
 	}
-	
+
 	public function testGetUnitTypes(){
 		// test gettint department Unit type
 		$departmentUnitType = array(1,2,3);
 		$unitTypeClass = 'USAWght';
 		$categoty = 'department';
 		$departmentId = 1;
-		
+
 		$department = new Department($this->db, $departmentId);
 		$department->setUnitTypeClass($unitTypeClass);
 		$unittype = new \Unittype($this->db);
 		$unittype->setDefaultCategoryUnitTypelist($departmentUnitType, $categoty, $departmentId);
 		$departmentUnitTypes = $department->getUnitTypeList();
-		
+
 		//get unit type
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.system " .
@@ -249,7 +266,7 @@ class DepartmentTest extends DbTestCase {
 		}
 		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
 		$this->assertEquals($unittypes, $departmentUnitTypes);
-		
+
 		//test getting facility unittype
 		$facilityUnitType = array(4,9);
 		$categoty = 'facility';
@@ -258,11 +275,11 @@ class DepartmentTest extends DbTestCase {
 		$unitTypeClass = 'MetricVlm';
 		$department = new Department($this->db, $departmentId);
 		$department->setUnitTypeClass($unitTypeClass);
-		
+
 		$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $facilityId);
 		$department->setFacilityId($facilityId);
 		$departmentUnitTypes = $department->getUnitTypeList();
-		
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.system " .
 				"FROM " . TB_UNITTYPE . " ut " .
@@ -296,7 +313,7 @@ class DepartmentTest extends DbTestCase {
 		}
 		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
 		$this->assertEquals($unittypes, $departmentUnitTypes);
-		
+
 		//test getting company unittype
 		$companyUnitType = array(38,39);
 		$categoty = 'company';
@@ -304,15 +321,15 @@ class DepartmentTest extends DbTestCase {
 		$departmentId = 3;
 		$facilityId = 2;
 		$companyId = 1;
-		
+
 		$department = new Department($this->db, $departmentId);
 		$department->setUnitTypeClass($unitTypeClass);
-		
+
 		$unittype->setDefaultCategoryUnitTypelist($companyUnitType, $categoty, $companyId);
 		$department->setFacilityId($facilityId);
 		$department->getFacility()->setCompanyId($companyId);
 		$companyUnitTypes = $department->getUnitTypeList();
-		
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.system " .
 				"FROM " . TB_UNITTYPE . " ut " .
@@ -346,7 +363,7 @@ class DepartmentTest extends DbTestCase {
 		}
 		$this->assertEquals(count($unittypes), count($companyUnitTypes));
 		$this->assertEquals($unittypes, $companyUnitTypes);
-		
+
 	}
 }
 
