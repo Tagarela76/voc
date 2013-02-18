@@ -118,13 +118,15 @@ class VOCApp
 
     /**
      * Setter for xnyo db
-     * TODO: move to DIC in future
      *
      * @param \db $db
      */
     public function setDB($db)
     {
         $this->db = $db;
+        
+        // add db to container as service
+        $this->container['db'] = $this->db;
     }
 
     /**

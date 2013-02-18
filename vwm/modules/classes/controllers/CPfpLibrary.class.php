@@ -18,6 +18,9 @@ class CPfpLibrary extends Controller
 	protected function bookmarkDPfpLibrary($vars)
     {
 		extract($vars);
+        $pfpManager = VOCApp::getInstance()->getService('pfp');
+        $pfpManager->findAll();
+        die;
         $department = new \VWM\Hierarchy\Department($this->db,
                 $this->getFromRequest('id'));
 
