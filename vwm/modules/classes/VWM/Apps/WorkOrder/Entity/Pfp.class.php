@@ -16,6 +16,7 @@ class Pfp extends Model {
 
 	const TABLE_NAME = 'preformulated_products';
 	const TABLE_PFP2COMPANY = 'pfp2company';
+    const TABLE_PFP2PRODUCT = 'pfp2product';
 
 	public function __construct(\db $db) {
 		$this->db = $db;
