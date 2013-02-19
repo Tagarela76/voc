@@ -78,7 +78,6 @@ class CABulkUploader extends Controller {
 			$input['realFileName'] = basename($_FILES['inputFile']['name']);
 			$validation = new validateCSV($this->db);
 			$validation->validatePFP($input); // array from csv
-
 			if ($validation->productsCorrect) {
 				for ($j = 0; $j < count($validation->productsCorrect); $j++) {
 			
@@ -109,7 +108,7 @@ class CABulkUploader extends Controller {
 			$correctCnt = count($validation->productsCorrect);*/
 			$errorCnt = $bu->productsError;
 			$correctCnt = $bu->productsCorrect;
-			
+
 			$total = $errorCnt + $correctCnt;
 			$percent = round($errorCnt * 100 / ($correctCnt + $errorCnt), 2);
 			
@@ -314,7 +313,6 @@ class CABulkUploader extends Controller {
 			}
 
 			return $goodArr;
-
 		}
 	}
 
@@ -429,15 +427,17 @@ class CABulkUploader extends Controller {
 		$isGrams = false;
 		foreach ($possibleGramsStrings as $gramsString) {
 			$isGrams = (strtoupper($product[bulkUploader4PFP::PRODUCTUNITTYPE_INDEX]) == $gramsString)
+
 					? true : false;
 			if ($isGrams) {
 				break;
 			}
+
 		}
 		return $isGrams;
 	}
 
-	//old code
+
 	private function convertOzRatioToVolume($product) {
 
 		$unitTypeConverter = new UnitTypeConverter();

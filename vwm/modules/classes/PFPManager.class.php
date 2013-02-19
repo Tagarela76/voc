@@ -86,7 +86,7 @@ class PFPManager {
 		}
 
 		$query .= " GROUP BY pfp.id";
-
+		
 		$this->db->query($query);
 
 		return $this->db->num_rows();

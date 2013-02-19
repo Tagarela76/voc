@@ -110,7 +110,7 @@ class VOCApp
         $this->container['tmpclass'] = $class;
         $this->container[$name] = $this->container->share(function ($c) {
             $service = new $c['tmpclass']();
-            unset($this->container['tmpclass']);
+            unset($c['tmpclass']);
 
             return $service;
         });
