@@ -20,6 +20,7 @@ class Pfp extends Model {
 
 	public function __construct(\db $db) {
 		$this->db = $db;
+		//$this->db = $db = \VOCApp::getInstance()->getService('db');
 	}
 
 	public function getId() {

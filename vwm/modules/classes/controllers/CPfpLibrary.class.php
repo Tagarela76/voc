@@ -17,97 +17,52 @@ class CPfpLibrary extends Controller
      */
 	protected function bookmarkDPfpLibrary($vars)
     {
-		extract($vars);
-        $pfpManager = VOCApp::getInstance()->getService('pfp');
-        $pfpManager->findAll();
-        die;
-        $department = new \VWM\Hierarchy\Department($this->db,
-                $this->getFromRequest('id'));
-
-        $pfps = $department->getPfpsGyant();
-
-        //	get list of Industry Types
-		$industryType = new IndustryType($this->db);
-		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
-		$this->smarty->assign("productTypeList", $productIndustryTypeList);
-
-		//	tell Smarty where to insert drop down list with industry types
-		$this->insertTplBlock('tpls/productTypesDropDown.tpl', self::INSERT_AFTER_SEARCH);
-
-		//	tell Smarty where to insert PFP Types Filter (if assign)
-		if ($this->getFromRequest('tab') == 'all') {
-			$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl',
-                    self::INSERT_AFTER_INDUSTRY_TYPES);
-		}
-
-		//	set js assets
-		$jsSources = array ('modules/js/checkBoxes.js',
-                'modules/js/autocomplete/jquery.autocomplete.js');
-
-		//	send to smarty
-		$this->smarty->assign('jsSources', $jsSources);
-		//$this->smarty->assign('pagination', $pagination);
-		$this->smarty->assign('pfps', $pfps);
-		$this->smarty->assign('childCategoryItems', $pfps);
-		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
-        return;
-        ///////////////////////
-
-		$manager = new PFPManager($this->db);
 		$facility = new Facility($this->db);
 		$productCategory = ($this->getFromRequest('productCategory')) ? $this->getFromRequest('productCategory') : 0;
-
+		
+		extract($vars);
+		
 		$url = "?".$_SERVER["QUERY_STRING"];
 		$url = preg_replace("/\&page=\d*/","", $url);
 
+        $pfpManager = VOCApp::getInstance()->getService('pfp');
+		$department = new \VWM\Hierarchy\Department($this->db,
+                $this->getFromRequest('id'));
+		//get pfpTypes
+		$pfpTypes = $department->getPfpTypes();
+		
+		
 		//	set search criteria
 		if (!is_null($this->getFromRequest('q'))) {
-			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
+			$pfpManager->setCriteria('search', $this->convertSearchItemsToArray($this->getFromRequest('q')));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		}
-
-		$department = new \VWM\Hierarchy\Department($this->db, $departmentDetails['department_id']);
-		$pfpTypes = $department->getPfpTypes();
-
+		
 		$selectedPfpType = $this->getFromRequest('pfpType');
 		if($selectedPfpType=='0'){
 			$selectedPfpType = $pfpTypes[0]->id;
 		}
-
-		$allUrl = "?action=browseCategory&category=department&id=" . $departmentDetails['department_id'] . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
-		$this->smarty->assign('allUrl', $allUrl);
-		$this->smarty->assign("pfpTypes", $pfpTypes);
-
-		$this->smarty->assign("selectedPfpType", $selectedPfpType);
-		$this->smarty->assign("productCategory", $productCategory);
-
+		
+		$companyId = $department->getFacility()->getCompanyId();
+		
+		$pfpManager->setCriteria('companyId', $companyId);
+		
+		if($productCategory!='0'){
+			$pfpManager->setCriteria('industryType', $productCategory);
+		}
 		// get Allowed or Assigned PFP
 		if ($this->getFromRequest('tab') == 'all') {
-			if (is_null($selectedPfpType)) {
-				$pfpCount = $manager->countPFPAllowed($companyDetails['company_id'], '', $productCategory);
-			} else {
-				$pfpTypesObj = new PfpTypes($this->db, $selectedPfpType);
-				$pfpCount = count($pfpTypesObj->getPfpProducts());
-			}
+			$pfpCount = $pfpManager->getPfpAllowedCount();
 		} else {
-			$pfpCount = $manager->countPFPAssigned($companyDetails['company_id'], '', $productCategory);
+			$pfpCount = $pfpManager->getPfpAssignedCount();
 		}
-
+		
 		$pagination = new Pagination((int) $pfpCount);
 		$pagination->url = $url;
 
-		if ($this->getFromRequest('tab') == 'all') {
-			if (is_null($selectedPfpType)) {
-				$pfps = $manager->getListAllowed($companyDetails['company_id'], $pagination, null, $productCategory);
-			} else {
-				$pfpTypes = new PfpTypes($this->db, $selectedPfpType);
-				$pfps = $pfpTypes->getPfpProducts($pagination);
-			}
-		} else {
-			$pfps = $manager->getListAssigned($companyDetails['company_id'], $pagination, null, $productCategory);
-		}
+		$pfps = $pfpManager->findAllAllowed($pagination);
 
-        if($this->getFromRequest('print') == true) {
+		if($this->getFromRequest('print') == true) {
             //	EXPORT THIS PAGE
             $exporter = new Exporter(Exporter::PDF);
             $exporter->company = $companyDetails['name'];
@@ -163,7 +118,8 @@ class CPfpLibrary extends Controller
             $exporter->export();
             return;
         }
-		//	get list of Industry Types
+		
+        //	get list of Industry Types
 		$industryType = new IndustryType($this->db);
 		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productIndustryTypeList);
@@ -173,19 +129,29 @@ class CPfpLibrary extends Controller
 
 		//	tell Smarty where to insert PFP Types Filter (if assign)
 		if ($this->getFromRequest('tab') == 'all') {
-			$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl', self::INSERT_AFTER_INDUSTRY_TYPES);
+			$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl',
+                    self::INSERT_AFTER_INDUSTRY_TYPES);
 		}
 
 		//	set js assets
-		$jsSources = array  ('modules/js/checkBoxes.js',
-                                     'modules/js/autocomplete/jquery.autocomplete.js');
+		$jsSources = array ('modules/js/checkBoxes.js',
+                'modules/js/autocomplete/jquery.autocomplete.js');
 
 		//	send to smarty
+		$allUrl = "?action=browseCategory&category=department&id=" . $department->getDepartmentId() . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
+		
+		$this->smarty->assign('allUrl', $allUrl);
+		$this->smarty->assign("pfpTypes", $pfpTypes);
+
+		$this->smarty->assign("selectedPfpType", $selectedPfpType);
+		$this->smarty->assign("productCategory", $productCategory);
 		$this->smarty->assign('jsSources', $jsSources);
 		$this->smarty->assign('pagination', $pagination);
 		$this->smarty->assign('pfps', $pfps);
+		$this->smarty->assign("productCategory", $productCategory);
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
+       // return;
 	}
 
 

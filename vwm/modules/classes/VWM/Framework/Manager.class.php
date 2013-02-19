@@ -55,6 +55,6 @@ abstract class Manager
 
     public function findAll()
     {
-        throw new Exception('This method should be implemented by child');
+        throw new \Exception('This method should be implemented by child');
     }
 }
