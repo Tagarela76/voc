@@ -88,7 +88,7 @@ class bulkUploader4PFP {
 					$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist
 					
-					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 1) {
+					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 0) {
 						$productIDS[] = $r->product_id;
 						$productRATIOS[] = $products[$i][self::PRODUCTRATIO_INDEX];
 						$productRATIOSTo[] = (isset($products[$i]['ratioRangeTo']))
