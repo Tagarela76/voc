@@ -14,13 +14,14 @@ class PfpManager extends Manager
 	const TB_PERFORMULATED_PRODUCT = "preformulated_products";
 	const TB_PFP_2_COMPANY = "pfp2company";
 
-	/**
+	/** 
 	 * @inheritdoc
 	 */
 	protected $criteria = array(
 		'companyId' => false,
 		'industryType' => false,
 		'supplierId' => false,
+		'pfpType' => false,
 		'search' => array(),
 	);
 
@@ -73,10 +74,10 @@ class PfpManager extends Manager
 	 * @param \Pagination $pagination
 	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]  
 	 */
-	public function findAllAllowed($isAvailable = 1, \Pagination $pagination = null)
+	public function findAllPfps($isAvailable = 1, \Pagination $pagination = null)
 	{
-		//check if avaolable
-		if($isAvailable){
+		//check if available
+		if($isAvailable == 1){
 			$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
 		}else{
 			$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 ";
@@ -91,7 +92,6 @@ class PfpManager extends Manager
 					  "OFFSET " . $pagination->getOffset() . "";
 
 		}
-
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -121,6 +121,11 @@ class PfpManager extends Manager
 			$join[] = "LEFT JOIN " . Pfp::TABLE_PFP2COMPANY . " pfp2c " .
 					"ON pfp2c.pfp_id = pfp.id";
 		}
+		
+		if ($this->getCriteria('pfpType') !== false) {
+			$join[] = "LEFT JOIN " . TB_PFP2PFP_TYPES . " pfp2t ".
+					  "ON pfp.id = pfp2t.pfp_id ";
+		}
 
 		if ($this->getCriteria('industryType') !== false) {
 			$join[] = "LEFT JOIN " . TB_PRODUCT2INDUSTRY_TYPE . " p2t " .
@@ -131,7 +136,7 @@ class PfpManager extends Manager
 			$join[] = "LEFT JOIN " . TB_SUPPLIER . " s " .
 					"ON p.supplier_id = s.supplier_id";
 		}
-
+		
 		return implode(" ", $join);
 	}
 
@@ -158,6 +163,10 @@ class PfpManager extends Manager
 
 		if ($this->getCriteria('supplierId') !== false) {
 			$where[] = "s.supplier_id = " . $this->getCriteria('supplierId');
+		}
+		
+		if ($this->getCriteria('pfpType') !== false) {
+			$where[] = "pfp2t.pfp_type_id = " . $this->getCriteria('pfpType');
 		}
 
 		if (count($this->getCriteria('search')) > 0 || 

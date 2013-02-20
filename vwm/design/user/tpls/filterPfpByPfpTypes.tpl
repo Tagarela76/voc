@@ -12,7 +12,7 @@
 			{assign var='id' value=$smarty.request.id}
 			{assign var='pfpTypeId' value=$pfpType->id}
 			{assign var='productCategory' value=$productCategory}
-			{assign var='url' value="?action=browseCategory&category=department&id=$id&bookmark=pfpLibrary&tab=all&productCategory=$productCategory&pfpType=$pfpTypeId"}
+			{assign var='url' value="?action=browseCategory&category=department&id=$id&bookmark=pfpLibrary&tab=$tab&productCategory=$productCategory&pfpType=$pfpTypeId"}
 			{if $pfpType->id == $selectedPfpType}
 				<a href="{$url}" class="active_link"> {$pfpType->name} </a>
 			{else}

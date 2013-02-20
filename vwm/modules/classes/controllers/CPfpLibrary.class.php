@@ -32,7 +32,6 @@ class CPfpLibrary extends Controller
 		$pfpTypes = $department->getPfpTypes();
 
 		//set search criteria
-
 		if (!is_null($this->getFromRequest('q'))) {
 			$pfpManager->setCriteria('search', $this->convertSearchItemsToArray($this->getFromRequest('q')));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
@@ -50,15 +49,14 @@ class CPfpLibrary extends Controller
 
 			$pfpManager->setCriteria('industryType', $productCategory);
 		}
+		
+		//check pfp type;
+		if (!is_null($selectedPfpType)) {
+			$pfpManager->setCriteria('pfpType', $selectedPfpType);
+		}
 		// get Allowed or Assigned PFP
 		if ($this->getFromRequest('tab') == 'all') {
-
-			if (is_null($selectedPfpType)) {
-				$pfpCount = $pfpManager->getPfpAllowedCount();
-			} else {
-				$pfpTypesObj = new PfpTypes($this->db, $selectedPfpType);
-				$pfpCount = count($pfpTypesObj->getPfpProducts());
-			}
+			$pfpCount = $pfpManager->getPfpAllowedCount();
 		} else {
 			$pfpCount = $pfpManager->getPfpAssignedCount();
 		}
@@ -66,16 +64,11 @@ class CPfpLibrary extends Controller
 		// get Allowed or Assigned PFP
 		$pagination = new Pagination((int) $pfpCount);
 		$pagination->url = $url;
-
+		
 		if ($this->getFromRequest('tab') == 'all') {
-			if (is_null($selectedPfpType)) {
-				$pfps = $pfpManager->findAllAllowed(1, $pagination);
-			} else {
-				$pfpTypes = new PfpTypes($this->db, $selectedPfpType);
-				$pfps = $pfpTypes->getPfpProducts($pagination);
-			}
+			$pfps = $pfpManager->findAllPfps(1, $pagination);
 		} else {
-			$pfps = $pfpManager->findAllAllowed(0, $pagination);
+			$pfps = $pfpManager->findAllPfps(0, $pagination);
 		}
 
 		if ($this->getFromRequest('print') == true) {
@@ -136,7 +129,6 @@ class CPfpLibrary extends Controller
 		}
 
 		//get list of Industry Types
-
 		$industryType = new IndustryType($this->db);
 		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productIndustryTypeList);
@@ -144,10 +136,10 @@ class CPfpLibrary extends Controller
 		//tell Smarty where to insert drop down list with industry types
 		$this->insertTplBlock('tpls/productTypesDropDown.tpl', self::INSERT_AFTER_SEARCH);
 
-		//tell Smarty where to insert PFP Types Filter (if assign)
-		if ($this->getFromRequest('tab') == 'all') {
-			$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl', self::INSERT_AFTER_INDUSTRY_TYPES);
-		}
+		//tell Smarty where to insert PFP Types Filter
+		$this->smarty->assign('tab', $this->getFromRequest('tab'));
+		$this->insertTplBlock('tpls/filterPfpByPfpTypes.tpl', self::INSERT_AFTER_INDUSTRY_TYPES);
+
 
 		//set js assets
 		$jsSources = array('modules/js/checkBoxes.js',
