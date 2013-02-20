@@ -40,7 +40,7 @@ class PfpManager extends Manager
 				$this->applyWhere($queryFilter)." ".
 				"GROUP BY pfp.id";
 		$db->query($query);
-		$pfpCount =$db->num_rows();
+		$pfpCount = $db->num_rows();
 		return $pfpCount;
 	}
 
@@ -59,30 +59,44 @@ class PfpManager extends Manager
 				$this->applyWhere($queryFilter)." ".
 				"GROUP BY pfp.id";
 		$db->query($query);
-		$pfpCount =$db->num_rows();
+		$pfpCount = $db->num_rows();
 		return $pfpCount;
 	}
 	
 	/**
-	 * Find all allowed pfps. Allowed Pfp is that Pfp which is open to use for
+	 *Find all allowed pfps. Allowed Pfp is that Pfp which is open to use for
 	 * company. Company should assign it to department to let department use it
+	 * @param bool $isAvailable
+	 * @param \Pagination $pagination
+	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]  
 	 */
-	public function findAllAllowed(\Pagination $pagination = null)
+	public function findAllAllowed($isAvailable = 1, \Pagination $pagination = null)
 	{
-		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
+		//check if avaolable
+		if($isAvailable){
+			$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
+		}else{
+			$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 ";
+		}
 
 		$query = "SELECT pfp.id, pfp.description, pfp.company_id, pfp.is_proprietary " .
 				"FROM " . Pfp::TABLE_NAME . " pfp " .
 				$this->applyJoin() . " " .
 				$this->applyWhere($queryFilter) . " GROUP BY pfp.id";
 		if (isset($pagination)) {
-			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() ." ". 
+					  "OFFSET " . $pagination->getOffset() . "";
 		}
 
 		return $this->_processGetPFPListQuery($query);
 	}
 
-	private function applyJoin()
+	/**
+	 * function for gettin datebase wich we needs
+	 * 
+	 * @return type string 
+	 */
+	protected function applyJoin()
 	{
 		$join = array();
 
@@ -92,7 +106,8 @@ class PfpManager extends Manager
 		if (count($this->getCriteria('search')) > 0
 				|| $this->getCriteria('industryType') !== false
 				|| $this->getCriteria('supplierId') !== false) {
-			$join[] = "LEFT JOIN " . TB_PRODUCT . " p ON p.product_id = pfp2p.product_id";
+			$join[] = "LEFT JOIN " . TB_PRODUCT . " p ".
+					  "ON p.product_id = pfp2p.product_id";
 		}
 
 		if ($this->getCriteria('companyId') !== false) {
@@ -113,6 +128,13 @@ class PfpManager extends Manager
 		return implode(" ", $join);
 	}
 
+	/**
+	 *function for getting Where condition
+	 * 
+	 * @param string|null $queryFilter
+	 * 
+	 * @return type string
+	 */
 	protected function applyWhere($queryFilter = null)
 	{
 		$whereCondition = "";
@@ -130,7 +152,9 @@ class PfpManager extends Manager
 			$where[] = "s.supplier_id = " . $this->getCriteria('supplierId');
 		}
 
-		if (count($this->getCriteria('search')) > 0 || $this->getCriteria('industryType') != 0 || $this->getCriteria('supplierId') != 0) {
+		if (count($this->getCriteria('search')) > 0 || 
+			$this->getCriteria('industryType') != 0 || 
+			$this->getCriteria('supplierId') != 0) {
 			$where[] = "p.product_id = pfp2p.product_id";
 		}
 
@@ -153,10 +177,14 @@ class PfpManager extends Manager
 			$whereCondition.=$queryFilter;
 		}
 		return $whereCondition;
-		// TODO: continue in the same style as apply join
 	}
-
-	private function _processGetPFPListQuery($query)
+	
+	/**
+	 * function for getting list of pfps
+	 * @param string $query
+	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[] 
+	 */
+	protected function _processGetPFPListQuery($query)
 	{
 		$db = \VOCApp::getInstance()->getService('db');
 
@@ -182,14 +210,17 @@ class PfpManager extends Manager
 
 			$PFPProductsArray = array();
 
-			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
+			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " ".
+								"WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
 
 			$db->query($getProductsQuery);
 			$products = $db->fetch_all_array();
 
 			$isRangePFP = false;
 			foreach ($products as $p) {
-				if (!is_null($p['ratio_to']) && !is_null($p['ratio_from_original']) && !is_null($p['ratio_to_original'])) {
+				if (!is_null($p['ratio_to']) && 
+					!is_null($p['ratio_from_original']) && 
+					!is_null($p['ratio_to_original'])) {
 					$isRangePFP = true;
 				}
 				$prodtmp = new \PFPProduct($db);
