@@ -32,6 +32,7 @@ class CPfpLibrary extends Controller
 		$pfpTypes = $department->getPfpTypes();
 
 		//set search criteria
+
 		if (!is_null($this->getFromRequest('q'))) {
 			$pfpManager->setCriteria('search', $this->convertSearchItemsToArray($this->getFromRequest('q')));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
@@ -46,10 +47,12 @@ class CPfpLibrary extends Controller
 		$pfpManager->setCriteria('companyId', $companyId);
 
 		if ($productCategory != '0') {
+
 			$pfpManager->setCriteria('industryType', $productCategory);
 		}
 		// get Allowed or Assigned PFP
 		if ($this->getFromRequest('tab') == 'all') {
+
 			if (is_null($selectedPfpType)) {
 				$pfpCount = $pfpManager->getPfpAllowedCount();
 			} else {
@@ -59,22 +62,22 @@ class CPfpLibrary extends Controller
 		} else {
 			$pfpCount = $pfpManager->getPfpAssignedCount();
 		}
-		
+
 		// get Allowed or Assigned PFP
 		$pagination = new Pagination((int) $pfpCount);
 		$pagination->url = $url;
-		
+
 		if ($this->getFromRequest('tab') == 'all') {
 			if (is_null($selectedPfpType)) {
-				$pfps = $pfpManager->findAllAllowed(1,$pagination);
+				$pfps = $pfpManager->findAllAllowed(1, $pagination);
 			} else {
 				$pfpTypes = new PfpTypes($this->db, $selectedPfpType);
 				$pfps = $pfpTypes->getPfpProducts($pagination);
 			}
 		} else {
-			$pfps = $pfpManager->findAllAllowed(0,$pagination);
+			$pfps = $pfpManager->findAllAllowed(0, $pagination);
 		}
-		
+
 		if ($this->getFromRequest('print') == true) {
 			//EXPORT THIS PAGE
 			$exporter = new Exporter(Exporter::PDF);
@@ -133,6 +136,7 @@ class CPfpLibrary extends Controller
 		}
 
 		//get list of Industry Types
+
 		$industryType = new IndustryType($this->db);
 		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productIndustryTypeList);
@@ -153,6 +157,7 @@ class CPfpLibrary extends Controller
 		$allUrl = "?action=browseCategory&category=department&id=" . $department->getDepartmentId() . "&bookmark=pfpLibrary&tab=all&productCategory=$productCategory";
 		$this->smarty->assign('allUrl', $allUrl);
 		$this->smarty->assign("pfpTypes", $pfpTypes);
+
 		$this->smarty->assign("selectedPfpType", $selectedPfpType);
 		$this->smarty->assign("productCategory", $productCategory);
 		$this->smarty->assign('jsSources', $jsSources);
@@ -161,7 +166,6 @@ class CPfpLibrary extends Controller
 		$this->smarty->assign("productCategory", $productCategory);
 		$this->smarty->assign('childCategoryItems', $pfps);
 		$this->smarty->assign('tpl', 'tpls/pfpMixList.tpl');
-		// return;
 	}
 
 	protected function actionAssign()

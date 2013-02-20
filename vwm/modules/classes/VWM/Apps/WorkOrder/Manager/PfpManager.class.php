@@ -40,6 +40,7 @@ class PfpManager extends Manager
 				$this->applyWhere($queryFilter)." ".
 				"GROUP BY pfp.id";
 		$db->query($query);
+
 		$pfpCount = $db->num_rows();
 		return $pfpCount;
 	}
@@ -59,7 +60,9 @@ class PfpManager extends Manager
 				$this->applyWhere($queryFilter)." ".
 				"GROUP BY pfp.id";
 		$db->query($query);
+
 		$pfpCount = $db->num_rows();
+
 		return $pfpCount;
 	}
 	
@@ -86,6 +89,7 @@ class PfpManager extends Manager
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() ." ". 
 					  "OFFSET " . $pagination->getOffset() . "";
+
 		}
 
 		return $this->_processGetPFPListQuery($query);
@@ -97,6 +101,7 @@ class PfpManager extends Manager
 	 * @return type string 
 	 */
 	protected function applyJoin()
+
 	{
 		$join = array();
 
@@ -106,8 +111,10 @@ class PfpManager extends Manager
 		if (count($this->getCriteria('search')) > 0
 				|| $this->getCriteria('industryType') !== false
 				|| $this->getCriteria('supplierId') !== false) {
+
 			$join[] = "LEFT JOIN " . TB_PRODUCT . " p ".
 					  "ON p.product_id = pfp2p.product_id";
+
 		}
 
 		if ($this->getCriteria('companyId') !== false) {
@@ -127,6 +134,7 @@ class PfpManager extends Manager
 
 		return implode(" ", $join);
 	}
+
 
 	/**
 	 *function for getting Where condition
@@ -155,6 +163,7 @@ class PfpManager extends Manager
 		if (count($this->getCriteria('search')) > 0 || 
 			$this->getCriteria('industryType') != 0 || 
 			$this->getCriteria('supplierId') != 0) {
+
 			$where[] = "p.product_id = pfp2p.product_id";
 		}
 
@@ -185,6 +194,7 @@ class PfpManager extends Manager
 	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[] 
 	 */
 	protected function _processGetPFPListQuery($query)
+
 	{
 		$db = \VOCApp::getInstance()->getService('db');
 
@@ -212,12 +222,12 @@ class PfpManager extends Manager
 
 			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " ".
 								"WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
-
 			$db->query($getProductsQuery);
 			$products = $db->fetch_all_array();
 
 			$isRangePFP = false;
 			foreach ($products as $p) {
+
 				if (!is_null($p['ratio_to']) && 
 					!is_null($p['ratio_from_original']) && 
 					!is_null($p['ratio_to_original'])) {

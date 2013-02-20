@@ -55,6 +55,7 @@ class Department extends Model
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'department';
 
+
 	/**
 	 * Constructor
 	 * @param \db $db
@@ -91,7 +92,7 @@ class Department extends Model
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
-
+        
 		return true;
 	}
 
@@ -192,7 +193,6 @@ class Department extends Model
 				break;
 			case Gauge::VOC_GAUGE:
 			default:
-
 				return false;
 				break;
 		}
@@ -636,7 +636,6 @@ class Department extends Model
 
 		return $unittypes;
 	}
-
 	/**
 	 * Get all Gyant PFPs
 	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
