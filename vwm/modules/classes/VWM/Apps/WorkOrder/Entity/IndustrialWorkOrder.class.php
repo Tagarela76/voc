@@ -4,6 +4,7 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 class IndustrialWorkOrder extends WorkOrder {
     
+	const TABLE_NAME = 'work_order';
     public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = 'IndustrialWorkOrder'; 
@@ -50,16 +51,16 @@ class IndustrialWorkOrder extends WorkOrder {
      * @return int
      */
     protected function insert() {
-		$query = "INSERT INTO " . TB_WORK_ORDER . " SET " .
+		$query = "INSERT INTO " . self::TABLE_NAME . " SET " .
 				"number = '{$this->db->sqltext($this->getNumber())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
-				"customer_name='{$this->db->sqltext($this->getCustomer_name())}', " .
+				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
-				"status = '{$this->db->sqltext($this->getStatus())}', " .
-				"vin = '{$this->db->sqltext($this->getVin())}'";
+				"status = '{$this->db->sqltext($this->getStatus())}'";
+				//"vin = '{$this->db->sqltext($this->getVin())}'";
 
-		if ($this->getProcessID() != null) {
-			$query.=", process_id = '{$this->db->sqltext($this->getProcessID())}'";
+		if ($this->getProcessTemplateId() != null) {
+			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
 		}
 		$this->db->query($query); 
 		$id = $this->db->getLastInsertedID();
@@ -73,10 +74,10 @@ class IndustrialWorkOrder extends WorkOrder {
 	 */
 	protected function update() {
 
-		$query = "UPDATE " . TB_WORK_ORDER . "
+		$query = "UPDATE " . self::TABLE_NAME . "
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
-						customer_name='" . $this->db->sqltext($this->getCustomer_name()) . "',	
+						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',	
 						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
 						status='" . $this->db->sqltext($this->getStatus()) . "'
 					WHERE id= " . $this->db->sqltext($this->getId());

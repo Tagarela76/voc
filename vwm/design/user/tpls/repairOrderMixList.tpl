@@ -65,12 +65,14 @@
     <tr class="hov_company"	height="10px">
         <td class="border_users_l border_users_b border_users_r" >
             <div>
-                {$mix->mix_id|escape} &nbsp;
+				{if !$mixesCosts[$index].stepEmpty}
+				 {$mix->mix_id|escape} &nbsp;
+				{/if}
             </div>
         </td>
 		<td class="border_users_l border_users_b border_users_r" >
             <div>
-                {$mixesCosts[$index].StepNumber|escape} &nbsp;
+					{$mixesCosts[$index].stepNumber|escape} &nbsp;
             </div>
         </td>
 		<td class="border_users_b border_users_r">
@@ -115,7 +117,11 @@
         </td>
 		<td class="border_users_b border_users_r">
             <div>
-                ${$mix->price|escape} &nbsp;
+				{if !$mixesCosts[$index].stepEmpty}
+					${$mix->price|escape} &nbsp;
+				{else}
+					$0
+				{/if}
             </div>
         </td>
 		<td class="border_users_b border_users_r">

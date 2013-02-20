@@ -213,7 +213,7 @@ class DepartmentTest extends DbTestCase {
 		$department->setUnitTypeClass($unitTypeClass);
 		$unittype = new \Unittype($this->db);
 		$unittype->setDefaultCategoryUnitTypelist($departmentUnitType, $categoty, $departmentId);
-		$departmentUnitTypes = $department->getUnitTypeList();
+		$departmentUnitTypes = $department->getOldUnitTypeList();
 		
 		//get unit type
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
@@ -261,7 +261,7 @@ class DepartmentTest extends DbTestCase {
 		
 		$unittype->setDefaultCategoryUnitTypelist($facilityUnitType, $categoty, $facilityId);
 		$department->setFacilityId($facilityId);
-		$departmentUnitTypes = $department->getUnitTypeList();
+		$departmentUnitTypes = $department->getOldUnitTypeList();
 		
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.system " .
@@ -311,7 +311,7 @@ class DepartmentTest extends DbTestCase {
 		$unittype->setDefaultCategoryUnitTypelist($companyUnitType, $categoty, $companyId);
 		$department->setFacilityId($facilityId);
 		$department->getFacility()->setCompanyId($companyId);
-		$companyUnitTypes = $department->getUnitTypeList();
+		$companyUnitTypes = $department->getOldUnitTypeList();
 		
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.system " .

@@ -80,9 +80,9 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp; 
+                                &nbsp;
 								{if $usage->spent_time}
-									{$usage->spent_time} min								
+									{$usage->spent_time} min
 								{/if}
                             </div>
                         </td>
@@ -282,6 +282,8 @@
                             <div align="left">
 								{if $isProprietary == 0}
 									&nbsp; {$product->quantity}
+                                {else}
+                                    &nbsp; IP
 								{/if}
                             </div>
                         </td>
@@ -295,14 +297,14 @@
                     </tr>
                     {/foreach}
 					{if $isProprietary == 1}
-						<tr class="border_users_l border_users_b " height="20" width="50%">
+						<tr class="border_users_l border_users_b" height="20" width="50%">
 							<td colspan="3">
 								 <b>Total</b>
 							</td>
-							<td class=" border_users_b border_users_r">
+							<td class="">
 								 <b>{$total}</b>
 							</td>
-							<td>
+							<td class="border_users_r">
 								<b>{$usage->products[0]->unittypeDetails.name}</b>
 							</td>
 						</tr>

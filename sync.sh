@@ -17,7 +17,10 @@ ls $JS | grep -v min > $FILELIST
 while read LINE
 do
 	if [ ! -d "$JS/$LINE" ]; then
+        # if empty line then skip
+        [ -z "$LINE" ] && continue
 		FILE="$JS/$LINE"
+
 		java -jar tools/yuicompressor-2.4.7.jar $FILE -o $FILE
 	fi
 done < $FILELIST

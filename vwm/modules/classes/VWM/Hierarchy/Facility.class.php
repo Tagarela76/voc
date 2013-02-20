@@ -82,7 +82,7 @@ class Facility extends Model {
 
 	const TABLE_NAME = 'facility';
 	const TABLE_GAUGE = 'product_gauge';
-	const TB_PROCESS = 'process';
+	const TB_PROCESS = 'process_template';
 	const TB_UNITTYPE = 'unittype';
 	const TB_DEFAULT = '`default`';
 	const TB_TYPE = 'type';
@@ -485,7 +485,7 @@ class Facility extends Model {
 	}
 
 	/**
-	 * @return \VWM\Apps\Process\Process[]
+	 * @return \VWM\Apps\Process\ProcessTemplate[]
 	 */
 	public function getProcessList(){
 		$sql = "SELECT id ".
@@ -497,7 +497,7 @@ class Facility extends Model {
 		}
 		$processListId = $this->db->fetch_all();
 		foreach ($processListId as $processId){
-			$processList[] = new \VWM\Apps\Process\Process($this->db, $processId->id);
+			$processList[] = new \VWM\Apps\Process\ProcessTemplate($this->db, $processId->id);
 		}
 		return $processList;
 	}

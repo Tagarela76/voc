@@ -7,6 +7,11 @@
 {if $color eq "blue"}
 	{include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
+{literal}
+	<script type="text/javascript">
+		var stepManager = new StepManager();
+	</script>
+{/literal}
 <div style="padding:7px;">
 	<table style='width: 98%' align="center" cellpadding="0" cellspacing="0">
         <!--<tr class="users_top_yellowgreen">
@@ -132,7 +137,7 @@
 								Material costs:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								${$materialCoat|escape}
+								${$materialCost|escape}
 							</td>
 						</tr>
 						
@@ -141,7 +146,7 @@
 								Labor costs:
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								${$laborCoast|escape}
+								${$laborCost|escape}
 							</td>
 						</tr>
 					{/if}
@@ -150,7 +155,7 @@
 							Total:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							<b>${$totalCoast|escape}</b>
+							<b>${$totalCost|escape}</b>
 						</td>
 					</tr>
 
@@ -177,10 +182,10 @@
 			<td style="width: 100px">
 				<div  style="margin: 10px 0 0 25px; width: 100%">
 					<input class='button' type="button" value="Add New Mix" onclick="document.location.href=$('#urlMixAdd').val()">
-						
+					<input class='button' type="button" value="Add Step" onclick="stepManager.addStepWithOutMix()">	
 					{if $isHaveProcess}
-						<select name='availableSteps' id='availableSteps' value='0' onchange="addstepToUrl();">
-							<option>
+						<select name='availableSteps' id='availableSteps' value='0' onchange="stepManager.addstepToUrl();">
+							<option value='0'>
 								No Process
 							</option>
 							{foreach from=$availableSteps item=step}
@@ -196,6 +201,8 @@
 		</tr>
 	</table>
 	<input type='hidden' value='{$urlMixAdd}' id='urlMixAdd'>
+	
+	<input type='hidden' value='{$processInstanceId}' id='processInstanceId'>
 
     <div align="right">
     </div>    

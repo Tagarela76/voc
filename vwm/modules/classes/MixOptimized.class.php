@@ -167,7 +167,7 @@ class MixOptimized extends Model {
 		return $date;
 	}
 
-	private function set_creation_time($value) {
+	public function set_creation_time($value) {
 		if (!isset($this->dateFormat)) {
 			$this->iniDateFormat();
 			if (!isset($this->dateFormat)) {
@@ -180,8 +180,10 @@ class MixOptimized extends Model {
 		/*
 		 * If value is already timestamp  - just set value
 		 */
-		if (strlen($value) == 10 and is_numeric($value)) {
+		
+		if (strlen($value) == 10 && is_numeric($value)) {
 			$this->creation_time = $value;
+			
 		} else {
 
 			$date = DateTime::createFromFormat($this->dateFormat, $value);
