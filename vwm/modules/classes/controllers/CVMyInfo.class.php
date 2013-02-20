@@ -443,8 +443,8 @@ class CVMyInfo extends Controller {
         
 		$this->smarty->assign("ids",json_encode($ids));
         $dt = new DateTime();
-		$this->smarty->assign('date',$dt->format(VOCApp::get_instance()->getDateFormat()));
-        $this->smarty->assign('jsdateformat',VOCApp::get_instance()->getDateFormat_JS());
+		$this->smarty->assign('date',$dt->format(VOCApp::getInstance()->getDateFormat()));
+        $this->smarty->assign('jsdateformat',VOCApp::getInstance()->getDateFormat_JS());
 		$this->smarty->assign('newUserRegistration',true);
 		/////////////////////////
 		

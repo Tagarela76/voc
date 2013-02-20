@@ -16,9 +16,11 @@ class Pfp extends Model {
 
 	const TABLE_NAME = 'preformulated_products';
 	const TABLE_PFP2COMPANY = 'pfp2company';
+    const TABLE_PFP2PRODUCT = 'pfp2product';
 
 	public function __construct(\db $db) {
-		$this->db = $db;
+		//$this->db = $db;
+		$db = \VOCApp::getInstance()->getService('db');
 	}
 
 	public function getId() {
@@ -85,29 +87,29 @@ class Pfp extends Model {
 
 
 	protected function _insert() {
-
+		$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$sql = "INSERT INTO " . self::TABLE_NAME .
 				"(description, company_id, creater_id, last_update_time, is_proprietary" .
 				") VALUES (" .
-				"'{$this->db->sqltext($this->getDescription())}', " .
-				"{$this->db->sqltext($this->getCompanyId())}, " .
+				"'{$db->sqltext($this->getDescription())}', " .
+				"{$db->sqltext($this->getCompanyId())}, " .
 				"NULL, " .
 				"{$lastUpdateTime}, " .
-				"{$this->db->sqltext($this->getIsProprietary())})";
-		$response = $this->db->exec($sql);
+				"{$db->sqltext($this->getIsProprietary())})";
+		$response = $db->exec($sql);
 		if ($response) {
-			$this->setId($this->db->getLastInsertedID());
+			$this->setId($db->getLastInsertedID());
 
 			if ($this->getCompanyId() != 0) {
 				$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
 					"(pfp_id ,company_id" .
 					") VALUES (" .
-					"{$this->db->sqltext($this->getId())}, " .
-					"{$this->db->sqltext($this->getCompanyId())})";
-				$this->db->query($sql);
+					"{$db->sqltext($this->getId())}, " .
+					"{$db->sqltext($this->getCompanyId())})";
+				$db->query($sql);
 			}
 			return $this->getId();
 		} else {
@@ -116,28 +118,29 @@ class Pfp extends Model {
 	}
 
 	protected function _update() {
+		$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$sql = "UPDATE preformulated_products SET ".
-					"company_id = {$this->db->sqltext($this->getCompanyId())}, ".
-					"is_proprietary = {$this->db->sqltext($this->getIsProprietary())}, ".
+					"company_id = {$db->sqltext($this->getCompanyId())}, ".
+					"is_proprietary = {$db->sqltext($this->getIsProprietary())}, ".
 					"last_update_time = {$lastUpdateTime} ".
-					"WHERE id = {$this->db->sqltext($this->getId())}";
+					"WHERE id = {$db->sqltext($this->getId())}";
 
-		$response = $this->db->exec($sql);
+		$response = $db->exec($sql);
 		if ($response) {
 			if ($this->getCompanyId() != 0) {
 				$sql = "SELECT * FROM ". self::TABLE_PFP2COMPANY .
 						"WHERE company_id = {$this->db->sqltext($this->getCompanyId())}";
-				$response = $this->db->exec($sql);
+				$response = $db->exec($sql);
 				if (!$response) {
 					$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
 							"(pfp_id ,company_id" .
 							") VALUES (" .
-							"{$this->db->sqltext($this->getId())}, " .
-							"{$this->db->sqltext($this->getCompanyId())})";
-					$this->db->query($sql);
+							"{$db->sqltext($this->getId())}, " .
+							"{$db->sqltext($this->getCompanyId())})";
+					$db->query($sql);
 				}
 			}
 			return $this->getId();
@@ -148,17 +151,18 @@ class Pfp extends Model {
 
 
 	public function load() {
+		$db = \VOCApp::getInstance()->getService('db');
 		if (is_null($this->getId())) {
 			return false;
 		}
 
 		$sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE id =" .
-				$this->db->sqltext($this->getId());
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
+				$db->sqltext($this->getId());
+		$db->query($sql);
+		if ($db->num_rows() == 0) {
 			return false;
 		}
-		$row = $this->db->fetch(0);
+		$row = $db->fetch(0);
 		$this->initByArray($row);
 	}
 

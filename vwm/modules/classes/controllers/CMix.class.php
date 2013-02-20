@@ -484,7 +484,7 @@ class CMix extends Controller {
 
 			//	Try to get mix list from cache
 			$mixList = false;
-			$cache = VOCApp::get_instance()->getCache();
+			$cache = VOCApp::getInstance()->getCache();
 			$key = md5('mixListByFacility'.$_SERVER["QUERY_STRING"]);
 			if ($cache) {
 				$mixList = $cache->get($key);
@@ -2012,14 +2012,12 @@ class CMix extends Controller {
 
 
 		//get Total Quantity for proprietary pfp
-		$totalQuantity = 0;
+		/*$totalQuantity = 0;
 		foreach($optMix->products as $product){
 			$totalQuantity += $product->quantity;
-		}
+		}*/
 
-
-
-		$this->smarty->assign('totalQuantity', $totalQuantity);
+		$this->smarty->assign('totalQuantity', $optMix->products[0]->quantity);
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('companyEx', $companyEx);
 

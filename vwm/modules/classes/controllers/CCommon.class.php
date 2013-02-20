@@ -814,20 +814,20 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 			throw new Exception('404');
 		}
 
-		$allUsers = VOCApp::get_instance()
+		$allUsers = VOCApp::getInstance()
 				->getUser()
 				->getUserListByFacility($facilityId);
 
 		$departmentUsers = array();
 		foreach ($departments as $departmentDetails) {
-			$assignedUsers = VOCApp::get_instance()
+			$assignedUsers = VOCApp::getInstance()
 					->getAccessControl()
 					->getGroupUsers('department_' . $departmentDetails['id']);
 			foreach ($assignedUsers as $assignedUser) {
-				$userId = VOCApp::get_instance()
+				$userId = VOCApp::getInstance()
 						->getUser()
 						->getUserIDbyAccessname($assignedUser);
-				$userDetails = VOCApp::get_instance()
+				$userDetails = VOCApp::getInstance()
 						->getUser()
 						->getUserDetails($userId);
 				$departmentUsers[$departmentDetails['id']][] = $userDetails;
@@ -864,7 +864,7 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 		$assignedUsers = $this->getFromRequest('assignedUsers');
 		$assignedUsersDetails = array();
 		foreach ($assignedUsers as $assignedUser) {
-			$userDetails = VOCApp::get_instance()
+			$userDetails = VOCApp::getInstance()
 					->getUser()
 					->getUserDetails($assignedUser);
 			if ($userDetails['facility_id'] != $departmentDetails['facility_id']) {
@@ -879,12 +879,12 @@ INSERT INTO `contacts_type` (`id`, `name`) VALUES
 
 
 		$groupName = 'department_' . $departmentDetails['department_id'];
-		VOCApp::get_instance()
+		VOCApp::getInstance()
 				->getAccessControl()
 				->removeAllUsersFromGroup($groupName);
 
 		foreach ($assignedUsersDetails as $userDetails) {
-			VOCApp::get_instance()
+			VOCApp::getInstance()
 					->getAccessControl()
 					->addUserToGroup($userDetails['accessname'], $groupName);
 		}

@@ -76,7 +76,7 @@ class MeetingWithContact extends Model {
 			$datetime->setTimestamp($this->meeting_date);
 			
 			return $datetime->format(
-					\VOCApp::get_instance()->getDateFormat()." H:i");
+					\VOCApp::getInstance()->getDateFormat()." H:i");
 		}
 		return $this->meeting_date;
 	}
@@ -176,7 +176,7 @@ class MeetingWithContact extends Model {
 
 	public function getUser() {
 		if(!$this->user) {
-			$userDetails = \VOCApp::get_instance()
+			$userDetails = \VOCApp::getInstance()
 					->getUser()
 					->getUserDetails($this->getUserId());
 			$this->user = new \stdClass();

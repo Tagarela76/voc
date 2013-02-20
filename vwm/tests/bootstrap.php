@@ -22,4 +22,5 @@ $xnyo->start();
 $GLOBALS["db"]->select_db(DB_NAME);
 
 $user = new User($GLOBALS["db"]);
-VOCApp::get_instance()->setUser($user);
+VOCApp::getInstance()->setUser($user);
+VOCApp::getInstance()->setDB($GLOBALS["db"]);
