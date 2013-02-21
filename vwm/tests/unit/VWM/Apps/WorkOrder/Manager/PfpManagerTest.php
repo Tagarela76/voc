@@ -3,6 +3,7 @@
 namespace VWM\Apps\WorkOrder\Manager;
 
 use VWM\Framework\Test\DbTestCase;
+use VWM\Apps\WorkOrder\Entity\Pfp;
 
 class PfpManagerTest extends DbTestCase
 {
@@ -13,13 +14,13 @@ class PfpManagerTest extends DbTestCase
     );
 
     public function testFindAllAllowed()
-    {   
+    {
 		$db = \VOCApp::getInstance()->getService('db');
         $manager = \VOCApp::getInstance()->getService('pfp');
-		
+		$pfp = new Pfp($db);
 //		$manager = new PfpManager();
         $manager->setCriteria('companyId', '1');
-        $list = $manager->findAllAllowed();
+        $list = $manager->findAllPfps();
 
         $this->assertTrue(is_array($list));
         $this->assertTrue(count($list) == 2);
@@ -29,14 +30,14 @@ class PfpManagerTest extends DbTestCase
         $productsOne = $list[0]->getProducts();
         $productsTwo = $list[1]->getProducts();
 		$this->assertTrue(count($productsOne) == 3);
-		
-		
+
+
         $this->assertTrue($productsOne[0]->isPrimary() === false);
         $this->assertTrue($productsOne[1]->isPrimary() === true);
         $this->assertTrue($productsOne[2]->isPrimary() === false);
 		$this->assertTrue($productsTwo[0]->isPrimary() === true);
-		
-		
+
+
 		$sql = "SELECT pfp.id, pfp.description, pfp.company_id, pfp.is_proprietary ".
 				"FROM preformulated_products pfp ".
 				"LEFT JOIN pfp2product pfp2p ON pfp2p.preformulated_products_id = pfp.id ".
@@ -57,12 +58,12 @@ class PfpManagerTest extends DbTestCase
 		$this->assertEquals($list[1]->is_proprietary, $result[1]['is_proprietary']);
 		$this->assertEquals($list[1]->description, $result[1]['description']);
 		$this->assertEquals($list[1]->description, $result[1]['description']);
-		
+
 		//test search criteria
 		$search = array();
 		$search[] = 'Ford';
 		$manager->setCriteria('search', $search);
-		$list = $manager->findAllAllowed();
+		$list = $manager->findAllPfps();
 		$this->assertTrue(count($list) == 2);
 		$this->assertEquals($list[0]->id, $result[0]['id']);
 		$this->assertEquals($list[1]->id, $result[1]['id']);

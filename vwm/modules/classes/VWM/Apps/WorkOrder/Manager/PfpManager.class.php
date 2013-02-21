@@ -3,6 +3,7 @@
 namespace VWM\Apps\WorkOrder\Manager;
 
 use VWM\Framework\Manager;
+use VWM\Framework\Cache\DbCacheDependency;
 use VWM\Apps\WorkOrder\Entity\Pfp;
 
 /**
@@ -14,7 +15,7 @@ class PfpManager extends Manager
 	const TB_PERFORMULATED_PRODUCT = "preformulated_products";
 	const TB_PFP_2_COMPANY = "pfp2company";
 
-	/** 
+	/**
 	 * @inheritdoc
 	 */
 	protected $criteria = array(
@@ -25,16 +26,16 @@ class PfpManager extends Manager
 		'search' => array(),
 	);
 
-	
+
 	/**
 	 *fuction for getting all allowed pfp Count by company Id
-	 * @return type 
+	 * @return type
 	 */
 	public function getPfpAllowedCount()
 	{
 		$db = \VOCApp::getInstance()->getService('db');
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_available = 1 ";
-		
+
 		$query = "SELECT pfp.id " .
 				"FROM " . Pfp::TABLE_NAME . " pfp " .
 				$this->applyJoin() . " " .
@@ -48,13 +49,13 @@ class PfpManager extends Manager
 
 	/**
 	 * fuction for getting assigned pfp Count by company Id
-	 * @return type 
+	 * @return type
 	 */
 	public function getPfpAssignedCount()
 	{
 		$db = \VOCApp::getInstance()->getService('db');
 		$queryFilter = " AND pfp.id = pfp2c.pfp_id AND pfp2c.is_assigned = 1 ";
-		
+
 		$query = "SELECT pfp.id " .
 				"FROM " . Pfp::TABLE_NAME . " pfp " .
 				$this->applyJoin() . " " .
@@ -66,13 +67,13 @@ class PfpManager extends Manager
 
 		return $pfpCount;
 	}
-	
+
 	/**
 	 *Find all allowed pfps. Allowed Pfp is that Pfp which is open to use for
 	 * company. Company should assign it to department to let department use it
 	 * @param bool $isAvailable
 	 * @param \Pagination $pagination
-	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]  
+	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
 	 */
 	public function findAllPfps($isAvailable = 1, \Pagination $pagination = null)
 	{
@@ -88,7 +89,7 @@ class PfpManager extends Manager
 				$this->applyJoin() . " " .
 				$this->applyWhere($queryFilter) . " GROUP BY pfp.id";
 		if (isset($pagination)) {
-			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() ." ". 
+			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() ." ".
 					  "OFFSET " . $pagination->getOffset() . "";
 
 		}
@@ -97,8 +98,8 @@ class PfpManager extends Manager
 
 	/**
 	 * function for gettin datebase wich we needs
-	 * 
-	 * @return type string 
+	 *
+	 * @return type string
 	 */
 	protected function applyJoin()
 
@@ -121,7 +122,7 @@ class PfpManager extends Manager
 			$join[] = "LEFT JOIN " . Pfp::TABLE_PFP2COMPANY . " pfp2c " .
 					"ON pfp2c.pfp_id = pfp.id";
 		}
-		
+
 		if ($this->getCriteria('pfpType') !== false) {
 			$join[] = "LEFT JOIN " . TB_PFP2PFP_TYPES . " pfp2t ".
 					  "ON pfp.id = pfp2t.pfp_id ";
@@ -136,23 +137,23 @@ class PfpManager extends Manager
 			$join[] = "LEFT JOIN " . TB_SUPPLIER . " s " .
 					"ON p.supplier_id = s.supplier_id";
 		}
-		
+
 		return implode(" ", $join);
 	}
 
 
 	/**
 	 *function for getting Where condition
-	 * 
+	 *
 	 * @param string|null $queryFilter
-	 * 
+	 *
 	 * @return type string
 	 */
 	protected function applyWhere($queryFilter = null)
 	{
 		$whereCondition = "";
 		$where = array();
-		
+
 		if ($this->getCriteria('companyId') !== false) {
 			$where[] = "pfp2c.company_id = " . $this->getCriteria('companyId');
 		}
@@ -164,13 +165,13 @@ class PfpManager extends Manager
 		if ($this->getCriteria('supplierId') !== false) {
 			$where[] = "s.supplier_id = " . $this->getCriteria('supplierId');
 		}
-		
+
 		if ($this->getCriteria('pfpType') !== false) {
 			$where[] = "pfp2t.pfp_type_id = " . $this->getCriteria('pfpType');
 		}
 
-		if (count($this->getCriteria('search')) > 0 || 
-			$this->getCriteria('industryType') != 0 || 
+		if (count($this->getCriteria('search')) > 0 ||
+			$this->getCriteria('industryType') != 0 ||
 			$this->getCriteria('supplierId') != 0) {
 
 			$where[] = "p.product_id = pfp2p.product_id";
@@ -196,11 +197,11 @@ class PfpManager extends Manager
 		}
 		return $whereCondition;
 	}
-	
+
 	/**
 	 * function for getting list of pfps
 	 * @param string $query
-	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[] 
+	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
 	 */
 	protected function _processGetPFPListQuery($query)
 
@@ -237,8 +238,8 @@ class PfpManager extends Manager
 			$isRangePFP = false;
 			foreach ($products as $p) {
 
-				if (!is_null($p['ratio_to']) && 
-					!is_null($p['ratio_from_original']) && 
+				if (!is_null($p['ratio_to']) &&
+					!is_null($p['ratio_from_original']) &&
 					!is_null($p['ratio_to_original'])) {
 					$isRangePFP = true;
 				}
@@ -262,7 +263,7 @@ class PfpManager extends Manager
 		//save to cache
 		if ($cache) {
 			$sqlDependency = "SELECT MAX(last_update_time) FROM " . TB_PFP . "";
-			$cache->set($key, $pfps, 86400, new DbCacheDependency($this->db, $sqlDependency));
+			$cache->set($key, $pfps, 86400, new DbCacheDependency($db, $sqlDependency));
 		}
 
 		return $pfps;
