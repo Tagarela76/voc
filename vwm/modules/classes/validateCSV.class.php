@@ -1,4 +1,6 @@
 <?php
+use VWM\Apps\WorkOrder\Entity\Pfp;
+
 class validateCSV {
 	/**
 	 * @var db
@@ -89,7 +91,7 @@ class validateCSV {
 			
 				if(!empty($dat[1])){
 					
-					$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+					$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 					$pfp->setIsProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY]);
 					$pfp->setDescription($dat[bulkUploader4PFP::PRODUCTNAME_INDEX]);
 					$pfp->setCompanyId($input['companyID']);
