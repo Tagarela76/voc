@@ -20,6 +20,16 @@ class ResourceInstance extends Resource
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function load()
 	{
 		if (is_null($this->getId())) {

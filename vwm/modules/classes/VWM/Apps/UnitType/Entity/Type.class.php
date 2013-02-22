@@ -15,6 +15,16 @@ class Type extends Model {
 		$this->db = $db;
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getTypeId() {
 		return $this->type_id;
 	}

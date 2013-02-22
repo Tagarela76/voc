@@ -12,6 +12,16 @@ class StepTemplate extends Step
 	const VOLUME = 2;
 	const COUNT = 3;
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	public function load()
 	{
 		if (is_null($this->getId())) {
@@ -57,8 +67,8 @@ class StepTemplate extends Step
 	}
 
 	/**
-	 * function for getting step resources 
-	 * @return boolean|\VWM\Apps\Process\ResourceTemplate 
+	 * function for getting step resources
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate
 	 */
 	public function getResources()
 	{
@@ -122,7 +132,7 @@ class StepTemplate extends Step
 	/**
 	 * function for creating step instance by step template
 	 * @param type $processInstanceId
-	 * @return \VWM\Apps\Process\StepInstance 
+	 * @return \VWM\Apps\Process\StepInstance
 	 */
 	public function createInstanceStep($processInstanceId = null)
 	{

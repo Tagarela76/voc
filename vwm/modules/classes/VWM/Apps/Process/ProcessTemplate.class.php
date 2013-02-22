@@ -10,6 +10,16 @@ class ProcessTemplate extends Process
 	const STEP_TABLE = 'step_template';
 	const RESOURCE_TABLE = 'resource_template';
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function load()
 	{
 		if (is_null($this->getId())) {
@@ -30,7 +40,7 @@ class ProcessTemplate extends Process
 
 	/**
 	 * function for getting all Steps in process
-	 * @return boolean|\VWM\Apps\Process\StepTemplate[] 
+	 * @return boolean|\VWM\Apps\Process\StepTemplate[]
 	 */
 	public function getSteps()
 	{
@@ -93,11 +103,11 @@ class ProcessTemplate extends Process
 
 	/**
 	 * function for getting Process Id by name and Facility Id
-	 * 
+	 *
 	 * @param type $facilityId
 	 * @param type $name
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public function getProcessIdByNameAndFacilityId($facilityId = null, $name = null)
 	{
@@ -130,7 +140,7 @@ class ProcessTemplate extends Process
 
 	/**
 	 * function for deleting process step
-	 * @param int $processId 
+	 * @param int $processId
 	 * @return boolean
 	 */
 	public function deleteProcessSteps($processId = null)

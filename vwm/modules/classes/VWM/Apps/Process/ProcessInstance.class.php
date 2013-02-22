@@ -10,6 +10,16 @@ class ProcessInstance extends Process
 	const STEP_TABLE = 'step_instance';
 	const RESOURCE_TABLE = 'resource_instance';
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function load()
 	{
 		if (is_null($this->getId())) {
@@ -90,10 +100,10 @@ class ProcessInstance extends Process
 
 	/**
 	 * function for deleting process, process steps and process resources
-	 * 
+	 *
 	 * @param type $processId
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public function deleteCurrentProcess($processId)
 	{

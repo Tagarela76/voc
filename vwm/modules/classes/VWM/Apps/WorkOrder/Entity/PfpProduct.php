@@ -19,6 +19,16 @@ class PfpProduct extends Model {
 		;
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	public function getId() {
 		return $this->id;
 	}

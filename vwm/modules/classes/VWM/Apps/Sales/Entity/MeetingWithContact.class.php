@@ -20,7 +20,7 @@ class MeetingWithContact extends Model {
 	 */
 	protected $contact;
 
-	/**	 
+	/**
 	 * @var \stdClass
 	 */
 	protected $user;
@@ -37,7 +37,7 @@ class MeetingWithContact extends Model {
 		$this->modelName = "MeetingWithContact";
 
 		$this->salesManager = new SalesContactsManager($this->db);
-		
+
 		if($id !== null) {
 			$this->setId($id);
 			if(!$this->_load()) {
@@ -45,6 +45,16 @@ class MeetingWithContact extends Model {
 			}
 		}
 	}
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function getId() {
 		return $this->id;
@@ -74,7 +84,7 @@ class MeetingWithContact extends Model {
 		if($formatted) {
 			$datetime = new DateTime();
 			$datetime->setTimestamp($this->meeting_date);
-			
+
 			return $datetime->format(
 					\VOCApp::getInstance()->getDateFormat()." H:i");
 		}
@@ -109,7 +119,7 @@ class MeetingWithContact extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-		
+
 		$sql = "INSERT INTO ".self::TABLE_NAME." " .
 				"(contact_id, user_id, meeting_date, notes, last_update_time) VALUES (" .
 				"{$this->db->sqltext($this->getContactId())}, " .
@@ -143,7 +153,7 @@ class MeetingWithContact extends Model {
 		if(!$this->db->exec($sql)) {
 			return false;
 		}
-		
+
 		return $this->getId();
 	}
 

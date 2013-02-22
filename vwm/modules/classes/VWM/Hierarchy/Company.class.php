@@ -45,10 +45,20 @@ class Company extends Model {
     protected $last_update_time;
 
     protected $industryType;
-	
+
 	protected $unitTypes;
 
 	const TABLE_NAME = 'company';
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
     public function getCompanyId() {
         return $this->company_id;
@@ -394,7 +404,7 @@ class Company extends Model {
 	}
 
 	public function getUnitTypeList() {
-		
+
 		if ($this->unitTypes) {
 			return $this->unitTypes;
 		}
@@ -438,7 +448,7 @@ class Company extends Model {
 
 			}
 		} else {
-			
+
 			$unitType = new \VWM\Apps\UnitType\Entity\UnitType($this->db);
 			return $unitType->getDefaultUnitType();
 		}

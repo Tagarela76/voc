@@ -3,11 +3,11 @@
 use VWM\Framework\Model;
 use VWM\Framework\Utils\DateTime;
 
-class NewProductRequest extends Model {    
-    
+class NewProductRequest extends Model {
+
 	protected $id;
 	protected $supplier;
-    protected $product_id;    
+    protected $product_id;
     protected $name;
     protected $description;
 	protected $msds_id;
@@ -15,19 +15,19 @@ class NewProductRequest extends Model {
 	protected $last_update_time;
 	protected $user_id;
 	protected $status;
-	
+
 	protected $user;
 	protected $msds;
-	
+
 	public $url;
 
 	const STATUS_NEW = 0;
 	const STATUS_ACCEPT = 1;
-	
+
 	public function __construct(\db $db, $id = NULL) {
 		$this->db = $db;
 		$this->modelName = 'NewProductRequest';
-		
+
 		if($id !== NULL) {
 			$this->setId($id);
 			if(!$this->_load()) {
@@ -36,6 +36,16 @@ class NewProductRequest extends Model {
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	public function getId() {
 		return $this->id;
 	}
@@ -86,12 +96,12 @@ class NewProductRequest extends Model {
 
 	public function getDate() {
 		return $this->date;
-	}	
+	}
 
 	public function setDate($date) {
 		$this->date = $date;
 	}
-		
+
 	public function getLastUpdateTime() {
 		return $this->last_update_time;
 	}
@@ -115,10 +125,10 @@ class NewProductRequest extends Model {
 	public function setStatus($status) {
 		$this->status = $status;
 	}
-	
+
 	/**
 	 * TODO: finish me
-	 * @return 
+	 * @return
 	 */
 	public function getUser() {
 		return $this->user;
@@ -129,24 +139,24 @@ class NewProductRequest extends Model {
 
 	/**
 	 * TODO: finish me
-	 * @return 
+	 * @return
 	 */
 	public function getMsds() {
 		return $this->msds;
 	}
-	
+
 	public function setMsds($msds) {
 		$this->msds = $msds;
 	}
-	
-	
+
+
 	public function getStatusOptions() {
 		return array(
 			self::STATUS_NEW => 'New',
-			self::STATUS_ACCEPT => 'Accept',			
+			self::STATUS_ACCEPT => 'Accept',
 		);
 	}
-	
+
 	public function getStatusOptionName($id) {
 		$options = $this->getStatusOptions();
 		foreach ($options as $key => $name) {
@@ -158,7 +168,7 @@ class NewProductRequest extends Model {
 
 	public function save() {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
+
 		if($this->getId()) {
 			return $this->_update();
 		} else {
@@ -166,13 +176,13 @@ class NewProductRequest extends Model {
 			$this->setDate($now->getTimestamp());
 			return $this->_insert();
 		}
-	}	
-	
+	}
+
 	protected function _insert() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: 'NULL';
-		
+
 		$query = "INSERT INTO ".TB_NEW_PRODUCT_REQUEST." (supplier, " .
 				 "product_id, name, description, msds_id, date, user_id, " .
 				 "status, last_update_time) VALUES ( " .
@@ -185,20 +195,20 @@ class NewProductRequest extends Model {
                 "{$this->db->sqltext($this->getUserId())}, " .
                 "{$this->db->sqltext($this->getStatus())}, " .
 				"{$lastUpdateTime}) ";
-				
+
         if($this->db->exec($query)) {
 			$this->setId($this->db->getLastInsertedID());
 			return $this->getId();
 		} else {
 			return false;
-		}		
+		}
 	}
-	
+
 	protected function _update() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: 'NULL';
-				
+
 		$sql = "UPDATE ".TB_NEW_PRODUCT_REQUEST." SET " .
 				"supplier = '{$this->db->sqltext($this->getSupplier())}', " .
 				"product_id = '{$this->db->sqltext($this->getProductId())}', " .
@@ -210,36 +220,36 @@ class NewProductRequest extends Model {
 				"status = {$this->db->sqltext($this->getStatus())}, " .
 				"last_update_time = {$lastUpdateTime} " .
 			"WHERE id = {$this->db->sqltext($this->getId())}";
-		
-		if($this->db->exec($sql)) {			
+
+		if($this->db->exec($sql)) {
 			return $this->getId();
 		} else {
 			return false;
-		}	
+		}
 	}
 
-	
+
 	private function _load() {
 		if(!$this->getId()) {
 			throw new \Exception('ID should be set before calling this method');
 		}
-				
+
 		$sql = "SELECT * FROM ".TB_NEW_PRODUCT_REQUEST." " .
 				"WHERE id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
-				
+
 		if($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		$row = $this->db->fetch_array(0);
 		$this->initByArray($row);
-		
+
 		return true;
 	}
 
 
-   
+
 }
 
 ?>

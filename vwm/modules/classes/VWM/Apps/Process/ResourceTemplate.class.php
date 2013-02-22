@@ -20,6 +20,16 @@ class ResourceTemplate extends Resource
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	public function load()
 	{
 		if (is_null($this->getId())) {
@@ -105,7 +115,7 @@ class ResourceTemplate extends Resource
 	/**
 	 * function for creating resourse instance by resource template
 	 * @param type $stepId
-	 * @return boolean|\VWM\Apps\Process\ResourceInstance 
+	 * @return boolean|\VWM\Apps\Process\ResourceInstance
 	 */
 	public function createInstanceResource($stepId = null)
 	{

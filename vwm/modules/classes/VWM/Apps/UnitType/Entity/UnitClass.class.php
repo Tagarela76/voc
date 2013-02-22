@@ -17,6 +17,16 @@ class UnitClass extends Model {
 
 	const TABLE_NAME = '`unit_class`';
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getId() {
 		return $this->id;
 	}

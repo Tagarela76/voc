@@ -3,7 +3,7 @@ namespace VWM\Calendar;
 use VWM\Framework\Model;
 
 class CalendarEvent extends Model {
-	
+
 	/**
 	 *
 	 * @var int
@@ -14,31 +14,41 @@ class CalendarEvent extends Model {
 	 * @var string
 	 */
 	protected $title;
-	
+
 	/**
 	 *
 	 * @var string
 	 */
 	protected $description;
-	
+
 	/**
 	 *
 	 * @var int
 	 */
 	protected $event_date;
-	
+
 	/**
 	 *
 	 * @var int
 	 */
 	protected $author_id;
-	
+
 	/**
 	 *
 	 * @var datetime
 	 */
 	protected $last_update_time;
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getLastUpdateTime() {
 		return $this->last_update_time;
 	}
@@ -47,7 +57,7 @@ class CalendarEvent extends Model {
 		$this->last_update_time = $last_update_time;
 	}
 
-		
+
 	public function getId() {
 		return $this->id;
 	}
@@ -55,7 +65,7 @@ class CalendarEvent extends Model {
 	public function setId($id) {
 		$this->id = $id;
 	}
-	
+
 	public function getTitle() {
 		return $this->title;
 	}
@@ -94,9 +104,9 @@ class CalendarEvent extends Model {
 		if (isset($id)) {
 			$this->setId($id);
 			$this->_load();
-		}		
+		}
 	}
-	
+
 	private function _load() {
 
 		if (!isset($this->id)) {
@@ -104,7 +114,7 @@ class CalendarEvent extends Model {
 		}
 		$sql = "SELECT * ".
 				"FROM " . TB_CALENDAR . " ".
-				"WHERE id={$this->db->sqltext($this->id)} " . 
+				"WHERE id={$this->db->sqltext($this->id)} " .
 				"LIMIT 1";
 		$this->db->query($sql);
 
@@ -119,22 +129,22 @@ class CalendarEvent extends Model {
 			}
 		}
 	}
-	
+
 	/**
 	 * INSERT OR UPDATE EVENT
 	 * TODO: completly remove as it is the same as parent
 	 * @return int
 	 */
-	public function save() {		
+	public function save() {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
-		
+
 		if($this->getId() ) {
 			return $this->_update();
 		} else {
 			return $this->_insert();
 		}
 	}
-	
+
 	/**
 	 * Insert new event
 	 * @return boolean
@@ -143,7 +153,7 @@ class CalendarEvent extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "INSERT INTO ".TB_CALENDAR." (" .
 				"title, description, event_date, author_id, last_update_time" .
 				") VALUES ( ".
@@ -155,15 +165,15 @@ class CalendarEvent extends Model {
 				")";
 		$response = $this->db->exec($sql);
 		if($response) {
-			$this->setId($this->db->getLastInsertedID());	
+			$this->setId($this->db->getLastInsertedID());
 			return $this->getId();
 		} else {
 			return false;
 		}
-		
-		
+
+
 	}
-	
+
 	/**
 	 * Update event
 	 * @return boolean
@@ -172,23 +182,23 @@ class CalendarEvent extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "UPDATE ".TB_CALENDAR." SET " .
 				"title='{$this->db->sqltext($this->getTitle())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
 				"event_date={$this->db->sqltext($this->getEventDate())}, " .
-				"author_id={$this->db->sqltext($this->getAuthorId())}, " .				
+				"author_id={$this->db->sqltext($this->getAuthorId())}, " .
 				"last_update_time={$lastUpdateTime} " .
-				"WHERE id={$this->db->sqltext($this->getId())}";	
-		
+				"WHERE id={$this->db->sqltext($this->getId())}";
+
 		$response = $this->db->exec($sql);
-		if($response) {			
+		if($response) {
 			return $this->getId();
 		} else {
 			return false;
 		}
-	}		
-	
+	}
+
 	/**
 	 * Delete event
 	 */

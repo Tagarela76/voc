@@ -14,7 +14,7 @@ abstract class Model
     /**
      * @var \db - xnyo databse - DEPRECATED. Use service approuch
      * <pre>
-     * \VOCApp::getInstanse()->get('db');
+     * \VOCApp::getInstanse()->getService('db');
      * </pre>
      */
     protected $db;
@@ -153,6 +153,21 @@ abstract class Model
     }
 
     /**
+     * Convert model to JSON string
+     *
+     * At this moment method converts only scalar values.
+     * THIS WILL NOT WORK WITH RELATIONS
+     *
+     * @return string
+     */
+    public function toJson()
+    {
+        $attributes = $this->getAttributes();
+        
+        return json_encode($attributes);
+    }
+
+    /**
      * Saves model to database
      *
      * @return int newly created recored ID
@@ -169,6 +184,8 @@ abstract class Model
     }
 
     /**
+     * TODO: make it abstract
+     *
      * Should be implemented by children
      */
     protected function _insert()
@@ -177,11 +194,20 @@ abstract class Model
     }
 
     /**
+     * TODO: make it abstract
+     *
      * Should be implemented by children
      */
     protected function _update()
     {
         throw new \Exception("Update should be implemented by child");
     }
+
+    /**
+     * Model properties that are readable by world
+     *
+     * @return array property => value
+     */
+    abstract protected function getAttributes();
 
 }
