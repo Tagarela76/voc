@@ -134,7 +134,8 @@ class CRepairOrder extends Controller
 					"laborCost" => 0,
 					"totalCost" => 0,
 					"stepNumber" => '--',
-					"stepEmpty" => false
+					"stepEmpty" => false,
+					"stepId" => 0
 				);
 
 				if (!is_null($mix->getStepId())) {
@@ -159,6 +160,7 @@ class CRepairOrder extends Controller
 					$mixCosts['stepNumber'] = $step->getNumber();
 				}
 				$mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
+				$mixCosts['stepId'] = $mix->getStepId();
 				$mixesCosts[$mix->mix_id] = $mixCosts;
 			}//die();
 
@@ -171,6 +173,10 @@ class CRepairOrder extends Controller
 				"&repairOrderId=" . $repairOrder->getId() .
 				"&departmentID=" . $departmentId;
 
+		$urlMixEdit = "?action=showEditStep&category=repairOrder" .
+				"&repairOrderId=" . $repairOrder->getId() .
+				"&departmentId=" . $departmentId;
+		
 		if ($mixes && !$mix->hasChild) {
 			$urlMixAdd .= "&parentMixID=" . $mix->mix_id;
 		}
@@ -214,7 +220,8 @@ class CRepairOrder extends Controller
 				"laborCost" => 0,
 				"totalCost" => 0,
 				"stepNumber" => '--',
-				"stepEmpty" => true
+				"stepEmpty" => true,
+				"stepId" => 0
 			);
 			$mix = new MixOptimized($this->db);
 			$mix->mix_id = $emptyMixStep->getId();
@@ -236,6 +243,7 @@ class CRepairOrder extends Controller
 			$mixCosts["totalCost"] = $mixCosts["materialCost"] + $mixCosts["laborCost"];
 			$mixList[$emptyMixStep->getNumber()] = $mix;
 			$mixCosts['stepNumber'] = $emptyMixStep->getNumber();
+			$mixCosts['stepId'] = $emptyMixStep->getId();
 			$mixesCosts[$mix->mix_id] = $mixCosts;
 			//get prices for work order
 			$mixTotalSpentTime+=$mix->spent_time;
@@ -247,7 +255,7 @@ class CRepairOrder extends Controller
 		ksort($mixList);
 
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
-
+		$this->smarty->assign('urlMixEdit', $urlMixEdit);
 		$jsSources = array(
 			'modules/js/viewRepairOrder.js');
 		$this->smarty->assign('jsSources', $jsSources);
@@ -836,6 +844,53 @@ class CRepairOrder extends Controller
 			$responce = 0;
 		}
 		echo $responce;
+	}
+	
+	/**
+	 *function edit step dispay  
+	 */
+	protected function actionShowEditStep(){
+		$repaitOrderId = $this->getFromRequest('repairOrderId');
+		$stepId = $this->getFromRequest('stepId');
+		$departmentId = $this->getFromRequest('departmentId');
+		
+		//get step Template
+		$stepInstance = new StepInstance($this->db);
+		$stepInstance->setId($stepId);
+		$stepInstance->load();
+		
+		$jsSources = array(
+			"modules/js/stepObject.js",
+			"modules/js/editStepDialog.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js",
+		);
+		
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+		
+		$this->smarty->assign('cssSources', $cssSources);
+		$this->smarty->assign('jsSources', $jsSources);
+		
+		$this->smarty->assign('stepInstance', $stepInstance);
+		
+		$this->smarty->assign('tpl','tpls/viewEditStep.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	} 
+	
+	protected function actionLoadEditResourceDetails(){
+		$stepTemplate = new StepTemplate($this->db);
+		$unittype = new VWM\Apps\UnitType\Entity\UnitType($this->db);
+		
+		$resourceType = VWM\Apps\Process\Resource::getResourceType();
+		
+		$this->smarty->assign('resourceType', $resourceType);
+		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
 	}
 }
 

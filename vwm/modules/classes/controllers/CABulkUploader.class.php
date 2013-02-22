@@ -574,7 +574,7 @@ class CABulkUploader extends Controller {
 			foreach ($steps as $step) {
 				$step->setProcessId($processId);
 				$stepId = $step->save();
-				$resources = $step->getInitResources();
+				$resources = $step->getResources();
 
 				foreach ($resources as $resource) {
 					
