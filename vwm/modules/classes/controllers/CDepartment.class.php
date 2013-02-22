@@ -169,9 +169,6 @@ class CDepartment extends Controller {
 
 		$this->smarty->assign("departmentGauges", $departmentGauges);
 
-
-
-
 		$this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
 		$this->smarty->display("tpls:index.tpl");
 	}

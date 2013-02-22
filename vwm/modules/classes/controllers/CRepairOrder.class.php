@@ -490,12 +490,14 @@ class CRepairOrder extends Controller
 			}
 		}
 
+
 		$this->smarty->assign('woDepartments', $woDepartments_id);
 
 		$companyLevelLabel = new CompanyLevelLabel($this->db);
 		$companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
 		$repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()
 						->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
 		//	set js scripts

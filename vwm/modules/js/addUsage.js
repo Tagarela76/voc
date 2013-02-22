@@ -288,7 +288,7 @@ function PfpManager() {
 			uManager.currentClassName = $('#proprietaryUnitClass').val();
 			uManager.getProprietaryUnitType($('#proprietaryUnitTypes'));
 			uManager.setUnitClassToProduct();
-			page.pfpManager.calculateVocByTotalPfpQuantity();
+			page.pfpManager.calculateProprietaryPfpVoc();
         });
 		
 		
@@ -296,7 +296,7 @@ function PfpManager() {
         $('#proprieratyProductQuantity').change({
             
         }, function(eventObject) {
-			page.pfpManager.calculateVocByTotalPfpQuantity();
+			page.pfpManager.calculateProprietaryPfpVoc();
         });
 		
 		$('#proprietaryUnitTypes').change({
@@ -304,7 +304,7 @@ function PfpManager() {
         }, function(eventObject) {
 			uManager.currentTypeId = $('#proprietaryUnitTypes').val();
 			uManager.setUnitClassToProduct();
-			page.pfpManager.calculateVocByTotalPfpQuantity();
+			page.pfpManager.calculateProprietaryPfpVoc();
         });
 		
 		if(unitType == undefined){
@@ -371,46 +371,50 @@ function PfpManager() {
      this.renderProprietaryPfpForm();   
     }
 	
-	/*
-	 *function for calculate voc for proprietary pfp
-	 */
-	this.calculateVocByTotalPfpQuantity = function(){
+	
+	this.calculateProprietaryPfpVoc = function(){
 		
-		var i = 0;
-		var quantity = $("#proprieratyProductQuantity").val();
+		var pfpProducts = this.productsOnPreview;
+		pfpProducts[0].quantity = $("#proprieratyProductQuantity").val();
 		
 		var selectUnittypeClass = $("#proprietaryUnitClass").val();
 		var selectUnittype = $("#proprietaryUnitTypes").val();
-		var pfpProducts = this.productsOnPreview;
-		//get qyantity for all products
-		var ratio = 0;
 		
-		for(i=0; i<pfpProducts.length; i++){
-			primaryProduct = pfpProducts[i];
-			//get product ratio
-			if(primaryProduct.ratio > 0) {
-				delitel = parseFloat(primaryProduct.ratio);
-			} else {
-				delitel = 1;
-			}
-			// get common ratio
-			ratio += delitel;
+		primaryProduct = pfpProducts[0];
+		var productID = pfpProducts[0].product_id;
+		
+		if(primaryProduct.ratio > 0) {
+			delitel = primaryProduct.ratio;
+		} else {
+			delitel = 1;
 		}
+		
+		quantity = pfpProducts[0].quantity
 
-		//ratio for 1 unit
-		unitRatio =  ratio/quantity;
-		products.products = [];
+		for(i=0; i<pfpProducts.length; i++) {
+			if(pfpProducts.productID != productID) {
+				if (pfpProducts[i].isRange) {
+					pr_ratio = pfpProducts[i].ratio*primaryProduct.ratio/100;
+				} else {
+					pr_ratio = pfpProducts[i].ratio;
+				}
+				q_tmp = (pr_ratio / delitel) * quantity;
+				pr_id = pfpProducts[i].productID;
+				q_tmp = q_tmp.toFixed(2);
+				pfpProducts[i].quantity = q_tmp;
+				
+			}
+		}
+		//delete old products
+		products.products.length = 0;
 		for(i=0; i<pfpProducts.length; i++){
 			//get product quantity for each product
-			pfpProducts[i].quantity = pfpProducts[i].ratio/unitRatio;
-
 			products.addPFPProduct(pfpProducts[i].product_id, pfpProducts[i].quantity, selectUnittype, selectUnittypeClass,pfpProducts[i].ratio,pfpProducts[i].isPrimary,pfpProducts[i].isRange);
 
 		}
+		
 		calculateVOC();
 	}
-	
-	
 }
 
 // END OF OOP VERSION

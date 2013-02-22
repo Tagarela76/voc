@@ -40,16 +40,6 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="" height="20">
-                            Ratio:
-                        </td>
-                        <td class="">
-                            <div align="left">
-                                &nbsp; {$pfp->getRatio()} 
-                            </div>
-                        </td>
-                    </tr>
                     
                 </table>
             </td>
@@ -78,18 +68,22 @@
                     {foreach from=$pfpProducts item=product}
                     <tr>
                         <td class="border_users_l border_users_b " height="20" width="20%">
-                            {$product->supplier}
+                            {$product->supplier|escape}
                         </td>
                         <td class="border_users_l border_users_b " height="20" width="15%">
-                            {$product->product_nr}
+                            {$product->product_nr|escape}
                         </td>
                         <td class="border_users_l border_users_b border_users_r" height="20" width="40%">
-                            {$product->name}
+                            {$product->name|escape}
                         </td>
                         
                         <td class=" border_users_b border_users_r">
                             <div align="left">
-                                &nbsp; {$product->getRatio()}
+                                {if $pfp->getIsProprietary() != 1}
+                                    &nbsp; {$product->getRatio()}
+                                {else}
+                                    &nbsp;IP
+                                {/if}
                             </div>
                         </td>
                     </tr>

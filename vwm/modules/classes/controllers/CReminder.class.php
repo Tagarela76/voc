@@ -109,8 +109,8 @@ class CReminder extends Controller {
 			}
 			$reminder->setValidationGroup("add");
 			$reminder->setUsers($reminderUsers);
-			VOCApp::get_instance()->setCustomerID($companyID);
-			VOCApp::get_instance()->setDateFormat(NULL);
+			VOCApp::getInstance()->setCustomerID($companyID);
+			VOCApp::getInstance()->setDateFormat(NULL);
 
 			$violationList = $reminder->validate(); 
 			if(count($violationList) == 0) {		
@@ -294,8 +294,8 @@ class CReminder extends Controller {
 			}
 			$reminder->setUsers($reminderUsers);
 			
-			VOCApp::get_instance()->setCustomerID($companyID);
-			VOCApp::get_instance()->setDateFormat(NULL); 
+			VOCApp::getInstance()->setCustomerID($companyID);
+			VOCApp::getInstance()->setDateFormat(NULL); 
 			$violationList = $reminder->validate(); 
 			if(count($violationList) == 0) { 
 				$dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');   
