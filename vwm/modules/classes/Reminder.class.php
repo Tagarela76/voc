@@ -6,40 +6,40 @@ class Reminder extends Model {
 
 	/**
 	 *
-	 * @var int 
+	 * @var int
 	 */
 	public $id;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $name;
-	
+
 	/**
 	 * reminder date
-	 * @var int 
+	 * @var int
 	 */
 	public $date;
-	
+
 	/**
 	 *
-	 * @var int 
+	 * @var int
 	 */
 	public $facility_id;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $url;
-	
+
 	/**
 	 *
-	 * @var array 
+	 * @var array
 	 */
 	public $users;
-	
+
 	/**
 	 *
 	 * @var object
@@ -61,7 +61,17 @@ class Reminder extends Model {
 			$this->email = $email;
 		}
 	}
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	private function _load() {
 
 		if (!isset($this->id)) {
@@ -69,7 +79,7 @@ class Reminder extends Model {
 		}
 		$sql = "SELECT * ".
 				"FROM " . TB_REMINDER . " ".
-				"WHERE id={$this->db->sqltext($this->id)} " . 
+				"WHERE id={$this->db->sqltext($this->id)} " .
 				"LIMIT 1";
 		$this->db->query($sql);
 
@@ -87,7 +97,7 @@ class Reminder extends Model {
 
 	/**
 	 * Insert or Update Reminder
-	 * @return int 
+	 * @return int
 	 */
 	public function save() {
 
@@ -98,43 +108,43 @@ class Reminder extends Model {
 		}
 		return $id;
 	}
-	
+
 	/**
 	 * Add reminder and return inserted reminder id
-	 * @return int 
+	 * @return int
 	 */
 	public function add() {
 
-		$query = "INSERT INTO " . TB_REMINDER . "(name, date, facility_id) 
-				VALUES ( 
+		$query = "INSERT INTO " . TB_REMINDER . "(name, date, facility_id)
+				VALUES (
 				'{$this->db->sqltext($this->name)}'
 				, {$this->db->sqltext($this->date)}
-				, {$this->db->sqltext($this->facility_id)}		
+				, {$this->db->sqltext($this->facility_id)}
 				)";
-		$this->db->query($query); 
+		$this->db->query($query);
 		$id = $this->db->getLastInsertedID();
 		$this->id = $id;
 		return $id;
 	}
-	
+
 	/**
 	 * Update reminder and return updated reminder id
-	 * @return int 
+	 * @return int
 	 */
 	public function update() {
 
 		$query = "UPDATE " . TB_REMINDER . "
 					set name='{$this->db->sqltext($this->name)}',
 						date={$this->db->sqltext($this->date)},
-						facility_id={$this->db->sqltext($this->facility_id)}			
+						facility_id={$this->db->sqltext($this->facility_id)}
 					WHERE id={$this->db->sqltext($this->id)}";
 		$this->db->query($query);
 
 		return $this->id;
 	}
-	
+
 	/**
-	 * Delete reminder 
+	 * Delete reminder
 	 */
 	public function delete() {
 
@@ -142,7 +152,7 @@ class Reminder extends Model {
 				 WHERE id={$this->db->sqltext($this->id)}";
 		$this->db->query($sql);
 	}
-	
+
 	public function isUniqueName() {
 		$sql = "SELECT id FROM " . TB_REMINDER . "
 				 WHERE name = '{$this->db->sqltext($this->name)}' " .
@@ -150,13 +160,13 @@ class Reminder extends Model {
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
 	}
-	
+
 	/**
 	 *
-	 * @return boolean 
+	 * @return boolean
 	 */
-	private function loadUsers() { 
-		
+	private function loadUsers() {
+
 		if (!isset($this->users)) {
 			$sql = "SELECT u.user_id, u.username, u.email ".
 					"FROM " . TB_USER . " u" .
@@ -168,20 +178,20 @@ class Reminder extends Model {
 				return false;
 			} else {
 				$this->users = $this->db->fetch_all_array();
-			} 
+			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getUsers() {
 		return $this->users;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type array
 	 */
 	public function setUsers($users) {
@@ -192,13 +202,13 @@ class Reminder extends Model {
 	 * set user to remind
 	 * @param type int
 	 */
-	public function setRemind2User($userId) { 
-		
-		$query = "INSERT INTO " . TB_REMIND2USER . "(user_id, reminders_id) 
+	public function setRemind2User($userId) {
+
+		$query = "INSERT INTO " . TB_REMIND2USER . "(user_id, reminders_id)
 				VALUES ({$this->db->sqltext($userId)}, {$this->db->sqltext($this->id)})";
-		$this->db->query($query);      
+		$this->db->query($query);
 	}
-    
+
 	/**
 	 * unset all users from remind
 	 */
@@ -208,7 +218,7 @@ class Reminder extends Model {
 				 WHERE reminders_id={$this->db->sqltext($this->id)}";
 		$this->db->query($sql);
 	}
-	
+
 	public function sendRemind() {
 
         $to = array();
@@ -216,7 +226,7 @@ class Reminder extends Model {
 		foreach ($users as $user) {
 			$to[] = $user["email"];
 		}
-  	 	
+
     	$from = REMIND_SENDER."@".DOMAIN;
     	$theme = "Notification ";
 		$message = $this->name;
@@ -225,7 +235,7 @@ class Reminder extends Model {
 			$this->email->sendMail($from, $to, $theme, $message);
 		}
     }
-	
+
 	public function isAtLeastOneUserSelect() {
 
 		return (count($this->users) != 0) ? true : false;

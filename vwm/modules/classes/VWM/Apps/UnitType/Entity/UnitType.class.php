@@ -22,8 +22,8 @@ class UnitType extends Model {
 	protected $system;
 
 	protected $unit_class_id;
-	
-	
+
+
 
 	/**
 	 * @var Type
@@ -34,16 +34,26 @@ class UnitType extends Model {
 	 * @var UnitClass
 	 */
 	protected $unitClass;
-	
-	
+
+
 
 	const TABLE_NAME = '`unittype`';
 	const TB_TYPE = 'type';
 	const TB_UNITCLASS = 'unit_class';
-	
+
 	public function __construct(\db $db) {
 		$this->db = $db;
 	}
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function getUnitTypeId() {
 		return $this->unittype_id;
@@ -159,13 +169,13 @@ class UnitType extends Model {
 	public function save() {
 		throw new \Exception('You cannot add/edit this entity');
 	}
-	
+
 	/**
 	 * function for getting defoult unit type
-	 * return array 
+	 * return array
 	 */
 	public function getDefaultUnitType() {
-		
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				"ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
 				"uc.description ucDescription " .

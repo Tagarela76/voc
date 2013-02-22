@@ -14,6 +14,16 @@ class StepInstance extends Step
 
 	protected $resources = array();
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getTotalSpentTime()
 	{
 		$this->calculateTotalSpentTime();
@@ -39,7 +49,7 @@ class StepInstance extends Step
 	}
 
 	/**
-	 * calculate total spent time 
+	 * calculate total spent time
 	 */
 	private function calculateTotalSpentTime()
 	{
@@ -60,7 +70,7 @@ class StepInstance extends Step
 
 	/**
 	 * function for getting step resources
-	 * @return boolean|\VWM\Apps\Process\ResourceTemplate[] 
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate[]
 	 */
 	public function getResources($stepId = null)
 	{
@@ -131,7 +141,7 @@ class StepInstance extends Step
 	/**
 	 * delete current step with its resources
 	 * @param type $stepId
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public function delete($stepId = null)
 	{

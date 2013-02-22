@@ -112,6 +112,16 @@ class MixOptimized extends Model {
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	/**
 	 *
 	 * Overvrite get property if property is not exists or private.
@@ -180,10 +190,10 @@ class MixOptimized extends Model {
 		/*
 		 * If value is already timestamp  - just set value
 		 */
-		
+
 		if (strlen($value) == 10 && is_numeric($value)) {
 			$this->creation_time = $value;
-			
+
 		} else {
 
 			$date = DateTime::createFromFormat($this->dateFormat, $value);
@@ -430,7 +440,7 @@ class MixOptimized extends Model {
 		$spentTime = (!empty($this->spent_time))
 				? $this->db->sqltext($this->spent_time)
 				: "NULL";
-		
+
 		$pfpId = ($this->getPfpId() !== null)
 				? $this->db->sqltext($this->getPfpId())
 				: "NULL";
@@ -692,7 +702,7 @@ class MixOptimized extends Model {
 		$this->voclx = isset($this->voclx) ? $this->voclx : "0.00";
 		$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
 		$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
-		
+
 
 		$creation_time = isset($this->creation_time)
 				? $this->db->sqltext($this->creation_time)

@@ -72,6 +72,16 @@ class Department extends Model
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	/**
 	 * Load Department by already set department id
 	 * @return boolean did load was successful?
@@ -92,7 +102,7 @@ class Department extends Model
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
-        
+
 		return true;
 	}
 

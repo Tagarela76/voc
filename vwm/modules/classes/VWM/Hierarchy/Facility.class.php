@@ -72,7 +72,7 @@ class Facility extends Model {
 	 * @var string
 	 */
 	protected $unitTypeClass = 'USAWght';
-	
+
 	/**
 	 * Default or all unittypes available for facility
 	 * @var \VWM\Apps\UnitType\Entity\UnitType[]
@@ -100,6 +100,16 @@ class Facility extends Model {
 			}
 		}
 	}
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function getFacilityId() {
 		return $this->facility_id;
@@ -571,7 +581,7 @@ class Facility extends Model {
 		if($this->unitTypes) {
 			return $this->unitTypes;
 		}
-		
+
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
 				 "ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
 				 "uc.description ucDescription " .

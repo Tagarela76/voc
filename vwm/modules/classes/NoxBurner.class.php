@@ -3,7 +3,7 @@
 use VWM\Framework\Model;
 
 class NoxBurner extends Model {
-	
+
 	private $burner_id;
 	private $manufacturer_id;
 	private $serial;
@@ -18,13 +18,21 @@ class NoxBurner extends Model {
 	public function __construct(db $db, Array $array = null) {
 		$this->db = $db;
 		$this->modelName = "NoxBurner";
-		
+
 		if (isset($array)) {
 			$this->initByArray($array);
 		}
 	}
 
-	
+	/**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function save() {
 		if ($this->burner_id != NULL) {
@@ -57,7 +65,7 @@ class NoxBurner extends Model {
 			throw new Exception(mysql_error());
 		}
 	}
-	
+
 
 	public function get_burner_id() {
 		return $this->burner_id;
@@ -90,7 +98,7 @@ class NoxBurner extends Model {
 	public function get_output() {
 		return $this->output;
 	}
-	
+
 	public function get_ratio() {
 		return $this->ratio;
 	}
@@ -158,27 +166,27 @@ class NoxBurner extends Model {
 			throw new Exception("Output id cannot be empty!" . $e->getMessage());
 		}
 	}
-	
+
 
 	public function set_ratio($value) {
 		try {
 			$this->ratio = $value;
 		} catch (Exception $e) {
-			
+
 		}
 	}
-	
+
 	public function isUniqueSerial() {
 		$sql = "SELECT burner_id FROM burner WHERE serial = '{$this->db->sqltext($this->serial)}'";
 		$this->db->query($sql);
 		return ($this->db->num_rows() == 0) ? true : false;
 	}
-	
+
 	public function setRatio2Burner($burnerId, $ratio) {
 
 		$query = "UPDATE burner SET " .
 					"ratio = {$this->db->sqltext($ratio)} " .
-					"WHERE burner_id = {$this->db->sqltext($burnerId)}"; 
+					"WHERE burner_id = {$this->db->sqltext($burnerId)}";
 		$this->db->query($query);
 
 		if (mysql_error() == '') {
@@ -187,19 +195,19 @@ class NoxBurner extends Model {
 			throw new Exception(mysql_error());
 		}
 	}
-	
+
 	public function getCommonRatio4Facility($facilityId) {
 
 		$query = "SELECT sum(ratio) as ratio
 					From burner
 					WHERE department_id IN (
 						SELECT department_id
-						From " . TB_DEPARTMENT . " 
-						WHERE facility_id = {$this->db->sqltext($facilityId)})"; 						
+						From " . TB_DEPARTMENT . "
+						WHERE facility_id = {$this->db->sqltext($facilityId)})";
 		$this->db->query($query);
 
 		if ($this->db->num_rows()) {
-			$data = $this->db->fetch(0); 
+			$data = $this->db->fetch(0);
 			return $data->ratio;
 		}
 		else
