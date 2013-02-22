@@ -77,7 +77,7 @@ class CVInvoices extends Controller {
         }	//subCategory switch ending
 
         $dt = new DateTime();
-        $dateFormat = VOCApp::get_instance()->getDateFormat();
+        $dateFormat = VOCApp::getInstance()->getDateFormat();
 
         $count = count($invoiceList);
         for($i=0; $i< $count; $i++) {
@@ -142,7 +142,7 @@ class CVInvoices extends Controller {
 			throw new Exception('404');
 		}
 $date = $invoiceToShow->generation_date;
-$dateFormat = VOCApp::get_instance()->getDateFormat();
+$dateFormat = VOCApp::getInstance()->getDateFormat();
 $invoiceDetails = get_object_vars($invoiceToShow);
 
 $invoiceDetails['customerDetails'] = get_object_vars($customer);

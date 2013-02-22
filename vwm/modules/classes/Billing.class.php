@@ -974,7 +974,7 @@ class Billing {
 	    }
 
 	    $dt = new DateTime();
-        $dateFormat = VOCApp::get_instance()->getDateFormat();
+        $dateFormat = VOCApp::getInstance()->getDateFormat();
 
 	    $appliedModules = array();
 	    foreach ($purchasedModules as $key => $module) {

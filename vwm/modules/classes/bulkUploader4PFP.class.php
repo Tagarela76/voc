@@ -40,6 +40,10 @@ class bulkUploader4PFP {
 	
 	function bulkUploader4PFP(db $db, $input, validateCSV $validate) {
 		
+
+		$pfpCorrect = count($validate->productsError);
+		$pfpErrors = 0;
+
 		$pfpArray = $validate->productsCorrect;
 		$this->db = $db;
 
@@ -75,18 +79,16 @@ class bulkUploader4PFP {
 			$productRATIOSToOriginal = array();
 			
 			$products = $pfp->getProducts();
-			
-			for ($i = 0; $i < count($products); $i++) {
-
+			$productCount = count($products);
+			for ($i = 0; $i < $productCount; $i++) {
 				$sql = "SELECT product_id FROM product WHERE product_nr='" . $products[$i][self::PRODUCTNR_INDEX] . "'";
 				$this->db->query($sql);
 				$r = $this->db->fetch(0);
-				
 				if (empty($r)) {
 					$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " doesn't exist \n";
 				} elseif (isset($r->product_id)) { //product exist
 					
-					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 1) {
+					if ($products[$i][self::PRODUCTRATIO_INDEX] >= 0) {
 						$productIDS[] = $r->product_id;
 						$productRATIOS[] = $products[$i][self::PRODUCTRATIO_INDEX];
 						$productRATIOSTo[] = (isset($products[$i]['ratioRangeTo']))
@@ -107,10 +109,11 @@ class bulkUploader4PFP {
 						
 					} else {
 						$actionLog .= " Product " . $products[$i][self::PRODUCTNR_INDEX] . " has ratio less than 1 \n";
+						//delete product wich has ratio less than 1; But we still must save pfp;
+						unset($products[$i]);
 					}
 				}
 			}//end for
-
 			if (count($products) == count($productIDS)) { // all products exists
 				if ($pfp->getDescription() != '') {
 					$sql = "SELECT id FROM preformulated_products WHERE description = '" . $pfp->getDescription() . "' LIMIT 1";
@@ -120,22 +123,36 @@ class bulkUploader4PFP {
 					if (!$r->id) {
 						$actionLog .= $this->insertData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 						$this->insertedCnt++;
+
+						$pfpCorrect++;
+
 					} else { //pfp exist
 						$pfp->setId($r->id);
 						if (!empty($input['update'])) {
 							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: YES.\n";
 							$actionLog .= $this->updateData($productIDS, $productRATIOS, $productRATIOSTo, $productRATIOSFromOriginal, $productRATIOSToOriginal, $this->companyID, $pfp);
 							$this->updatedCnt++;
+
+							$pfpCorrect++;
 						} else {
 							$actionLog .= "	PFP " . $pfp->getDescription() . " already exists. Update items: NO.\n";
+							$pfpErrors++;
 						}
 					}
+					
 				} else {
 					$actionLog .= " PFP with products hasn't description. \n";
+					$pfpErrors++;
 				}
 				$description = '/ ';
+			}else{
+				$pfpErrors++;
 			}
 		}//end foreach
+		//get pfps errors count
+		$this->productsCorrect = $pfpCorrect;
+		$this->productsError = $pfpErrors;
+		
 
 		$actionLog .= "--------------------------------\n";
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of " . $input['realFileName'] . " is successfuly finished.\n";

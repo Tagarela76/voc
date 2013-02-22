@@ -44,7 +44,7 @@ class CRepairOrder extends Controller
 
 		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 
-		// get child mixes		  
+		// get child mixes
 		$mixTotalPrice = 0;
 		$mixTotalSpentTime = 0;
 		$mixes = $repairOrder->getMixes();
@@ -89,15 +89,15 @@ class CRepairOrder extends Controller
 		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
 		$processId = $wo->getProcessTemplateId();
 		$isHaveProcess = false;
-		
+
 		$materialCost = 0;
 		$laborCost = 0;
 		$totalCost = 0;
 		$spentTime = 0;
-		
-		
+
+
 		if (!is_null($processId)) {
-			//get default steps for work order by process Template Id	
+			//get default steps for work order by process Template Id
 			$availableSteps = array();
 			$isHaveProcess = true;
 			$processTemplate = new ProcessTemplate($this->db, $processId);
@@ -162,8 +162,8 @@ class CRepairOrder extends Controller
 				$mixesCosts[$mix->mix_id] = $mixCosts;
 			}//die();
 
-		
-		
+
+
 
 		//get url for adding mix to Repair Order button
 		//get last mix
@@ -179,8 +179,8 @@ class CRepairOrder extends Controller
 		}
 		// set stepID = 0 if mix do not conect with step
 		$urlMixAdd .="&stepID=0";
-		
-		
+
+
 		$mixList = array();
 		$stepsCount = count($steps);
 		//array of not empty mixs
@@ -198,7 +198,7 @@ class CRepairOrder extends Controller
 		}
 
 		//get empty steps
-		
+
 		$emptyMixSteps = array();
 		foreach ($stepInstances as $stepInstance) {
 			if (!in_array($stepInstance->getId(), $mixStepsIds)) {
@@ -207,7 +207,7 @@ class CRepairOrder extends Controller
 		}
 
 		// create empty steps for display
-		
+
 		foreach ($emptyMixSteps as $emptyMixStep) {
 			$mixCosts = array(
 				"materialCost" => 0,
@@ -228,7 +228,7 @@ class CRepairOrder extends Controller
 
 			//get labor, material and total cost
 			$emptyStepResources = $emptyMixStep->getResources();
-			
+
 			foreach ($emptyStepResources as $emptyStepResource) {
 				$mixCosts["materialCost"] += $emptyStepResource->getMaterialCost();
 				$mixCosts["laborCost"] += $emptyStepResource->getLaborCost();
@@ -242,7 +242,7 @@ class CRepairOrder extends Controller
 			$materialCost+=$mixCosts["materialCost"];
 			$laborCost+=$mixCosts["laborCost"];
 		}
-		
+
 		$totalCost += $materialCost + $laborCost + $mixTotalPrice;
 		ksort($mixList);
 
@@ -260,7 +260,7 @@ class CRepairOrder extends Controller
 		$this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
 		$this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
 		$this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
-		
+
 		$this->smarty->assign('mixList', $mixList);
 
 		$this->smarty->assign('isHaveProcess', $isHaveProcess);
@@ -484,10 +484,10 @@ class CRepairOrder extends Controller
 
 		$this->smarty->assign('woDepartments', $woDepartments_id);
 
-		$companyLevelLabel = new CompanyLevelLabel($this->db);
-		$companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
-		$repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()
-						->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        $companyLevelLabel = new CompanyLevelLabel($this->db);
+        $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
+        $repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()
+				->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
 		//	set js scripts
@@ -737,7 +737,7 @@ class CRepairOrder extends Controller
 	{
 		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 		$mixList = array();
-		// get child mixes 
+		// get child mixes
 		$mixTotalPrice = 0;
 		$mixes = $repairOrder->getMixes();
 		foreach ($mixes as $mix) {
@@ -808,9 +808,9 @@ class CRepairOrder extends Controller
 		echo $response;
 	}
 
-	
+
 	/**
-	 *method for adding step with out mix colling by ajax  
+	 *method for adding step with out mix colling by ajax
 	 */
 	protected function actionAddStepWithOutMix()
 	{
@@ -822,10 +822,10 @@ class CRepairOrder extends Controller
 		$stepTemplate = new StepTemplate($this->db, $stepId);
 		$stepTemplateResources = $stepTemplate->getResources();
 		$stepInstance = $stepTemplate->createInstanceStep($processInstanceId);
-		
+
 		$stepInstanceId = $stepInstance->save();
 		$stepInstance->setId($stepInstanceId);
-		
+
 		if ($stepInstance) {
 			foreach ($stepTemplateResources as $stepTemplateResource) {
 				$stepInstanceResource = $stepTemplateResource->createInstanceResource($stepInstance->getId());

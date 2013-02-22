@@ -4,11 +4,12 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Model;
 
-class Pfp extends Model {
+class Pfp extends Model
+{
 
 	public $id;
 	public $description;
-	public $company_id;
+	public $company_id = 0;
 	public $creator_id;
 	public $last_update_time;
 	public $is_proprietary = 0;
@@ -16,9 +17,12 @@ class Pfp extends Model {
 
 	const TABLE_NAME = 'preformulated_products';
 	const TABLE_PFP2COMPANY = 'pfp2company';
+    const TABLE_PFP2PRODUCT = 'pfp2product';
 
 	public function __construct(\db $db) {
 		$this->db = $db;
+		//$db = \VOCApp::getInstance()->getService('db');
+
 	}
 
 	public function getId() {
@@ -85,7 +89,7 @@ class Pfp extends Model {
 
 
 	protected function _insert() {
-
+		//$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
@@ -116,6 +120,7 @@ class Pfp extends Model {
 	}
 
 	protected function _update() {
+		//$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
 
@@ -148,6 +153,7 @@ class Pfp extends Model {
 
 
 	public function load() {
+		//$db = \VOCApp::getInstance()->getService('db');
 		if (is_null($this->getId())) {
 			return false;
 		}
@@ -206,5 +212,3 @@ class Pfp extends Model {
 
 
 }
-
-?>

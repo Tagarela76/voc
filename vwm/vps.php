@@ -38,9 +38,9 @@ $xnyo->filter_get_var('action', 'text');
 $xnyo->filter_post_var('action', 'text');
 
 
-VOCApp::get_instance()->setDB($db);
+VOCApp::getInstance()->setDB($db);
 
-$smarty->assign("VOCApp_instance", VOCApp::get_instance());
+$smarty->assign("VOCApp_instance", VOCApp::getInstance());
 
 try {
 
@@ -94,8 +94,8 @@ try {
 					$_SESSION['customerID'] = $customer_id;
 					$_SESSION["username"] = strtoupper($username);
 
-					VOCApp::get_instance()->setUserID($user_id);
-					VOCApp::get_instance()->setCustomerID($customer_id);
+					VOCApp::getInstance()->setUserID($user_id);
+					VOCApp::getInstance()->setCustomerID($customer_id);
 
 					if ($_POST['backUrl']) {
 						$backUrl = $_POST['backUrl'];
@@ -119,8 +119,8 @@ try {
 				//$customer_id
 				$_SESSION['customerID'] = $customer_id;
 
-				VOCApp::get_instance()->setUserID($_SESSION['user_id']);
-				VOCApp::get_instance()->setCustomerID($customer_id);
+				VOCApp::getInstance()->setUserID($_SESSION['user_id']);
+				VOCApp::getInstance()->setCustomerID($customer_id);
 
 				header("Location: vps.php?action=viewDetails&category=dashboard");
 			} else {
@@ -137,9 +137,9 @@ try {
 
 
 
-		VOCApp::get_instance()->setUserID($userID);
-		VOCApp::get_instance()->setCustomerID($customerID);
-		VOCApp::get_instance()->getDateFormat();
+		VOCApp::getInstance()->setUserID($userID);
+		VOCApp::getInstance()->setCustomerID($customerID);
+		VOCApp::getInstance()->getDateFormat();
 
 		//	logged in?
 		if ((!($user->isLoggedIn() && $_SESSION['auth']['company_id'] == $customerID) && !$_SESSION['registration'] && isset($_GET["category"]) && $_GET["category"] != 'scriptNewBilling')) {

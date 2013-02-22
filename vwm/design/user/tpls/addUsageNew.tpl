@@ -132,7 +132,7 @@ $(function()
         page.pfpManager.productsOnPreview.push(product);
 	{/literal}{/foreach}{literal}
 		page.pfpManager.renderProprietaryPfpForm('{/literal}{$totalQuantity}', '{$data->products.0->unit_type}'{literal});
-		page.pfpManager.calculateVocByTotalPfpQuantity();
+		page.pfpManager.calculateProprietaryPfpVoc();
 	}
 }
 );

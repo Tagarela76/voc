@@ -29,7 +29,7 @@ class CAMeetingWithContact extends Controller {
 			$meeting->setNotes($this->getFromPost('notes'));
 			$violationList = $meeting->validate();
 			if(count($violationList) == 0) {
-				$format = \VOCApp::get_instance()->getDateFormat();
+				$format = \VOCApp::getInstance()->getDateFormat();
 				$format .= " H:i";
 				$meetingDate = DateTime::createFromFormat($format,
 						$meeting->getMeetingDate());
@@ -72,7 +72,7 @@ class CAMeetingWithContact extends Controller {
 			$meeting->setNotes($this->getFromPost('notes'));
 			$violationList = $meeting->validate();
 			if(count($violationList) == 0) {
-				$format = \VOCApp::get_instance()->getDateFormat();
+				$format = \VOCApp::getInstance()->getDateFormat();
 				$format .= " H:i";
 				$meetingDate = DateTime::createFromFormat($format,
 						$meeting->getMeetingDate());

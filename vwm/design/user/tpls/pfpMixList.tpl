@@ -94,7 +94,7 @@
             </a>
         </td>
 		<td class="border_users_b border_users_r">
-            <a href="{$url}" class="id_company1" title="">              
+            <a href="{$url}" class="id_company1" title="">
 				<div style="width:100%;">
                     {assign var="pfpProducts" value=$pfp->getProducts()}
 						{foreach from=$pfpProducts item=item}
@@ -126,7 +126,11 @@
         <td class="border_users_b border_users_r">
             <a href="{$url}" class="id_company1" title="{$mix->hoverMessage}">
                 <div style="width:100%;">
-                    {$pfp->getRatio()} &nbsp;{if $pfp->isRangePFP}(with range){/if}
+                    {*if $pfp->getIsProprietary() != 1*}
+                        {$pfp->getRatio()} &nbsp;{if $pfp->isRangePFP}(with range){/if}
+                    {*else}
+                        &nbsp;IP
+                    {/if*}
                 </div>
             </a>
         </td>

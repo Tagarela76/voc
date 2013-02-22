@@ -11,12 +11,13 @@ class PfpTest extends DbTestCase {
 	);
 
 	public function testSave() {
-		$pfp = new Pfp($this->db);		
+		$pfp = new Pfp($this->db);
 		$pfp->setDescription('Test Pfp');
-		$this->assertEquals(5, $pfp->save());
+		$id = $pfp->save();
+		$this->assertEquals(6, $id);
 
 		$pfp->setDescription('Updated');
-		$this->assertEquals(5, $pfp->save());
+		$this->assertEquals(6, $pfp->save());
 	}
 }
 

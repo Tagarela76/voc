@@ -39,7 +39,7 @@ class CVDashboard extends Controller {
 	$diff = new DateInterval("P{$config['invoice_generation_period']}D");
         $nextInvoiceDate->sub($diff);
 
-	$nextInvoiceDateFormat = $nextInvoiceDate->format(VOCApp::get_instance()->getDateFormat()); 	
+	$nextInvoiceDateFormat = $nextInvoiceDate->format(VOCApp::getInstance()->getDateFormat()); 	
 
 	//	TODO: finish view part
 	/*****
