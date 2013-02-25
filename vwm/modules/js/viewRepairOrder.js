@@ -3,11 +3,17 @@ function StepManager(){
 	
 	this.addstepToUrl = function(){
 		var url = $('#urlMixAdd').val();
-		var step = $('#availableSteps option:selected').val();
+		var stepId = $('#availableSteps option:selected').val();
 		var count = url.indexOf('&stepID');
 		url = url.substr(0, count);
-		url += '&stepID='+step;
+		url += '&stepID='+stepId;
 		$('#urlMixAdd').val(url);
+		
+		if(stepId!=0){
+			$('#editStep').show();
+		}else{
+			$('#editStep').hide();
+		}
 	
 	}
 
@@ -35,6 +41,12 @@ function StepManager(){
 				}
 			});
 		}
+	}
+	
+	this.editStep = function(stepId){
+		var url = $('#urlMixEdit').val();
+		//var stepId = $('#availableSteps option:selected').val();
+		document.location.href = url+"&stepId="+stepId;
 	}
 }
 

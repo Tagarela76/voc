@@ -12,8 +12,6 @@ class StepInstance extends Step
 	const VOLUME = 2;
 	const COUNT = 3;
 
-	protected $resources = array();
-
 	public function getTotalSpentTime()
 	{
 		$this->calculateTotalSpentTime();
@@ -87,6 +85,8 @@ class StepInstance extends Step
 		$this->resources = $resources;
 		return $resources;
 	}
+	
+	
 
 	protected function _insert()
 	{
@@ -112,6 +112,22 @@ class StepInstance extends Step
 
 	protected function _update()
 	{
+		$this->db->beginTransaction();
+		//delete step Resources
+		$resources = $this->getResources();
+		if(!empty($resources)){
+			$sql = "DELETE FROM ". self::RESOURCE_TABLE ." ".
+					"WHERE step_id = {$this->db->sqltext($this->getId())}";
+			$response = $this->db->exec($sql);
+			foreach ($resources as $resource){
+				$resourceId = $resource->save();
+				if(!$resourceId){
+					$this->db->rollbackTransaction();
+					return false;
+				}
+			}
+		}
+		
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"number={$this->db->sqltext($this->getNumber())}, " .
 				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
@@ -122,8 +138,10 @@ class StepInstance extends Step
 
 		$response = $this->db->exec($sql);
 		if ($response) {
+			$this->db->commitTransaction();
 			return $this->getId();
 		} else {
+			$this->db->rollbackTransaction();
 			return false;
 		}
 	}

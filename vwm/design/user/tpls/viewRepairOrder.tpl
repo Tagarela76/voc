@@ -201,7 +201,7 @@
 		</tr>
 	</table>
 	<input type='hidden' value='{$urlMixAdd}' id='urlMixAdd'>
-	
+	<input type='hidden' value='{$urlMixEdit}' id='urlMixEdit'>
 	<input type='hidden' value='{$processInstanceId}' id='processInstanceId'>
 
     <div align="right">

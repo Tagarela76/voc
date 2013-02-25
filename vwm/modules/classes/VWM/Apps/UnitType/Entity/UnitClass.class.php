@@ -17,6 +17,10 @@ class UnitClass extends Model {
 
 	const TABLE_NAME = '`unit_class`';
 
+	public function __construct(\db $db) {
+		$this->db = $db;
+	}
+	
 	public function getId() {
 		return $this->id;
 	}

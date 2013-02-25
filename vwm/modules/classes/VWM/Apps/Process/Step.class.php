@@ -44,9 +44,9 @@ abstract class Step extends Model
 
 	/**
 	 * resources
-	 * @var array of objects
+	 * @var array of \VWM\Apps\Process\Resource[]
 	 */
-	protected $init_resources = array();
+	protected $resources = array();
 
 	const TABLE_NAME = 'step_template';
 	const RESOURCE_TABLE = 'resource_template';
@@ -97,14 +97,14 @@ abstract class Step extends Model
 	 * get and set resources for initialization
 	 * @return Resource[] 
 	 */
-	public function getInitResources()
+	public function getResources()
 	{
-		return $this->init_resources;
+		return $this->resources;
 	}
 
-	public function setInitResources($init_resources)
+	public function setResources($resources)
 	{
-		$this->init_resources = $init_resources;
+		$this->resources = $resources;
 	}
 
 	public function getNumber()

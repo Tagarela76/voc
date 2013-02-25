@@ -856,6 +856,7 @@ class CRepairOrder extends Controller
 		$stepId = $this->getFromRequest('stepId');
 		$departmentId = $this->getFromRequest('departmentId');
 		
+		
 		//get step Template
 		$stepInstance = new StepInstance($this->db);
 		$stepInstance->setId($stepId);
@@ -863,7 +864,7 @@ class CRepairOrder extends Controller
 		
 		$jsSources = array(
 			"modules/js/stepObject.js",
-			"modules/js/editStepDialog.js",
+			"modules/js/editStepSettings.js",
 			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
 			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
 			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
@@ -876,24 +877,58 @@ class CRepairOrder extends Controller
 		
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		
+		
 		$this->smarty->assign('cssSources', $cssSources);
 		$this->smarty->assign('jsSources', $jsSources);
 		
+		$this->smarty->assign('departmentId', $departmentId);
 		$this->smarty->assign('stepInstance', $stepInstance);
+		$this->smarty->assign('repaitOrderId', $repaitOrderId);
 		
 		$this->smarty->assign('tpl','tpls/viewEditStep.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	} 
 	
-	protected function actionLoadEditResourceDetails(){
+	protected function actionLoadResourceDetails(){
 		$stepTemplate = new StepTemplate($this->db);
-		$unittype = new VWM\Apps\UnitType\Entity\UnitType($this->db);
+		$departmentId = $this->getFromPost('departmentId');
+		$resourceUnitTypeId = $this->getFromPost('resourceUnitTypeId');
 		
-		$resourceType = VWM\Apps\Process\Resource::getResourceType();
 		
-		$this->smarty->assign('resourceType', $resourceType);
+		$resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
+		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType($resourceUnitTypeId,$departmentId);
+		
+		$this->smarty->assign('unitTypeList', $unitTypeList);
+		$this->smarty->assign('resourceType', $resourceTypes);
 		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
 	}
+	
+	/*protected function actionLoadEditResourceDetails(){
+		$stepTemplate = new StepTemplate($this->db);
+		$departmentId = $this->getFromPost('departmentId');
+		$resourceId = $this->getFromPost('resourceId');
+		
+		$resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
+		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType(1,$departmentId);
+		
+		//check if resourceInstance already isset
+		if ($resourceId) {
+			$resouceInstance = new VWM\Apps\Process\ResourceInstance($this->db);
+			$resouceInstance->setId($resourceId);
+			$resouceInstance->load();
+
+			//get Resource setting
+			$this->smarty->assign('description', $resouceInstance->getDescription());
+			$this->smarty->assign('quantity', $resouceInstance->getQty());
+			$this->smarty->assign('rate', $resouceInstance->getRate());
+
+			$this->smarty->assign('resouceInstance', $resouceInstance);
+		}
+		$this->smarty->assign('unitTypeList', $unitTypeList);
+		$this->smarty->assign('resourceType', $resourceTypes);
+		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
+	}*/
+	
 }
 
 ?>
