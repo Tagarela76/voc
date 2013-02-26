@@ -1,6 +1,8 @@
 <?php
 
 use VWM\Framework\Model;
+use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\ProcessTemplate;
 
 class RepairOrder extends Model {
 
@@ -302,7 +304,7 @@ class RepairOrder extends Model {
 			return false;
 		}
 		
-		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->getProcessTemplateId());
+		$process = new ProcessTemplate($this->db, $this->getProcessTemplateId());
 		return $process->getName();
 		
 	}
@@ -340,7 +342,7 @@ class RepairOrder extends Model {
 			return false;
 		}
 		$result = $this->db->fetch(0);
-		$processInstance = new \VWM\Apps\Process\ProcessInstance($this->db, $result->id);
+		$processInstance = new ProcessInstance($this->db, $result->id);
 		
 		return $processInstance;
 		

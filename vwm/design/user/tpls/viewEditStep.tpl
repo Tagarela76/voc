@@ -1,9 +1,11 @@
 {literal}
 	<script type="text/javascript">
 	//step initialization
+	
 	var departmentId = '{/literal}{$departmentId}{literal}';
 	var stepId = {/literal}{$stepInstance->getId()}{literal};
 	var repaitOrderId = '{/literal}{$repaitOrderId}{literal}';
+	//temporary resource id. resources get id from 1 to resource count
 	var templateResourceId = 0;
 		
 	var step = new Step();
@@ -13,7 +15,6 @@
 	{/literal}{foreach from=$stepInstance->getResources() item=resource}{literal}
 		templateResourceId++;
 		var resource = new Resource();
-			//resource.setId({/literal}{$resource->getId()}{literal});
 			resource.setId(templateResourceId);
 			resource.setDescription({/literal}'{$resource->getDescription()}'{literal});
 			resource.setQty({/literal}{$resource->getQty()}{literal});
@@ -21,17 +22,14 @@
 			resource.setUnittypeId({/literal}{$resource->getUnittypeId()}{literal});
 			resource.setResourceUnittypeId({/literal}{$resource->getResourceTypeId()}{literal});
 			resource.setStepId({/literal}{$stepInstance->getId()}{literal});
-			step.setResources(resource);
+			step.addResource(resource);
 	{/literal}{/foreach}{literal}
 		
 	</script>
 {/literal}
 
 <div align="left">
-	<!--Step-->
-	<!--<div style="font-size: 30px; margin: 0px 0 0 0">
-		Edit Step
-	</div>-->
+	{*Step*}
 	<table style='width: 98%' align="left" cellpadding="0" cellspacing="0" >
 		<tr>
 			<td valign="top" style="padding:0 2px 0 5px; width: 30%">
@@ -48,7 +46,7 @@
 							Step description
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							<input type="text" id="stepDescription" value='{$stepInstance->getDescription()}' onchange="changeStepDescription()" style="width: 400px">
+							<input type="text" id="stepDescription" value='{$stepInstance->getDescription()}' onchange="stepPage.stepEdit.changeStepDescription()" style="width: 400px">
 						</td>
 					</tr>
 					<tr>
@@ -64,7 +62,7 @@
 
 		<tr>
 			<td style="width: 100px">
-				<!--Resources-->
+				{*Resources*}
 				<div style="margin: 10px 0 0 25px; width: 100%">
 					Resources
 				</div>
@@ -73,8 +71,8 @@
 		<tr>
 			<td>
 				<div style="margin: 10px 0 0 25px; width: 100%">
-					<input type='button' class='button' value="Add Resource" onclick="stepSettings.checkNewDialog(0, 'add'); stepSettings.stepAddEditResource.openDialog();">
-					<input type='button' class='button' value="Delete Resources" onclick = 'deleteResources()'>
+					<input type='button' class='button' value="Add Resource" onclick="stepPage.stepAddEditResource.checkNewDialog(0, 'add'); stepPage.stepAddEditResource.openDialog();">
+					<input type='button' class='button' value="Delete Resources" onclick = 'stepPage.stepEdit.deleteResources()'>
 				</div>
 			</td>
 		</tr>
@@ -115,11 +113,11 @@
 								</div>
 							</td>
 						</tr>
-						<!-- use counter to set template id for resource-->
+						{*Use counter to set template id for resource from 1 to resource count*}
 						{counter assign=count start=0 skip=1}
-						<!--get step Resources-->
+						{*get step Resources*}
 						{foreach from=$stepInstance->getResources() item=resource}
-							<!--increase count-->
+							{*increase count*}
 							{counter}
 							<tr class="hov_company"	height="10px" id="resource_detail_{$count}">
 								<td class="border_users_l border_users_b border_users_r" >
@@ -149,7 +147,7 @@
 								</td>
 								<td class="border_users_b border_users_r">
 									<div align='center' id = '{$count}'>
-										<a onclick="stepSettings.checkNewDialog({$count}, 'edit'); stepSettings.stepAddEditResource.openDialog();">
+										<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
 											edit
 										</a>
 									</div>
@@ -165,7 +163,7 @@
 			<td>
 				<div style="margin: 10px 0 0 25px; ">
 					<input type='button' class='button' value='<< Back' onclick="history.back()">
-					<input type='button' class='button' value='save' onclick="saveStep()">
+					<input type='button' class='button' value='save' onclick="stepPage.stepEdit.saveStep()">
 				</div>
 			</td>
 		</tr>

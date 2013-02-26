@@ -33,7 +33,7 @@
 			</td>
 			<td>
 				<div>
-					<select id ='resourceType' onchange="getUnitType()">
+					<select id ='resourceType' onchange="stepPage.stepAddEditResource.getUnitType()">
 						{foreach from=$resourceType key=key item=type}
 							<option id = '{$key}' value='{$key}'>
 								{$type}

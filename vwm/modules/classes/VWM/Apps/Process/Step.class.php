@@ -48,8 +48,8 @@ abstract class Step extends Model
 	 */
 	protected $resources = array();
 
-	const TABLE_NAME = 'step_template';
-	const RESOURCE_TABLE = 'resource_template';
+	//const TABLE_NAME = 'step_template';
+	//const RESOURCE_TABLE = 'resource_template';
 	const TIME = 1;
 	const VOLUME = 2;
 	const COUNT = 3;
@@ -125,6 +125,24 @@ abstract class Step extends Model
 	public function setProcessId($process_id)
 	{
 		$this->process_id = $process_id;
+	}
+	
+	public function load($table)
+	{
+		if (is_null($this->getId())) {
+			return false;
+		}
+		$sql = "SELECT * " .
+				"FROM " . $table . " " .
+				"WHERE id = {$this->db->sqltext($this->getId())} " .
+				"LIMIT 1";
+
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$row = $this->db->fetch(0);
+		$this->initByArray($row);
 	}
 
 }

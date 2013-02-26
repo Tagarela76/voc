@@ -45,7 +45,6 @@ function StepManager(){
 	
 	this.editStep = function(stepId){
 		var url = $('#urlMixEdit').val();
-		//var stepId = $('#availableSteps option:selected').val();
 		document.location.href = url+"&stepId="+stepId;
 	}
 }

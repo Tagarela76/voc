@@ -923,6 +923,71 @@ class CRepairOrder extends Controller
 		$this->smarty->assign('resourceType', $resourceTypes);
 		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
 	}
+	
+	//ajax function for getting resource cost
+	protected function actionGetResourceCostsInformation()
+	{
+		$qty = $this->getFromPost('resourceQty');
+		$rate = $this->getFromPost('resourceRate');
+		$resourceUnittypeId = $this->getFromPost('resourceUnittypeId');
+		$resourceResourceUnittypeId = $this->getFromPost('resourceResourceUnittypeId');
+		
+		$resoutceInstance = new VWM\Apps\Process\ResourceInstance($this->db);
+
+		$resoutceInstance->setQty($qty);
+		$resoutceInstance->setRate($rate);
+		$resoutceInstance->setUnittypeId($resourceUnittypeId);
+		$resoutceInstance->setRateUnittypeId($resourceUnittypeId);
+
+		$resoutceInstance->setResourceTypeId($resourceResourceUnittypeId);
+		$resoutceInstance->calculateTotalCost();
+
+		$costs = array(
+			'laborCost' => $resoutceInstance->getLaborCost(),
+			'materialCost' => $resoutceInstance->getMaterialCost(),
+			'totalCost' => $resoutceInstance->getTotalCost()
+		);
+
+		$costs = json_encode($costs);
+		echo $costs;
+	}
+	
+	protected function actionSaveStep()
+	{
+		$resourcesAttributes = json_decode($this->getFromPost('resourcesAttributes'));
+		$stepAttributes = json_decode($this->getFromPost('stepAttributes'));
+
+		$stepInstance = new \VWM\Apps\Process\StepInstance($this->db);
+		$stepInstance->setId($stepAttributes->stepId);
+		$stepInstance->load();
+		$stepInstance->setDescription($stepAttributes->stepDescription);
+
+		foreach ($resourcesAttributes as $resourceAttributes) {
+			$resources[] = json_decode($resourceAttributes);
+		}
+
+		$resourceInstanceArray = array();
+		foreach ($resources as $resource) {
+			$resourceInstance = new \VWM\Apps\Process\ResourceInstance($this->db);
+			$resourceInstance->setDescription($resource->description);
+			$resourceInstance->setQty($resource->qty);
+			$resourceInstance->setRate($resource->rate);
+			$resourceInstance->setUnittypeId($resource->unittypeId);
+			$resourceInstance->setResourceTypeId($resource->resourceTypeId);
+			$resourceInstance->setRateUnittypeId($resource->unittypeId);
+			$resourceInstance->setStepId($stepInstance->getId());
+			$resourceInstanceArray[] = $resourceInstance;
+		}
+
+		$stepInstance->setResources($resourceInstanceArray);
+		$stepId = $stepInstance->save();
+
+		if ($stepId) {
+			echo '?action=viewDetails&category=repairOrder';
+		} else {
+			echo false;
+		}
+	}
 }
 
 ?>

@@ -14,20 +14,7 @@ class StepTemplate extends Step
 
 	public function load()
 	{
-		if (is_null($this->getId())) {
-			return false;
-		}
-		$sql = "SELECT * " .
-				"FROM " . self::TABLE_NAME . " " .
-				"WHERE id = {$this->db->sqltext($this->getId())} " .
-				"LIMIT 1";
-
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$this->initByArray($row);
+		parent::load(self::TABLE_NAME);
 	}
 
 	/**

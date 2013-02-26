@@ -22,8 +22,8 @@ function Step(){
 			id = stepId;
 		}
 		
-		self.setResources = function(resource) {
-			resources.push(resource);
+		self.setResources = function(stepResources) {
+			resources = stepResources;
 		}
 		
 		//getters

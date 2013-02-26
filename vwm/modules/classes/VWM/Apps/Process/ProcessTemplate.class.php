@@ -34,6 +34,11 @@ class ProcessTemplate extends Process
 	 */
 	public function getSteps()
 	{
+		$processSteps = $this->getProcessSteps();
+		if(!empty($processSteps)){
+			return $this->getProcessSteps();
+		}
+		
 		$sql = "SELECT * FROM " . self::STEP_TABLE .
 				" WHERE process_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
@@ -47,7 +52,8 @@ class ProcessTemplate extends Process
 			$step->initByArray($stepDetails);
 			$steps[] = $step;
 		}
-
+		
+		$this->setProcessSteps($step);
 		return $steps;
 	}
 
@@ -94,10 +100,10 @@ class ProcessTemplate extends Process
 	/**
 	 * function for getting Process Id by name and Facility Id
 	 * 
-	 * @param type $facilityId
-	 * @param type $name
+	 * @param int $facilityId
+	 * @param string $name
 	 * 
-	 * @return boolean 
+	 * @return boolean|int
 	 */
 	public function getProcessIdByNameAndFacilityId($facilityId = null, $name = null)
 	{

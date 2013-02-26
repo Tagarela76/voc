@@ -8,6 +8,7 @@ use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
+use VWM\Apps\Process\ProcessTemplate;
 
 
 class Facility extends Model {
@@ -497,7 +498,7 @@ class Facility extends Model {
 		}
 		$processListId = $this->db->fetch_all();
 		foreach ($processListId as $processId){
-			$processList[] = new \VWM\Apps\Process\ProcessTemplate($this->db, $processId->id);
+			$processList[] = new ProcessTemplate($this->db, $processId->id);
 		}
 		return $processList;
 	}

@@ -1,5 +1,5 @@
 <?php
-
+/*
 	chdir('../..');
 
 	require('config/constants.php');
@@ -58,5 +58,5 @@
 		echo '?action=viewDetails&category=repairOrder';
 	}else{
 		echo false;
-	}
+	}*/
 ?>
