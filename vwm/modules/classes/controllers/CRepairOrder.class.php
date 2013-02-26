@@ -164,9 +164,6 @@ class CRepairOrder extends Controller
 				$mixesCosts[$mix->mix_id] = $mixCosts;
 			}//die();
 
-		
-		
-
 		//get url for adding mix to Repair Order button
 		//get last mix
 		$urlMixAdd = "?action=addItem&category=mix" .
@@ -852,11 +849,31 @@ class CRepairOrder extends Controller
 	 *function edit step dispay  
 	 */
 	protected function actionShowEditStep(){
+		
+		$params = array("bookmark" => "repairOrder");
+
+		if ($this->getFromRequest('departmentId')) {
+			$category = 'department';
+			$categoryId = $this->getFromRequest('departmentId');
+			$department = new VWM\Hierarchy\Department($this->db, $categoryId);
+			$facility = $department->getFacility();
+		} elseif ($this->getFromRequest('facilityID')) {
+			$category = 'facility';
+			$categoryId = $this->getFromRequest('facilityID');
+			$facility = new VWM\Hierarchy\Facility($this->db, $categoryId);
+		} else {
+			throw new Exception('404');
+		}
+		$this->setNavigationUpNew($category, $categoryId);
+		$this->setListCategoriesLeftNew($category, $categoryId, $params);
+		$this->setPermissionsNew('viewRepairOrder');
+		
 		$repaitOrderId = $this->getFromRequest('repairOrderId');
 		$stepId = $this->getFromRequest('stepId');
 		$departmentId = $this->getFromRequest('departmentId');
 		
-		
+		$category = "department";
+		$categoryId = $departmentId;
 		//get step Template
 		$stepInstance = new StepInstance($this->db);
 		$stepInstance->setId($stepId);
@@ -873,11 +890,15 @@ class CRepairOrder extends Controller
 			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
 			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
 			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/json2.js",
 		);
 		
 		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
 		
+		$request['id'] = $categoryId;
+		$request['category'] = $category;
 		
+		$this->smarty->assign('request', $request);
 		$this->smarty->assign('cssSources', $cssSources);
 		$this->smarty->assign('jsSources', $jsSources);
 		
@@ -902,33 +923,6 @@ class CRepairOrder extends Controller
 		$this->smarty->assign('resourceType', $resourceTypes);
 		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
 	}
-	
-	/*protected function actionLoadEditResourceDetails(){
-		$stepTemplate = new StepTemplate($this->db);
-		$departmentId = $this->getFromPost('departmentId');
-		$resourceId = $this->getFromPost('resourceId');
-		
-		$resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
-		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType(1,$departmentId);
-		
-		//check if resourceInstance already isset
-		if ($resourceId) {
-			$resouceInstance = new VWM\Apps\Process\ResourceInstance($this->db);
-			$resouceInstance->setId($resourceId);
-			$resouceInstance->load();
-
-			//get Resource setting
-			$this->smarty->assign('description', $resouceInstance->getDescription());
-			$this->smarty->assign('quantity', $resouceInstance->getQty());
-			$this->smarty->assign('rate', $resouceInstance->getRate());
-
-			$this->smarty->assign('resouceInstance', $resouceInstance);
-		}
-		$this->smarty->assign('unitTypeList', $unitTypeList);
-		$this->smarty->assign('resourceType', $resourceTypes);
-		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
-	}*/
-	
 }
 
 ?>

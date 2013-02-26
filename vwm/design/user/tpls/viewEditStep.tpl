@@ -67,7 +67,12 @@
 				<!--Resources-->
 				<div style="margin: 10px 0 0 25px; width: 100%">
 					Resources
-						
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div style="margin: 10px 0 0 25px; width: 100%">
 					<input type='button' class='button' value="Add Resource" onclick="stepSettings.checkNewDialog(0, 'add'); stepSettings.stepAddEditResource.openDialog();">
 					<input type='button' class='button' value="Delete Resources" onclick = 'deleteResources()'>
 				</div>
@@ -158,7 +163,8 @@
 		</tr>
 		<tr>
 			<td>
-				<div style="margin: 10px 0 0 25px; width: 100%">
+				<div style="margin: 10px 0 0 25px; ">
+					<input type='button' class='button' value='<< Back' onclick="history.back()">
 					<input type='button' class='button' value='save' onclick="saveStep()">
 				</div>
 			</td>

@@ -179,7 +179,7 @@
 
 		</tr>
 		<tr>
-			<td style="width: 100px">
+			<td style="width: 800px">
 				<div  style="margin: 10px 0 0 25px; width: 100%">
 					<input class='button' type="button" value="Add New Mix" onclick="document.location.href=$('#urlMixAdd').val()">
 					<input class='button' type="button" value="Add Step" onclick="stepManager.addStepWithOutMix()">	

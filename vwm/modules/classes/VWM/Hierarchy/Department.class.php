@@ -67,7 +67,7 @@ class Department extends Model
 		if (isset($departmentId)) {
 			$this->setDepartmentId($departmentId);
 			if (!$this->load()) {
-				throw new Exception('404');
+				throw new \Exception('404');
 			}
 		}
 	}

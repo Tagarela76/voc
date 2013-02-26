@@ -224,6 +224,11 @@ function StepSettings() {
 			this.resourceId=id;
 		}
 		this.action = action;
+		if(action=='add'){
+			$("#resourceDetailsContainer").dialog('option', 'title', 'Add new resource'); 
+		}else{
+			$("#resourceDetailsContainer").dialog('option', 'title', 'Edit new resource');
+		}
 	}
 }
 
@@ -294,6 +299,7 @@ function saveStep(){
 		for(var i = 0; i<countResources; i++){
 			resourcesAttributes[i] = resources[i].toJson();
 		}
+		
 		resourcesAttributes = JSON.stringify(resourcesAttributes);
 		$.ajax({
 			url: "modules/ajax/saveNewStep.php",
@@ -324,7 +330,6 @@ $(function() {
 	//	ini global object
 	stepSettings = new StepSettings();
 	stepSettings.stepAddEditResource.iniDialog();
-//stepSettings.stepEditResource.iniDialog();
 });
 
 
