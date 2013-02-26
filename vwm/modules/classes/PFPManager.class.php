@@ -584,8 +584,6 @@ class PFPManager {
 		//Init PFPProducts for each PFP...
 		$pfpArray = $this->db->fetch_array(0);
 
-		//var_dump($pfpArray);
-
 		$PFPProductsArray = array();
 
 		$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray['id'];
@@ -614,10 +612,9 @@ class PFPManager {
 		$pfp->setDescription($pfpArray['description']);
 		$pfp->products = $PFPProductsArray;*/
 		
-		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 		$pfp->setId($id);
 		$pfp->load();
-		//$pfp->setDescription($pfpArray['description']);
 		$pfp->setProducts($PFPProductsArray);
 
 		return $pfp;

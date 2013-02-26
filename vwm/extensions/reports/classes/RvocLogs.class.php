@@ -371,7 +371,7 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 						$isProprietary = 0;
 						$pfpId = $mix->getPfpId();
 						if(!is_null($pfpId)){
-							$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+							$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp();
 							$pfp->setId($pfpId);
 							$pfp->load();
 							$isProprietary = $pfp->getIsProprietary();
