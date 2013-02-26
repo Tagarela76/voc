@@ -250,8 +250,7 @@ class PfpManager extends Manager
 				$PFPProductsArray[] = $prodtmp;
 			}
 
-			//var_dump($PFPProductsArray);
-			$pfp = new Pfp($db);
+			$pfp = new Pfp();
 			$pfp->setID($pfpArray[$i]['id']);
 			$pfp->setDescription($pfpArray[$i]['description']);
 			$pfp->setIsProprietary($pfpArray[$i]['is_proprietary']);

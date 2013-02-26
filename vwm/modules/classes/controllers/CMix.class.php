@@ -97,7 +97,7 @@ class CMix extends Controller {
 		$pfp_id = $mixOptimized->getPfpId();
 
 		if(isset($pfp_id)){
-			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 			$pfp->setId($pfp_id);
 			$pfp->load();
 			$isProprietary = $pfp->getIsProprietary();
@@ -1586,7 +1586,7 @@ class CMix extends Controller {
 			$manager = new PFPManager($this->db);
 			$pfp = $manager->getPFP($optMix->getPfpId());
 		}else{
-			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 		}
 
 		$this->smarty->assign('pfp', $pfp);
