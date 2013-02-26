@@ -139,7 +139,7 @@ function StepAddEditResource() {
 					html +=	'</td>';
 			
 					html +=	'<td class="border_users_l border_users_b border_users_r">';
-					html +=   '<div style="font-size: 15px" id="resource_description_'+stepSettings.resourceId+'">'
+					html +=   '<div style="width: 150px" id="resource_description_'+stepSettings.resourceId+'">'
 					html += $('#resourceDescription').val()+'</div>';
 					html +=	'</td>';
 			
