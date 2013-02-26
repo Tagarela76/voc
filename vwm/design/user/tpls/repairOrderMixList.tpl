@@ -3,7 +3,7 @@
  <div style="padding:7px;">
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr class="users_top_yellowgreen users_u_top_size">
-            <td class="users_u_top_yellowgreen" width="5%" height="30">
+			<td class="users_u_top_yellowgreen" width="5%" height="30">
                 <div style='width:10%;  color:white;'>
                     Mix ID
                 </div>
@@ -53,17 +53,22 @@
                         Paint costs
                     </div>
             </td>
-			<td class="users_u_top_r_yellowgreen" width="9%">
+			<td class="border_users_b" width="9%">
                     <div style='width:20%;  color:white;'>
                         Total cost
                     </div>
+            </td>
+			<td class="users_u_top_r_yellowgreen" width="5%" height="30">
+                <div style='width:10%;  color:white;'>
+					edit
+                </div>
             </td>
         </tr>
     {*BEGIN LIST*}
     {foreach from=$mixList item=mix}
 	{assign var="index" value=$mix->mix_id}
     <tr class="hov_company"	height="10px">
-        <td class="border_users_l border_users_b border_users_r" >
+		<td class="border_users_l border_users_b border_users_r" >
             <div>
 				{if !$mixesCosts[$index].stepEmpty}
 				 {$mix->mix_id|escape} &nbsp;
@@ -129,6 +134,14 @@
                <b>${$mixesCosts[$index].totalCost}&nbsp;</b>
             </div>
         </td>
+		 <td class="border_users_l border_users_b border_users_r" >
+            <div align='center'>
+				<a onclick="stepManager.editStep({$mixesCosts[$index].stepId})">
+					edit
+				</a>
+				<!--<input type='checkbox' id ='{$mixesCosts[$index].stepId}' >-->
+            </div>
+        </td>
     </tr>
     {/foreach}
 	<!--<tr class="hov_company"	height="10px">
@@ -150,13 +163,13 @@
         </td>
     </tr>-->
     <tr>
-        <td colspan="11" class="border_users_l border_users_r">
+        <td colspan="12" class="border_users_l border_users_r">
             &nbsp;
         </td>
     </tr>
     {*END LIST*}
     <tr>
-        <td class="users_u_bottom" colspan="10" height="15">
+        <td class="users_u_bottom" colspan="11" height="15">
         </td>
         <td class="users_u_bottom_r">
         </td>

@@ -27,6 +27,11 @@ class UnitClass extends Model {
         return array();
     }
 
+	public function __construct(\db $db) {
+		$this->db = $db;
+	}
+
+
 	public function getId() {
 		return $this->id;
 	}

@@ -10,6 +10,7 @@ use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\Process\ProcessInstance;
 use VWM\Apps\Process\ProcessTemplate;
 use VWM\Apps\Process\StepInstance;
+use VWM\Apps\Process\StepTemplate;
 
 
 
@@ -21,16 +22,14 @@ class CMix extends Controller {
 		$this->parent_category = 'department';
 	}
 
-	protected function actionConfirmDelete() {
-		
+	protected function actionConfirmDelete()
+	{
 		foreach ($this->itemID as $Id) {
 			$mix = new MixOptimized($this->db, $Id);
 			//delete Process steps for mix
-			$stepId = $mix->getStepId();
-			if($stepId){
-				$stepInstance = new StepInstance($this->db, $stepId);
+			$stepInstance = $mix->getStepInstance();
+			if ($stepInstance) {
 				$stepInstance->delete();
-				
 			}
 			$mix->delete();
 		}
@@ -1228,7 +1227,7 @@ class CMix extends Controller {
 			$processInstance = $workOrder->getProcessInstance();
 
 			//create current step
-			$stepTemplate = new \VWM\Apps\Process\StepTemplate($this->db, $mix->getStepId());
+			$stepTemplate = new StepTemplate($this->db, $mix->getStepId());
 			$resourceTemplates = $stepTemplate->getResources();
 			$stepInstance = $stepTemplate->createInstanceStep($processInstance->getId());
 			$stepInstance->save();
@@ -1961,10 +1960,10 @@ class CMix extends Controller {
 			$data->description = $workOrder->getNumber();
 		}
 
-		$process = $workOrder->getProcess();
+		$process = $workOrder->getProcessTemplate();
 
 		if (!is_null($process->getId()) && $request['stepID']!=0) {
-			$step = new \VWM\Apps\Process\StepTemplate($this->db, $request['stepID']);
+			$step = new StepTemplate($this->db, $request['stepID']);
 			if($step) {
 				$data->spent_time = $step->getTotalSpentTime();
 				$resources = $step->getResources();

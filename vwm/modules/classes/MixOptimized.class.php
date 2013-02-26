@@ -5,6 +5,7 @@
  */
 
 use VWM\Framework\Model as Model;
+use VWM\Apps\Process\StepInstance;
 
 class MixOptimized extends Model {
 
@@ -97,6 +98,12 @@ class MixOptimized extends Model {
 	 * @var array
 	 */
 	private $mixCosts;
+	
+	/**
+	 *
+	 * @var VWM\Apps\Process\StepInstance 
+	 */
+	protected $stepInstance = null;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
@@ -323,7 +330,27 @@ class MixOptimized extends Model {
 		$this->pfp_id = $pfp_id;
 	}
 
-					/**
+	public function getStepInstance()
+	{
+		if(!is_null($this->stepInstance)){
+			return $this->stepInstance;
+		}
+		if($this->getStepId()){
+			$stepInstance = new StepInstance($this->db, $this->getStepId());
+			$this->setStepInstance($stepInstance);
+			return $stepInstance;
+		}else{
+			return false;
+		}
+		
+	}
+
+	public function setStepInstance($stepInstance)
+	{
+		$this->stepInstance = $stepInstance;
+	}
+
+		/**
 	 * Add or Edit this mix
 	 *
 	 */

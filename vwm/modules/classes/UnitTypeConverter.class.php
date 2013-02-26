@@ -499,7 +499,7 @@ class UnitTypeConverter {
 				$time = $defaultTime/1440;
 				break;
 			default :
-				throw new Exception('convertTimeFromTo error: can not convert '.$from.' to minutes');
+				throw new Exception('convertTimeFromTo error: can not convert '.$from.' to mins');
 				break;
 		}
 		return $time;
