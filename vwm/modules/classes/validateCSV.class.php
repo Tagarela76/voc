@@ -375,7 +375,6 @@ class validateCSV {
 						$data[35] = '0';
 					}
 
-
 					// unit type clear
 					$data[39] = trim($data[39]);
 					// prepare unit type
@@ -424,7 +423,6 @@ class validateCSV {
 					}
 					$unitType = $unitTypeClass->getUnittypeByName($unitType);
 					$unitType = $unitType['unittype_id']; // get unit type id
-
 
 					//	product processing
 					$product = array (
