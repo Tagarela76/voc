@@ -1,18 +1,18 @@
 {literal}
 	<script type="text/javascript">
 	//step initialization
-	
-	var departmentId = '{/literal}{$departmentId}{literal}';
-	var stepId = {/literal}{$stepInstance->getId()}{literal};
-	var repaitOrderId = '{/literal}{$repaitOrderId}{literal}';
+
+	var departmentId = '{/literal}{$departmentId|escape}{literal}';
+	var stepId = {/literal}{$stepInstance->getId()|escape}{literal};
+	var repaitOrderId = '{/literal}{$repaitOrderId|escape}{literal}';
 	//temporary resource id. resources get id from 1 to resource count
 	var templateResourceId = 0;
-		
+
 	var step = new Step();
 	step.setId(stepId);
-	step.setDescription({/literal}"{$stepInstance->getDescription()}"{literal});
+	step.setDescription({/literal}"{$stepInstance->getDescription()|escape}"{literal});
 
-	
+
 	{/literal}
 	{if $stepInstance->getResources()!=''}
 		{foreach from=$stepInstance->getResources() item=resource}
@@ -20,15 +20,15 @@
 		templateResourceId++;
 		var resource = new Resource();
 			resource.setId(templateResourceId);
-			resource.setDescription({/literal}'{$resource->getDescription()}'{literal});
-			resource.setQty({/literal}{$resource->getQty()}{literal});
-			resource.setRate({/literal}{$resource->getRate()}{literal});
-			resource.setUnittypeId({/literal}{$resource->getUnittypeId()}{literal});
-			resource.setResourceUnittypeId({/literal}{$resource->getResourceTypeId()}{literal});
-			resource.setStepId({/literal}{$stepInstance->getId()}{literal});
+			resource.setDescription({/literal}'{$resource->getDescription()|escape}'{literal});
+			resource.setQty({/literal}{$resource->getQty()|escape}{literal});
+			resource.setRate({/literal}{$resource->getRate()|escape}{literal});
+			resource.setUnittypeId({/literal}{$resource->getUnittypeId()|escape}{literal});
+			resource.setResourceUnittypeId({/literal}{$resource->getResourceTypeId()|escape}{literal});
+			resource.setStepId({/literal}{$stepInstance->getId()|escape}{literal});
 			step.addResource(resource);
 	{/literal}{/foreach}{/if}{literal}
-		
+
 	</script>
 {/literal}
 
@@ -50,7 +50,7 @@
 							Step description
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
-							<input type="text" id="stepDescription" value='{$stepInstance->getDescription()}' onchange="stepPage.stepEdit.changeStepDescription()" style="width: 400px">
+							<input type="text" id="stepDescription" value='{$stepInstance->getDescription()|escape}' onchange="stepPage.stepEdit.changeStepDescription()" style="width: 400px">
 						</td>
 					</tr>
 					<tr>
@@ -107,12 +107,12 @@
 								</div>
 							</td>
 							<td class="border_users_b" width="9%">
-								<div style='width:20%;  color:white;'>
+								<div style='color:white;'>
 									Total cost
 								</div>
 							</td>
-							<td class="users_u_top_r_yellowgreen" width="9%">
-								<div style='width:20%;  color:white;'>
+							<td class="border_users_b users_u_top_r_yellowgreen" width="9%">
+								<div style='color:white;'>
 									Edit Resource
 								</div>
 							</td>
@@ -132,25 +132,25 @@
 									</td>
 									<td class="border_users_l border_users_b" >
 										<div style='width: 150px' id='resource_description_{$count}'>
-											{$resource->getDescription()}
+											{$resource->getDescription()|escape}
 										</div>
 									</td>
 									<td class="border_users_l border_users_b" id="material_cost_{$count}">
 										<div align='center'>
-											${$resource->getMaterialCost()}
+											${$resource->getMaterialCost()|escape}
 										</div>
 									</td>
 									<td class="border_users_l border_users_b" id = "labor_cost_{$count}">
 										<div align='center'>
-											${$resource->getLaborCost()}
+											${$resource->getLaborCost()|escape}
 										</div>
 									</td>
 									<td class="border_users_l border_users_b" id = "total_cost_{$count}">
 										<div align='center'>
-											${$resource->getTotalCost()}
+											${$resource->getTotalCost()|escape}
 										</div>
 									</td>
-									<td class="border_users_b border_users_r">
+									<td class="border_users_l border_users_b border_users_r">
 										<div align='center' id = '{$count}'>
 											<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
 												edit
@@ -160,16 +160,11 @@
 								</tr>
 							{/foreach}
 						{/if}
-						
+                        <tr>
+                            <td class="users_u_bottom" colspan="5"> </td>
+                            <td class="users_u_bottom_r"> </td>
+                        </tr>
 					</table>
-						<table class="users" align="left" cellpadding="0" cellspacing="0" style='width: 100%'>
-							<tr>
-								<td class="users_u_bottom" colspan="5">
-								</td>
-								<td class="users_u_bottom_r">
-								</td>
-							</tr>
-						</table>
 				</div>
 			</td>
 		</tr>
@@ -177,13 +172,13 @@
 			<td>
 				<div style="margin: 10px 0 0 25px; ">
 					<input type='button' class='button' value='<< Back' onclick="history.back()">
-					<input type='button' class='button' value='save' onclick="stepPage.stepEdit.saveStep()">
+					<input type='button' class='button' value='Save' onclick="stepPage.stepEdit.saveStep()">
 				</div>
 			</td>
 		</tr>
 	</table>
 </div>
 <div id="resourceDetailsContainer" title="Add new resource" style="display:none;">Loading ...</div>
-<input type='hidden' id='currentStep' value='{$stepInstance}'>
-<input type='hidden' id='departmentId' value='{$departmentId}'>
+<input type='hidden' id='currentStep' value='{$stepInstance|escape}'>
+<input type='hidden' id='departmentId' value='{$departmentId|escape}'>
 
