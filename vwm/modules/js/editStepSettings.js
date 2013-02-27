@@ -42,7 +42,7 @@ function StepAddEditResource() {
 
 	this.loadContent = function() {
 		if(stepPage.action=='edit'){ 
-			var resource = stepPage.step.getResourceById(stepPage.resourceId);
+			var resource = stepPage.stepEdit.step.getResourceById(stepPage.resourceId);
 			var resourceUnitTypeId = resource.getResourceUnittypeId();
 		}else{
 			resourceUnitTypeId = 1;
@@ -134,26 +134,26 @@ function StepAddEditResource() {
 					var html = ''
 					html += '<tr class="hov_company" height="10px" id="resource_detail_'+stepPage.resourceId+'">';
 			
-					html +=	'<td class="border_users_l border_users_b border_users_r">';
+					html +=	'<td class="border_users_l border_users_b">';
 					html +=   '<div align="center"><input type="checkbox" value="'+stepPage.resourceId+'"></div>';
 					html +=	'</td>';
 			
-					html +=	'<td class="border_users_l border_users_b border_users_r">';
+					html +=	'<td class="border_users_l border_users_b">';
 					html +=   '<div style="width: 150px" id="resource_description_'+stepPage.resourceId+'">'
 					html += $('#resourceDescription').val()+'</div>';
 					html +=	'</td>';
 			
-					html +=	'<td class="border_users_l border_users_b border_users_r">';
+					html +=	'<td class="border_users_l border_users_b">';
 					html +=   '<div align="center" id="material_cost_'+stepPage.resourceId+'">';
 					html += '$'+resourceCost.materialCost+'</div>';
 					html +=	'</td>';
 			
-					html +=	'<td class="border_users_l border_users_b border_users_r" id = "labor_cost_'+stepPage.resourceId+'">';
+					html +=	'<td class="border_users_l border_users_b" id = "labor_cost_'+stepPage.resourceId+'">';
 					html +=   '<div align="center">';
 					html += '$'+resourceCost.laborCost+'</div>';
 					html +=	'</td>';
 			
-					html +=	'<td class="border_users_l border_users_b border_users_r" id = "total_cost_'+stepPage.resourceId+'">';
+					html +=	'<td class="border_users_l border_users_b" id = "total_cost_'+stepPage.resourceId+'">';
 					html +=   '<div align="center">';
 					html += '$'+resourceCost.totalCost+'</div>';
 					html +=	'</td>';
@@ -168,7 +168,7 @@ function StepAddEditResource() {
 			
 					html+='</tr>'
 					$('#stepResourcesDetails').append(html);
-					stepPage.step.addResource(resource);
+					stepPage.stepEdit.step.addResource(resource);
 				}
 			});
 			
@@ -196,7 +196,7 @@ function StepAddEditResource() {
 			dataType: "text",
 			success: function (response) {
 				//delete Resource 
-				stepPage.step.deleteResource(stepPage.resourceId);
+				stepPage.stepEdit.step.deleteResource(stepPage.resourceId);
 				var resourceCosts = eval("(" + response + ')');
 				//set new information
 				$('#resource_description_'+stepPage.resourceId).html(resource.getDescription());
@@ -205,7 +205,7 @@ function StepAddEditResource() {
 				$('#total_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.totalCost+'</div>');
 				//create new row for display 
 				//add new Resource
-				stepPage.step.addResource(resource);
+				stepPage.stepEdit.step.addResource(resource);
 			}
 		});
 	}
@@ -270,7 +270,6 @@ function StepAddEditResource() {
 function StepSettings() {
 	this.stepAddEditResource = new StepAddEditResource();
 	this.stepEdit = new StepEdit();
-	this.step = step;
 	
 	this.departmentId = departmentId;
 	this.resourceId = false;
@@ -280,10 +279,10 @@ function StepSettings() {
 
 //class for edit step
 function StepEdit(){
-	
+	this.step = step;
 	//function for changing stepDescription
 	this.changeStepDescription = function(){
-		step.setDescription($('#stepDescription').val());
+		this.step.setDescription($('#stepDescription').val());
 	}
 	
 	//function for saving steps and step resources
@@ -291,9 +290,9 @@ function StepEdit(){
 		if($('#stepDescription').val()==''){
 			alert('Enter step description please');
 		}else{
-			var stepAttributes = step.toJson();
+			var stepAttributes = this.step.toJson();
 			var resourcesAttributes = new Array();
-			var resources = step.getResources();
+			var resources = this.step.getResources();
 			var countResources = resources.length;
 		
 			for(var i = 0; i<countResources; i++){
@@ -331,7 +330,7 @@ function StepEdit(){
 		});
 		var count = rowsToDelete.length;
 		for(var i = 0; i<count; i++){
-			step.deleteResource(rowsToDelete[i]);
+			this.step.deleteResource(rowsToDelete[i]);
 			$('#resource_detail_'+rowsToDelete[i]).remove();
 		}
 	}

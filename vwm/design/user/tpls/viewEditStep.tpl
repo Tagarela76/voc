@@ -10,9 +10,13 @@
 		
 	var step = new Step();
 	step.setId(stepId);
-	step.setDescription({/literal}'{$stepInstance->getDescription()}'{literal});
+	step.setDescription({/literal}"{$stepInstance->getDescription()}"{literal});
 
-	{/literal}{foreach from=$stepInstance->getResources() item=resource}{literal}
+	
+	{/literal}
+	{if $stepInstance->getResources()!=''}
+		{foreach from=$stepInstance->getResources() item=resource}
+			{literal}
 		templateResourceId++;
 		var resource = new Resource();
 			resource.setId(templateResourceId);
@@ -23,7 +27,7 @@
 			resource.setResourceUnittypeId({/literal}{$resource->getResourceTypeId()}{literal});
 			resource.setStepId({/literal}{$stepInstance->getId()}{literal});
 			step.addResource(resource);
-	{/literal}{/foreach}{literal}
+	{/literal}{/foreach}{/if}{literal}
 		
 	</script>
 {/literal}
@@ -56,7 +60,7 @@
 						</td>
 					</tr>
 				</table>
-						
+
 			</td>
 		</tr>
 
@@ -116,46 +120,56 @@
 						{*Use counter to set template id for resource from 1 to resource count*}
 						{counter assign=count start=0 skip=1}
 						{*get step Resources*}
-						{foreach from=$stepInstance->getResources() item=resource}
-							{*increase count*}
-							{counter}
-							<tr class="hov_company"	height="10px" id="resource_detail_{$count}">
-								<td class="border_users_l border_users_b border_users_r" >
-									<div align='center'>
-										<input type="checkbox" value='{$count}' id = 'deleteCheckBox'>
-									</div>
+						{if $stepInstance->getResources()!=''}
+							{foreach from=$stepInstance->getResources() item=resource}
+								{*increase count*}
+								{counter}
+								<tr class="hov_company"	height="10px" id="resource_detail_{$count}">
+									<td class="border_users_l border_users_b" >
+										<div align='center'>
+											<input type="checkbox" value='{$count}' id = 'deleteCheckBox'>
+										</div>
+									</td>
+									<td class="border_users_l border_users_b" >
+										<div style='width: 150px' id='resource_description_{$count}'>
+											{$resource->getDescription()}
+										</div>
+									</td>
+									<td class="border_users_l border_users_b" id="material_cost_{$count}">
+										<div align='center'>
+											${$resource->getMaterialCost()}
+										</div>
+									</td>
+									<td class="border_users_l border_users_b" id = "labor_cost_{$count}">
+										<div align='center'>
+											${$resource->getLaborCost()}
+										</div>
+									</td>
+									<td class="border_users_l border_users_b" id = "total_cost_{$count}">
+										<div align='center'>
+											${$resource->getTotalCost()}
+										</div>
+									</td>
+									<td class="border_users_b border_users_r">
+										<div align='center' id = '{$count}'>
+											<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
+												edit
+											</a>
+										</div>
+									</td>
+								</tr>
+							{/foreach}
+						{/if}
+						
+					</table>
+						<table class="users" align="left" cellpadding="0" cellspacing="0" style='width: 100%'>
+							<tr>
+								<td class="users_u_bottom" colspan="5">
 								</td>
-								<td class="border_users_l border_users_b border_users_r" >
-									<div style='width: 150px' id='resource_description_{$count}'>
-										{$resource->getDescription()}
-									</div>
-								</td>
-								<td class="border_users_l border_users_b border_users_r" id="material_cost_{$count}">
-									<div align='center'>
-										${$resource->getMaterialCost()}
-									</div>
-								</td>
-								<td class="border_users_l border_users_b border_users_r" id = "labor_cost_{$count}">
-									<div align='center'>
-										${$resource->getLaborCost()}
-									</div>
-								</td>
-								<td class="border_users_l border_users_b border_users_r" id = "total_cost_{$count}">
-									<div align='center'>
-										${$resource->getTotalCost()}
-									</div>
-								</td>
-								<td class="border_users_b border_users_r">
-									<div align='center' id = '{$count}'>
-										<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
-											edit
-										</a>
-									</div>
+								<td class="users_u_bottom_r">
 								</td>
 							</tr>
-						{/foreach}
-					</table>
-
+						</table>
 				</div>
 			</td>
 		</tr>
