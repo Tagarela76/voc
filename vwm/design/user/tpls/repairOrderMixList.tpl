@@ -136,10 +136,13 @@
         </td>
 		 <td class="border_users_l border_users_b border_users_r" >
             <div align='center'>
+                {if $mixesCosts[$index].stepId}
 				<a onclick="stepManager.editStep({$mixesCosts[$index].stepId})">
 					edit
 				</a>
-				<!--<input type='checkbox' id ='{$mixesCosts[$index].stepId}' >-->
+                {else}
+                    --
+				{/if}
             </div>
         </td>
     </tr>
@@ -176,4 +179,4 @@
     </tr>
 </table>
 </div>
-{/if} 
+{/if}
