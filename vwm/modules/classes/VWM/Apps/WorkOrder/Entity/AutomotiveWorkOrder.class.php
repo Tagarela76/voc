@@ -3,13 +3,23 @@
 namespace VWM\Apps\WorkOrder\Entity;
 
 class AutomotiveWorkOrder extends WorkOrder {
-    
+
    /**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	protected $vin;
-    
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
     public function getVin() {
         return $this->vin;
     }
@@ -26,15 +36,15 @@ class AutomotiveWorkOrder extends WorkOrder {
 			$this->_load();
 		}
 	}
-    
-    private function _load() { 
+
+    private function _load() {
 
 		if (is_null($this->getId())) {
 			return false;
 		}
 		$sql = "SELECT * ".
 				"FROM ".TB_WORK_ORDER." ".
-				"WHERE id={$this->db->sqltext($this->getId())} " . 
+				"WHERE id={$this->db->sqltext($this->getId())} " .
 				"LIMIT 1";
 		$this->db->query($sql);
 
@@ -49,8 +59,8 @@ class AutomotiveWorkOrder extends WorkOrder {
 			}
 		}
 	}
-    
-    public function save() {		
+
+    public function save() {
 
 		if($this->getId() ) {
 			return $this->update();
@@ -58,7 +68,7 @@ class AutomotiveWorkOrder extends WorkOrder {
 			return $this->insert();
 		}
 	}
-    
+
     /**
      * Insert WO
      * @return int
@@ -84,16 +94,16 @@ class AutomotiveWorkOrder extends WorkOrder {
 
 	/**
 	 * Update WO
-	 * @return int 
+	 * @return int
 	 */
 	protected function update() {
 
 		$query = "UPDATE " . TB_WORK_ORDER . "
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
-						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',	
+						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',
 						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
-						status='" . $this->db->sqltext($this->getStatus()) . "', 	
+						status='" . $this->db->sqltext($this->getStatus()) . "',
 						vin='" . $this->db->sqltext($this->getVin()) . "'
 					WHERE id= " . $this->db->sqltext($this->getId());
 		$this->db->query($query);

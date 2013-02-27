@@ -44,7 +44,7 @@ class CRepairOrder extends Controller
 
 		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 
-		// get child mixes		  
+		// get child mixes
 		$mixTotalPrice = 0;
 		$mixTotalSpentTime = 0;
 		$mixes = $repairOrder->getMixes();
@@ -89,15 +89,15 @@ class CRepairOrder extends Controller
 		$wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
 		$processId = $wo->getProcessTemplateId();
 		$isHaveProcess = false;
-		
+
 		$materialCost = 0;
 		$laborCost = 0;
 		$totalCost = 0;
 		$spentTime = 0;
-		
-		
+
+
 		if (!is_null($processId)) {
-			//get default steps for work order by process Template Id	
+			//get default steps for work order by process Template Id
 			$availableSteps = array();
 			$isHaveProcess = true;
 			$processTemplate = new ProcessTemplate($this->db, $processId);
@@ -134,7 +134,8 @@ class CRepairOrder extends Controller
 					"laborCost" => 0,
 					"totalCost" => 0,
 					"stepNumber" => '--',
-					"stepEmpty" => false
+					"stepEmpty" => false,
+					"stepId" => 0
 				);
 
 				if (!is_null($mix->getStepId())) {
@@ -159,17 +160,19 @@ class CRepairOrder extends Controller
 					$mixCosts['stepNumber'] = $step->getNumber();
 				}
 				$mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
+				$mixCosts['stepId'] = $mix->getStepId();
 				$mixesCosts[$mix->mix_id] = $mixCosts;
 			}//die();
-
-		
-		
 
 		//get url for adding mix to Repair Order button
 		//get last mix
 		$urlMixAdd = "?action=addItem&category=mix" .
 				"&repairOrderId=" . $repairOrder->getId() .
 				"&departmentID=" . $departmentId;
+
+		$urlMixEdit = "?action=showEditStep&category=repairOrder" .
+				"&repairOrderId=" . $repairOrder->getId() .
+				"&departmentId=" . $departmentId;
 
 		if ($mixes && !$mix->hasChild) {
 			$urlMixAdd .= "&parentMixID=" . $mix->mix_id;
@@ -179,8 +182,8 @@ class CRepairOrder extends Controller
 		}
 		// set stepID = 0 if mix do not conect with step
 		$urlMixAdd .="&stepID=0";
-		
-		
+
+
 		$mixList = array();
 		$stepsCount = count($steps);
 		//array of not empty mixs
@@ -198,7 +201,7 @@ class CRepairOrder extends Controller
 		}
 
 		//get empty steps
-		
+
 		$emptyMixSteps = array();
 		foreach ($stepInstances as $stepInstance) {
 			if (!in_array($stepInstance->getId(), $mixStepsIds)) {
@@ -207,14 +210,15 @@ class CRepairOrder extends Controller
 		}
 
 		// create empty steps for display
-		
+
 		foreach ($emptyMixSteps as $emptyMixStep) {
 			$mixCosts = array(
 				"materialCost" => 0,
 				"laborCost" => 0,
 				"totalCost" => 0,
 				"stepNumber" => '--',
-				"stepEmpty" => true
+				"stepEmpty" => true,
+				"stepId" => 0
 			);
 			$mix = new MixOptimized($this->db);
 			$mix->mix_id = $emptyMixStep->getId();
@@ -228,7 +232,7 @@ class CRepairOrder extends Controller
 
 			//get labor, material and total cost
 			$emptyStepResources = $emptyMixStep->getResources();
-			
+
 			foreach ($emptyStepResources as $emptyStepResource) {
 				$mixCosts["materialCost"] += $emptyStepResource->getMaterialCost();
 				$mixCosts["laborCost"] += $emptyStepResource->getLaborCost();
@@ -236,18 +240,19 @@ class CRepairOrder extends Controller
 			$mixCosts["totalCost"] = $mixCosts["materialCost"] + $mixCosts["laborCost"];
 			$mixList[$emptyMixStep->getNumber()] = $mix;
 			$mixCosts['stepNumber'] = $emptyMixStep->getNumber();
+			$mixCosts['stepId'] = $emptyMixStep->getId();
 			$mixesCosts[$mix->mix_id] = $mixCosts;
 			//get prices for work order
 			$mixTotalSpentTime+=$mix->spent_time;
 			$materialCost+=$mixCosts["materialCost"];
 			$laborCost+=$mixCosts["laborCost"];
 		}
-		
+
 		$totalCost += $materialCost + $laborCost + $mixTotalPrice;
 		ksort($mixList);
 
 		$this->smarty->assign('urlMixAdd', $urlMixAdd);
-
+		$this->smarty->assign('urlMixEdit', $urlMixEdit);
 		$jsSources = array(
 			'modules/js/viewRepairOrder.js');
 		$this->smarty->assign('jsSources', $jsSources);
@@ -260,7 +265,7 @@ class CRepairOrder extends Controller
 		$this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
 		$this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
 		$this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
-		
+
 		$this->smarty->assign('mixList', $mixList);
 
 		$this->smarty->assign('isHaveProcess', $isHaveProcess);
@@ -488,6 +493,7 @@ class CRepairOrder extends Controller
 		$companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
 		$repairOrderLabel = $companyNew->getIndustryType()->getLabelManager()
 						->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+
 		$this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
 		//	set js scripts
@@ -737,7 +743,7 @@ class CRepairOrder extends Controller
 	{
 		$repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
 		$mixList = array();
-		// get child mixes 
+		// get child mixes
 		$mixTotalPrice = 0;
 		$mixes = $repairOrder->getMixes();
 		foreach ($mixes as $mix) {
@@ -808,9 +814,9 @@ class CRepairOrder extends Controller
 		echo $response;
 	}
 
-	
+
 	/**
-	 *method for adding step with out mix colling by ajax  
+	 *method for adding step with out mix colling by ajax
 	 */
 	protected function actionAddStepWithOutMix()
 	{
@@ -822,10 +828,10 @@ class CRepairOrder extends Controller
 		$stepTemplate = new StepTemplate($this->db, $stepId);
 		$stepTemplateResources = $stepTemplate->getResources();
 		$stepInstance = $stepTemplate->createInstanceStep($processInstanceId);
-		
+
 		$stepInstanceId = $stepInstance->save();
 		$stepInstance->setId($stepInstanceId);
-		
+
 		if ($stepInstance) {
 			foreach ($stepTemplateResources as $stepTemplateResource) {
 				$stepInstanceResource = $stepTemplateResource->createInstanceResource($stepInstance->getId());
@@ -836,6 +842,150 @@ class CRepairOrder extends Controller
 			$responce = 0;
 		}
 		echo $responce;
+	}
+
+	/**
+	 *function edit step dispay
+	 */
+	protected function actionShowEditStep(){
+
+		$params = array("bookmark" => "repairOrder");
+
+		if ($this->getFromRequest('departmentId')) {
+			$category = 'department';
+			$categoryId = $this->getFromRequest('departmentId');
+			$department = new VWM\Hierarchy\Department($this->db, $categoryId);
+			$facility = $department->getFacility();
+		} elseif ($this->getFromRequest('facilityID')) {
+			$category = 'facility';
+			$categoryId = $this->getFromRequest('facilityID');
+			$facility = new VWM\Hierarchy\Facility($this->db, $categoryId);
+		} else {
+			throw new Exception('404');
+		}
+		$this->setNavigationUpNew($category, $categoryId);
+		$this->setListCategoriesLeftNew($category, $categoryId, $params);
+		$this->setPermissionsNew('viewRepairOrder');
+
+		$repaitOrderId = $this->getFromRequest('repairOrderId');
+		$stepId = $this->getFromRequest('stepId');
+		$departmentId = $this->getFromRequest('departmentId');
+
+		$category = "department";
+		$categoryId = $departmentId;
+		//get step Template
+		$stepInstance = new StepInstance($this->db);
+		$stepInstance->setId($stepId);
+		$stepInstance->load();
+
+		$jsSources = array(
+			"modules/js/stepObject.js",
+			"modules/js/editStepSettings.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.core.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.widget.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.mouse.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.draggable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.position.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.resizable.js",
+			"modules/js/jquery-ui-1.8.2.custom/development-bundle/ui/jquery.ui.dialog.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js",
+			"modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/json2.js",
+		);
+
+		$cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
+
+		$request['id'] = $categoryId;
+		$request['category'] = $category;
+
+		$this->smarty->assign('request', $request);
+		$this->smarty->assign('cssSources', $cssSources);
+		$this->smarty->assign('jsSources', $jsSources);
+
+		$this->smarty->assign('departmentId', $departmentId);
+		$this->smarty->assign('stepInstance', $stepInstance);
+		$this->smarty->assign('repaitOrderId', $repaitOrderId);
+
+		$this->smarty->assign('tpl','tpls/viewEditStep.tpl');
+		$this->smarty->display("tpls:index.tpl");
+	}
+
+	protected function actionLoadResourceDetails(){
+		$stepTemplate = new StepTemplate($this->db);
+		$departmentId = $this->getFromPost('departmentId');
+		$resourceUnitTypeId = $this->getFromPost('resourceUnitTypeId');
+
+
+		$resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
+		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType($resourceUnitTypeId,$departmentId);
+
+		$this->smarty->assign('unitTypeList', $unitTypeList);
+		$this->smarty->assign('resourceType', $resourceTypes);
+		echo $this->smarty->fetch('tpls/viewEditResourceDetails.tpl');
+	}
+
+	//ajax function for getting resource cost
+	protected function actionGetResourceCostsInformation()
+	{
+		$qty = $this->getFromPost('resourceQty');
+		$rate = $this->getFromPost('resourceRate');
+		$resourceUnittypeId = $this->getFromPost('resourceUnittypeId');
+		$resourceResourceUnittypeId = $this->getFromPost('resourceResourceUnittypeId');
+
+		$resoutceInstance = new VWM\Apps\Process\ResourceInstance($this->db);
+
+		$resoutceInstance->setQty($qty);
+		$resoutceInstance->setRate($rate);
+		$resoutceInstance->setUnittypeId($resourceUnittypeId);
+		$resoutceInstance->setRateUnittypeId($resourceUnittypeId);
+
+		$resoutceInstance->setResourceTypeId($resourceResourceUnittypeId);
+		$resoutceInstance->calculateTotalCost();
+
+		$costs = array(
+			'laborCost' => $resoutceInstance->getLaborCost(),
+			'materialCost' => $resoutceInstance->getMaterialCost(),
+			'totalCost' => $resoutceInstance->getTotalCost()
+		);
+
+		$costs = json_encode($costs);
+		echo $costs;
+	}
+
+	protected function actionSaveStep()
+	{
+		$resourcesAttributes = json_decode($this->getFromPost('resourcesAttributes'));
+		$stepAttributes = json_decode($this->getFromPost('stepAttributes'));
+
+		$stepInstance = new \VWM\Apps\Process\StepInstance($this->db);
+		$stepInstance->setId($stepAttributes->stepId);
+		$stepInstance->load();
+		$stepInstance->setDescription($stepAttributes->stepDescription);
+
+		foreach ($resourcesAttributes as $resourceAttributes) {
+			$resources[] = json_decode($resourceAttributes);
+		}
+
+		$resourceInstanceArray = array();
+		foreach ($resources as $resource) {
+			$resourceInstance = new \VWM\Apps\Process\ResourceInstance($this->db);
+			$resourceInstance->setDescription($resource->description);
+			$resourceInstance->setQty($resource->qty);
+			$resourceInstance->setRate($resource->rate);
+			$resourceInstance->setUnittypeId($resource->unittypeId);
+			$resourceInstance->setResourceTypeId($resource->resourceTypeId);
+			$resourceInstance->setRateUnittypeId($resource->unittypeId);
+			$resourceInstance->setStepId($stepInstance->getId());
+			$resourceInstanceArray[] = $resourceInstance;
+		}
+
+		$stepInstance->setResources($resourceInstanceArray);
+		$stepId = $stepInstance->save();
+
+		if ($stepId) {
+			echo '?action=viewDetails&category=repairOrder';
+		} else {
+			echo false;
+		}
 	}
 }
 

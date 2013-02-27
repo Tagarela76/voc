@@ -131,13 +131,13 @@ class CVAvailableBillingPlans extends Controller {
         $this->smarty->assign("ids",json_encode($ids));
         
         
-        $this->smarty->assign('date',date(VOCApp::get_instance()->getDateFormat()));
+        $this->smarty->assign('date',date(VOCApp::getInstance()->getDateFormat()));
 
         $title = "Available Billing Plans";
         $this->smarty->assign("title", $title);	
         $this->smarty->assign("category","billing");
         
-        $dateFormatJS = VOCApp::get_instance()->getDateFormat_JS();
+        $dateFormatJS = VOCApp::getInstance()->getDateFormat_JS();
         
         
         $this->smarty->assign("dateFormatJS",$dateFormatJS);

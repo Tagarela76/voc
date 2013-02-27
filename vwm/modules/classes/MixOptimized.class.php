@@ -5,6 +5,7 @@
  */
 
 use VWM\Framework\Model as Model;
+use VWM\Apps\Process\StepInstance;
 
 class MixOptimized extends Model {
 
@@ -97,6 +98,12 @@ class MixOptimized extends Model {
 	 * @var array
 	 */
 	private $mixCosts;
+	
+	/**
+	 *
+	 * @var VWM\Apps\Process\StepInstance 
+	 */
+	protected $stepInstance = null;
 
 	const MIX_IS_VALID = 'valid';
 	const MIX_IS_INVALID = 'invalid';
@@ -111,6 +118,16 @@ class MixOptimized extends Model {
 			$this->_load();
 		}
 	}
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	/**
 	 *
@@ -180,10 +197,10 @@ class MixOptimized extends Model {
 		/*
 		 * If value is already timestamp  - just set value
 		 */
-		
+
 		if (strlen($value) == 10 && is_numeric($value)) {
 			$this->creation_time = $value;
-			
+
 		} else {
 
 			$date = DateTime::createFromFormat($this->dateFormat, $value);
@@ -313,7 +330,27 @@ class MixOptimized extends Model {
 		$this->pfp_id = $pfp_id;
 	}
 
-					/**
+	public function getStepInstance()
+	{
+		if(!is_null($this->stepInstance)){
+			return $this->stepInstance;
+		}
+		if($this->getStepId()){
+			$stepInstance = new StepInstance($this->db, $this->getStepId());
+			$this->setStepInstance($stepInstance);
+			return $stepInstance;
+		}else{
+			return false;
+		}
+		
+	}
+
+	public function setStepInstance($stepInstance)
+	{
+		$this->stepInstance = $stepInstance;
+	}
+
+		/**
 	 * Add or Edit this mix
 	 *
 	 */
@@ -430,7 +467,7 @@ class MixOptimized extends Model {
 		$spentTime = (!empty($this->spent_time))
 				? $this->db->sqltext($this->spent_time)
 				: "NULL";
-		
+
 		$pfpId = ($this->getPfpId() !== null)
 				? $this->db->sqltext($this->getPfpId())
 				: "NULL";
@@ -692,7 +729,7 @@ class MixOptimized extends Model {
 		$this->voclx = isset($this->voclx) ? $this->voclx : "0.00";
 		$this->vocwx = isset($this->vocwx) ? $this->vocwx : "0.00";
 		$this->rule_id = isset($this->rule_id) ? $this->rule_id : "0";
-		
+
 
 		$creation_time = isset($this->creation_time)
 				? $this->db->sqltext($this->creation_time)
@@ -1521,7 +1558,7 @@ class MixOptimized extends Model {
 		$this->db->exec($sql);
 
 		//	remove everything from cache
-		$cache = VOCApp::get_instance()->getCache();
+		$cache = VOCApp::getInstance()->getCache();
 		if ($cache) {
 			$cache->flush();
 		}

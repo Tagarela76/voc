@@ -79,9 +79,15 @@ abstract class Resource extends Model
 	protected $step_id;
 
 	const TABLE_NAME = 'resource_template';
+	
 	const TIME = 1;
 	const VOLUME = 2;
 	const GOM = 3;
+	
+	//Realy class id 
+	const TIME_UNIT_CLASS = 7;
+	const GOM_UNIT_CLASS = 8;
+	const VOLUME_UNIT_CLASS = 1;
 
 	public function __construct(\db $db, $Id = null)
 	{
@@ -285,6 +291,61 @@ abstract class Resource extends Model
 	{
 		$value = ereg_replace(',', '.', $value);
 		return $value;
+	}
+	
+	/**
+	 * function for getting all available resource types
+	 * @return string[] 
+	 */
+	public function getResourceTypes(){
+		return array(
+			self::TIME => 'TIME',
+			self::VOLUME => 'VOLUME',
+			self::GOM => 'GOM'
+		); 
+	}
+	
+	/**
+	 * function for getting resource unit types
+	 * @param int $resourceType
+	 * @param int $deparmentId
+	 * 
+	 * @return \VWM\Apps\UnitType\Entity\UnitType[]
+	 * @throws \Exception 
+	 */
+	public function getResourceUnitTypeByResourceType($resourceType,$departmentId = null)
+	{
+		$db = \VOCApp::getInstance()->getService('db');
+		
+		$utManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($db);
+		$unitClass = new \VWM\Apps\UnitType\Entity\UnitClass($db);
+		
+		switch ($resourceType) {
+			case self::TIME:
+				$unitClass->setId(self::TIME_UNIT_CLASS);
+				break;
+			case self::GOM:
+				$unitClass->setId(self::GOM_UNIT_CLASS);
+				break;
+			case self::VOLUME:
+				$unitClass->setId(self::VOLUME_UNIT_CLASS);
+				break;
+			default :
+				throw new \Exception('unknown resource type');
+				break;
+		}
+		$unitClass->load();
+		
+		if(is_null($deparmentId)){
+			$unitTypes = null;
+		}else{
+			$department = new \VWM\Hierarchy\Department($db, $departmentId);
+			$unitTypes = $department->getUnitTypeList();
+		}
+		
+		$unitTypeList = $utManager->getUnitTypeListByUnitClass($unitClass->getDescription(), $unitTypes);
+		return $unitTypeList;
+		
 	}
 
 }

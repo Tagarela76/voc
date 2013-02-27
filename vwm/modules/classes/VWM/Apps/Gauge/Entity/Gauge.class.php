@@ -5,10 +5,10 @@ namespace VWM\Apps\Gauge\Entity;
 use VWM\Framework\Model;
 
 abstract class Gauge extends Model {
-	
+
 	/**
 	 * Gauge id
-	 * @var int 
+	 * @var int
 	 */
 	protected $id;
 
@@ -24,7 +24,7 @@ abstract class Gauge extends Model {
 	 */
     protected $unit_type=1;
 
-	
+
 	/**
 	 * Gauge tracking period (monthly or annually)
 	 * @var int
@@ -42,31 +42,31 @@ abstract class Gauge extends Model {
 	 * @var int
 	 */
 	protected $facility_id;
-	
+
 	/*
 	 * Gauge type
 	 * @var int
 	 */
 	protected $gauge_type;
-	
+
 	/*
 	 *Gauge unit type  name;
 	 */
 	protected $unit_type_name;
-	
+
     protected $last_update_time;
-	
+
 	/*
 	 *Guage pxCount
 	 * @var  int
 	 */
 	protected $pxCount;
-	
+
 	/*
-	 * 
+	 *
 	 */
 	protected $gauge_priority;
-	
+
     const PERIOD_MONTHLY = 0;
 	const PERIOD_ANNUALLY= 1;
 	const QUANTITY_GAUGE = 1;
@@ -77,11 +77,21 @@ abstract class Gauge extends Model {
 
 	const TABLE_NAME = 'product_gauge';
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getGaugePriority() {
 		return $this->gauge_priority;
 	}
 
-	
+
 	public function getId() {
 		return $this->id;
 	}
@@ -129,7 +139,7 @@ abstract class Gauge extends Model {
 	public function setFacilityId($facility_id) {
 		$this->facility_id = $facility_id;
 	}
-	
+
 	public function getPxCount() {
 		$this->pxCount = round(200 *  $this->getCurrentUsage()
 						/ $this->limit);
@@ -138,7 +148,7 @@ abstract class Gauge extends Model {
 		}
 		return $this->pxCount;
 	}
-	
+
 	public function getUnitTypeName() {
 		return $this->unit_type_name;
 	}
@@ -146,7 +156,7 @@ abstract class Gauge extends Model {
 	public function setUnitTypeName($unit_type_name) {
 		$this->unit_type_name = $unit_type_name;
 	}
-	
+
 
 	public function getPeriodOptions() {
 		return array(
@@ -154,7 +164,7 @@ abstract class Gauge extends Model {
 			'Annually' => self::PERIOD_ANNUALLY,
 		);
 	}
-		
+
 	public function getGaugeType() {
 		return $this->gauge_type;
 	}
@@ -172,7 +182,7 @@ abstract class Gauge extends Model {
 	public function getCurrentUsage() {
 		throw new Exception("getCurrentUsage() should be implemented by child");
 	}
-	
+
 	public static function getGaugeTypes(){
 		return array(
 		self::QUANTITY_GAUGE => 'Product\'s Quantity',
@@ -210,7 +220,7 @@ abstract class Gauge extends Model {
 		}
 	}
 
-	
+
 	protected function _update() {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
@@ -264,9 +274,9 @@ abstract class Gauge extends Model {
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
-		
+
 	}
-	
+
 	public function getGaugeTypeName(){
 		$types = $this->getGaugeTypes();
 		return $types[$this->gauge_type];

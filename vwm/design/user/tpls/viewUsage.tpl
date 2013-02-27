@@ -80,9 +80,10 @@
                         </td>
                         <td class="">
                             <div align="left">
-                                &nbsp;
+                                &nbsp; 
 								{if $usage->spent_time}
-									{$usage->spent_time} min
+									{$usage->spent_time} min								
+
 								{/if}
                             </div>
                         </td>

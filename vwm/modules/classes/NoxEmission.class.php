@@ -31,6 +31,16 @@ class NoxEmission extends Model {
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function save() {
 
 		if ($this->start_time instanceof DateTime) {
@@ -50,7 +60,7 @@ class NoxEmission extends Model {
 						"burner_id = {$this->db->sqltext($this->burner_id)}, " .
 						"note = '{$this->db->sqltext($this->note)}', " .
 						"gas_unit_used = {$this->db->sqltext($this->gas_unit_used)}, " .
-						"nox = {$this->db->sqltext($this->nox)} " . 
+						"nox = {$this->db->sqltext($this->nox)} " .
 						"WHERE nox_id = {$this->db->sqltext($this->nox_id)}";
 		} else {
 
@@ -75,9 +85,9 @@ class NoxEmission extends Model {
 	}
 
 	/**
-	 * 
+	 *
 	 * Overvrite get property if property is not exists or private.
-	 * @param unknown_type $name - property name. method call method get_%property_name%, if method does not exists - return property value; 
+	 * @param unknown_type $name - property name. method call method get_%property_name%, if method does not exists - return property value;
 	 */
 	public function __get($name) {
 		if (method_exists($this, "get_" . $name)) {
@@ -92,7 +102,7 @@ class NoxEmission extends Model {
 	}
 
 	/**
-	 * 
+	 *
 	 * Overvrive set property. If property reload function set_%property_name% exists - call it. Else - do nothing. Keep OOP =)
 	 * @param unknown_type $name - name of property
 	 * @param unknown_type $value - value to set
@@ -105,7 +115,7 @@ class NoxEmission extends Model {
 			$this->$methodName($value);
 		}
 		/**
-		 * Set property value only if property does not exists (in order to do not revrite privat or protected properties), 
+		 * Set property value only if property does not exists (in order to do not revrite privat or protected properties),
 		 * it will craete dynamic property, like usually does PHP
 		 */ else if (!property_exists($this, $name)) {
 			/**
@@ -219,11 +229,11 @@ class NoxEmission extends Model {
 	public function set_nox($nox) {
 		$this->nox = $nox;
 	}
-	
+
 	public function set_action($action) {
 		$this->action = $action;
 	}
-	
+
 	public function isUniqueDescription() {
 		if ($this->validationGroup == 'edit') {
 			$sql = "SELECT nox_id FROM nox " .

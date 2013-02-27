@@ -12,22 +12,19 @@ class StepTemplate extends Step
 	const VOLUME = 2;
 	const COUNT = 3;
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+    
 	public function load()
 	{
-		if (is_null($this->getId())) {
-			return false;
-		}
-		$sql = "SELECT * " .
-				"FROM " . self::TABLE_NAME . " " .
-				"WHERE id = {$this->db->sqltext($this->getId())} " .
-				"LIMIT 1";
-
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$this->initByArray($row);
+		parent::load(self::TABLE_NAME);
 	}
 
 	/**
@@ -57,8 +54,8 @@ class StepTemplate extends Step
 	}
 
 	/**
-	 * function for getting step resources 
-	 * @return boolean|\VWM\Apps\Process\ResourceTemplate 
+	 * function for getting step resources
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate
 	 */
 	public function getResources()
 	{
@@ -122,7 +119,7 @@ class StepTemplate extends Step
 	/**
 	 * function for creating step instance by step template
 	 * @param type $processInstanceId
-	 * @return \VWM\Apps\Process\StepInstance 
+	 * @return \VWM\Apps\Process\StepInstance
 	 */
 	public function createInstanceStep($processInstanceId = null)
 	{

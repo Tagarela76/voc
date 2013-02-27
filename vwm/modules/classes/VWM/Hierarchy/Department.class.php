@@ -9,9 +9,8 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
 
-
-class Department extends Model {
-
+class Department extends Model
+{
 	protected $department_id;
 	protected $name;
 	protected $facility_id;
@@ -21,8 +20,7 @@ class Department extends Model {
 	protected $share_wo;
 
 	/**
-	 *
-	 * @var Facility
+	 * @var \VWM\Hierarchy\Facility
 	 */
 	protected $facility;
 
@@ -31,8 +29,13 @@ class Department extends Model {
 	 */
 	protected $pfpTypes;
 
-	/*
-	 * name of unit_class for getUnitTypeList function
+	/**
+	 * @var \VWM\Apps\WorkOrder\Entity\Pfp[]
+	 */
+	protected $pfpsGyant;
+
+	/**
+	 * Name of unit_class for getUnitTypeList function
 	 * USAWght for default
 	 * @var string
 	 */
@@ -43,7 +46,6 @@ class Department extends Model {
 	 * @var \VWM\Apps\UnitType\Entity\UnitType[]
 	 */
 	protected $unitTypes;
-
 	public $searchCriteria = array();
 
 	const TABLE_NAME = 'department';
@@ -53,16 +55,41 @@ class Department extends Model {
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'department';
 
-	public function __construct(\db $db, $departmentId = null) {
+
+	/**
+	 * Constructor
+	 * @param \db $db
+	 * @param int $departmentId to load
+	 */
+	public function __construct(\db $db, $departmentId = null)
+	{
 		$this->db = $db;
 		if (isset($departmentId)) {
 			$this->setDepartmentId($departmentId);
-			$this->load();
+			if (!$this->load()) {
+				throw new \Exception('404');
+			}
 		}
 	}
 
-	public function load() {
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
+	/**
+	 * Load Department by already set department id
+	 * @return boolean did load was successful?
+	 */
+	public function load()
+	{
 		if (is_null($this->getDepartmentId())) {
+
 			return false;
 		}
 
@@ -70,78 +97,103 @@ class Department extends Model {
 				$this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		if ($this->db->num_rows() == 0) {
+
 			return false;
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+
+		return true;
 	}
 
-	public function getDepartmentId() {
+	public function getDepartmentId()
+	{
 		return $this->department_id;
 	}
 
-	public function setDepartmentId($department_id) {
+	public function setDepartmentId($department_id)
+	{
 		$this->department_id = $department_id;
 	}
 
-	public function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 
-	public function setName($name) {
+	public function setName($name)
+	{
 		$this->name = $name;
 	}
 
-	public function getFacilityId() {
+	public function getFacilityId()
+	{
 		return $this->facility_id;
 	}
 
-	public function setFacilityId($facility_id) {
+	public function setFacilityId($facility_id)
+	{
 		$this->facility_id = $facility_id;
 	}
 
-	public function getCreaterId() {
+	public function getCreaterId()
+	{
 		return $this->creater_id;
 	}
 
-	public function setCreaterId($creator_id) {
+	public function setCreaterId($creator_id)
+	{
 		$this->creater_id = $creator_id;
 	}
 
-	public function getVocLimit() {
+	public function getVocLimit()
+	{
 		return $this->voc_limit;
 	}
 
-	public function setVocLimit($voc_limit) {
+	public function setVocLimit($voc_limit)
+	{
 		$this->voc_limit = $voc_limit;
 	}
 
-	public function getVocAnnualLimit() {
+	public function getVocAnnualLimit()
+	{
 		return $this->voc_annual_limit;
 	}
 
-	public function setVocAnnualLimit($voc_annual_limit) {
+	public function setVocAnnualLimit($voc_annual_limit)
+	{
 		$this->voc_annual_limit = $voc_annual_limit;
 	}
 
-	public function getShareWo() {
+	public function getShareWo()
+	{
 		return $this->share_wo;
 	}
 
-	public function setShareWo($shareWo) {
+	public function setShareWo($shareWo)
+	{
 		$this->share_wo = $shareWo;
 	}
 
-	public function getUnitTypeClass() {
+	public function getUnitTypeClass()
+	{
 		return $this->unitTypeClass;
 	}
 
-	public function setUnitTypeClass($unitTypeClass) {
+	public function setUnitTypeClass($unitTypeClass)
+	{
 		$this->unitTypeClass = $unitTypeClass;
 	}
 
-
-	public function getGauge($gaugeType) {
+	/**
+	 * Get gauge by type
+	 * @param int $gaugeType
+	 * @return \VWM\Apps\Gauge\Entity\Gauge|boolean one of the Gauge child
+	 * or false
+	 */
+	public function getGauge($gaugeType)
+	{
 		switch ($gaugeType) {
 			case Gauge::QUANTITY_GAUGE:
 				$gauge = new QtyProductGauge($this->db);
@@ -150,18 +202,20 @@ class Department extends Model {
 				$gauge = new SpentTimeGauge($this->db);
 				break;
 			case Gauge::VOC_GAUGE:
-				break;
 			default:
+				return false;
 				break;
 		}
 
 		$gauge->setDepartmentId($this->department_id);
 		$gauge->setFacilityId($this->facility_id);
 		$gauge->load();
+
 		return $gauge;
 	}
 
-	public function getAllAvailableGauges() {
+	public function getAllAvailableGauges()
+	{
 		$sql = "SELECT gauge_type FROM " . QtyProductGauge::TABLE_NAME . " WHERE `limit`<>0 AND department_id=" . $this->db->sqltext($this->getDepartmentId());
 		$this->db->query($sql);
 		$rows = $this->db->fetch_all_array();
@@ -193,8 +247,8 @@ class Department extends Model {
 		return $gauges;
 	}
 
-	public function countRepairOrderInDepartment() {
-
+	public function countRepairOrderInDepartment()
+	{
 		$sql = "SELECT count(*) repairOrderCount FROM " . TB_WORK_ORDER . " w " .
 				"JOIN " . TB_WO2DEPARTMENT . " dw " .
 				"ON w.id=dw.wo_id " .
@@ -219,16 +273,16 @@ class Department extends Model {
 		}
 	}
 
-	public function getRepairOrdersList(Pagination $pagination = null) {
-
+	public function getRepairOrdersList(Pagination $pagination = null)
+	{
 		$repairOrders = array();
 
-		$sql =  "SELECT w.* FROM " . TB_WORK_ORDER . " w ".
-				"JOIN ". TB_WO2DEPARTMENT." dw ".
-				"ON w.id=dw.wo_id ".
-				"WHERE department_id=".$this->db->sqltext($this->department_id);
+		$sql = "SELECT w.* FROM " . TB_WORK_ORDER . " w " .
+				"JOIN " . TB_WO2DEPARTMENT . " dw " .
+				"ON w.id=dw.wo_id " .
+				"WHERE department_id=" . $this->db->sqltext($this->department_id);
 
-		if(count($this->searchCriteria) > 0) {
+		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
 			$sql .= " AND ( ";
 			foreach ($this->searchCriteria as $repairOrder) {
@@ -266,8 +320,8 @@ class Department extends Model {
 		return $repairOrders;
 	}
 
-	protected function _insert() {
-
+	protected function _insert()
+	{
 		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$query = "INSERT INTO " . self::TABLE_NAME . " (" .
@@ -290,7 +344,8 @@ class Department extends Model {
 		}
 	}
 
-	protected function _update() {
+	protected function _update()
+	{
 		$lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
 		$query = "UPDATE " . self::TABLE_NAME . " SET " .
@@ -312,7 +367,8 @@ class Department extends Model {
 		}
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
 
 		if ($this->department_id) {
@@ -322,11 +378,12 @@ class Department extends Model {
 		}
 	}
 
-	public function getMixList(\Pagination $pagination = null, $filter = ' TRUE ', $sort=' ORDER BY m.mix_id DESC ') {
+	public function getMixList(\Pagination $pagination = null, $filter = ' TRUE ', $sort = ' ORDER BY m.mix_id DESC ')
+	{
 		$woDescriptionField = 'woDescription';
 		$query = "SELECT m.*, wo.id, wo.customer_name, wo.description {$woDescriptionField}, wo.vin  " .
 				"FROM " . TB_USAGE . " m " .
-				" LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
+				" LEFT JOIN " . TB_WORK_ORDER . " wo ON m.wo_id = wo.id " .
 				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
 				"WHERE (m.department_id ={$this->db->sqltext($this->getDepartmentId())} " .
 				"OR j.department_id={$this->db->sqltext($this->getDepartmentId())}) " .
@@ -359,7 +416,7 @@ class Department extends Model {
 		$rows = $this->db->fetch_all_array();
 
 		$mixes = array();
-		foreach($rows as $row) {
+		foreach ($rows as $row) {
 			$mix = new \MixOptimized($this->db);
 			foreach ($row as $key => $value) {
 				if (property_exists($mix, $key)) {
@@ -367,7 +424,7 @@ class Department extends Model {
 				}
 			}
 
-			if($mix->wo_id !== null) {
+			if ($mix->wo_id !== null) {
 				$repairOrder = new \RepairOrder($this->db);
 				//	overrite mix description just because both mix and work order
 				//	have field description
@@ -381,16 +438,15 @@ class Department extends Model {
 		return $mixes;
 	}
 
-
-
 	/**
 	 * Get department's facility
 	 * @return \VWM\Hierarchy\Facility
 	 * @throws \Exception
 	 */
-	public function getFacility() {
-		if($this->facility === null) {
-			if(!$this->getFacilityId()) {
+	public function getFacility()
+	{
+		if ($this->facility === null) {
+			if (!$this->getFacilityId()) {
 				throw new \Exception('Facility Id is not set');
 			}
 
@@ -400,13 +456,14 @@ class Department extends Model {
 		return $this->facility;
 	}
 
-	public function getCountMix($filter = " TRUE ") {
+	public function getCountMix($filter = " TRUE ")
+	{
 		$query = "SELECT count(m.mix_id) mixCount FROM " . TB_USAGE . " m " .
-                " LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id " .
+				" LEFT JOIN " . TB_WORK_ORDER . " wo ON m.wo_id = wo.id " .
 				"LEFT JOIN " . TB_WO2DEPARTMENT . " j ON m.wo_id=j.wo_id " .
 				"WHERE (m.department_id = {$this->db->sqltext($this->department_id)} " .
 				"OR j.department_id = {$this->db->sqltext($this->department_id)}) " .
-                " AND {$filter} ";
+				" AND {$filter} ";
 
 		if (count($this->searchCriteria) > 0) {
 			$searchSql = array();
@@ -432,17 +489,17 @@ class Department extends Model {
 		}
 	}
 
-
-	public function getPfpTypes() {
-		if($this->pfpTypes === null) {
+	public function getPfpTypes()
+	{
+		if ($this->pfpTypes === null) {
 			$sql = "SELECT pfp_t.* " .
-					"FROM ".TB_PFP_TYPES." pfp_t " .
-					"JOIN ".\PfpTypes::TB_PFP_2_DEPARTMENT." pfp_t2d " .
+					"FROM " . TB_PFP_TYPES . " pfp_t " .
+					"JOIN " . \PfpTypes::TB_PFP_2_DEPARTMENT . " pfp_t2d " .
 					"ON pfp_t.id = pfp_t2d.pfp_type_id " .
 					"WHERE pfp_t2d.department_id = {$this->db->sqltext($this->getDepartmentId())}";
 			$this->db->query($sql);
 
-			if($this->db->num_rows() == 0) {
+			if ($this->db->num_rows() == 0) {
 				$this->pfpTypes = array();
 				return $this->pfpTypes;
 			}
@@ -465,25 +522,26 @@ class Department extends Model {
 	 *
 	 * @return UnitType[]
 	 */
-	public function getUnitTypeList() {
-		if($this->unitTypes) {
+	public function getUnitTypeList()
+	{
+		if ($this->unitTypes) {
 			return $this->unitTypes;
 		}
 
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
-				 "ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
-				 "uc.description ucDescription " .
-				 "FROM " . self::TB_UNITTYPE ." ut ".
-				 "INNER JOIN " . self::TB_TYPE ." t ".
-				 "ON ut.type_id = t.type_id ".
-				 "INNER JOIN " . self::TB_DEFAULT ." def ".
-				 "ON ut.unittype_id = def.id_of_subject ".
-				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
-				 "ON ut.unit_class_id = uc.id ".
-				 "WHERE def.object = '" .self::CATEGORY."' ".
-				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
-			     "AND def.subject = 'unittype' ".
-				 "ORDER BY ut.unittype_id";
+				"ut.unittype_desc, ut.unit_class_id, ut.system, uc.id, uc.name ucName, " .
+				"uc.description ucDescription " .
+				"FROM " . self::TB_UNITTYPE . " ut " .
+				"INNER JOIN " . self::TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . self::TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . self::TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = '" . self::CATEGORY . "' " .
+				"AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} " .
+				"AND def.subject = 'unittype' " .
+				"ORDER BY ut.unittype_id";
 
 		$this->db->query($query);
 
@@ -506,7 +564,6 @@ class Department extends Model {
 				$unittype->setUnitClass($class);
 
 				$unitTypes[] = $unittype;
-
 			}
 		} else {
 			//	failed to load defaults by department,
@@ -517,28 +574,27 @@ class Department extends Model {
 
 		$this->unitTypes = $unitTypes;
 		return $unitTypes;
-
 	}
 
-	public function getDefaultAPMethodList(){
-
-		$query ="SELECT apm.apmethod_id, apm.apmethod_desc";
-		$query.=" FROM ".TB_DEFAULT." def, ".TB_APMETHOD." apm WHERE def.id_of_object={$this->db->sqltext($this->getDepartmentId())}";
+	public function getDefaultAPMethodList()
+	{
+		$query = "SELECT apm.apmethod_id, apm.apmethod_desc";
+		$query.=" FROM " . TB_DEFAULT . " def, " . TB_APMETHOD . " apm WHERE def.id_of_object={$this->db->sqltext($this->getDepartmentId())}";
 		$query.= " AND apm.apmethod_id=def.id_of_subject";
 		$query.=" AND def.subject='apmethod'";
-		$query.=" AND def.object='" .self::CATEGORY."'";
+		$query.=" AND def.object='" . self::CATEGORY . "'";
 
 		$this->db->query($query);
 		if ($this->db->num_rows()) {
-			for ($j=0; $j < $this->db->num_rows(); $j++) {
-				$data=$this->db->fetch($j);
-				$apmethod=array (
-					'apmethod_id'			=>	$data->apmethod_id,
-					'description'			=>	$data->apmethod_desc
+			for ($j = 0; $j < $this->db->num_rows(); $j++) {
+				$data = $this->db->fetch($j);
+				$apmethod = array(
+					'apmethod_id' => $data->apmethod_id,
+					'description' => $data->apmethod_desc
 				);
-				$apmethods[]=$apmethod;
+				$apmethods[] = $apmethod;
 			}
-		}else{
+		} else {
 			$facility = $this->getFacility();
 			$apmethods = $facility->getDefaultAPMethodList();
 		}
@@ -546,25 +602,24 @@ class Department extends Model {
 		return $apmethods;
 	}
 
-
-	public function getOldUnitTypeList() {
-
+	public function getOldUnitTypeList()
+	{
 		$unitTypeCollection = new \VWM\Apps\UnitType\UnitTypeCollection();
 		$unitTypesName = array();
 		$unitTypes = array();
 		$query = "SELECT ut.unittype_id, ut.name, ut.type_id, t.type_desc, " .
-				 "ut.unittype_desc, ut.system, uc.name " .
-				 "FROM " . self::TB_UNITTYPE ." ut ".
-				 "INNER JOIN " . self::TB_TYPE ." t ".
-				 "ON ut.type_id = t.type_id ".
-				 "INNER JOIN " . self::TB_DEFAULT ." def ".
-				 "ON ut.unittype_id = def.id_of_subject ".
-				 "INNER JOIN " . self::TB_UNITCLASS ." uc ".
-				 "ON ut.unit_class_id = uc.id ".
-				 "WHERE def.object = '" .self::CATEGORY."' ".
-				 "AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} ".
-			     "AND def.subject = 'unittype' ".
-				 "ORDER BY ut.unittype_id";
+				"ut.unittype_desc, ut.system, uc.name " .
+				"FROM " . self::TB_UNITTYPE . " ut " .
+				"INNER JOIN " . self::TB_TYPE . " t " .
+				"ON ut.type_id = t.type_id " .
+				"INNER JOIN " . self::TB_DEFAULT . " def " .
+				"ON ut.unittype_id = def.id_of_subject " .
+				"INNER JOIN " . self::TB_UNITCLASS . " uc " .
+				"ON ut.unit_class_id = uc.id " .
+				"WHERE def.object = '" . self::CATEGORY . "' " .
+				"AND def.id_of_object = {$this->db->sqltext($this->getDepartmentId())} " .
+				"AND def.subject = 'unittype' " .
+				"ORDER BY ut.unittype_id";
 
 		$this->db->query($query);
 
@@ -582,7 +637,6 @@ class Department extends Model {
 					'name' => $data->name
 				);
 				$unittypes[] = $unittype;
-
 			}
 		} else {
 			$facility = $this->getFacility();
@@ -590,9 +644,25 @@ class Department extends Model {
 			$unittypes = $facility->getOldUnitTypeList();
 		}
 
-
 		return $unittypes;
 	}
-}
+	/**
+	 * Get all Gyant PFPs
+	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
+	 */
+	public function getPfpsGyant(\Pagination $pagination = null, $industryType = 0, $supplierId = 0)
+	{
+		if ($this->pfpsGyant) {
 
+			return $this->pfpsGyant;
+		}
+
+		// temporary wrapper
+		$pfpManager = new \PFPManager($this->db);
+		$this->pfpsGyant = $pfpManager->getListAllowed($this->getFacility()->getCompanyId(), $pagination, null, $industryType, $supplierId);
+
+		return $this->pfpsGyant;
+	}
+
+}
 ?>

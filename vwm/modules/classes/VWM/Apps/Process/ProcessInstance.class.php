@@ -4,11 +4,28 @@ namespace VWM\Apps\Process;
 
 use VWM\Framework\Model;
 
+/**
+ * class ProcessInstance class of work order process
+ *
+ * @access public
+ *
+ */
 class ProcessInstance extends Process
 {
+
 	const TABLE_NAME = 'process_instance';
 	const STEP_TABLE = 'step_instance';
 	const RESOURCE_TABLE = 'resource_instance';
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function load()
 	{
@@ -70,6 +87,10 @@ class ProcessInstance extends Process
 	 */
 	public function getSteps()
 	{
+		$processSteps = $this->getProcessSteps();
+		if (!empty($processSteps)) {
+			return $this->getProcessSteps();
+		}
 		$sql = "SELECT * FROM " . self::STEP_TABLE .
 				" WHERE process_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
@@ -85,14 +106,15 @@ class ProcessInstance extends Process
 			$steps[] = $step;
 		}
 
+		$this->setProcessSteps($steps);
 		return $steps;
 	}
 
 	/**
 	 * function for deleting process, process steps and process resources
-	 * 
-	 * @param type $processId
-	 * 
+	 *
+	 * @param int $processId
+	 *
 	 * @return boolean 
 	 */
 	public function deleteCurrentProcess($processId)
@@ -116,6 +138,6 @@ class ProcessInstance extends Process
 			return false;
 		}
 	}
-}
 
+}
 ?>

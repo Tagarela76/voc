@@ -14,6 +14,16 @@ class StepInstance extends Step
 
 	protected $resources = array();
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getTotalSpentTime()
 	{
 		$this->calculateTotalSpentTime();
@@ -22,24 +32,11 @@ class StepInstance extends Step
 
 	public function load()
 	{
-		if (is_null($this->getId())) {
-			return false;
-		}
-		$sql = "SELECT * " .
-				"FROM " . self::TABLE_NAME . " " .
-				"WHERE id = {$this->db->sqltext($this->getId())} " .
-				"LIMIT 1";
-
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
-			return false;
-		}
-		$row = $this->db->fetch(0);
-		$this->initByArray($row);
+		parent::load(self::TABLE_NAME);
 	}
 
 	/**
-	 * calculate total spent time 
+	 * calculate total spent time
 	 */
 	private function calculateTotalSpentTime()
 	{
@@ -60,7 +57,7 @@ class StepInstance extends Step
 
 	/**
 	 * function for getting step resources
-	 * @return boolean|\VWM\Apps\Process\ResourceTemplate[] 
+	 * @return boolean|\VWM\Apps\Process\ResourceTemplate[]
 	 */
 	public function getResources($stepId = null)
 	{
@@ -88,6 +85,8 @@ class StepInstance extends Step
 		return $resources;
 	}
 
+
+
 	protected function _insert()
 	{
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
@@ -112,6 +111,22 @@ class StepInstance extends Step
 
 	protected function _update()
 	{
+		$this->db->beginTransaction();
+		//delete step Resources
+		$resources = $this->getResources();
+		if(!empty($resources)){
+			$sql = "DELETE FROM ". self::RESOURCE_TABLE ." ".
+					"WHERE step_id = {$this->db->sqltext($this->getId())}";
+			$response = $this->db->exec($sql);
+			foreach ($resources as $resource){
+				$resourceId = $resource->save();
+				if(!$resourceId){
+					$this->db->rollbackTransaction();
+					return false;
+				}
+			}
+		}
+
 		$sql = "UPDATE " . self::TABLE_NAME . " SET " .
 				"number={$this->db->sqltext($this->getNumber())}, " .
 				"process_id='{$this->db->sqltext($this->getProcessId())}', " .
@@ -122,8 +137,10 @@ class StepInstance extends Step
 
 		$response = $this->db->exec($sql);
 		if ($response) {
+			$this->db->commitTransaction();
 			return $this->getId();
 		} else {
+			$this->db->rollbackTransaction();
 			return false;
 		}
 	}
@@ -131,7 +148,7 @@ class StepInstance extends Step
 	/**
 	 * delete current step with its resources
 	 * @param type $stepId
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public function delete($stepId = null)
 	{

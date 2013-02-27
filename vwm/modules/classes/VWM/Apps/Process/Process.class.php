@@ -62,9 +62,9 @@ abstract class Process extends Model
 		return $this->process_type;
 	}
 
-	public function setProcessType($process_type)
+	public function setProcessType($processType)
 	{
-		$this->process_type = $process_type;
+		$this->process_type = $processType;
 	}
 
 	/**
@@ -79,9 +79,9 @@ abstract class Process extends Model
 	/**
 	 * @param \VWM\Apps\Process\StepTemplate[] 
 	 */
-	public function setProcessSteps($process_steps)
+	public function setProcessSteps($processSteps)
 	{
-		$this->process_steps = $process_steps;
+		$this->process_steps = $processSteps;
 	}
 
 	public function getId()
@@ -99,9 +99,9 @@ abstract class Process extends Model
 		return $this->facility_id;
 	}
 
-	public function setFacilityId($facility_id)
+	public function setFacilityId($facilityId)
 	{
-		$this->facility_id = $facility_id;
+		$this->facility_id = $facilityId;
 	}
 
 	public function getName()
@@ -119,9 +119,9 @@ abstract class Process extends Model
 		return $this->work_order_id;
 	}
 
-	public function setWorkOrderId($work_order_id)
+	public function setWorkOrderId($workOrderId)
 	{
-		$this->work_order_id = $work_order_id;
+		$this->work_order_id = $workOrderId;
 	}
 
 	public function getCurrentStepNumber()
@@ -129,9 +129,9 @@ abstract class Process extends Model
 		return $this->current_step_number;
 	}
 
-	public function setCurrentStepNumber($current_step_number)
+	public function setCurrentStepNumber($currentStepNumber)
 	{
-		$this->current_step_number = $current_step_number;
+		$this->current_step_number = $currentStepNumber;
 	}
 
 }

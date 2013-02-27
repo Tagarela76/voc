@@ -5,40 +5,50 @@ namespace VWM\ManageColumns;
 use \VWM\Framework\Model;
 
 class DisplayColumnsSettings extends Model {
-	
-	/**	 
+
+	/**
 	 * @var \db
 	 */
 	protected $db;
-	
+
 	/**
 	 *
 	 * @var int
 	 */
 	protected $id;
-	/**	 
+	/**
 	 * @var int
 	 */
 	protected $browse_category_entity_id;
-	
+
 	/**
 	 *
 	 * @var string
 	 */
 	protected $value;
-	
+
 	/**
 	 *
 	 * @var int
 	 */
 	protected $industry_type_id;
-	
+
 	/**
 	 *
 	 * @var datetime
 	 */
 	protected $last_update_time;
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getLastUpdateTime() {
 		return $this->last_update_time;
 	}
@@ -46,7 +56,7 @@ class DisplayColumnsSettings extends Model {
 	public function setLastUpdateTime($last_update_time) {
 		$this->last_update_time = $last_update_time;
 	}
-	
+
 	public function getId() {
 		return $this->id;
 	}
@@ -54,7 +64,7 @@ class DisplayColumnsSettings extends Model {
 	public function setId($id) {
 		$this->id = $id;
 	}
-	
+
 	public function getBrowseCategoryEntityId() {
 		return $this->browse_category_entity_id;
 	}
@@ -78,14 +88,14 @@ class DisplayColumnsSettings extends Model {
 	public function setIndustryTypeId($industryTypeId) {
 		$this->industry_type_id = $industryTypeId;
 	}
-	
+
 	public function __construct(\db $db, $industryTypeId = null) {
 		$this->db = $db;
 		if (!is_null($industryTypeId)) {
 			$this->setIndustryTypeId($industryTypeId);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Insert
 	 * @return boolean
@@ -94,7 +104,7 @@ class DisplayColumnsSettings extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "INSERT INTO ".TB_DISPLAY_COLUMNS_SETTINGS." (" .
 				"browse_category_entity_id, value, industry_type_id, last_update_time" .
 				") VALUES ( ".
@@ -102,16 +112,16 @@ class DisplayColumnsSettings extends Model {
 				"'{$this->db->sqltext($this->getValue())}', " .
 				"{$this->db->sqltext($this->getIndustryTypeId())}, " .
 				"{$lastUpdateTime} " .
-				")"; 
+				")";
 		$response = $this->db->exec($sql);
 		if($response) {
-			$this->setId($this->db->getLastInsertedID());	
+			$this->setId($this->db->getLastInsertedID());
 			return $this->getId();
 		} else {
 			return false;
-		}			
+		}
 	}
-	
+
 	/**
 	 * Update event
 	 * @return boolean
@@ -120,38 +130,38 @@ class DisplayColumnsSettings extends Model {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
-				
+
 		$sql = "UPDATE ".TB_DISPLAY_COLUMNS_SETTINGS." SET " .
 				"browse_category_entity_id={$this->db->sqltext($this->getBrowseCategoryEntityId())}, " .
 				"value='{$this->db->sqltext($this->getValue())}', " .
-				"industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}, " .			
+				"industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}, " .
 				"last_update_time={$lastUpdateTime} " .
-				"WHERE id={$this->db->sqltext($this->getId())}";	
-	
+				"WHERE id={$this->db->sqltext($this->getId())}";
+
 		$response = $this->db->exec($sql);
-		if($response) {			
+		if($response) {
 			return $this->getId();
 		} else {
 			return false;
 		}
-	}		
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param string $browseCategoryEntityName
 	 * @return boolean|\VWM\ManageColumns\DisplayColumnsSettings
 	 */
 	public function getDisplayColumnsSettings($browseCategoryEntityName) {
-		
+
         $displayColumnsSettings = new DisplayColumnsSettings($this->db);
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
 		$sql = "SELECT cs.* FROM " . TB_DISPLAY_COLUMNS_SETTINGS . " cs " .
-			   "JOIN " . TB_BROWSE_CATEGORY_ENTITY . " be " . 
+			   "JOIN " . TB_BROWSE_CATEGORY_ENTITY . " be " .
 			   "ON cs.browse_category_entity_id= be.id " .
 			   "WHERE be.name='{$this->db->sqltext($browseCategoryEntityName)}' " .
-			   "AND cs.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}"; 
- 		$this->db->query($sql); 
-		$row = $this->db->fetch(0); 
+			   "AND cs.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}";
+ 		$this->db->query($sql);
+		$row = $this->db->fetch(0);
 		if ($this->db->num_rows() == 0) {
 			$displayColumnsSettings->setValue($browseCategoryEntity->getDefaultBrowseCategoryValue($browseCategoryEntityName));
             $displayColumnsSettings->setIndustryTypeId($this->getIndustryTypeId());

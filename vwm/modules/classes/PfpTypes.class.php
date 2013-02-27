@@ -257,6 +257,8 @@ class PfpTypes {
         $this->pfps = $pfpProducts;
 		return $pfpProducts;
 	}
+	
+	
 
 }
 

@@ -5,13 +5,13 @@ namespace VWM\Entity\Crib;
 use VWM\Framework\Model;
 
 class Bin extends Model {
-	
+
 	protected $id;
 	protected $crib_id;
 	protected $number;
 	protected $size;
 	protected $type;
-	protected $capacity;	
+	protected $capacity;
 	protected $name;
 
 	/**
@@ -19,21 +19,31 @@ class Bin extends Model {
 	 * @var \VWM\Entity\Crib\Crib
 	 */
 	protected $crib;
-	
+
 	const TABLE_NAME = 'bin';
-	
+
 	public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = 'Bin';
-		
-		if($id !== null) {	
+
+		if($id !== null) {
 			$this->setId($id);
 			if(!$this->_load()) {
 				throw new Exception('404');
 			}
 		}
 	}
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getId() {
 		return $this->id;
 	}
@@ -80,8 +90,8 @@ class Bin extends Model {
 
 	public function setCapacity($capacity) {
 		$this->capacity = $capacity;
-	}		
-	
+	}
+
 	public function getName() {
 		return $this->name;
 	}
@@ -99,14 +109,14 @@ class Bin extends Model {
 			if(!$this->getCribId()) {
 				throw new \Exception("Crib Id should be set in order to call this method");
 			}
-			
+
 			$sql = "SELECT * FROM ".Crib::TABLE_NAME." WHERE " .
 					"id = {$this->db->sqltext($this->getCribId())}";
 			$this->db->query($sql);
 			if($this->db->num_rows() == 0) {
 				return false;
 			}
-			
+
 			$row = $this->db->fetch_array(0);
 			$crib = new Crib($this->db);
 			$crib->initByArray($row);
@@ -115,7 +125,7 @@ class Bin extends Model {
 		return $this->crib;
 	}
 
-	/**	 
+	/**
 	 * @param \VWM\Cribs\Crib $crib
 	 */
 	public function setCrib(Crib $crib) {
@@ -126,20 +136,20 @@ class Bin extends Model {
 		if(!$this->getId()) {
 			throw new Exception('You should set Id first to call this method');
 		}
-		
+
 		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
 				"WHERE id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
 		if($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		$row = $this->db->fetch_array(0);
 		$this->initByArray($row);
 		return true;
 	}
-	
-	
+
+
 	protected function _insert() {
 		$sql = "INSERT INTO ".self::TABLE_NAME." (crib_id, size, " .
 				"capacity, last_update_time, name ) VALUES ( "  .
@@ -149,33 +159,33 @@ class Bin extends Model {
 				"{$this->db->sqltext($this->getType())}, " .
 				"{$this->db->sqltext($this->getCapacity())}, " .
 				"'{$this->db->sqltext($this->getLastUpdateTime())}', " .
-				"'{$this->db->sqltext($this->getName())}'" .		
+				"'{$this->db->sqltext($this->getName())}'" .
 				")";
-				
+
 		if(!$this->db->exec($sql)) {
 			return false;
 		}
-		
+
 		$this->setId($this->db->getLastInsertedID());
-		
+
 		return $this->getId();
 	}
-	
+
 	protected function _update() {
 		$sql = "UPDATE ".self::TABLE_NAME." SET " .
 				"crib_id={$this->db->sqltext($this->getCribId())}, " .
 				"size={$this->db->sqltext($this->getSize())}, " .
 				"capacity={$this->db->sqltext($this->getCapacity())}, " .
 				"last_update_time='{$this->db->sqltext($this->getLastUpdateTime())}', " .
-				"name='{$this->db->sqltext($this->getName())}' " .		
-				"WHERE id = {$this->db->sqltext($this->getId())}";					
+				"name='{$this->db->sqltext($this->getName())}' " .
+				"WHERE id = {$this->db->sqltext($this->getId())}";
 		if(!$this->db->exec($sql)) {
 			return false;
-		}				
-		
+		}
+
 		return $this->getId();
 	}
-	
+
 	/**
 	 * Method that check if exist bin with this name
 	 */

@@ -86,7 +86,7 @@ class PFPManager {
 		}
 
 		$query .= " GROUP BY pfp.id";
-
+		
 		$this->db->query($query);
 
 		return $this->db->num_rows();
@@ -584,8 +584,6 @@ class PFPManager {
 		//Init PFPProducts for each PFP...
 		$pfpArray = $this->db->fetch_array(0);
 
-		//var_dump($pfpArray);
-
 		$PFPProductsArray = array();
 
 		$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " WHERE preformulated_products_id = " . $pfpArray['id'];
@@ -614,10 +612,9 @@ class PFPManager {
 		$pfp->setDescription($pfpArray['description']);
 		$pfp->products = $PFPProductsArray;*/
 		
-		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+		$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 		$pfp->setId($id);
 		$pfp->load();
-		//$pfp->setDescription($pfpArray['description']);
 		$pfp->setProducts($PFPProductsArray);
 
 		return $pfp;
@@ -735,7 +732,7 @@ class PFPManager {
 		$pfps = array(); //Array of objects PFP
 
 		//	try to read from cache
-		$cache = VOCApp::get_instance()->getCache();
+		$cache = VOCApp::getInstance()->getCache();
 		$key = md5('query'.$query);
 		if ($cache) {
 			$pfps = $cache->get($key);

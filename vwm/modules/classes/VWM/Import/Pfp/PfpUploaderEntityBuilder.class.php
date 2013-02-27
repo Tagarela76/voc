@@ -17,7 +17,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder {
 
 		$fileData = $csvHelper->getFileContent();
 
-		$currentPfp = new Pfp($this->db);
+		$currentPfp = new Pfp();
 		foreach ($fileData as $data) {
 
 			//	group rows by PFP
@@ -27,7 +27,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder {
 					&& $data[$this->mapper->mappedData['unitType']] == '') {
 
 				$this->pfps[] = $currentPfp;
-				$currentPfp = new Pfp($this->db);
+				$currentPfp = new Pfp();
 				continue;
 			}
 

@@ -10,6 +10,7 @@ use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
 use VWM\Apps\Process\ProcessInstance;
 use VWM\Apps\Process\ProcessTemplate;
 use VWM\Apps\Process\StepInstance;
+use VWM\Apps\Process\StepTemplate;
 
 
 
@@ -21,16 +22,14 @@ class CMix extends Controller {
 		$this->parent_category = 'department';
 	}
 
-	protected function actionConfirmDelete() {
-		
+	protected function actionConfirmDelete()
+	{
 		foreach ($this->itemID as $Id) {
 			$mix = new MixOptimized($this->db, $Id);
 			//delete Process steps for mix
-			$stepId = $mix->getStepId();
-			if($stepId){
-				$stepInstance = new StepInstance($this->db, $stepId);
+			$stepInstance = $mix->getStepInstance();
+			if ($stepInstance) {
 				$stepInstance->delete();
-				
 			}
 			$mix->delete();
 		}
@@ -106,7 +105,7 @@ class CMix extends Controller {
 		$pfp_id = $mixOptimized->getPfpId();
 
 		if(isset($pfp_id)){
-			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 			$pfp->setId($pfp_id);
 			$pfp->load();
 			$isProprietary = $pfp->getIsProprietary();
@@ -493,7 +492,7 @@ class CMix extends Controller {
 
 			//	Try to get mix list from cache
 			$mixList = false;
-			$cache = VOCApp::get_instance()->getCache();
+			$cache = VOCApp::getInstance()->getCache();
 			$key = md5('mixListByFacility'.$_SERVER["QUERY_STRING"]);
 			if ($cache) {
 				$mixList = $cache->get($key);
@@ -1228,7 +1227,7 @@ class CMix extends Controller {
 			$processInstance = $workOrder->getProcessInstance();
 
 			//create current step
-			$stepTemplate = new \VWM\Apps\Process\StepTemplate($this->db, $mix->getStepId());
+			$stepTemplate = new StepTemplate($this->db, $mix->getStepId());
 			$resourceTemplates = $stepTemplate->getResources();
 			$stepInstance = $stepTemplate->createInstanceStep($processInstance->getId());
 			$stepInstance->save();
@@ -1621,7 +1620,7 @@ class CMix extends Controller {
 			$manager = new PFPManager($this->db);
 			$pfp = $manager->getPFP($optMix->getPfpId());
 		}else{
-			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+			$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
 		}
 
 		$this->smarty->assign('pfp', $pfp);
@@ -1961,10 +1960,10 @@ class CMix extends Controller {
 			$data->description = $workOrder->getNumber();
 		}
 
-		$process = $workOrder->getProcess();
+		$process = $workOrder->getProcessTemplate();
 
 		if (!is_null($process->getId()) && $request['stepID']!=0) {
-			$step = new \VWM\Apps\Process\StepTemplate($this->db, $request['stepID']);
+			$step = new StepTemplate($this->db, $request['stepID']);
 			if($step) {
 				$data->spent_time = $step->getTotalSpentTime();
 				$resources = $step->getResources();
@@ -2047,14 +2046,12 @@ class CMix extends Controller {
 
 
 		//get Total Quantity for proprietary pfp
-		$totalQuantity = 0;
+		/*$totalQuantity = 0;
 		foreach($optMix->products as $product){
 			$totalQuantity += $product->quantity;
-		}
+		}*/
 
-
-
-		$this->smarty->assign('totalQuantity', $totalQuantity);
+		$this->smarty->assign('totalQuantity', $optMix->products[0]->quantity);
 		$this->smarty->assign('unitTypeEx', $unitTypeEx);
 		$this->smarty->assign('companyEx', $companyEx);
 

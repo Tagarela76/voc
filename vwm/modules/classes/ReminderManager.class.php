@@ -8,7 +8,17 @@ class ReminderManager extends Model {
 		$this->db = $db;
 		$this->modelName = 'ReminderManager';
 	}
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getReminders() {
 
 		$reminders = array();

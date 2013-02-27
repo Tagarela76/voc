@@ -108,9 +108,9 @@ class CVBilling extends Controller {
                 $currentInvoice = $invoice->getCurrentInvoice($customerID);
                 if ($currentInvoice['periodEndDate'] == NULL) {
                     $firstInvoice = $invoice->getInvoiceWhenTrialPeriod($customerID);
-                    $dateWhenNewPlanWillBeImplemented = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($firstInvoice['periodStartDate'], false) ;											
+                    $dateWhenNewPlanWillBeImplemented = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($firstInvoice['periodStartDate'], false) ;											
                 } else {
-                    $dateWhenNewPlanWillBeImplemented = VOCApp::get_instance()->printDatetimeByTimestampInCurrentDateformat($currentInvoice['periodEndDate'], false) ;	;
+                    $dateWhenNewPlanWillBeImplemented = VOCApp::getInstance()->printDatetimeByTimestampInCurrentDateformat($currentInvoice['periodEndDate'], false) ;	;
                 }																	
                 //$dateWhenNewPlanWillBeImplemented = substr($currentInvoice['periodEndDate'],0,10);	//	maybe +1 day?										
                 break;

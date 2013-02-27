@@ -1,53 +1,55 @@
 <?php
 
 use VWM\Framework\Model;
+use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\ProcessTemplate;
 
 class RepairOrder extends Model {
 
 	/**
 	 *
-	 * @var int 
+	 * @var int
 	 */
 	public $id;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $number;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $description;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $customer_name;
 
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $facility_id;
 
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $status;
-	
+
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $vin;
-	
+
 	public $url;
-	
+
 	public $process_template_id = NULL;
 
 	const TB_MIX = 'mix';
@@ -64,6 +66,15 @@ class RepairOrder extends Model {
 		}
 	}
 
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function getId() {
 		return $this->id;
@@ -80,7 +91,7 @@ class RepairOrder extends Model {
 	public function setProcessTemplateId($process_id) {
 		$this->process_template_id = $process_id;
 	}
-	
+
 	public function getNumber() {
 		return $this->number;
 	}
@@ -137,23 +148,23 @@ class RepairOrder extends Model {
 		$this->url = $url;
 	}
 
-	
+
 	/**
 	 * add work order
-	 * @return int 
+	 * @return int
 	 */
 	public function addRepairOrder() {
 
-		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin) 
-				VALUES ( 
+		$query = "INSERT INTO " . TB_WORK_ORDER . "(number, description, customer_name, facility_id, status, vin)
+				VALUES (
 				'" . $this->db->sqltext($this->number) . "'
 				, '" . $this->db->sqltext($this->description) . "'
 				, '" . $this->db->sqltext($this->customer_name) . "'
-				, '" . $this->db->sqltext($this->facility_id) . "'	
-				, '" . $this->db->sqltext($this->status) . "'	
-				, '" . $this->db->sqltext($this->vin) . "'		
+				, '" . $this->db->sqltext($this->facility_id) . "'
+				, '" . $this->db->sqltext($this->status) . "'
+				, '" . $this->db->sqltext($this->vin) . "'
 				)";
-		$this->db->query($query); 
+		$this->db->query($query);
 		$work_order_id = $this->db->getLastInsertedID();
 		$this->id = $work_order_id;
 		return $work_order_id;
@@ -161,17 +172,17 @@ class RepairOrder extends Model {
 
 	/**
 	 * update work order
-	 * @return int 
+	 * @return int
 	 */
 	public function updateRepairOrder() {
 
 		$query = "UPDATE " . TB_WORK_ORDER . "
 					set number='" . $this->db->sqltext($this->number) . "',
 						description='" . $this->db->sqltext($this->description) . "',
-						customer_name='" . $this->db->sqltext($this->customer_name) . "',	
+						customer_name='" . $this->db->sqltext($this->customer_name) . "',
 						facility_id='" . $this->db->sqltext($this->facility_id) . "',
-						status='" . $this->db->sqltext($this->status) . "', 	
-						vin='" . $this->db->sqltext($this->vin) . "'		
+						status='" . $this->db->sqltext($this->status) . "',
+						vin='" . $this->db->sqltext($this->vin) . "'
 					WHERE id= " . $this->db->sqltext($this->id);
 		$this->db->query($query);
 
@@ -191,7 +202,7 @@ class RepairOrder extends Model {
 
 	/**
 	 * insert or update work order
-	 * @return int 
+	 * @return int
 	 */
 	public function save() {
 
@@ -210,7 +221,7 @@ class RepairOrder extends Model {
 		}
 		$sql = "SELECT * ".
 				"FROM ".TB_WORK_ORDER." ".
-				"WHERE id={$this->db->sqltext($this->id)} " . 
+				"WHERE id={$this->db->sqltext($this->id)} " .
 				"LIMIT 1";
 		$this->db->query($sql);
 
@@ -225,10 +236,10 @@ class RepairOrder extends Model {
 			}
 		}
 	}
-	
-		
+
+
 	public function getMixes() {
-		
+
 		$query = "SELECT * FROM " . TB_USAGE .
 				 " WHERE wo_id={$this->db->sqltext($this->id)}";
 		$this->db->query($query);
@@ -249,16 +260,16 @@ class RepairOrder extends Model {
 		}
 		return $mixes;
 	}
-	
+
 	public function searchAutocomplete($occurrence, $facilityId) {
 
 		$query = "SELECT number, description, customer_name, vin, LOCATE('{$this->db->sqltext($occurrence)}', number) occurrence1, LOCATE('{$this->db->sqltext($occurrence)}', description) occurrence2,
 				LOCATE('{$this->db->sqltext($occurrence)}', customer_name) occurrence3, LOCATE('{$this->db->sqltext($occurrence)}', vin) occurrence4  " .
-				"FROM " . TB_WORK_ORDER . 
-				" WHERE facility_id={$this->db->sqltext($facilityId)} AND LOCATE('{$this->db->sqltext($occurrence)}', number)>0 OR 
-				 LOCATE('{$this->db->sqltext($occurrence)}', description)>0 OR 
-				 LOCATE('{$this->db->sqltext($occurrence)}', customer_name)>0 OR 
-				 LOCATE('{$this->db->sqltext($occurrence)}', vin)>0 
+				"FROM " . TB_WORK_ORDER .
+				" WHERE facility_id={$this->db->sqltext($facilityId)} AND LOCATE('{$this->db->sqltext($occurrence)}', number)>0 OR
+				 LOCATE('{$this->db->sqltext($occurrence)}', description)>0 OR
+				 LOCATE('{$this->db->sqltext($occurrence)}', customer_name)>0 OR
+				 LOCATE('{$this->db->sqltext($occurrence)}', vin)>0
 				 LIMIT ".AUTOCOMPLETE_LIMIT;
 		$this->db->query($query);
 
@@ -296,26 +307,27 @@ class RepairOrder extends Model {
 		} else
 			return false;
 	}
-	
+
 	public function getRepairOrderProcessName(){
 		if(is_null($this->getProcessTemplateId())){
 			return false;
 		}
-		
-		$process = new \VWM\Apps\Process\ProcessTemplate($this->db, $this->getProcessTemplateId());
+
+		$process = new ProcessTemplate($this->db, $this->getProcessTemplateId());
+        
 		return $process->getName();
-		
+
 	}
-	
+
 	/**
 	 *function for getting step ids for Repair Order  which have been already used
 	 */
 	/*public function getUsedStepIds(){
-		
+
 		if (is_null($this->getProcessId())){
 			return false;
 		}
-		
+
 		$ids = array();
 		$query = "SELECT s.id FROM ".  self::TB_STEP." s ".
 				"LEFT JOIN ".self::TB_MIX." m ".
@@ -324,14 +336,14 @@ class RepairOrder extends Model {
 				"m.wo_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($query);
 		$result = $this->db->fetch_all_array();
-		
+
 		foreach ($result as $r){
 			$ids[] = $r['id'];
 		}
 		return $ids;
-		
+
 	}*/
-	
+
 	public function getProcessInstance(){
 		$sql = "SELECT id FROM ".self::TB_PROCESS_INSTANCE." ".
 			   "WHERE work_order_id = {$this->db->sqltext($this->getId())} LIMIT 1";
@@ -340,10 +352,10 @@ class RepairOrder extends Model {
 			return false;
 		}
 		$result = $this->db->fetch(0);
-		$processInstance = new \VWM\Apps\Process\ProcessInstance($this->db, $result->id);
-		
+		$processInstance = new ProcessInstance($this->db, $result->id);
+
 		return $processInstance;
-		
+
 	}
 
 }

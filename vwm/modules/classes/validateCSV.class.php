@@ -1,4 +1,6 @@
 <?php
+use VWM\Apps\WorkOrder\Entity\Pfp;
+
 class validateCSV {
 	/**
 	 * @var db
@@ -8,10 +10,10 @@ class validateCSV {
 	public $productsError;
 	public $productsCorrect;
 	public $errorComments;
-	
+
 	protected $processError = array();
 	protected $processCorrect = array();
-	
+
 
 	public function getProcessError() {
 		return $this->processError;
@@ -28,7 +30,7 @@ class validateCSV {
 	public function setProcessCorrect($processCorrect) {
 		$this->processCorrect[] = $processCorrect;
 	}
-	
+
 
 		const TB_UNIT_TYPE = 'unittype';
 		const UNIT_TYPE = 6;
@@ -37,7 +39,7 @@ class validateCSV {
 		const RATE = 7;
 
 
-			function validateCSV($db) {
+	function validateCSV($db) {
 		$this->db=$db;
 
 		$this->productsError = array();
@@ -69,14 +71,14 @@ class validateCSV {
 		//	here we'll store rows for single pfp
 		$currentPfp = array();
 		$isErrorInCurrentPfp = false;
-		
-		
-		//i for test 
+
+
+		//i for test
 		$i=0;
-		
+
 		while ($dat = fgetcsv($file, 1000, ";")) {
 			$i++;
-			
+
 			$currentRow++;
 			if ($currentRow < $headerEndsRow) {
 				//	skip first $headerEndsRow rows
@@ -84,12 +86,13 @@ class validateCSV {
 			}
 
 			// get pfp Details if exist
-			
+
 				//var_dump($this->productsCorrect);die();
-			
+
 				if(!empty($dat[1])){
 
-					$pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+					$pfp = new VWM\Apps\WorkOrder\Entity\Pfp();
+
 					$pfp->setIsProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY]);
 					$pfp->setDescription($dat[bulkUploader4PFP::PRODUCTNAME_INDEX]);
 					$pfp->setCompanyId($input['companyID']);
@@ -103,15 +106,15 @@ class validateCSV {
 						continue;
 					}
 				}
-				
-			
+
+
 			$data = $this->trimAll($dat);
-			
+
 			//	pfp's are splitted by empty row
 			if ($this->isEmptyRow($data)) {
-				
+
 				if (count($currentPfp) > 0 && isset($pfp)) {
-					
+
 
 					if($isErrorInCurrentPfp) {
 						$this->productsError[] = $currentPfp;
@@ -151,7 +154,7 @@ class validateCSV {
 
 	private function pfpDataCheck($data,$row){
 		$comments = "";
-		
+
 		if ($data[2]) {
 			$this->db->query("SELECT product_id FROM product WHERE product_nr='" . $this->db->sqltext($data[2]) . "'");
 
@@ -175,12 +178,12 @@ class validateCSV {
 			if (bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
 				return $comments;
 			}
-			
+
 			//	check for cumulative "344.32"
 			if (Validation::isFloat($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
 				return $comments;
 			}
-			
+
 			//	no, it's just a validation error
 			$comments .= "Product with ID : " . $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] . " has validation error at Ratio. Row " . $row . ".\n";
 		}
@@ -252,7 +255,7 @@ class validateCSV {
 
 	public function validate($input) {
 		$unitTypeClass = new Unittype($this->db);
-		
+
 		$CSVPath = $input['inputFile'];
 		//last row
 		$file = fopen($CSVPath, "a");
@@ -321,7 +324,7 @@ class validateCSV {
 			$data_tmp[39] = $data[$headerKey['unitType']] ; // unit type
 			$data_tmp[40] = $data[$headerKey['QTY']] ; // product quantity
 			$data_tmp[41] = $data[$headerKey['libraryTypes']] ; // product library type
-			
+
 			$data = $data_tmp;
 
 				if (!empty($data[0])) {
@@ -346,7 +349,7 @@ class validateCSV {
 						$data[9] = '0';
 						$data[37] = 1;
 					}
-					
+
 					$currRowComments = $this->productDataCheck($data,$row);
 					if ($currRowComments != "") {
 						//$error = TRUE;
@@ -372,56 +375,54 @@ class validateCSV {
 						$data[35] = '0';
 					}
 
-					
 					// unit type clear
-					$data[39] = trim($data[39]); 
+					$data[39] = trim($data[39]);
 					// prepare unit type
 					switch ($data[39]) {
 						case "QUART":
-						case "quart":	
+						case "quart":
 							$unitType = "qt";
 							break;
 						case "GALLONS":
-						case "GALLON": 
-						case "gallon": 	
+						case "GALLON":
+						case "gallon":
 						case "gallons":
-						case "GAL":	
-						case "gal":	
+						case "GAL":
+						case "gal":
 							$unitType = "gal";
 							break;
-						case "PINT": 
-						case "pint": 	
+						case "PINT":
+						case "pint":
 							$unitType = "pt";
 							break;
-						case "LITRE": 
-						case "litre": 	
+						case "LITRE":
+						case "litre":
 							$unitType = "L";
 							break;
-						case "KG": 
-						case "kg": 	
+						case "KG":
+						case "kg":
 							$unitType = "KG";
 							break;
-						case "ML": 
-						case "ml": 	
+						case "ML":
+						case "ml":
 							$unitType = "ml";
 							break;
-						case "GRAMS": 
-						case "grams": 	
+						case "GRAMS":
+						case "grams":
 							$unitType = "GRAM";
 							break;
-						case "OUNCES": 
-						case "ounces": 
-						case "OZS": 
-						case "ozs": 
+						case "OUNCES":
+						case "ounces":
+						case "OZS":
+						case "ozs":
 							$unitType = "OZS";
-							break;			
+							break;
 						default:
 							$unitType = "LBS";
-							break;	
+							break;
 					}
 					$unitType = $unitTypeClass->getUnittypeByName($unitType);
 					$unitType = $unitType['unittype_id']; // get unit type id
-					
 
 					//	product processing
 					$product = array (
@@ -456,7 +457,7 @@ class validateCSV {
 						"unitType" => $unitType,
 						"QTY" => $data[40],
 						"libraryTypes" => $data[41]
-						
+
 					);
 				}
 
@@ -669,7 +670,7 @@ class validateCSV {
 
 		return $result;
 	}
-	
+
 	private function calculateProductPrice($price, $qty){
 		// preparate data
 		$price = trim($price); // for one unit
@@ -677,12 +678,12 @@ class validateCSV {
 		$price = str_replace(",",".",$price);
 		$price = str_replace("$","",$price);
 		// to float value
-		$fullPrice = (float)$price * (float)$qty;	
+		$fullPrice = (float)$price * (float)$qty;
 		$result = strval($fullPrice);
 
 		return $result;
 	}
-	
+
 	private function productDataCheck($data,$row){
 		$comments = "";
 		//product id check
@@ -786,7 +787,7 @@ class validateCSV {
 		if ( !preg_match("/^[0-9.]*$/",$data[30]) || (substr_count($data[30],".") > 1) || $data[30] > 100 ){
 			$comments .= "	Percent Volatile by Weight is undefined. Row " . $row . ".\n";
 		}
-		
+
 		//product pricing
 		$data[38] = str_replace(",",".",$data[38]);
 		$data[38] = str_replace("$","",$data[38]);
@@ -799,8 +800,8 @@ class validateCSV {
 			// isn't empty
 			if ( $data[39] != "QUART" && $data[39] != "quart" && $data[39] != "GALLON" &&
 					$data[39] != "gallon" && $data[39] != "GALLONS" && $data[39] != "gallons" && $data[39] != "GAL" && $data[39] != "gal"
-					&& $data[39] != "PINT" && $data[39] != "pint" 
-					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg" 
+					&& $data[39] != "PINT" && $data[39] != "pint"
+					&& $data[39] != "LITRE" && $data[39] != "litre" && $data[39] != "KG" && $data[39] != "kg"
 					&& $data[39] != "ML" && $data[39] != "ml" && $data[39] != "GRAMS" && $data[39] != "grams" && $data[39] != "OUNCES" && $data[39] != "ounces"
 					 && $data[39] != "OZS" && $data[39] != "ozs"){
 				$comments .= "	Unit type is undefined. Row " . $row . ".\n";
@@ -828,26 +829,26 @@ class validateCSV {
 				$comments .= "	Waste value is too long. Row " . $row . ".\n";
 			}
 		}
-		
+
 		//product library type
 		$data[41] = trim($data[41]);
 		if ($data[41] != "") {
 			// isn't empty
 			$libraryTypes = explode(',', $data[41]); // we get array of library types
 			foreach ($libraryTypes as $libraryType) {
-				if ( trim($libraryType) != "PAINT SHOP" && 
-						trim($libraryType) != "paint shop" && 
-						trim($libraryType) != "PAINT SUPPLIES" && 
-						trim($libraryType) != "paint supplies" && 
-						trim($libraryType) != "BODY SHOP" && 
-						trim($libraryType) != "body shop"  && 
-						trim($libraryType) != "DETAILING" && 
-						trim($libraryType) != "detailing" && 
-						trim($libraryType) != "PAINT PRODUCTS" && 
+				if ( trim($libraryType) != "PAINT SHOP" &&
+						trim($libraryType) != "paint shop" &&
+						trim($libraryType) != "PAINT SUPPLIES" &&
+						trim($libraryType) != "paint supplies" &&
+						trim($libraryType) != "BODY SHOP" &&
+						trim($libraryType) != "body shop"  &&
+						trim($libraryType) != "DETAILING" &&
+						trim($libraryType) != "detailing" &&
+						trim($libraryType) != "PAINT PRODUCTS" &&
 						trim($libraryType) != "paint products" &&
-                        trim($libraryType) != "POWDER COATING" && 
+                        trim($libraryType) != "POWDER COATING" &&
 						trim($libraryType) != "powder coating" &&
-                        trim($libraryType) != "FUEL PRODUCTS" && 
+                        trim($libraryType) != "FUEL PRODUCTS" &&
                         trim($libraryType) != "fuel products") {
 					$comments .= "	Product Library type is undefined. Row " . $row . ".\n";
 					break;
@@ -1006,9 +1007,9 @@ class validateCSV {
 		$possibleProductPricing = array('PRODUCT PRICING');
 		$possibleUnitType = array('UNIT TYPE');
 		$possibleQTY = array('QTY');
-		
+
 		$possibleLibraryTypes = array('LIBRARY TYPE');
-		
+
 		$columnIndex = array();
 
 		for ($i=0;$i<count($secondRowData);$i++){
@@ -1472,7 +1473,7 @@ class validateCSV {
 					$columnIndex[$i] = TRUE;
 				}
 			}
-			
+
 			//product pricing mapping
 			if (!isset($key['productPricing'])){
 				if ( (strtoupper(trim($firstRowData[$i])) == 'PRODUCT') &&
@@ -1507,7 +1508,7 @@ class validateCSV {
 					}
 				}
 			}
-			
+
 			//QTY mapping
 			if (!isset($key['QTY'])){
 				foreach ($possibleQTY as $header){
@@ -1520,7 +1521,7 @@ class validateCSV {
 					}
 				}
 			}
-			
+
 			//library types mapping
 			if (!isset($key['libraryTypes'])){
 				if ( (strtoupper(trim($firstRowData[$i])) == 'LIBRARY') &&
@@ -1815,9 +1816,9 @@ class validateCSV {
 
 		return true;
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	private function convertDensity($data) {
 		$data = trim($data);
@@ -1825,7 +1826,7 @@ class validateCSV {
 			$data = preg_replace('/[A-Za-z]/', '', $data);
 			$data = preg_replace('/\//', '', $data);
 			$data = trim($data);
-	
+
 			//	gram per liter
 			$from = new Density($this->db);
 			$from->setNumerator(Unittype::UNIT_G_ID);
@@ -1838,8 +1839,8 @@ class validateCSV {
 
 			$converter = new UnitTypeConverter();
 
-			$result = $converter->convertDensity($data, $from, $to, new Unittype($this->db)); 
-			
+			$result = $converter->convertDensity($data, $from, $to, new Unittype($this->db));
+
 		} else {
 			$result = trim($data);
 		}
@@ -1848,10 +1849,10 @@ class validateCSV {
 		return $result;
 
 	}
-	
+
 	public function validateProcess($input) {
 		$CSVPath = $input['inputFile'];
-		
+
 		//last row
 		$file = fopen($CSVPath, "a");
 
@@ -1869,12 +1870,12 @@ class validateCSV {
 		//	here we'll store rows for single pfp
 		$currentProcessName = '';
 		$isErrorInCurrentProcess = false;
-		
+
 		$i = 0;
-		
+
 		while ($dat = fgetcsv($file, 1000, ";")) {
 			$currentRow++;$i++;
-			
+
 			if ($currentRow < $headerEndsRow) {
 				//	skip first $headerEndsRow rows
 				continue;
@@ -1886,26 +1887,26 @@ class validateCSV {
 			if($this->isEmptyRow($data)){
 				continue;
 			}
-			
-			//get a process in which the error 
-			
+
+			//get a process in which the error
+
 			if($data[0]!=''){
-				
+
 				if($isErrorInCurrentProcess){
 					$this->setProcessError($currentProcessName);
 					$isErrorInCurrentProcess = false;
 				}elseif($currentProcessName!=''){
 					$this->setProcessCorrect($currentProcessName);
 				}
-				
+
 				$currentProcessName = $data[0];
-				
+
 			}
-			
+
 			/*if($currentRow==4){
 				die(var_dump($data));
 			}*/
-			
+
 			$currRowComments = $this->processDataCheck($data, $currentRow);
 
 			if ($currRowComments != "") {
@@ -1923,10 +1924,10 @@ class validateCSV {
 		fclose($file);
 	}
 
-	
+
 	private function processDataCheck($data,$row){
 		$comments = "";
-		
+
 		//Check Rate Unit Type
 		if (!is_null($data[self::RATE_UNIT_TYPE])) {
 			if($data[self::RATE_UNIT_TYPE] != '') {

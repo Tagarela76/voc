@@ -3,10 +3,10 @@
 namespace VWM\Entity\Product;
 
 /**
- * This is old \Product class 
+ * This is old \Product class
  */
 class PaintProduct extends GeneralProduct {
-	
+
 	protected $product_id;	// TODO: rename to id
 	protected $voclx;
 	protected $vocwx;
@@ -23,7 +23,7 @@ class PaintProduct extends GeneralProduct {
 	protected $flash_point; // TODO: why varchar?
 	protected $supplier_id;
 	protected $percent_volatile_weight;
-	protected $percent_volatile_volume;	
+	protected $percent_volatile_volume;
 	protected $closed; // TODO: replace all yes/no values to boolean in the DB
 	protected $discontinued;
 	protected $product_instock;
@@ -46,11 +46,21 @@ class PaintProduct extends GeneralProduct {
 			}
 		}
 	}
-	
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
+
 	public function getId() {
 		return $this->product_id;
 	}
-	
+
 	public function setId($id) {
 		$this->id = $id;
 		$this->product_id = $id;
@@ -199,7 +209,7 @@ class PaintProduct extends GeneralProduct {
 	public function setDiscontinued($discontinued) {
 		$this->discontinued = $discontinued;
 	}
-	
+
 	public function getProductInstock() {
 		return $this->product_instock;
 	}
@@ -231,7 +241,7 @@ class PaintProduct extends GeneralProduct {
 	public function setProductStocktype($product_stocktype) {
 		$this->product_stocktype = $product_stocktype;
 	}
-	
+
 	public function getPriceUnitType() {
 		return $this->price_unit_type;
 	}
@@ -241,7 +251,7 @@ class PaintProduct extends GeneralProduct {
 	}
 
 	protected function _insert() {
-		
+
 		$sql = "INSERT INTO ". TB_PRODUCT." (name, product_instock, " .
 				"product_limit, product_amount, product_stocktype, " .
 				"product_pricing, price_unit_type, product_nr, voclx, vocwx, " .
@@ -278,23 +288,23 @@ class PaintProduct extends GeneralProduct {
 				"'{$this->db->sqltext($this->getClosed())}', " .
 				"{$this->db->sqltext($this->getDiscontinued())} " .
 				")";
-				
+
 		if(!$this->db->exec($sql)) {
 			return false;
 		}
-		
+
 		$this->setId($this->db->getLastInsertedID());
-		
+
 		return $this->getId();
 	}
-	
+
 	protected function _update() {
-		
+
 		$sql = "UPDATE ".TB_PRODUCT." SET " .
 				"name = '{$this->db->sqltext($this->getName())}', " .
 				"product_instock = {$this->db->sqltext($this->getProductInstock())}, " .
 				"product_limit = {$this->db->sqltext($this->getProductLimit())}, " .
-				"product_amount = {$this->db->sqltext($this->getProductAmount())}, " .		
+				"product_amount = {$this->db->sqltext($this->getProductAmount())}, " .
 				"product_stocktype = {$this->db->sqltext($this->getProductStocktype())}, " .
 				"product_pricing = '{$this->db->sqltext($this->getProductPricing())}', " .
 				"price_unit_type = {$this->db->sqltext($this->getPriceUnitType())}, " .
@@ -315,31 +325,31 @@ class PaintProduct extends GeneralProduct {
 				"supplier_id = {$this->db->sqltext($this->getSupplierId())}, " .
 				"percent_volatile_weight = {$this->db->sqltext($this->getPercentVolatileWeight())}, " .
 				"percent_volatile_volume = {$this->db->sqltext($this->getPercentVolatileVolume())}, " .
-				"closed = '{$this->db->sqltext($this->getClosed())}', " . 
+				"closed = '{$this->db->sqltext($this->getClosed())}', " .
 				"discontinued = {$this->db->sqltext($this->getDiscontinued())} " .
 				"WHERE product_id = {$this->db->sqltext($this->getId())}";
 		if(!$this->db->exec($sql)) {
 			return false;
-		}				
-		
+		}
+
 		return $this->getId();
 	}
-	
+
 	protected function _load() {
 		if(!$this->getId()) {
 			throw new \Exception('Paint Product ID should be set before calling this method');
 		}
-		
+
 		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
 				"WHERE product_id = {$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
 		if($this->db->num_rows() == 0) {
 			return false;
 		}
-		
+
 		$row = $this->db->fetch_array(0);
 		$this->initByArray($row);
-		
+
 		return true;
 	}
 
