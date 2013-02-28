@@ -314,6 +314,8 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 			$summaryEquipmentQty = 0;
 			$summaryEquipmentVoc3 = 0;
 			$summaryEquipmentTotalVoc = 0;
+			$summaryEquipmentTotalSpentTime = 0;
+			$summaryEquipmentTotalCost = 0;
 
 			$equipmentTag = $doc->createElement( "equipment" );
 
@@ -349,6 +351,11 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				$totalQty = 0;
 				$totalVoc3 = 0;
 				$totalVoc = 0;
+				$totalTime = 0;
+				$totalCost = 0;
+				
+				
+				$totalMixCost = 0;
 
 				$dayTmp = date($this->dateFormat, $day);
 				if(isset($equipment['mixes'][$dayTmp]))
@@ -364,9 +371,26 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					$coatAsApplied = 0;
 					$ratioSum = 0;
 					$isToday = true;//раньше было false (!)
+					$mixSpentTime = 0;
 
 					foreach($mixesByDay as $mix)
 					{
+						//get mix total spent time
+						$mixSpentTime = 0;
+						$mixSpentTime  += $mix->spent_time;
+						//get totalmix cost
+						$stepInstanceId = $mix->step_id;
+						if(!is_null($stepInstanceId)){
+							$stepInstance = new VWM\Apps\Process\StepInstance($this->db);
+							$stepInstance->setId($stepInstanceId);
+							$stepInstance->load();
+							$resourcesInstance = $stepInstance->getResources();
+							foreach($resourcesInstance as $resourceInstance){
+								$totalMixCost += $resourceInstance->getTotalCost();
+							}
+						}
+						$totalMixCost += $mix->getMixPrice();
+						
 						//get pfp proprietary for understanding if we need display current quantity
 						$isProprietary = 0;
 						$pfpId = $mix->getPfpId();
@@ -504,7 +528,23 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 								);
 								$totalOnProjectTag->appendChild( $totalVocAttr );
 								$totalVoc += $voc;
-
+								
+								//spent Time
+								$spentTimeAttr = $doc->createAttribute("spentTime" );
+								$spentTimeAttr->appendChild(
+									$doc->createTextNode($mixSpentTime)
+								);
+								$totalOnProjectTag->appendChild( $spentTimeAttr );
+								$totalTime += $mixSpentTime;
+								
+								//mix cost
+								$mixCostAttr = $doc->createAttribute("mixCost" );
+								$mixCostAttr->appendChild(
+									$doc->createTextNode($totalMixCost)
+								);
+								$totalOnProjectTag->appendChild( $mixCostAttr );
+								$totalCost += $totalMixCost;
+								
 								$dateTag->appendChild( $totalOnProjectTag );
 							}
 						}
@@ -620,9 +660,25 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 					$doc->createTextNode($totalVoc)
 				);
 				$dateTag->appendChild( $totalTotalVocTag );
-
+				
 				$summaryEquipmentTotalVoc += $totalVoc;
-
+				
+				$totalSpentTimeTag = $doc->createElement("totalSpentTime" );
+				$totalSpentTimeTag->appendChild(
+					$doc->createTextNode($totalTime)
+				);
+				$dateTag->appendChild( $totalSpentTimeTag );
+				
+				$summaryEquipmentTotalSpentTime += $totalTime;
+				
+				$totalMixCostTag = $doc->createElement("totalMixCost" );
+				$totalMixCostTag->appendChild(
+					$doc->createTextNode($totalCost)
+				);
+				$dateTag->appendChild( $totalMixCostTag );
+				
+				$summaryEquipmentTotalCost += $totalCost;
+				
 				$equipmentTag -> appendChild($dateTag);
 			}
 
@@ -649,8 +705,23 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 			$summaryEquipmentTag->appendChild( $summaryEquipmenTotalVocTag );
 			$summaryTotalVoc[] = $summaryEquipmentTotalVoc;
 
+			//Mix spent Time
+			$summaryEquipmentSpentTimeTag = $doc->createElement("summaryEquipmentSpentTime" );
+			$summaryEquipmentSpentTimeTag->appendChild(
+				$doc->createTextNode($summaryEquipmentTotalSpentTime)
+			);
+			$summaryEquipmentTag->appendChild( $summaryEquipmentSpentTimeTag );
+			$summaryTime[]= $summaryEquipmentTotalSpentTime;
+			
+			//Mix total cost
+			$summaryEquipmentTotalMixCostTag = $doc->createElement("summaryEquipmentTotalMixCostTag" );
+			$summaryEquipmentTotalMixCostTag->appendChild(
+				$doc->createTextNode($summaryEquipmentTotalCost)
+			);
+			$summaryEquipmentTag->appendChild( $summaryEquipmentTotalMixCostTag );
+			$summaryCost[]= $summaryEquipmentTotalCost;
+			
 			$equipmentTag->appendChild( $summaryEquipmentTag );
-			//
 
 			$pageTag -> appendChild($equipmentTag);
 		}
@@ -666,12 +737,16 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				$facilityTotal['qty'] = $facilitiesTotals[ $equipments[$i]['facility_id'] ] ['qty'];
 				$facilityTotal['voc3'] = $facilitiesTotals[ $equipments[$i]['facility_id'] ] ['voc3'];
 				$facilityTotal['totalVoc'] = $facilitiesTotals[ $equipments[$i]['facility_id'] ] ['totalVoc'];
+				$facilityTotal['spentTime'] = $facilitiesTotals[ $equipments[$i]['facility_id'] ] ['spentTime'];
+				$facilityTotal['mixCost'] = $facilitiesTotals[ $equipments[$i]['facility_id'] ] ['mixCost'];
 			} else {
 				//	no
 				$facilityTotal = array (
 					'qty'		=> 0,
 					'voc3'	=> 0,
-					'totalVoc'	=> 0
+					'totalVoc'	=> 0,
+					'spentTime' => 0,
+					'mixCost' => 0
 				);
 			}
 
@@ -703,7 +778,23 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				);
 				$summaryTotalEquipmentTag->appendChild( $summaryTotalVocPar );
 				$facilityTotal['totalVoc'] += $summaryTotalVoc[$i];
-
+				
+				//mix spent Time
+				$summarySpentTimePar = $doc->createAttribute("spentTime" );
+				$summarySpentTimePar->appendChild(
+					$doc->createTextNode($summaryTime[$i])
+				);
+				$summaryTotalEquipmentTag->appendChild( $summarySpentTimePar );
+				$facilityTotal ['spentTime'] += $summaryTime[$i];
+				
+				//mix total cost
+				$summaryTotalMixCostPar = $doc->createAttribute("mixCost" );
+				$summaryTotalMixCostPar->appendChild(
+					$doc->createTextNode($summaryCost[$i])
+				);
+				$summaryTotalEquipmentTag->appendChild( $summaryTotalMixCostPar );
+				$facilityTotal ['mixCost'] += $summaryCost[$i];
+				
 			$summaryTag->appendChild( $summaryTotalEquipmentTag );
 
 			if ($facilityList) {
@@ -764,6 +855,18 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 			);
 			$summarySumTag->appendChild( $summarySumTotalVocPar );
 
+			$summarySumTimePar = $doc->createAttribute("spentTime" );
+			$summarySumTimePar->appendChild(
+				$doc->createTextNode(array_sum($summaryTime))
+			);
+			$summarySumTag->appendChild( $summarySumTimePar );
+			
+			$summarySumCostPar = $doc->createAttribute("mixCost" );
+			$summarySumCostPar->appendChild(
+				$doc->createTextNode(array_sum($summaryCost))
+			);
+			$summarySumTag->appendChild( $summarySumCostPar );
+			
 		$summaryTag->appendChild( $summarySumTag );
 
 		$pageTag->appendChild( $summaryTag );
