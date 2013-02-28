@@ -974,25 +974,54 @@ class CRepairOrder extends Controller
 
 		$resourceInstanceArray = array();
 		foreach ($resources as $resource) {
+			
 			$resourceInstance = new \VWM\Apps\Process\ResourceInstance($this->db);
 			$resourceInstance->setDescription($resource->description);
-			$resourceInstance->setQty($resource->qty);
-			$resourceInstance->setRate($resource->rate);
+			if ($resource->qty == '') {
+				$resourceInstance->setQty(0);
+			} else {
+				$resourceInstance->setQty($resource->qty);
+			}
+			if ($resource->rate == '') {
+				$resourceInstance->setRate(0);
+			} else {
+				$resourceInstance->setRate($resource->rate);
+			}
 			$resourceInstance->setUnittypeId($resource->unittypeId);
 			$resourceInstance->setResourceTypeId($resource->resourceTypeId);
 			$resourceInstance->setRateUnittypeId($resource->unittypeId);
 			$resourceInstance->setStepId($stepInstance->getId());
 			$resourceInstanceArray[] = $resourceInstance;
 		}
-
-		$stepInstance->setResources($resourceInstanceArray);
-		$stepId = $stepInstance->save();
-
-		if ($stepId) {
-			echo '?action=viewDetails&category=repairOrder';
-		} else {
-			echo false;
+		
+        $violationList = array();
+        $errorsMessage = array();
+		//step validate
+        if (count($stepInstance->validate()) != 0) {
+            $violationList[] = 'step description: '.$stepInstance->validate()->get(0)->getMessageTemplate();
+        }
+        
+		foreach ($resourceInstanceArray as $resourceInstance) {
+            //get resource errors
+            if(count($resourceInstance->validate()) != 0){
+                $violationList[] = 'resource description: '.$resourceInstance->validate()->get(0)->getMessageTemplate();
+            }
 		}
+        
+        if (count($violationList) != 0) {
+            $errors = json_encode($violationList);
+        } else {
+            $errors = false;
+            $stepInstance->setResources($resourceInstanceArray);
+            $stepId = $stepInstance->save();
+        }
+        
+        $responce = array(
+            'link' => '?action=viewDetails&category=repairOrder',
+            'errors' => $errors
+        );
+        $responce = json_encode($responce);
+		echo $responce;
 	}
 	
 	/**

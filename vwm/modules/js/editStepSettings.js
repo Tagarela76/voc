@@ -157,7 +157,7 @@ function StepAddEditResource() {
 					html += '$'+resourceCost.totalCost+'</div>';
 					html +=	'</td>';
 			
-					html +=	'<td class="border_users_b border_users_r">';
+					html +=	'<td class="border_users_b border_users_r border_users_l">';
 					html +=   '<div align="center" id = "'+stepPage.resourceId+'">'
 					html +=			'<a onclick="stepPage.stepAddEditResource.checkNewDialog('+stepPage.resourceId+', \'edit\'); stepPage.stepAddEditResource.openDialog();">'
 					html +=				'edit'
@@ -175,38 +175,52 @@ function StepAddEditResource() {
 	}
 	
 	this.saveEditResource = function(){
-		//init new Resources
-		var resource = new Resource();
-		resource.setId(stepPage.resourceId);
-		resource.setDescription($('#resourceDescription').val());
-		resource.setQty($('#resourceQty').val());
-		resource.setRate($('#resourceRate').val());
-		resource.setUnittypeId($('#selectUnitType').val());
-		resource.setResourceUnittypeId($('#resourceType').val());
-		$.ajax({
-			url: "?action=getResourceCostsInformation&category=repairOrder",
-			data: {
-				resourceQty: $('#resourceQty').val(),
-				resourceRate: $('#resourceRate').val(),
-				resourceUnittypeId: $('#selectUnitType').val(),
-				resourceResourceUnittypeId: $('#resourceType').val()
-			},
-			type: "POST",
-			dataType: "text",
-			success: function (response) {
-				//delete Resource 
-				stepPage.stepEdit.step.deleteResource(stepPage.resourceId);
-				var resourceCosts = eval("(" + response + ')');
-				//set new information
-				$('#resource_description_'+stepPage.resourceId).html(resource.getDescription());
-				$('#material_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.materialCost+'</div>');
-				$('#labor_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.laborCost+'</div>');
-				$('#total_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.totalCost+'</div>');
-				//create new row for display 
-				//add new Resource
-				stepPage.stepEdit.step.addResource(resource);
-			}
-		});
+		var errors = false;
+		if($('#resourceDescription').val()==''){
+			errors = true;
+			alert('enter description');
+		}else if($('#resourceQty').val() == ''){
+			errors = true;
+			alert('enter quantity');
+		}else if($('#resourceRate').val() == ''){
+			errors = true;
+			alert('enter rate');
+		}
+		 
+		if(errors == false){
+			//init new Resources
+			var resource = new Resource();
+			resource.setId(stepPage.resourceId);
+			resource.setDescription($('#resourceDescription').val());
+			resource.setQty($('#resourceQty').val());
+			resource.setRate($('#resourceRate').val());
+			resource.setUnittypeId($('#selectUnitType').val());
+			resource.setResourceUnittypeId($('#resourceType').val());
+			$.ajax({
+				url: "?action=getResourceCostsInformation&category=repairOrder",
+				data: {
+					resourceQty: $('#resourceQty').val(),
+					resourceRate: $('#resourceRate').val(),
+					resourceUnittypeId: $('#selectUnitType').val(),
+					resourceResourceUnittypeId: $('#resourceType').val()
+				},
+				type: "POST",
+				dataType: "text",
+				success: function (response) {
+					//delete Resource 
+					stepPage.stepEdit.step.deleteResource(stepPage.resourceId);
+					var resourceCosts = eval("(" + response + ')');
+					//set new information
+					$('#resource_description_'+stepPage.resourceId).html(resource.getDescription());
+					$('#material_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.materialCost+'</div>');
+					$('#labor_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.laborCost+'</div>');
+					$('#total_cost_'+stepPage.resourceId).html('<div align="center">$'+resourceCosts.totalCost+'</div>');
+					//create new row for display 
+					//add new Resource
+					stepPage.stepEdit.step.addResource(resource);
+				}
+			});
+		}
 	}
 	
 	//function for getting unitTypes
@@ -311,10 +325,15 @@ function StepEdit(){
 				dataType: "text",
 				success: function (response)
 				{
-					window.location.href = response+'&id='+repaitOrderId+'&departmentID='+departmentId;
+                    var resp=eval("("+response+")");
+                    if(resp.errors == false){
+                        window.location.href = resp.link+'&id='+repaitOrderId+'&departmentID='+departmentId;
+                    }else{
+                        var error=eval("("+resp.errors+")");
+                        alert(error);
+                    }
 				}
 			});
-		
 		}
 	}
 	//function for delete Resources

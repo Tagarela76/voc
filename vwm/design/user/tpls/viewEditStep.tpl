@@ -167,11 +167,14 @@
 								{/if}
 							{/foreach}
 						{/if}
-                        <tr>
-                            <td class="users_u_bottom" colspan="5"> </td>
-                            <td class="users_u_bottom_r"> </td>
-                        </tr>
+                        
 					</table>
+						<table class="users" align="left" cellpadding="0" cellspacing="0" style='width: 100%' id='stepResourcesDetails'>
+							<tr>
+								<td class="users_u_bottom" colspan="5"> </td>
+								<td class="users_u_bottom_r"> </td>
+							</tr>
+						</table>
 				</div>
 			</td>
 		</tr>
@@ -188,4 +191,6 @@
 <div id="resourceDetailsContainer" title="Add new resource" style="display:none;">Loading ...</div>
 <input type='hidden' id='currentStep' value='{$stepInstance|escape}'>
 <input type='hidden' id='departmentId' value='{$departmentId|escape}'>
+
+<div id = 'test'></div>
 
