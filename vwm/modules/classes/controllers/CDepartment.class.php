@@ -158,7 +158,7 @@ class CDepartment extends Controller
 
 
         $allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
-        var_dump($allDepartmentAvailableGauges);
+
         $departmentGauges = array();
         foreach ($allDepartmentAvailableGauges as $departmentGauge) {
             $unitType = $departmentGauge->getUnitType();
