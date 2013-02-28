@@ -5,7 +5,6 @@ namespace VWM\Apps\Gauge\Entity;
 
 class NoxGauge extends Gauge {
 
-	protected $currentUsage;
 	const GAUGE_TYPE_NAME = 'NOx';
 	const NOX_PRIORITY = 0;
 
