@@ -8,6 +8,7 @@ use VWM\Apps\Process\ProcessTemplate;
 use VWM\Apps\Process\ProcessInstance;
 use VWM\Apps\Process\StepTemplate;
 use VWM\Apps\Process\StepInstance;
+use VWM\Apps\UnitType\Manager\UnitTypeManager;
 
 class CRepairOrder extends Controller
 {
@@ -101,11 +102,16 @@ class CRepairOrder extends Controller
 			$availableSteps = array();
 			$isHaveProcess = true;
 			$processTemplate = new ProcessTemplate($this->db, $processId);
+			$processTemplate->setWorkOrderId($wo->getId());
 			//get all available steps
 			$steps = $processTemplate->getSteps();
-
 			//get used steps
 			$processInstance = $wo->getProcessInstance();
+			
+			//create process Instance if work order have process Template but don't have Process instance yet
+			if(!$processInstance){
+				$processInstance = $processTemplate->createProcessInstance();
+			}
 			$stepInstances = $processInstance->getSteps();
 			$this->smarty->assign('processName', $processInstance->getName());
 			$this->smarty->assign('processInstanceId', $processInstance->getId());
@@ -911,12 +917,13 @@ class CRepairOrder extends Controller
 
 	protected function actionLoadResourceDetails(){
 		$stepTemplate = new StepTemplate($this->db);
-		$departmentId = $this->getFromPost('departmentId');
 		$resourceUnitTypeId = $this->getFromPost('resourceUnitTypeId');
 
-
 		$resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
-		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType($resourceUnitTypeId,$departmentId);
+		
+		//delete valume resource type as we can't edit such resource.
+		unset($resourceTypes[2]);
+		$unitTypeList = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType($resourceUnitTypeId);
 
 		$this->smarty->assign('unitTypeList', $unitTypeList);
 		$this->smarty->assign('resourceType', $resourceTypes);
@@ -986,6 +993,26 @@ class CRepairOrder extends Controller
 		} else {
 			echo false;
 		}
+	}
+	
+	/**
+	 * function return unittype list by ajax request 
+	 */
+	protected function actionGetUnittypeListForResourceEdit()
+	{
+		$sysType = $this->getFromRequest('sysType');
+		$uManager = new UnitTypeManager($this->db);
+		$unitTypeClasses = $uManager->getUnitTypeListByUnitClass($sysType);
+
+		$data = array();
+		foreach ($unitTypeClasses as $unitType) {
+			$type = array(
+				'unittype_id' => $unitType->getUnitTypeId(),
+				'name' => $unitType->getUnitTypeDesc()
+			);
+			$data[] = $type;
+		}
+		echo json_encode($data);
 	}
 }
 

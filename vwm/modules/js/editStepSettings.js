@@ -71,7 +71,6 @@ function StepAddEditResource() {
 					//$('#resourceType').val(resource.getResourceUnittypeId());
 					$("#resourceType [value='"+resource.getResourceUnittypeId()+"']").attr("selected", "selected");
 					$("#selectUnitType [value='"+resource.getUnittypeId()+"']").attr("selected", "selected");
-				//alert(resource.getUnittypeId());
 					
 				}
 				
@@ -224,7 +223,8 @@ function StepAddEditResource() {
 		}
 	
 		$.ajax({
-			url: "modules/ajax/getUnitTypes.php",
+			//url: "modules/ajax/getUnitTypes.php",
+			url: "?action=getUnittypeListForResourceEdit&category=repairOrder",
 			type: "GET",
 			async: false,
 			data: {

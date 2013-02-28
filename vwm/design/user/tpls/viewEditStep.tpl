@@ -16,7 +16,8 @@
 	{/literal}
 	{if $stepInstance->getResources()!=''}
 		{foreach from=$stepInstance->getResources() item=resource}
-			{literal}
+			{if $resource->getResourceTypeId()!=2}
+				{literal}
 		templateResourceId++;
 		var resource = new Resource();
 			resource.setId(templateResourceId);
@@ -27,7 +28,11 @@
 			resource.setResourceUnittypeId({/literal}{$resource->getResourceTypeId()|escape}{literal});
 			resource.setStepId({/literal}{$stepInstance->getId()|escape}{literal});
 			step.addResource(resource);
-	{/literal}{/foreach}{/if}{literal}
+				{/literal}
+			{/if}
+		{/foreach}
+	{/if}
+	{literal}
 
 	</script>
 {/literal}
@@ -122,42 +127,44 @@
 						{*get step Resources*}
 						{if $stepInstance->getResources()!=''}
 							{foreach from=$stepInstance->getResources() item=resource}
-								{*increase count*}
-								{counter}
-								<tr class="hov_company"	height="10px" id="resource_detail_{$count}">
-									<td class="border_users_l border_users_b" >
-										<div align='center'>
-											<input type="checkbox" value='{$count}' id = 'deleteCheckBox'>
-										</div>
-									</td>
-									<td class="border_users_l border_users_b" >
-										<div style='width: 150px' id='resource_description_{$count}'>
-											{$resource->getDescription()|escape}
-										</div>
-									</td>
-									<td class="border_users_l border_users_b" id="material_cost_{$count}">
-										<div align='center'>
-											${$resource->getMaterialCost()|escape}
-										</div>
-									</td>
-									<td class="border_users_l border_users_b" id = "labor_cost_{$count}">
-										<div align='center'>
-											${$resource->getLaborCost()|escape}
-										</div>
-									</td>
-									<td class="border_users_l border_users_b" id = "total_cost_{$count}">
-										<div align='center'>
-											${$resource->getTotalCost()|escape}
-										</div>
-									</td>
-									<td class="border_users_l border_users_b border_users_r">
-										<div align='center' id = '{$count}'>
-											<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
-												edit
-											</a>
-										</div>
-									</td>
-								</tr>
+								{if $resource->getResourceTypeId()!=2}
+									{*increase count*}
+									{counter}
+									<tr class="hov_company"	height="10px" id="resource_detail_{$count}">
+										<td class="border_users_l border_users_b" >
+											<div align='center'>
+												<input type="checkbox" value='{$count}' id = 'deleteCheckBox'>
+											</div>
+										</td>
+										<td class="border_users_l border_users_b" >
+											<div style='width: 150px' id='resource_description_{$count}'>
+												{$resource->getDescription()|escape}
+											</div>
+										</td>
+										<td class="border_users_l border_users_b" id="material_cost_{$count}">
+											<div align='center'>
+												${$resource->getMaterialCost()|escape}
+											</div>
+										</td>
+										<td class="border_users_l border_users_b" id = "labor_cost_{$count}">
+											<div align='center'>
+												${$resource->getLaborCost()|escape}
+											</div>
+										</td>
+										<td class="border_users_l border_users_b" id = "total_cost_{$count}">
+											<div align='center'>
+												${$resource->getTotalCost()|escape}
+											</div>
+										</td>
+										<td class="border_users_l border_users_b border_users_r">
+											<div align='center' id = '{$count}'>
+												<a onclick="stepPage.stepAddEditResource.checkNewDialog({$count}, 'edit'); stepPage.stepAddEditResource.openDialog();">
+													edit
+												</a>
+											</div>
+										</td>
+									</tr>
+								{/if}
 							{/foreach}
 						{/if}
                         <tr>
