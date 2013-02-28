@@ -29,7 +29,7 @@ class QtyProductGaugeTest extends DbTestCase
         $qtyProductGauge->setPeriod("0");
         $qtyProductGauge->setFacilityId("2");
 
-        $expectedId = 5;
+        $expectedId = 6;
         $result = $qtyProductGauge->save();
 
         $this->assertEquals($expectedId, $result); // last id
@@ -65,8 +65,15 @@ class QtyProductGaugeTest extends DbTestCase
 
         $expectedQty = 1200; // 1200 lbs
         $this->assertEquals($expectedQty, $qtyGauge->getCurrentUsage());
+
+        // check annual gauge
+        $qtyAnnualGauge = new QtyProductGauge($this->db);
+        $qtyAnnualGauge->setDepartmentId(3);
+        $qtyAnnualGauge->setFacilityId(1);
+        $this->assertTrue($qtyAnnualGauge->load());
+
+        $expectedAnnualQty = 250;
+        $this->assertEquals($expectedAnnualQty, $qtyAnnualGauge->getCurrentUsage());
     }
 
 }
-
-?>

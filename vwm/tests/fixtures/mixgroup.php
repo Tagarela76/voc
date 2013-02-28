@@ -33,6 +33,22 @@ return array(
 		'is_primary'	=> 0,
 		'ratio'			=> NULL),
     array(
+		'mix_id'		=> 8,
+		'product_id'	=> 3,
+		'quantity'		=> 10.00,
+		'unit_type'		=> 1,
+		'quantity_lbs'	=> 200,
+		'is_primary'	=> 0,
+		'ratio'			=> NULL),
+    array(
+		'mix_id'		=> 8,
+		'product_id'	=> 3,
+		'quantity'		=> 10.00,
+		'unit_type'		=> 1,
+		'quantity_lbs'	=> 50,
+		'is_primary'	=> 0,
+		'ratio'			=> NULL),
+    array(
 		'mix_id'		=> 21,
 		'product_id'	=> 5,
 		'quantity'		=> 34.00,
