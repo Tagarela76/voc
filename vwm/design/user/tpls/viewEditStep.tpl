@@ -127,6 +127,7 @@
 						{*get step Resources*}
 						{if $stepInstance->getResources()!=''}
 							{foreach from=$stepInstance->getResources() item=resource}
+                                {*check if resource type is not VOLUME. We can't edit such resource type as we edit mix in that case*}
 								{if $resource->getResourceTypeId()!=2}
 									{*increase count*}
 									{counter}
@@ -192,5 +193,5 @@
 <input type='hidden' id='currentStep' value='{$stepInstance|escape}'>
 <input type='hidden' id='departmentId' value='{$departmentId|escape}'>
 
-<div id = 'test'></div>
+<div class="error_img" style="float: left; display: none;" id = 'showStepError'><span class="error_text" id = 'stepSaveErrors'></span></div>
 

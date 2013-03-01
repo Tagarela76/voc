@@ -1,15 +1,15 @@
 VWM\Apps\Process\ResourceInstance:
     properties:
         description:	
-            - MaxLength: { limit: 100, groups: [add,Default]}
-            - NotBlank: { groups: [add,Default] }
+            - MaxLength: 100
+            - NotBlank: ~
         resource_type_id:
-            - NotBlank: { groups: [add,Default] }
+            - NotBlank: ~
         unittype_id:
-            - NotBlank: { groups: [add,Default] }
+            - NotBlank: ~
         qty:
-            - Min: { limit: 0, groups: [add,Default]}
-            - Max: { limit: 9999999999, groups: [add,Default]}
+            - Min: 0
+            - Max: 9999999999
         rate:
-            - Min: { limit: 0, groups: [add,Default]}
-            - Max: { limit: 9999999999, groups: [add,Default]}
+            - Min: 0
+            - Max: 9999999999
