@@ -40,8 +40,10 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 		$data['responsiblePerson'] = (($_REQUEST['responsiblePerson'] == "[Responsible Person]") ? "" : $_REQUEST['responsiblePerson']);
 		$data['title'] = (($_REQUEST['title'] == "[Title]") ? "" : $_REQUEST['title']);
 		$data['notes'] = (($_REQUEST['notes'] == "[Notes]") ? "" : $_REQUEST['notes']);
+        $data['spentTime'] = (isset($_REQUEST['spentTime']) ? true : false);
+        $data['totalCost'] = (isset($_REQUEST['totalCost']) ? true : false);
 		$extraVar['data'] = $data;
-
+        
 		//lets set extra vars in case its csv format
 		if ($format == "csv") {
 			$extraVar['commaSeparator'] = $_REQUEST['commaSeparator'];

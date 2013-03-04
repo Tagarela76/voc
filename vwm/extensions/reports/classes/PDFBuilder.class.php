@@ -3,7 +3,7 @@
 class PDFBuilder {
 
 
-    function PDFBuilder($xmlFileName, $reportType) {
+    function PDFBuilder($xmlFileName, $reportType, $extraVar) {
     	define( "FPDF_FONTPATH", "extensions/reports/xml2pdf/font/" );
 		echo "\n\n";
 		
@@ -46,8 +46,15 @@ class PDFBuilder {
 		require($xml2pdfClassFileName);
 
 		$file = $xmlFileName;
-
+       
 		$xml2pdf = new XML2PDF( FALSE );
+        
+        if($extraVar['data']['spentTime']){
+           $xml2pdf->setShowSpentTime(true);
+        }
+        if($extraVar['data']['totalCost']){
+            $xml2pdf->setShowTotalCost(true);
+        }
 		$xml2pdf->Open();
 
 		$xml2pdf->Parse($xmlFileName);
