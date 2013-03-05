@@ -1,0 +1,217 @@
+{
+    "hash": "ad6f280d062d62f780c04d3b95f66864",
+    "packages": [
+        {
+            "name": "chriskite/phactory",
+            "version": "v0.4",
+            "source": {
+                "type": "git",
+                "url": "http://github.com/chriskite/phactory",
+                "reference": "v0.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/chriskite/phactory/zipball/v0.4",
+                "reference": "v0.4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "ext-mongo": "*",
+                "ext-pdo": "*",
+                "ext-pdo_sqlite": "*"
+            },
+            "suggest": {
+                "ext-mongo": "Allows use of Phactory for testing against MongoDB databases",
+                "ext-pdo": "Allows use of Phactory for testing against SQL databases",
+                "ext-pdo_mysql": "Allows use of Phactory for testing against MySQL databases",
+                "ext-pdo_sqlite": "Allows use of Phactory for testing against SQLite databases"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Phactory": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "A Database Factory for PHP Unit Tests",
+            "homepage": "http://phactory.org",
+            "keywords": [
+                "database",
+                "mongodb",
+                "mysql",
+                "sqlite",
+                "testing"
+            ],
+            "time": "2012-08-21 15:21:46"
+        },
+        {
+            "name": "pimple/pimple",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fabpot/Pimple.git",
+                "reference": "5a8936d9d31eb613f1a33753e5f22bffebe0bbc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/5a8936d9d31eb613f1a33753e5f22bffebe0bbc3",
+                "reference": "5a8936d9d31eb613f1a33753e5f22bffebe0bbc3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Pimple": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
+            "homepage": "http://pimple.sensiolabs.org",
+            "keywords": [
+                "container",
+                "dependency injection"
+            ],
+            "time": "2013-02-09 15:33:26"
+        },
+        {
+            "name": "symfony/validator",
+            "version": "v2.1.0",
+            "target-dir": "Symfony/Component/Validator",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Validator",
+                "reference": "v2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/symfony/Validator/zipball/v2.1.0",
+                "reference": "v2.1.0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/http-foundation": "2.1.*",
+                "symfony/locale": "2.1.*",
+                "symfony/yaml": "2.1.*"
+            },
+            "suggest": {
+                "doctrine/common": ">=2.1,<2.4-dev",
+                "symfony/http-foundation": "v2.1.0",
+                "symfony/yaml": "v2.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Validator": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Validator Component",
+            "homepage": "http://symfony.com",
+            "time": "2012-08-30 02:53:07"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v2.1.0",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml",
+                "reference": "v2.1.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.1.2",
+                "reference": "v2.1.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2012-08-22 13:48:41"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "pimple/pimple": 20
+    },
+    "platform": [
+
+    ],
+    "platform-dev": [
+
+    ]
+}

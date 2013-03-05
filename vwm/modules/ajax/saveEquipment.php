@@ -10,7 +10,7 @@ $site_path = getcwd() . DIRECTORY_SEPARATOR;
 define('site_path', $site_path);
 
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
+require $site_path.'../vendor/autoload.php';
 
 $xnyo = new Xnyo();
 $xnyo->database_type = DB_TYPE;
@@ -317,7 +317,7 @@ switch ($action) {
 			$equipment_lighting_bulb_type = explode(',', $_REQUEST['equipment_lighting_bulb_type']);
 			$equipment_lighting_color = explode(',', $_REQUEST['equipment_lighting_color']);
 			$equipment_lighting_quantity = explode(',', $_REQUEST['equipment_lighting_quantity']);
-			
+
 			$equipmentLightingCount = sizeof($equipment_lighting_id) - 1; // delete last because empty element
 
 			for ($i = 0; $i < $equipmentLightingCount; $i++) {

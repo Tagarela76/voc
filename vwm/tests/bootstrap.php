@@ -7,10 +7,7 @@ require($site_path.'config/constants4unitTest.php');
 require_once ($site_path.'modules/xnyo/xnyo.class.php');
 
 //	Include Class Autoloader
-require_once($site_path.'modules/classAutoloader.php');
-
-//http://stackoverflow.com/questions/6612413/autoload-not-respected-when-testing-with-phpunit
-spl_autoload_register('__autoload');
+require $site_path.'../vendor/autoload.php';
 
 $xnyo = new Xnyo();
 $xnyo->database_type = DB_TYPE;
