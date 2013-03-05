@@ -26,6 +26,7 @@ class DepartmentTest extends DbTestCase {
 		TB_DEFAULT,
 		TB_TYPE,
 		TB_UNITCLASS,
+        TB_USAGE,
 
 	);
 
@@ -88,8 +89,6 @@ class DepartmentTest extends DbTestCase {
 		foreach ($allGaugesCount as $key => $value){
 			$this->assertTrue(in_array($value, $gaugeTypes));
 		}
-
-
 	}
 
 	public function testCountRepairOrderInDepartment(){
@@ -141,8 +140,12 @@ class DepartmentTest extends DbTestCase {
 
         // company 1 has 2 available pfps
         $this->assertCount(2, $pfps);
-        $this->assertEquals($pfps[0], new \VWM\Apps\WorkOrder\Entity\Pfp($this->db, 1));
-    }
+        $newPfp = new \VWM\Apps\WorkOrder\Entity\Pfp();
+        $newPfp->setId(1);
+        $newPfp->load();
+        $this->assertEquals($pfps[0]->getId(), $newPfp->getId());
+        $this->assertEquals($pfps[0]->getDescription(), $newPfp->getDescription());
+   }
 
 	public function testSave(){
 		$department = new Department($this->db);
@@ -152,7 +155,6 @@ class DepartmentTest extends DbTestCase {
 		$department->setVocLimit('100.00');
 		$department->setVocAnnualLimit('100.00');
 		$department->setCreaterId('1');
-
 
 		$expectedId = 4;
 		$result = $department->save();
@@ -165,9 +167,7 @@ class DepartmentTest extends DbTestCase {
 		$departmentActual->initByArray($row);
 		$this->assertEquals($department, $departmentActual);
 
-
 		//check update
-
 		$department->setCreaterId('2');
 		$department->setShareWo('0');
 		$result=$department->save();
@@ -180,23 +180,24 @@ class DepartmentTest extends DbTestCase {
 	public function testGetCountMix(){
 		$department = new Department($this->db, 1);
 		$mixCount = $department->getCountMix();
-		$this->assertEquals($mixCount, 0);
+		$this->assertEquals($mixCount, 10);
 	}
 	public function testGetMixList(){
-		/*$pagination = new Pagination(1);
-		$pagination->url = "#";*/
-
 		$departmentId =1;
-		$query = "SELECT * FROM ". TB_USAGE ." m ".
-				"LEFT JOIN ". TB_WO2DEPARTMENT ." j ON m.wo_id=j.wo_id ".
-				"WHERE m.department_id =".$departmentId." ".
-				"OR j.department_id=".$departmentId." ".
-				"GROUP BY mix_id";
+		
+        $query = "SELECT m.*, wo.id, wo.customer_name, wo.description woDescription, wo.vin ".
+                 "FROM ".TB_USAGE." m  ".
+                 "LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id ".
+                 "LEFT JOIN ".TB_WO2DEPARTMENT." j ON m.wo_id=j.wo_id ".
+                 "WHERE (m.department_id ={$departmentId} OR j.department_id={$departmentId}) ".
+                 "AND  TRUE   GROUP BY m.mix_id ORDER BY m.mix_id DESC ";
+        $this->db->query($query);
 		$rows = $this->db->fetch_all_array();
-		$this->db->query($query);
-		$department = new Department($this->db, 1);
+		$department = new Department($this->db, $departmentId);
 		$mixList = $department->getMixList();
-		$this->assertEquals($mixList, $rows);
+		$this->assertEquals($mixList[0]->getDepartmentId(), $rows[0]['department_id']);
+        $this->assertEquals($mixList[0]->getDescription(), $rows[0]['description']);
+        
 	}
 
 
@@ -216,7 +217,7 @@ class DepartmentTest extends DbTestCase {
 			$expectedPfpTypes[] = new \PfpTypes($this->db, $row['pfp_type_id']);
 		}
 
-		$this->assertEquals($expectedPfpTypes, $pfpTypes);
+		$this->assertEquals($expectedPfpTypes[0], $pfpTypes[0]);
 	}
 
 	public function testGetUnitTypes(){
@@ -244,7 +245,6 @@ class DepartmentTest extends DbTestCase {
 				"ON ut.unit_class_id = uc.id " .
 				"WHERE def.object = 'department' " .
 				"AND def.id_of_object = {$this->db->sqltext($departmentId)} " .
-				"AND uc.name = '{$unitTypeClass}' " .
 				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
@@ -265,7 +265,10 @@ class DepartmentTest extends DbTestCase {
 			}
 		}
 		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
-		$this->assertEquals($unittypes, $departmentUnitTypes);
+		$this->assertEquals($unittypes[0]['type_id'], $departmentUnitTypes[0]->getTypeId());
+        $this->assertEquals($unittypes[0]['unittype_id'], $departmentUnitTypes[0]->getUnitTypeId());
+        $this->assertEquals($unittypes[0]['unittype_desc'], $departmentUnitTypes[0]->getUnitTypeDesc());
+        $this->assertEquals($unittypes[0]['system'], $departmentUnitTypes[0]->getSystem());
 
 		//test getting facility unittype
 		$facilityUnitType = array(4,9);
@@ -291,7 +294,6 @@ class DepartmentTest extends DbTestCase {
 				"ON ut.unit_class_id = uc.id " .
 				"WHERE def.object = 'facility' " .
 				"AND def.id_of_object = {$this->db->sqltext($facilityId)} " .
-				"AND uc.name = '{$unitTypeClass}' " .
 				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
@@ -312,7 +314,10 @@ class DepartmentTest extends DbTestCase {
 			}
 		}
 		$this->assertEquals(count($unittypes), count($departmentUnitTypes));
-		$this->assertEquals($unittypes, $departmentUnitTypes);
+		$this->assertEquals($unittypes[0]['type_id'], $departmentUnitTypes[0]->getTypeId());
+        $this->assertEquals($unittypes[0]['unittype_id'], $departmentUnitTypes[0]->getUnitTypeId());
+        $this->assertEquals($unittypes[0]['unittype_desc'], $departmentUnitTypes[0]->getUnitTypeDesc());
+        $this->assertEquals($unittypes[0]['system'], $departmentUnitTypes[0]->getSystem());
 
 		//test getting company unittype
 		$companyUnitType = array(38,39);
@@ -341,7 +346,6 @@ class DepartmentTest extends DbTestCase {
 				"ON ut.unit_class_id = uc.id " .
 				"WHERE def.object = 'company' " .
 				"AND def.id_of_object = {$this->db->sqltext($companyId)} " .
-				"AND uc.name = '{$unitTypeClass}' " .
 				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
@@ -362,7 +366,10 @@ class DepartmentTest extends DbTestCase {
 			}
 		}
 		$this->assertEquals(count($unittypes), count($companyUnitTypes));
-		$this->assertEquals($unittypes, $companyUnitTypes);
+		$this->assertEquals($unittypes[0]['type_id'], $companyUnitTypes[0]->getTypeId());
+        $this->assertEquals($unittypes[0]['unittype_id'], $companyUnitTypes[0]->getUnitTypeId());
+        $this->assertEquals($unittypes[0]['unittype_desc'], $companyUnitTypes[0]->getUnitTypeDesc());
+        $this->assertEquals($unittypes[0]['system'], $companyUnitTypes[0]->getSystem());
 
 	}
 }

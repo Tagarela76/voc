@@ -133,10 +133,10 @@
                         &nbsp;
                     </td>
                     <td>
-                        &nbsp;
+                        Show Spent Time
                     </td>
                     <td>
-                        &nbsp;
+                        <input type='checkbox' id = 'spentTime' name = 'spentTime'>
                     </td>
                 </tr>
                 <tr>
@@ -153,10 +153,10 @@
                         &nbsp;
                     </td>
                     <td>
-                        &nbsp;
+                        Show Total Cost
                     </td>
                     <td>
-                        &nbsp;
+                        <input type='checkbox' id = 'totalCost' name='totalCost'>
                     </td>
                 </tr>
                 <tr>

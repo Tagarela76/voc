@@ -1,0 +1,6 @@
+VWM\Apps\Process\StepInstance:
+   properties:
+     description:	
+         - MaxLength: 100
+         - NotBlank: ~
+     

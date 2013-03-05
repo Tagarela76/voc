@@ -39,12 +39,12 @@ class VocGauge extends Gauge {
 				 "AND e.facility_track = 'yes' " .
 				 "AND MONTH(FROM_UNIXTIME(m.creation_time)) = ".$month." " .
 				 "AND YEAR(FROM_UNIXTIME(m.creation_time)) = ".$year." " .
-				 "AND d.department_id = ".$this->department_id." ".
+				 "AND d.facility_id = ".$this->facility_id." ".
 				 "GROUP BY voc_limit";
 		}
 
 		$this->db->query($query);
-//var_dump($query);die();
+
 		$numRows = $this->db->num_rows();
 		$currentDate = getdate();
 		if ($numRows > 0) {

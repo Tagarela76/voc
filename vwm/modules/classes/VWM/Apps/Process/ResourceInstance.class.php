@@ -13,7 +13,9 @@ class ResourceInstance extends Resource
 
 	public function __construct(\db $db, $Id = null)
 	{
+		
 		$this->db = $db;
+		$this->modelName = "Resource";
 		if (isset($Id)) {
 			$this->setId($Id);
 			$this->load();

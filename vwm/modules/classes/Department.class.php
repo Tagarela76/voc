@@ -108,7 +108,7 @@ class Department extends DepartmentProperties {
 		//get empty template for output for each facility
 		$emptyData = array();
 		$day = 86400; // Day in seconds
-		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;//var_dump('day_count',$daysCount);
+		$daysCount = round((strtotime($endDate->formatInput()) - strtotime($beginDate->formatInput()))/$day) + 1;
 		$curDay = $beginDate->formatInput();
 		for($i = 0; $i< $daysCount; $i++) {
 			$emptyData []= array(strtotime($curDay)*1000, 0);

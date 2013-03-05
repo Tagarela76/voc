@@ -34,7 +34,7 @@ class Report {
     private function buildReport($xmlFileName, $reportType, $format,$extraVar) {
     	switch ($format) {
     		case "pdf":
-    			$pdf = new PDFBuilder($xmlFileName, $reportType);
+    			$pdf = new PDFBuilder($xmlFileName, $reportType, $extraVar);
     			break;
     			
     		case "html":    		
