@@ -71,7 +71,9 @@
 		<td class="border_users_l border_users_b border_users_r" >
             <div>
 				{if !$mixesCosts[$index].stepEmpty}
-				 {$mix->mix_id|escape} &nbsp;
+                    <a onclick="document.location='?action=viewDetails&category=mix&id={$mix->mix_id}&departmentID={$mix->department_id}'">
+                        {$mix->mix_id|escape}
+                    </a>
 				{/if}
             </div>
         </td>
@@ -91,9 +93,9 @@
             </div>
         </td>
         <td class="border_users_b border_users_r">
-			<div>
-                {$mix->description|escape} &nbsp;
-            </div>
+    			<div>
+                    {$mix->description|escape} &nbsp;
+                </div>
         </td>
         <td class="border_users_b border_users_r">
             <div>

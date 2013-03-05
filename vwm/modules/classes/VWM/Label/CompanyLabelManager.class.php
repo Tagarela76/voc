@@ -41,6 +41,9 @@ class CompanyLabelManager {
 	 * @var datetime
 	 */
 	protected $last_update_time;
+    
+    const TB_INDUSTRY_TYPE2LABEL = 'industry_type2label';
+    const TB_COMPANY_LEVEL_LABEL = 'company_level_label';
 	
     public function getId() {
         return $this->id;
@@ -108,7 +111,7 @@ class CompanyLabelManager {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 				
-		$sql = "INSERT INTO ".TB_INDUSTRY_TYPE2LABEL." (" .
+		$sql = "INSERT INTO ".self::TB_INDUSTRY_TYPE2LABEL." (" .
 				"company_level_label_id, label_text, industry_type_id, last_update_time" .
 				") VALUES ( ".
 				"{$this->db->sqltext($this->getCompanyLevelLabelId())}, " .
@@ -134,7 +137,7 @@ class CompanyLabelManager {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 				
-		$sql = "UPDATE ".TB_INDUSTRY_TYPE2LABEL." SET " .
+		$sql = "UPDATE ".self::TB_INDUSTRY_TYPE2LABEL." SET " .
 				"company_level_label_id={$this->db->sqltext($this->getCompanyLevelLabelId())}, " .
 				"label_text='{$this->db->sqltext($this->getLabelText())}', " .
 				"industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}, " .			
@@ -158,8 +161,8 @@ class CompanyLabelManager {
 		
         $label = new CompanyLevelLabel($this->db);
         $companyLabelManager = new CompanyLabelManager($this->db);
-		$sql = "SELECT itl.* FROM " . TB_INDUSTRY_TYPE2LABEL . " itl " .
-			   "JOIN " . TB_COMPANY_LEVEL_LABEL . " cll " . 
+		$sql = "SELECT itl.* FROM " . self::TB_INDUSTRY_TYPE2LABEL . " itl " .
+			   "JOIN " . self::TB_COMPANY_LEVEL_LABEL . " cll " . 
 			   "ON itl.company_level_label_id= cll.id " .
 			   "WHERE cll.label_id='{$this->db->sqltext($labelId)}' " .
 			   "AND itl.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}";  

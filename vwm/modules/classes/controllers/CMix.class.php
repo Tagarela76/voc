@@ -1207,7 +1207,7 @@ class CMix extends Controller {
 		$mix->recycle = $jrecycle;
 		//$mix->setWoId(777);
 
-		//Create Repair Order if not exist
+		//Create Repair Order if not exist 
 		if (is_null($mix->getWoId())) {
 			$repairOrder = new RepairOrder($this->db);
 			$repairOrderManager = new RepairOrderManager($this->db);

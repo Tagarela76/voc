@@ -7,14 +7,19 @@ use VWM\Framework\Test\DbTestCase;
 
 class CompanyTest extends DbTestCase {
 
+    const TB_DISPLAY_COLUMNS_SETTINGS = 'display_columns_settings';
+    const TB_BROWSE_CATEGORY_ENTITY = 'browse_category_entity';
+    const TB_INDUSTRY_TYPE2LABEL = 'industry_type2label';
+    const TB_COMPANY_LEVEL_LABEL = 'company_level_label';
+    
     protected $fixtures = array(
 		TB_COMPANY,
         TB_INDUSTRY_TYPE,
-        TB_COMPANY_LEVEL_LABEL,
-        TB_INDUSTRY_TYPE2LABEL,
+        self::TB_COMPANY_LEVEL_LABEL,
+        self::TB_INDUSTRY_TYPE2LABEL,
         TB_COMPANY2INDUSTRY_TYPE,
-        TB_BROWSE_CATEGORY_ENTITY,
-        TB_DISPLAY_COLUMNS_SETTINGS,
+        self::TB_BROWSE_CATEGORY_ENTITY,
+        self::TB_DISPLAY_COLUMNS_SETTINGS,
 		TB_DEFAULT,
 		TB_TYPE,
 		TB_UNITCLASS,
@@ -138,7 +143,6 @@ class CompanyTest extends DbTestCase {
 				"ON ut.unit_class_id = uc.id " .
 				"WHERE def.object = 'company' " .
 				"AND def.id_of_object = {$this->db->sqltext($companyId)} " .
-				"AND uc.name = '{$unitTypeClass}' " .
 				"AND def.subject = 'unittype' ".
 				"ORDER BY ut.unittype_id";
 
@@ -159,7 +163,10 @@ class CompanyTest extends DbTestCase {
 			}
 		}
 		$this->assertEquals(count($unittypes), count($companyUnitTypes));
-		$this->assertEquals($unittypes, $companyUnitTypes);
+		$this->assertEquals($unittypes[0]['type_id'], $companyUnitTypes[0]->getTypeId());
+        $this->assertEquals($unittypes[0]['unittype_id'], $companyUnitTypes[0]->getUnitTypeId());
+        $this->assertEquals($unittypes[0]['unittype_desc'], $companyUnitTypes[0]->getUnitTypeDesc());
+        $this->assertEquals($unittypes[0]['system'], $companyUnitTypes[0]->getSystem());
 	}
 }
 

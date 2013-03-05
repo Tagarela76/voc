@@ -190,7 +190,7 @@
 							</option>
 							{foreach from=$availableSteps item=step}
 								<option id='{$step->getId()}' name='{$step->getId()}' value='{$step->getId()}'>
-									{$step->getDescription()}
+                                    {$step->getNumber()}.{$step->getDescription()}
 									{*$step->getDescription()*}
 								</option>
 							{/foreach}

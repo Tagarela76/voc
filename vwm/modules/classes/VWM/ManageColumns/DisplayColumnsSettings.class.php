@@ -39,6 +39,9 @@ class DisplayColumnsSettings extends Model {
 	 */
 	protected $last_update_time;
 
+    const TB_DISPLAY_COLUMNS_SETTINGS = 'display_columns_settings';
+    
+    const TB_BROWSE_CATEGORY_ENTITY = 'browse_category_entity';
     /**
      * TODO: implement this method
      *
@@ -105,7 +108,7 @@ class DisplayColumnsSettings extends Model {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 
-		$sql = "INSERT INTO ".TB_DISPLAY_COLUMNS_SETTINGS." (" .
+		$sql = "INSERT INTO ".self::TB_DISPLAY_COLUMNS_SETTINGS." (" .
 				"browse_category_entity_id, value, industry_type_id, last_update_time" .
 				") VALUES ( ".
 				"{$this->db->sqltext($this->getBrowseCategoryEntityId())}, " .
@@ -131,7 +134,7 @@ class DisplayColumnsSettings extends Model {
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
 
-		$sql = "UPDATE ".TB_DISPLAY_COLUMNS_SETTINGS." SET " .
+		$sql = "UPDATE ".self::TB_DISPLAY_COLUMNS_SETTINGS." SET " .
 				"browse_category_entity_id={$this->db->sqltext($this->getBrowseCategoryEntityId())}, " .
 				"value='{$this->db->sqltext($this->getValue())}', " .
 				"industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}, " .
@@ -155,8 +158,8 @@ class DisplayColumnsSettings extends Model {
 
         $displayColumnsSettings = new DisplayColumnsSettings($this->db);
         $browseCategoryEntity = new BrowseCategoryEntity($this->db);
-		$sql = "SELECT cs.* FROM " . TB_DISPLAY_COLUMNS_SETTINGS . " cs " .
-			   "JOIN " . TB_BROWSE_CATEGORY_ENTITY . " be " .
+		$sql = "SELECT cs.* FROM " . self::TB_DISPLAY_COLUMNS_SETTINGS . " cs " .
+			   "JOIN " . self::TB_BROWSE_CATEGORY_ENTITY . " be " .
 			   "ON cs.browse_category_entity_id= be.id " .
 			   "WHERE be.name='{$this->db->sqltext($browseCategoryEntityName)}' " .
 			   "AND cs.industry_type_id={$this->db->sqltext($this->getIndustryTypeId())}";
