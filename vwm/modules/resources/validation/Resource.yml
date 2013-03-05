@@ -1,0 +1,15 @@
+VWM\Apps\Process\ResourceInstance:
+    properties:
+        description:	
+            - MaxLength: 100
+            - NotBlank: ~
+        resource_type_id:
+            - NotBlank: ~
+        unittype_id:
+            - NotBlank: ~
+        qty:
+            - Min: 0
+            - Max: 9999999999
+        rate:
+            - Min: 0
+            - Max: 9999999999

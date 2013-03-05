@@ -57,6 +57,7 @@ abstract class Step extends Model
 	public function __construct(\db $db, $id = null)
 	{
 		$this->db = $db;
+		$this->modelName = "Step";
 		if (isset($id)) {
 			$this->setId($id);
 			$this->load();
