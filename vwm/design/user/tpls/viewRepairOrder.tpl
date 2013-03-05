@@ -182,8 +182,8 @@
 			<td style="width: 800px">
 				<div  style="margin: 10px 0 0 25px; width: 100%">
 					<input class='button' type="button" value="Add New Mix" onclick="document.location.href=$('#urlMixAdd').val()">
-					<input class='button' type="button" value="Add Step" onclick="stepManager.addStepWithOutMix()">	
 					{if $isHaveProcess}
+                        <input class='button' type="button" value="Add Step" onclick="stepManager.addStepWithOutMix()">	
 						<select name='availableSteps' id='availableSteps' value='0' onchange="stepManager.addstepToUrl();">
 							<option value='0'>
 								No Process

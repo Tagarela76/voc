@@ -23,7 +23,9 @@ class UnitTypeTest extends DbTestCase {
 
 	protected $unit_class_id;
 
-	//public function
+	public function testLoad(){
+        
+    }
 }
 
 ?>

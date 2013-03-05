@@ -27,7 +27,7 @@ class NoxGaugeTest extends DbTestCase {
 		$noxGauge->setPeriod(Gauge::PERIOD_ANNUALLY);
 		$noxGauge->setUnitType(1);
 
-		$expectedId = 4;
+		$expectedId = 6;
 		$this->assertEquals($expectedId, $noxGauge->save());
 
 		$sql = "SELECT * FROM " . Gauge::TABLE_NAME . " WHERE id = {$expectedId}";

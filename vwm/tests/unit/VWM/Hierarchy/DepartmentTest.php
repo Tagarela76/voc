@@ -26,6 +26,7 @@ class DepartmentTest extends DbTestCase {
 		TB_DEFAULT,
 		TB_TYPE,
 		TB_UNITCLASS,
+        TB_USAGE,
 
 	);
 
