@@ -1003,7 +1003,9 @@ class CMix extends Controller {
 			echo "add mix";
 			var_dump($form);
 		}
-
+        
+        $isCustomStep = $form['isCustomStep'];
+        
 		$departmentID = $form['departmentID'];
 		$company = new Company($this->db);
 		$companyID = $company->getCompanyIDbyDepartmentID($departmentID);
@@ -1136,10 +1138,11 @@ class CMix extends Controller {
 		if ($debug) {
 			var_dump('AddOrEditAjax', $params);
 		}
-		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug);
+        
+		$this->AddOrEditAjax($facilityID, $companyID, $isMWS, $mix, $mWasteStreams, $wastes, $recycle, $debug, null, $isCustomStep);
 	}
 
-	protected function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null) {
+	protected function AddOrEditAjax($facilityID, $companyID, $isMWS, MixOptimized $mix, MWasteStreams $mWasteStreams, $jwaste, $jrecycle, $debug = false, $productsOldVal = null, $isCustomStep = 0) {
 //$debug =true;
 
 		if ($isMWS) {
@@ -1208,6 +1211,7 @@ class CMix extends Controller {
 		//$mix->setWoId(777);
 
 		//Create Repair Order if not exist 
+        
 		if (is_null($mix->getWoId())) {
 			$repairOrder = new RepairOrder($this->db);
 			$repairOrderManager = new RepairOrderManager($this->db);
@@ -1217,7 +1221,7 @@ class CMix extends Controller {
 
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
-		} elseif($mix->getStepId()) {
+		} elseif($mix->getStepId() && $isCustomStep==0) {
 			//save new step for work order
 			//create work order
 			$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
@@ -1933,7 +1937,7 @@ class CMix extends Controller {
 		if($request['stepID']!=0){
 			$mix->setStepId($request['stepID']);
 		}
-
+        
 		$data->creation_time = $mix->creation_time;
 		$data->dateFormatForCalendar = $mix->dateFormatForCalendar;
 		$data->waste = $mix->waste;
@@ -1963,7 +1967,16 @@ class CMix extends Controller {
 		$process = $workOrder->getProcessTemplate();
 
 		if (!is_null($process->getId()) && $request['stepID']!=0) {
-			$step = new StepTemplate($this->db, $request['stepID']);
+            //check if step already created
+            if(isset($request['stepIsCreated'])){
+                //mark stepInstance as custom
+                $step = new StepInstance($this->db, $request['stepID']);
+                $isCustomStep = 1;
+            }else{
+                $step = new StepTemplate($this->db, $request['stepID']);
+                $isCustomStep = 0;
+            }
+            
 			if($step) {
 				$data->spent_time = $step->getTotalSpentTime();
 				$resources = $step->getResources();
@@ -1979,6 +1992,7 @@ class CMix extends Controller {
 
 		$this->smarty->assign('repairOrderIteration', $repairOrderIteration);
 		$this->smarty->assign('mixParentID', $mixParentID);
+        $this->smarty->assign('isCustomStep', $isCustomStep);
 
 		$this->smarty->assign('repairOrderId', $repairOrderId);
 		$this->smarty->assign('departmentID', $department->getDepartmentId());

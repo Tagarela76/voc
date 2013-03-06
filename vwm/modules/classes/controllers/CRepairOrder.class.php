@@ -876,14 +876,36 @@ class CRepairOrder extends Controller
         $repaitOrderId = $this->getFromRequest('repairOrderId');
         $stepId = $this->getFromRequest('stepId');
         $departmentId = $this->getFromRequest('departmentId');
-
+        
         $category = "department";
         $categoryId = $departmentId;
-        //get step Template
+        
         $stepInstance = new StepInstance($this->db);
-        $stepInstance->setId($stepId);
-        $stepInstance->load();
-
+        //check if we edit or create step. If create set step id 0
+        if (is_null($stepId)) {
+            //get steps count
+            //count template Steps
+            $wo = new RepairOrder($this->db, $repaitOrderId);
+            $processTemplateId = $wo->getProcessTemplateId();
+            $processTemplate = new ProcessTemplate($this->db);
+            $processTemplate->setId($processTemplateId);
+            $processTemplate->load();
+            $stepsTemplateCount = count($processTemplate->getSteps());
+            //count steps creating by user
+            $processInstance = new ProcessInstance($this->db);
+            $processInstance->setId($this->getFromRequest('processId'));
+            $processInstance->load();
+            $stepsInstanceCreatingByUserCount = count($processInstance->getStepsCreatingByUser($stepsTemplateCount));
+            //initialize new Step 
+            $stepInstance->setId(0);
+            $stepInstance->setProcessId($this->getFromRequest('processId'));
+            $stepInstanceNumber = $stepsTemplateCount + $stepsInstanceCreatingByUserCount + 1;
+            $stepInstance->setNumber($stepInstanceNumber);
+        } else {
+            $stepInstance->setId($stepId);
+            $stepInstance->load();
+        }
+        
         $jsSources = array(
             "modules/js/stepObject.js",
             "modules/js/editStepSettings.js",
@@ -964,12 +986,19 @@ class CRepairOrder extends Controller
         $isErrors = false;
         $resourcesAttributes = json_decode($this->getFromPost('resourcesAttributes'));
         $stepAttributes = json_decode($this->getFromPost('stepAttributes'));
-
+        
         $stepInstance = new \VWM\Apps\Process\StepInstance($this->db);
-        $stepInstance->setId($stepAttributes->stepId);
-        $stepInstance->load();
+        
+        if ($stepAttributes->stepId != 0) {
+            $stepInstance->setId($stepAttributes->stepId);
+            $stepInstance->load();
+        }else{
+            $stepInstance->setProcessId($stepAttributes->processId);
+            $stepInstance->setNumber($stepAttributes->number);
+        }
         $stepInstance->setDescription($stepAttributes->stepDescription);
-
+        
+        
         foreach ($resourcesAttributes as $resourceAttributes) {
             $resources[] = json_decode($resourceAttributes);
         }

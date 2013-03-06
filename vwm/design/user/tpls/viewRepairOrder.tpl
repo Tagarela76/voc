@@ -194,6 +194,10 @@
 									{*$step->getDescription()*}
 								</option>
 							{/foreach}
+                            {*Create new Custom Step*}
+                            <option value='create'>
+                                Custom Step
+                            </option>
 						</select>
 					{/if}
 				</div>

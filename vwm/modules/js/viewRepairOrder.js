@@ -17,35 +17,46 @@ function StepManager(){
 	
 	}
 
-	this.addStepWithOutMix = function(){
-		var stepId = $('#availableSteps option:selected').val();
-		var processInstanceId = $('#processInstanceId').val();
-	
-		if(stepId==0){
-			alert('select process step');
-		}else{
-			$.ajax({
-				url: "?action=addStepWithOutMix&category=repairOrder",
-				async: false,
-				data: {
-					"stepId":stepId,
-					"processInstanceId":processInstanceId
-				},
-				type: "POST",
-				success: function (result) {
-					if(result == 1){
-						window.location.reload();
-					}else{
-						alert('fail to save step.Try again please.');
-					}
-				}
-			});
-		}
-	}
+	this.addStepWithOutMix = function() {
+
+        var stepId = $('#availableSteps option:selected').val();
+        //check if step exist. If not - create step
+        if (stepId == 'create') {
+            this.createStep($('#processInstanceId').val());
+        } else {
+            var processInstanceId = $('#processInstanceId').val();
+
+            if (stepId == 0) {
+                alert('select process step');
+            } else {
+                $.ajax({
+                    url: "?action=addStepWithOutMix&category=repairOrder",
+                    async: false,
+                    data: {
+                        "stepId": stepId,
+                        "processInstanceId": processInstanceId
+                    },
+                    type: "POST",
+                    success: function(result) {
+                        if (result == 1) {
+                            window.location.reload();
+                        } else {
+                            alert('fail to save step.Try again please.');
+                        }
+                    }
+                });
+            }
+        }
+    }
 	
 	this.editStep = function(stepId){
 		var url = $('#urlMixEdit').val();
 		document.location.href = url+"&stepId="+stepId;
 	}
+    
+    this.createStep = function(processId){
+        var url = $('#urlMixEdit').val();
+        document.location.href = url+"&processId="+processId;
+    }
 }
 

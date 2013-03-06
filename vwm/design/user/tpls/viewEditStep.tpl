@@ -11,6 +11,8 @@
 	var step = new Step();
 	step.setId(stepId);
 	step.setDescription({/literal}"{$stepInstance->getDescription()|escape}"{literal});
+    step.setProcessId({/literal}"{$stepInstance->getProcessId()|escape}"{literal});
+    step.setStepNumber({/literal}"{$stepInstance->getNumber()|escape}"{literal});
 
 
 	{/literal}
