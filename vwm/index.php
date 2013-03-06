@@ -9,10 +9,7 @@ $site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP;
 define('site_path', $site_path);
 
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
-
-//http://www.php.net/manual/en/function.spl-autoload-register.php
-spl_autoload_register('__autoload');
+require $site_path.'../vendor/autoload.php';
 
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');
@@ -161,7 +158,7 @@ try {
 								$company_id = $user->getUserDetails($_SESSION['user_id'], true);
 								$terms_conditions = $company_id['terms_conditions'];
 								$company_id = $company_id['company_id'];
-							
+
 								if ($queryStrPost[0] == 'h') {
 									header("Location: " . $queryStrPost);
 								} else {

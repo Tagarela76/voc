@@ -1,17 +1,17 @@
 <?php
-// REWRITE ME TO HANDLE lib folder
+// REWRITE ME TO HANDLE vendor folder
 
 function __autoload($class_name) {
 
     //  tweak for PHP 5.3 namespaces
 	$class_name = str_replace('\\', '/', $class_name);
 	if(substr($class_name, 0, 7) =='Symfony') {
-		require_once(site_path.'modules'.DIRSEP.'lib'.DIRSEP.$class_name.'.php');
+		require_once(site_path.DIRSEP.'..'.DIRSEP.'vendor'.DIRSEP.'Symfony'.DIRSEP.'lib'.DIRSEP.$class_name.'.php');
 		return true;
 	}
 
     if (substr($class_name, 0, 6) == 'Pimple') {
-        require_once(site_path.'modules'.DIRSEP.'lib'.DIRSEP.'Pimple-master'.DIRSEP.'lib'.DIRSEP.$class_name.'.php');
+        require_once(site_path.DIRSEP.'..'.DIRSEP.'vendor'.DIRSEP.'Pimple-master'.DIRSEP.'lib'.DIRSEP.$class_name.'.php');
 		return true;
     }
 

@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "classmap": ["vwm/modules/classes/", "vwm/extensions/", "vwm/tests/unit/"]
+    },
+    "require": {
+        "symfony/validator": "v2.1.0",
+        "symfony/yaml": "v2.1.0",
+        "pimple/pimple": "1.0.*@dev",
+        "chriskite/phactory": "v0.4"
+    }
+}

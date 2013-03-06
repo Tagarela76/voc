@@ -1,16 +1,16 @@
 <?php
-chdir('../..');	
+chdir('../..');
 
 require('config/constants.php');
 require_once ('modules/xnyo/xnyo.class.php');
 require_once ('modules/classes/Unittype.class.php');
 require_once ('extensions/carbon_footprint/classes/CarbonFootprint.class.php');
 
-$site_path = getcwd().DIRECTORY_SEPARATOR; 
+$site_path = getcwd().DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
-	
+
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
+require $site_path.'../vendor/autoload.php';
 
 $xnyo = new Xnyo;
 
@@ -21,9 +21,9 @@ $xnyo->db_passwd		= DB_PASS;
 
 $xnyo->start();
 $db->select_db(DB_NAME);
- 
+
 $unittypeObject = new Unittype($db);
- 
+
 $xnyo->filter_post_var('fuel', 'text');
 
 $fuel = $_POST['fuel'];

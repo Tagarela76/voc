@@ -7,9 +7,7 @@ define('DIRSEP', DIRECTORY_SEPARATOR);
 $site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP;
 define('site_path', $site_path);
 
-require_once('modules/classAutoloader.php');
-//http://www.php.net/manual/en/function.spl-autoload-register.php
-spl_autoload_register('__autoload');
+require $site_path.'../vendor/autoload.php';
 
 require_once('modules/lib/Reform.inc.php');
 //	Start xnyo Framework
@@ -82,18 +80,18 @@ try {
 		}
 
         VOCApp::getInstance()->setUser($user);
-        
+
 		$smarty->assign("accessname", $xnyo->user['username']);
 
 		if (isset($_GET['category']) || isset($_POST['itemID'])) {
 			$className = "CA" . ucfirst($_GET['category']);
-			
+
 			if (class_exists($className)) {
 				$controllerObj = new $className($smarty, $xnyo, $db, $user, $action);
 				$controllerObj->runAction();
 			}
 			else
-				throw new Exception('404');	
+				throw new Exception('404');
 		} elseif ($_GET["action"] == 'vps') {
 			$smarty->assign('parent', 'vps');
 			require ('vps_admin.php');

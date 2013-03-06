@@ -10,7 +10,7 @@ $site_path = getcwd() . DIRECTORY_SEPARATOR;
 define('site_path', $site_path);
 
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
+require $site_path.'../vendor/autoload.php';
 
 $xnyo = new Xnyo;
 
@@ -55,7 +55,7 @@ switch ($action) {
             $sysType = $_POST['selectedClassValue'];
             $companyID = $_POST['companyId'];
             $companyEx = $_POST['companyEx'];
-            
+
             //this function change unittype if CompanyEx
             function setsql_1($sysType, $companyID) {
                 switch ($sysType) {
@@ -126,7 +126,7 @@ switch ($action) {
             } else {
                 $query = setsql_2($sysType, $companyID);
             }
-            
+
             $db->query($query);
             if ($db->num_rows() == 0) {
                 $query = setsql_2($sysType, $companyID);

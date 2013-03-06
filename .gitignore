@@ -3,6 +3,7 @@ nbproject/
 msds/
 msds_deleted/
 voc_logs/
+vendor/
 documentation/html/
 /vwm/cache/
 /vwm/db_backup/

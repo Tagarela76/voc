@@ -1,27 +1,27 @@
 <?php
-	
-	chdir('../..');		
-	
+
+	chdir('../..');
+
 	require('config/constants.php');
 	require_once ('modules/xnyo/xnyo.class.php');
 	require_once('modules/lib/Reform.inc.php');
-		
-	$site_path = getcwd().DIRECTORY_SEPARATOR; 
+
+	$site_path = getcwd().DIRECTORY_SEPARATOR;
 	define ('site_path', $site_path);
-	
+
 	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
-	
+	require $site_path.'../vendor/autoload.php';
+
 	$xnyo = new Xnyo();
 	$xnyo->database_type	= DB_TYPE;
 	$xnyo->db_host 			= DB_HOST;
 	$xnyo->db_user			= DB_USER;
 	$xnyo->db_passwd		= DB_PASS;
 	$xnyo->start();
-	
+
 	$db->select_db(DB_NAME);
-	
-	//	logged in?	
+
+	//	logged in?
 	$user = new User($db, $xnyo, $access, $auth);
 	if (!$user->isLoggedIn()) {
 		die();
@@ -42,7 +42,7 @@
 	if ($repairOrderId == '') {
 		$repairOrderId = null;
 	}
-	$repairOrder = new RepairOrder($db, $repairOrderId);	
+	$repairOrder = new RepairOrder($db, $repairOrderId);
 	// we should save old work order number for use it in mix update
 	$repairOrderOldDesc = $repairOrder->number;
 	$repairOrder->number = $_POST["work_order_number"];
@@ -65,8 +65,8 @@
 			$validStatus['summary'] = 'false';
 			$validStatus['number'] = 'alredyExist';
 		}
-	}	
-	if ($validStatus['summary'] == 'true') {					
+	}
+	if ($validStatus['summary'] == 'true') {
 
 		$repairOrderId = $repairOrder->save();
 		// add empty mix
@@ -80,7 +80,7 @@
 				$mixOptimized->description = $_POST["work_order_number"];
 				$mixOptimized->wo_id = $repairOrderId;
 				$mixOptimized->iteration = 0;
-				$mixOptimized->facility_id = $_POST["id"]; 
+				$mixOptimized->facility_id = $_POST["id"];
 				$mixOptimized->department_id = $departmentIds[0];
 				$mixOptimized->save();
 			}
@@ -88,18 +88,18 @@
 
 		if ($action == 'edit') {
 			// get work order mix id
-			$mixIDs = $repairOrder->getMixes();  
+			$mixIDs = $repairOrder->getMixes();
 			// now we should update child work order mix (don't touch iteration suffix)
 			foreach ($mixIDs as $mixID) {
 				// add empty mix for each facility department
 				$mixOptimized = new MixOptimized($db, $mixID->mix_id);
-				preg_match("/$repairOrderOldDesc(.*)/", $mixOptimized->description, $suffix);  
-				
+				preg_match("/$repairOrderOldDesc(.*)/", $mixOptimized->description, $suffix);
+
                 $mixOptimized->description = $_POST["work_order_number"];
                 if(!empty($suffix[1]) ) {
-                    $mixOptimized->description .= $suffix[1]; 
+                    $mixOptimized->description .= $suffix[1];
                 }
-                $mixOptimized->save(); 
+                $mixOptimized->save();
 			}
 		}
 	}
@@ -110,8 +110,8 @@
     $repairOrderManager->unSetDepartmentToWo($repairOrderId);
     // set departments to wo
     foreach ($woDepartments_id as $departmentId) {
-       $repairOrderManager->setDepartmentToWo($repairOrderId, $departmentId); 
+       $repairOrderManager->setDepartmentToWo($repairOrderId, $departmentId);
     }
-	echo json_encode($validStatus);		
+	echo json_encode($validStatus);
 
 ?>

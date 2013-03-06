@@ -5,7 +5,7 @@ namespace VWM\Framework\Test;
 require_once('PHPUnit/Runner/Version.php');
 require_once('PHPUnit/Autoload.php');
 
-require_once(site_path.'modules/lib/phactory/lib/Phactory.php');
+require_once(site_path.'../vendor/phactory/lib/Phactory.php');
 
 abstract class DbTestCase extends TestCase {
 
