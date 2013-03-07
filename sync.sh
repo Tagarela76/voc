@@ -1,5 +1,6 @@
 DIRECTORY="vwm"
 RELEASE_DIRECTORY="../vwmRelease"
+TARGET="root@jon.vocwebmanager.com:/home/jonvo0/public_html/vocwebmanager.com"
 
 if [ ! -d "$DIRECTORY" ]; then
 	echo "You should cd to VOCWEBMANAGER root folder before sync"
@@ -38,7 +39,10 @@ rsync -rzvp \
 --exclude "tmp/*" \
 --exclude "config" \
 --exclude "modules/phpgacl/" \
---inplace $RELEASE_DIRECTORY/* root@jon.vocwebmanager.com:/home/jonvo0/public_html/vocwebmanager.com/vwm/;
+--inplace $RELEASE_DIRECTORY/* $TARGET/vwm/;
+
+echo "Syncing vendor separatly"
+rsync -rvzp --inplace vendor/* $TARGET/vendor/;
 
 echo "Sync is done"
 exit 0
