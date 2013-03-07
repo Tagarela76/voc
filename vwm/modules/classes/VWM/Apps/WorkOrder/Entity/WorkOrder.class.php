@@ -242,6 +242,6 @@ abstract class WorkOrder extends Model
 		$this->setProcessInstance($processInstance);
 		return $processInstance;
 	}
-
+    
 }
 ?>

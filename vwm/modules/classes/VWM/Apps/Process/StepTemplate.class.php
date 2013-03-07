@@ -24,7 +24,7 @@ class StepTemplate extends Step
     
 	public function load()
 	{
-		parent::load(self::TABLE_NAME);
+		return parent::load(self::TABLE_NAME);
 	}
 
 	/**
@@ -131,5 +131,6 @@ class StepTemplate extends Step
 
 		return $step;
 	}
+    
 }
 ?>

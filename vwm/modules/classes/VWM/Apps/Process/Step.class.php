@@ -144,6 +144,7 @@ abstract class Step extends Model
 		}
 		$row = $this->db->fetch(0);
 		$this->initByArray($row);
+        return $this->getId();
 	}
 
 }

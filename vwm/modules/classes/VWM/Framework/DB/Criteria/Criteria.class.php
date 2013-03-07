@@ -10,6 +10,7 @@ class Criteria
 
     public function __construct()
     {
-        $this->tables
+        $this->tables;
     }
+    
 }

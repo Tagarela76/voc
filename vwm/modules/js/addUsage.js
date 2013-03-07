@@ -661,7 +661,8 @@ function addMix() {
     if(editForm == false) {
         urlData = {
             "action" : "addItemAjax", 
-            "category" : "mix", 
+            "category" : "mix",
+            "isCustomStep":$('#isCustomStep').val(),
             "departmentID": departmentID, 
             "wasteJson" : waste, 
             "recycleJson" : recycle, 
@@ -689,7 +690,7 @@ function addMix() {
         dataType: "html",
         success: function (response)
         {
-					
+		//console.log(response);			
             if(response == 'DONE') {
                 if( true) {
                     if($('#repairOrderId').val()==''){
@@ -719,8 +720,6 @@ function addMix() {
                         $("#PrimaryProductError").css("display","block");
                     }
                 }
-
-
             } else {
                 alert(response);
             }

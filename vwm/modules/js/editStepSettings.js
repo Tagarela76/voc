@@ -328,7 +328,6 @@ $(function() {
     stepPage = new StepSettings();
     stepPage.stepAddEditResource.iniDialog();
 	
-	
 });
 
 

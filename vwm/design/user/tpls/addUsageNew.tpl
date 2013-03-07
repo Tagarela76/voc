@@ -889,7 +889,8 @@ $(function()
     <input id='repairOrderId' type='hidden' name='repairOrderId' value='{$repairOrderId}'/>
     <input id='woIteration' type='hidden' name='woIteration' value='{$woIteration}'/>
 	<input id='StepID' type='hidden' name='StepID' value='{$stepID}'/>
-
+    <input id='isCustomStep' type='hidden' name='isCustomStep' value='{$isCustomStep}'/>
+    
     {if $request.action eq "addItem"}
         <input type='hidden' name='department_id' value='{$request.departmentID}'>
     {/if}
