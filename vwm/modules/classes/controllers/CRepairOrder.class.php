@@ -1082,6 +1082,26 @@ class CRepairOrder extends Controller
         }
         echo json_encode($data);
     }
+    
+     /**
+     * function for getting Paint Cost to understand if step can have mix 
+     * ajax function
+     */
+    protected function actionIsStepCanHaveMix(){
+        $isStepCanHaveMix = 0;
+        $stepId = $this->getFromPost('stepId');
+        $stepTemplate = new StepTemplate($this->db);
+        $stepTemplate->setId($stepId);
+        $stepTemplate->load();
+        $resources = $stepTemplate->getResources();
+        foreach($resources as $resource){
+            if($resource->getResourceTypeId()==2){
+                $isStepCanHaveMix = 1;
+                break;
+            }
+        }
+        echo $isStepCanHaveMix;
+    }
 
 }
 ?>

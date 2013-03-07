@@ -58,5 +58,30 @@ function StepManager(){
         var url = $('#urlMixEdit').val();
         document.location.href = url+"&processId="+processId;
     }
+    
+     //function for adding step
+    this.addStep = function(){
+        var stepId = $('#availableSteps option:selected').val();
+        if(stepId == 0){
+            //add mix with out Step
+            document.location.href=$('#urlMixAdd').val();
+        }else{
+        $.ajax({
+				url: "?action=isStepCanHaveMix&category=repairOrder",
+				async: false,
+				data: {
+					"stepId":stepId,
+				},
+				type: "POST",
+				success: function (result) {
+					if(result == 1){
+                        document.location.href=$('#urlMixAdd').val();
+                    }else{
+                        stepManager.addStepWithOutMix();
+                    }
+				}
+			});
+        }
+    }
 }
 
