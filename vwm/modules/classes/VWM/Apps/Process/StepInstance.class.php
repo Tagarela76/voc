@@ -89,6 +89,8 @@ class StepInstance extends Step
 
 	protected function _insert()
 	{
+        $this->db->beginTransaction();
+        
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"number, process_id, last_update_time, description, optional" .
 				") VALUES(" .
@@ -103,10 +105,26 @@ class StepInstance extends Step
 
 		if ($response) {
 			$this->setId($this->db->getLastInsertedID());
-			return $this->getId();
-		} else {
-			return false;
-		}
+            $resources = $this->getResources();
+            
+        //save Resources
+        if (!empty($resources)) {
+                foreach ($resources as $resource) {
+                    $resource->setStepId($this->getId());
+                    $resourceId = $resource->save();
+                    if (!$resourceId) {
+                        $this->db->rollbackTransaction();
+                        return false;
+                    }
+                }
+            }
+
+            $this->db->commitTransaction();
+            return $this->getId();
+        } else {
+            $this->db->rollbackTransaction();
+            return false;
+        }
 	}
 
 	protected function _update()
@@ -147,7 +165,7 @@ class StepInstance extends Step
 
 	/**
 	 * delete current step with its resources
-	 * @param type $stepId
+	 * @param int $stepId
 	 * @return boolean
 	 */
 	public function delete($stepId = null)
@@ -171,6 +189,8 @@ class StepInstance extends Step
 			return false;
 		}
 	}
+    
+    
 
 }
 

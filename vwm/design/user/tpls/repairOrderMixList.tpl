@@ -74,6 +74,10 @@
                     <a onclick="document.location='?action=viewDetails&category=mix&id={$mix->mix_id}&departmentID={$mix->department_id}'">
                         {$mix->mix_id|escape}
                     </a>
+                {else}
+                    <a  onclick="document.location='?action=addItem&category=mix&repairOrderId={$repairOrder->getId()}&departmentID={$mix->department_id}&stepID={$mix->mix_id}&stepIsCreated=1'">
+                        add mix
+                    </a>
 				{/if}
             </div>
         </td>

@@ -9,7 +9,7 @@ if(isset($_GET['product_id'])){
 	define ('site_path', $site_path);
 
 	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
+	require $site_path.'../vendor/autoload.php';
 
 
 	//	Start xnyo Framework
@@ -25,7 +25,7 @@ if(isset($_GET['product_id'])){
 
 	if ($db->num_rows() == 1) {
 		$data = $db->fetch(0);
-		
+
 		$description = $data->name;
 
 		$query = "SELECT * FROM ".TB_COAT." WHERE coat_id=".$data->coating_id;

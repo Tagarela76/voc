@@ -9,7 +9,7 @@ if(isset($_GET['customerID'])){
 	define ('site_path', $site_path);
 
 	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
+	require $site_path.'../vendor/autoload.php';
 
 	$xnyo = new Xnyo;
 
@@ -29,7 +29,7 @@ if(isset($_GET['customerID'])){
 	if ($requestDetails!=false)
 	{
 		$customerDetails = $vps2voc->getCustomerDetails($_GET['customerID']);
-												
+
 		$definedPlans['request_id'] = $requestDetails['id'];
 		$definedPlans['customer_id'] = $requestDetails['customer_id'];
 		$definedPlans['customerName'] = $customerDetails['name'];

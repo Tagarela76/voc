@@ -16,8 +16,17 @@ class ProcessInstance extends Process
 	const TABLE_NAME = 'process_instance';
 	const STEP_TABLE = 'step_instance';
 	const RESOURCE_TABLE = 'resource_instance';
-
     /**
+     * @var VWM\Apps\Process\StepInstance[]
+     */
+    protected $stepsCreatingByUser = array();
+    
+    public function setStepsCreatingByUser($stepsCreatingByUser)
+    {
+        $this->stepsCreatingByUser = $stepsCreatingByUser;
+    }
+
+     /**
      * TODO: implement this method
      *
      * @return array property => value
@@ -138,6 +147,46 @@ class ProcessInstance extends Process
 			return false;
 		}
 	}
+    
+    /**
+     * get step wich user create by himself.
+     * 
+     * @param int $lastTemplateStepNumber
+     * 
+     * @return NULL | VWM\Apps\Process\StepInstance[]
+     */
+    public function getStepsCreatingByUser($lastTemplateStepNumber = null)
+    {
+        if (!empty($this->stepsCreatingByUser)) {
+            return $this->stepsCreatingByUser;
+        }
+
+        $stepsCreatingByUser = array();
+
+        if (!is_null($lastTemplateStepNumber)) {
+            $sql = "SELECT id FROM " . self::STEP_TABLE . " " .
+                    "WHERE process_id={$this->db->sqltext($this->getId())} " .
+                    "AND number > {$this->db->sqltext($lastTemplateStepNumber)}";
+            $this->db->exec($sql);
+
+            if ($this->db->num_rows() == 0) {
+                return null;
+            }
+
+            $stepIds = $this->db->fetch_all();
+            foreach ($stepIds as $stepId) {
+                $stepInstance = new StepInstance($this->db);
+                $stepInstance->setId($stepId->id);
+                $stepInstance->load();
+                $stepsCreatingByUser[] = $stepInstance;
+            }
+            $this->setStepsCreatingByUser($stepsCreatingByUser);
+            return $stepsCreatingByUser;
+        } else {
+            //return all steps
+            return $this->getSteps();
+        }
+    }
 
 }
 ?>

@@ -9,7 +9,7 @@ $site_path = getcwd().DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
 
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
+require $site_path.'../vendor/autoload.php';
 
 $xnyo = new Xnyo;
 

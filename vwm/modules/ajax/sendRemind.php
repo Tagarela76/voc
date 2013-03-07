@@ -8,7 +8,7 @@
 	define ('site_path', $site_path);
 
 	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
+	require $site_path.'../vendor/autoload.php';
 
 	$xnyo = new Xnyo();
 	$xnyo->database_type	= DB_TYPE;
@@ -20,16 +20,16 @@
 	$db->select_db(DB_NAME);
 	$email = new EMail();
 	$facility = new Facility($db);
-	
+
 	$currentTime = new DateTime('now');
-	
-	$reminderManager = new ReminderManager($db); 
-	$reminderList = $reminderManager->getReminders();  
+
+	$reminderManager = new ReminderManager($db);
+	$reminderList = $reminderManager->getReminders();
 	foreach ($reminderList as $reminder) {
 		$remind = new Reminder($db, $reminder->id, $email);
 		// we should use this only for test Democompany (id = 125)
 		$facilityDetails = $facility->getFacilityDetails($remind->facility_id);
-		$companyId = $facilityDetails["company_id"];		
+		$companyId = $facilityDetails["company_id"];
 		if ($companyId == 125) {
 			$remindersTime = new DateTime();
 			$remindersTime->setDate(date("Y", $remind->date), date("m", $remind->date), date("d", $remind->date));
@@ -41,6 +41,6 @@
 		}
 	}
 
-	
-	
+
+
 ?>

@@ -14,7 +14,7 @@ $site_path = realpath(dirname(__FILE__) . DIRSEP) . DIRSEP;
 define('site_path', $site_path);
 
 //	Include Class Autoloader
-require_once('modules/classAutoloader.php');
+require $site_path.'../vendor/autoload.php';
 
 //	Start xnyo Framework
 require ('modules/xnyo/startXnyo.php');
@@ -65,7 +65,7 @@ try {
 			$password = $_POST["password"];
 
 			$authResult = $user->authorize($username, $password);
-			
+
 			if ($authResult) {
 
 				if ($authResult["showAddUser"]) {

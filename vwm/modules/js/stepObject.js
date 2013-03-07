@@ -11,9 +11,19 @@ function Step(){
 	var constructor = function () {
 		var templateid = null;
 		var description = null;
+        var processId = null;
+        var stepNumber = null;
 		var resources = [];
 		
 		//setters
+        self.setStepNumber = function(number) {
+            stepNumber = number;
+        }
+        
+        self.setProcessId = function(id) {
+            processId = id;
+        }
+        
 		self.setDescription = function(descr) {
 			description = descr;
 		}
@@ -38,6 +48,14 @@ function Step(){
 		self.getId = function() {
 			return id;
 		}
+        
+        self.getProcessId = function(){
+            return processId;
+        }
+        
+        self.getStepNumber = function(){
+            return stepNumber;
+        }
 		
 		self.deleteResource = function(resourceId){
 			var count = resources.length;
@@ -71,7 +89,9 @@ function Step(){
 	self.getAttributes = function(){
 		var stepAttributes = {
 				stepId : self.getId(),
-				stepDescription : self.getDescription()
+				stepDescription : self.getDescription(),
+                processId : self.getProcessId(),
+                number : self.getStepNumber()
 			}
 			return stepAttributes;
 	}

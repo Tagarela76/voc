@@ -9,7 +9,7 @@
 	define ('site_path', $site_path);
 
 	//	Include Class Autoloader
-	require_once('modules/classAutoloader.php');
+	require $site_path.'../vendor/autoload.php';
 
 
 	//	Start xnyo Framework
