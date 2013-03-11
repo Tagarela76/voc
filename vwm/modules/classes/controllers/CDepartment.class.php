@@ -176,7 +176,7 @@ class CDepartment extends Controller
         $this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
         $this->smarty->display("tpls:index.tpl");
     }
-
+  
     protected function actionAddItem()
     {
         //	Access control

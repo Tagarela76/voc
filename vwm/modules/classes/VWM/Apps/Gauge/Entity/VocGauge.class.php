@@ -62,7 +62,7 @@ class VocGauge extends Gauge {
         }
         return $currentUssage;
     }
-
+   
 }
 
 ?>
