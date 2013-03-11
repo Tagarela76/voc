@@ -5,8 +5,6 @@ use VWM\Apps\Gauge\Entity\SpentTimeGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\Gauge;
 
-//use VWM\Hierarchy\Department;
-
 class CDepartment extends Controller
 {
 
@@ -156,14 +154,15 @@ class CDepartment extends Controller
 
         $departmentClass = new VWM\Hierarchy\Department($this->db, $departmentDetails['department_id']);
 
-
         $allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
 
         $departmentGauges = array();
+        $gaugeTypeNames = Gauge::getGaugeTypes();
+        $unittype = new Unittype($this->db);
         foreach ($allDepartmentAvailableGauges as $departmentGauge) {
             $unitType = $departmentGauge->getUnitType();
 
-            if ($departmentGauge->getGaugeType() == Gauge::NOX_GAUGE) {
+            if ($departmentGauge->getGaugeType() == 4) {
                 $departmentGauge->setUnitTypeName('');
             } else {
                 $departmentGauge->setUnitTypeName($unittype->getNameByID($unitType));
@@ -177,14 +176,13 @@ class CDepartment extends Controller
         $this->forward($this->getFromRequest('bookmark'), 'bookmarkD' . ucfirst($this->getFromRequest('bookmark')), $vars);
         $this->smarty->display("tpls:index.tpl");
     }
-
+  
     protected function actionAddItem()
     {
         //	Access control
         if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
             throw new Exception('deny');
         }
-
         //	modules/ajax/saveDepartment.php - for more details
         $request = $this->getFromRequest();
         $request["id"] = $request["facilityID"];
@@ -208,8 +206,6 @@ class CDepartment extends Controller
                 ->getLabel(VWM\Label\CompanyLevelLabel::LABEL_ID_REPAIR_ORDER)
                 ->getLabelText();
         $this->smarty->assign('woLabel', $woLabel);
-
-
 
         //	set js scripts
         $jsSources = array(
@@ -239,7 +235,6 @@ class CDepartment extends Controller
         $department = new VWM\Hierarchy\Department($this->db, $this->getFromRequest('id'));
 
         $this->smarty->assign('department', $department);
-//var_dump($department);die();
         $woLabel = $department->getFacility()
                 ->getCompany()
                 ->getIndustryType()
@@ -303,7 +298,6 @@ class CDepartment extends Controller
         $pagination->url = "?action=browseCategory&category=" . $this->getFromRequest("category") . "&id=" . $this->getFromRequest("id") . "&bookmark=" . $this->getFromRequest("bookmark");
         $departmentList = $departments->getDepartmentListByFacility($this->getFromRequest('id'), $pagination, $filterStr, $sortStr);
 
-
         for ($i = 0; $i < count($departmentList); $i++) {
             $url = "?action=browseCategory&category=department&id=" . $departmentList[$i]['id'] . "&bookmark=mix";
             $departmentList[$i]['url'] = $url;
@@ -317,10 +311,8 @@ class CDepartment extends Controller
                 $departmentList[$i]["valid"] = "valid";
             }
 
-
             //Create gauges for departments
             $departmentClass = new VWM\Hierarchy\Department($this->db, $departmentList[$i]['id']);
-
 
             $allDepartmentAvailableGauges = $departmentClass->getAllAvailableGauges();
 
@@ -329,7 +321,6 @@ class CDepartment extends Controller
             $unittype = new Unittype($this->db);
             foreach ($allDepartmentAvailableGauges as $departmentGauge) {
                 $unitType = $departmentGauge->getUnitType();
-
                 if ($departmentGauge->getGaugeType() == 4) {
                     $departmentGauge->setUnitTypeName('');
                 } else {
@@ -340,7 +331,6 @@ class CDepartment extends Controller
             ksort($departmentGauges);
             $departmentList[$i]['gauges'] = $departmentGauges;
         }
-
         $this->smarty->assign("childCategoryItems", $departmentList);
         //	voc indicator
         //	set js scripts
@@ -352,9 +342,7 @@ class CDepartment extends Controller
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
         $this->smarty->assign('cssSources', $cssSources);
 
-
         $facilityClass = new VWM\Hierarchy\Facility($this->db, $facilityDetails['facility_id']);
-
 
         $allFacilityAvailableGauges = $facilityClass->getAllAvailableGauges();
 
@@ -372,7 +360,6 @@ class CDepartment extends Controller
             $facilityGauges[$facilityGauge->getGaugePriority()] = $facilityGauge;
         }
         ksort($facilityGauges);
-        //var_dump($facilityGauges);die();
         $this->smarty->assign("departmentGauges", $facilityGauges);
         //	set tpl
         $this->smarty->assign('tpl', 'tpls/departmentList.tpl');
@@ -380,3 +367,4 @@ class CDepartment extends Controller
     }
 
 }
+?>
