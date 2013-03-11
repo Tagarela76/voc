@@ -690,15 +690,8 @@ function addMix() {
         dataType: "html",
         success: function (response)
         {
-		//console.log(response);			
-            if(response == 'DONE') {
-                if( true) {
-                    if($('#repairOrderId').val()==''){
-                        document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
-                    }else{
-                        document.location = "?action=viewDetails&category=repairOrder&id="+$('#repairOrderId').val()+"&departmentID="+departmentID;
-                    }
-                }
+            if (response == 'DONE') {
+                document.location = "?action=browseCategory&category=department&id="+departmentID+"&bookmark=mix";
             }
             else if(response!='false') {
                 var res = eval('(' + response + ')');
