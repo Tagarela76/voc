@@ -1,10 +1,9 @@
 <?php
 
-namespace VWM\Calendar;
+namespace VWM\Apps\Calendar\Manager;
 
 use VWM\Framework\Test\DbTestCase;
-use VWM\Calendar\CalendarEvent;
-use VWM\Calendar\CalendarEventManager;
+use VWM\Apps\Calendar\Entity\CalendarEvent;
 
 class CalendarEventManagerTest extends DbTestCase {
 	
