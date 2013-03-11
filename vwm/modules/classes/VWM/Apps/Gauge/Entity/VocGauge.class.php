@@ -2,20 +2,27 @@
 
 namespace VWM\Apps\Gauge\Entity;
 
-class VocGauge extends Gauge {
+class VocGauge extends Gauge
+{
 
-	protected $currentUsage;
+    protected $currentUsage;
 
-	const GAUGE_TYPE_NAME = 'VOC';
-	const VOC_PRIORITY = 1;
+    const GAUGE_TYPE_NAME = 'VOC';
+    const VOC_PRIORITY = 1;
 
-	public function __construct(\db $db) {
-		$this->db = $db;
-		$this->gauge_priority = self::VOC_PRIORITY;
-		$this->gauge_type = self::VOC_GAUGE;
-	}
+    public function __construct(\db $db)
+    {
+        $this->db = $db;
+        $this->gauge_priority = self::VOC_PRIORITY;
+        $this->gauge_type = self::VOC_GAUGE;
+    }
 
-	public function getCurrentUsage()
+    /**
+     * function for getting voc on department or facility level
+     * 
+     * @return int
+     */
+    public function getCurrentUsage()
     {
         $month = 'MONTH(CURRENT_DATE)';
         $year = 'YEAR(CURRENT_DATE)';
@@ -62,7 +69,6 @@ class VocGauge extends Gauge {
         }
         return $currentUssage;
     }
-   
-}
 
+}
 ?>
