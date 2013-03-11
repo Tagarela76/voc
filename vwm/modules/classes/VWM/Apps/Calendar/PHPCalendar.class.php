@@ -1,5 +1,6 @@
 <?php
-namespace VWM\Calendar;
+
+namespace VWM\Apps\Calendar;
 
 /** 
  * PHP Calendar Class

@@ -1,26 +1,29 @@
 <?php
 
-use VWM\Calendar\Calendar;
-use VWM\Calendar\CalendarEvent;
-use \VWM\Calendar\CalendarEventManager;
+use VWM\Apps\Calendar\Calendar;
+use VWM\Apps\Calendar\Entity\CalendarEvent;
+use VWM\Apps\Calendar\Manager\CalendarEventManager;
 
-class CSCalendar extends Controller {
+class CSCalendar extends Controller
+{
 	
-	function CSCalendar($smarty,$xnyo,$db,$user,$action) {
+	public function __construct($smarty,$xnyo,$db,$user,$action)
+    {
 		parent::Controller($smarty,$xnyo,$db,$user,$action);
 		$this->category='calendar';
 		$this->parent_category='calendar';		
 	}
 	
-	function runAction() {		
+	public function runAction()
+    {		
 		$this->runCommon('sales');		
 		$functionName='action'.ucfirst($this->action);						
 		if (method_exists($this,$functionName))			
 			$this->$functionName();		
 	}
 	
-	protected function actionBrowseCategory() {
-		
+	protected function actionBrowseCategory()
+    {
 		$user = new User($this->db);
 		$userId = $user->getLoggedUserID();	
 		$this->smarty->assign('userId', $userId);

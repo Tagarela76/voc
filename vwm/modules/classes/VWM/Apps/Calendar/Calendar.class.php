@@ -1,9 +1,14 @@
 <?php
 
-namespace VWM\Calendar;
-use VWM\Calendar\CalendarEventManager;
+namespace VWM\Apps\Calendar;
 
-class Calendar extends PHPCalendar {
+use VWM\Apps\Calendar\Manager\CalendarEventManager;
+
+/**
+ * VOC WEB MANAGER Calendar
+ */
+class Calendar extends PHPCalendar 
+{
 	
 	/**
 	 *
@@ -17,23 +22,45 @@ class Calendar extends PHPCalendar {
 	 */
 	protected $calendarEventManager;
 	
-	public function getSmarty() {
+    /**
+     * @return \Smarty
+     */
+	public function getSmarty() 
+    {
 		return $this->smarty;
 	}
 
-	public function setSmarty(\Smarty $smarty) {
+    /**
+     * @parent \Smarty
+     */
+	public function setSmarty(\Smarty $smarty) 
+    {
 		$this->smarty = $smarty;
 	}
 
-	public function getCalendarEventManager() {
+    /**
+     * @return CalendarEventManager
+     */
+	public function getCalendarEventManager() 
+    {
 		return $this->calendarEventManager;
 	}
 
-	public function setCalendarEventManager(CalendarEventManager $calendarEventManager) {
+    /**
+     * @param CalendarEventManager
+     */
+	public function setCalendarEventManager(CalendarEventManager $calendarEventManager) 
+    {
 		$this->calendarEventManager = $calendarEventManager;
 	}
 
-	public function getCalendar() {
+    /**
+     * Get HTML code for the calendar
+     *
+     * @return string HTML code ready to use
+     */
+	public function getCalendar() 
+    {
 		parent::getCalendar();
 
 		$userCalendarEvents = $this->getCalendarEventManager()->getUserCalendarEvents();		
@@ -90,21 +117,24 @@ class Calendar extends PHPCalendar {
 		$this->smarty->assign("pieceOfCalendar",$pieceOfCalendar);
 		
 		$result = $this->smarty->fetch("tpls/phpCalendar.tpl");
+
 		return $result;
 	}
 
-	protected function getNavButtonTimestamp($direction) {
+	protected function getNavButtonTimestamp($direction) 
+    {
 		$when = $direction == 'forward' ? '+1 month' : '-1 month';
 		$timestamp = $this->getFirstOfMonth(strtotime($when, $this->timestamp));
+
 		return $timestamp;
-                date("M", strtotime($when, $this->timestamp));
 	}
 	
-	protected function getNavButtonDate($direction) {
+	protected function getNavButtonDate($direction) 
+    {
 		$when = $direction == 'forward' ? '+1 month' : '-1 month';
 		$date = date("M", strtotime($when, $this->timestamp));
+
 		return $date;      
 	}
 }
 
-?>

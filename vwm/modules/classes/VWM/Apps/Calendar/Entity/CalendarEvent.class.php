@@ -1,8 +1,11 @@
 <?php
-namespace VWM\Calendar;
+
+namespace VWM\Apps\Calendar\Entity;
+
 use VWM\Framework\Model;
 
-class CalendarEvent extends Model {
+class CalendarEvent extends Model 
+{
 
 	/**
 	 *
@@ -49,56 +52,68 @@ class CalendarEvent extends Model {
         return array();
     }
 
-	public function getLastUpdateTime() {
+	public function getLastUpdateTime() 
+    {
 		return $this->last_update_time;
 	}
 
-	public function setLastUpdateTime($last_update_time) {
+	public function setLastUpdateTime($last_update_time) 
+    {
 		$this->last_update_time = $last_update_time;
 	}
 
-
-	public function getId() {
+	public function getId() 
+    {
 		return $this->id;
 	}
 
-	public function setId($id) {
+	public function setId($id) 
+    {
 		$this->id = $id;
 	}
 
-	public function getTitle() {
+	public function getTitle() 
+    {
 		return $this->title;
 	}
 
-	public function setTitle($title) {
+	public function setTitle($title) 
+    {
 		$this->title = $title;
 	}
 
-	public function getDescription() {
+	public function getDescription() 
+    {
 		return $this->description;
 	}
 
-	public function setDescription($description) {
+	public function setDescription($description) 
+    {
 		$this->description = $description;
 	}
 
-	public function getEventDate() {
+	public function getEventDate()
+    {
 		return $this->event_date;
 	}
 
-	public function setEventDate($event_date) {
+	public function setEventDate($event_date) 
+    {
 		$this->event_date = $event_date;
 	}
 
-	public function getAuthorId() {
+	public function getAuthorId() 
+    {
 		return $this->author_id;
 	}
 
-	public function setAuthorId($author_id) {
+	public function setAuthorId($author_id) 
+    {
 		$this->author_id = $author_id;
 	}
 
-	function __construct(\db $db, $id = null) {
+	function __construct(\db $db, $id = null) 
+    {
 		$this->db = $db;
 		$this->modelName = 'CalendarEvent';
 		if (isset($id)) {
@@ -107,8 +122,8 @@ class CalendarEvent extends Model {
 		}
 	}
 
-	private function _load() {
-
+	private function _load() 
+    {
 		if (!isset($this->id)) {
 			return false;
 		}
@@ -135,7 +150,8 @@ class CalendarEvent extends Model {
 	 * TODO: completly remove as it is the same as parent
 	 * @return int
 	 */
-	public function save() {
+	public function save() 
+    {
 		$this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
 
 		if($this->getId() ) {
@@ -149,7 +165,8 @@ class CalendarEvent extends Model {
 	 * Insert new event
 	 * @return boolean
 	 */
-	protected function _insert() {
+	protected function _insert() 
+    {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
@@ -170,15 +187,14 @@ class CalendarEvent extends Model {
 		} else {
 			return false;
 		}
-
-
 	}
 
 	/**
 	 * Update event
 	 * @return boolean
 	 */
-	protected function _update() {
+	protected function _update() 
+    {
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
@@ -202,12 +218,11 @@ class CalendarEvent extends Model {
 	/**
 	 * Delete event
 	 */
-	public function delete() {
-
+	public function delete() 
+    {
 		$sql = "DELETE FROM " . TB_CALENDAR . "
 				 WHERE id={$this->db->sqltext($this->getId())}";
 		$this->db->query($sql);
 	}
 }
 
-?>

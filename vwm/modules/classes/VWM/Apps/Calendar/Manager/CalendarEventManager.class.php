@@ -1,10 +1,11 @@
 <?php
 
-namespace VWM\Calendar;
+namespace VWM\Apps\Calendar\Manager;
 
-use VWM\Calendar\CalendarEvent;
+use VWM\Apps\Calendar\Entity\CalendarEvent;
 
-class CalendarEventManager {
+class CalendarEventManager 
+{
 
 	/**
 	 *
@@ -18,19 +19,23 @@ class CalendarEventManager {
 	 */
 	protected $userCalendarEvents;
 	
-	public function getUserCalendarEvents() {
+	public function getUserCalendarEvents() 
+    {
 		return $this->userCalendarEvents;
 	}
 
-	public function setUserCalendarEvents($userCalendarEvents) {
+	public function setUserCalendarEvents($userCalendarEvents) 
+    {
 		$this->userCalendarEvents = $userCalendarEvents;
 	}
 
-	public function __construct(\db $db) {
+	public function __construct(\db $db) 
+    {
 		$this->db = $db;
 	}
 
-	public function getAllEventsByUser($userId) {		
+	public function getAllEventsByUser($userId) 
+    {		
 		
 		$sql = "SELECT * ".
 				"FROM " . TB_CALENDAR . " ".
@@ -55,4 +60,3 @@ class CalendarEventManager {
 		return $calendarEvents;
 	}
 }
-?>
