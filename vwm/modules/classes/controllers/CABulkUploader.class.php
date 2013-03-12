@@ -104,28 +104,47 @@ class CABulkUploader extends Controller
             $errorPfpsNames = $validation->getPfpErrorsNames();
             $pfps = $eb->getPfps();
 
+            $actionLog = "--------------------------------\n";
+            $actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of " . $input['realFileName'] . "...\n";
+            
             foreach ($pfps as $pfp) {
+                $productErrors = false;
                 if (in_array($pfp->getDescription(), $correctPfpsNames)) {
-                    if (count($pfp->getProducts()) == 1) {
-                        // RDU or RTS
-                        //	keep ratio as 1
-                    } else {
-                        $products = $this->calcRatioVolume($pfp->getProducts());
-                        $pfp->setProducts($products);
-                    }
-
-                    if ($pfp->getId()) {
-                        $updatedPfps++;
-                    } else {
-                        $insertedPfps++;
-                    }
-                    $pfpId = $pfp->save();
-                    //save products
+                     //check ratio errors
                     $products = $pfp->getProducts();
-                    $pfp->deleteAllProductsFromPfp();
-                    foreach ($products as $product) {
-                        $product->setPreformulatedProductsId($pfpId);
-                        $product->save();
+                    
+                    foreach($products as $product){
+                        if($product->getRatio()<=0){
+                          $actionLog .= " Product " . $product->getName() . " has ratio less than 1 \n";
+                          $productErrors = true;
+                        }
+                    }
+                    
+                    if (!$productErrors) {
+                        $products = $this->convertFromCumulativeQty($pfp->getProducts());
+                        if (count($products) == 1) {
+                            // RDU or RTS
+                            //	keep ratio as 1
+                        } else {
+                            $products = $this->calcRatioVolume($products);
+                            $pfp->setProducts($products);
+                        }
+                        if ($pfp->getId()) {
+                            $updatedPfps++;
+                        } else {
+                            $insertedPfps++;
+                        }
+                        $pfpId = $pfp->save();
+                        //save products
+                        $products = $pfp->getProducts();
+                        $pfp->deleteAllProductsFromPfp();
+                        foreach ($products as $product) {
+                            $product->setPreformulatedProductsId($pfpId);
+                            $product->save();
+                        }
+                    }else{
+                        $errorCnt++;
+                        $correctCnt--;
                     }
                 }
             }
@@ -140,7 +159,17 @@ class CABulkUploader extends Controller
             $validationLogFile = fopen(DIR_PATH_LOGS . "validation.log", "a");
             fwrite($validationLogFile, $errorLog);
             fclose($validationLogFile);
-
+            
+            //action log
+            $actionLog .= "--------------------------------\n";
+            $actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of " . $input['realFileName'] . " is successfuly finished.\n";
+            $actionLog .= "	Number of inserted pfps is " . $insertedPfps . "\n";
+            $actionLog .= "	Number of updated pfps is " .  $updatedPfps . "\n";
+            $actionLogFile = fopen(DIR_PATH_LOGS . "actions.log", "a");
+            fwrite($actionLogFile, $actionLog);
+            fclose($actionLogFile);
+            $actions = str_replace("\n", "<br>", $actionLog);
+            $actions = str_replace("	", "&nbsp;&nbsp;", $this->actions);
 
             $title = new Titles($this->smarty);
             $title->titleBulkUploadResults();
@@ -155,6 +184,7 @@ class CABulkUploader extends Controller
             $this->smarty->assign("insertedCnt", $insertedPfps);
             $this->smarty->assign("updatedCnt", $updatedPfps);
             $this->smarty->assign("validationResult", $validation->validationResult);
+            $this->smarty->assign("actions", $actions);
             $this->smarty->assign("parent", $this->parent_category);
 
             $jsSources = array("modules/js/checkBoxes.js",
@@ -449,9 +479,9 @@ class CABulkUploader extends Controller
         $productsCount = count($products);
         $i = 0;
         while ($i != ($productsCount - 1)) {
-            $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] = $products[$i][bulkUploader4PFP::PRODUCTRATIO_INDEX] - $products[$i + 1][bulkUploader4PFP::PRODUCTRATIO_INDEX];
+            $products[$i]->setRatio($products[$i]->getRatio() - $products[$i + 1]->getRatio());
             $i++;
-            $products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+           // $products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
         }
         return $products;
     }
