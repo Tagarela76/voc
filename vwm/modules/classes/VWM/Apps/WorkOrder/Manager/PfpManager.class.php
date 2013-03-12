@@ -93,6 +93,7 @@ class PfpManager extends Manager
 					  "OFFSET " . $pagination->getOffset() . "";
 
 		}
+
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -199,16 +200,18 @@ class PfpManager extends Manager
 	}
 
 	/**
-	 * function for getting list of pfps
+	 * Process SQL query which gets list of PFPs
+     *
 	 * @param string $query
+     *
 	 * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
 	 */
-	protected function _processGetPFPListQuery($query)
-
+	private function _processGetPFPListQuery($query)
 	{
 		$db = \VOCApp::getInstance()->getService('db');
 
 		$pfps = array(); //Array of objects PFP
+
 		//	try to read from cache
 		$cache = \VOCApp::getInstance()->getCache();
 
@@ -231,7 +234,8 @@ class PfpManager extends Manager
 			$PFPProductsArray = array();
 
 			$getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " ".
-								"WHERE preformulated_products_id = " . $pfpArray[$i]['id'];
+								"WHERE preformulated_products_id = " . $pfpArray[$i]['id']. " " .
+                                "ORDER BY isPrimary DESC";
 			$db->query($getProductsQuery);
 			$products = $db->fetch_all_array();
 

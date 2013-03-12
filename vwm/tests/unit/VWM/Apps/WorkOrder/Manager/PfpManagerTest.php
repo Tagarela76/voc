@@ -9,8 +9,8 @@ class PfpManagerTest extends DbTestCase
 {
 
     protected $fixtures = array(
-        TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP2PRODUCT,
-		TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP2PFP_TYPES, TB_PFP, TB_PFP_TYPES
+        TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP, TB_PFP2PRODUCT,
+		TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP2PFP_TYPES, TB_PFP_TYPES
     );
 
     public function testFindAllAllowed()
@@ -31,12 +31,10 @@ class PfpManagerTest extends DbTestCase
         $productsTwo = $list[1]->getProducts();
 		$this->assertTrue(count($productsOne) == 3);
 
-
-        $this->assertTrue($productsOne[0]->isPrimary() === false);
-        $this->assertTrue($productsOne[1]->isPrimary() === true);
+        // make sure primary product is on top
+        $this->assertTrue($productsOne[0]->isPrimary() === true);
+        $this->assertTrue($productsOne[1]->isPrimary() === false);
         $this->assertTrue($productsOne[2]->isPrimary() === false);
-		$this->assertTrue($productsTwo[0]->isPrimary() === true);
-
 
 		$sql = "SELECT pfp.id, pfp.description, pfp.company_id, pfp.is_proprietary ".
 				"FROM preformulated_products pfp ".
