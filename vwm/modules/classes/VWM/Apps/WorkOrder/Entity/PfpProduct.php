@@ -3,8 +3,9 @@
 namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Model;
+use \VWM\Entity\Product\PaintProduct;
 
-class PfpProduct extends Model
+class PfpProduct extends PaintProduct
 {
 
     protected $id;
@@ -36,7 +37,7 @@ class PfpProduct extends Model
 
     const TABLE_NAME = 'pfp2product';
     const TABLE_PRODUCT = 'product';
-    
+
     public function __construct()
     {
         ;
@@ -166,84 +167,54 @@ class PfpProduct extends Model
     {
         
     }
-    
-    protected function _insert() {
-        $db = \VOCApp::getInstance()->getService('db');
-        
-        $ratioTo = ($this->getRatioTo() !== null)
-				? $this->db->sqltext($this->getRatioTo())
-				: "NULL";
-        
-         $ratioFromOriginal = ($this->getRatioFromOriginal() !== null)
-				? $this->db->sqltext($this->getRatioFromOriginal())
-				: "NULL";
-        
-         $ratioToOriginal = ($this->getRatioToOriginal() !== null)
-				? $this->db->sqltext($this->getRatioToOriginal())
-				: "NULL";
-         
-		$sql = "INSERT INTO " . self::TABLE_NAME .
-				"(ratio, ratio_to, ratio_from_original, ratio_to_original, product_id, preformulated_products_id, isPrimary" .
-				") VALUES (" .
-				"'{$db->sqltext($this->getRatio())}', " .
-				"{$ratioTo}, " .
-				"{$ratioFromOriginal}, " .
-                "{$ratioToOriginal}, " .
-				"{$db->sqltext($this->getProductId())}, " .
-                "{$db->sqltext($this->getPreformulatedProductsId())}, " .
-				"{$db->sqltext($this->getIsPrimary())})";
-		$response = $db->exec($sql);
-        if ($response) {
-			$this->setId($db->getLastInsertedID());
-			return $this->getId();
-		} else {
-			return false;
-		}
-    }
-    
-    protected function _update() {
-		$db = \VOCApp::getInstance()->getService('db');
-		$sql = "UPDATE ".self::TABLE_NAME." SET ".
-					"ratio = {$db->sqltext($this->getRatio())}, ".
-					"ratio_to = {$db->sqltext($this->getRatioTo())}, ".
-					"ratio_from_original = {$db->sqltext($this->getRatioFromOriginal())} ".
-                    "ratio_to_original = {$db->sqltext($this->getRatioToOriginal())}, ".
-                    "product_id = {$db->sqltext($this->getProductId())}, ".
-                    "preformulated_products_id = {$db->sqltext($this->getPreformulatedProductsId())}, ".
-                     "isPrimary = {$db->sqltext($this->getIsPrimary())}, ".
-					"WHERE id = {$db->sqltext($this->getId())}";
-		$response = $db->exec($sql);
-		if ($response) {
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
-    
-    /**
-     * function for getting product id by product_nr
-     * 
-     * @param string $productNr
-     * 
-     * @return boolean|int
-     */
-    public function getProductIdByProductNr($productNr = null)
-    {
-        
-        $db = \VOCApp::getInstance()->getService('db');
-        if (is_null($productNr)) {
-            $productNr = $this->getProductNr();
-        }
 
-        $sql = "SELECT product_id FROM " . self::TABLE_PRODUCT . " " .
-                "WHERE product_nr = '{$db->sqltext($productNr)}'";
-        $db->query($sql);
-       
-        if ($db->num_rows() == 0) {
+    protected function _insert()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        $ratioTo = ($this->getRatioTo() !== null) ? $this->db->sqltext($this->getRatioTo()) : "NULL";
+
+        $ratioFromOriginal = ($this->getRatioFromOriginal() !== null) ? $this->db->sqltext($this->getRatioFromOriginal()) : "NULL";
+
+        $ratioToOriginal = ($this->getRatioToOriginal() !== null) ? $this->db->sqltext($this->getRatioToOriginal()) : "NULL";
+
+        $sql = "INSERT INTO " . self::TABLE_NAME .
+                "(ratio, ratio_to, ratio_from_original, ratio_to_original, product_id, preformulated_products_id, isPrimary" .
+                ") VALUES (" .
+                "'{$db->sqltext($this->getRatio())}', " .
+                "{$ratioTo}, " .
+                "{$ratioFromOriginal}, " .
+                "{$ratioToOriginal}, " .
+                "{$db->sqltext($this->getProductId())}, " .
+                "{$db->sqltext($this->getPreformulatedProductsId())}, " .
+                "{$db->sqltext($this->getIsPrimary())})";
+        $response = $db->exec($sql);
+        if ($response) {
+            $this->setId($db->getLastInsertedID());
+            return $this->getId();
+        } else {
             return false;
         }
-        $row = $db->fetch(0);
-        return $row->product_id;
+    }
+
+    protected function _update()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $sql = "UPDATE " . self::TABLE_NAME . " SET " .
+                "ratio = {$db->sqltext($this->getRatio())}, " .
+                "ratio_to = {$db->sqltext($this->getRatioTo())}, " .
+                "ratio_from_original = {$db->sqltext($this->getRatioFromOriginal())} " .
+                "ratio_to_original = {$db->sqltext($this->getRatioToOriginal())}, " .
+                "product_id = {$db->sqltext($this->getProductId())}, " .
+                "preformulated_products_id = {$db->sqltext($this->getPreformulatedProductsId())}, " .
+                "isPrimary = {$db->sqltext($this->getIsPrimary())}, " .
+                "WHERE id = {$db->sqltext($this->getId())}";
+        $response = $db->exec($sql);
+        if ($response) {
+            return $this->getId();
+        } else {
+            return false;
+        }
     }
 
 }

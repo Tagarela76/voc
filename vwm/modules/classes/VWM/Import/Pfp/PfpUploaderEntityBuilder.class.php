@@ -46,7 +46,12 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             $i++;
             
             //	group rows by PFP
-            if ($data[$this->mapper->mappedData['number']] == '' && $data[$this->mapper->mappedData['productId']] == '' && $data[$this->mapper->mappedData['productName']] == '' && $data[$this->mapper->mappedData['ratio']] == '' && $data[$this->mapper->mappedData['unitType']] == '' && $data[$this->mapper->mappedData['IP']] == '') {
+            if ($data[$this->mapper->mappedData['number']] == '' 
+                && $data[$this->mapper->mappedData['productId']] == '' 
+                && $data[$this->mapper->mappedData['productName']] == '' 
+                && $data[$this->mapper->mappedData['ratio']] == '' 
+                && $data[$this->mapper->mappedData['unitType']] == '' 
+                && $data[$this->mapper->mappedData['IP']] == '') {
                 if(!is_null($currentPfp->getDescription())){
                     $currentPfp->setProducts($pfpProducts);
                     $this->pfps[] = $currentPfp;
@@ -68,12 +73,13 @@ class PfpUploaderEntityBuilder extends EntityBuilder
 
                 $currentPfp->setDescription($data[$this->mapper
                         ->mappedData['productName']]);
-                //get pfp id id exist
-                $pfpId = $currentPfp->getPfpIdByDescription();
-                if ($pfpId) {
-                    $currentPfp->setId($pfpId);
+                //get pfp id if exist
+                $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
+                $description = $currentPfp->getDescription();
+                $newPfp = $pfpManager->getPfpByDescription($description);
+                if ($newPfp) {
+                    $currentPfp->setId($newPfp->getId());
                 }
-                
                 if ($data[$this->mapper->mappedData['ratio']] == '' && $data[$this->mapper->mappedData['unitType']] == '') {
                     continue;    
                 }
@@ -114,20 +120,32 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         return $isVolume;
     }
 
+    /**
+     * 
+     * @param \VWM\Apps\WorkOrder\Entity\PfpProduct 
+     * 
+     * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
+     * 
+     * @throws \Exception
+     * @throws Exception
+     */
     private function convertRatioToVolume($product)
     {
         $unitTypeConverter = new \UnitTypeConverter();
-        $productObj = new \Product($this->db);
+        $productObj = new \VWM\Entity\Product\PaintProduct($this->db);
         $productID = $productObj->getProductIdByName($product->getProductNr());
 
         if (!$productID) {
-            throw new Exception('This is no product in database' . $product[bulkUploader4PFP::PRODUCTNR_INDEX]);
+            throw new \Exception('This is no product in database' . $product[bulkUploader4PFP::PRODUCTNR_INDEX]);
         }
-        $productObj->initializeByID($productID);
+        
+        $productObj->setId($productID);
+        $productObj->load();
+        
         $density = new \Density($this->db, $productObj->getDensityUnitID());
 
         if (!$density->getNumerator()) {
-            throw new Exception("Failed to load Density with id " . $productObj->getDensityUnitID());
+            throw new \Exception("Failed to load Density with id " . $productObj->getDensityUnitId());
         }
 
         $densityType = array(

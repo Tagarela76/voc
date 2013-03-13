@@ -137,7 +137,7 @@ class CABulkUploader extends Controller
                         $pfpId = $pfp->save();
                         //save products
                         $products = $pfp->getProducts();
-                        $pfp->deleteAllProductsFromPfp();
+                        $pfp->deleteProducts();
                         foreach ($products as $product) {
                             $product->setPreformulatedProductsId($pfpId);
                             $product->save();

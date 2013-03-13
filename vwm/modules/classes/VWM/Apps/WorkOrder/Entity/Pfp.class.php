@@ -229,25 +229,12 @@ class Pfp extends Model
         return implode(':', $res);
     }
 
-    public function getPfpIdByDescription()
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        $sql = "SELECT id FROM " .self::TABLE_NAME." ".
-                "WHERE description = '" . $this->getDescription() . "' LIMIT 1";
-        $db->query($sql);
-        if ($db->num_rows() == 0) {
-            return false;
-        }
-        $row = $db->fetch(0);
-        $this->setId($row->id);
-        return $row->id;
-    }
-
     /**
-     * function for deleting all pfp products
-     * return boolean
+     * Delete all pfp products
+     * 
+     * @return boolean
      */
-    public function deleteAllProductsFromPfp()
+    public function deleteProducts()
     {
         $db = \VOCApp::getInstance()->getService('db');
         $sql = "DELETE FROM " . self::TABLE_PFP2PRODUCT . " " .
@@ -262,12 +249,12 @@ class Pfp extends Model
     }
 
     /**
-     * fuction for saving pfp product
+     * Save pfp product
      */
     public function savePfpProducts()
     {
         $products = $this->getProducts();
-        $this->deleteAllProductsFromPfp();
+        $this->deleteProducts();
         foreach ($products as $product) {
             $product->save();
         }
