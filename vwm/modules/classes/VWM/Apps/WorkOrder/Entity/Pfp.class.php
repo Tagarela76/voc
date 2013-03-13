@@ -4,6 +4,9 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Model;
 
+/**
+ * Preformulated product
+ */
 class Pfp extends Model
 {
 
@@ -19,73 +22,97 @@ class Pfp extends Model
 	const TABLE_PFP2COMPANY = 'pfp2company';
     const TABLE_PFP2PRODUCT = 'pfp2product';
 
-	public function __construct() {
-
+	public function __construct() 
+    {
 	}
 
     /**
-     * TODO: implement this method
-     *
-     * @return array property => value
+     * {@inheritdoc}
      */
     public function getAttributes()
     {
-        return array();
+        return array(
+            'id'            => $this->getId(),
+            'description'   => $this->getDescription(),
+            'company_id'    => $this->getCompanyId(),
+            'creator_id'    => $this->getCreaterId(),
+            'is_proprietary'=> $this->getIsProprietary()
+        );
     }
 
-	public function getId() {
+	public function getId()
+    {
 		return $this->id;
 	}
 
-	public function setId($id) {
+	public function setId($id)
+    {
 		$this->id = $id;
 	}
 
-	public function getDescription() {
+	public function getDescription()
+    {
 		return $this->description;
 	}
 
-	public function setDescription($description) {
+	public function setDescription($description)
+    {
 		$this->description = $description;
 	}
 
-	public function getCompanyId() {
+	public function getCompanyId()
+    {
 		return $this->company_id;
 	}
 
-	public function setCompanyId($company_id) {
+	public function setCompanyId($company_id)
+    {
 		$this->company_id = $company_id;
 	}
 
-	public function getCreatorId() {
+	public function getCreatorId()
+    {
 		return $this->creator_id;
 	}
 
-	public function setCreatorId($creator_id) {
+	public function setCreatorId($creator_id)
+    {
 		$this->creator_id = $creator_id;
 	}
 
-	public function getLastUpdateTime() {
+	public function getLastUpdateTime()
+    {
 		return $this->last_update_time;
 	}
 
-	public function setLastUpdateTime($last_update_time) {
+	public function setLastUpdateTime($last_update_time)
+    {
 		$this->last_update_time = $last_update_time;
 	}
 
-	public function getProducts() {
+    /**
+     * @return VWM\Apps\WorkOrder\Entity\PfpProduct[]
+     */
+	public function getProducts()
+    {
 		return $this->products;
 	}
 
-	public function setProducts($products) {
+    /**
+     * @param VWM\Apps\WorkOrder\Entity\PfpProduct[]
+     */
+    public function setProducts($products)
+    {
 		$this->products = $products;
 	}
 
-	public function getIsProprietary() {
+	public function getIsProprietary()
+    {
 		return $this->is_proprietary;
 	}
 
-	public function setIsProprietary($isProprietary) {
+	public function setIsProprietary($isProprietary)
+    {
 		$isProprietary = $this->convertPfpIProprietary($isProprietary);
 		if($isProprietary){
 			$this->is_proprietary = $isProprietary;
@@ -94,9 +121,8 @@ class Pfp extends Model
 		}
 	}
 
-
-
-	protected function _insert() {
+	protected function _insert()
+    {
 		$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
@@ -127,7 +153,8 @@ class Pfp extends Model
 		}
 	}
 
-	protected function _update() {
+	protected function _update() 
+    {
 		$db = \VOCApp::getInstance()->getService('db');
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'" : "NULL";
@@ -160,7 +187,11 @@ class Pfp extends Model
 	}
 
 
-	public function load() {
+    /**
+     * DEPRECATED
+     */
+	public function load()
+    {
 		$db = \VOCApp::getInstance()->getService('db');
 		if (is_null($this->getId())) {
 			return false;
@@ -179,10 +210,13 @@ class Pfp extends Model
 
 	/**
 	 * function for converting pfps intellectual proprietary to boolean type
-	 * @string isProprietary
-	 * return bool
+     *
+	 * @param string isProprietary
+     *
+	 * @return bool
 	 */
-	private function convertPfpIProprietary($isProprietary=0){
+	private function convertPfpIProprietary($isProprietary=0)
+    {
 		//correct values
 
 		if($isProprietary == '1' || $isProprietary == '0'){
@@ -199,13 +233,14 @@ class Pfp extends Model
 
 	}
 
-	public function getProductsCount(){
+	public function getProductsCount()
+    {
 		return count($this->getProducts());
 	}
 
 
-	public function getRatio($htmlFormatting) {
-
+	public function getRatio($htmlFormatting) 
+    {
 		$products = $this->getProducts();
 
         foreach ($products as $product) {
@@ -217,6 +252,4 @@ class Pfp extends Model
         }
 		return implode(':', $res);
 	}
-
-
 }

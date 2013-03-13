@@ -13,12 +13,20 @@ class PfpManagerTest extends DbTestCase
 		TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP2PFP_TYPES, TB_PFP_TYPES
     );
 
+    public function testFindById()
+    {
+    	$db = \VOCApp::getInstance()->getService('db');
+        $manager = \VOCApp::getInstance()->getService('pfp');
+        $pfp = $manager->findById(1);
+
+        $this->assertInstanceOf('\VWM\Apps\WorkOrder\Entity\Pfp', $pfp);
+    }
+
     public function testFindAllAllowed()
     {
 		$db = \VOCApp::getInstance()->getService('db');
         $manager = \VOCApp::getInstance()->getService('pfp');
 		$pfp = new Pfp($db);
-//		$manager = new PfpManager();
         $manager->setCriteria('companyId', '1');
         $list = $manager->findAllPfps();
 

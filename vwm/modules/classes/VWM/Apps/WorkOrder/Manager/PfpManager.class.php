@@ -199,6 +199,25 @@ class PfpManager extends Manager
 		return $whereCondition;
 	}
 
+    /**
+     * {@inheritdoc}
+     */
+    public function findById($id)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $sql = "SELECT * " .
+                "FROM ".Pfp::TABLE_NAME." " .
+                "WHERE id = {$db->sqltext($id)}";
+
+        $pfps = $this->_processGetPFPListQuery($sql);
+        if (count($pfps) == 0) {
+
+            return false;
+        }
+
+        return $pfps[0];
+    }
+
 	/**
 	 * Process SQL query which gets list of PFPs
      *

@@ -214,14 +214,19 @@ class CMix extends Controller {
 		exit;
 	}
 
-	protected function actionViewPFPDetails() {
+	protected function actionViewPFPDetails() 
+    {
 		//	Access control
 		if (!$this->user->checkAccess($this->parent_category, $this->getFromRequest('departmentID'))) {
 			throw new Exception('deny');
 		}
 
-		$manager = new PFPManager($this->db);
-		$pfp = $manager->getPFP($this->getFromRequest("id"));
+        $manager = VOCApp::getInstance()->getService('pfp');
+        $pfp = $manager->findById($this->getFromRequest("id"));
+        if (!$pfp) {
+            throw new Exception("404");
+        }
+
 		$this->setListCategoriesLeftNew('department', $this->getFromRequest('departmentID'));
 		$this->setNavigationUpNew('department', $this->getFromRequest('departmentID'));
 		$this->setPermissionsNew('viewData');
