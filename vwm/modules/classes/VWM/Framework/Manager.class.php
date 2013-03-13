@@ -48,7 +48,14 @@ abstract class Manager
         $this->criteria[$key] = $value;
     }
 
-    public function findById()
+    /**
+     * Find entity by it's primary key
+     *
+     * @param int primary key
+     *
+     * @return \VWM\Framework\Model
+     */
+    public function findById($id)
     {
         throw new Exception('This method should be implemented by child');
     }
