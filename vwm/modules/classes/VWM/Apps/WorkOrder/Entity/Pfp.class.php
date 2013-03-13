@@ -6,7 +6,6 @@ use VWM\Framework\Model;
 
 class Pfp extends Model
 {
-
     public $id;
     public $description;
     public $company_id = 0;
@@ -14,6 +13,7 @@ class Pfp extends Model
     public $last_update_time;
     public $is_proprietary = 0;
     public $products = array();
+    protected $supplier_id;
 
     const TABLE_NAME = 'preformulated_products';
     const TABLE_PFP2COMPANY = 'pfp2company';
@@ -108,19 +108,33 @@ class Pfp extends Model
             return $isProprietary;
         }
     }
+    
+    public function getSupplierId()
+    {
+        return $this->supplier_id;
+    }
 
+    public function setSupplierId($supplierId)
+    {
+        $this->supplier_id = $supplierId;
+    }
+
+    
     protected function _insert()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
+        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$db->sqltext($this->getLastUpdateTime())}'" : "'NULL'";
+        $supplierId = ($this->getSupplierId()) ? "'{$db->sqltext($this->getSupplierId())}'" : "'NULL'";
+        $companyId = ($this->getCompanyId()) ? "'{$db->sqltext($this->getCompanyId())}'" : "'NULL'";
 
         $sql = "INSERT INTO " . self::TABLE_NAME .
-                "(description, company_id, creater_id, last_update_time, is_proprietary" .
+                "(description, company_id, creater_id, last_update_time, supplier_id, is_proprietary" .
                 ") VALUES (" .
                 "'{$db->sqltext($this->getDescription())}', " .
-                "{$db->sqltext($this->getCompanyId())}, " .
+                "{$companyId}, " .
                 "NULL, " .
                 "{$lastUpdateTime}, " .
+                "{$supplierId}, " .
                 "{$db->sqltext($this->getIsProprietary())})";
         $response = $db->exec($sql);
         if ($response) {
@@ -143,12 +157,15 @@ class Pfp extends Model
     protected function _update()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
-
+        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$db->sqltext($this->getLastUpdateTime())}'" : "'NULL'";
+        $supplierId = ($this->getSupplierId()) ? "'{$db->sqltext($this->getSupplierId())}'" : "'NULL'";
+        $companyId = ($this->getCompanyId()) ? "'{$db->sqltext($this->getCompanyId())}'" : "'NULL'";
+        
         $sql = "UPDATE preformulated_products SET " .
-                "company_id = {$db->sqltext($this->getCompanyId())}, " .
+                "company_id = {$companyId}, " .
                 "is_proprietary = {$db->sqltext($this->getIsProprietary())}, " .
-                "last_update_time = {$lastUpdateTime} " .
+                "last_update_time = {$lastUpdateTime}, " .
+                "supplier_id = {$supplierId} " .        
                 "WHERE id = {$db->sqltext($this->getId())}";
 
         $response = $db->exec($sql);

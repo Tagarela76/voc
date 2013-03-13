@@ -6,6 +6,7 @@ use VWM\Import\CsvHelper;
 use VWM\Import\EntityBuilder;
 use VWM\Apps\WorkOrder\Entity\Pfp;
 use \VWM\Apps\WorkOrder\Entity\PfpProduct;
+use \VWM\Entity\Product\PaintProduct;
 
 class PfpUploaderEntityBuilder extends EntityBuilder
 {
@@ -42,6 +43,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $currentPfp = new Pfp();
         $pfpProducts = array();
         $i = 0;
+        $isPrimary = 1; 
         foreach ($fileData as $data) {
             $i++;
             
@@ -58,6 +60,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 }
                 $currentPfp = new Pfp();
                 $pfpProducts = array();
+                $isPrimary = 1;
                 continue;
             }
 
@@ -95,6 +98,14 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             //get Product Id
             $productId = $pfpProduct->getProductIdByProductNr($data[$this->mapper->mappedData['productId']]);
             $pfpProduct->setProductId($productId);
+            //get pfp supplier Id by product
+            if ($isPrimary == 1 && $productId) {
+                $pfpProduct->setIsPrimary($isPrimary);
+                $paintProduct = new PaintProduct($this->db, $productId);
+                $supplierId = $paintProduct->getSupplierId();
+                $currentPfp->setSupplierId($supplierId);
+                $isPrimary = 0;
+            }
             //check product unitType For getting Process
             if (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
                 $pfpProduct = $this->convertRatioToVolume($pfpProduct);
@@ -136,7 +147,8 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $productID = $productObj->getProductIdByName($product->getProductNr());
 
         if (!$productID) {
-            throw new \Exception('This is no product in database' . $product[bulkUploader4PFP::PRODUCTNR_INDEX]);
+            //throw new \Exception('This is no product in database ' . $product->getProductNr());
+            return $product;
         }
         
         $productObj->setId($productID);

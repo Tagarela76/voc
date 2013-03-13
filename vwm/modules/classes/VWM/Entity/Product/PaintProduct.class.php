@@ -337,6 +337,7 @@ class PaintProduct extends GeneralProduct {
 
 	public function load() {
 		if(!$this->getId()) {
+            var_dump($this->getId());die();
 			throw new \Exception('Paint Product ID should be set before calling this method');
 		}
 

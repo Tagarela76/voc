@@ -175,11 +175,12 @@ class validateCSV
                 $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] = 1;
             }
             
+            
             //check product dencity
             $productObj = new \Product($this->db);
             $productId = $productObj->getProductIdByName($data[bulkUploader4PFP::PRODUCTNR_INDEX]);
             if (!$productId) {
-                $currRowComments.="There is no products with id " . $productId . ".\n";
+                $currRowComments.="There is no products with description " . $dat[bulkUploader4PFP::PRODUCTNAME_INDEX] . ".\n";
             } else {
                 $productObj->initializeByID($productId);
                 if (is_null($productObj->getDensity())) {
