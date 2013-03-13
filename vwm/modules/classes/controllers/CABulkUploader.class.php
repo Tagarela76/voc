@@ -106,16 +106,21 @@ class CABulkUploader extends Controller
 
             $actionLog = "--------------------------------\n";
             $actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of " . $input['realFileName'] . "...\n";
-            
+            $i = 0;
             foreach ($pfps as $pfp) {
+                
                 $productErrors = false;
                 if (in_array($pfp->getDescription(), $correctPfpsNames)) {
                      //check ratio errors
                     $products = $pfp->getProducts();
+                    if(empty($products)){
+                      $actionLog .= " Pfp " . $product->getName() . " has ratio less than 1 \n"; 
+                      $productErrors = true;
+                    }
                     
                     foreach($products as $product){
                         if($product->getRatio()<=0){
-                          $actionLog .= " Product " . $product->getName() . " has ratio less than 1 \n";
+                          $actionLog .= " Product " . $pfp->getDescription() . " is empty \n";
                           $productErrors = true;
                         }
                     }
@@ -131,6 +136,7 @@ class CABulkUploader extends Controller
                         }
                         if ($pfp->getId()) {
                             $updatedPfps++;
+                            
                         } else {
                             $insertedPfps++;
                         }
@@ -353,6 +359,7 @@ class CABulkUploader extends Controller
     {
         //	save ratio of base product
         $firstNum = $products[0]->getRatio();
+        
         $quan = array($firstNum);
 
         for ($i = 1; $i < count($products); $i++) {
@@ -479,7 +486,8 @@ class CABulkUploader extends Controller
         $productsCount = count($products);
         $i = 0;
         while ($i != ($productsCount - 1)) {
-            $products[$i]->setRatio($products[$i]->getRatio() - $products[$i + 1]->getRatio());
+            $ratio = $products[$i]->getRatio() - $products[$i + 1]->getRatio();
+            $products[$i]->setRatio($ratio);
             $i++;
            // $products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
         }

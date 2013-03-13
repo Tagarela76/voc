@@ -46,7 +46,6 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $isPrimary = 1; 
         foreach ($fileData as $data) {
             $i++;
-            
             //	group rows by PFP
             if ($data[$this->mapper->mappedData['number']] == '' 
                 && $data[$this->mapper->mappedData['productId']] == '' 
@@ -113,6 +112,8 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             
             $pfpProducts[] = $pfpProduct;
         }
+        $currentPfp->setProducts($pfpProducts);
+        $this->pfps[] = $currentPfp;
     }
 
      /**

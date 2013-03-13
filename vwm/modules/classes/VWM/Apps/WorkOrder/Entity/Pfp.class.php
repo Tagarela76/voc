@@ -136,6 +136,7 @@ class Pfp extends Model
                 "{$lastUpdateTime}, " .
                 "{$supplierId}, " .
                 "{$db->sqltext($this->getIsProprietary())})";
+                
         $response = $db->exec($sql);
         if ($response) {
             $this->setId($db->getLastInsertedID());
