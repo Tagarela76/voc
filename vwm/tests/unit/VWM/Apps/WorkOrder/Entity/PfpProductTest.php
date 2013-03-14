@@ -7,6 +7,9 @@ use VWM\Framework\Test\DbTestCase;
 class PfpProductTest extends DbTestCase {
 
 	public $fixtures = array(
+        TB_SUPPLIER,
+        TB_PRODUCT,
+        Pfp::TABLE_NAME,
 		PfpProduct::TABLE_NAME,
 	);
 

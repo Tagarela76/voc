@@ -20,12 +20,12 @@ class PfpTest extends DbTestCase {
 		$this->assertEquals(6, $pfp->save());
 	}
    
-    public function testGetPfpIdByDescription(){
+/*    public function testGetPfpIdByDescription(){
         $description = "Ford Explorer Basecoat";
         $pfp = new Pfp();
         $pfp->setDescription($description);
         $this->assertEquals(1, $pfp->getPfpIdByDescription());
-    }
+    }*/
     
 }
 
