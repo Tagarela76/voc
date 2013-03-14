@@ -42,7 +42,6 @@ class CABulkUploader extends Controller
 
         $this->smarty->assign('doNotShowControls', true);
         //	TODO: internal js script left there
-
         $jsSources = array("modules/js/checkBoxes.js",
             "modules/js/reg_country_state.js",
             "modules/js/bulkUploader.js");
@@ -86,11 +85,9 @@ class CABulkUploader extends Controller
             if (!in_array($_FILES['inputFile']['type'], array('text/comma-separated-values', 'text/csv'))) {
                 throw new Exception('Input file should be CSV format');
             }
-
             //validate csv file
             $validation = new validateCSV($this->db);
             $validation->validatePFP($input);
-
             //	path to the uploaded file
             $tmpName = $_FILES['inputFile']['tmp_name'];
             $mapper = new PfpUploaderMapper();
@@ -244,7 +241,6 @@ class CABulkUploader extends Controller
             $this->smarty->assign('tpl', "tpls/uploadResults.tpl");
             $this->smarty->display("tpls:index.tpl");
         } else {
-            //for PRODUCT
             //we should check input file!
             if ($input['size'] < 1024000) {
                 $input['inputFile'] = $_FILES['inputFile']['tmp_name'];
@@ -283,7 +279,6 @@ class CABulkUploader extends Controller
 
     protected function actionBrowseCategoryGomWithBins()
     {
-
         //	form submitted
         if ($this->getFromPost() && $_FILES) {
             //	path to the uploaded file
@@ -318,7 +313,6 @@ class CABulkUploader extends Controller
     // GET RATIO FOR PRODUCTS IN PFP
     private function rate($ar)
     {
-
         if (count($ar) > 1) {
             $first = array_shift($ar);
 
@@ -397,7 +391,6 @@ class CABulkUploader extends Controller
                 $quan[] = $products[$i]->getRatio();
             }
         }
-
         if ($quan) {
             $lcm = $this->rate($quan); //make ratio
 
@@ -488,9 +481,6 @@ class CABulkUploader extends Controller
         $i = 0;
         while ($i != ($productsCount - 1)) {
         //check % in form
-            if($products[$i]->getUnitType()=='%'){
-                $products[$i] = $this->convertRatioToPercent($products[$i], $products[0]->getRatio());
-            }
             $ratio = $products[$i]->getRatio() - $products[$i + 1]->getRatio();
             $products[$i]->setRatio($ratio);
             $i++;
@@ -499,25 +489,6 @@ class CABulkUploader extends Controller
         return $products;
     }
     
-    /**
-     * 
-     * getting percent from value
-     * 
-     * @param int $percent
-     * @param int $value
-     * 
-     * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
-     */
-    
-    private function convertRatioToPercent($pfpProduct, $value){
-        $percent = $pfpProduct->getRatio();
-        $value = $percent*$value/100;
-        $pfpProduct->setRatio($value);
-        $pfpProduct->setUnitType('VOL');
-        return $pfpProduct;
-    }
-
-   
     protected function actionBrowseCategoryProcessNew()
     {
         $input = array(

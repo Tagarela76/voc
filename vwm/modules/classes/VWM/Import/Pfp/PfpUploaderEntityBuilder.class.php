@@ -111,7 +111,6 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             }
             //create pfp Product
             $pfpProduct = new PfpProduct($this->db);
-            
             $pfpProduct->setRatio($data[$this->mapper->mappedData['ratio']]);
             $pfpProduct->setName($data[$this->mapper->mappedData['productName']]);
             $pfpProduct->setProductNr($data[$this->mapper->mappedData['productId']]);
@@ -150,8 +149,6 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         }
         return $isVolume;
     }
-
-    
     /**
      * 
      * @param \VWM\Apps\WorkOrder\Entity\PfpProduct 
@@ -207,7 +204,6 @@ class PfpUploaderEntityBuilder extends EntityBuilder
      * 
      * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
      */
-    
     private function convertRatioToPercent($pfpProduct, $value){
         $percent = $pfpProduct->getRatio();
         $value = $percent*$value/100;
