@@ -34,6 +34,7 @@ rsync -rzvp \
 --exclude "*.tpl.php" \
 --exclude ".svn" \
 --exclude ".git" \
+--exclude "phinx.yml" \
 --exclude "migrations/" \
 --exclude "tests/" \
 --exclude "tmp/*" \
