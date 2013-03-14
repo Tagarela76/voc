@@ -41,7 +41,7 @@ class PaintProduct extends GeneralProduct {
 		$this->modelName = 'PaintProduct';
 		if($id !== null) {
 			$this->setId($id);
-			if(!$this->_load()) {
+			if(!$this->load()) {
 				throw new \Exception('404');
 			}
 		}
@@ -335,7 +335,7 @@ class PaintProduct extends GeneralProduct {
 		return $this->getId();
 	}
 
-	protected function _load() {
+	public function load() {
 		if(!$this->getId()) {
 			throw new \Exception('Paint Product ID should be set before calling this method');
 		}
@@ -352,6 +352,30 @@ class PaintProduct extends GeneralProduct {
 
 		return true;
 	}
+    
+    /**
+     * function for getting product id by product_nr
+     * 
+     * @param string $productNr
+     * 
+     * @return boolean|int
+     */
+    public function getProductIdByProductNr($productNr = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        if (is_null($productNr)) {
+            return false;
+        }
+        $sql = "SELECT product_id FROM " . self::TABLE_NAME . " " .
+                "WHERE product_nr = '{$db->sqltext($productNr)}'";
+        $db->query($sql);
+       
+        if ($db->num_rows() == 0) {
+            return false;
+        }
+        $row = $db->fetch(0);
+        return $row->product_id;
+    }
 
 }
 

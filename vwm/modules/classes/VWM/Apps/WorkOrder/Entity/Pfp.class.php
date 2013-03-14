@@ -10,16 +10,16 @@ use VWM\Framework\Model;
 class Pfp extends Model
 {
 
-	public $id;
-	public $description;
-	public $company_id = 0;
-	public $creator_id;
-	public $last_update_time;
-	public $is_proprietary = 0;
-	public $products;
+    public $id;
+    public $description;
+    public $company_id = 0;
+    public $creator_id;
+    public $last_update_time;
+    public $is_proprietary = 0;
+    public $products = array();
 
-	const TABLE_NAME = 'preformulated_products';
-	const TABLE_PFP2COMPANY = 'pfp2company';
+    const TABLE_NAME = 'preformulated_products';
+    const TABLE_PFP2COMPANY = 'pfp2company';
     const TABLE_PFP2PRODUCT = 'pfp2product';
 
 	public function __construct() 
@@ -121,135 +121,157 @@ class Pfp extends Model
 		}
 	}
 
-	protected function _insert()
+    protected function _insert()
     {
-		$db = \VOCApp::getInstance()->getService('db');
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
+        $db = \VOCApp::getInstance()->getService('db');
+        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
-		$sql = "INSERT INTO " . self::TABLE_NAME .
-				"(description, company_id, creater_id, last_update_time, is_proprietary" .
-				") VALUES (" .
-				"'{$db->sqltext($this->getDescription())}', " .
-				"{$db->sqltext($this->getCompanyId())}, " .
-				"NULL, " .
-				"{$lastUpdateTime}, " .
-				"{$db->sqltext($this->getIsProprietary())})";
-		$response = $db->exec($sql);
-		if ($response) {
-			$this->setId($db->getLastInsertedID());
+        $sql = "INSERT INTO " . self::TABLE_NAME .
+                "(description, company_id, creater_id, last_update_time, is_proprietary" .
+                ") VALUES (" .
+                "'{$db->sqltext($this->getDescription())}', " .
+                "{$db->sqltext($this->getCompanyId())}, " .
+                "NULL, " .
+                "{$lastUpdateTime}, " .
+                "{$db->sqltext($this->getIsProprietary())})";
+        $response = $db->exec($sql);
+        if ($response) {
+            $this->setId($db->getLastInsertedID());
 
-			if ($this->getCompanyId() != 0) {
-				$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
-					"(pfp_id ,company_id" .
-					") VALUES (" .
-					"{$db->sqltext($this->getId())}, " .
-					"{$db->sqltext($this->getCompanyId())})";
-				$db->query($sql);
-			}
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
+            if ($this->getCompanyId() != 0) {
+                $sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
+                        "(pfp_id ,company_id" .
+                        ") VALUES (" .
+                        "{$db->sqltext($this->getId())}, " .
+                        "{$db->sqltext($this->getCompanyId())})";
+                $db->query($sql);
+            }
+            return $this->getId();
+        } else {
+            return false;
+        }
+    }
 
-	protected function _update() 
+    protected function _update()
     {
-		$db = \VOCApp::getInstance()->getService('db');
-		$lastUpdateTime = ($this->getLastUpdateTime())
-				? "'{$this->getLastUpdateTime()}'" : "NULL";
+        $db = \VOCApp::getInstance()->getService('db');
+        $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$this->getLastUpdateTime()}'" : "NULL";
 
-		$sql = "UPDATE preformulated_products SET ".
-					"company_id = {$db->sqltext($this->getCompanyId())}, ".
-					"is_proprietary = {$db->sqltext($this->getIsProprietary())}, ".
-					"last_update_time = {$lastUpdateTime} ".
-					"WHERE id = {$db->sqltext($this->getId())}";
+        $sql = "UPDATE preformulated_products SET " .
+                "company_id = {$db->sqltext($this->getCompanyId())}, " .
+                "is_proprietary = {$db->sqltext($this->getIsProprietary())}, " .
+                "last_update_time = {$lastUpdateTime} " .
+                "WHERE id = {$db->sqltext($this->getId())}";
 
-		$response = $db->exec($sql);
-		if ($response) {
-			if ($this->getCompanyId() != 0) {
-				$sql = "SELECT * FROM ". self::TABLE_PFP2COMPANY .
-						"WHERE company_id = {$db->sqltext($this->getCompanyId())}";
-				$response = $db->exec($sql);
-				if (!$response) {
-					$sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
-							"(pfp_id ,company_id" .
-							") VALUES (" .
-							"{$db->sqltext($this->getId())}, " .
-							"{$db->sqltext($this->getCompanyId())})";
-					$db->query($sql);
-				}
-			}
-			return $this->getId();
-		} else {
-			return false;
-		}
-	}
-
+        $response = $db->exec($sql);
+        if ($response) {
+            if ($this->getCompanyId() != 0) {
+                $sql = "SELECT * FROM " . self::TABLE_PFP2COMPANY .
+                        "WHERE company_id = {$db->sqltext($this->getCompanyId())}";
+                $response = $db->exec($sql);
+                if (!$response) {
+                    $sql = "INSERT INTO " . self::TABLE_PFP2COMPANY .
+                            "(pfp_id ,company_id" .
+                            ") VALUES (" .
+                            "{$db->sqltext($this->getId())}, " .
+                            "{$db->sqltext($this->getCompanyId())})";
+                    $db->query($sql);
+                }
+            }
+            return $this->getId();
+        } else {
+            return false;
+        }
+    }
 
     /**
      * DEPRECATED
      */
-	public function load()
+    public function load()
     {
-		$db = \VOCApp::getInstance()->getService('db');
-		if (is_null($this->getId())) {
-			return false;
-		}
+        $db = \VOCApp::getInstance()->getService('db');
+        if (is_null($this->getId())) {
+            return false;
+        }
 
-		$sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE id =" .
-				$db->sqltext($this->getId());
-		$db->query($sql);
-		if ($db->num_rows() == 0) {
-			return false;
-		}
-		$row = $db->fetch(0);
-		$this->initByArray($row);
-	}
+        $sql = "SELECT * FROM " . self::TABLE_NAME . " WHERE id =" .
+                $db->sqltext($this->getId());
+        $db->query($sql);
+        if ($db->num_rows() == 0) {
+            return false;
+        }
+        $row = $db->fetch(0);
+        $this->initByArray($row);
+    }
 
-
-	/**
-	 * function for converting pfps intellectual proprietary to boolean type
-     *
-	 * @param string isProprietary
-     *
-	 * @return bool
-	 */
-	private function convertPfpIProprietary($isProprietary=0)
+    /**
+     * function for converting pfps intellectual proprietary to boolean type
+     * @string isProprietary
+     * return bool
+     */
+    private function convertPfpIProprietary($isProprietary = 0)
     {
-		//correct values
+        //correct values
 
-		if($isProprietary == '1' || $isProprietary == '0'){
-			return $isProprietary;
-		}
-		elseif($isProprietary == 'IP'){
-			return 1;
-		}
-		elseif(trim($isProprietary == '')){
-			return 0;
-		}else{
-			return false;
-		}
+        if ($isProprietary == '1' || $isProprietary == '0') {
+            return $isProprietary;
+        } elseif ($isProprietary == 'IP') {
+            return 1;
+        } elseif (trim($isProprietary == '')) {
+            return 0;
+        } else {
+            return false;
+        }
+    }
 
-	}
-
-	public function getProductsCount()
+    public function getProductsCount()
     {
-		return count($this->getProducts());
-	}
+        return count($this->getProducts());
+    }
 
-
-	public function getRatio($htmlFormatting) 
+    public function getRatio($htmlFormatting)
     {
-		$products = $this->getProducts();
+        $products = $this->getProducts();
 
         foreach ($products as $product) {
-            if($product->isPrimary() && $htmlFormatting){
-                $res[] = "<b>".$product->getRatio()."</b>";
+            if ($product->isPrimary() && $htmlFormatting) {
+                $res[] = "<b>" . $product->getRatio() . "</b>";
             } else {
                 $res[] = $product->getRatio();
             }
         }
-		return implode(':', $res);
-	}
+        return implode(':', $res);
+    }
+
+    /**
+     * Delete all pfp products
+     * 
+     * @return boolean
+     */
+    public function deleteProducts()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $sql = "DELETE FROM " . self::TABLE_PFP2PRODUCT . " " .
+                "WHERE preformulated_products_id={$db->sqltext($this->getId())}";
+
+        $responce = $db->query($sql);
+        if ($responce) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Save pfp product
+     */
+    public function savePfpProducts()
+    {
+        $products = $this->getProducts();
+        $this->deleteProducts();
+        foreach ($products as $product) {
+            $product->save();
+        }
+    }
+
 }

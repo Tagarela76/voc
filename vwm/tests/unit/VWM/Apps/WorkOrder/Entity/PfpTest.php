@@ -11,7 +11,7 @@ class PfpTest extends DbTestCase {
 	);
 
 	public function testSave() {
-		$pfp = new Pfp($this->db);
+		$pfp = new Pfp();
 		$pfp->setDescription('Test Pfp');
 		$id = $pfp->save();
 		$this->assertEquals(6, $id);
@@ -19,6 +19,14 @@ class PfpTest extends DbTestCase {
 		$pfp->setDescription('Updated');
 		$this->assertEquals(6, $pfp->save());
 	}
+   
+/*    public function testGetPfpIdByDescription(){
+        $description = "Ford Explorer Basecoat";
+        $pfp = new Pfp();
+        $pfp->setDescription($description);
+        $this->assertEquals(1, $pfp->getPfpIdByDescription());
+    }*/
+    
 }
 
 ?>

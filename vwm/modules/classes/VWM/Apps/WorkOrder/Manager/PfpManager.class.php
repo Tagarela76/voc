@@ -290,5 +290,28 @@ class PfpManager extends Manager
 
 		return $pfps;
 	}
+    
+    /**
+     * function for getting pfp by Description
+     * 
+     * @param string $description Description
+     * 
+     * @return boolean|\VWM\Apps\WorkOrder\Entity\Pfp
+     */
+    public function getPfpByDescription($description)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $sql = "SELECT id FROM " . self::TB_PERFORMULATED_PRODUCT . " " .
+                "WHERE description = '{$db->sqltext($description)}' LIMIT 1";
+        $db->query($sql);
+        if ($db->num_rows() == 0) {
+            return false;
+        }
+        $row = $db->fetch(0);
+        $pfp = new Pfp();
+        $pfp->setId($row->id);
+        $pfp->load();
+        return $pfp;
+    }
 
 }

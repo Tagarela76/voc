@@ -94,6 +94,26 @@ abstract class GeneralProduct extends Model {
 		
 		return $this->binContext[$binId];
 	}
+    
+    /**
+     * getting product id by name
+     * 
+     * @param string $productName
+     * 
+     * @return int
+     */
+    public function getProductIdByName($productName) {
+
+		$productName = mysql_escape_string($productName);
+
+        $query = "SELECT * FROM " . TB_PRODUCT . " where product_nr='" . $productName . "'";
+		$this->db->query($query);
+		$data = $this->db->fetch(0);
+		$productId = $data->product_id;
+        
+        $this->setId($productId);
+		return $productId;
+	}
 
 
 }

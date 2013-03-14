@@ -7,6 +7,7 @@ class PfpUploaderMapper extends \VWM\Import\Mapper {
 
 	public function getMap() {
 		return array(
+            "number" => array(''),
 			"productId" => array('PRODUCT ID'),
 			"productName" => array('PRODUCT NAME/COLOR'),
 			"ratio" => array('MIX RATIO'),
