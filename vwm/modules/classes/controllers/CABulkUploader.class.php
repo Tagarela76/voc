@@ -127,7 +127,17 @@ class CABulkUploader extends Controller
                     }
                     
                     if (!$productErrors) {
-                        $products = $this->convertFromCumulativeQty($products);
+                        //check % in form
+                        $i=0;
+                        $productsCount = count($products);
+                        while ($i != ($productsCount - 1)) {
+                            if ($products[$i]->getUnitType() == '%') {
+                                $products[$i] = $this->convertRatioToPercent($products[$i], $products[0]->getRatio());
+                                $products[$i]->setUnitType('VOL');
+                            }
+                            $i++;
+                        }
+                        //$products = $this->convertFromCumulativeQty($products);
                         
                         if (count($products) == 1) {
                             // RDU or RTS
