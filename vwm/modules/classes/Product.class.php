@@ -474,10 +474,11 @@ class Product extends ProductProperties {
 
 		$productName = mysql_escape_string($productName);
 
-		$this->db->query("SELECT * FROM " . TB_PRODUCT . " where product_nr='" . $productName . "'");
+        $query = "SELECT * FROM " . TB_PRODUCT . " where product_nr='" . $productName . "'";
+		$this->db->query($query);
 		$data = $this->db->fetch(0);
 		$productID = $data->product_id;
-
+        
 		return $productID;
 	}
 

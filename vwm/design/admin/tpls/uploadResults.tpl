@@ -8,7 +8,7 @@
 <table width="100%" cellpadding=0 cellspacing=0 >
 {section name=i loop=$productsError}
 	<tr>
-		<td><b>{$productsError[i].productID}</b><td>
+		<td><b>{$productsError[i].productId}</b><td>
 		<td>{$productsError[i].errorComments}</td>
 	</tr>
 {/section}
