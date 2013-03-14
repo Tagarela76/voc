@@ -1154,7 +1154,7 @@ class MixOptimized extends Model {
 		$mixID = mysql_escape_string($this->mix_id);
 
 		$this->calculateCurrentUsage();
-		$this->waste_percent = round($this->waste_percent, 2);
+		$this->waste_percent = round($this->waste_percent, 4);
 
 		$query = "UPDATE " . TB_USAGE . " SET waste_percent='$this->waste_percent.' WHERE mix_id='" . $mixID . "'";
 		$this->db->exec($query);
@@ -1384,7 +1384,7 @@ class MixOptimized extends Model {
 			$unitTypeDetails = $unittype->getUnittypeDetails($unittypeID);
 			$waste = $unitTypeConverter->convertToDefault($value, $unitTypeDetails["description"], $mixDensity);
 		}
-		$waste = round($waste, 2);
+		$waste = round($waste, 4);
 
 		return $waste;
 	}
@@ -1444,7 +1444,7 @@ class MixOptimized extends Model {
 			$result['isWastePercentAbove100'] = true;
 		}
 
-		$result['wastePercent'] = round($result['wastePercent'], 2);
+		$result['wastePercent'] = round($result['wastePercent'], 4);
 		return $result;
 	}
 
@@ -1496,7 +1496,7 @@ class MixOptimized extends Model {
 		if ($this->debug) {
 			var_dump($result);
 		}
-		$result['recyclePercent'] = round($result['recyclePercent'], 2);
+		$result['recyclePercent'] = round($result['recyclePercent'], 4);
 
 		return $result;
 	}

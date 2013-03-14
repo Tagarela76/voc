@@ -832,7 +832,7 @@ class CMix extends Controller {
 		}
 
 		$responce = array(
-			"currentUsage" => round($mix->currentUsage, 2),
+			"currentUsage" => round($mix->currentUsage, 4),
 			"dailyLimitExcess" => $mixValidatorResponse->isDailyLimitExceeded(),
 			"departmentLimitExceeded" => $mixValidatorResponse->isDepartmentLimitExceeded(),
 			"facilityLimitExceeded" => $mixValidatorResponse->isFacilityLimitExceeded(),
