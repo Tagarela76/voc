@@ -71,6 +71,18 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                             $convertPfpProducts[] = $pfpProduct;
                         }
                     }
+                    //create the hole pfpDescription
+                    $description = $currentPfp->getDescription();
+                    foreach($convertPfpProducts as $pfpProductDescription){
+                       $description.=' / '. $pfpProductDescription->getProductNr();
+                    }
+                    $currentPfp->setDescription($description);
+                    //get pfp id if exist
+                    $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
+                    $newPfp = $pfpManager->getPfpByDescription($description);
+                    if ($newPfp) {
+                        $currentPfp->setId($newPfp->getId());
+                    }
                     $currentPfp->setProducts($convertPfpProducts);
                     $this->pfps[] = $currentPfp;
                 }
@@ -89,16 +101,9 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 $currentPfp->setCompanyId($this->getCompanyId());
 
                 //if pfp has it's own description set description and IP    
-
-                $currentPfp->setDescription($data[$this->mapper
+                $currentPfp->setDescription('/ '.$data[$this->mapper
                         ->mappedData['productName']]);
-                //get pfp id if exist
-                $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
-                $description = $currentPfp->getDescription();
-                $newPfp = $pfpManager->getPfpByDescription($description);
-                if ($newPfp) {
-                    $currentPfp->setId($newPfp->getId());
-                }
+                
                 if ($data[$this->mapper->mappedData['ratio']] == '' && $data[$this->mapper->mappedData['unitType']] == '') {
                     continue;    
                 }

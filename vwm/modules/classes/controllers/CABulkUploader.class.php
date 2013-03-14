@@ -109,6 +109,7 @@ class CABulkUploader extends Controller
             $i = 0;
             
             foreach ($pfps as $pfp) {
+                $i++;
                 
                 $productErrors = false;
                 if (in_array($pfp->getDescription(), $correctPfpsNames)) {
@@ -137,8 +138,9 @@ class CABulkUploader extends Controller
                             }
                             $i++;
                         }
-                        //$products = $this->convertFromCumulativeQty($products);
                         
+                        // we have not use cumulative form now
+                        //$products = $this->convertFromCumulativeQty($products);
                         if (count($products) == 1) {
                             // RDU or RTS
                             //	keep ratio as 1

@@ -133,7 +133,7 @@ class validateCSV
             }
             // get pfp Details if exist
             if (!empty($dat[1])) {
-                $currentPfpName = $dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
+                $currentPfpName = '/ '.$dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
                 
                 // check ip correct
                 if (!bulkUploader4PFP::isProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
@@ -144,7 +144,7 @@ class validateCSV
                     continue;
                 }
             }
-
+            
             $data = $this->trimAll($dat);
 
             //	pfp's are splitted by empty row
@@ -165,6 +165,8 @@ class validateCSV
             }
 
             $currRowComments = $this->pfpDataCheck($data, $currentRow);
+            //create the hole pfp name
+            $currentPfpName.=' / '.$data[bulkUploader4PFP::PRODUCTNR_INDEX];
 
             if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
                 $ranges = bulkUploader4PFP::splitRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX]);
