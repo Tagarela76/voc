@@ -35,6 +35,7 @@ rsync -rzvp \
 --exclude ".svn" \
 --exclude ".git" \
 --exclude "phinx.yml" \
+--exclude "composer.*" \
 --exclude "migrations/" \
 --exclude "tests/" \
 --exclude "tmp/*" \
