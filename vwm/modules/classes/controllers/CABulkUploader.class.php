@@ -107,6 +107,7 @@ class CABulkUploader extends Controller
             $actionLog = "--------------------------------\n";
             $actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of " . $input['realFileName'] . "...\n";
             $i = 0;
+            
             foreach ($pfps as $pfp) {
                 
                 $productErrors = false;
@@ -126,20 +127,23 @@ class CABulkUploader extends Controller
                     }
                     
                     if (!$productErrors) {
-                        $products = $this->convertFromCumulativeQty($pfp->getProducts());
+                        $products = $this->convertFromCumulativeQty($products);
+                        
                         if (count($products) == 1) {
                             // RDU or RTS
                             //	keep ratio as 1
                         } else {
                             $products = $this->calcRatioVolume($products);
-                            $pfp->setProducts($products);
                         }
+                        
+                        $pfp->setProducts($products);
                         if ($pfp->getId()) {
                             $updatedPfps++;
                             
                         } else {
                             $insertedPfps++;
                         }
+                        
                         $pfpId = $pfp->save();
                         //save products
                         $products = $pfp->getProducts();
@@ -180,7 +184,7 @@ class CABulkUploader extends Controller
             $title = new Titles($this->smarty);
             $title->titleBulkUploadResults();
 
-            //var_dump($validation->productsError);die();
+            
             $this->smarty->assign("categoryID", "tab_" . $this->getFromPost('categoryID'));
             $this->smarty->assign("productsError", $validation->productsError);
             $this->smarty->assign("errorCnt", $errorCnt);
@@ -267,7 +271,6 @@ class CABulkUploader extends Controller
                 $this->smarty->assign("validationResult", $bu->validationResult);
                 $this->smarty->assign("actions", $bu->actions);
                 $this->smarty->assign("parent", $this->parent_category);
-
 
                 //$smarty->display('tpls:bulkUploader.tpl');
                 $jsSources = array("modules/js/checkBoxes.js",
@@ -486,12 +489,34 @@ class CABulkUploader extends Controller
         $productsCount = count($products);
         $i = 0;
         while ($i != ($productsCount - 1)) {
+        //check % in form
+            if($products[$i]->getUnitType()=='%'){
+                $products[$i] = $this->convertRatioToPercent($products[$i], $products[0]->getRatio());
+            }
             $ratio = $products[$i]->getRatio() - $products[$i + 1]->getRatio();
             $products[$i]->setRatio($ratio);
             $i++;
-           // $products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+           $products[$i]->setUnitType('VOL');
         }
         return $products;
+    }
+    
+    /**
+     * 
+     * getting percent from value
+     * 
+     * @param int $percent
+     * @param int $value
+     * 
+     * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
+     */
+    
+    private function convertRatioToPercent($pfpProduct, $value){
+        $percent = $pfpProduct->getRatio();
+        $value = $percent*$value/100;
+        $pfpProduct->setRatio($value);
+        $pfpProduct->setUnitType('VOL');
+        return $pfpProduct;
     }
 
    

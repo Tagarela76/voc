@@ -54,7 +54,24 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 && $data[$this->mapper->mappedData['unitType']] == '' 
                 && $data[$this->mapper->mappedData['IP']] == '') {
                 if(!is_null($currentPfp->getDescription())){
-                    $currentPfp->setProducts($pfpProducts);
+                    $convertPfpProducts = array();
+                    if(count($pfpProducts)==1){
+                        $convertPfpProducts = $pfpProducts;
+                         // RDU or RTS
+                         //	keep ratio as 1
+                    }else{
+                        foreach ($pfpProducts as $pfpProduct) {
+                           
+                            //check for %
+                            if($pfpProduct->getUnitType()=='%'){
+                               //do not do enything with this product
+                            }elseif (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
+                                $pfpProduct = $this->convertRatioToVolume($pfpProduct);
+                            }
+                            $convertPfpProducts[] = $pfpProduct;
+                        }
+                    }
+                    $currentPfp->setProducts($convertPfpProducts);
                     $this->pfps[] = $currentPfp;
                 }
                 $currentPfp = new Pfp();
@@ -62,7 +79,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 $isPrimary = 1;
                 continue;
             }
-
+            
             if ($data[$this->mapper->mappedData['number']] != '') {
 
                 if ($data[$this->mapper->mappedData['IP']] == 'IP') {
@@ -104,10 +121,6 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 $supplierId = $paintProduct->getSupplierId();
                 $currentPfp->setSupplierId($supplierId);
                 $isPrimary = 0;
-            }
-            //check product unitType For getting Process
-            if (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
-                $pfpProduct = $this->convertRatioToVolume($pfpProduct);
             }
             
             $pfpProducts[] = $pfpProduct;
@@ -177,6 +190,5 @@ class PfpUploaderEntityBuilder extends EntityBuilder
 
         return $product;
     }
-
 }
 ?>
