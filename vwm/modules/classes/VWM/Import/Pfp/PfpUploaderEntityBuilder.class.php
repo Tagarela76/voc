@@ -137,7 +137,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
      */
     private function isVolumeRatio($unitType)
     {
-        $possibleVolumeStrings = array('VOL', 'VOLUME', '');
+        $possibleVolumeStrings = array('VOL', 'VOLUME', '', 'PART');
         $isVolume = false;
         if (in_array($unitType, $possibleVolumeStrings)) {
             $isVolume = true;
