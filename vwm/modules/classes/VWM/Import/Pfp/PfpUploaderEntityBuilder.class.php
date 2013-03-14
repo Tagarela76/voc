@@ -65,6 +65,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                             //check for %
                             if($pfpProduct->getUnitType()=='%'){
                                //do not do enything with this product
+                              $pfpProduct = $this->convertRatioToPercent($pfpProduct, $convertPfpProducts[0]->getRatio());
                             }elseif (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
                                 $pfpProduct = $this->convertRatioToVolume($pfpProduct);
                             }
@@ -76,7 +77,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                     foreach($convertPfpProducts as $pfpProductDescription){
                        $description.=' / '. $pfpProductDescription->getProductNr();
                     }
-                    $currentPfp->setDescription($description);
+                    $currentPfp->setDescription($description.' /');
                     //get pfp id if exist
                     $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
                     $newPfp = $pfpManager->getPfpByDescription($description);
@@ -150,6 +151,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         return $isVolume;
     }
 
+    
     /**
      * 
      * @param \VWM\Apps\WorkOrder\Entity\PfpProduct 
@@ -194,6 +196,24 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $product->setUnitType('VOL');
 
         return $product;
+    }
+    
+    /**
+     * 
+     * getting percent from value
+     * 
+     * @param int $percent
+     * @param int $value
+     * 
+     * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
+     */
+    
+    private function convertRatioToPercent($pfpProduct, $value){
+        $percent = $pfpProduct->getRatio();
+        $value = $percent*$value/100;
+        $pfpProduct->setRatio($value);
+        $pfpProduct->setUnitType('VOL');
+        return $pfpProduct;
     }
 }
 ?>

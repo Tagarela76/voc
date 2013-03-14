@@ -110,7 +110,6 @@ class CABulkUploader extends Controller
             
             foreach ($pfps as $pfp) {
                 $i++;
-                
                 $productErrors = false;
                 if (in_array($pfp->getDescription(), $correctPfpsNames)) {
                      //check ratio errors
@@ -119,26 +118,13 @@ class CABulkUploader extends Controller
                       $actionLog .= " Pfp " . $product->getName() . " has ratio less than 1 \n"; 
                       $productErrors = true;
                     }
-                    
                     foreach($products as $product){
                         if($product->getRatio()<=0){
                           $actionLog .= " Product " . $pfp->getDescription() . " is empty \n";
                           $productErrors = true;
                         }
                     }
-                    
                     if (!$productErrors) {
-                        //check % in form
-                        $i=0;
-                        $productsCount = count($products);
-                        while ($i != ($productsCount - 1)) {
-                            if ($products[$i]->getUnitType() == '%') {
-                                $products[$i] = $this->convertRatioToPercent($products[$i], $products[0]->getRatio());
-                                $products[$i]->setUnitType('VOL');
-                            }
-                            $i++;
-                        }
-                        
                         // we have not use cumulative form now
                         //$products = $this->convertFromCumulativeQty($products);
                         if (count($products) == 1) {

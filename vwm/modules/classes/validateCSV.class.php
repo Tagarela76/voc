@@ -154,7 +154,7 @@ class validateCSV
                     if ($isErrorInCurrentPfp) {
                         $pfpErrorsNames[] = $currentPfpName;
                     } else {
-                        $pfpCorrectsNames[] = $currentPfpName;
+                        $pfpCorrectsNames[] = $currentPfpName.' /';
                     }
                     //	reset
                     $currentPfpName = '';
