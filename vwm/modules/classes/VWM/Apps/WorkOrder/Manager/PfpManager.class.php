@@ -95,7 +95,7 @@ class PfpManager extends Manager
 		}
 		return $this->_processGetPFPListQuery($query);
 	}
-
+ 
 	/**
 	 * function for gettin datebase wich we needs
 	 *

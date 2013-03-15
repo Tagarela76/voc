@@ -14,7 +14,7 @@ class Pfp extends Model
     public $is_proprietary = 0;
     public $products = array();
     protected $supplier_id;
-
+ 
     const TABLE_NAME = 'preformulated_products';
     const TABLE_PFP2COMPANY = 'pfp2company';
     const TABLE_PFP2PRODUCT = 'pfp2product';

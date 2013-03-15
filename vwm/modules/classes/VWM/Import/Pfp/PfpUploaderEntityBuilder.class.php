@@ -133,7 +133,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $currentPfp->setProducts($pfpProducts);
         $this->pfps[] = $currentPfp;
     }
-
+ 
      /**
      * Check product for volume ratio. Actually Volume is default value,
      * so if it meets empty string this is also Volume
