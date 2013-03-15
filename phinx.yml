@@ -1,0 +1,30 @@
+paths:
+    migrations: /home/developer/WorkSpace/voc/vwm/migrations
+        
+environments:
+    default_migration_table: phinxlog
+    default_database: development
+    production:
+        adapter: mysql
+        host: localhost
+        name: voc
+        user: root
+        pass: 'developer'
+        port: 3306
+                
+    development:
+        adapter: mysql
+        host: localhost
+        name: voc
+        user: root
+        pass: 'developer'
+        port: 3306
+                    
+    testing:
+        adapter: mysql
+        host: localhost
+        name: voc_test
+        user: root
+        pass: 'developer'
+        port: 3306
+                 

@@ -42,7 +42,6 @@ class CABulkUploader extends Controller
 
         $this->smarty->assign('doNotShowControls', true);
         //	TODO: internal js script left there
-
         $jsSources = array("modules/js/checkBoxes.js",
             "modules/js/reg_country_state.js",
             "modules/js/bulkUploader.js");
@@ -86,11 +85,9 @@ class CABulkUploader extends Controller
             if (!in_array($_FILES['inputFile']['type'], array('text/comma-separated-values', 'text/csv'))) {
                 throw new Exception('Input file should be CSV format');
             }
-
             //validate csv file
             $validation = new validateCSV($this->db);
             $validation->validatePFP($input);
-
             //	path to the uploaded file
             $tmpName = $_FILES['inputFile']['tmp_name'];
             $mapper = new PfpUploaderMapper();
@@ -106,34 +103,42 @@ class CABulkUploader extends Controller
 
             $actionLog = "--------------------------------\n";
             $actionLog .= "(" . date("m.d.Y H:i:s") . ") Starting uploading of " . $input['realFileName'] . "...\n";
+            $i = 0;
             
             foreach ($pfps as $pfp) {
+                $i++;
                 $productErrors = false;
                 if (in_array($pfp->getDescription(), $correctPfpsNames)) {
                      //check ratio errors
                     $products = $pfp->getProducts();
-                    
+                    if(empty($products)){
+                      $actionLog .= " Pfp " . $product->getName() . " has ratio less than 1 \n"; 
+                      $productErrors = true;
+                    }
                     foreach($products as $product){
                         if($product->getRatio()<=0){
-                          $actionLog .= " Product " . $product->getName() . " has ratio less than 1 \n";
+                          $actionLog .= " Product " . $pfp->getDescription() . " is empty \n";
                           $productErrors = true;
                         }
                     }
-                    
                     if (!$productErrors) {
-                        $products = $this->convertFromCumulativeQty($pfp->getProducts());
+                        // we have not use cumulative form now
+                        //$products = $this->convertFromCumulativeQty($products);
                         if (count($products) == 1) {
                             // RDU or RTS
                             //	keep ratio as 1
                         } else {
                             $products = $this->calcRatioVolume($products);
-                            $pfp->setProducts($products);
                         }
+                        
+                        $pfp->setProducts($products);
                         if ($pfp->getId()) {
                             $updatedPfps++;
+                            
                         } else {
                             $insertedPfps++;
                         }
+                        
                         $pfpId = $pfp->save();
                         //save products
                         $products = $pfp->getProducts();
@@ -174,7 +179,7 @@ class CABulkUploader extends Controller
             $title = new Titles($this->smarty);
             $title->titleBulkUploadResults();
 
-            //var_dump($validation->productsError);die();
+            
             $this->smarty->assign("categoryID", "tab_" . $this->getFromPost('categoryID'));
             $this->smarty->assign("productsError", $validation->productsError);
             $this->smarty->assign("errorCnt", $errorCnt);
@@ -236,7 +241,6 @@ class CABulkUploader extends Controller
             $this->smarty->assign('tpl', "tpls/uploadResults.tpl");
             $this->smarty->display("tpls:index.tpl");
         } else {
-            //for PRODUCT
             //we should check input file!
             if ($input['size'] < 1024000) {
                 $input['inputFile'] = $_FILES['inputFile']['tmp_name'];
@@ -262,7 +266,6 @@ class CABulkUploader extends Controller
                 $this->smarty->assign("actions", $bu->actions);
                 $this->smarty->assign("parent", $this->parent_category);
 
-
                 //$smarty->display('tpls:bulkUploader.tpl');
                 $jsSources = array("modules/js/checkBoxes.js",
                     "modules/js/reg_country_state.js");
@@ -276,7 +279,6 @@ class CABulkUploader extends Controller
 
     protected function actionBrowseCategoryGomWithBins()
     {
-
         //	form submitted
         if ($this->getFromPost() && $_FILES) {
             //	path to the uploaded file
@@ -311,7 +313,6 @@ class CABulkUploader extends Controller
     // GET RATIO FOR PRODUCTS IN PFP
     private function rate($ar)
     {
-
         if (count($ar) > 1) {
             $first = array_shift($ar);
 
@@ -353,6 +354,7 @@ class CABulkUploader extends Controller
     {
         //	save ratio of base product
         $firstNum = $products[0]->getRatio();
+        
         $quan = array($firstNum);
 
         for ($i = 1; $i < count($products); $i++) {
@@ -389,7 +391,6 @@ class CABulkUploader extends Controller
                 $quan[] = $products[$i]->getRatio();
             }
         }
-
         if ($quan) {
             $lcm = $this->rate($quan); //make ratio
 
@@ -479,14 +480,15 @@ class CABulkUploader extends Controller
         $productsCount = count($products);
         $i = 0;
         while ($i != ($productsCount - 1)) {
-            $products[$i]->setRatio($products[$i]->getRatio() - $products[$i + 1]->getRatio());
+        //check % in form
+            $ratio = $products[$i]->getRatio() - $products[$i + 1]->getRatio();
+            $products[$i]->setRatio($ratio);
             $i++;
-           // $products[$i][bulkUploader4PFP::PRODUCTUNITTYPE_INDEX] = 'VOL';
+           $products[$i]->setUnitType('VOL');
         }
         return $products;
     }
-
-   
+    
     protected function actionBrowseCategoryProcessNew()
     {
         $input = array(

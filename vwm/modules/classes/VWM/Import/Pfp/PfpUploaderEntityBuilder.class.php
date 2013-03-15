@@ -6,6 +6,7 @@ use VWM\Import\CsvHelper;
 use VWM\Import\EntityBuilder;
 use VWM\Apps\WorkOrder\Entity\Pfp;
 use \VWM\Apps\WorkOrder\Entity\PfpProduct;
+use \VWM\Entity\Product\PaintProduct;
 
 class PfpUploaderEntityBuilder extends EntityBuilder
 {
@@ -42,9 +43,9 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $currentPfp = new Pfp();
         $pfpProducts = array();
         $i = 0;
+        $isPrimary = 1; 
         foreach ($fileData as $data) {
             $i++;
-            
             //	group rows by PFP
             if ($data[$this->mapper->mappedData['number']] == '' 
                 && $data[$this->mapper->mappedData['productId']] == '' 
@@ -53,14 +54,45 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 && $data[$this->mapper->mappedData['unitType']] == '' 
                 && $data[$this->mapper->mappedData['IP']] == '') {
                 if(!is_null($currentPfp->getDescription())){
-                    $currentPfp->setProducts($pfpProducts);
+                    $convertPfpProducts = array();
+                    if(count($pfpProducts)==1){
+                        $convertPfpProducts = $pfpProducts;
+                         // RDU or RTS
+                         //	keep ratio as 1
+                    }else{
+                        foreach ($pfpProducts as $pfpProduct) {
+                           
+                            //check for %
+                            if($pfpProduct->getUnitType()=='%'){
+                               //do not do enything with this product
+                              $pfpProduct = $this->convertRatioToPercent($pfpProduct, $convertPfpProducts[0]->getRatio());
+                            }elseif (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
+                                $pfpProduct = $this->convertRatioToVolume($pfpProduct);
+                            }
+                            $convertPfpProducts[] = $pfpProduct;
+                        }
+                    }
+                    //create the hole pfpDescription
+                    $description = $currentPfp->getDescription();
+                    foreach($convertPfpProducts as $pfpProductDescription){
+                       $description.=' / '. $pfpProductDescription->getProductNr();
+                    }
+                    $currentPfp->setDescription($description.' /');
+                    //get pfp id if exist
+                    $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
+                    $newPfp = $pfpManager->getPfpByDescription($description);
+                    if ($newPfp) {
+                        $currentPfp->setId($newPfp->getId());
+                    }
+                    $currentPfp->setProducts($convertPfpProducts);
                     $this->pfps[] = $currentPfp;
                 }
                 $currentPfp = new Pfp();
                 $pfpProducts = array();
+                $isPrimary = 1;
                 continue;
             }
-
+            
             if ($data[$this->mapper->mappedData['number']] != '') {
 
                 if ($data[$this->mapper->mappedData['IP']] == 'IP') {
@@ -70,23 +102,15 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 $currentPfp->setCompanyId($this->getCompanyId());
 
                 //if pfp has it's own description set description and IP    
-
-                $currentPfp->setDescription($data[$this->mapper
+                $currentPfp->setDescription('/ '.$data[$this->mapper
                         ->mappedData['productName']]);
-                //get pfp id if exist
-                $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
-                $description = $currentPfp->getDescription();
-                $newPfp = $pfpManager->getPfpByDescription($description);
-                if ($newPfp) {
-                    $currentPfp->setId($newPfp->getId());
-                }
+                
                 if ($data[$this->mapper->mappedData['ratio']] == '' && $data[$this->mapper->mappedData['unitType']] == '') {
                     continue;    
                 }
             }
             //create pfp Product
             $pfpProduct = new PfpProduct($this->db);
-            
             $pfpProduct->setRatio($data[$this->mapper->mappedData['ratio']]);
             $pfpProduct->setName($data[$this->mapper->mappedData['productName']]);
             $pfpProduct->setProductNr($data[$this->mapper->mappedData['productId']]);
@@ -95,15 +119,21 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             //get Product Id
             $productId = $pfpProduct->getProductIdByProductNr($data[$this->mapper->mappedData['productId']]);
             $pfpProduct->setProductId($productId);
-            //check product unitType For getting Process
-            if (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
-                $pfpProduct = $this->convertRatioToVolume($pfpProduct);
+            //get pfp supplier Id by product
+            if ($isPrimary == 1 && $productId) {
+                $pfpProduct->setIsPrimary($isPrimary);
+                $paintProduct = new PaintProduct($this->db, $productId);
+                $supplierId = $paintProduct->getSupplierId();
+                $currentPfp->setSupplierId($supplierId);
+                $isPrimary = 0;
             }
             
             $pfpProducts[] = $pfpProduct;
         }
+        $currentPfp->setProducts($pfpProducts);
+        $this->pfps[] = $currentPfp;
     }
-
+ 
      /**
      * Check product for volume ratio. Actually Volume is default value,
      * so if it meets empty string this is also Volume
@@ -112,14 +142,13 @@ class PfpUploaderEntityBuilder extends EntityBuilder
      */
     private function isVolumeRatio($unitType)
     {
-        $possibleVolumeStrings = array('VOL', 'VOLUME', '');
+        $possibleVolumeStrings = array('VOL', 'VOLUME', '', 'PART');
         $isVolume = false;
         if (in_array($unitType, $possibleVolumeStrings)) {
             $isVolume = true;
         }
         return $isVolume;
     }
-
     /**
      * 
      * @param \VWM\Apps\WorkOrder\Entity\PfpProduct 
@@ -136,7 +165,8 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $productID = $productObj->getProductIdByName($product->getProductNr());
 
         if (!$productID) {
-            throw new \Exception('This is no product in database' . $product[bulkUploader4PFP::PRODUCTNR_INDEX]);
+            //throw new \Exception('This is no product in database ' . $product->getProductNr());
+            return $product;
         }
         
         $productObj->setId($productID);
@@ -164,6 +194,22 @@ class PfpUploaderEntityBuilder extends EntityBuilder
 
         return $product;
     }
-
+    
+    /**
+     * 
+     * getting percent from value
+     * 
+     * @param int $percent
+     * @param int $value
+     * 
+     * @return \VWM\Apps\WorkOrder\Entity\PfpProduct
+     */
+    private function convertRatioToPercent($pfpProduct, $value){
+        $percent = $pfpProduct->getRatio();
+        $value = $percent*$value/100;
+        $pfpProduct->setRatio($value);
+        $pfpProduct->setUnitType('VOL');
+        return $pfpProduct;
+    }
 }
 ?>

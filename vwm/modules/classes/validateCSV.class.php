@@ -133,7 +133,7 @@ class validateCSV
             }
             // get pfp Details if exist
             if (!empty($dat[1])) {
-                $currentPfpName = $dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
+                $currentPfpName = '/ '.$dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
                 
                 // check ip correct
                 if (!bulkUploader4PFP::isProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
@@ -144,7 +144,7 @@ class validateCSV
                     continue;
                 }
             }
-
+            
             $data = $this->trimAll($dat);
 
             //	pfp's are splitted by empty row
@@ -154,7 +154,7 @@ class validateCSV
                     if ($isErrorInCurrentPfp) {
                         $pfpErrorsNames[] = $currentPfpName;
                     } else {
-                        $pfpCorrectsNames[] = $currentPfpName;
+                        $pfpCorrectsNames[] = $currentPfpName.' /';
                     }
                     //	reset
                     $currentPfpName = '';
@@ -165,6 +165,8 @@ class validateCSV
             }
 
             $currRowComments = $this->pfpDataCheck($data, $currentRow);
+            //create the hole pfp name
+            $currentPfpName.=' / '.$data[bulkUploader4PFP::PRODUCTNR_INDEX];
 
             if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
                 $ranges = bulkUploader4PFP::splitRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX]);
@@ -175,11 +177,12 @@ class validateCSV
                 $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] = 1;
             }
             
+            
             //check product dencity
             $productObj = new \Product($this->db);
             $productId = $productObj->getProductIdByName($data[bulkUploader4PFP::PRODUCTNR_INDEX]);
             if (!$productId) {
-                $currRowComments.="There is no products with id " . $productId . ".\n";
+                $currRowComments.="There is no products with description " . $dat[bulkUploader4PFP::PRODUCTNAME_INDEX] . ".\n";
             } else {
                 $productObj->initializeByID($productId);
                 if (is_null($productObj->getDensity())) {
