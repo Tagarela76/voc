@@ -77,7 +77,8 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                     foreach($convertPfpProducts as $pfpProductDescription){
                        $description.=' / '. $pfpProductDescription->getProductNr();
                     }
-                    $currentPfp->setDescription($description.' /');
+                    $description.=' /';
+                    $currentPfp->setDescription($description);
                     //get pfp id if exist
                     $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
                     $newPfp = $pfpManager->getPfpByDescription($description);

@@ -172,11 +172,11 @@ class PfpProduct extends PaintProduct
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $ratioTo = ($this->getRatioTo() !== null) ? $this->db->sqltext($this->getRatioTo()) : "NULL";
+        $ratioTo = ($this->getRatioTo() !== null) ? $db->sqltext($this->getRatioTo()) : "NULL";
 
-        $ratioFromOriginal = ($this->getRatioFromOriginal() !== null) ? $this->db->sqltext($this->getRatioFromOriginal()) : "NULL";
+        $ratioFromOriginal = ($this->getRatioFromOriginal() !== null) ? $db->sqltext($this->getRatioFromOriginal()) : "NULL";
 
-        $ratioToOriginal = ($this->getRatioToOriginal() !== null) ? $this->db->sqltext($this->getRatioToOriginal()) : "NULL";
+        $ratioToOriginal = ($this->getRatioToOriginal() !== null) ? $db->sqltext($this->getRatioToOriginal()) : "NULL";
 
         $sql = "INSERT INTO " . self::TABLE_NAME .
                 "(ratio, ratio_to, ratio_from_original, ratio_to_original, product_id, preformulated_products_id, isPrimary" .
