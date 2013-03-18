@@ -63,7 +63,7 @@
 					<tr>
 						<td class="users_u_bottom">
 						</td>
-						<td class="users_u_bottom_r">
+						<td colspan="1" class="users_u_bottom_r">
 						</td>
 					</tr>
 				</table>
@@ -170,14 +170,14 @@
 								{/if}
 							{/foreach}
 						{/if}
-                        
+                        <tr>
+                            <td class="users_u_bottom">
+                            </td>
+                            <td colspan="5" class="users_u_bottom_r">
+                            </td>
+                        </tr>
 					</table>
-						<table class="users" align="left" cellpadding="0" cellspacing="0" style='width: 100%' id='stepResourcesDetails'>
-							<tr>
-								<td class="users_u_bottom" colspan="5"> </td>
-								<td class="users_u_bottom_r"> </td>
-							</tr>
-						</table>
+						
 				</div>
 			</td>
 		</tr>
