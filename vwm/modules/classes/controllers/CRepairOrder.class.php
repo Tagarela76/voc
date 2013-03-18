@@ -924,7 +924,7 @@ class CRepairOrder extends Controller
 
         $request['id'] = $categoryId;
         $request['category'] = $category;
-
+        
         $this->smarty->assign('request', $request);
         $this->smarty->assign('cssSources', $cssSources);
         $this->smarty->assign('jsSources', $jsSources);
@@ -941,7 +941,7 @@ class CRepairOrder extends Controller
     {
         $stepTemplate = new StepTemplate($this->db);
         $resourceUnitTypeId = $this->getFromPost('resourceUnitTypeId');
-
+        
         $resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
 
         //delete volume resource type as we can't edit such resource.
@@ -960,13 +960,13 @@ class CRepairOrder extends Controller
         $rate = $this->getFromPost('resourceRate');
         $resourceUnittypeId = $this->getFromPost('resourceUnittypeId');
         $resourceResourceUnittypeId = $this->getFromPost('resourceResourceUnittypeId');
-
+        
         $resoutceInstance = new VWM\Apps\Process\ResourceInstance($this->db);
 
         $resoutceInstance->setQty($qty);
         $resoutceInstance->setRate($rate);
         $resoutceInstance->setUnittypeId($resourceUnittypeId);
-        $resoutceInstance->setRateUnittypeId($resourceUnittypeId);
+        //$resoutceInstance->setRateUnittypeId($resourceUnittypeId);
 
         $resoutceInstance->setResourceTypeId($resourceResourceUnittypeId);
         $resoutceInstance->calculateTotalCost();
@@ -1020,7 +1020,6 @@ class CRepairOrder extends Controller
             }
             $resourceInstance->setUnittypeId($resource->unittypeId);
             $resourceInstance->setResourceTypeId($resource->resourceTypeId);
-            $resourceInstance->setRateUnittypeId($resource->unittypeId);
             $resourceInstance->setStepId($stepInstance->getId());
             $resourceInstanceArray[] = $resourceInstance;
         }
@@ -1046,7 +1045,7 @@ class CRepairOrder extends Controller
                 }
             }
         }
-
+        
         if ($isErrors) {
             $errors = $violationList;
         }else{
@@ -1068,10 +1067,12 @@ class CRepairOrder extends Controller
      */
     protected function actionGetUnittypeListForResourceEdit()
     {
-        $sysType = $this->getFromRequest('sysType');
-        $uManager = new UnitTypeManager($this->db);
-        $unitTypeClasses = $uManager->getUnitTypeListByUnitClass($sysType);
-
+        $resourceUnitTypeId = $this->getFromRequest('sysType');
+        $resourceTypes = VWM\Apps\Process\Resource::getResourceTypes();
+        //delete volume resource type as we can't edit such resource.
+        unset($resourceTypes[2]);
+        $unitTypeClasses = VWM\Apps\Process\Resource::getResourceUnitTypeByResourceType($resourceUnitTypeId);
+        
         $data = array();
         foreach ($unitTypeClasses as $unitType) {
             $type = array(

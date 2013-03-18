@@ -111,6 +111,25 @@ class UnitType extends Model {
 		$this->unit_class_id = $unit_class_id;
 	}
 
+    
+    public function load()
+	{
+		if (is_null($this->getUnitTypeId())) {
+			return false;
+		}
+		$sql = "SELECT * " .
+				"FROM " . self::TABLE_NAME . " " .
+				"WHERE unittype_id = {$this->db->sqltext($this->getUnitTypeId())} " .
+				"LIMIT 1";
+
+		$this->db->query($sql);
+		if ($this->db->num_rows() == 0) {
+			return false;
+		}
+		$row = $this->db->fetch(0);
+		$this->initByArray($row);
+	}
+    
 	/**
 	 * @return Type
 	 */

@@ -255,7 +255,7 @@ class bulkUploader4PFP {
 	}
 	
 	public static function isProprietary($isProprietary) {
-		$possibleValues = array('1', 'IP', '', '0');
+		$possibleValues = array('1', 'IP', '', '0', ' ');
 		return in_array(trim(strtoupper($isProprietary)), $possibleValues);
 
 	}

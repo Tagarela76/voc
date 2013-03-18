@@ -9,6 +9,7 @@ function Step(){
 	
 	// Private members are made by the constructor	
 	var constructor = function () {
+        var id = null;
 		var templateid = null;
 		var description = null;
         var processId = null;

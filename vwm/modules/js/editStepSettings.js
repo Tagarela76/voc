@@ -199,14 +199,6 @@ function StepAddEditResource() {
         var departmentId = $('#departmentId').val();
         var sysType = $('#resourceType').val();
 	
-        if(sysType == 3){
-            sysType = 'Quantity';
-        }else if(sysType == 2){
-            sysType = 'USA Weight';
-        }else if(sysType == 1){
-            sysType = 'Time';
-        }
-	
         $.ajax({
             //url: "modules/ajax/getUnitTypes.php",
             url: "?action=getUnittypeListForResourceEdit&category=repairOrder",

@@ -52,10 +52,10 @@ class ResourceInstance extends Resource
 
 	protected function _insert()
 	{
+        
 		if ($this->total_cost === null) {
 			$this->calculateTotalCost();
 		}
-
 		$sql = "INSERT INTO " . self::TABLE_NAME . " (" .
 				"description, qty, unittype_id, resource_type_id, labor_cost, " .
 				"material_cost, total_cost, rate, rate_unittype_id, rate_qty, " .

@@ -88,6 +88,14 @@ abstract class Resource extends Model
 	const TIME_UNIT_CLASS = 7;
 	const GOM_UNIT_CLASS = 8;
 	const VOLUME_UNIT_CLASS = 1;
+    
+    //default values
+    const DEFAULT_TIME_TYPE_ID = 38;
+    const DEFAULT_GOM_TYPE_ID = 43;
+    const DEFAULT_VULUME_TYPE_ID = 1;
+    const LINER_FEET_TYPE_ID = 45;
+    const SQUARE_FEET_TYPE_ID = 47;
+    
 
 	public function __construct(\db $db, $Id = null)
 	{
@@ -242,6 +250,8 @@ abstract class Resource extends Model
 	 */
 	public function countCost()
 	{
+        //array of additional unitType Description for GOM
+        $additionalUnitTypes = array('LS', 'LF', 'SF');
 		$unitTypeConvector = new \UnitTypeConverter($this->db);
 		$unitType = new \Unittype($this->db);
 		$from = $unitType->getNameByID($this->unittype_id);
@@ -250,6 +260,11 @@ abstract class Resource extends Model
 
 		switch ($this->resource_type_id) {
 			case self::TIME:
+                //set default value if null
+                if(is_null($this->rate_unittype_id)){
+                    $this->setRateUnittypeId(self::DEFAULT_TIME_TYPE_ID);
+                    $to = $unitType->getNameByID($this->rate_unittype_id);
+                }
 				$qty = $unitTypeConvector->convertTimeFromTo($from, $to, $value);
 				$rate = $this->getRate();
 				$rateQty = $this->getRateQty();
@@ -257,6 +272,11 @@ abstract class Resource extends Model
 				$this->setLaborCost($laborCost);
 				break;
 			case self::VOLUME:
+                //set default value if null
+                if (is_null($this->rate_unittype_id)) {
+                    $this->setRateUnittypeId(self::DEFAULT_VULUME_TYPE_ID);
+                    $to = $unitType->getNameByID($this->rate_unittype_id);
+                }
 				if ($to == 'LS' || $from == 'LS') {
 					$qty = $value;
 				} else {
@@ -268,7 +288,13 @@ abstract class Resource extends Model
 				$this->setMaterialCost($laborCost);
 				break;
 			case self::GOM:
-				if ($to == 'LS' || $from == 'LS') {
+                
+                //set default value if null
+                if (is_null($this->rate_unittype_id)) {
+                    $this->setRateUnittypeId(self::DEFAULT_GOM_TYPE_ID);
+                    $to = $unitType->getNameByID($this->rate_unittype_id);
+                }
+				if ( in_array($to, $additionalUnitTypes) || in_array($from, $additionalUnitTypes)) {
 					$qty = $value;
 				} else {
 					$qty = $unitTypeConvector->convertCountFromTo($from, $to, $value);
@@ -345,6 +371,20 @@ abstract class Resource extends Model
 		}
 		
 		$unitTypeList = $utManager->getUnitTypeListByUnitClass($unitClass->getDescription(), $unitTypes);
+        //add new resources for GOM
+        if($resourceType==self::GOM){
+            //add LF Type to GOM Resource
+            $unitType = new \VWM\Apps\UnitType\Entity\UnitType($db);
+            $unitType->setUnitTypeId(self::LINER_FEET_TYPE_ID);
+            $unitType->load();
+            $unitTypeList[] = $unitType;
+            
+            //add LF Type to GOM Resource
+            $unitType = new \VWM\Apps\UnitType\Entity\UnitType($db);
+            $unitType->setUnitTypeId(self::SQUARE_FEET_TYPE_ID);
+            $unitType->load();
+            $unitTypeList[] = $unitType;
+        }
 		return $unitTypeList;
 		
 	}
