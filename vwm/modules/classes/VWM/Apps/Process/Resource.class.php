@@ -94,7 +94,7 @@ abstract class Resource extends Model
     const DEFAULT_GOM_TYPE_ID = 40;
     const DEFAULT_VULUME_TYPE_ID = 1;
     const LINER_FEET_TYPE_ID = 41;
-    const SQUARE_FEET_TYPE_ID = 42;
+    const SQUARE_FEET_TYPE_ID = 44;
     
 
 	public function __construct(\db $db, $Id = null)
