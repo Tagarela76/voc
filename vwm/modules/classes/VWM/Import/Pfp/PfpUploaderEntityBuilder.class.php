@@ -43,7 +43,10 @@ class PfpUploaderEntityBuilder extends EntityBuilder
         $currentPfp = new Pfp();
         $pfpProducts = array();
         $i = 0;
-        $isPrimary = 1; 
+        $isPrimary = 1;
+        //check is everything is alright. Count of pfp must not be 0;
+        $pfpsCount = 0;
+        
         foreach ($fileData as $data) {
             $i++;
             //	group rows by PFP
@@ -53,31 +56,27 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 && $data[$this->mapper->mappedData['ratio']] == '' 
                 && $data[$this->mapper->mappedData['unitType']] == '' 
                 && $data[$this->mapper->mappedData['IP']] == '') {
+                
                 if(!is_null($currentPfp->getDescription())){
                     $convertPfpProducts = array();
-                    if(count($pfpProducts)==1){
-                        $convertPfpProducts = $pfpProducts;
-                         // RDU or RTS
-                         //	keep ratio as 1
-                    }else{
-                        foreach ($pfpProducts as $pfpProduct) {
-                           
-                            //check for %
-                            if($pfpProduct->getUnitType()=='%'){
-                               //do not do enything with this product
-                              $pfpProduct = $this->convertRatioToPercent($pfpProduct, $convertPfpProducts[0]->getRatio());
-                            }elseif (!$this->isVolumeRatio($pfpProduct->getUnitType())) {
-                                $pfpProduct = $this->convertRatioToVolume($pfpProduct);
-                            }
-                            $convertPfpProducts[] = $pfpProduct;
+                    //check for %
+                    foreach ($pfpProducts as $pfpProduct) {
+                        if ($pfpProduct->getUnitType() == '%') {
+                            //get % from primary product
+                            $pfpProduct = $this->convertRatioToPercent($pfpProduct, $convertPfpProducts[0]->getRatio());
+                        } else {
+                            //set unitType as OZS
+                            $pfpProduct->setUnitType('OZS');
                         }
+                        $convertPfpProducts[] = $pfpProduct;
                     }
                     //create the hole pfpDescription
                     $description = $currentPfp->getDescription();
                     foreach($convertPfpProducts as $pfpProductDescription){
                        $description.=' / '. $pfpProductDescription->getProductNr();
                     }
-                    $currentPfp->setDescription($description.' /');
+                    $description.=' /';
+                    $currentPfp->setDescription($description);
                     //get pfp id if exist
                     $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
                     $newPfp = $pfpManager->getPfpByDescription($description);
@@ -94,7 +93,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             }
             
             if ($data[$this->mapper->mappedData['number']] != '') {
-
+                $pfpsCount++;
                 if ($data[$this->mapper->mappedData['IP']] == 'IP') {
                     $currentPfp->setIsProprietary(1);
                 }
@@ -127,28 +126,16 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                 $currentPfp->setSupplierId($supplierId);
                 $isPrimary = 0;
             }
-            
             $pfpProducts[] = $pfpProduct;
         }
+        if($pfpsCount==0){
+            throw new \Exception('Something wrong. Check the name of the fields in the file. First field must have name:  ITEM#');
+        }
+        //get last pfp
         $currentPfp->setProducts($pfpProducts);
         $this->pfps[] = $currentPfp;
     }
  
-     /**
-     * Check product for volume ratio. Actually Volume is default value,
-     * so if it meets empty string this is also Volume
-     * @param array $product from CSV file
-     * @return boolean
-     */
-    private function isVolumeRatio($unitType)
-    {
-        $possibleVolumeStrings = array('VOL', 'VOLUME', '', 'PART');
-        $isVolume = false;
-        if (in_array($unitType, $possibleVolumeStrings)) {
-            $isVolume = true;
-        }
-        return $isVolume;
-    }
     /**
      * 
      * @param \VWM\Apps\WorkOrder\Entity\PfpProduct 

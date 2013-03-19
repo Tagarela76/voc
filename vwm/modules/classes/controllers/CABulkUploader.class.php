@@ -96,7 +96,7 @@ class CABulkUploader extends Controller
             $eb = new PfpUploaderEntityBuilder($this->db, $mapper);
             $eb->setCompanyId($input['companyId']);
             $eb->buildEntities($tmpName);
-
+            
             $correctPfpsNames = $validation->getPfpCorrectsNames();
             $errorPfpsNames = $validation->getPfpErrorsNames();
             $pfps = $eb->getPfps();
@@ -112,12 +112,12 @@ class CABulkUploader extends Controller
                      //check ratio errors
                     $products = $pfp->getProducts();
                     if(empty($products)){
-                      $actionLog .= " Pfp " . $product->getName() . " has ratio less than 1 \n"; 
+                      $actionLog .= " Pfp " . $pfp->getDescription() . " is empty \n"; 
                       $productErrors = true;
                     }
                     foreach($products as $product){
                         if($product->getRatio()<=0){
-                          $actionLog .= " Product " . $pfp->getDescription() . " is empty \n";
+                          $actionLog .= " Product " . $product->getName() . " has ratio less than 1\n";
                           $productErrors = true;
                         }
                     }
@@ -134,7 +134,6 @@ class CABulkUploader extends Controller
                         $pfp->setProducts($products);
                         if ($pfp->getId()) {
                             $updatedPfps++;
-                            
                         } else {
                             $insertedPfps++;
                         }
@@ -179,7 +178,6 @@ class CABulkUploader extends Controller
             $title = new Titles($this->smarty);
             $title->titleBulkUploadResults();
 
-            
             $this->smarty->assign("categoryID", "tab_" . $this->getFromPost('categoryID'));
             $this->smarty->assign("productsError", $validation->productsError);
             $this->smarty->assign("errorCnt", $errorCnt);
