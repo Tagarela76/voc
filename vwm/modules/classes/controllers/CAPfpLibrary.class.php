@@ -78,7 +78,7 @@ class CAPfpLibrary extends Controller {
 		  $pfps = $manager->getListSpecial(null,null,$pfplist);
 		 */
 
-
+        $this->smarty->assign('pfpsCount', $pfpsCount);
 		$this->smarty->assign('itemsCount', count($pfps));
 		$this->smarty->assign('pfps', $pfps);
 		$this->smarty->assign('childCategoryItems', $pfps);
