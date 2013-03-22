@@ -170,6 +170,7 @@ class CAProduct extends Controller {
 		$this->smarty->assign("category", $list);
 		$this->smarty->assign("itemsCount", $itemsCount);
 
+        $this->smarty->assign('productCount', $productCount);
 		$this->smarty->assign('tpl', 'tpls/productClass.tpl');
 		$this->smarty->assign('pagination', $pagination);
 
