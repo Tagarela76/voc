@@ -5,8 +5,9 @@ namespace VWM\Import\Process;
 use VWM\Import\CsvHelper;
 use VWM\Import\EntityBuilder;
 use VWM\Apps\Process\Process;
-use VWM\Apps\Process\Step;
-use VWM\Apps\Process\Resource;
+use VWM\Apps\Process\StepTemplate;
+use VWM\Apps\Process\ResourceTemplate;
+use VWM\Apps\Process\ProcessTemplate;
 
 class ProcessUploaderEntityBuilder extends EntityBuilder {
 
@@ -117,7 +118,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 					continue;
 				}
 				
-				$step->setInitResources($resourses);
+				$step->setResources($resourses);
 				$steps[] = $step;
 				$currentProcess->setProcessSteps($steps);
 				$processes[] = $currentProcess;
@@ -133,7 +134,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 				
 				
 				if ($data[$this->mapper->mappedData['processName']] == '') {
-					$step->setInitResources($resourses);
+					$step->setResources($resourses);
 					$steps[] = $step;
 				}
 				$resourses = array();
@@ -169,7 +170,7 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 		}
 		
 		$resourses = $resource;
-		$step->setInitResources($resourses);
+		$step->setResources($resourses);
 		$steps[] = $step;
 		$currentProcess->setProcessSteps($steps);
 		$processes[] = $currentProcess;
