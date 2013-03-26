@@ -66,8 +66,8 @@ class IndustrialWorkOrder extends WorkOrder {
 				"description='{$this->db->sqltext($this->getDescription())}', " .
 				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
-				"status = '{$this->db->sqltext($this->getStatus())}'";
-				//"vin = '{$this->db->sqltext($this->getVin())}'";
+				"status = '{$this->db->sqltext($this->getStatus())}' ".
+				"creation_time=NOW()";
 
 		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";

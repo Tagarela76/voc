@@ -767,6 +767,13 @@ class CRepairOrder extends Controller
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
         $company = new VWM\Hierarchy\Company($this->db, $companyId);
         $repairOrderLabel = $company->getIndustryType()->getLabelManager()->getLabel($companyLevelLabelRepairOrder->label_id)->getLabelText();
+        
+        //get process name
+        $processTemplate = new ProcessTemplate($this->db);
+        $processTemplate->setId($repairOrder->getProcessTemplateId());
+        $processTemplate->load();
+        
+        $this->smarty->assign('processName', $processTemplate->getName());
         $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
 
         $this->smarty->assign('mixTotalPrice', $mixTotalPrice);

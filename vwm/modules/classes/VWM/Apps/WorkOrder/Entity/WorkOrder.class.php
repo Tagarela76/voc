@@ -73,6 +73,12 @@ abstract class WorkOrder extends Model
 	 * @var VWM\Apps\Process\ProcessInstance; 
 	 */
 	protected $processInstance = null;
+    
+    /**
+     *
+     * @var string 
+     */
+    protected $creation_time = null;
 
 	const TB_PROCESS_INSTANCE = 'process_instance';
 
@@ -161,7 +167,17 @@ abstract class WorkOrder extends Model
 		$this->processInstance = $processInstance;
 	}
 
-		/**
+    public function getCreationTime()
+    {
+        return $this->creation_time;
+    }
+
+    public function setCreationTime($creation_time)
+    {
+        $this->creation_time = $creation_time;
+    }
+
+    /**
 	 *delete Work Order  
 	 */
 	public function delete()

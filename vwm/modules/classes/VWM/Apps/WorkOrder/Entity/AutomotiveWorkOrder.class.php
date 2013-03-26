@@ -81,8 +81,8 @@ class AutomotiveWorkOrder extends WorkOrder {
 				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
 				"status = '{$this->db->sqltext($this->getStatus())}', " .
-				"vin = '{$this->db->sqltext($this->getVin())}'";
-
+				"vin = '{$this->db->sqltext($this->getVin())}', ".
+                "creation_time=NOW()";
 		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
 		}
