@@ -5,11 +5,14 @@ use Phinx\Migration\AbstractMigration;
 class HabsMigration extends AbstractMigration
 {
     
-     public function change()
+    public function change()
     {
         $table = $this->table('component');
         if ($table) {
-            $rows = $this->query("ALTER TABLE  `component` ADD  `HAPs` INT( 255 ) NOT NULL DEFAULT  '0'");
+            $table->addColumn('HAPs', 'integer', array('default' => 0));
+
+            $rows = $this->query("INSERT INTO `report` (`report_id`, `name`, `type`, `description`) " . 
+                "VALUES (NULL, 'HAPs', 'hapsCoat', 'Hazardous Air Pollutant ')");
         }else{
             die('table is not exist');
         }
