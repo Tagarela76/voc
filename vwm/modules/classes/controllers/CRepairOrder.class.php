@@ -1084,7 +1084,7 @@ class CRepairOrder extends Controller
         foreach ($unitTypeClasses as $unitType) {
             $type = array(
                 'unittype_id' => $unitType->getUnitTypeId(),
-                'name' => $unitType->getUnitTypeDesc()
+                'name' => $unitType->getName()
             );
             $data[] = $type;
         }
