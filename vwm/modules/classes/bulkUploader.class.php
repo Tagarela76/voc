@@ -45,7 +45,6 @@ class bulkUploader
         $validation = new validateCSV($this->db);
         $validation->validate($input);
 
-
         $errorLog = $validation->errorComments;
 
         //partition
