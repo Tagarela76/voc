@@ -2364,6 +2364,27 @@ table.bookmarks td {
     padding: 7px 19px 8px 21px;
     min-width: 60px;
     text-align: center;
+    font-size: 9px;
+}
+.activeBookmark_right_css {
+    border-top-right-radius:12px;
+    border-top-left-radius:12px;
+    min-width: 60px;
+    padding: 7px 19px 8px 21px;
+    white-space: nowrap;
+    text-align: center;
+    color: white;
+    background: #8aa4c8;
+
+}
+.deactiveBookmark_right_css{
+    border-top-right-radius:12px;
+    border-top-left-radius:12px;
+    min-width: 60px;
+    padding: 7px 19px 8px 21px;
+    white-space: nowrap;
+    text-align: center;
+    background: #C0C0C0; 
 }
 /*ultraviolet*/
 .activeBookmark_ultraviolet {

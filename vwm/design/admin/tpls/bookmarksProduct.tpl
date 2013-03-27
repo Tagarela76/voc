@@ -9,15 +9,15 @@
 					<td >
 					     <a href="admin.php?action=browseCategory&category={$request.category}&subBookmark={$bookmarks[i].supplier_id}&letterpage={$request.letterpage}{if $request.productCategory }&productCategory={$request.productCategory}{/if}" style="text-decoration: none; color: #333333;">
 							{if $request.subBookmark == $bookmarks[i].supplier_id}
-								<div  class = "activeBookmark">  <div class = "activeBookmark_right">
+								<div class = "activeBookmark_right_css">
 									{else}
 
-										<div class="deactiveBookmark"><div class="deactiveBookmark_right">
+										<div class="deactiveBookmark_right_css">
 
 							{/if}
-							{$bookmarks[i].supplier|lower}
+							{$bookmarks[i].supplier|lower}{if $request.subBookmark == $bookmarks[i].supplier_id} &nbsp({$productCount}){/if}
 
-							</div>
+							
 						</div></a>
 					</td>
 				{/section}

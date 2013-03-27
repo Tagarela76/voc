@@ -186,7 +186,7 @@ class validateCSV
             } else {
                 $productObj->initializeByID($productId);
                 if (is_null($productObj->getDensity())) {
-                    $currRowComments.="Product with id " . $productId . " has dencity NULL.\n";
+                    $currRowComments.="Product with number " . $data[bulkUploader4PFP::PRODUCTNR_INDEX] . " has dencity NULL. Row " . $currentRow . ".\n";
                 }
             }
             if ($currRowComments != "") {
