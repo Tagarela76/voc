@@ -28,7 +28,7 @@ class Rhaps extends ReportCreator implements iReportCreator
 
         switch ($this->categoryType) {
             case "company":
-                $query = "SELECT p.product_nr, c.cas, c.description, " .
+                $query = "SELECT p.product_nr, c.cas, c.description, mg.quantity_lbs," .
                         "p.density, cg.weight_from, p.product_id, p.specific_gravity " .
                         "FROM " . TB_PRODUCT . " p " .
                         "LEFT JOIN " . TB_MIXGROUP . " mg " .
@@ -60,7 +60,7 @@ class Rhaps extends ReportCreator implements iReportCreator
 
             case "facility":
 
-                $query = "SELECT p.product_nr, c.cas, c.description, " .
+                $query = "SELECT p.product_nr, c.cas, c.description, mg.quantity_lbs," .
                         "p.density, cg.weight_from, p.product_id, p.specific_gravity " .
                         "FROM " . TB_PRODUCT . " p " .
                         "LEFT JOIN " . TB_MIXGROUP . " mg " .
@@ -91,7 +91,7 @@ class Rhaps extends ReportCreator implements iReportCreator
 
             case "department":
                 //get information wich we need
-                $query = "SELECT p.product_nr, c.cas, c.description, " .
+                $query = "SELECT p.product_nr, c.cas, c.description, mg.quantity_lbs, " .
                         "p.density, cg.weight_from, p.product_id, p.specific_gravity " .
                         "FROM " . TB_PRODUCT . " p " .
                         "LEFT JOIN " . TB_MIXGROUP . " mg " .
@@ -108,6 +108,7 @@ class Rhaps extends ReportCreator implements iReportCreator
                         "AND c.HAPs = 1 " .
                         "GROUP BY p.product_id,  c.component_id";
 
+                //var_dump($query);die();
                 $department = new Department($this->db, $this->categoryID);
                 $facilityIDS = array();
                 $facility = new Facility($this->db, $department->getFacilityId());
@@ -347,7 +348,7 @@ class Rhaps extends ReportCreator implements iReportCreator
                 if ($component->weight_from == '') {
                     $productAmount = 0;
                 } else {
-                    $productAmount = $component->weight_from;
+                    $productAmount = ($component->weight_from*$component->quantity_lbs)/100;
                 }
 
                 $componentAmountTag = $doc->createAttribute('amount');
@@ -492,7 +493,7 @@ class Rhaps extends ReportCreator implements iReportCreator
         foreach ($componentUsages as $key => $value) {
             foreach ($rows as $row) {
                 if ($key == $row->cas) {
-                    $value['amount']+=$row->weight_from;
+                    $value['amount']+=($row->weight_from*$row->quantity_lbs)/100;
                     $summaryAmount+=$row->weight_from;
                 }
             }
