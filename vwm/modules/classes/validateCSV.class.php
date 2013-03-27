@@ -322,13 +322,13 @@ class validateCSV
         $file = fopen($CSVPath, "r");
 
         $headerKey = $this->tableHeader($file); //identification columns by their header
-
         $row = 3;
         $lastNotEmptyRow = 4;
         $inProduct = false;
         $error = "";
         $this->errorComments = "--------------------------------\n";
         $this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
+        
         while ($dat = fgetcsv($file, 1000, ";")) {
 
             $data = Array();
@@ -337,7 +337,7 @@ class validateCSV
             }
 
             $data = $this->trimAll($data);
-
+            
             $data_tmp[0] = $data[$headerKey['productID']];
             $data_tmp[1] = $data[$headerKey['mfg']];
             $data_tmp[2] = $data[$headerKey['productName']];
@@ -382,7 +382,7 @@ class validateCSV
             $data_tmp[41] = $data[$headerKey['libraryTypes']]; // product library type
 
             $data = $data_tmp;
-
+        
             if (!empty($data[0])) {
 
                 $componentKey = -1;
@@ -397,7 +397,6 @@ class validateCSV
                     $inProduct = false;
                     $error = "";
                 }
-
                 $inProduct = true;
                 // check product to be discontinued
                 if ($data[8] == 'DISC' || $data[8] == 'discontinued' || $data[9] == 'DISC' || $data[9] == 'discontinued') {
@@ -761,9 +760,10 @@ class validateCSV
 
         //specialty coating check
         //$sc = trim($data[4]);
-        if (!(strtoupper($data[4]) == "YES" || strtoupper($data[4]) == "NO" || empty($data[4]))) {
+        
+        /*if (!(strtoupper($data[4]) == "YES" || strtoupper($data[4]) == "NO" || empty($data[4]))) {
             $comments .= "	Specialty coating value is undefined. Row " . $row . ".\n";
-        }
+        }*/
 
         //aerosol check
         //$aerosol = trim($data[5]);
@@ -1012,10 +1012,12 @@ class validateCSV
     private function tableHeader($file)
     {
         $dat = fgetcsv($file, 1000, ";");
+        
         $firstRowData = Array();
         foreach ($dat as $val) {
             $firstRowData[] = mysql_real_escape_string($val);
         }
+        
         $dat = fgetcsv($file, 1000, ";");
         $secondRowData = Array();
         foreach ($dat as $val) {
@@ -1063,7 +1065,7 @@ class validateCSV
             $columnIndex[$i] = FALSE;
             //PRODUCT ID mapping
             if (!isset($key['productID'])) {
-                if (strtoupper(trim($firstRowData[$i])) == 'PRODUCT' && strtoupper(trim($secondRowData[$i])) == 'ID') {
+                if (strtoupper(trim($firstRowData[$i])) == 'PRODUCT ID') {
                     $key['productID'] = $i;
                     $columnIndex[$i] = TRUE;
                 }
@@ -1106,7 +1108,7 @@ class validateCSV
 
             //PRODUCT NAME/COLOR mapping
             if (!isset($key['productName'])) {
-                if (strtoupper(trim($firstRowData[$i])) == 'PRODUCT NAME' && strtoupper(trim($secondRowData[$i])) == 'COLOR') {
+                if (strtoupper(trim($firstRowData[$i])) == 'PRODUCT NAME/COLOR') {
                     $key['productName'] = $i;
                     $columnIndex[$i] = TRUE;
                 }
@@ -1149,7 +1151,7 @@ class validateCSV
 
             //Paint or Chemical mapping
             if (!isset($key['paintOrChemical'])) {
-                if (strtoupper(trim($firstRowData[$i])) == 'PAINT COATING' && strtoupper(trim($secondRowData[$i])) == 'CHEMICAL PRODUCTS') {
+                if (strtoupper(trim($firstRowData[$i])) == 'PAINT COATING' && strtoupper(trim($secondRowData[$i])) == 'PRODUCTS') {
                     $key['paintOrChemical'] = $i;
                     $columnIndex[$i] = TRUE;
                 }
@@ -1166,7 +1168,7 @@ class validateCSV
 
             //FLASH POINT mapping
             if (!isset($key['flashPoint'])) {
-                if (strtoupper(trim($firstRowData[$i])) == 'FLASH' && strtoupper(trim($secondRowData[$i])) == 'POINT') {
+                if (strtoupper(trim($firstRowData[$i])) == 'FLASH' && strtoupper(trim($secondRowData[$i])) == 'POINT (F)') {
                     $key['flashPoint'] = $i;
                     $columnIndex[$i] = TRUE;
                 }
@@ -1196,11 +1198,7 @@ class validateCSV
 
             //Spec Coating mapping
             if (!isset($key['scoating'])) {
-                if (strtoupper(trim($firstRowData[$i])) == 'SPECIALTY' && strtoupper(trim($secondRowData[$i])) == 'COATING') {
-                    $key['scoating'] = $i;
-                    $columnIndex[$i] = TRUE;
-                }
-                if (strtoupper(trim($firstRowData[$i])) == 'COATING' && strtoupper(trim($secondRowData[$i])) == 'SPECIALTY') {
+                if (strtoupper(trim($firstRowData[$i])) == 'COATING') {
                     $key['scoating'] = $i;
                     $columnIndex[$i] = TRUE;
                 }
@@ -1208,10 +1206,7 @@ class validateCSV
                     if (strtoupper(trim($firstRowData[$i])) == $header) {
                         $key['scoating'] = $i;
                         $columnIndex[$i] = TRUE;
-                    } elseif (strtoupper(trim($secondRowData[$i])) == $header) {
-                        $key['scoating'] = $i;
-                        $columnIndex[$i] = TRUE;
-                    }
+                    } 
                 }
             }
 
@@ -1947,10 +1942,6 @@ class validateCSV
 
                 $currentProcessName = $data[0];
             }
-
-            /* if($currentRow==4){
-              die(var_dump($data));
-              } */
 
             $currRowComments = $this->processDataCheck($data, $currentRow);
 

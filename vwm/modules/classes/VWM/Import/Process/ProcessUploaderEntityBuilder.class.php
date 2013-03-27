@@ -170,7 +170,9 @@ class ProcessUploaderEntityBuilder extends EntityBuilder {
 		}
 		
 		$resourses = $resource;
-		$step->setResources($resourses);
+
+		$step->setResources($resourses); 
+
 		$steps[] = $step;
 		$currentProcess->setProcessSteps($steps);
 		$processes[] = $currentProcess;
