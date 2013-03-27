@@ -3,3 +3,6 @@ VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder:
     number: 
       - NotBlank: { groups: [add,Default] }
       - MaxLength: { limit: 64, groups: [add,Default] }
+    creation_time:
+      - MaxLength: { limit: 10, groups: [add,Default] }
+      - VWM\Framework\Validator\Constraints\Date: ~

@@ -427,6 +427,7 @@ class CRepairOrder extends Controller
         $this->smarty->assign('processList', $processList);
 
         if (count($post) > 0) {
+            $creationTime = $this->getFromPost('creationTime');
             $facilityID = $post['facility_id'];
             $woDepartments_id = $post['woDepartments_id'];
             $woProcessId = $post['woProcessId'];
@@ -444,8 +445,9 @@ class CRepairOrder extends Controller
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
+            $workOrder->setCreationTime($creationTime);
             $violationList = $workOrder->validate();
-
+            
             if (count($violationList) == 0 && $woDepartments_id != '') {
                 $this->db->beginTransaction();
 
@@ -491,9 +493,15 @@ class CRepairOrder extends Controller
                     $this->smarty->assign('woDepartmentsError', true);
                 }
             }
+        }else{
+            $creationTime = date('m/d/Y', time());
         }
 
+        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
+        $this->smarty->assign('dataChain', $dataChain);
+        
         $this->smarty->assign('woDepartments', $woDepartments_id);
+        $this->smarty->assign('creationTime', $creationTime);
 
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
@@ -598,6 +606,7 @@ class CRepairOrder extends Controller
 
     protected function actionEdit()
     {
+        
         $request = $this->getFromRequest();
         $facility = new Facility($this->db);
         $department = new Department($this->db);
@@ -634,6 +643,7 @@ class CRepairOrder extends Controller
         $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
         $industryTypeId = $companyNew->getIndustryType();
         $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $this->getFromRequest('id'));
+        $creationTime = $workOrder->getCreationTime();
         $woOldDesc = $workOrder->number;
         //     $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
         $this->smarty->assign('data', $workOrder);
@@ -653,6 +663,8 @@ class CRepairOrder extends Controller
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
+            $creationTime = $post['creationTime'];
+            $workOrder->setCreationTime($creationTime);
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
@@ -715,8 +727,12 @@ class CRepairOrder extends Controller
         }
         $woDepartmentsName = implode(",", $departmetsName);
         $woDepartments = implode(",", $woDepartments);
+        
+        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
+        $this->smarty->assign('dataChain', $dataChain);
         $this->smarty->assign('woDepartments', $woDepartments);
         $this->smarty->assign('woDepartmentsName', $woDepartmentsName);
+        $this->smarty->assign('creationTime', $creationTime);
         //	set js scripts
         $jsSources = array(
             "modules/js/reg_country_state.js",

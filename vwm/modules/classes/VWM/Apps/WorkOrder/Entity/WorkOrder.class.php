@@ -78,7 +78,7 @@ abstract class WorkOrder extends Model
      *
      * @var string 
      */
-    protected $creation_time = null;
+    protected $creation_time = '';
 
 	const TB_PROCESS_INSTANCE = 'process_instance';
 

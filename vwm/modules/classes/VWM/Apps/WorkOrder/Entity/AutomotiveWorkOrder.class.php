@@ -74,7 +74,10 @@ class AutomotiveWorkOrder extends WorkOrder {
      * @return int
      */
     protected function insert() {
-
+        $creation_time = ($this->getCreationTime() !== '')
+				? $this->db->sqltext($this->getCreationTime())
+				: date('m/d/Y', time());
+        
 		$query = "INSERT INTO " . TB_WORK_ORDER . " SET " .
 				"number = '{$this->db->sqltext($this->getNumber())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
@@ -82,10 +85,11 @@ class AutomotiveWorkOrder extends WorkOrder {
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
 				"status = '{$this->db->sqltext($this->getStatus())}', " .
 				"vin = '{$this->db->sqltext($this->getVin())}', ".
-                "creation_time=NOW()";
+                "creation_time='{$creation_time}'";
 		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
 		}
+        
 		$this->db->query($query);
 		$id = $this->db->getLastInsertedID();
 		$this->setId($id);
@@ -97,14 +101,18 @@ class AutomotiveWorkOrder extends WorkOrder {
 	 * @return int
 	 */
 	protected function update() {
-
+        $creation_time = ($this->getCreationTime() !== '')
+				? $this->db->sqltext($this->getCreationTime())
+				: date('m/d/Y', time());
+        
 		$query = "UPDATE " . TB_WORK_ORDER . "
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
 						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',
 						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
 						status='" . $this->db->sqltext($this->getStatus()) . "',
-						vin='" . $this->db->sqltext($this->getVin()) . "'
+						vin='" . $this->db->sqltext($this->getVin()) . "',
+                        creation_time='{$creation_time} '
 					WHERE id= " . $this->db->sqltext($this->getId());
 		$this->db->query($query);
 
