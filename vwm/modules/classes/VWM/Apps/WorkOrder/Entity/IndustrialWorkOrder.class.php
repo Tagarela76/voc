@@ -61,13 +61,17 @@ class IndustrialWorkOrder extends WorkOrder {
      * @return int
      */
     protected function insert() {
+        $creation_time = ($this->getCreationTime() !== '')
+				? $this->db->sqltext($this->getCreationTime())
+				: date('m/d/Y', time());
+        
 		$query = "INSERT INTO " . self::TABLE_NAME . " SET " .
 				"number = '{$this->db->sqltext($this->getNumber())}', " .
 				"description='{$this->db->sqltext($this->getDescription())}', " .
 				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
-				"status = '{$this->db->sqltext($this->getStatus())}'";
-				//"vin = '{$this->db->sqltext($this->getVin())}'";
+				"status = '{$this->db->sqltext($this->getStatus())}' ".
+				"creation_time='{$creation_time}'";
 
 		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
@@ -84,12 +88,17 @@ class IndustrialWorkOrder extends WorkOrder {
 	 */
 	protected function update() {
 
+        $creation_time = ($this->getCreationTime() !== '')
+				? $this->db->sqltext($this->getCreationTime())
+				: date('m/d/Y', time());
+        
 		$query = "UPDATE " . self::TABLE_NAME . "
 					set number='" . $this->db->sqltext($this->getNumber()) . "',
 						description='" . $this->db->sqltext($this->getDescription()) . "',
 						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',
 						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
-						status='" . $this->db->sqltext($this->getStatus()) . "'
+						status='" . $this->db->sqltext($this->getStatus()) . "',
+                        creation_time='{$creation_time} '
 					WHERE id= " . $this->db->sqltext($this->getId());
 		$this->db->query($query);
 

@@ -1,5 +1,8 @@
 VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder:
   properties:
     number: 
-      - NotBlank: { groups: [add,Default] }
-      - MaxLength: { limit: 64, groups: [add,Default] }
+      - NotBlank: ~
+      - MaxLength: 64
+    creation_time:
+      - MaxLength: 10
+      - VWM\Framework\Validator\Constraints\Date: ~

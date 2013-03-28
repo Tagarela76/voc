@@ -1,6 +1,8 @@
 {literal}
 <script type="text/javascript">
 	$(function() {
+        
+    $('#calendar').datepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}' }); 
 		//	global reminderPage object defined at manageReminders.js
 		repairOrderPage.facilityId = {/literal} {$facilityDetails.facility_id} {literal};
         repairOrderPage.woId = {/literal} {$request.id} {literal};
@@ -136,8 +138,19 @@
 					<!--<input type='hidden' name='woProcessId' id='woProcessId' value="{$processList[0]->id}"/>-->
 				</td>
 			</tr>
-			
             {/if}
+            
+            {*Select creation time*}
+            <tr class="border_users_b border_users_r">			
+				<td height="20" class="border_users_l">
+					Creation Time:
+				</td>
+				<td>
+                    <div align="left">
+                        <input type="text" name="creationTime" id="calendar" class="calendarFocus" value='{$creationTime}'/>
+                    </div>						
+				</td>					
+			</tr>
 			{if $request.parent_category == 'facility'}
 			<tr height="10px">
 				<td height="20" class="border_users_l">

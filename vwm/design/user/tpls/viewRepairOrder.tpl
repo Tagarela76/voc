@@ -72,6 +72,16 @@
 							</div>
 						</td>
 					</tr>
+                    <tr>
+						<td class="border_users_l border_users_b" height="20">
+							{$repairOrderLabel} creation time:
+						</td>
+						<td class="border_users_l border_users_b border_users_r">
+							<div align="left">
+								&nbsp; {$repairOrder->getCreationTime()|escape}
+							</div>
+						</td>
+					</tr>
 					{if $instanceOfWorkOrder instanceof VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder}
 						<tr>
 							<td class="border_users_l border_users_b" height="20">

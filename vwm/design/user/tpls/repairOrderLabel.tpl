@@ -39,6 +39,16 @@
 							<b>{$repairOrderLabel} Status:</b> {$repairOrder->status|escape}
 						</td>
 					</tr>
+                    <tr>
+						<td height="20">
+							<b>{$repairOrderLabel} creation time:</b> {$repairOrder->getCreationTime()|escape}
+						</td>
+					</tr>
+                    <tr>
+						<td height="20">
+							<b>{$repairOrderLabel} process name:</b> {$processName|escape}
+						</td>
+					</tr>
 					<tr>
 						<td height="20">
 							<b>{$repairOrderLabel} VIN number:</b> {$repairOrder->vin|escape}

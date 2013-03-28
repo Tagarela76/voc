@@ -51,6 +51,12 @@ class RepairOrder extends Model {
 	public $url;
 
 	public $process_template_id = NULL;
+    
+    /**
+     *
+     * @var string 
+     */
+    protected $creation_time;
 
 	const TB_MIX = 'mix';
 	const TB_STEP = 'step';
@@ -147,6 +153,16 @@ class RepairOrder extends Model {
 	public function setUrl($url) {
 		$this->url = $url;
 	}
+    
+    public function getCreationTime()
+    {
+        return $this->creation_time;
+    }
+
+    public function setCreationTime($creation_time)
+    {
+        $this->creation_time = $creation_time;
+    }
 
 
 	/**
