@@ -394,7 +394,7 @@ class XML2PDF extends PDF_MC_Table
 				$this->rows[7] = 'Qty Used ('.$this->quantityUnittype.')';
 				$this->rows[8] = 'Coating as Applied';
 				$this->rows[9] = 'Rule Exemption';
-				$this->rows[10] = 'Total '.$this->vocUnittype.' VOC';
+				$this->rows[10] = 'Total VOC ('.$this->vocUnittype.')';
                 
                 $tableRows = self::COLUMNUMBER;
                 if($this->getShowSpentTime()){
@@ -464,7 +464,7 @@ class XML2PDF extends PDF_MC_Table
 				$this->rows[6] = 'Qty Used ('.$this->quantityUnittype.')';
 				$this->rows[7] = 'Coating as Applied';
 				$this->rows[8] = 'Rule Exemption';
-				$this->rows[9] = 'Total '.$this->vocUnittype.' VOC';
+				$this->rows[9] = 'Total VOC ('.$this->vocUnittype.')';
                 $columNumbers = self::COLUMNUMBER-1;
                 $totalTableWidth = self::TOTAL_TABLE_WIDTH;
                 if($this->getShowSpentTime()){
@@ -779,7 +779,7 @@ class XML2PDF extends PDF_MC_Table
 			case "SUMMARYSUM":
 				$this->rows[0] = "";
 				$this->rows[1] = "";
-				$this->rows[2] = $this->header['RULE']." VOC TOTALS";
+				$this->rows[2] = $this->header['RULE']." VOC TOTALS (".$this->vocUnittype.")";
 				$this->rows[3] = "";
 				$this->rows[4] = "";
 				$this->rows[5] = "";
