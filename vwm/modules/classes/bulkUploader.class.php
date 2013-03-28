@@ -611,7 +611,7 @@ class bulkUploader
 
     public function deleteProductComponents($productId)
     {
-        $query = "DELETE FROM components_group WHERE" .
+        $query = "DELETE FROM components_group WHERE " .
                  "product_id ={$this->db->sqltext($productId)}";
 
         $this->db->query($query);
