@@ -1,7 +1,7 @@
 VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder:
   properties:
     number: 
-      - NotBlank ~
+      - NotBlank: ~
       - MaxLength: 64
     creation_time:
       - MaxLength: 10

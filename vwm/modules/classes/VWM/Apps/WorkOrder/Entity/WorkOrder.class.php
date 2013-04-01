@@ -81,6 +81,7 @@ abstract class WorkOrder extends Model
     protected $creation_time = '';
 
 	const TB_PROCESS_INSTANCE = 'process_instance';
+    const TABLE_NAME = 'work_order';
 
 	public function getId()
 	{

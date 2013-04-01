@@ -4,7 +4,6 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 class IndustrialWorkOrder extends WorkOrder {
 
-	const TABLE_NAME = 'work_order';
     public function __construct(\db $db, $id = null) {
 		$this->db = $db;
 		$this->modelName = 'IndustrialWorkOrder';
@@ -30,7 +29,7 @@ class IndustrialWorkOrder extends WorkOrder {
 			return false;
 		}
 		$sql = "SELECT * ".
-				"FROM ".TB_WORK_ORDER." ".
+				"FROM ".self::TABLE_NAME." ".
 				"WHERE id={$this->db->sqltext($this->getId())} " .
 				"LIMIT 1";
 		$this->db->query($sql);
@@ -62,8 +61,8 @@ class IndustrialWorkOrder extends WorkOrder {
      */
     protected function insert() {
         $creation_time = ($this->getCreationTime() !== '')
-				? $this->db->sqltext($this->getCreationTime())
-				: date('m/d/Y', time());
+                ? "STR_TO_DATE('{$this->db->sqltext($this->getCreationTime())}', '%m/%d/%Y')"
+				: "CURDATE()";
         
 		$query = "INSERT INTO " . self::TABLE_NAME . " SET " .
 				"number = '{$this->db->sqltext($this->getNumber())}', " .
@@ -71,11 +70,12 @@ class IndustrialWorkOrder extends WorkOrder {
 				"customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
 				"facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
 				"status = '{$this->db->sqltext($this->getStatus())}' ".
-				"creation_time='{$creation_time}'";
+				"creation_time={$creation_time} ";
 
 		if ($this->getProcessTemplateId() != null) {
 			$query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
 		}
+        
 		$this->db->query($query);
 		$id = $this->db->getLastInsertedID();
 		$this->setId($id);
@@ -87,19 +87,18 @@ class IndustrialWorkOrder extends WorkOrder {
 	 * @return int
 	 */
 	protected function update() {
-
-        $creation_time = ($this->getCreationTime() !== '')
-				? $this->db->sqltext($this->getCreationTime())
-				: date('m/d/Y', time());
+       $creation_time = ($this->getCreationTime() !== '')
+                ? "STR_TO_DATE('{$this->db->sqltext($this->getCreationTime())}', '%m/%d/%Y')"
+				: "CURDATE()";
         
-		$query = "UPDATE " . self::TABLE_NAME . "
-					set number='" . $this->db->sqltext($this->getNumber()) . "',
-						description='" . $this->db->sqltext($this->getDescription()) . "',
-						customer_name='" . $this->db->sqltext($this->getCustomerName()) . "',
-						facility_id='" . $this->db->sqltext($this->getFacilityId()) . "',
-						status='" . $this->db->sqltext($this->getStatus()) . "',
-                        creation_time='{$creation_time} '
-					WHERE id= " . $this->db->sqltext($this->getId());
+		$query = "UPDATE " . self::TABLE_NAME . " ".
+                    "set number='{$this->db->sqltext($this->getNumber())}', ".
+                        "description='{$this->db->sqltext($this->getDescription())}', ".
+						"customer_name='{$this->db->sqltext($this->getCustomerName())}', ".
+                        "facility_id='{$this->db->sqltext($this->getFacilityId())}', ".
+                        "status='{$this->db->sqltext($this->getStatus())}', ".
+                        "creation_time={$creation_time} ".
+					"WHERE id= " . $this->db->sqltext($this->getId());
 		$this->db->query($query);
 
 		return $this->getId();
