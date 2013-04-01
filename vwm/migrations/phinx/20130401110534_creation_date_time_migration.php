@@ -9,8 +9,8 @@ class CreationDateTimeMigration extends AbstractMigration
         $exist->$this->hasTable('work_order');
         if($exist){
             $sql = "ALTER TABLE  `work_order` ".
-                   "CHANGE  `creation_time` ".
-                   "`creation_time` DATE NULL DEFAULT NULL";
+                   "CHANGE  `creation_time`  ".
+                   "`creation_time` INT( 11 ) NULL DEFAULT NULL";
             $rows = $this->query($sql);
         }  else {
             die('table does not exist');

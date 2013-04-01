@@ -75,10 +75,16 @@ abstract class WorkOrder extends Model
 	protected $processInstance = null;
     
     /**
+     * date format for creation time
+     * @var string
+     */
+    protected $dateFormat;
+    /**
      *
      * @var string 
      */
     protected $creation_time = '';
+    
 
 	const TB_PROCESS_INSTANCE = 'process_instance';
     const TABLE_NAME = 'work_order';
@@ -170,15 +176,61 @@ abstract class WorkOrder extends Model
 
     public function getCreationTime()
     {
-        return $this->creation_time;
+        $dateFormat = $this->getDateFormat();
+        $facilityId = $this->getFacilityId();
+        if (!isset($dateFormat) && isset($facilityId)) {
+			$this->iniDateFormat();
+		} else if (!isset($dateFormat) and !isset($facilityId)) {
+			throw new Exception("Date format does not exists! And department_id is not set!");
+		}
+
+		$date = date($dateFormat, $this->creation_time);
+		return $date;
     }
 
     public function setCreationTime($creation_time)
     {
-        $this->creation_time = $creation_time;
+        $dateFormat = $this->getDateFormat();
+        
+        if (!isset($dateFormat)) {
+            $this->iniDateFormat();
+            $dateFormat = $this->getDateFormat();
+            if (!isset($dateFormat)) {
+                return;
+            }
+        } else if (!isset($creation_time)) {
+            throw new \Exception("\$value is not set!");
+        }
+
+        /*
+         * If value is already timestamp  - just set value
+         */
+
+        if (strlen($creation_time) == 10 && is_numeric($creation_time)) {
+            $this->creation_time = $creation_time;
+        } else {
+            $dateFormat = $this->getDateFormat();
+            $date = \VWM\Framework\Utils\DateTime::createFromFormat($dateFormat, $creation_time);
+            if (!$date) {
+                return;
+            }
+            $timestamp = $date->getTimestamp();
+            $this->creation_time = $timestamp;
+        }
+        
     }
 
-    /**
+    public function getDateFormat()
+    {
+            return $this->dateFormat;
+    }
+
+    public function setDateFormat($dateFormat)
+    {
+        $this->dateFormat = $dateFormat;
+    }
+
+        /**
 	 *delete Work Order  
 	 */
 	public function delete()
@@ -258,6 +310,24 @@ abstract class WorkOrder extends Model
 		
 		$this->setProcessInstance($processInstance);
 		return $processInstance;
+	}
+    
+    /**
+     * init date Format
+     * @param type $departmentID
+     * @throws Exception
+     */
+    private function iniDateFormat($facilityId = null) {
+
+		$fId = $facilityId ? $facilityId : $this->facility_id;
+
+		if (!$fId or $fId == NULL or !isset($fId)) {
+			throw new \Exception("Cannot get date format for work order, because facility id is not set!");
+		}
+
+		$chain = new \TypeChain(null, 'Date', $this->db, $fId, 'facility');
+
+		$this->dateFormat = $chain->getFromTypeController('getFormat');
 	}
     
 }

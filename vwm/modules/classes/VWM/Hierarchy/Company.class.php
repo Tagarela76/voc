@@ -299,6 +299,11 @@ class Company extends Model {
      */
     protected function _insert() {
 
+        /*$company = new Company($this->db);
+        $company->setCompanyId($this->getCompanyId());
+        $company->load();
+        $dateType = $company->getDateFormatId();
+        $date = new \Date*/
 		$lastUpdateTime = ($this->getLastUpdateTime())
 				? "'{$this->getLastUpdateTime()}'"
 				: "NULL";
