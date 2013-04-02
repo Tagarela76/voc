@@ -76,12 +76,26 @@ abstract class WorkOrder extends Model
 
     /**
      *
+     * @var int 
+     */
+    protected $overhead = 0;
+
+    /**
+     *
+     * @var int 
+     */
+    protected $profit = 0;
+
+    /**
+     *
      * @var string 
      */
     protected $creation_time = '';
+    protected $subTotals = 0;
 
     const TB_PROCESS_INSTANCE = 'process_instance';
     const TABLE_NAME = 'work_order';
+
 
     public function getId()
     {
@@ -178,6 +192,26 @@ abstract class WorkOrder extends Model
         $this->creation_time = $creation_time;
     }
 
+    public function getOverhead()
+    {
+        return $this->overhead;
+    }
+
+    public function setOverhead($overhead)
+    {
+        $this->overhead = $overhead;
+    }
+
+    public function getProfit()
+    {
+        return $this->profit;
+    }
+
+    public function setProfit($profit)
+    {
+        $this->profit = $profit;
+    }
+
     /**
      * delete Work Order  
      */
@@ -188,6 +222,7 @@ abstract class WorkOrder extends Model
         $this->db->query($sql);
     }
 
+
     public function save()
     {
         if ($this->getId()) {
@@ -196,7 +231,6 @@ abstract class WorkOrder extends Model
             return $this->insert();
         }
     }
-    
     /**
      * function for getting Work Order Mixes
      * 
@@ -270,5 +304,36 @@ abstract class WorkOrder extends Model
 
         return $processInstance;
     }
+
+    /**
+     * calculate Work Order Total Cost
+     * 
+     * @param int $materialCost
+     * @param int $laborCost
+     * @param int $mixTotalPrice
+     * 
+     * @return int
+     */
+    public function calculateSubTotalCost($materialCost, $laborCost, $mixTotalPrice)
+    {
+        $subTotalCost = $materialCost + $laborCost + $mixTotalPrice;
+
+        return $subTotalCost;
+    }
+
+    /**
+     * calculate Work Order Total Cost
+     * 
+     * @param int $subTotalCost
+     * 
+     * @return int
+     */
+    public function calculateTotalCost($subTotalCost)
+    {
+        $totalCost = $subTotalCost + $this->getOverhead() - $this->getProfit();
+
+        return $totalCost;
+    }
+
 }
 ?>

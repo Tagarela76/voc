@@ -6,4 +6,7 @@ VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder:
     creation_time:
       - MaxLength: 10
       - Min: 0
+    overhead:
+      - Max: 9999999999
+    profit:
       - Max: 9999999999

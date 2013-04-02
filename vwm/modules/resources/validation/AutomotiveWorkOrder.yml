@@ -3,8 +3,10 @@ VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder:
     number: 
       - NotBlank: ~
       - MaxLength: 64
-      
     creation_time:
       - MaxLength: 10
       - Min: 0
+    overhead:
+      - Max: 9999999999
+    profit:
       - Max: 9999999999

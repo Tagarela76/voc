@@ -91,12 +91,13 @@ class CRepairOrder extends Controller
         $woDateFormat = $dataChain->getFromTypeController('getFormat');
         
         //get process information
+
         $processId = $workOrder->getProcessTemplateId();
         $isHaveProcess = false;
 
         $materialCost = 0;
         $laborCost = 0;
-        $totalCost = 0;
+        $subTotalCost = 0;
         $spentTime = 0;
 
 
@@ -171,7 +172,7 @@ class CRepairOrder extends Controller
             $mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mix->price;
             $mixCosts['stepId'] = $mix->getStepId();
             $mixesCosts[$mix->mix_id] = $mixCosts;
-        }//die();
+        }
         //get url for adding mix to Repair Order button
         //get last mix
         $urlMixAdd = "?action=addItem&category=mix" .
@@ -191,7 +192,6 @@ class CRepairOrder extends Controller
         // set stepID = 0 if mix do not conect with step
         $urlMixAdd .="&stepID=0";
 
-
         $mixList = array();
         $stepsCount = count($steps);
         //array of not empty mixs
@@ -209,7 +209,6 @@ class CRepairOrder extends Controller
         }
 
         //get empty steps
-
         $emptyMixSteps = array();
         foreach ($stepInstances as $stepInstance) {
             if (!in_array($stepInstance->getId(), $mixStepsIds)) {
@@ -256,13 +255,16 @@ class CRepairOrder extends Controller
             $laborCost+=$mixCosts["laborCost"];
         }
 
-        $totalCost += $materialCost + $laborCost + $mixTotalPrice;
+        $subTotalCost = $workOrder->calculateSubTotalCost($materialCost, $laborCost, $mixTotalPrice);
         ksort($mixList);
         
         //display creation_time
 		$woCreationDate = date($woDateFormat, $workOrder->getCreationTime());
-        
         $this->smarty->assign('woCreationDate', $woCreationDate);
+
+        //calculate total
+        $total = $workOrder->calculateTotalCost($subTotalCost);
+
         $this->smarty->assign('urlMixAdd', $urlMixAdd);
         $this->smarty->assign('urlMixEdit', $urlMixEdit);
         $jsSources = array(
@@ -272,7 +274,10 @@ class CRepairOrder extends Controller
         $this->smarty->assign('materialCost', $materialCost);
         $this->smarty->assign('spentTime', $spentTime);
         $this->smarty->assign('laborCost', $laborCost);
-        $this->smarty->assign('totalCost', $totalCost);
+
+        $this->smarty->assign('totalCost', $subTotalCost);
+        $this->smarty->assign('total', $total);
+
         $this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
         $this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
@@ -444,6 +449,8 @@ class CRepairOrder extends Controller
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
+            $workOrder->setOverhead($post['repairOrderOverhead']);
+            $workOrder->setProfit($post['repairOrderProfit']);
 
             if ($woProcessId != '') {
                 $workOrder->setProcessTemplateId($woProcessId);
@@ -549,6 +556,7 @@ class CRepairOrder extends Controller
         $this->smarty->assign('cssSources', $cssSources);
 
         $this->smarty->assign('pleaseWaitReason', "Recalculating repair orders at facility.");
+        $this->smarty->assign('action', 'add');
         $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
@@ -619,7 +627,6 @@ class CRepairOrder extends Controller
 
     protected function actionEdit()
     {
-        
         $request = $this->getFromRequest();
         $facility = new Facility($this->db);
         $department = new Department($this->db);
@@ -677,6 +684,8 @@ class CRepairOrder extends Controller
             $workOrder->setStatus($post['repairOrderStatus']);
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
+            $workOrder->setOverhead($post['repairOrderOverhead']);
+            $workOrder->setProfit($post['repairOrderProfit']);
             $creationTime = $post['creationTime'];
             
             if (strlen($creationTime) == 10 && is_numeric($creationTime)) {
@@ -690,6 +699,7 @@ class CRepairOrder extends Controller
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
+            
             $violationList = $workOrder->validate();
             
             if (count($violationList) == 0 && $woDepartments_id != '') {
@@ -778,7 +788,7 @@ class CRepairOrder extends Controller
         $this->smarty->assign('jsSources', $jsSources);
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
         $this->smarty->assign('cssSources', $cssSources);
-
+        $this->smarty->assign('action', 'edit');
         $this->smarty->assign('tpl', 'tpls/addRepairOrder.tpl');
         $this->smarty->display("tpls:index.tpl");
     }
