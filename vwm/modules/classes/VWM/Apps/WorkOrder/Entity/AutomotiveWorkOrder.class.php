@@ -66,8 +66,9 @@ class AutomotiveWorkOrder extends WorkOrder
     {
         $creation_time = $this->getCreationTime();
         if ($creation_time == '') {
-            $creation_time = 'NULL';
+            $creation_time = time();
         }
+        
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "number = '{$this->db->sqltext($this->getNumber())}', " .
                 "description='{$this->db->sqltext($this->getDescription())}', " .
@@ -79,7 +80,6 @@ class AutomotiveWorkOrder extends WorkOrder
         if ($this->getProcessTemplateId() != null) {
             $query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
         }
-
         $this->db->query($query);
         $id = $this->db->getLastInsertedID();
         $this->setId($id);
@@ -94,7 +94,7 @@ class AutomotiveWorkOrder extends WorkOrder
     {
         $creation_time = $this->getCreationTime();
         if ($creation_time == '') {
-            $creation_time = 'NULL';
+            $creation_time = time();
         }
         $query = "UPDATE " . self::TABLE_NAME . " " .
                 "set number='{$this->db->sqltext($this->getNumber())}', " .

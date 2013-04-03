@@ -51,7 +51,7 @@ class IndustrialWorkOrder extends WorkOrder
     {
         $creation_time = $this->getCreationTime();
         if ($creation_time == '') {
-            $creation_time = 'NULL';
+            $creation_time = time();
         }
 
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
@@ -80,7 +80,7 @@ class IndustrialWorkOrder extends WorkOrder
     {
         $creation_time = $this->getCreationTime();
         if ($creation_time == '') {
-            $creation_time = 'NULL';
+            $creation_time = time();
         }
         $query = "UPDATE " . self::TABLE_NAME . " " .
                 "set number='{$this->db->sqltext($this->getNumber())}', " .

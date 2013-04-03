@@ -1216,9 +1216,11 @@ class CMix extends Controller {
 		//$mix->setWoId(777);
 
 		//Create Repair Order if not exist 
-        
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+        $industryTypeId = $companyNew->getIndustryType();
 		if (is_null($mix->getWoId())) {
-			$repairOrder = new RepairOrder($this->db);
+			//$repairOrder = new RepairOrder($this->db);
+            $repairOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
 			$repairOrderManager = new RepairOrderManager($this->db);
 			$repairOrder->setNumber($mix->getDescription());
 			$repairOrder->setFacilityId($facilityID);
@@ -1229,8 +1231,6 @@ class CMix extends Controller {
 		} elseif($mix->getStepId() && $isCustomStep==0) {
 			//save new step for work order
 			//create work order
-			$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
-			$industryTypeId = $companyNew->getIndustryType();
 			$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $mix->getWoId());
 			//initialize process
 			$processInstance = $workOrder->getProcessInstance();
