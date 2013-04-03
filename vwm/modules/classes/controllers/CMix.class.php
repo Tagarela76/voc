@@ -1129,6 +1129,7 @@ class CMix extends Controller {
 
 		//	Start to ini onbjects
 		$mix = $this->buildMix($jmix);
+        
 		$mix->facility_id = $facilityID;
 		$mix->isMWS = $isMWS;
 		if($jmix->step_id!=''){
@@ -1224,8 +1225,8 @@ class CMix extends Controller {
 			$repairOrderManager = new RepairOrderManager($this->db);
 			$repairOrder->setNumber($mix->getDescription());
 			$repairOrder->setFacilityId($facilityID);
+            $repairOrder->setCreationTime($mix->getCreationTimeInUnixType());
 			$woId = $repairOrder->save();
-
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		} elseif($mix->getStepId() && $isCustomStep==0) {
