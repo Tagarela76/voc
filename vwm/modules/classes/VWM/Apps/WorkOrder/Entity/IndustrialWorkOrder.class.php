@@ -49,17 +49,18 @@ class IndustrialWorkOrder extends WorkOrder
      */
     protected function insert()
     {
-        $creation_time = ($this->creation_time !== '')
-                ? "{$this->db->sqltext($this->creation_time)}"
-				: "NULL";
+        $creation_time = $this->getCreationTime();
+        if ($creation_time == '') {
+            $creation_time = 'NULL';
+        }
 
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "number = '{$this->db->sqltext($this->getNumber())}', " .
                 "description='{$this->db->sqltext($this->getDescription())}', " .
                 "customer_name='{$this->db->sqltext($this->getCustomerName())}', " .
                 "facility_id = {$this->db->sqltext($this->getFacilityId())}, " .
-                "status = '{$this->db->sqltext($this->getStatus())}' " .
-                "creation_time={$creation_time} ";
+                "status = '{$this->db->sqltext($this->getStatus())}', " .
+                "creation_time='{$creation_time}' ";
 
         if ($this->getProcessTemplateId() != null) {
             $query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
@@ -77,10 +78,10 @@ class IndustrialWorkOrder extends WorkOrder
      */
     protected function update()
     {
-        $creation_time = ($this->creation_time !== '')
-                ? "{$this->db->sqltext($this->creation_time)}"
-				: "NULL";
-
+        $creation_time = $this->getCreationTime();
+        if ($creation_time == '') {
+            $creation_time = 'NULL';
+        }
         $query = "UPDATE " . self::TABLE_NAME . " " .
                 "set number='{$this->db->sqltext($this->getNumber())}', " .
                 "description='{$this->db->sqltext($this->getDescription())}', " .

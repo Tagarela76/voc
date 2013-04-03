@@ -13,7 +13,6 @@ class AutomotiveWorkOrderTest extends DbTestCase {
 
 
 	public function testSave() {		
-		
         $automotiveWO = new AutomotiveWorkOrder($this->db);
         $automotiveWO->setCustomerName("Tom Smith");
         $automotiveWO->setDescription("test wo");

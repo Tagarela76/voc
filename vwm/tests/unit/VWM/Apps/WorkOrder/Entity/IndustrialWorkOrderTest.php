@@ -14,13 +14,13 @@ class IndustrialWorkOrderTest extends DbTestCase {
 
 
 	public function testSave() {		
-		
         $industrialWO = new IndustrialWorkOrder($this->db);
         $industrialWO->setCustomerName("Tom Smith");
         $industrialWO->setDescription("test wo");
         $industrialWO->setFacilityId("1");
         $industrialWO->setNumber("wo nubmer");
         $industrialWO->setStatus("in progress");
+        $industrialWO->setCreationTime('1361603686');
 		$r = $industrialWO->save();
 		$expectedId = 5;
 		$this->assertEquals($expectedId, $r);
