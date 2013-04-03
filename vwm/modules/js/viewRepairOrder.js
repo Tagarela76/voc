@@ -62,7 +62,8 @@ function StepManager(){
      //function for adding step
     this.addStep = function(){
         var stepId = $('#availableSteps option:selected').val();
-        if(stepId == 0){
+        
+        if(stepId == 0 || stepId==undefined){
             //add mix with out Step
             document.location.href=$('#urlMixAdd').val();
         }else{

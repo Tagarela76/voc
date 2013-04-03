@@ -85,11 +85,13 @@ class CRepairOrder extends Controller
         $woDepartments = implode(",", $departmetsName);
         $this->smarty->assign('woDepartments', $woDepartments);
 
-        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $company->getIndustryType()->id);
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $company->getIndustryType()->id,$this->getFromRequest('id'));
 
+        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
+        $woDateFormat = $dataChain->getFromTypeController('getFormat');
+        
         //get process information
-        $wo = new IndustrialWorkOrder($this->db, $this->getFromRequest('id'));
-        $processId = $wo->getProcessTemplateId();
+        $processId = $workOrder->getProcessTemplateId();
         $isHaveProcess = false;
 
         $materialCost = 0;
@@ -103,11 +105,11 @@ class CRepairOrder extends Controller
             $availableSteps = array();
             $isHaveProcess = true;
             $processTemplate = new ProcessTemplate($this->db, $processId);
-            $processTemplate->setWorkOrderId($wo->getId());
+            $processTemplate->setWorkOrderId($workOrder->getId());
             //get all available steps
             $steps = $processTemplate->getSteps();
             //get used steps
-            $processInstance = $wo->getProcessInstance();
+            $processInstance = $workOrder->getProcessInstance();
 
             //create process Instance if work order have process Template but don't have Process instance yet
             if (!$processInstance) {
@@ -256,7 +258,11 @@ class CRepairOrder extends Controller
 
         $totalCost += $materialCost + $laborCost + $mixTotalPrice;
         ksort($mixList);
-
+        
+        //display creation_time
+		$woCreationDate = date($woDateFormat, $workOrder->getCreationTime());
+        
+        $this->smarty->assign('woCreationDate', $woCreationDate);
         $this->smarty->assign('urlMixAdd', $urlMixAdd);
         $this->smarty->assign('urlMixEdit', $urlMixEdit);
         $jsSources = array(
@@ -267,7 +273,6 @@ class CRepairOrder extends Controller
         $this->smarty->assign('spentTime', $spentTime);
         $this->smarty->assign('laborCost', $laborCost);
         $this->smarty->assign('totalCost', $totalCost);
-        $this->smarty->assign('instanceOfWorkOrder', $workOrder);
         $this->smarty->assign('backUrl', "?action=browseCategory&category={$category}&id={$categoryId}&bookmark=repairOrder");
         $this->smarty->assign('deleteUrl', "?action=deleteItem&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
         $this->smarty->assign('editUrl', "?action=edit&category=repairOrder&id={$this->getFromRequest('id')}&{$category}ID={$categoryId}");
@@ -275,7 +280,7 @@ class CRepairOrder extends Controller
         $this->smarty->assign('mixList', $mixList);
 
         $this->smarty->assign('isHaveProcess', $isHaveProcess);
-        $this->smarty->assign('repairOrder', $repairOrder);
+        $this->smarty->assign('repairOrder', $workOrder);
         $this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         $this->smarty->assign('mixTotalSpentTime', $mixTotalSpentTime);
         $this->smarty->assign('mixesCosts', $mixesCosts);
@@ -389,7 +394,6 @@ class CRepairOrder extends Controller
         } else {
             throw new Exception('404');
         }
-
         //	Access control
         if (!$this->user->checkAccess($category, $categoryId)) {
             throw new Exception('deny');
@@ -426,7 +430,11 @@ class CRepairOrder extends Controller
 
         $this->smarty->assign('processList', $processList);
 
+        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
+        
         if (count($post) > 0) {
+            $woDateFormat = $dataChain->getFromTypeController('getFormat');
+            
             $creationTime = $this->getFromPost('creationTime');
             $facilityID = $post['facility_id'];
             $woDepartments_id = $post['woDepartments_id'];
@@ -437,7 +445,6 @@ class CRepairOrder extends Controller
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
 
-
             if ($woProcessId != '') {
                 $workOrder->setProcessTemplateId($woProcessId);
             }
@@ -445,7 +452,16 @@ class CRepairOrder extends Controller
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
+            
+            //set creation time 
+        if (strlen($creationTime) == 10 && is_numeric($creationTime)) {
             $workOrder->setCreationTime($creationTime);
+        } else {
+            $date = \VWM\Framework\Utils\DateTime::createFromFormat($woDateFormat, $creationTime);
+            
+            $timestamp = $date->getTimestamp();
+            $workOrder->setCreationTime($timestamp);
+        }
             $violationList = $workOrder->validate();
             
             if (count($violationList) == 0 && $woDepartments_id != '') {
@@ -497,9 +513,7 @@ class CRepairOrder extends Controller
             $creationTime = date('m/d/Y', time());
         }
 
-        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
         $this->smarty->assign('dataChain', $dataChain);
-        
         $this->smarty->assign('woDepartments', $woDepartments_id);
         $this->smarty->assign('creationTime', $creationTime);
 
@@ -599,7 +613,6 @@ class CRepairOrder extends Controller
                 die();
             }
         }
-
         if ($this->successDeleteInventories)
             header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=repairOrder&notify=48");
     }
@@ -628,7 +641,6 @@ class CRepairOrder extends Controller
         } else {
             throw new Exception('404');
         }
-
         //	Access control
         if (!$this->user->checkAccess($category, $categoryId)) {
             throw new Exception('deny');
@@ -643,9 +655,11 @@ class CRepairOrder extends Controller
         $companyNew = new VWM\Hierarchy\Company($this->db, $companyId);
         $industryTypeId = $companyNew->getIndustryType();
         $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $this->getFromRequest('id'));
-        $creationTime = $workOrder->getCreationTime();
+        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
+        $woDateFormat = $dataChain->getFromTypeController('getFormat');
+        
+        $creationTime = date($woDateFormat, $workOrder->getCreationTime());
         $woOldDesc = $workOrder->number;
-        //     $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
         $this->smarty->assign('data', $workOrder);
 
         $this->setNavigationUpNew($category, $categoryId);
@@ -664,11 +678,20 @@ class CRepairOrder extends Controller
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
             $creationTime = $post['creationTime'];
-            $workOrder->setCreationTime($creationTime);
+            
+            if (strlen($creationTime) == 10 && is_numeric($creationTime)) {
+                $workOrder->setCreationTime($creationTime);
+            } else {
+                $date = \VWM\Framework\Utils\DateTime::createFromFormat($woDateFormat, $creationTime);
+                $timestamp = $date->getTimestamp();
+                $workOrder->setCreationTime($timestamp);
+            }
+
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
             $violationList = $workOrder->validate();
+            
             if (count($violationList) == 0 && $woDepartments_id != '') {
                 $woID = $workOrder->save();
                 // get work order mix id
@@ -728,7 +751,6 @@ class CRepairOrder extends Controller
         $woDepartmentsName = implode(",", $departmetsName);
         $woDepartments = implode(",", $woDepartments);
         
-        $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
         $this->smarty->assign('dataChain', $dataChain);
         $this->smarty->assign('woDepartments', $woDepartments);
         $this->smarty->assign('woDepartmentsName', $woDepartmentsName);

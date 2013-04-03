@@ -1,8 +1,10 @@
 VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder:
   properties:
     number: 
-      - NotBlank ~
+      - NotBlank: ~
       - MaxLength: 64
+      
     creation_time:
       - MaxLength: 10
-      - VWM\Framework\Validator\Constraints\Date: ~
+      - Min: 0
+      - Max: 9999999999

@@ -1129,6 +1129,7 @@ class CMix extends Controller {
 
 		//	Start to ini onbjects
 		$mix = $this->buildMix($jmix);
+        
 		$mix->facility_id = $facilityID;
 		$mix->isMWS = $isMWS;
 		if($jmix->step_id!=''){
@@ -1216,21 +1217,21 @@ class CMix extends Controller {
 		//$mix->setWoId(777);
 
 		//Create Repair Order if not exist 
-        
+        $companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
+        $industryTypeId = $companyNew->getIndustryType();
 		if (is_null($mix->getWoId())) {
-			$repairOrder = new RepairOrder($this->db);
+			//$repairOrder = new RepairOrder($this->db);
+            $repairOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id);
 			$repairOrderManager = new RepairOrderManager($this->db);
 			$repairOrder->setNumber($mix->getDescription());
 			$repairOrder->setFacilityId($facilityID);
+            $repairOrder->setCreationTime($mix->getCreationTimeInUnixType());
 			$woId = $repairOrder->save();
-
 			$mix->setWoId($woId);
 			$repairOrderManager->setDepartmentToWo($woId, $mix->getDepartmentId());
 		} elseif($mix->getStepId() && $isCustomStep==0) {
 			//save new step for work order
 			//create work order
-			$companyNew = new VWM\Hierarchy\Company($this->db, $companyID);
-			$industryTypeId = $companyNew->getIndustryType();
 			$workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $mix->getWoId());
 			//initialize process
 			$processInstance = $workOrder->getProcessInstance();
