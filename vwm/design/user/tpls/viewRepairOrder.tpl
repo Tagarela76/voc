@@ -78,7 +78,7 @@
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
 							<div align="left">
-								&nbsp; {$repairOrder->getCreationTime()|escape}
+								&nbsp; {$woCreationDate|escape}
 							</div>
 						</td>
 					</tr>

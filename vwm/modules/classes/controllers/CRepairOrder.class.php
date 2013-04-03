@@ -89,7 +89,6 @@ class CRepairOrder extends Controller
 
         $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
         $woDateFormat = $dataChain->getFromTypeController('getFormat');
-        $workOrder->setDateFormat($woDateFormat);
         
         //get process information
         $processId = $workOrder->getProcessTemplateId();
@@ -260,6 +259,10 @@ class CRepairOrder extends Controller
         $totalCost += $materialCost + $laborCost + $mixTotalPrice;
         ksort($mixList);
         
+        //display creation_time
+		$woCreationDate = date($woDateFormat, $workOrder->getCreationTime());
+        
+        $this->smarty->assign('woCreationDate', $woCreationDate);
         $this->smarty->assign('urlMixAdd', $urlMixAdd);
         $this->smarty->assign('urlMixEdit', $urlMixEdit);
         $jsSources = array(
@@ -391,7 +394,6 @@ class CRepairOrder extends Controller
         } else {
             throw new Exception('404');
         }
-
         //	Access control
         if (!$this->user->checkAccess($category, $categoryId)) {
             throw new Exception('deny');
@@ -432,7 +434,6 @@ class CRepairOrder extends Controller
         
         if (count($post) > 0) {
             $woDateFormat = $dataChain->getFromTypeController('getFormat');
-            $workOrder->setDateFormat($woDateFormat);
             
             $creationTime = $this->getFromPost('creationTime');
             $facilityID = $post['facility_id'];
@@ -444,7 +445,6 @@ class CRepairOrder extends Controller
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
 
-
             if ($woProcessId != '') {
                 $workOrder->setProcessTemplateId($woProcessId);
             }
@@ -453,8 +453,15 @@ class CRepairOrder extends Controller
                 $workOrder->setVin($post['repairOrderVin']);
             }
             
+            //set creation time 
+        if (strlen($creationTime) == 10 && is_numeric($creationTime)) {
             $workOrder->setCreationTime($creationTime);
+        } else {
+            $date = \VWM\Framework\Utils\DateTime::createFromFormat($woDateFormat, $creationTime);
             
+            $timestamp = $date->getTimestamp();
+            $workOrder->setCreationTime($timestamp);
+        }
             $violationList = $workOrder->validate();
             
             if (count($violationList) == 0 && $woDepartments_id != '') {
@@ -506,9 +513,7 @@ class CRepairOrder extends Controller
             $creationTime = date('m/d/Y', time());
         }
 
-        
         $this->smarty->assign('dataChain', $dataChain);
-        
         $this->smarty->assign('woDepartments', $woDepartments_id);
         $this->smarty->assign('creationTime', $creationTime);
 
@@ -608,7 +613,6 @@ class CRepairOrder extends Controller
                 die();
             }
         }
-
         if ($this->successDeleteInventories)
             header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=repairOrder&notify=48");
     }
@@ -637,7 +641,6 @@ class CRepairOrder extends Controller
         } else {
             throw new Exception('404');
         }
-
         //	Access control
         if (!$this->user->checkAccess($category, $categoryId)) {
             throw new Exception('deny');
@@ -654,11 +657,9 @@ class CRepairOrder extends Controller
         $workOrder = WorkOrderFactory::createWorkOrder($this->db, $industryTypeId->id, $this->getFromRequest('id'));
         $dataChain = new TypeChain(null, 'date', $this->db, $companyId, 'company');
         $woDateFormat = $dataChain->getFromTypeController('getFormat');
-        $workOrder->setDateFormat($woDateFormat);
-        $creationTime = $workOrder->getCreationTime();
         
+        $creationTime = date($woDateFormat, $workOrder->getCreationTime());
         $woOldDesc = $workOrder->number;
-        //     $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
         $this->smarty->assign('data', $workOrder);
 
         $this->setNavigationUpNew($category, $categoryId);
@@ -677,11 +678,20 @@ class CRepairOrder extends Controller
             $workOrder->setDescription($post['repairOrderDescription']);
             $workOrder->setFacilityId($facilityID);
             $creationTime = $post['creationTime'];
-            $workOrder->setCreationTime($creationTime);
+            
+            if (strlen($creationTime) == 10 && is_numeric($creationTime)) {
+                $workOrder->setCreationTime($creationTime);
+            } else {
+                $date = \VWM\Framework\Utils\DateTime::createFromFormat($woDateFormat, $creationTime);
+                $timestamp = $date->getTimestamp();
+                $workOrder->setCreationTime($timestamp);
+            }
+
             if ($workOrder instanceof AutomotiveWorkOrder) {
                 $workOrder->setVin($post['repairOrderVin']);
             }
             $violationList = $workOrder->validate();
+            
             if (count($violationList) == 0 && $woDepartments_id != '') {
                 $woID = $workOrder->save();
                 // get work order mix id

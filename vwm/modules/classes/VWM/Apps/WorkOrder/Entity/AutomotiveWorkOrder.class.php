@@ -4,7 +4,6 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 class AutomotiveWorkOrder extends WorkOrder
 {
-
     /**
      *
      * @var string
@@ -43,7 +42,6 @@ class AutomotiveWorkOrder extends WorkOrder
 
     private function _load()
     {
-
         if (is_null($this->getId())) {
             return false;
         }
@@ -57,22 +55,7 @@ class AutomotiveWorkOrder extends WorkOrder
             return false;
         }
         $rows = $this->db->fetch(0);
-
-        foreach ($rows as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function save()
-    {
-
-        if ($this->getId()) {
-            return $this->update();
-        } else {
-            return $this->insert();
-        }
+        $this->initByArray($rows);
     }
 
     /**

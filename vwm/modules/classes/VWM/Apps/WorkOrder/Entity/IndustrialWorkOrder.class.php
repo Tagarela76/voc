@@ -4,7 +4,6 @@ namespace VWM\Apps\WorkOrder\Entity;
 
 class IndustrialWorkOrder extends WorkOrder
 {
-
     public function __construct(\db $db, $id = null)
     {
         $this->db = $db;
@@ -27,7 +26,6 @@ class IndustrialWorkOrder extends WorkOrder
 
     private function _load()
     {
-
         if (is_null($this->getId())) {
             return false;
         }
@@ -42,21 +40,7 @@ class IndustrialWorkOrder extends WorkOrder
         }
         $rows = $this->db->fetch(0);
 
-        foreach ($rows as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function save()
-    {
-
-        if ($this->getId()) {
-            return $this->update();
-        } else {
-            return $this->insert();
-        }
+        $this->initByArray($rows);
     }
 
     /**
@@ -110,6 +94,5 @@ class IndustrialWorkOrder extends WorkOrder
 
         return $this->getId();
     }
-
 }
 ?>
