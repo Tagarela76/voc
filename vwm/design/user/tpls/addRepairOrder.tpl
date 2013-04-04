@@ -123,22 +123,59 @@
                     {/foreach}					    						
 				</td>	
 			</tr>
-			
-			<!SELECT Process-->
-			<tr class="border_users_b border_users_r">
+			{/if}
+            
+            <tr class="border_users_b border_users_r">			
 				<td height="20" class="border_users_l">
-					Select Process:
+					 Overhead:
 				</td>
 				<td>
-					<select name = 'woProcessId'>
-						{foreach from=$processList item='process'}
-						<option value='{$process->id}'>{$process->name}</option>
-						{/foreach}
-					</select>
-					<!--<input type='hidden' name='woProcessId' id='woProcessId' value="{$processList[0]->id}"/>-->
-				</td>
+					<div align="left">
+						<input id='repairOrderOverhead' type='text' name='repairOrderOverhead' value='{$data->getOverhead()}' maxlength="30">
+					</div>
+                    {foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'overhead' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}	
+				</td>	
 			</tr>
-            {/if}
+            
+            <tr class="border_users_b border_users_r">			
+				<td height="20" class="border_users_l">
+					 Profit:
+				</td>
+				<td>
+					<div align="left">
+						<input id='repairOrderProfit' type='text' name='repairOrderProfit' value='{$data->getProfit()}' maxlength="30">
+					</div>
+                    {foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'profit' || $violation->getPropertyPath() eq 'uniqueName'}							
+                        {*ERROR*}					
+                        <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                        {/if}
+                    {/foreach}	
+				</td>	
+			</tr>
+            
+            {if $action == 'add'}
+                <tr class="border_users_b border_users_r">
+                    <td height="20" class="border_users_l">
+                        Select Process:
+                    </td>
+                    <td>
+                        <select name = 'woProcessId'>
+                            {foreach from=$processList item='process'}
+                                <option value='{$process->id|escape}'>{$process->name|escape}</option>
+                            {/foreach}
+                        </select>
+                        <!--<input type='hidden' name='woProcessId' id='woProcessId' value="{$processList[0]->id}"/>-->
+                    </td>
+                </tr>
+            {/if} 
             
             {*Select creation time*}
             <tr class="border_users_b border_users_r">			
@@ -147,7 +184,7 @@
 				</td>
 				<td>
                     <div align="left">
-                        <input type="text" name="creationTime" id="calendar" class="calendarFocus" value='{$creationTime}'/>
+                        <input type="text" name="creationTime" id="calendar" class="calendarFocus" value='{$creationTime|escape}'/>
                     </div>						
 				</td>					
 			</tr>
@@ -159,7 +196,7 @@
                 <td>										
 					<div align="left">
 						<div id="departments2wo_list">{$woDepartmentsName}
-							<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$woDepartments}" />
+							<input type='hidden' name='woDepartments_id' id='woDepartments_id' value="{$woDepartments|escape}" />
 						</div>
 						<a href="#" onclick="repairOrderPage.manageRepairOrder.openDialog();">edit</a>
                     </div>
@@ -217,7 +254,7 @@
 		{*HIDDEN*}
 		<input type='hidden' name='action' value={$request.action}>		
 		{if $request.action eq "addItem"}
-			<input type='hidden' name='facility_id' value='{$facilityDetails.facility_id}'>
+			<input type='hidden' name='facility_id' value='{$facilityDetails.facility_id|escape}'>
 		{/if}			
 		{if $request.action eq "edit"}
 			<input type="hidden" name="id" value="{$data->facility_id|escape}">

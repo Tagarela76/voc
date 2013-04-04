@@ -162,13 +162,36 @@
 					{/if}
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
-							Total:
+							Sub Total:
 						</td>
 						<td class="border_users_l border_users_b border_users_r">
 							<b>${$totalCost|escape}</b>
 						</td>
 					</tr>
-
+                    <tr>
+                        <td class="border_users_l border_users_b" height="20">
+                            Overhead:
+                        </td>
+                        <td class="border_users_l border_users_b border_users_r">
+                            ${$repairOrder->getOverhead()|escape}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border_users_l border_users_b" height="20">
+                            Profit:
+                        </td>
+                        <td class="border_users_l border_users_b border_users_r">
+                            ${$repairOrder->getProfit()|escape}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border_users_l border_users_b" height="20">
+                            Total:
+                        </td>
+                        <td class="border_users_l border_users_b border_users_r">
+                            <b>${$total|escape}</b>
+                        </td>
+                    </tr>
 					<tr>
 						<td class="border_users_l border_users_b" height="20">
 							Spent time:
