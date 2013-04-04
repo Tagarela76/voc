@@ -20,6 +20,7 @@ class AutomotiveWorkOrderTest extends DbTestCase {
         $automotiveWO->setNumber("wo nubmer");
         $automotiveWO->setStatus("in progress");
         $automotiveWO->setVin("440");
+        $automotiveWO->setCreationTime('1365064587');
 		$r = $automotiveWO->save();
 		$expectedId = 5;
 		$this->assertEquals($expectedId, $r);
