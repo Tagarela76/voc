@@ -35,7 +35,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				}		
 				$facilityString = substr($facilityString,0,-1);
 				
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+				$query ="SELECT s.supplier, m.creation_time, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
 					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
 					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .
@@ -56,7 +56,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				break;
 				
 			case "facility":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+				$query ="SELECT s.supplier, m.creation_time, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
 					"FROM product p, mixgroup mg, mix m, department d, rule r, supplier s " .
 					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .
@@ -82,7 +82,11 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				break;
 				
 			case "department":
-				$query ="SELECT s.supplier, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
+                
+                $dataChain = new TypeChain(null, 'date', $this->db, $this->categoryID, 'department');
+                $dateFormat = $dataChain->getFromTypeController('getFormat');
+                
+				$query ="SELECT s.supplier, m.creation_time, p.product_id, p.product_nr, p.name product_name, r.$rule_nr_byRegion as rule_nr, sum(mg.quantity) qtyRule, sum(mg.quantity) used, mg.unit_type, mg.quantity_lbs " .
 					"FROM product p, mixgroup mg, mix m, rule r, supplier s " .
 					"WHERE p.product_id = mg.product_id " .
 					"AND mg.mix_id = m.mix_id " .								
@@ -92,7 +96,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 					"AND m.creation_time >= ".$dateBeginObj->getTimestamp()." AND m.creation_time <= ".$dateEndObj->getTimestamp()." " .
 					"GROUP BY p.product_nr, p.name, m.rule_id, r.$rule_nr_byRegion";											
 				$this->db->query($query);						
-
+                
 				if ($this->db->num_rows()) {
 					for ($i=0; $i<$this->db->num_rows(); $i++) {
 						$data=$this->db->fetch($i);																								
@@ -105,11 +109,13 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 							'qtyRule'		=>	$data->qtyRule,
 							'used'			=>	$data->used,							
 							'unitType'		=>	$data->unit_type,	
-							'quantity_lbs'	=>	$data->quantity_lbs
+							'quantity_lbs'	=>	$data->quantity_lbs,
+                            'creation_time' =>  date($dateFormat,$data->creation_time)
 						);
 						$results[] = $result;																						
 					}
 				}
+                
 				//conversion
 				//$unittype = new Unittype($this->db);
 				//$unitTypeConverter = new UnitTypeConverter("us gallon");						
@@ -118,6 +124,7 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 				$products[0]['product_id'] = $results[0]['product_id'];
 				$products[0]['product_nr'] = $results[0]['product_nr'];
 				$products[0]['product_name'] = $results[0]['product_name'];
+                $products[0]['creation_time'] = $results[0]['creation_time'];
 				//$products[0]['used'] = $results[0]['used'];
 				
 				//$unitypeDetails = $unittype->getUnittypeDetails($results[0]['unitType']);
@@ -151,7 +158,8 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 						$products[$k]['used'] = $results[$i]['quantity_lbs'];
 
 						//	TODO: add inventory support later 
-						$products[$k]['notUsed'] = '--';												
+						$products[$k]['notUsed'] = '--';
+                        $products[$k]['creation_time'] = $results[$i]['creation_time'];
 					}
 				}
 				
@@ -501,7 +509,13 @@ class RmixQuantRule extends ReportCreator implements iReportCreator {
 		$productsTag = $doc->createElement( "products" );					
 		foreach ($products as $product) {
 			$productTag = $doc->createElement( "product" );		
-			
+			//create attribute creation_time
+            $creationTimeTag = $doc->createElement( "creation_time" );
+			$creationTimeTag->appendChild(
+				$doc->createTextNode( html_entity_decode ($product['creation_time']))
+			);
+			$productTag->appendChild( $creationTimeTag );
+            
 			$supplierTag = $doc->createElement( "supplier" );
 			$supplierTag->appendChild(
 				$doc->createTextNode( html_entity_decode ($product['supplier']))

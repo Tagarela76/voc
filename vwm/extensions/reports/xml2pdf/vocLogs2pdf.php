@@ -492,9 +492,10 @@ class XML2PDF extends PDF_MC_Table
                 }
 
                 $this->SetDrawColor(255, 255, 255);
+                $this->SetFont('Arial', '', 10);
                 $this->Row($this->rows);
                 $this->SetDrawColor(0, 0, 0);
-                $x = $this->getX();
+                $x = $this->getX(); 
                 $y = $this->getY();
 
                 $this->Line(10, $this->cellStack, 10, $y);
@@ -1000,7 +1001,7 @@ class XML2PDF extends PDF_MC_Table
 
     function Header()
     {
-
+        $fontSize = 7;
         if (isset($this->header['TITLE'])) {
             $this->SetFont('Arial', 'B', 15);
             $this->Cell(75, 0, $this->header['TITLE'], 0, 0, 'L');
@@ -1013,103 +1014,104 @@ class XML2PDF extends PDF_MC_Table
             $this->Ln(10);
 
             if (isset($this->header['FACILITYNANE'])) {
-                $this->SetFont('Arial', 'B', 10);
+                $this->SetFont('Arial', 'B', $fontSize);
                 $this->Cell(35, 5, 'Facility Name: ', 0, 0, 'R');
-                $this->SetFont('Arial', '', 10);
+                $this->SetFont('Arial', '', $fontSize);
                 $this->Cell(50, 5, $this->header['FACILITYNANE'], 0, 0, 'L');
             } else {
-                $this->SetFont('Arial', 'B', 10);
+                $this->SetFont('Arial', 'B', $fontSize);
                 $this->Cell(35, 5, 'Company Name: ', 0, 0, 'R');
-                $this->SetFont('Arial', '', 10);
+                $this->SetFont('Arial', '', $fontSize);
                 $this->Cell(50, 5, $this->header['COMPANYNANE'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Equip: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['EQUIPMENT'], 0, 0, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(75, 5, 'Responsible Person: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(90, 5, $this->header['RESPONSIBLEPERSON'], 0, 1, 'L');
 
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Address: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             if (isset($this->header['FACILITYADDRESS'])) {
                 $this->Cell(50, 5, $this->header['FACILITYADDRESS'], 0, 0, 'L');
             } else {
                 $this->Cell(50, 5, $this->header['COMPANYADDRESS'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Permit No: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['PERMITNO'], 0, 0, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(75, 5, 'Title: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(90, 5, $this->header['TITLEMANUAL'], 0, 1, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'City, State, Zip: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             if (isset($this->header['FACILITYCITY'])) {
                 $this->Cell(50, 5, $this->header['FACILITYCITY'], 0, 0, 'L');
             } else {
                 $this->Cell(50, 5, $this->header['COMPANYCITY'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Facility ID: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['FACILITYID'], 0, 1, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'County: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             if (isset($this->header['FACILITYCOUNTY'])) {
                 $this->Cell(50, 5, $this->header['FACILITYCOUNTY'], 0, 0, 'L');
             } else {
                 $this->Cell(50, 5, $this->header['COMPANYCOUNTY'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Rule No: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['RULE'], 0, 1, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Phone: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             if (isset($this->header['FACILITYPHONE'])) {
                 $this->Cell(50, 5, $this->header['FACILITYPHONE'], 0, 0, 'L');
             } else {
                 $this->Cell(50, 5, $this->header['COMPANYPHONE'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'GCG No: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['GCG'], 0, 1, 'L');
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Fax: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             if (isset($this->header['FACILITYPHONE'])) {
                 $this->Cell(50, 5, $this->header['FACILITYFAX'], 0, 0, 'L');
             } else {
                 $this->Cell(50, 5, $this->header['COMPANYFAX'], 0, 0, 'L');
             }
 
-            $this->SetFont('Arial', 'B', 10);
+            $this->SetFont('Arial', 'B', $fontSize);
             $this->Cell(35, 5, 'Notes: ', 0, 0, 'R');
-            $this->SetFont('Arial', '', 10);
+            $this->SetFont('Arial', '', $fontSize);
             $this->Cell(50, 5, $this->header['NOTES'], 0, 1, 'L');
             $this->cellStack = $this->getY();
+            $this->SetFont('Arial', '', 10);
             //set table header
             if (!isset($this->header['SUMMARY'])) {
                 $this->rows[0] = 'Date:';
