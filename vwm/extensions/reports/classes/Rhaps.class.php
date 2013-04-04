@@ -39,7 +39,7 @@ class Rhaps extends ReportCreator implements iReportCreator
                         "ON p.product_id = cg.product_id " .
                         "LEFT JOIN " . TB_COMPONENT . " c " .
                         "ON cg.component_id = c.component_id " .
-                        "LEFT JOIN " . TB_COMPONENT . " d " .
+                        "LEFT JOIN " . TB_DEPARTMENT . " d " .
                         "ON d.department_id = m.department_id " .
                         "LEFT JOIN " . TB_FACILITY . " f " .
                         "ON d.facility_id = f.facility_id " .
@@ -71,7 +71,7 @@ class Rhaps extends ReportCreator implements iReportCreator
                         "ON p.product_id = cg.product_id " .
                         "LEFT JOIN " . TB_COMPONENT . " c " .
                         "ON cg.component_id = c.component_id " .
-                        "LEFT JOIN " . TB_COMPONENT . " d " .
+                        "LEFT JOIN " . TB_DEPARTMENT . " d " .
                         "ON d.department_id = m.department_id " .
                         "WHERE m.creation_time >= " . $dateBeginObj->getTimestamp() . " " .
                         "AND m.creation_time <= " . $dateEndObj->getTimestamp() . " " .

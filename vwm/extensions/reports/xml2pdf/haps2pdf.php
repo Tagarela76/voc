@@ -187,31 +187,6 @@ class XML2PDF extends PDF_MC_Table
                 }
                 $this->SetAutoPageBreak(true, 25);
                 break;
-            case "TABLE":
-                $this->widths = array(30,90,30,20,25);
-                $this->SetWidths($this->widths);
-                $this->aligns = array();
-                $this->SetAligns($this->aligns);
-                //$this->SetFillColor(200, 200, 200, 200, 200, 200, 200);
-                $this->SetLineWidth(0.4);
-                                
-                $this->SetFont('Arial','B',10);
-				$this->Cell($this->widths[0]+$this->widths[1]+$this->widths[2]+
-                            $this->widths[3]+$this->widths[4],7,
-                        'Hazardous Air Pollutants (HAPs) Totals bv Product (YTD)' ,1,0,'C');
-                $this->Ln();
-                
-                //set heidht;
-                $h = 10;
-                
-                $this->SetFont('Arial','B',5);
-				$this->Cell($this->widths[0],$h,"CAS Number",1,0,'C');
-				$this->Cell($this->widths[1],$h,"Description",1,0,'C');
-				$this->Cell($this->widths[2],$h,"Product Weight (Ibs/ga)",1,0,'C');
-				$this->Cell($this->widths[3],$h,"Amount \n\r(gal)",1,0,'C');
-				$this->Cell($this->widths[4],$h,"HAPs Emissions \n( Ibs )",1,0,'C');
-                $this->Ln();
-                break;
             case "USAGESUMMARY":
                  $this->widths = array(30,90,30,20,25);
                  $this->SetWidths($this->widths);
@@ -347,114 +322,137 @@ class XML2PDF extends PDF_MC_Table
 
     function Header()
     {
-        
+
         if (isset($this->header["CATEGORYNAME"])) {
             //write title
             $this->SetX(-15);
             $this->setY(0);
-            $this->SetFont('Arial','B',15);
-			$this->Cell(290,10,$this->header['TITLE'],0,1,'L');
-			
-    	    //write period
-    	    $this->SetFont('Arial','B',15);
-    	    $this->Cell(290,10,$this->header['PERIOD'],0,0,'L');
-    	    
-    	    $this->Ln(3);
-            
+            $this->SetFont('Arial', 'B', 15);
+            $this->Cell(290, 10, $this->header['TITLE'], 0, 1, 'L');
+
+            //write period
+            $this->SetFont('Arial', 'B', 15);
+            $this->Cell(290, 10, $this->header['PERIOD'], 0, 0, 'L');
+
+            $this->Ln(3);
+
             $this->Ln(5);
-    	    	    	    	
-  	    	$this->SetFont('Arial','B',10); 
-   	    	$this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,$this->header['CATEGORY']." Name:",0,0,'L');
-   	    	$this->SetFont('Arial','',10);
-   	    	$this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['CATEGORYNAME']); 
-                
+
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, $this->header['CATEGORY'] . " Name:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['CATEGORYNAME']);
+
             //WRITE FACILITYID
-            $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,$this->header['CATEGORY']." ID:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,$this->header['FACILITYID']);
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH, 10, $this->header['CATEGORY'] . " ID:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH, 10, $this->header['FACILITYID']);
             $this->Ln(5);
-            
+
             //second row
             //write address
-            $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,"Address:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['ADDRESS']);
-            $this->SetFont('Arial','B',10);
-    	 /*   $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"SIC Code:",0,0,'L');
-            $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE');*/
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Address:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['ADDRESS']);
+            $this->SetFont('Arial', 'B', 10);
+            /*   $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"SIC Code:",0,0,'L');
+              $this->SetFont('Arial','',10);
+              $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
             $this->Ln(5);
-            
+
             //third row
             //write zip code
-            $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,"City, State, Zip:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['CITYSTATEZIP']);
-            $this->SetFont('Arial','B',10);
-    	    /*$this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"GRC-Pirk#:",0,0,'L');
-            $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE');*/
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "City, State, Zip:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['CITYSTATEZIP']);
+            $this->SetFont('Arial', 'B', 10);
+            /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"GRC-Pirk#:",0,0,'L');
+              $this->SetFont('Arial','',10);
+              $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
             $this->Ln(5);
-            
+
             //fourth row
             //write country
-            $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,"County:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['COUNTY']);
-            $this->SetFont('Arial','B',10);
-    	    /*$this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Site Mapk#:",0,0,'L');
-            $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE');*/
-    	    $this->Ln(5);
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "County:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['COUNTY']);
+            $this->SetFont('Arial', 'B', 10);
+            /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Site Mapk#:",0,0,'L');
+              $this->SetFont('Arial','',10);
+              $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
+            $this->Ln(5);
 
             //fifth row
             //write phone
-    	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,"Phone:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['PHONE']);
-            $this->SetFont('Arial','B',10);
-    	    /*$this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Applied Rule#:",0,0,'L');
-            $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE');*/
-    	    $this->Ln(5); 
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Phone:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['PHONE']);
+            $this->SetFont('Arial', 'B', 10);
+            /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Applied Rule#:",0,0,'L');
+              $this->SetFont('Arial','',10);
+              $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
+            $this->Ln(5);
 
             //write fax
-    	    $this->SetFont('Arial','B',10); 
-    	    $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH,10,"Fax:",0,0,'L');
-    	    $this->SetFont('Arial','',10);
-    	    $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH,10,$this->header['FAX']);
-    	    $this->Ln(5);
-            
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Fax:", 0, 0, 'L');
+            $this->SetFont('Arial', '', 10);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['FAX']);
+            $this->Ln(5);
+
             $this->SetY(20);
             $this->SetX(140);
-            $this->SetFont('Arial','B',10);
-            $this->Cell(40,10,'Year to Date (YTD) Summary');
-            
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell(40, 10, 'Year to Date (YTD) Summary');
+
             $this->SetY(25);
             $this->SetX(128);
-            $this->SetFont('Arial','B',7);
-            $this->Cell(40,10,'Responsible Party:');
-            
+            $this->SetFont('Arial', 'B', 7);
+            $this->Cell(40, 10, 'Responsible Party:');
+
             $this->SetY(30);
             $this->SetX(128);
-            $this->SetFont('Arial','B',7);
-            $this->Cell(40,10,'Title:');
+            $this->SetFont('Arial', 'B', 7);
+            $this->Cell(40, 10, 'Title:');
 
             //draw a box around the information
             $this->SetLineWidth(0.2);
-            $this->SetFillColor(0,255,0);
+            $this->SetFillColor(0, 255, 0);
             $this->Line(10, 20, 10, 50);
             $this->Line(127, 20, 127, 50);
             $this->Line(10, 20, 127, 20);
             $this->Line(10, 50, 127, 50);
             $this->SetY(57);
+
+            //set table header for units
+            $this->widths = array(30, 90, 30, 20, 25);
+            $this->SetWidths($this->widths);
+            $this->aligns = array();
+            $this->SetAligns($this->aligns);
+            //$this->SetFillColor(200, 200, 200, 200, 200, 200, 200);
+            $this->SetLineWidth(0.4);
+
+            $this->SetFont('Arial', 'B', 10);
+            $this->Cell($this->widths[0] + $this->widths[1] + $this->widths[2] +
+                    $this->widths[3] + $this->widths[4], 7, 'Hazardous Air Pollutants (HAPs) Totals bv Product (YTD)', 1, 0, 'C');
+            $this->Ln();
+
+            //set heidht;
+            $h = 10;
+
+            $this->SetFont('Arial', 'B', 5);
+            $this->Cell($this->widths[0], $h, "CAS Number", 1, 0, 'C');
+            $this->Cell($this->widths[1], $h, "Description", 1, 0, 'C');
+            $this->Cell($this->widths[2], $h, "Product Weight (Ibs/ga)", 1, 0, 'C');
+            $this->Cell($this->widths[3], $h, "Amount \n\r(gal)", 1, 0, 'C');
+            $this->Cell($this->widths[4], $h, "HAPs Emissions \n( Ibs )", 1, 0, 'C');
+            $this->Ln();
         }
-        
     }
 
     function Footer()
@@ -470,34 +468,7 @@ class XML2PDF extends PDF_MC_Table
     {
         if (!$this->debug)
             return;
-        //    print "<font size=2>".htmlentities($message)."</font><br/>\n";
         print "$message\n";
     }
-
-    function _setfont($family = -1, $style = -1, $size = -1)
-    {
-       
-    }
-
-    function _restorefont()
-    {
-        
-    }
-
-    function _color($color)
-    {
-        
-    }
-
-    function _setcolor($drawcolor, $fillcolor, $textcolor)
-    {
-       
-    }
-
-    function _restorecolor()
-    {
-        
-    }
-
 }
 ?>
