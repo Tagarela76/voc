@@ -215,13 +215,14 @@ class Component {
 		$query.="comp_density='".$compDetails['comp_density']."', ";*/
 		$query.="description='".$compDetails['description']."', ";
 		$query.="EINECS='".$compDetails['EINECS']."', ";
+        $query.="VOC_PM='".$compDetails['vocPm']."', ";
 		$query.="cas='".$compDetails['cas']."'";
+        
 		/*$query.="supplier='".$compDetails['supplier']."', ";
 		$query.="sara='".$compDetails['sara']."'";*/
 		
 		$query.=" WHERE component_id=".$compDetails['component_id'];
 		$this->db->query($query);
-		
 		$this->setAgencyBelong($compDetails);
 	}
 	
