@@ -46,8 +46,11 @@ class CAComponents extends Controller {
 	}
 	
 	private function actionViewDetails() {
+        $vocPmList = array('VOC', 'PM');
 		$components=new Component($this->db);
 		$componentsDetails=$components->getComponentDetails($this->getFromRequest('id'));
+        
+        $this->smarty->assign('vocPm',$vocPmList[$componentsDetails['VOC_PM']]);
 		$this->smarty->assign("components",$componentsDetails);
 		$this->smarty->assign('tpl', 'tpls/viewComponents.tpl');
 		$this->smarty->display("tpls:index.tpl");
@@ -56,14 +59,16 @@ class CAComponents extends Controller {
 	private function actionEdit() {
 		$id = $this->getFromRequest('id');
 		$components=new Component($this->db);
+        $vocPmList = array('VOC', 'PM');
+        
 		if ($this->getFromPost('save')=='Save')
 		{	
 			$regData=array(
 				"component_id"	=>	$id,
 				"description"	=>	$this->getFromPost("description"),
 				"EINECS"	=>	$this->getFromPost("EINECS"),
-				"cas"	=>	$this->getFromPost("cas")
-				
+				"cas"	=>	$this->getFromPost("cas"),
+                'vocPm' => $this->getFromPost("vocPm")
 			);
 			
 			
@@ -83,10 +88,10 @@ class CAComponents extends Controller {
 			$validate=new Validation($this->db);
 			$validStatus=$validate->validateRegDataAdminClasses($regData);
 			
-			if (!($validate->isUniqueName("component", $regData['cas'], 'none', $id))) {
+			/*if (!($validate->isUniqueName("component", $regData['cas'], 'none', $id))) {
 				$validStatus['summary'] = 'false';
 				$validStatus['cas'] = 'alredyExist';
-			}
+			}*/
 			
 			if ($validStatus["summary"] == "true") {
 				$components->setComponentDetails($regData);
@@ -109,6 +114,7 @@ class CAComponents extends Controller {
 		}									
 		
 		$this->smarty->assign('tpl','tpls/addComponentsClass.tpl');
+        $this->smarty->assign('vocPmList',$vocPmList);
 		$this->smarty->assign('data', $data);
 		$this->smarty->display("tpls:index.tpl");
 	}

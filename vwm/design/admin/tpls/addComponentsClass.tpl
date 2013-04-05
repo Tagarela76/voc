@@ -64,6 +64,20 @@
 							</td>
 						</tr>
 							
+                        <tr height="10px">
+                            <td class="border_users_l border_users_b" height="20">
+                                VOC/PM
+                            </td>
+                            <td class="border_users_l border_users_b border_users_r">
+                                <select name='vocPm' id='vocPm'>
+                                    {foreach from=$vocPmList key=value item=description}
+                                        <option value="{$value}" {if $data.VOC_PM == $value}selected{/if}>
+                                            {$description}
+                                        </option>
+                                    {/foreach}
+                                </select>
+                            </td>
+                        </tr>
 						<tr>			
 							<td class="border_users_l border_users_b" height="20">
 								Description:
@@ -82,7 +96,7 @@
 								
 							</td>
 					
-						
+                        </tr>
 						<tr class="users_u_top_size users_top_lightgray">			
 							<td  height="20">
 								<u><b>Agencies:</b></u>
@@ -93,7 +107,7 @@
 							</div>
 							</td>
 						</tr>
-						
+                        
 						{section name=i loop=$data.agencies}
 						<tr>
 							<td class="border_users_l border_users_b" height="20">
