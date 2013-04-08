@@ -345,16 +345,20 @@ class XML2PDF extends PDF_MC_Table
 				break;
 				
 				
-			case 'SUPPLIER':
+            case 'CREATION_TIME':
 				$this->rows[0] = $data;				
+				break;
+            
+			case 'SUPPLIER':
+				$this->rows[1] = $data;				
 				break;
 					
 			case 'PRODUCTCODE':
-				$this->rows[1] = $data;
+				$this->rows[2] = $data;
 				break;
 			
 			case 'PRODUCTNAME':
-				$this->rows[2] = $data;
+				$this->rows[3] = $data;
 				break;
 				
 			case 'NAME':
@@ -367,11 +371,11 @@ class XML2PDF extends PDF_MC_Table
 				break;*/
 			
 			case 'USED':
-				$this->rows[4] = $data;
+				$this->rows[5] = $data;
 				break;
 			
 			case 'NOTUSED':
-				$this->rows[5] = $data;
+				$this->rows[6] = $data;
 				break;			
 		}
 						
@@ -390,14 +394,14 @@ class XML2PDF extends PDF_MC_Table
 	
 	function Header( ) {
 		if (isset($this->header["TITLE"])) {
-			$this->SetWidths(array(40,40,60,40,40,40));
+			$this->SetWidths(array(20,40,40,60,40,40,40));
 			$this->SetFont('Arial','B',15);
 			$this->cell(270,5,$this->header["TITLE"],0,1,'C');
 			
 			$this->ln(10);
 			
 			$this->SetFont('Arial','B',10);						
-			$this->rows = array('Supplier','Product Code','Product name','Rule No','Grand total of product used (US gal)','Product qtys not used (US gal)');								
+			$this->rows = array('Date','Supplier','Product Code','Product name','Rule No','Grand total of product used (US gal)','Product qtys not used (US gal)');								
 			$this->Row($this->rows);
 			$this->SetFont('Arial','',10);			
 		}
