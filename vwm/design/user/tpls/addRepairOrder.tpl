@@ -132,6 +132,10 @@
 				<td>
 					<div align="left">
 						<input id='repairOrderOverhead' type='text' name='repairOrderOverhead' value='{$data->getOverhead()}' maxlength="30">
+                        <select id='overheadUnitType' name='overheadUnitType' style="width:40px">
+                            <option value="0" {if $data->getOverheadUnitType() == 0}selected{/if}>$</option>
+                            <option value="1" {if $data->getOverheadUnitType() == 1}selected{/if}>%</option>
+                        </select>
 					</div>
                     {foreach from=$violationList item="violation"}
                         {if $violation->getPropertyPath() eq 'overhead' || $violation->getPropertyPath() eq 'uniqueName'}							
@@ -150,6 +154,10 @@
 				<td>
 					<div align="left">
 						<input id='repairOrderProfit' type='text' name='repairOrderProfit' value='{$data->getProfit()}' maxlength="30">
+                        <select id = 'profitUnitType' name='profitUnitType' style="width:40px">
+                            <option value="0" {if $data->getProfitUnitType() == 0}selected{/if}>$</option>
+                            <option value="1" {if $data->getProfitUnitType() == 1}selected{/if}>%</option>
+                        </select>
 					</div>
                     {foreach from=$violationList item="violation"}
                         {if $violation->getPropertyPath() eq 'profit' || $violation->getPropertyPath() eq 'uniqueName'}							

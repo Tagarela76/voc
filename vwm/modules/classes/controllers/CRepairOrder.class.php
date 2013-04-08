@@ -2,6 +2,7 @@
 
 use VWM\Label\CompanyLevelLabel;
 use VWM\Apps\WorkOrder\Factory\WorkOrderFactory;
+use \VWM\Apps\WorkOrder\Entity\WorkOrder;
 use VWM\Apps\WorkOrder\Entity\IndustrialWorkOrder;
 use VWM\Apps\WorkOrder\Entity\AutomotiveWorkOrder;
 use VWM\Apps\Process\ProcessTemplate;
@@ -9,6 +10,7 @@ use VWM\Apps\Process\ProcessInstance;
 use VWM\Apps\Process\StepTemplate;
 use VWM\Apps\Process\StepInstance;
 use VWM\Apps\UnitType\Manager\UnitTypeManager;
+
 
 class CRepairOrder extends Controller
 {
@@ -254,16 +256,30 @@ class CRepairOrder extends Controller
             $materialCost+=$mixCosts["materialCost"];
             $laborCost+=$mixCosts["laborCost"];
         }
-
-        $subTotalCost = $workOrder->calculateSubTotalCost($materialCost, $laborCost, $mixTotalPrice);
         ksort($mixList);
+        $subTotalCost = $workOrder->calculateSubTotalCost($materialCost, $laborCost, $mixTotalPrice);
+        $profit = $workOrder->getProfit();
+        $overhead = $workOrder->getOverhead();
+        
+        if($workOrder->getOverheadUnitType() == WorkOrder::PERCENTAGE) {
+            //calculate profit taking procent from totalcost
+            $overhead = $overhead*$subTotalCost/100;
+        }
+        if($workOrder->getProfitUnitType() == WorkOrder::PERCENTAGE) {
+            //calculate profit taking procent from totalcost
+            $profit = $overhead*$profit/100;
+        }
+        
+        $this->smarty->assign('overhead', $overhead);
+        $this->smarty->assign('profit', $profit);
+        
         
         //display creation_time
 		$woCreationDate = date($woDateFormat, $workOrder->getCreationTime());
         $this->smarty->assign('woCreationDate', $woCreationDate);
 
         //calculate total
-        $total = $workOrder->calculateTotalCost($subTotalCost);
+        $total = $workOrder->calculateTotalCost($subTotalCost, $overhead, $profit);
 
         $this->smarty->assign('urlMixAdd', $urlMixAdd);
         $this->smarty->assign('urlMixEdit', $urlMixEdit);
@@ -451,6 +467,8 @@ class CRepairOrder extends Controller
             $workOrder->setFacilityId($facilityID);
             $workOrder->setOverhead($post['repairOrderOverhead']);
             $workOrder->setProfit($post['repairOrderProfit']);
+            $workOrder->setOverheadUnitType($post['overheadUnitType']);
+            $workOrder->setProfitUnitType($post['profitUnitType']);
 
             if ($woProcessId != '') {
                 $workOrder->setProcessTemplateId($woProcessId);
@@ -567,12 +585,23 @@ class CRepairOrder extends Controller
         if (!is_array($req_id))
             $req_id = array($req_id);
         $itemForDelete = array();
+        
         if (!is_null($this->getFromRequest('id'))) {
             foreach ($req_id as $repairOrderID) {
                 //	Access control
-                if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
+                
+                if(!is_null($this->getFromRequest("facilityID"))){
+                    $category = 'facility';
+                    $categoryId = $this->getFromRequest("facilityID");
+                }else{
+                    $category = 'department';
+                    $categoryId = $this->getFromRequest("departmentID");
+                }
+                
+                if (!$this->user->checkAccess($category, $categoryId)) {
                     throw new Exception('deny');
                 }
+                
                 $repairOrder = new RepairOrder($this->db, $repairOrderID);
                 $delete = array();
                 $delete["id"] = $repairOrder->id;
@@ -604,8 +633,9 @@ class CRepairOrder extends Controller
             $repairOrder = new RepairOrder($this->db, $ID);
             //delete process
             $processInstance = $repairOrder->getProcessInstance();
-            $processInstance->deleteCurrentProcess();
-
+            if($processInstance){
+                $processInstance->deleteCurrentProcess();
+            }
             $facilityId = $repairOrder->facility_id;
             // get work order mix id, we check if work order already has any mixes
             $mixOptimized = new MixOptimized($this->db);
@@ -686,6 +716,8 @@ class CRepairOrder extends Controller
             $workOrder->setFacilityId($facilityID);
             $workOrder->setOverhead($post['repairOrderOverhead']);
             $workOrder->setProfit($post['repairOrderProfit']);
+            $workOrder->setOverheadUnitType($post['overheadUnitType']);
+            $workOrder->setProfitUnitType($post['profitUnitType']);
             $creationTime = $post['creationTime'];
             
             if (strlen($creationTime) == 10 && is_numeric($creationTime)) {

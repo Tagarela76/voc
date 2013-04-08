@@ -62,6 +62,8 @@ class IndustrialWorkOrder extends WorkOrder
                 "status = '{$this->db->sqltext($this->getStatus())}', " .
                 "overhead={$this->db->sqltext($this->getOverhead())}, " .
                 "profit={$this->db->sqltext($this->getProfit())}, " .
+                "overhead_unit_type={$this->db->sqltext($this->getOverheadUnitType())}, " .
+                "profit_unit_type={$this->db->sqltext($this->getProfitUnitType())}, " .
                 "creation_time='{$creation_time}'";
 
         if ($this->getProcessTemplateId() != null) {
@@ -93,6 +95,8 @@ class IndustrialWorkOrder extends WorkOrder
                 "status='{$this->db->sqltext($this->getStatus())}', " .
                 "overhead = {$this->db->sqltext($this->getOverhead())}, " .
                 "status='{$this->db->sqltext($this->getStatus())}', " .
+                "overhead_unit_type='{$this->db->sqltext($this->getOverheadUnitType())}', " .
+                "profit_unit_type='{$this->db->sqltext($this->getProfitUnitType())}', " .
                 "creation_time={$creation_time} " .
                 "WHERE id= " . $this->db->sqltext($this->getId());
                 

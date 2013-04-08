@@ -8,6 +8,7 @@ use VWM\Apps\Process\ProcessInstance;
 
 abstract class WorkOrder extends Model
 {
+
     /**
      *
      * @var int 
@@ -88,6 +89,18 @@ abstract class WorkOrder extends Model
 
     /**
      *
+     * @var int profit unit type 
+     */
+    protected $profit_unit_type = 0;
+
+    /**
+     *
+     * @var int overhead unit type 
+     */
+    protected $overhead_unit_type = 0;
+
+    /**
+     *
      * @var string 
      */
     protected $creation_time = '';
@@ -95,7 +108,8 @@ abstract class WorkOrder extends Model
 
     const TB_PROCESS_INSTANCE = 'process_instance';
     const TABLE_NAME = 'work_order';
-
+    const AMOUNT = 0;
+    const PERCENTAGE = 1;
 
     public function getId()
     {
@@ -212,6 +226,32 @@ abstract class WorkOrder extends Model
         $this->profit = $profit;
     }
 
+    public function getProfitUnitType()
+    {
+        return $this->profit_unit_type;
+    }
+
+    /**
+     * set profit unit type 0-amount 1-percent
+     * 
+     * @param int $profit_unit_type
+     * 
+     */
+    public function setProfitUnitType($profit_unit_type)
+    {
+        $this->profit_unit_type = $profit_unit_type;
+    }
+
+    public function getOverheadUnitType()
+    {
+        return $this->overhead_unit_type;
+    }
+
+    public function setOverheadUnitType($overhead_unit_type)
+    {
+        $this->overhead_unit_type = $overhead_unit_type;
+    }
+
     /**
      * delete Work Order  
      */
@@ -222,7 +262,6 @@ abstract class WorkOrder extends Model
         $this->db->query($sql);
     }
 
-
     public function save()
     {
         if ($this->getId()) {
@@ -231,6 +270,7 @@ abstract class WorkOrder extends Model
             return $this->insert();
         }
     }
+
     /**
      * function for getting Work Order Mixes
      * 
@@ -325,12 +365,20 @@ abstract class WorkOrder extends Model
      * calculate Work Order Total Cost
      * 
      * @param int $subTotalCost
+     * @param int $overHead
+     * @param int $profit
      * 
      * @return int
      */
-    public function calculateTotalCost($subTotalCost)
+    public function calculateTotalCost($subTotalCost, $overHead = null, $profit = null)
     {
-        $totalCost = $subTotalCost + $this->getOverhead() - $this->getProfit();
+        if (is_null($overHead)) {
+            $overHead = $this->getOverhead();
+        }
+        if (is_null($profit)) {
+            $profit = $this->getProfit();
+        }
+        $totalCost = $subTotalCost + $overHead - $profit;
 
         return $totalCost;
     }
