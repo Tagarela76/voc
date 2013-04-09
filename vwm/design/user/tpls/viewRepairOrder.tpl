@@ -173,7 +173,7 @@
                             Overhead:
                         </td>
                         <td class="border_users_l border_users_b border_users_r">
-                            ${$repairOrder->getOverhead()|escape}
+                            ${$overhead|escape}
                         </td>
                     </tr>
                     <tr>
@@ -181,7 +181,7 @@
                             Profit:
                         </td>
                         <td class="border_users_l border_users_b border_users_r">
-                            ${$repairOrder->getProfit()|escape}
+                            ${$profit|escape}
                         </td>
                     </tr>
                     <tr>

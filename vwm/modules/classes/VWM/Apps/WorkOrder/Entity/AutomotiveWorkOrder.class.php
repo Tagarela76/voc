@@ -80,6 +80,8 @@ class AutomotiveWorkOrder extends WorkOrder
                 "vin = '{$this->db->sqltext($this->getVin())}', " .
                 "overhead={$this->db->sqltext($this->getOverhead())}, " .
                 "profit={$this->db->sqltext($this->getProfit())}, " .
+                "overhead_unit_type={$this->db->sqltext($this->getOverheadUnitType())}, " .
+                "profit_unit_type={$this->db->sqltext($this->getProfitUnitType())}, " .
                 "creation_time='{$creation_time}'";
         if ($this->getProcessTemplateId() != null) {
             $query.=", process_template_id = '{$this->db->sqltext($this->getProcessTemplateID())}'";
@@ -111,8 +113,10 @@ class AutomotiveWorkOrder extends WorkOrder
                 "facility_id='{$this->db->sqltext($this->getFacilityId())}', " .
                 "status='{$this->db->sqltext($this->getStatus())}', " .
                 "vin='{$this->db->sqltext($this->getVin())}', " .
-                "overhead = {$this->db->sqltext($this->getOverhead())}, " .
-                "profit = {$this->db->sqltext($this->getProfit())}, " .
+                "overhead={$this->db->sqltext($this->getOverhead())}, " .
+                "profit={$this->db->sqltext($this->getProfit())}, " .
+                "overhead_unit_type='{$this->db->sqltext($this->getOverheadUnitType())}', " .
+                "profit_unit_type='{$this->db->sqltext($this->getProfitUnitType())}', " .
                 "creation_time='{$creation_time}' " .
                 "WHERE id= " . $this->db->sqltext($this->getId());
 
