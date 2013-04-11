@@ -81,7 +81,6 @@ function IndustryTypePage() {
 	this.industryTypeId = false;
 }
 
-
 //	global object
 var industryTypePage;
 

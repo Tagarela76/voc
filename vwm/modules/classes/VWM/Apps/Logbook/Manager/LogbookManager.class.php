@@ -2,6 +2,8 @@
 
 namespace VWM\Apps\Logbook\Manager;
 
+use \VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
+
 class LogbookManager
 {
 
@@ -40,9 +42,16 @@ class LogbookManager
         $typeList = json_decode($json);
         return $typeList->inspectionTypes[$typeId]->subtypes;
     }
-    
-    public function getLogbookDescriptionsList(){
-         //get current directory
+
+    /**
+     * 
+     * get description list
+     * 
+     * @return std[]
+     */
+    public function getLogbookDescriptionsList()
+    {
+        //get current directory
         $path = getcwd();
         //get file content
         $json = file_get_contents($path . self::FILENAME);
@@ -50,12 +59,42 @@ class LogbookManager
         $typeList = json_decode($json);
         return $typeList->description;
     }
-    
-    public function getInspectionTypeListInJson(){
+
+    /**
+     * 
+     * getting inspection Type structure in json string
+     * 
+     * @return string
+     */
+    public function getInspectionTypeListInJson()
+    {
         $path = getcwd();
         //get file content
         $json = file_get_contents($path . self::FILENAME);
         return $json;
+    }
+
+    /**
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookInspectionPerson[]
+     */
+    public function getLogbookInspectionPersonListByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $inspectionPersonList = array();
+        $query = "SELECT * FROM ". LogbookInspectionPerson::TABLE_NAME." ".
+                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $inspectionPerson = new LogbookInspectionPerson();
+            $inspectionPerson->initByArray($row);
+            $inspectionPersonList[] = $inspectionPerson;
+        }
+        
+        return $inspectionPersonList;
     }
 
 }

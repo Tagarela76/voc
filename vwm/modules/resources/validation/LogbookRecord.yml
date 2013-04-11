@@ -1,0 +1,6 @@
+VWM\Apps\Logbook\Entity\LogbookRecord:
+  properties:
+    date_time:
+      - Min: 0
+      
+     
