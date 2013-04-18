@@ -87,7 +87,7 @@ class LogbookInspectionPerson extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $query = "INSERT INTO " . self::TB_NAME . " SET " .
+        $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "name = '{$db->sqltext($this->getName())}'";
         $db->query($query);
@@ -101,7 +101,7 @@ class LogbookInspectionPerson extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $query = "UPDATE " . self::TB_NAME . " SET " .
+        $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "name = '{$db->sqltext($this->getName())}' " .
                 "WHERE id = {$db->sqltext($this->getId())}";

@@ -3,8 +3,10 @@
         var itlManager = new ManageLogbookRecord();
         itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
         var facilityId ={/literal}{$facilityId}{literal}
-                $(function() {
+       $(function() {
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
+            itlManager.inspectionTypeList.getSubTypesAdditionFields();
+            itlManager.description.showNotes();
         });
     </script>
 {/literal}
@@ -54,7 +56,7 @@
                     <div>
                         <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList()">
                             {section name=i loop=$inspectionTypesList}
-                                <option value="{$smarty.section.i.index}">
+                                <option value="{$inspectionTypesList[i]->typeName|escape}" {if $logbook->getInspectionType() == $inspectionTypesList[i]->typeName}selected='selected'{/if}>
                                     {$inspectionTypesList[i]->typeName|escape}
                                 </option>
                             {/section}
@@ -63,7 +65,7 @@
                     <div>
                         <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.getSubTypesAdditionFields()">
                             {section name=i loop=$inspectionSubTypesList}
-                                <option value="{$smarty.section.i.index}">
+                                <option value="{$inspectionSubTypesList[i]->name|escape}" {if $logbook->getInspectionSubType() == $inspectionSubTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionSubTypesList[i]->name|escape}
                                 </option>
                             {/section}
@@ -78,8 +80,15 @@
                     Permit
                 </td>
                 <td>
-                    <input type="checkbox" name='permit'>
+                    <input type="checkbox" name='permit' id ='permit'{if $logbook->getPermit() == 1}checked{/if}>
                 </td>
+                {foreach from=$violationList item="violation"}
+                    {if $violation->getPropertyPath() eq 'permit'}							
+                        {*ERROR*}					
+                    <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                    {*/ERROR*}						    
+                    {/if}
+                {/foreach}
             </tr>
 
             <tr class="border_users_b border_users_r" height='30' id='subTypeQty' hidden="hidden">
@@ -87,8 +96,15 @@
                     QTY
                 </td>
                 <td>
-                    <input type="number" name =  "qty">
+                    <input type="number" name =  "qty"  id='qty' value="{$logbook->getQty()}">
                 </td>
+                {foreach from=$violationList item="violation"}
+                    {if $violation->getPropertyPath() eq 'qty'}							
+                        {*ERROR*}					
+                    <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                        {*/ERROR*}						    
+                    {/if}
+                {/foreach}
             </tr>
 
             <tr class="border_users_b border_users_r" height='30' id='logBookSubTypeNotes' hidden="hidden">
@@ -96,7 +112,7 @@
                     Sub Type Notes
                 </td>
                 <td>
-                    <textarea name="logBookSubTypeNotes"></textarea>
+                    <textarea name="subTypeNotes" id='subTypeNotes'>{$logbook->getSubTypeNotes()}</textarea>
                 </td>
             </tr>
 
@@ -105,15 +121,15 @@
                     Description
                 </td>
                 <td>
-                    <select id="logBookDescription" name = "logBookDescription" onchange="itlManager.description.showNotes();">
+                    <select id="logBookDescription" name = "logBookDescription" onchange="itlManager.description.changeDescription();">
                         {section name=i loop=$logbookDescriptionsList}
-                            <option value="{$smarty.section.i.index}">
+                            <option value="{$logbookDescriptionsList[i]->name|escape}" {if $logbook->getDescription() == $logbookDescriptionsList[i]->name}selected='selected'{/if}>
                                 {$logbookDescriptionsList[i]->name|escape}
                             </option>
                         {/section}
                     </select>
                     <div>
-                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden"></textarea>
+                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden">{$logbook->getDescriptionNotes()}</textarea>
                     </div>
                 </td>
             </tr>
@@ -130,12 +146,12 @@
                         {if $violation->getPropertyPath() eq 'date_time'}							
                             {*ERROR*}					
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                            {*/ERROR*}						    
-                         {/if}
-                     {/foreach}	
+                                {*/ERROR*}						    
+                            {/if}
+                        {/foreach}	
                 </td>
             </tr>
-            
+
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
                     Reports

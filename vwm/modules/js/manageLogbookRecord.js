@@ -24,13 +24,18 @@ function InspectionTypeList() {
 
     /**
      * 
-     * @param {int} number
+     * @param {string} inspectionTypeName
      * 
-     * @returns {std[]}
+     * @returns {std[]|Boolean}
      */
-    this.getInspectionTypeByTypeId = function(inspectionTypeId) {
+    this.getInspectionTypeByTypeName = function(inspectionTypeName) {
         var inspectionTypes = this.getInspectionTypes();
-        return inspectionTypes[inspectionTypeId];
+        for(var i=0; i<inspectionTypes.length; i++){
+            if(inspectionTypes[i].typeName == inspectionTypeName){
+                return inspectionTypes[i];
+            }
+        }
+        return false;
     }
 
     /**
@@ -39,37 +44,52 @@ function InspectionTypeList() {
      * @returns null
      */
     this.changeSubTypeList = function() {
-        var inspectionTypeId = $('#inspectionType').val();
+        var inspectionTypeName = $('#inspectionType').val();
+        //clear addition field
+        $('#qty').val('');
+        $('#subTypeNotes').val('');
+        $('#permit').removeAttr('checked');
+        
         //get subTypeList
-        var inspectionType = this.getInspectionTypeByTypeId(inspectionTypeId)
+        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
         var html = '';
         for (var i = 0; i < inspectionType.subtypes.length; i++) {
-            html += "<option value='" + i + "'>";
+            html += "<option value='" + inspectionType.subtypes[i].name + "'>";
             html += inspectionType.subtypes[i].name;
             html += "</option>";
         }
         //change subType list
         $('#inspectionSubType').html(html);
-        if(inspectionType.permit == 0){
-            $('#logBookPermit').hide();
-        }else{
-            $('#logBookPermit').show();
-        }
         this.getSubTypesAdditionFields();
     }
     
     /**
      * get sub type
      * 
-     * @param {int} inspectionTypeId
-     * @param {int} inspectionSubTypeId
+     * @param {string} inspectionTypeName
+     * @param {string} inspectionSubTypeName
      * 
-     * @returns {std}
+     * @returns {std|Boolean}
      */
-    this.getInspectionSubType = function(inspectionTypeId, inspectionSubTypeId){
+    this.getInspectionSubType = function(inspectionTypeName, inspectionSubTypeName){
         var inspectionTypes = this.getInspectionTypes();
+        var inspectionSubTypes;
         
-        return inspectionTypes[inspectionTypeId].subtypes[inspectionSubTypeId];
+        //get subTypes
+        for (var i = 0; i < inspectionTypes.length; i++) {
+            if (inspectionTypes[i].typeName == inspectionTypeName) {
+                inspectionSubTypes = inspectionTypes[i].subtypes;
+                break;
+            }
+        }
+        
+        //get subtype
+        for(var i = 0; i < inspectionSubTypes.length; i++){
+            if(inspectionSubTypes[i].name == inspectionSubTypeName){
+                return inspectionSubTypes[i];
+            }
+        }
+        return false;
     }
     
     /**
@@ -78,9 +98,10 @@ function InspectionTypeList() {
      * @returns {null}
      */
     this.getSubTypesAdditionFields = function(){
-        var inspectionTypeId = $('#inspectionType').val();
-        var inspectionSubTypeId = $('#inspectionSubType').val();
-        var inspectionSubType = this.getInspectionSubType(inspectionTypeId,inspectionSubTypeId);
+        var inspectionTypeName = $('#inspectionType').val();
+        var inspectionSubTypeName = $('#inspectionSubType').val();
+        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
+        var inspectionSubType = this.getInspectionSubType(inspectionTypeName,inspectionSubTypeName);
         
         if(inspectionSubType.qty == 0){
             $('#subTypeQty').hide();
@@ -92,6 +113,12 @@ function InspectionTypeList() {
             $('#logBookSubTypeNotes').hide();
         }else{
             $('#logBookSubTypeNotes').show();
+        }
+        
+        if(inspectionType.permit == 0){
+            $('#logBookPermit').hide();
+        }else{
+            $('#logBookPermit').show();
         }
     }
 
@@ -118,14 +145,43 @@ function Description() {
     };
     constructor();
     
-    this.getDescriptionById = function(number){
+    /**
+     * 
+     * get description by description name
+     * 
+     * @param {string} descriptionName
+     * 
+     * @returns {std|Boolean}
+     */
+    this.getDescriptionByName = function(descriptionName){
         var descriptionList = this.getDescriptions();
-        return descriptionList[number];
+        for(var i=0; i<descriptionList.length; i++){
+            if(descriptionList[i].name == descriptionName){
+                return descriptionList[i];
+            }
+        }
+        return false;
     }
     
+    /**
+     * 
+     * change description
+     * 
+     * @returns null
+     */
+    this.changeDescription = function(){
+        $('#logBookDescriptionNotes').val('');
+        this.showNotes();
+    }
+    /**
+     * 
+     * show description notes
+     * 
+     * @returns {null}
+     */
     this.showNotes = function(){
-        var descriptionId = $('#logBookDescription').val();
-        var description = this.getDescriptionById(descriptionId);
+        var descriptionName = $('#logBookDescription').val();
+        var description = this.getDescriptionByName(descriptionName);
         if(description.notes == 0){
             $('#logBookDescriptionNotes').hide();
         }else{

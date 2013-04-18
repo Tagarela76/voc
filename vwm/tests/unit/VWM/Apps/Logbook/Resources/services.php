@@ -1,5 +1,5 @@
 <?php
 
 return array(
-    'pfp' => '\VWM\Apps\Logbook\Manager\LogbookManager',
+    'logbook' => '\VWM\Apps\Logbook\Manager\LogbookManager',
 );

@@ -3,6 +3,7 @@
 namespace VWM\Apps\Logbook\Manager;
 
 use \VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
+use \VWM\Apps\Logbook\Entity\LogbookRecord;
 
 class LogbookManager
 {
@@ -26,23 +27,30 @@ class LogbookManager
     }
 
     /**
-     * getting sub type list by type number
+     * get sub type list by type description
      * 
-     * @param int $typeId
+     * @param string $typeDescription
      * 
-     * @return std[]
+     * @return boolean| std[]
      */
-    public function getInspectionSubTypeByTypeNumber($typeId = 0)
-    {
+    public function getInspectionSubTypeByTypeDescription($typeDescription = null){
         //get current directory
         $path = getcwd();
         //get file content
         $json = file_get_contents($path . self::FILENAME);
         //decode json information
         $typeList = json_decode($json);
-        return $typeList->inspectionTypes[$typeId]->subtypes;
+        if(!isset($typeDescription) || $typeDescription==''){
+           return $typeList->inspectionTypes[0]->subtypes;
+        }
+        foreach($typeList->inspectionTypes as $type){
+            if($type->typeName == $typeDescription){
+                return $type->subtypes;
+            }
+        }
+        return false;
     }
-
+    
     /**
      * 
      * get description list
@@ -96,6 +104,27 @@ class LogbookManager
         
         return $inspectionPersonList;
     }
+    
+    
+    public function getLogbookListByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        $logbookList = array();
+        $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "facility_id = {$db->sqltext($facilityId)}";
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        
+        foreach($rows as $row){
+            $logbook = new LogbookRecord();
+            $logbook->initByArray($row);
+            $logbookList[] = $logbook;
+        }
+        
+        return $logbookList;
+    }
+                
 
 }
 ?>
