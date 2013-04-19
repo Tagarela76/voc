@@ -116,39 +116,24 @@
                 </td>
             </tr>
             
-            <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
+           <!-- <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
                 <td class="border_users_l">
                     Value Gauge
                 </td>
                 <td>
                     <div>
-                        <select name="GaugeType">
+                        <select name="gaugeType" id='gaugeType' onchange="itlManager.inspectionTypeList.changeGauge();">
                             <option value="0">Temperature Gauge</option>
                             <option value="1"> Manometer Gauge</option>
                         </select>
                     </div>
                     <div align="left" >
-						<input type="text" name="gauge_value" id="gaugeValue" value="{}" style="border: 0; background-color: #EFEFEF;">
-						<div id="gaugeValueSlider" style="width:200px"></div>
-                        
-					<script type="text/javascript">
-						$("#spentTime").numeric();
-						{literal}
-						$(function() {
-							$( "#gaugeValueSlider" ).slider({
-								value: $( "#gaugeValue" ).val(),
-								min: 0,
-								max: 360,
-								step: 5,
-								slide: function( event, ui ) {
-									$( "#gaugeValue" ).val(ui.value);
-								}
-							});
-						});
-						{/literal}
-					</script>
+                        <input type="text" name="gauge_value" id="gaugeValue" value="{}" style="border: 0; background-color: #EFEFEF;">
+                        <div id="temperatureGaugeSlider" style="width:200px" hidden="hidden"></div>
+                        <div id="manometrGaugeSlider" style="width:200px" hidden="hidden"></div>
+                    </div>
                 </td>
-            </tr>
+            </tr>-->
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
                     Description
