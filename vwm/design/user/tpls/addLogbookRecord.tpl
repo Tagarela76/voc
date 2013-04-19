@@ -63,7 +63,7 @@
                         </select>
                     </div>
                     <div>
-                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.getSubTypesAdditionFields()">
+                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()">
                             {section name=i loop=$inspectionSubTypesList}
                                 <option value="{$inspectionSubTypesList[i]->name|escape}" {if $logbook->getInspectionSubType() == $inspectionSubTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionSubTypesList[i]->name|escape}
@@ -116,24 +116,26 @@
                 </td>
             </tr>
             
-           <!-- <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
+            <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
                 <td class="border_users_l">
                     Value Gauge
                 </td>
                 <td>
                     <div>
                         <select name="gaugeType" id='gaugeType' onchange="itlManager.inspectionTypeList.changeGauge();">
-                            <option value="0">Temperature Gauge</option>
-                            <option value="1"> Manometer Gauge</option>
+                            <option value="null">Select Gauge</option>
+                            <option value="0" {if $logbook->getValueGaugeType() == 0} selected='selected'{/if}>Temperature Gauge</option>
+                            <option value="1" {if $logbook->getValueGaugeType() == 1} selected='selected'{/if}> Manometer Gauge</option>
                         </select>
                     </div>
                     <div align="left" >
-                        <input type="text" name="gauge_value" id="gaugeValue" value="{}" style="border: 0; background-color: #EFEFEF;">
-                        <div id="temperatureGaugeSlider" style="width:200px" hidden="hidden"></div>
-                        <div id="manometrGaugeSlider" style="width:200px" hidden="hidden"></div>
+                        <input type="text" name="gauge_value" id="gaugeValue" value="{$logbook->getGaugeValue()} " style="border: 0; background-color: #EFEFEF;">
+                        
+                        <div id="temperatureGaugeSlider" style="width:200px" {if $logbook->getValueGaugeType() != 0}hidden="hidden"{/if}></div>
+                        <div id="manometrGaugeSlider" style="width:200px" {if $logbook->getValueGaugeType() != 1} hidden="hidden"{/if}></div>
                     </div>
                 </td>
-            </tr>-->
+            </tr>
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
                     Description

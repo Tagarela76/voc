@@ -99,7 +99,6 @@ class LogbookRecord extends Model
      * @var string
      */
     protected $sub_type_notes = null;
-    
     //check for additio fields
     /**
      *
@@ -108,7 +107,7 @@ class LogbookRecord extends Model
      * @var boolean 
      */
     protected $hasPermit = 0;
-    
+
     /**
      *
      * if logbook has qty
@@ -116,7 +115,7 @@ class LogbookRecord extends Model
      * @var boolean 
      */
     protected $hasQty = 0;
-    
+
     /**
      *
      * if logbook has Gauge
@@ -124,18 +123,32 @@ class LogbookRecord extends Model
      * @var boolean 
      */
     protected $hasVolueGauge = 0;
-    
-    
-    protected $valueGaugeType = null;
-     /**
+
+    /**
+     *
+     * gauge type
+     * 
+     * @var int 
+     */
+    protected $gauge_type = null;
+
+    /**
+     *
+     * gauge value
+     * 
+     * @var int 
+     */
+    protected $gauge_value = null;
+
+    /**
      *
      * if logbook has description notes
      * 
      * @var boolean 
      */
     protected $hasDescriptionNotes = 0;
-    
-     /**
+
+    /**
      *
      * if logbook has sub types notes
      * 
@@ -145,8 +158,8 @@ class LogbookRecord extends Model
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
-    
-    /*Type of Value Gauge*/
+
+    /* Type of Value Gauge */
     const TEMPERATURE_GAUGE = 0;
     const MANOMETER_GAUGE = 0;
 
@@ -331,15 +344,24 @@ class LogbookRecord extends Model
 
     public function getValueGaugeType()
     {
-        return $this->valueGaugeType;
+        return $this->gauge_type;
     }
 
     public function setValueGaugeType($vulueGaugeType)
     {
-        $this->valueGaugeType = $vulueGaugeType;
+        $this->gauge_type = $vulueGaugeType;
     }
 
-        
+    public function getGaugeValue()
+    {
+        return $this->gauge_value;
+    }
+
+    public function setGaugeValue($gauge_value)
+    {
+        $this->gauge_value = $gauge_value;
+    }
+
     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -370,6 +392,8 @@ class LogbookRecord extends Model
         $subTipesNotes = $this->getSubTypeNotes();
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
+        $gaugeType = $this->getValueGaugeType();
+        $gaugeValue = $this->getGaugeValue();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -386,6 +410,12 @@ class LogbookRecord extends Model
         if (is_null($descriptionNotes)) {
             $descriptionNotes = 'NULL';
         }
+        if(is_null($gaugeType)){
+            $gaugeType = 'NULL';
+        }
+        if(is_null($gaugeValue)){
+            $gaugeValue = 'NULL';
+        }
 
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
@@ -398,6 +428,8 @@ class LogbookRecord extends Model
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
+                "gauge_type = '{$db->sqltext($gaugeType)}', " .
+                "gauge_value = '{$db->sqltext($gaugeValue)}', " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
@@ -416,6 +448,8 @@ class LogbookRecord extends Model
         $subTipesNotes = $this->getSubTypeNotes();
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
+        $gaugeType = $this->getValueGaugeType();
+        $gaugeValue = $this->getGaugeValue();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -432,6 +466,12 @@ class LogbookRecord extends Model
         if (is_null($descriptionNotes)) {
             $descriptionNotes = 'NULL';
         }
+        if(is_null($gaugeType)){
+            $gaugeType = 'NULL';
+        }
+        if(is_null($gaugeValue)){
+            $gaugeValue = 'NULL';
+        }
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
@@ -444,7 +484,9 @@ class LogbookRecord extends Model
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
-                "qty = {$db->sqltext($qty)} ".
+                "gauge_type = {$db->sqltext($gaugeType)}, " .
+                "gauge_value = {$db->sqltext($gaugeValue)}, " .
+                "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
         $db->query($sql);
@@ -468,61 +510,61 @@ class LogbookRecord extends Model
      */
     public function getAvailableLogbookAdditionFields($inspectionTypeName = null, $inspectionSubTypeName = null, $inspectionDescriptionName = null)
     {
-        if(is_null($inspectionTypeName)){
+        if (is_null($inspectionTypeName)) {
             $inspectionTypeName = $this->getInspectionType();
         }
-        if(is_null($inspectionSubTypeName)){
+        if (is_null($inspectionSubTypeName)) {
             $inspectionSubTypeName = $this->getInspectionSubType();
         }
-        if(is_null($inspectionDescriptionName)){
+        if (is_null($inspectionDescriptionName)) {
             $inspectionDescriptionName = $this->getDescription();
         }
-        /*get current directory*/
+        /* get current directory */
         $path = getcwd();
-        /*get file content*/
+        /* get file content */
         $json = file_get_contents($path . self::FILENAME);
         $typeList = json_decode($json);
-        /*get inspection type*/
-        foreach($typeList->inspectionTypes as $type){
-            if ($type->typeName == $inspectionTypeName){
+        /* get inspection type */
+        foreach ($typeList->inspectionTypes as $type) {
+            if ($type->typeName == $inspectionTypeName) {
                 $inspectionType = $type;
                 break;
             }
         }
-        
-        /*get inspection sub type*/
-        foreach($inspectionType->subtypes as $subtype){
-            if($subtype->name == $inspectionSubTypeName){
+
+        /* get inspection sub type */
+        foreach ($inspectionType->subtypes as $subtype) {
+            if ($subtype->name == $inspectionSubTypeName) {
                 $inspectionSubType = $subtype;
                 break;
             }
         }
-        
-        foreach ($typeList->description as $description){
-            if($description->name == $inspectionDescriptionName){
+
+        foreach ($typeList->description as $description) {
+            if ($description->name == $inspectionDescriptionName) {
                 $inspectionDescription = $description;
                 break;
             }
         }
-        /*set addition fields available*/
+        /* set addition fields available */
         $this->setHasPermit($inspectionType->permit);
         $this->setHasQty($inspectionSubType->qty);
         $this->setHasSubTypeNotes($inspectionSubType->notes);
         $this->setHasDescriptionNotes($inspectionDescription->notes);
         $this->setHasVolueGauge($inspectionSubType->valueGauge);
-        
+
         return true;
     }
-    
+
     /**
      * delete logbook
      */
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        
-        $query = "DELETE FROM ".self::TABLE_NAME." ".
-                 "WHERE id={$db->sqltext($this->getId())}";
+
+        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+                "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
     }
 

@@ -38,19 +38,13 @@ class CLogbook extends Controller
         $post = $this->getFromPost();
         //get id if exist
         $logbookId = $this->getFromRequest('logbookId');
-        $logbook = new LogbookRecord($logbookId);
-
-        //check for add or edit
-        $creationTime = $logbook->getDateTime();
-        if (!is_null($creationTime)) {
-            $creationTime = date($timeFormat . ' H:i', $creationTime);
-            $this->smarty->assign('creationTime', $creationTime);
-        }
+        $logbook = new LogbookRecord();
+        $logbook->setId($logbookId);
 
         //add or update logbook if we need
         if (count($post) > 0) {
+            
             //transfer time to unix type
-            var_dump($post);die();
             if ($post['dateTime'] != '') {
                 $dateTime = explode(' ', $post['dateTime']);
                 $date = explode('/', $dateTime[0]);
@@ -80,6 +74,11 @@ class CLogbook extends Controller
             if ($post['subTypeNotes'] != '') {
                 $logbook->setSubTypeNotes($post['subTypeNotes']);
             }
+            if($post['gaugeType'] != 'null'){
+                $logbook->setValueGaugeType($post['gaugeType']);
+                $logbook->setGaugeValue($post['gauge_value']);
+            }
+            
             if (isset($dateTime)) {
                 $logbook->setDateTime($dateTime);
             }
@@ -90,7 +89,16 @@ class CLogbook extends Controller
             } else {
                 $this->smarty->assign('creationTime', $post['dateTime']);
             }
+        }else{
+            $logbook->load();
+            //check for add or edit
+            $creationTime = $logbook->getDateTime();
+            if (!is_null($creationTime)) {
+                $creationTime = date($timeFormat . ' H:i', $creationTime);
+                $this->smarty->assign('creationTime', $creationTime);
+            }
         }
+        
         $this->smarty->assign('logbook', $logbook);
 
         //set left menu

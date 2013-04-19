@@ -45,13 +45,6 @@ function InspectionTypeList() {
      */
     this.changeSubTypeList = function() {
         var inspectionTypeName = $('#inspectionType').val();
-        //clear addition field
-        
-        $('#qty').val('');
-        $('#subTypeNotes').val('');
-        $("#gaugeValue").val('')
-        $('#permit').removeAttr('checked');
-        
         //get subTypeList
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
         var html = '';
@@ -62,7 +55,7 @@ function InspectionTypeList() {
         }
         //change subType list
         $('#inspectionSubType').html(html);
-        this.getSubTypesAdditionFields();
+        this.changeSubType();
     }
     
     /**
@@ -105,6 +98,9 @@ function InspectionTypeList() {
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
         var inspectionSubType = this.getInspectionSubType(inspectionTypeName,inspectionSubTypeName);
         
+        
+        $('#permit').removeAttr('checked');
+        
         if(inspectionSubType.qty == 0){
             $('#subTypeQty').hide();
         }else{
@@ -127,6 +123,41 @@ function InspectionTypeList() {
             $('#logBookPermit').hide();
         }else{
             $('#logBookPermit').show();
+        }
+        
+       
+    }
+    
+    this.changeSubType = function(){
+        
+        //clear addition field
+        $('#qty').val('');
+        $('#subTypeNotes').val('');
+        
+        $('#gaugeType').val('null');
+        this.changeGauge();
+        this.getSubTypesAdditionFields();
+    }
+    
+    /**
+     * 
+     * show gauge slider
+     * 
+     * @returns null
+     */
+    this.changeGauge = function(){
+        var gaugeType = $('#gaugeType').val();
+        
+        $('#gaugeValue').val(0);
+        $('#manometrGaugeSlider').slider({value:0});
+        $('#temperatureGaugeSlider').slider({value:0});
+        
+        if(gaugeType == 0){
+            $('#manometrGaugeSlider').hide();
+            $('#temperatureGaugeSlider').show();
+        }else{
+            $('#temperatureGaugeSlider').hide();
+            $('#manometrGaugeSlider').show();
         }
     }
 
@@ -209,6 +240,7 @@ function ManageLogbookRecord() {
         self.inspectionTypeList.setInspectionTypes(json.inspectionTypes);
         self.description.setDescriptions(json.description);
     }
+    
 }
 
 
@@ -308,11 +340,35 @@ function InspectionPersonSettings() {
    this.addInspectionPerson = new AddInspectionPerson();
    this.facilityId = facilityId
 }
+
 var inspectionPerson;
+
 
 $(function() {
     //	ini global object
     inspectionPerson = new InspectionPersonSettings();
     inspectionPerson.addInspectionPerson.iniDialog();
-	
+    $("#gaugeValue").numeric();
+    // gauge slider
+    $("#temperatureGaugeSlider").slider({
+        value: $("#gaugeValue").val(),
+        min: 0,
+        max: 360,
+        step: 5,
+        slide: function(event, ui) {
+            $("#gaugeValue").val(ui.value);
+        }
+    });
+    
+    $("#manometrGaugeSlider").slider({
+        value: $("#gaugeValue").val(),
+        min: -0.05,
+        max: 2,
+        step: 0.05,
+        slide: function(event, ui) {
+            $("#gaugeValue").val(ui.value);
+        }
+    });
+    
+
 });
