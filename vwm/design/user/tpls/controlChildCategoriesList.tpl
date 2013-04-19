@@ -80,6 +80,7 @@
 									</div>
 								</div>
 							{/if}
+                            
 							{*if $request.bookmark=="product"}
 							<div class="button_alpha group_button">
 							<input type="submit" name="action" value="groupProducts">

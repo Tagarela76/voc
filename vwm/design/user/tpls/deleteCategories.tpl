@@ -41,7 +41,7 @@
                          {elseif $itemType eq "carbonfootprint"}
                          	<td><div class="users_header_red_r"><div> Direct Carbon Emission Name</div></div></td>
                          {elseif $itemType eq "logbook"}
-                         	<td><div class="users_header_red_r"><div> Logbook Record Name</div></div></td>
+                         	<td><div class="users_header_red_r"><div> Logbook Record Description</div></div></td>
                          {elseif $itemType eq "wastestorage"}
                          	<td><div class="users_header_red_r"><div> Storage Name</div></div></td>
                          {/if}

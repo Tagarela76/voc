@@ -46,8 +46,10 @@ function InspectionTypeList() {
     this.changeSubTypeList = function() {
         var inspectionTypeName = $('#inspectionType').val();
         //clear addition field
+        
         $('#qty').val('');
         $('#subTypeNotes').val('');
+        $("#gaugeValue").val('')
         $('#permit').removeAttr('checked');
         
         //get subTypeList
@@ -113,6 +115,12 @@ function InspectionTypeList() {
             $('#logBookSubTypeNotes').hide();
         }else{
             $('#logBookSubTypeNotes').show();
+        }
+        
+        if(inspectionSubType.valueGauge == 0){
+            $('#logbookValueGauge').hide();
+        }else{
+            $('#logbookValueGauge').show();
         }
         
         if(inspectionType.permit == 0){

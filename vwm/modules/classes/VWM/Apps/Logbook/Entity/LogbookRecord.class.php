@@ -117,6 +117,16 @@ class LogbookRecord extends Model
      */
     protected $hasQty = 0;
     
+    /**
+     *
+     * if logbook has Gauge
+     * 
+     * @var boolean 
+     */
+    protected $hasVolueGauge = 0;
+    
+    
+    protected $valueGaugeType = null;
      /**
      *
      * if logbook has description notes
@@ -135,6 +145,10 @@ class LogbookRecord extends Model
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
+    
+    /*Type of Value Gauge*/
+    const TEMPERATURE_GAUGE = 0;
+    const MANOMETER_GAUGE = 0;
 
     public function __construct($id = null)
     {
@@ -305,7 +319,28 @@ class LogbookRecord extends Model
         $this->hasSubTypeNotes = $hasSubTypeNotes;
     }
 
-        public function load()
+    public function getHasVolueGauge()
+    {
+        return $this->hasVolueGauge;
+    }
+
+    public function setHasVolueGauge($hasVolueGauge)
+    {
+        $this->hasVolueGauge = $hasVolueGauge;
+    }
+
+    public function getValueGaugeType()
+    {
+        return $this->valueGaugeType;
+    }
+
+    public function setValueGaugeType($vulueGaugeType)
+    {
+        $this->valueGaugeType = $vulueGaugeType;
+    }
+
+        
+    public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         if (is_null($this->getId())) {
@@ -474,8 +509,21 @@ class LogbookRecord extends Model
         $this->setHasQty($inspectionSubType->qty);
         $this->setHasSubTypeNotes($inspectionSubType->notes);
         $this->setHasDescriptionNotes($inspectionDescription->notes);
+        $this->setHasVolueGauge($inspectionSubType->valueGauge);
         
         return true;
+    }
+    
+    /**
+     * delete logbook
+     */
+    public function delete()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        
+        $query = "DELETE FROM ".self::TABLE_NAME." ".
+                 "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($query);
     }
 
 }

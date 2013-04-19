@@ -105,24 +105,54 @@ class LogbookManager
         return $inspectionPersonList;
     }
     
-    
-    public function getLogbookListByFacilityId($facilityId)
+    /**
+     * 
+     * @param int $facilityId
+     * @param Pagination $pagination
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookRecord
+     */
+    public function getLogbookListByFacilityId($facilityId, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
 
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
+
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
         $db->query($query);
         $rows = $db->fetch_all_array();
-        
-        foreach($rows as $row){
+
+        foreach ($rows as $row) {
             $logbook = new LogbookRecord();
             $logbook->initByArray($row);
             $logbookList[] = $logbook;
         }
-        
+
         return $logbookList;
+    }
+    
+    /**
+     * 
+     * get logbook List count by facility Id
+     * 
+     * @param int $facilityId
+     * 
+     * @return int
+     */
+    public function getCountLogbooksByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "SELECT count(*) logbookListcCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "facility_id = {$db->sqltext($facilityId)}";
+        $db->query($query);
+        $row = $db->fetch(0);
+        
+        return $row->logbookListcCount; 
+        
     }
                 
 

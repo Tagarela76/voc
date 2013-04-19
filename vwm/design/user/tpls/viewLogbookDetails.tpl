@@ -112,6 +112,6 @@
                 </td>
             </tr>
         {/if}
-
     </table>
+        <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>

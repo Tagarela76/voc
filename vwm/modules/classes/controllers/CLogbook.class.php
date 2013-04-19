@@ -30,16 +30,16 @@ class CLogbook extends Controller
         } else {
             throw new Exception('404');
         }
-        
+
         //get data format 
         $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
-        
+
         $post = $this->getFromPost();
         //get id if exist
         $logbookId = $this->getFromRequest('logbookId');
         $logbook = new LogbookRecord($logbookId);
-        
+
         //check for add or edit
         $creationTime = $logbook->getDateTime();
         if (!is_null($creationTime)) {
@@ -50,6 +50,7 @@ class CLogbook extends Controller
         //add or update logbook if we need
         if (count($post) > 0) {
             //transfer time to unix type
+            var_dump($post);die();
             if ($post['dateTime'] != '') {
                 $dateTime = explode(' ', $post['dateTime']);
                 $date = explode('/', $dateTime[0]);
@@ -124,6 +125,7 @@ class CLogbook extends Controller
             "modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
             "modules/js/manageLogbookRecord.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"
         );
 
         $cssSources = array(
@@ -154,9 +156,18 @@ class CLogbook extends Controller
 
         $jsSources = array(
             'modules/js/autocomplete/jquery.autocomplete.js',
+            'modules/js/checkBoxes.js',
         );
         $lbManager = new LogbookManager();
-        $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId);
+        
+        //set pagination
+        $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
+        $url = "?" . $_SERVER["QUERY_STRING"];
+        $url = preg_replace("/\&page=\d*/", "", $url);
+        $pagination = new Pagination($logbookListCount);
+        $pagination->url = $url;
+        
+        $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
 
         $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
@@ -166,17 +177,23 @@ class CLogbook extends Controller
             $creationDateTime = $logbookRecord->getDateTime();
             $creationDateTime = date($timeFormat . ' H:i', $creationDateTime);
             $creationDateTime = explode(' ', $creationDateTime);
+            //initialize inspection person
+            $inspectionPerson = new LogbookInspectionPerson();
+            $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
+            $inspectionPerson->load();
 
             $logbook = array(
                 'logbookId' => $logbookRecord->getId(),
                 'inspectionType' => $logbookRecord->getInspectionType(),
                 'creationDate' => $creationDateTime[0],
-                'creationTime' => $creationDateTime[1]
+                'creationTime' => $creationDateTime[1],
+                'inspectionPersonName' => $inspectionPerson->getName()
             );
 
             $logbookList[] = $logbook;
         }
-
+        
+        $this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('facilityId', $facilityId);
         $this->smarty->assign('logbookList', $logbookList);
         $this->smarty->assign('jsSources', $jsSources);
@@ -249,6 +266,55 @@ class CLogbook extends Controller
         $this->smarty->display('tpls:index.tpl');
     }
 
+    public function actionDeleteItem()
+    {
+        $facility = new Facility($this->db, $this->getFromRequest('facilityID'));
+
+        if (!$this->user->checkAccess('logbook', $facility->getCompanyId())) {
+            throw new Exception('deny');
+        }
+
+        $idArray = $this->getFromRequest('checkLogbook');
+
+        $itemsForDelete = array();
+        foreach ($idArray as $id) {
+            $logbook = new LogbookRecord();
+            $logbook->setId($id);
+            $logbook->load();
+            $itemForDelete = array(
+                'id' => $id,
+                'name' => $logbook->getDescription()
+            );
+            $itemsForDelete[] = $itemForDelete;
+        }
+
+        $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark' => 'logbook'));
+        $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
+        $this->setPermissionsNew('facility');
+
+        $this->smarty->assign('facilityID', $this->getFromRequest('facilityID'));
+        $this->smarty->assign('cancelUrl', "?action=browseCategory&category=facility&id=" . $this->getFromRequest('facilityID') . "&bookmark=logbook");
+        $this->smarty->assign('notViewChildCategory', true);
+        $this->finalDeleteItemCommon($itemsForDelete, $linkedNotify, $count, $info);
+    }
+
+    public function actionConfirmDelete()
+    {
+        $facility = new Facility($this->db, $this->getFromPost('facilityID'));
+        
+        if (!$this->user->checkAccess('logbook', $facility->getCompanyId())) {
+            throw new Exception('deny');
+        }
+        $logbooksIds = $this->itemID;
+        
+        foreach ($logbooksIds as $id) {
+            $logbook = new LogbookRecord($this->db);
+            $logbook->setId($id);
+            $logbook->delete();
+        }
+
+        header("Location: ?action=browseCategory&category=facility&id=" . $facility->getFacilityId() . "&bookmark=logbook");
+    }
 
 }
 ?>
