@@ -134,12 +134,18 @@ class LogbookRecord extends Model
 
     /**
      *
-     * gauge value
+     * gauge value from
      * 
      * @var int 
      */
-    protected $gauge_value = null;
+    protected $gauge_value_from = 0;
 
+    /**
+     *
+     * @var int 
+     */
+    protected $gauge_value_to = 0;
+    
     /**
      *
      * if logbook has description notes
@@ -352,17 +358,27 @@ class LogbookRecord extends Model
         $this->gauge_type = $vulueGaugeType;
     }
 
-    public function getGaugeValue()
+    public function getGaugeValueFrom()
     {
-        return $this->gauge_value;
+        return $this->gauge_value_from;
     }
 
-    public function setGaugeValue($gauge_value)
+    public function setGaugeValueFrom($gauge_value_from)
     {
-        $this->gauge_value = $gauge_value;
+        $this->gauge_value_from = $gauge_value_from;
     }
 
-    public function load()
+    public function getGaugeValueTo()
+    {
+        return $this->gauge_value_to;
+    }
+
+    public function setGaugeValueTo($gauge_value_to)
+    {
+        $this->gauge_value_to = $gauge_value_to;
+    }
+
+     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         if (is_null($this->getId())) {
@@ -393,7 +409,8 @@ class LogbookRecord extends Model
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
         $gaugeType = $this->getValueGaugeType();
-        $gaugeValue = $this->getGaugeValue();
+        $gaugeValueFrom = $this->getGaugeValueFrom();
+        $gaugeValueTo = $this->getGaugeValueTo();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -413,8 +430,11 @@ class LogbookRecord extends Model
         if(is_null($gaugeType)){
             $gaugeType = 'NULL';
         }
-        if(is_null($gaugeValue)){
-            $gaugeValue = 'NULL';
+        if(is_null($gaugeValueFrom)){
+            $gaugeValueFrom = 'NULL';
+        }
+        if(is_null($gaugeValueTo)){
+            $gaugeValueTo = 'NULL';
         }
 
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
@@ -429,7 +449,8 @@ class LogbookRecord extends Model
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
                 "gauge_type = '{$db->sqltext($gaugeType)}', " .
-                "gauge_value = '{$db->sqltext($gaugeValue)}', " .
+                "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
+                "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
@@ -449,7 +470,8 @@ class LogbookRecord extends Model
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
         $gaugeType = $this->getValueGaugeType();
-        $gaugeValue = $this->getGaugeValue();
+        $gaugeValueFrom = $this->getGaugeValueFrom();
+        $gaugeValueTo = $this->getGaugeValueTo();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -469,8 +491,11 @@ class LogbookRecord extends Model
         if(is_null($gaugeType)){
             $gaugeType = 'NULL';
         }
-        if(is_null($gaugeValue)){
-            $gaugeValue = 'NULL';
+        if(is_null($gaugeValueFrom)){
+            $gaugeValueFrom = 'NULL';
+        }
+        if(is_null($gaugeValueTo)){
+            $gaugeValueTo = 'NULL';
         }
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
@@ -485,7 +510,8 @@ class LogbookRecord extends Model
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
-                "gauge_value = {$db->sqltext($gaugeValue)}, " .
+                "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
+                "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
                 "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 

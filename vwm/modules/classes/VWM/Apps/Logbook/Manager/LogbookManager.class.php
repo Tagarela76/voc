@@ -154,6 +154,18 @@ class LogbookManager
         return $row->logbookListcCount; 
         
     }
+    
+    
+    public function getGaugeList()
+    {
+        $gaugeList = array(
+            0 => 'Temperature Gauge',
+            1 => 'Manometer Gauge',
+            2 => 'Clarifier Gauge'
+        );
+        
+        return $gaugeList;
+    }
                 
 
 }

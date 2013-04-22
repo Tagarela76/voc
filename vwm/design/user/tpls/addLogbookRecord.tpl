@@ -7,6 +7,7 @@
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
+            itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
         });
     </script>
 {/literal}
@@ -115,25 +116,38 @@
                     <textarea name="subTypeNotes" id='subTypeNotes'>{$logbook->getSubTypeNotes()}</textarea>
                 </td>
             </tr>
-            
+            {*gauges*}
             <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
                 <td class="border_users_l">
                     Value Gauge
                 </td>
                 <td>
                     <div>
-                        <select name="gaugeType" id='gaugeType' onchange="itlManager.inspectionTypeList.changeGauge();">
+                        <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()">
                             <option value="null">Select Gauge</option>
-                            <option value="0" {if $logbook->getValueGaugeType() == 0} selected='selected'{/if}>Temperature Gauge</option>
-                            <option value="1" {if $logbook->getValueGaugeType() == 1} selected='selected'{/if}> Manometer Gauge</option>
+                            {section name=i loop=$gaugeList}
+                                <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
+                            {/section}
                         </select>
                     </div>
-                    <div align="left" >
-                        <input type="text" name="gauge_value" id="gaugeValue" value="{$logbook->getGaugeValue()} " style="border: 0; background-color: #EFEFEF;">
-                        
-                        <div id="temperatureGaugeSlider" style="width:200px" {if $logbook->getValueGaugeType() != 0}hidden="hidden"{/if}></div>
-                        <div id="manometrGaugeSlider" style="width:200px" {if $logbook->getValueGaugeType() != 1} hidden="hidden"{/if}></div>
-                    </div>
+                 {*slider*}
+                 <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
+                     from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
+                     to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
+                     <a onclick="itlManager.gauges.changeGauge()">
+                     Show Gauge
+                     </a>
+                 </div>
+                 <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
+                     <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
+                 </div>
+                 <div id='temperatureCelContainer'>
+                     The Temperature in Celsius 
+                     from
+                     <input type='text' id='celFrom' disabled='disabled' style="width:50px">
+                     to
+                     <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                 </div>
                 </td>
             </tr>
             <tr class="border_users_b border_users_r" height='30'>

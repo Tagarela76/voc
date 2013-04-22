@@ -74,9 +74,12 @@ class CLogbook extends Controller
             if ($post['subTypeNotes'] != '') {
                 $logbook->setSubTypeNotes($post['subTypeNotes']);
             }
+            
             if($post['gaugeType'] != 'null'){
+                $gaugeValue = explode(';', $post['gaugeValue']);
                 $logbook->setValueGaugeType($post['gaugeType']);
-                $logbook->setGaugeValue($post['gauge_value']);
+                $logbook->setGaugeValueFrom($gaugeValue[0]);
+                $logbook->setGaugeValueTo($gaugeValue[1]);
             }
             
             if (isset($dateTime)) {
@@ -118,7 +121,11 @@ class CLogbook extends Controller
 
         //get inspection person list
         $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
+        
+        //get gauges
+        $gaugeList = $lbmanager->getGaugeList();
 
+        $this->smarty->assign('gaugeList', $gaugeList);
         $this->smarty->assign('violationList', $violationList);
         $this->smarty->assign('inspectionPersonList', $inspectionPersonList);
         $this->smarty->assign('inspectionTypesList', $inspectionTypesList);
@@ -133,11 +140,17 @@ class CLogbook extends Controller
             "modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
             "modules/js/manageLogbookRecord.js",
-            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/numeric/jquery.numeric.js"
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jshashtable-2.1_src.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.numberformatter-1.2.3.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/tmpl.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.dependClass-0.1.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/draggable-0.1.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js",
         );
 
         $cssSources = array(
-            'modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css'
+            'modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css',
+            'modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/css/jslider.css'
         );
 
         $this->smarty->assign('action', 'addItem');

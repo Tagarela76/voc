@@ -135,7 +135,6 @@ function InspectionTypeList() {
         $('#subTypeNotes').val('');
         
         $('#gaugeType').val('null');
-        this.changeGauge();
         this.getSubTypesAdditionFields();
     }
     
@@ -145,21 +144,23 @@ function InspectionTypeList() {
      * 
      * @returns null
      */
-    this.changeGauge = function(){
+    /*this.changeGauge = function(){
         var gaugeType = $('#gaugeType').val();
         
         $('#gaugeValue').val(0);
         $('#manometrGaugeSlider').slider({value:0});
         $('#temperatureGaugeSlider').slider({value:0});
-        
-        if(gaugeType == 0){
+        if(gaugeType == 'null'){
+            $('#temperatureGaugeSlider').hide();
+            $('#manometrGaugeSlider').hide();
+        }else if(gaugeType == 0){
             $('#manometrGaugeSlider').hide();
             $('#temperatureGaugeSlider').show();
         }else{
             $('#temperatureGaugeSlider').hide();
             $('#manometrGaugeSlider').show();
         }
-    }
+    }*/
 
 }
 
@@ -235,6 +236,7 @@ function ManageLogbookRecord() {
 
     this.inspectionTypeList = new InspectionTypeList();
     this.description = new Description();
+    this.gauges = new Gauges();
 
     this.setjSon = function(json) {
         self.inspectionTypeList.setInspectionTypes(json.inspectionTypes);
@@ -342,33 +344,152 @@ function InspectionPersonSettings() {
 }
 
 var inspectionPerson;
+/**
+ * 
+ * class gauges
+ * 
+ * @returns {Gauges}
+ */
+function Gauges() {
+   
+    
+    this.initGauges = function(from, to) {
+        $("#LogbookGauge").slider("value", from, to);
+        $("#LogbookGauge").slider("prc", from, to);
+        $("#LogbookGauge").slider({
+            from: -100,
+            to: 100,
+            dimension: '',
+            onstatechange: function( value ){
+                var myarr = value.split(";");
+                var fromCel = (myarr[0]-32)*5/9;
+                var fromTo = (myarr[1]-32)*5/9;
+                fromCel = fromCel.toPrecision(2)+'C'
+                fromTo = fromTo.toPrecision(2)+'C'
+                 $('#celFrom').val(fromCel);
+                 $('#celTo').val(fromTo);
+            }
+        });
+        
+        $("#LogbookGauge").slider("value", 1, 50);
+        $("#LogbookGauge").slider("prc", 1, 50);
+        
+       this.changeGauge();
+    }
+    
+    /**
+     * 
+     * show or change gauge slider
+     * 
+     * @returns null
+     */
+    this.changeGauge = function(){
+        
+        var gaugeType = $('#gaugeType').val();
+        var from = parseInt($('#gaugeRangeFrom').val());
+        var to = parseInt($('#gaugeRangeTo').val());
+        /*calculate scale*/
+        var scaleStep = (to-from)/10;
+        var division = from;
+        
+        var scale = new Array();
+        var i=1;
+        while(i!=10){
+            division += scaleStep;
+            scale.push(division.toPrecision(2));
+            i++;
+        }
+        scale.push(to);
+        $("#temperatureCelContainer").hide();
+        if (gaugeType == 0) {
+            this.initTemperatureGauge(from, to, scale);
+        } else if (gaugeType == 1) {
+            this.initManometrGauge(from, to, scale);
+        } else if (gaugeType == 2) {
+            this.initClarilfierGauge(from, to, scale);
+        }
+        
+    }
+    
+    /**
+     * 
+     * initialize temperature gauge
+     * 
+     * @returns null
+     */
+    this.initTemperatureGauge = function(from, to,scale){
+        $("#temperatureCelContainer").show();
+        $("#LogbookGauge").slider("redraw", {
+            from: from,
+            to: to,
+            step: 1,
+            round: 1,
+            scale:scale,
+            value: '-70:75',
+            format: { format: '##.0', locale: 'de' },
+            dimension: '&nbsp;F',
+            
+        });
+    }
+    
+    /**
+     * 
+     * initialize manometr gauge
+     * 
+     * @returns null
+     */
+    this.initManometrGauge = function(from, to, scale){
+          var step = 1;
+          var round =1;
+          var format = '##.0';
+          
+          if((to-from)<10){
+              step = 0.1;
+              round = 0.1;
+              format = '##.00';
+          }
+       
+         $("#LogbookGauge").slider("redraw",{
+           from: from,
+           to: to,
+           scale:scale,
+           step: step,
+           round: round,
+           format: { format: format, locale: 'de' },
+           dimension: ''
+        });
+    }
+    
+    this.initClarilfierGauge = function(from, to, scale) {
+        var step = 1;
+        var round = 1;
+        var format = '##.0';
 
+        if ((to - from) < 10) {
+            step = 0.1;
+            round = 0.1;
+            format = '##.00';
+        }
+
+        $("#LogbookGauge").slider("redraw", {
+            from: from,
+            to: to,
+            scale: scale,
+            step: step,
+            round: round,
+            format: {format: format, locale: 'de'},
+            dimension: ''
+        });
+    }
+    
+    
+}
 
 $(function() {
     //	ini global object
-    inspectionPerson = new InspectionPersonSettings();
+    var inspectionPerson = new InspectionPersonSettings();
     inspectionPerson.addInspectionPerson.iniDialog();
-    $("#gaugeValue").numeric();
-    // gauge slider
-    $("#temperatureGaugeSlider").slider({
-        value: $("#gaugeValue").val(),
-        min: 0,
-        max: 360,
-        step: 5,
-        slide: function(event, ui) {
-            $("#gaugeValue").val(ui.value);
-        }
-    });
     
-    $("#manometrGaugeSlider").slider({
-        value: $("#gaugeValue").val(),
-        min: -0.05,
-        max: 2,
-        step: 0.05,
-        slide: function(event, ui) {
-            $("#gaugeValue").val(ui.value);
-        }
-    });
     
-
+   
 });

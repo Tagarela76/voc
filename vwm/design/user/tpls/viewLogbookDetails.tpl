@@ -122,7 +122,7 @@
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$logbook->getGaugeValue()}
+                    {$logbook->getGaugeValueFrom()}-{$logbook->getGaugeValueTo()}
                 </td>
             </tr>
         {/if}
