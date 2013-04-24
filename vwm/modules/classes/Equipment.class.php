@@ -175,17 +175,17 @@ class Equipment extends EquipmentProperties {
 
 		$query = "INSERT INTO ".TB_EQUIPMENT." (department_id, equip_desc, inventory_id, permit, expire, daily, dept_track, facility_track, model_number, serial_number, creater_id) VALUES (";
 
-		$query .= "'".$equipmentData["department_id"]."', ";
-		$query .= "'".$equipmentData["equip_desc"]."', ";
-		$query .= "'".$equipmentData["inventory_id"]."', ";
-		$query .= "'".$equipmentData["permit"]."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["department_id"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["equip_desc"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["inventory_id"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["permit"])."', ";
 		$query .= "'".strtotime($equipmentData["expire"]->formatInput())."', ";
-		$query .= "'".$equipmentData["daily"]."', ";
-		$query .= "'".$equipmentData["dept_track"]."', ";
-		$query .= "'".$equipmentData["facility_track"]."', ";
-		$query .= "'". $equipmentData["model_number"]."', ";
-		$query .= "'".$equipmentData["serial_number"]."', ";
-		$query .= "'".$equipmentData["creater_id"]."'";
+		$query .= "'".$this->db->sqltext($equipmentData["daily"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["dept_track"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["facility_track"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["model_number"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["serial_number"])."', ";
+		$query .= "'".$this->db->sqltext($equipmentData["creater_id"])."'";
 		$query .= ")";
 
 		$this->db->query($query);
@@ -240,17 +240,17 @@ class Equipment extends EquipmentProperties {
 
 		$query="UPDATE ".TB_EQUIPMENT." SET ";
 
-		$query.="department_id='".$equipmentData["department_id"]."', ";
-		$query.="equip_desc='".$equipmentData["equip_desc"]."', ";
-		$query.="inventory_id='".$equipmentData["inventory_id"]."', ";
-		$query.="permit='".$equipmentData["permit"]."', ";
+		$query.="department_id='".$this->db->sqltext($equipmentData["department_id"])."', ";
+		$query.="equip_desc='".$this->db->sqltext($equipmentData["equip_desc"])."', ";
+		$query.="inventory_id='".$this->db->sqltext($equipmentData["inventory_id"])."', ";
+		$query.="permit='".$this->db->sqltext($equipmentData["permit"])."', ";
 		$query.="expire='".strtotime($equipmentData["expire"]->formatInput())."', ";
-		$query.="daily='".$equipmentData["daily"]."', ";
-		$query.="dept_track='".$equipmentData["dept_track"]."', ";
-		$query.="facility_track='".$equipmentData["facility_track"]."', ";
-		$query .= "model_number='". $equipmentData["model_number"]."', ";
-		$query .= "serial_number='".$equipmentData["serial_number"]."', ";
-		$query.="creater_id='".$equipmentData["creater_id"]."'";
+		$query.="daily='".$this->db->sqltext($equipmentData["daily"])."', ";
+		$query.="dept_track='".$this->db->sqltext($equipmentData["dept_track"])."', ";
+		$query.="facility_track='".$this->db->sqltext($equipmentData["facility_track"])."', ";
+		$query .= "model_number='".$this->db->sqltext($equipmentData["model_number"])."', ";
+		$query .= "serial_number='".$this->db->sqltext($equipmentData["serial_number"])."', ";
+		$query.="creater_id='".$this->db->sqltext($equipmentData["creater_id"])."'";
 
 		$query.=" WHERE equipment_id=".$equipmentData['equipment_id'];
 
