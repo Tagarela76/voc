@@ -117,12 +117,14 @@
                 <td class="border_users_b border_users_r border_users_l">
                     {if $logbook->getValueGaugeType() == '0'}
                         Temperature Gauge 
-                    {else}
+                    {elseif $logbook->getValueGaugeType() == '1'}
                         Manometer Gauge
+                    {else}
+                        Clarifier Gauge
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$logbook->getGaugeValueFrom()}-{$logbook->getGaugeValueTo()}
+                    ({$logbook->getGaugeValueFrom()}) - ({$logbook->getGaugeValueTo()})
                 </td>
             </tr>
         {/if}

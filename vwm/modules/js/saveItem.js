@@ -150,6 +150,7 @@ function saveEquipmentDetails()
 		dataType: "html",
 		success: function (response)
 		{
+            console.log(response);
 			jsonResponse=eval("("+response+")");
 			answer(jsonResponse);
 		}

@@ -354,8 +354,7 @@ function Gauges() {
    
     
     this.initGauges = function(from, to) {
-        $("#LogbookGauge").slider("value", from, to);
-        $("#LogbookGauge").slider("prc", from, to);
+        
         $("#LogbookGauge").slider({
             from: -100,
             to: 100,
@@ -370,9 +369,6 @@ function Gauges() {
                  $('#celTo').val(fromTo);
             }
         });
-        
-        $("#LogbookGauge").slider("value", 1, 50);
-        $("#LogbookGauge").slider("prc", 1, 50);
         
        this.changeGauge();
     }
@@ -487,7 +483,8 @@ function Gauges() {
 
 $(function() {
     //	ini global object
-    var inspectionPerson = new InspectionPersonSettings();
+    
+    console.log(inspectionPerson);
     inspectionPerson.addInspectionPerson.iniDialog();
     
     

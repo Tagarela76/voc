@@ -2,7 +2,8 @@
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
         itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
-        var facilityId ={/literal}{$facilityId}{literal}
+        var facilityId ={/literal}'{$facilityId}'{literal};
+        var inspectionPerson = new InspectionPersonSettings();
        $(function() {
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
@@ -45,7 +46,7 @@
                             </option>
                         {/foreach}
                     </select>
-                    <a onclick='inspectionPerson.addInspectionPerson.openDialog();'>add Inspection Person</a>
+                    <a onclick='inspectionPerson.addInspectionPerson.openDialog()'>add Inspection Person</a>
                 </td>
             </tr>
 

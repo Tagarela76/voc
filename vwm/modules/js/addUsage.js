@@ -1219,7 +1219,6 @@ function addProduct(productID, quantity, unittypeId, unittypeClass,pfp, isPrimar
 
             }
 
-
             if(editForm == false && 1==2) {
 
                 unittypeDescr = $("#selectUnittype option:selected").text();

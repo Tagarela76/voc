@@ -39,8 +39,14 @@
                 Inspected By
             </td>
             <td class="border_users_b border_users_r" width = "80%">
-                Type Description
+                Inspection Type
             </td>
+            <!--<td class="border_users_b border_users_r" width = "80%">
+                Condition
+            </td>
+            <td class="border_users_b border_users_r" width = "80%">
+                Notes
+            </td>-->
         </tr>
         {foreach from=$logbookList item=logbook}
              <tr>
@@ -61,6 +67,12 @@
                     {$logbook.inspectionType}
                 </a>
             </td>
+           <!-- <td class="border_users_b border_users_r">
+                {$null}
+            </td>
+            <td class="border_users_b border_users_r">
+                {$null}
+            </td>-->
         </tr>
         {/foreach}
     </table>

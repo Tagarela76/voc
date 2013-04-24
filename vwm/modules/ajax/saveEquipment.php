@@ -64,7 +64,7 @@ switch ($action) {
 		$xnyo->filter_post_var("equipment_lighting_color", "text");
 		$xnyo->filter_post_var("equipment_lighting_quantity", "text");
 		// protecting from xss
-		foreach ($_POST as $key => $value) {
+		/*foreach ($_POST as $key => $value) {
 			switch ($key) {
 				case "expire_date" : break;
 
@@ -73,7 +73,7 @@ switch ($action) {
 						break;
 					}
 			}
-		}
+		}*/
 
 		$deptTrack = (!isset($_POST['dept_track'])) ? "no" : "yes";
 		$facilityTrack = (!isset($_POST['facility_track'])) ? "no" : "yes";
@@ -230,7 +230,7 @@ switch ($action) {
 		$xnyo->filter_post_var("equipment_lighting_color", "text");
 		$xnyo->filter_post_var("equipment_lighting_quantity", "text");
 		// protecting from xss
-		foreach ($_POST as $key => $value) {
+		/*foreach ($_POST as $key => $value) {
 			switch ($key) {
 				case "expire_date" : break;
 
@@ -239,7 +239,7 @@ switch ($action) {
 						break;
 					}
 			}
-		}
+		}*/
 
 		$deptTrack = (!isset($_POST['dept_track'])) ? "no" : "yes";
 		$facilityTrack = (!isset($_POST['facility_track'])) ? "no" : "yes";
