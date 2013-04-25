@@ -1,9 +1,19 @@
 {literal}
+   <!-- <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script>
+        var j = jQuery;
+    </script>
+    <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js"></script>
+    <script>
+        var $j = jQuery;
+    </script>
+    <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js"></script>-->
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
         itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
         var facilityId ={/literal}'{$facilityId}'{literal};
         var inspectionPerson = new InspectionPersonSettings();
+
        $(function() {
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
             itlManager.inspectionTypeList.getSubTypesAdditionFields();

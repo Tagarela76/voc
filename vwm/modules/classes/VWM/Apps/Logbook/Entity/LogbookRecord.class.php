@@ -167,7 +167,8 @@ class LogbookRecord extends Model
 
     /* Type of Value Gauge */
     const TEMPERATURE_GAUGE = 0;
-    const MANOMETER_GAUGE = 0;
+    const MANOMETER_GAUGE = 1;
+    const CLARIFIER_GAUGE = 2;
 
     public function __construct($id = null)
     {

@@ -137,15 +137,15 @@ class CLogbook extends Controller
 
         $tpl = 'tpls/addLogbookRecord.tpl';
         $jsSources = array(
-            "modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
-            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
-            "modules/js/manageLogbookRecord.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jshashtable-2.1_src.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.numberformatter-1.2.3.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/tmpl.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.dependClass-0.1.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/draggable-0.1.js",
+            "modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
+            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js",
+            "modules/js/manageLogbookRecord.js",
         );
 
         $cssSources = array(

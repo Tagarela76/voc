@@ -351,7 +351,6 @@ var inspectionPerson;
  * @returns {Gauges}
  */
 function Gauges() {
-   
     
     this.initGauges = function(from, to) {
         
@@ -382,6 +381,11 @@ function Gauges() {
     this.changeGauge = function(){
         
         var gaugeType = $('#gaugeType').val();
+        if(gaugeType == 'null'){
+            $('#gaugeSlider').hide();
+        }else{
+            $('#gaugeSlider').show();
+        }
         var from = parseInt($('#gaugeRangeFrom').val());
         var to = parseInt($('#gaugeRangeTo').val());
         /*calculate scale*/
@@ -483,10 +487,5 @@ function Gauges() {
 
 $(function() {
     //	ini global object
-    
-    console.log(inspectionPerson);
     inspectionPerson.addInspectionPerson.iniDialog();
-    
-    
-   
 });
