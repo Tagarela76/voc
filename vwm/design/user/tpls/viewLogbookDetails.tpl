@@ -53,7 +53,7 @@
         </tr>
         <tr>
             <td class="border_users_b border_users_r border_users_l">
-                Equipmant Description
+                Equipment Description
             </td>
             <td class="border_users_b border_users_r">
                 {$equipmantDetails.equip_desc|escape}
@@ -124,7 +124,7 @@
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
                     {if $logbook->getValueGaugeType() == '0'}
-                        Temperature Gauge 
+                        Temperature Gauge
                     {elseif $logbook->getValueGaugeType() == '1'}
                         Manometer Gauge
                     {else}

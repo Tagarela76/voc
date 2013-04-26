@@ -10,7 +10,7 @@ class LogbookRecord extends Model
     /**
      *
      * logbook id
-     * 
+     *
      * @var int
      */
     protected $id;
@@ -18,71 +18,71 @@ class LogbookRecord extends Model
     /**
      *
      * facility id
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $facility_id;
 
     /**
      * department id
-     * @var int 
+     * @var int
      */
     protected $department_id = null;
 
     /**
      *
      * inspection person id
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $inspection_person_id;
 
     /**
      *
      * inspection type
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $inspection_type;
 
     /**
      *
      * inspection sub type
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $inspection_sub_type;
 
     /**
      *
      * logbook description
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $description;
 
     /**
      *
      *  time in unix type
-     * 
+     *
      * @var int
      */
     protected $date_time;
-    
-     /**
+
+    /**
      *
-     * equipmant id
-     * 
-     * @var int 
+     * equipment id
+     *
+     * @var int
      */
-    protected $equipmant_id;
-    
+    protected $equipment_id;
+
     /* Addition fields */
 
     /**
      *
      * Addition field - inspection type permit
-     * 
+     *
      * @var boolean
      */
     protected $permit = null;
@@ -90,7 +90,7 @@ class LogbookRecord extends Model
     /**
      *
      * Addition field - inspection sub type qty
-     * 
+     *
      * @var int
      */
     protected $qty = null;
@@ -98,7 +98,7 @@ class LogbookRecord extends Model
     /**
      *
      * Addition field - loogbook description notes
-     * 
+     *
      * @var string
      */
     protected $description_notes = null;
@@ -112,66 +112,66 @@ class LogbookRecord extends Model
     /**
      *
      * if logbook has Permit
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $hasPermit = 0;
 
     /**
      *
      * if logbook has qty
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $hasQty = 0;
 
     /**
      *
      * if logbook has Gauge
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $hasVolueGauge = 0;
 
     /**
      *
      * gauge type
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $gauge_type = null;
 
     /**
      *
      * gauge value from
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $gauge_value_from = 0;
 
     /**
      *
-     * @var int 
+     * @var int
      */
     protected $gauge_value_to = 0;
-    
+
     /**
      *
      * if logbook has description notes
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $hasDescriptionNotes = 0;
 
     /**
      *
      * if logbook has sub types notes
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $hasSubTypeNotes = 0;
-    
-   
+
+
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
@@ -249,15 +249,15 @@ class LogbookRecord extends Model
     {
         $this->date_time = $date_time;
     }
-    
-    public function getEquipmantId()
+
+    public function getEquipmentId()
     {
-        return $this->equipmant_id;
+        return $this->equipment_id;
     }
 
-    public function setEquipmantId($equipmant_id)
+    public function setEquipmentId($equipment_id)
     {
-        $this->equipmant_id = $equipmant_id;
+        $this->equipment_id = $equipment_id;
     }
 
     public function getPermit()
@@ -399,8 +399,8 @@ class LogbookRecord extends Model
     {
         $this->gauge_value_to = $gauge_value_to;
     }
-    
-    
+
+
 
      public function load()
     {
@@ -475,7 +475,7 @@ class LogbookRecord extends Model
                 "gauge_type = '{$db->sqltext($gaugeType)}', " .
                 "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
-                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
@@ -537,7 +537,7 @@ class LogbookRecord extends Model
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
-                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
                 "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
@@ -551,13 +551,13 @@ class LogbookRecord extends Model
 
     public function getAttributes()
     {
-        
+
     }
 
     /**
-     * 
+     *
      *  Getting addition fields of logbook from json file
-     * 
+     *
      * @return boolean
      */
     public function getAvailableLogbookAdditionFields($inspectionTypeName = null, $inspectionSubTypeName = null, $inspectionDescriptionName = null)

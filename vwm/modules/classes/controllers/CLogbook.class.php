@@ -66,7 +66,7 @@ class CLogbook extends Controller
             $logbook->setInspectionSubType($post['inspectionSubType']);
             $logbook->setDescription($post['logBookDescription']);
             $logbook->setPermit($permit);
-            $logbook->setEquipmantId($post['equipmantId']);
+            $logbook->setEquipmentId($post['equipmantId']);
             $logbook->setDepartmentId($post['departmentId']);
             //set addition fields
             if ($post['qty'] != '') {
@@ -132,7 +132,7 @@ class CLogbook extends Controller
         
         //getEquipmantList
         $equipmant = new Equipment($this->db);
-        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
+        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmentId());
         
         $this->smarty->assign('gaugeList', $gaugeList);
         $this->smarty->assign('violationList', $violationList);
@@ -284,7 +284,7 @@ class CLogbook extends Controller
         
         //initialize equipmant
         $equipmant = new Equipment($this->db);
-        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
+        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmentId());
         $this->smarty->assign('equipmantDetails', $equipmantDetails);
 
         // set left menu

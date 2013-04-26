@@ -7,7 +7,7 @@ class Logbook extends AbstractMigration
    public function change()
    {
         // create the table
-        $table = $this->table('logbook_record');
+            $table = $this->table('logbook_record');
         $table->addColumn('id', 'integer')
                 ->addColumn('facility_id', 'integer')
                 ->addColumn('departmet_id', 'integer', array('default' => null))
@@ -24,13 +24,13 @@ class Logbook extends AbstractMigration
                 ->addColumn('gauge_value', 'integer', array('default' => null))
                 ->create();
     }
-    
+
     /**
      * Migrate Up.
      */
     public function up()
     {
-    
+
     }
 
     /**
