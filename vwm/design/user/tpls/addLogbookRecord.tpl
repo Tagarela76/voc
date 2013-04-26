@@ -1,13 +1,14 @@
 {literal}
-   <!-- <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script>
-        var j = jQuery;
+   <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js"></script>
+     <script>
+        var jSlider = jQuery;
     </script>
+    <script type="text/javascript" src="modules/js/manageLogbookRecord.js"></script>
+    <script type="text/javascript" src="modules/js/jquery-1.5.2.js"></script>
+    <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js"></script>
-    <script>
-        var $j = jQuery;
-    </script>
-    <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js"></script>-->
+    
+     
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
         itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
@@ -16,9 +17,12 @@
 
        $(function() {
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
+            
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
+            itlManager.equipmant.getEquipmantList();
+            
         });
     </script>
 {/literal}
@@ -92,7 +96,7 @@
                     Permit
                 </td>
                 <td>
-                    <input type="checkbox" name='permit' id ='permit'{if $logbook->getPermit() == 1}checked{/if}>
+                    <input type="checkbox" name='permit' id ='permit'{if $logbook->getPermit() == 1}checked='checked'{/if}>
                 </td>
                 {foreach from=$violationList item="violation"}
                     {if $violation->getPropertyPath() eq 'permit'}							
@@ -134,30 +138,32 @@
                 </td>
                 <td>
                     <div>
-                        <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()">
-                            <option value="null">Select Gauge</option>
+                        <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
+                            <option value="null" selected='selected'>Select Gauge</option>
                             {section name=i loop=$gaugeList}
                                 <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
                             {/section}
                         </select>
                     </div>
                  {*slider*}
-                 <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
-                     from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
-                     to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
-                     <a onclick="itlManager.gauges.changeGauge()">
-                     Show Gauge
-                     </a>
-                 </div>
-                 <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
-                     <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
-                 </div>
-                 <div id='temperatureCelContainer'>
-                     The Temperature in Celsius 
-                     from
-                     <input type='text' id='celFrom' disabled='disabled' style="width:50px">
-                     to
-                     <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                 <div id='gaugeSlider' hidden="hidden">
+                     <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
+                         from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
+                         to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
+                         <a onclick="itlManager.gauges.changeGauge()">
+                             Update Gauge
+                         </a>
+                     </div>
+                     <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
+                         <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
+                     </div>
+                     <div id='temperatureCelContainer'>
+                         The Temperature in Celsius 
+                         from
+                         <input type='text' id='celFrom' disabled='disabled' style="width:50px">
+                         to
+                         <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                     </div>
                  </div>
                 </td>
             </tr>
@@ -199,13 +205,50 @@
 
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
+                    Equipmant
+                </td>
+                <td>
+                    <div>
+                        <div style="width: 150px">
+                            Select Department
+                        </div>
+                        <select onchange="itlManager.equipmant.getEquipmantList();" id='equipmantdepartmentIdList' name='departmentId'>
+                            <option value="null">
+                                select
+                            </option>
+                            {foreach from=$departments item="department"}
+                                <option value="{$department->getDepartmentId()}" {if $logbook->getDepartmentId() == $department->getDepartmentId()}selected='selected'{/if}>
+                                    {$department->getName()}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div id='equipmantListContainer' hidden="hidden">
+                        <div style="width: 150px">
+                            Select Equipmant
+                        </div>
+                        <select id ='equipmantList' name='equipmantId'>
+
+                        </select>
+                    </div>
+                    {foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'department_id'}							
+                            {*ERROR*}					
+                            <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                                {*/ERROR*}						    
+                            {/if}
+                        {/foreach}
+                </td>
+            </tr>
+            <!--<tr class="border_users_b border_users_r" height='30'>
+                <td class="border_users_l">
                     Reports
                 </td>
                 <td>
                     <select>
                     </select>
                 </td>
-            </tr>
+            </tr>-->
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
         

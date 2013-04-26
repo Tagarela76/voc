@@ -68,6 +68,15 @@ class LogbookRecord extends Model
      * @var int
      */
     protected $date_time;
+    
+     /**
+     *
+     * equipmant id
+     * 
+     * @var int 
+     */
+    protected $equipmant_id;
+    
     /* Addition fields */
 
     /**
@@ -161,6 +170,8 @@ class LogbookRecord extends Model
      * @var boolean 
      */
     protected $hasSubTypeNotes = 0;
+    
+   
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
@@ -237,6 +248,16 @@ class LogbookRecord extends Model
     public function setDateTime($date_time)
     {
         $this->date_time = $date_time;
+    }
+    
+    public function getEquipmantId()
+    {
+        return $this->equipmant_id;
+    }
+
+    public function setEquipmantId($equipmant_id)
+    {
+        $this->equipmant_id = $equipmant_id;
     }
 
     public function getPermit()
@@ -378,6 +399,8 @@ class LogbookRecord extends Model
     {
         $this->gauge_value_to = $gauge_value_to;
     }
+    
+    
 
      public function load()
     {
@@ -440,7 +463,7 @@ class LogbookRecord extends Model
 
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "departmet_id = {$db->sqltext($departmentId)}, " .
+                "department_id = {$db->sqltext($departmentId)}, " .
                 "inspection_type = '{$db->sqltext($this->getInspectionType())}', " .
                 "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
@@ -452,6 +475,7 @@ class LogbookRecord extends Model
                 "gauge_type = '{$db->sqltext($gaugeType)}', " .
                 "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
+                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
@@ -501,7 +525,7 @@ class LogbookRecord extends Model
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "departmet_id = {$db->sqltext($departmentId)}, " .
+                "department_id = {$db->sqltext($departmentId)}, " .
                 "inspection_type = '{$db->sqltext($this->getInspectionType())}', " .
                 "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
@@ -513,6 +537,7 @@ class LogbookRecord extends Model
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
+                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 

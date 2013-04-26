@@ -11,5 +11,7 @@ VWM\Apps\Logbook\Entity\LogbookRecord:
       - NotBlank: ~
     inspection_sub_type:
       - NotBlank: ~
+    department_id:
+      - Min: 0
       
      

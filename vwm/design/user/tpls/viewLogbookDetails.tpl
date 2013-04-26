@@ -6,7 +6,7 @@
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tr  class="users_u_top_size users_top_brown">
             <td class="users_u_top_brown" width='15%'>
-                Logbook record #{$logbook->getId()}
+                Logbook record #{$logbook->getId()|escape}
             </td>
             <td class="users_u_top_r_brown">
             </td>
@@ -16,7 +16,7 @@
                 Logbook ID
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getId()}
+                {$logbook->getId()|escape}
             </td>
         </tr>
         <tr>
@@ -24,7 +24,7 @@
                 Facility Id
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getFacilityID()}
+                {$logbook->getFacilityID()|escape}
             </td>
         </tr>
         <tr>
@@ -32,7 +32,7 @@
                 Inspection Person
             </td>
             <td class="border_users_b border_users_r">
-                {$inspectionPerson->getName()}
+                {$inspectionPerson->getName()|escape}
             </td>
         </tr>
         <tr>
@@ -40,7 +40,7 @@
                 Inspection Type
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getInspectionType()}
+                {$logbook->getInspectionType()|escape}
             </td>
         </tr>
         <tr>
@@ -48,7 +48,15 @@
                 Inspection Sub Type
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getInspectionSubType()}
+                {$logbook->getInspectionSubType()|escape}
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_b border_users_r border_users_l">
+                Equipmant Description
+            </td>
+            <td class="border_users_b border_users_r">
+                {$equipmantDetails.equip_desc|escape}
             </td>
         </tr>
         {if $logbook->getHasSubTypeNotes()}
@@ -57,7 +65,7 @@
                     Sub type notes
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$logbook->getSubTypeNotes()}
+                    {$logbook->getSubTypeNotes()|escape}
                 </td>
             </tr>
         {/if}
@@ -66,7 +74,7 @@
                 Description
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getDescription()}
+                {$logbook->getDescription()|escape}
             </td>
         </tr>
         {if $logbook->getHasDescriptionNotes()}
@@ -75,7 +83,7 @@
                     Description notes
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$logbook->getDescriptionNotes()}
+                    {$logbook->getDescriptionNotes()|escape}
                 </td>
             </tr>
         {/if}
@@ -108,7 +116,7 @@
                     Qty
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$logbook->getQty()}
+                    {$logbook->getQty()|escape}
                 </td>
             </tr>
         {/if}
@@ -124,7 +132,7 @@
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    ({$logbook->getGaugeValueFrom()}) - ({$logbook->getGaugeValueTo()})
+                    ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape}) F
                 </td>
             </tr>
         {/if}

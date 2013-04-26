@@ -98,9 +98,6 @@ function InspectionTypeList() {
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
         var inspectionSubType = this.getInspectionSubType(inspectionTypeName,inspectionSubTypeName);
         
-        
-        $('#permit').removeAttr('checked');
-        
         if(inspectionSubType.qty == 0){
             $('#subTypeQty').hide();
         }else{
@@ -135,33 +132,9 @@ function InspectionTypeList() {
         $('#subTypeNotes').val('');
         
         $('#gaugeType').val('null');
+        itlManager.gauges.changeGauge();
         this.getSubTypesAdditionFields();
     }
-    
-    /**
-     * 
-     * show gauge slider
-     * 
-     * @returns null
-     */
-    /*this.changeGauge = function(){
-        var gaugeType = $('#gaugeType').val();
-        
-        $('#gaugeValue').val(0);
-        $('#manometrGaugeSlider').slider({value:0});
-        $('#temperatureGaugeSlider').slider({value:0});
-        if(gaugeType == 'null'){
-            $('#temperatureGaugeSlider').hide();
-            $('#manometrGaugeSlider').hide();
-        }else if(gaugeType == 0){
-            $('#manometrGaugeSlider').hide();
-            $('#temperatureGaugeSlider').show();
-        }else{
-            $('#temperatureGaugeSlider').hide();
-            $('#manometrGaugeSlider').show();
-        }
-    }*/
-
 }
 
 /**
@@ -175,7 +148,7 @@ function Description() {
         var descriptionList = null;
         //setters
         self.setDescriptions = function(descriptions) {
-            //alert(types);
+            
             descriptionList = descriptions;
         }
 
@@ -230,12 +203,42 @@ function Description() {
     };
 }
 
+function Equipmant(){
+
+    this.getEquipmantList = function() {
+        var departmentId = $('#equipmantdepartmentIdList').val();
+        if(departmentId=='null'){
+            $('#equipmantListContainer').hide();
+        }else{
+            $('#equipmantListContainer').show();
+        }
+        $.ajax({
+            url: "?action=getEquipmantList&category=logbook",
+            data: {
+                departmentId: departmentId,
+            },
+            type: "POST",
+            dataType: 'json',
+            success: function(response) {
+                var html = ''
+                for (var i=0; i< response.length; i++){
+                    html += "<option value="+response[i].equipment_id+">";
+                    html += response[i].equip_desc;
+                    html += "</option>";
+                }
+                $('#equipmantList').html(html);
+            }
+        });
+        
+    }
+}
 
 function ManageLogbookRecord() {
     var self = this;
 
     this.inspectionTypeList = new InspectionTypeList();
     this.description = new Description();
+    this.equipmant = new Equipmant();
     this.gauges = new Gauges();
 
     this.setjSon = function(json) {
@@ -354,7 +357,7 @@ function Gauges() {
     
     this.initGauges = function(from, to) {
         
-        $("#LogbookGauge").slider({
+        jSlider("#LogbookGauge").slider({
             from: -100,
             to: 100,
             dimension: '',
@@ -381,6 +384,7 @@ function Gauges() {
     this.changeGauge = function(){
         
         var gaugeType = $('#gaugeType').val();
+        
         if(gaugeType == 'null'){
             $('#gaugeSlider').hide();
         }else{
@@ -419,7 +423,7 @@ function Gauges() {
      */
     this.initTemperatureGauge = function(from, to,scale){
         $("#temperatureCelContainer").show();
-        $("#LogbookGauge").slider("redraw", {
+        jSlider("#LogbookGauge").slider("redraw", {
             from: from,
             to: to,
             step: 1,
@@ -449,7 +453,7 @@ function Gauges() {
               format = '##.00';
           }
        
-         $("#LogbookGauge").slider("redraw",{
+         jSlider("#LogbookGauge").slider("redraw",{
            from: from,
            to: to,
            scale:scale,
@@ -471,7 +475,7 @@ function Gauges() {
             format = '##.00';
         }
 
-        $("#LogbookGauge").slider("redraw", {
+        jSlider("#LogbookGauge").slider("redraw", {
             from: from,
             to: to,
             scale: scale,

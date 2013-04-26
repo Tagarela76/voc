@@ -27,6 +27,8 @@ class CLogbook extends Controller
             $facility = new Facility($this->db, $categoryId);
             $companyId = $facility->getCompanyId();
             $facilityId = $categoryId;
+            $departments = $facility->getDepartments();
+            $this->smarty->assign('departments', $departments);
         } else {
             throw new Exception('404');
         }
@@ -43,7 +45,7 @@ class CLogbook extends Controller
 
         //add or update logbook if we need
         if (count($post) > 0) {
-            
+
             //transfer time to unix type
             if ($post['dateTime'] != '') {
                 $dateTime = explode(' ', $post['dateTime']);
@@ -64,6 +66,8 @@ class CLogbook extends Controller
             $logbook->setInspectionSubType($post['inspectionSubType']);
             $logbook->setDescription($post['logBookDescription']);
             $logbook->setPermit($permit);
+            $logbook->setEquipmantId($post['equipmantId']);
+            $logbook->setDepartmentId($post['departmentId']);
             //set addition fields
             if ($post['qty'] != '') {
                 $logbook->setQty($post['qty']);
@@ -74,25 +78,26 @@ class CLogbook extends Controller
             if ($post['subTypeNotes'] != '') {
                 $logbook->setSubTypeNotes($post['subTypeNotes']);
             }
-            
-            if($post['gaugeType'] != 'null'){
+
+            if ($post['gaugeType'] != 'null') {
                 $gaugeValue = explode(';', $post['gaugeValue']);
                 $logbook->setValueGaugeType($post['gaugeType']);
                 $logbook->setGaugeValueFrom($gaugeValue[0]);
                 $logbook->setGaugeValueTo($gaugeValue[1]);
             }
-            
+
             if (isset($dateTime)) {
                 $logbook->setDateTime($dateTime);
             }
             $violationList = $logbook->validate();
+            
             if (count($violationList) == 0) {
                 $id = $logbook->save();
                 header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook");
             } else {
                 $this->smarty->assign('creationTime', $post['dateTime']);
             }
-        }else{
+        } else {
             $logbook->load();
             //check for add or edit
             $creationTime = $logbook->getDateTime();
@@ -101,7 +106,7 @@ class CLogbook extends Controller
                 $this->smarty->assign('creationTime', $creationTime);
             }
         }
-        
+
         $this->smarty->assign('logbook', $logbook);
 
         //set left menu
@@ -121,10 +126,14 @@ class CLogbook extends Controller
 
         //get inspection person list
         $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
-        
+
         //get gauges
         $gaugeList = $lbmanager->getGaugeList();
-
+        
+        //getEquipmantList
+        $equipmant = new Equipment($this->db);
+        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
+        
         $this->smarty->assign('gaugeList', $gaugeList);
         $this->smarty->assign('violationList', $violationList);
         $this->smarty->assign('inspectionPersonList', $inspectionPersonList);
@@ -142,10 +151,6 @@ class CLogbook extends Controller
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/tmpl.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.dependClass-0.1.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/draggable-0.1.js",
-            "modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js",
-            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js",
-            "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/slider/js/jquery.slider.js",
-            "modules/js/manageLogbookRecord.js",
         );
 
         $cssSources = array(
@@ -180,14 +185,14 @@ class CLogbook extends Controller
             'modules/js/checkBoxes.js',
         );
         $lbManager = new LogbookManager();
-        
+
         //set pagination
         $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
         $url = "?" . $_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/", "", $url);
         $pagination = new Pagination($logbookListCount);
         $pagination->url = $url;
-        
+
         $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
 
         $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
@@ -213,7 +218,7 @@ class CLogbook extends Controller
 
             $logbookList[] = $logbook;
         }
-        
+
         $this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('facilityId', $facilityId);
         $this->smarty->assign('logbookList', $logbookList);
@@ -276,6 +281,11 @@ class CLogbook extends Controller
         $creationTime = $logbook->getDateTime();
         $creationTime = date($timeFormat . ' H:i', $creationTime);
         $this->smarty->assign('creationTime', $creationTime);
+        
+        //initialize equipmant
+        $equipmant = new Equipment($this->db);
+        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
+        $this->smarty->assign('equipmantDetails', $equipmantDetails);
 
         // set left menu
         $this->setListCategoriesLeftNew($category, $categoryId);
@@ -287,6 +297,12 @@ class CLogbook extends Controller
         $this->smarty->display('tpls:index.tpl');
     }
 
+    /**
+     * 
+     * delete logbooks
+     * 
+     * @throws Exception
+     */
     public function actionDeleteItem()
     {
         $facility = new Facility($this->db, $this->getFromRequest('facilityID'));
@@ -319,15 +335,21 @@ class CLogbook extends Controller
         $this->finalDeleteItemCommon($itemsForDelete, $linkedNotify, $count, $info);
     }
 
+    /**
+     * 
+     * confirm delete logbooks
+     * 
+     * @throws Exception
+     */
     public function actionConfirmDelete()
     {
         $facility = new Facility($this->db, $this->getFromPost('facilityID'));
-        
+
         if (!$this->user->checkAccess('logbook', $facility->getCompanyId())) {
             throw new Exception('deny');
         }
         $logbooksIds = $this->itemID;
-        
+
         foreach ($logbooksIds as $id) {
             $logbook = new LogbookRecord($this->db);
             $logbook->setId($id);
@@ -335,6 +357,18 @@ class CLogbook extends Controller
         }
 
         header("Location: ?action=browseCategory&category=facility&id=" . $facility->getFacilityId() . "&bookmark=logbook");
+    }
+
+    /**
+     * ajax method
+     */
+    public function actionGetEquipmantList()
+    {
+        $departmentId = $this->getFromPost('departmentId');
+        
+        $equipmant = new Equipment($this->db);
+        $equipmantList = $equipmant->getEquipmentList($departmentId);
+        echo json_encode($equipmantList);
     }
 
 }
