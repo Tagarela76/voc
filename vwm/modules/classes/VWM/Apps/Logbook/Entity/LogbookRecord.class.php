@@ -171,7 +171,13 @@ class LogbookRecord extends Model
      */
     protected $hasSubTypeNotes = 0;
     
-   
+   /**
+    *
+    * replaced bulbs
+    * 
+    * @var boolean 
+    */
+    protected $replaced_bulbs = 0;
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
@@ -400,8 +406,17 @@ class LogbookRecord extends Model
         $this->gauge_value_to = $gauge_value_to;
     }
     
-    
+    public function getReplacedBulbs()
+    {
+        return $this->replaced_bulbs;
+    }
 
+    public function setReplacedBulbs($replacedBulbs)
+    {
+        $this->replaced_bulbs = $replacedBulbs;
+    }
+
+    
      public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -476,6 +491,7 @@ class LogbookRecord extends Model
                 "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "replaced_bulbs = '{$db->sqltext($this->getReplacedBulbs())}', " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
@@ -538,6 +554,7 @@ class LogbookRecord extends Model
                 "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "replaced_bulbs = '{$db->sqltext($this->getReplacedBulbs())}', " .
                 "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 

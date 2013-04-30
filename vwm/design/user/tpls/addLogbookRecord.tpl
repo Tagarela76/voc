@@ -132,41 +132,50 @@
                 </td>
             </tr>
             {*gauges*}
-            <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
-                <td class="border_users_l">
-                    Value Gauge
-                </td>
-                <td>
-                    <div>
-                        <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
-                            <option value="null" selected='selected'>Select Gauge</option>
-                            {section name=i loop=$gaugeList}
-                                <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
-                            {/section}
-                        </select>
-                    </div>
-                 {*slider*}
-                 <div id='gaugeSlider' hidden="hidden">
-                     <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
-                         from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
-                         to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
-                         <a onclick="itlManager.gauges.changeGauge()">
-                             Update Gauge
-                         </a>
-                     </div>
-                     <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
-                         <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
-                     </div>
-                     <div id='temperatureCelContainer'>
-                         The Temperature in Celsius 
-                         from
-                         <input type='text' id='celFrom' disabled='disabled' style="width:50px">
-                         to
-                         <input type='text' id='celTo' disabled='disabled' style="width:50px">
-                     </div>
-                 </div>
-                </td>
-            </tr>
+            
+                <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
+                    <td class="border_users_l">
+                        Value Gauge
+                    </td>
+                    <td>
+                        <div>
+                            <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
+                                <option value="null" selected='selected'>Select Gauge</option>
+                                {section name=i loop=$gaugeList}
+                                    <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
+                                {/section}
+                            </select>
+                        </div>
+                        {*slider*}
+                        <div id='gaugeSlider' hidden="hidden">
+                            <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
+                                from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
+                                to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
+                                <a onclick="itlManager.gauges.changeGauge()">
+                                    Update Gauge
+                                </a>
+                            </div>
+                            <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
+                                <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
+                            </div>
+                            <div id='temperatureCelContainer'>
+                                The Temperature in Celsius 
+                                from
+                                <input type='text' id='celFrom' disabled='disabled' style="width:50px">
+                                to
+                                <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="border_users_b border_users_r" height='30' id='logbookReplacedBulbs' >
+                    <td class="border_users_l">
+                        Replaced Bulbs
+                    </td>
+                    <td>
+                        <input type='checkbox' id = 'replacedBulbs' name='replacedBulbs'>
+                    </td>
+                </tr>
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
                     Description
@@ -240,15 +249,6 @@
                         {/foreach}
                 </td>
             </tr>
-            <!--<tr class="border_users_b border_users_r" height='30'>
-                <td class="border_users_l">
-                    Reports
-                </td>
-                <td>
-                    <select>
-                    </select>
-                </td>
-            </tr>-->
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
         
