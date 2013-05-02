@@ -216,7 +216,7 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         //add company if exist
         if (($orgInfo["category"]) == 'Company') {
 
-            $categoryTag->appendChild(RTemperatureLog
+            $categoryTag->appendChild(
                     $doc->createTextNode('Company')
             );
 

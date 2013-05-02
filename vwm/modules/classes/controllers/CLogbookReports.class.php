@@ -48,7 +48,6 @@ class CLogbookReports extends Controller
 
         $result = $this->prepareSendReport($params);
 
-        //exit;
         foreach ($result as $key => $data) {
             $this->smarty->assign($key, $data);
         }
