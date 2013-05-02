@@ -1,13 +1,11 @@
 <?php
 
 use VWM\Apps\Logbook\Entity\LogbookRecord;
-use VWM\Hierarchy\Facility;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
-use VWM\Hierarchy\Department;
+use VWM\Hierarchy\Facility;
 
-class RTemperatureLog extends ReportCreator implements iReportCreator
+class RManometerLog extends ReportCreator implements iReportCreator
 {
-
     private $dateBegin;
     private $dateEnd;
     private $dateFormat;
@@ -78,28 +76,27 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         $db = \VOCApp::getInstance()->getService('db');
         $dateBeginObj = $this->getDateBegin();
         $dateEndObj = $this->getDateEnd();
-        $temperatureGaugeId = LogbookRecord::TEMPERATURE_GAUGE;
+        $gaugeId = LogbookRecord::MANOMETER_GAUGE;
 
         $query = "SELECT lb.facility_id, i.name, lb.date_time, " .
                 "lb.gauge_value_from, lb.gauge_value_to, lb.description " .
                 "FROM " . LogbookRecord::TABLE_NAME . " lb " .
                 "LEFT JOIN " . LogbookInspectionPerson::TABLE_NAME . " i " .
                 "ON lb.inspection_person_id = i.id " .
-                "WHERE lb.facility_id = {$db->sqltext($this->getCategoryId())} " .
-                "AND lb.gauge_type ={$temperatureGaugeId} " .
+                "WHERE lb.equipmant_id = {$db->sqltext($this->getEquipmentId())} " .
+                "AND lb.gauge_type ={$gaugeId} " .
                 "AND lb.date_time >= " . $dateBeginObj->getTimestamp() . " " .
                 "AND lb.date_time <= " . $dateEndObj->getTimestamp() . " ";
 
         $facility = new Facility($db, $this->getCategoryId());
         $companyId = $facility->getCompanyId();
-        $equipmantId = $this->getEquipmentId();
-        $equipmant = new Equipment($db);
-        $equipmantDetails = $equipmant->getEquipmentDetails($equipmantId);
+        $equipment = new Equipment($db);
+        $equipmentDetails = $equipment->getEquipmentDetails($this->getEquipmentId());
 
         $orgInfo = array(
             'category' => "Facility",
             'name' => $facility->getName(),
-            'equipment' =>$equipmantDetails['equip_desc']
+            'equipment' =>$equipmentDetails['equip_desc']
         );
 
         $db->query($query);
@@ -112,6 +109,7 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         $this->createXML($results, $orgInfo, $fileName);
     }
 
+
     private function group($rows, $companyId)
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -119,18 +117,18 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         $dataChain = new TypeChain(null, 'date', $db, $companyId, 'company');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
 
-        foreach ($rows as $row){
+        foreach ($rows as $row) {
             $dateTime = $row->date_time;
             $dateTime = date($timeFormat . ' H:i', $dateTime);
             $dateTime = explode(' ', $dateTime);
 
             $result = array(
                 'date' => $dateTime[0],
+                'time' => $dateTime[1],
                 'inspectionPerson' => $row->name,
-                'tempStart' => $row->gauge_value_from,
-                'tempEnd' => $row->gauge_value_to,
-                'description' => $row->description,
-                'replacedBulbs' => $row->replaced_bulbs
+                'valueFrom' => $row->gauge_value_from,
+                'valueTo' => $row->gauge_value_to,
+                'description' => $row->description
             );
          $results[] = $result;
         }
@@ -138,7 +136,7 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         return $results;
     }
 
-    private function createXML($results, $orgInfo, $fileName)
+        private function createXML($results, $orgInfo, $fileName)
     {
         $doc = new DOMDocument();
         $doc->formatOutput = true;
@@ -190,10 +188,10 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         );
         $meta->appendChild($metaValue);
 
-        //create title tag
+        //create title tagbijiben
         $title = $doc->createElement("title");
         $title->appendChild(
-                $doc->createTextNode("DAILY TEMPERATURE LOG")
+                $doc->createTextNode("MANOMETER READINGS LOG")
         );
         $page->appendChild($title);
 
@@ -216,7 +214,7 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         //add company if exist
         if (($orgInfo["category"]) == 'Company') {
 
-            $categoryTag->appendChild(RTemperatureLog
+            $categoryTag->appendChild(
                     $doc->createTextNode('Company')
             );
 
@@ -261,90 +259,38 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         $page->appendChild($table);
 
         foreach($results as $result){
-            $temperatureLb = $doc->createElement("logbookInspection");
-            $table->appendChild($temperatureLb);
+            $record = $doc->createElement("logbookInspection");
+            $table->appendChild($record);
             //create date
             $dateTag = $doc->createAttribute('date');
             $dateTag->appendChild(
                         $doc->createTextNode(html_entity_decode($result['date']))
                 );
-           $temperatureLb->appendChild($dateTag);
+            $record->appendChild($dateTag);
+
+            //time
+            $timeTag = $doc->createAttribute('time');
+            $timeTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($result['time']))
+                );
+            $record->appendChild($timeTag);
+
             //create Start
-            $tempStartTag = $doc->createAttribute('tempStart');
-            $tempStartTag->appendChild(
-                         $doc->createTextNode(html_entity_decode($result['tempStart']))
+            $readingValue = $doc->createAttribute('readingValue');
+            $readingValue->appendChild(
+                         $doc->createTextNode(html_entity_decode($result['valueTo']))
                 );
-           $temperatureLb->appendChild($tempStartTag);
-
-           //create temp End
-           $tempEndTag = $doc->createAttribute('tempEnd');
-           $tempEndTag->appendChild(
-                        $doc->createTextNode(html_entity_decode($result['tempEnd']))
-                );
-           $temperatureLb->appendChild($tempEndTag);
-
-           //create replacedBulbs
-           if($result['replacedBulbs'] == 1){
-               $replacedBulbs = 'Yes';
-           }else{
-               $replacedBulbs = 'No';
-           }
-           $replacedBulbsTag = $doc->createAttribute('replacedBulbs');
-           $replacedBulbsTag->appendChild(
-                        $doc->createTextNode(html_entity_decode($replacedBulbs))
-                );
-           $temperatureLb->appendChild($replacedBulbsTag);
-
+            $record->appendChild($readingValue);
 
             //create inspection Person
            $inspectedPersonTag = $doc->createAttribute('inspectedPerson');
            $inspectedPersonTag->appendChild(
                         $doc->createTextNode(html_entity_decode($result['inspectionPerson']))
                 );
-           $temperatureLb->appendChild($inspectedPersonTag);
+           $record->appendChild($inspectedPersonTag);
 
         }
 
         $doc->save($fileName);
     }
-
-   /* public function getReportRequestByGetVars($companyID) {
-		//at first lets get data already filtered
-		$categoryType = $_REQUEST['categoryLevel'];
-		$id = $_REQUEST['id'];
-		$reportType = $_REQUEST['reportType'];
-		$format = $_REQUEST['format'];
-        $equipmentId = $_REQUEST['equipmentId'];
-
-		//and get them too
-		$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
-	    $dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
-
-		$extraVar['rule'] = $_REQUEST['logs'];
-
-		$data['responsiblePerson'] = (($_REQUEST['responsiblePerson'] == "[Responsible Person]") ? "" : $_REQUEST['responsiblePerson']);
-		$data['title'] = (($_REQUEST['title'] == "[Title]") ? "" : $_REQUEST['title']);
-		$data['notes'] = (($_REQUEST['notes'] == "[Notes]") ? "" : $_REQUEST['notes']);
-        $data['spentTime'] = (isset($_REQUEST['spentTime']) ? true : false);
-        $data['totalCost'] = (isset($_REQUEST['totalCost']) ? true : false);
-		$extraVar['data'] = $data;
-
-		//lets set extra vars in case its csv format
-		if ($format == "csv") {
-			$extraVar['commaSeparator'] = $_REQUEST['commaSeparator'];
-			$extraVar['textDelimiter'] = $_REQUEST['textDelimiter'];
-			if (strstr($extraVar['commaSeparator'],"\\")) {
-				$extraVar['commaSeparator'] = substr(strstr($extraVar['commaSeparator'],"\\"),1);
-			}
-			if (strstr($extraVar['textDelimiter'],"\\")) {
-				$extraVar['textDelimiter'] = str_replace("\\","",$extraVar['textDelimiter']);
-			}
-		}
-
-		//finally: lets get	reportRequest object!
-		$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id'], $equipmentId);
-		return $reportRequest;
-	}*/
-
 }
-?>

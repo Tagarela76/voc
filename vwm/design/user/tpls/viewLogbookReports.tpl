@@ -16,7 +16,7 @@
 			<h1 class="titleinfo"><b>Choose Logbook Report Type</b></h1>
 
             <table cellspacing="0" cellpadding="0" class="choose_report_type" width="100%">
-            	
+
             		<tr class="choose_report_type">
             			<td>
             				<a style="color: black" href="?action=sendLogbookReport&reportType=TemperatureLog&category=logbookReports&id={$facilityId}">Temperature Log&nbsp;</a>
@@ -25,7 +25,16 @@
                         	Oven Logbook Report
                    	 	</td>
                 	</tr>
-            	
+
+                    <tr class="choose_report_type">
+            			<td>
+            				<a style="color: black" href="?action=sendLogbookReport&reportType=ManometerLog&category=logbookReports&id={$facilityId}">Manometer Log&nbsp;</a>
+            			</td>
+            			<td>
+                        	Manometer Logbook Report
+                   	 	</td>
+                	</tr>
+
             </table>
             <br>
             <br>

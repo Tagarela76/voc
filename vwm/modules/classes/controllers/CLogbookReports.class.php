@@ -17,6 +17,10 @@ class CLogbookReports extends Controller
         $this->smarty->assign("request", $request);
         $this->noname();
 
+        $this->setListCategoriesLeftNew('facility', $this->getFromRequest('id'), array('bookmark' => 'logbook'));
+        $this->setNavigationUpNew('facility', $this->getFromRequest('id'));
+        $this->setPermissionsNew('facility');
+
         $title = new TitlesNew($this->smarty, $this->db);
         $title->getTitle($request);
 
@@ -57,7 +61,8 @@ class CLogbookReports extends Controller
         $this->smarty->assign('jsSources', $jsSources);
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
         $this->smarty->assign('cssSources', $cssSources);
-        $this->smarty->assign('backUrl', '?action=createReport&category=' . $request['category'] . '&id=' . $request['id']);
+        $this->smarty->assign('backUrl',
+                '?action=viewLogbookReports&category=logbook&facilityId='.$request['id']);
 
         $this->smarty->display("tpls:index.tpl");
     }
@@ -88,13 +93,6 @@ class CLogbookReports extends Controller
         }
         $result["monthes"] = $mas;
 
-        //getting supplier list for projectCoat report
-        if ($reportType == "projectCoat") {
-            $supplierObj = new Supplier($db);
-            $supplierList = $supplierObj->getSupplierList();
-            $result["supplierList"] = $supplierList;
-        }
-
         //get Equipmant list
         $equipmants = new Equipment($db);
         $result['equipments'] = $equipmants->getEquipmentListByFacilityId($params['facilityID']);
@@ -102,13 +100,16 @@ class CLogbookReports extends Controller
         return $result;
     }
 
+    /**
+     * Get path to report template
+     *
+     * @param string $reportType
+     *
+     * @return string path to template
+     */
     public function getInputTPLfileName($reportType)
     {
-        if (file_exists('extensions/reports/design/' . $reportType . 'Input.tpl')) {
-            return 'reports/design/' . $reportType . 'Input.tpl';
-        } else {
-            return 'reports/design/standartInput.tpl';
-        }
+        return 'reports/design/logbookInput.tpl';
     }
 
     public function actionPrepareSendLogbookReport()
@@ -133,7 +134,12 @@ class CLogbookReports extends Controller
 
         //create xml
         $xmlFileName = 'tmp/reportByUser' . $userId . '.xml';
-        $xml = new RTemperatureLog($this->db);
+        $reportClassName = 'R'.$reportType;
+        if (class_exists($reportClassName)) {
+            $xml = new $reportClassName($this->db);
+        } else {
+            throw new Exception('Cannot find report of type '.$reportType);
+        }
 
         $xml->setCategoryId($facilityId);
         $xml->setDateBegin($dateBegin);
