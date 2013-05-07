@@ -67,7 +67,7 @@
                             </tr>
                             <tr>
                                 <td class="pcenter">
-                                    Equipmant
+                                    Equipment
                                 </td>
                                 <td>
                                     <select name ='equipmentId'>

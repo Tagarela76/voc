@@ -5,7 +5,7 @@ use VWM\Hierarchy\Facility;
 class Equipment extends EquipmentProperties
 {
 
-    /** 	 
+    /**
      * @var db
      */
     private $db;
@@ -112,11 +112,11 @@ class Equipment extends EquipmentProperties
     }
 
     /**
-     * 
+     *
      * get equipmants of facility
-     * 
+     *
      * @param int $facilityId
-     * 
+     *
      * @return array();
      */
     public function getEquipmentListByFacilityId($facilityId)
@@ -124,8 +124,9 @@ class Equipment extends EquipmentProperties
         $equipmantList = array();
         $facility = new Facility($this->db,$facilityId);
         $departments = $facility->getDepartments();
-        foreach($departments as $department){
-            $equipmantList = array_merge($equipmantList, $this->getEquipmentList($department->getDepartmentId()));
+        foreach($departments as $department) {
+            $equipmantList = array_merge((array)$equipmantList,
+                    (array)$this->getEquipmentList($department->getDepartmentId()));
         }
         return $equipmantList;
     }

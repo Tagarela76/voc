@@ -7,8 +7,8 @@
     <script type="text/javascript" src="modules/js/jquery-1.5.2.js"></script>
     <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="modules/js/jquery-ui-1.8.2.custom/jquery-plugins/timepicker/jquery-ui-timepicker-addon.js"></script>
-    
-     
+
+
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
         itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
@@ -17,12 +17,12 @@
 
        $(function() {
             $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
-            
+
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.equipmant.getEquipmantList();
-            
+
         });
     </script>
 {/literal}
@@ -99,10 +99,10 @@
                     <input type="checkbox" name='permit' id ='permit'{if $logbook->getPermit() == 1}checked='checked'{/if}>
                 </td>
                 {foreach from=$violationList item="violation"}
-                    {if $violation->getPropertyPath() eq 'permit'}							
-                        {*ERROR*}					
+                    {if $violation->getPropertyPath() eq 'permit'}
+                        {*ERROR*}
                     <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                    {*/ERROR*}						    
+                    {*/ERROR*}
                     {/if}
                 {/foreach}
             </tr>
@@ -115,10 +115,10 @@
                     <input type="number" name =  "qty"  id='qty' value="{$logbook->getQty()}">
                 </td>
                 {foreach from=$violationList item="violation"}
-                    {if $violation->getPropertyPath() eq 'qty'}							
-                        {*ERROR*}					
+                    {if $violation->getPropertyPath() eq 'qty'}
+                        {*ERROR*}
                     <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                        {*/ERROR*}						    
+                        {*/ERROR*}
                     {/if}
                 {/foreach}
             </tr>
@@ -132,7 +132,7 @@
                 </td>
             </tr>
             {*gauges*}
-            
+
                 <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
                     <td class="border_users_l">
                         Value Gauge
@@ -159,7 +159,7 @@
                                 <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
                             </div>
                             <div id='temperatureCelContainer'>
-                                The Temperature in Celsius 
+                                The Temperature in Celsius
                                 from
                                 <input type='text' id='celFrom' disabled='disabled' style="width:50px">
                                 to
@@ -203,12 +203,12 @@
                         <input type="text" name="dateTime" id="dateTime" class="calendarFocus" value='{$creationTime|escape}'/>
                     </div>
                     {foreach from=$violationList item="violation"}
-                        {if $violation->getPropertyPath() eq 'date_time'}							
-                            {*ERROR*}					
+                        {if $violation->getPropertyPath() eq 'date_time'}
+                            {*ERROR*}
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                                {*/ERROR*}						    
+                                {*/ERROR*}
                             {/if}
-                        {/foreach}	
+                        {/foreach}
                 </td>
             </tr>
 
@@ -234,24 +234,24 @@
                     </div>
                     <div id='equipmantListContainer' hidden="hidden">
                         <div style="width: 150px">
-                            Select Equipmant
+                            Select Equipment
                         </div>
                         <select id ='equipmantList' name='equipmantId'>
 
                         </select>
                     </div>
                     {foreach from=$violationList item="violation"}
-                        {if $violation->getPropertyPath() eq 'department_id'}							
-                            {*ERROR*}					
+                        {if $violation->getPropertyPath() eq 'department_id'}
+                            {*ERROR*}
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                                {*/ERROR*}						    
+                                {*/ERROR*}
                             {/if}
                         {/foreach}
                 </td>
             </tr>
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
-        
+
         <div align="right" style="padding: 12px 12px">
             <input type="submit" value="Save" class="button">
             <input type="button" value="Cancel" class="button" onclick='history.back()'>
