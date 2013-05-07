@@ -114,6 +114,12 @@ function InspectionTypeList() {
             $('#logbookValueGauge').hide();
             $('#logbookReplacedBulbs').hide();
         }else{
+            //get gauge type
+            if(inspectionType.gaugeType == undefined){
+                inspectionType.gaugeType = 'null';
+            }
+            //set gauge type
+            $('#gaugeType').val(inspectionType.gaugeType);
             $('#logbookValueGauge').show();
             $('#logbookReplacedBulbs').show();
         }
@@ -123,19 +129,16 @@ function InspectionTypeList() {
         }else{
             $('#logBookPermit').show();
         }
-        
-       
     }
     
     this.changeSubType = function(){
-        
         //clear addition field
         $('#qty').val('');
         $('#subTypeNotes').val('');
         
-        $('#gaugeType').val('null');
-        itlManager.gauges.changeGauge();
+        //$('#gaugeType').val(0);
         this.getSubTypesAdditionFields();
+        itlManager.gauges.changeGauge();
     }
 }
 
@@ -243,9 +246,11 @@ function ManageLogbookRecord() {
     this.equipmant = new Equipmant();
     this.gauges = new Gauges();
 
-    this.setjSon = function(json) {
-        self.inspectionTypeList.setInspectionTypes(json.inspectionTypes);
-        self.description.setDescriptions(json.description);
+    this.setjSonInspectionType = function(json) {
+        self.inspectionTypeList.setInspectionTypes(json);
+    }
+    this.setjSonDescriptionType = function(json){
+        self.description.setDescriptions(json);
     }
     
 }
@@ -356,51 +361,64 @@ var inspectionPerson;
  * @returns {Gauges}
  */
 function Gauges() {
-    
+    this.gaugeRanges = Array();
+    /**
+     * 
+     * get gauge range
+     * 
+     * @param {array} gauge
+     * 
+     * @returns {null}
+     */
+    this.setGaugeRanges = function(gauges) {
+        this.gaugeRanges =  gauges;
+    }
+
     this.initGauges = function(from, to) {
-        
+
         jSlider("#LogbookGauge").slider({
             from: -100,
             to: 100,
             dimension: '',
-            onstatechange: function( value ){
+            onstatechange: function(value) {
                 var myarr = value.split(";");
-                var fromCel = (myarr[0]-32)*5/9;
-                var fromTo = (myarr[1]-32)*5/9;
-                fromCel = fromCel.toPrecision(2)+'C'
-                fromTo = fromTo.toPrecision(2)+'C'
-                 $('#celFrom').val(fromCel);
-                 $('#celTo').val(fromTo);
+                var fromCel = (myarr[0] - 32) * 5 / 9;
+                var fromTo = (myarr[1] - 32) * 5 / 9;
+                fromCel = fromCel.toPrecision(2) + 'C'
+                fromTo = fromTo.toPrecision(2) + 'C'
+                $('#celFrom').val(fromCel);
+                $('#celTo').val(fromTo);
             }
         });
-        
-       this.changeGauge();
+
+        this.updateGauge();
     }
-    
+
     /**
      * 
      * show or change gauge slider
      * 
      * @returns null
      */
-    this.changeGauge = function(){
-        
+    this.updateGauge = function() {
+
         var gaugeType = $('#gaugeType').val();
-        
-        if(gaugeType == 'null'){
+
+        if (gaugeType == 'null') {
             $('#gaugeSlider').hide();
-        }else{
+        } else {
             $('#gaugeSlider').show();
         }
+        
         var from = parseInt($('#gaugeRangeFrom').val());
         var to = parseInt($('#gaugeRangeTo').val());
         /*calculate scale*/
-        var scaleStep = (to-from)/10;
+        var scaleStep = (to - from) / 10;
         var division = from;
-        
+
         var scale = new Array();
-        var i=1;
-        while(i!=10){
+        var i = 1;
+        while (i != 10) {
             division += scaleStep;
             scale.push(division.toPrecision(2));
             i++;
@@ -414,58 +432,73 @@ function Gauges() {
         } else if (gaugeType == 2) {
             this.initClarilfierGauge(from, to, scale);
         }
-        
+
     }
     
+    /**
+     * 
+     * set defaul range parameters and update gauge slider
+     * 
+     * @returns {null}
+     */
+    this.changeGauge = function (){
+        var gaugeType = $('#gaugeType').val();
+        
+        //set gauge range 
+        $('#gaugeRangeFrom').val(this.gaugeRanges[gaugeType].min);
+        $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
+        
+        this.updateGauge();
+    }
+
     /**
      * 
      * initialize temperature gauge
      * 
      * @returns null
      */
-    this.initTemperatureGauge = function(from, to,scale){
+    this.initTemperatureGauge = function(from, to, scale) {
         $("#temperatureCelContainer").show();
         jSlider("#LogbookGauge").slider("redraw", {
             from: from,
             to: to,
             step: 1,
             round: 1,
-            scale:scale,
+            scale: scale,
             value: '-70:75',
-            format: { format: '##.0', locale: 'de' },
+            format: {format: '##.0', locale: 'de'},
             dimension: '&nbsp;F',
-            
         });
     }
-    
+
     /**
      * 
      * initialize manometr gauge
      * 
      * @returns null
      */
-    this.initManometrGauge = function(from, to, scale){
-          var step = 1;
-          var round =1;
-          var format = '##.0';
-          
-          if((to-from)<10){
-              step = 0.1;
-              round = 0.1;
-              format = '##.00';
-          }
-       
-         jSlider("#LogbookGauge").slider("redraw",{
-           from: from,
-           to: to,
-           scale:scale,
-           step: step,
-           round: round,
-           format: { format: format, locale: 'de' },
-           dimension: ''
+    this.initManometrGauge = function(from, to, scale) {
+        var step = 1;
+        var round = 1;
+        var format = '##.0';
+
+        if ((to - from) < 10) {
+            step = 0.1;
+            round = 0.1;
+            format = '##.00';
+        }
+
+        jSlider("#LogbookGauge").slider("redraw", {
+            from: from,
+            to: to,
+            scale: scale,
+            step: step,
+            round: round,
+            format: {format: format, locale: 'de'},
+            dimension: ''
         });
     }
-    
+
     this.initClarilfierGauge = function(from, to, scale) {
         var step = 1;
         var round = 1;
@@ -487,8 +520,6 @@ function Gauges() {
             dimension: ''
         });
     }
-    
-    
 }
 
 $(function() {

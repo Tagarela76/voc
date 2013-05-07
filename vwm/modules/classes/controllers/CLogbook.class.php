@@ -45,7 +45,6 @@ class CLogbook extends Controller
 
         //add or update logbook if we need
         if (count($post) > 0) {
-
             //transfer time to unix type
             if ($post['dateTime'] != '') {
                 $dateTime = explode(' ', $post['dateTime']);
@@ -69,6 +68,9 @@ class CLogbook extends Controller
             $logbook->setPermit($permit);
             $logbook->setEquipmantId($post['equipmantId']);
             $logbook->setDepartmentId($post['departmentId']);
+            $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
+            $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
+            
             //set addition fields
             if ($post['qty'] != '') {
                 $logbook->setQty($post['qty']);
@@ -105,12 +107,13 @@ class CLogbook extends Controller
             $logbook->load();
             //check for add or edit
             $creationTime = $logbook->getDateTime();
-            if (!is_null($creationTime)) {
-                $creationTime = date($timeFormat . ' H:i', $creationTime);
-                $this->smarty->assign('creationTime', $creationTime);
+            if (is_null($creationTime)) {
+                $creationTime = time();
             }
+            $creationTime = date($timeFormat . ' H:i', $creationTime);
+            $this->smarty->assign('creationTime', $creationTime);
         }
-
+        
         $this->smarty->assign('logbook', $logbook);
 
         //set left menu
@@ -118,27 +121,35 @@ class CLogbook extends Controller
         $this->setPermissionsNew($category);
 
         //get inspection types list
-        $lbmanager = new LogbookManager();
-        $jsonInspectionalTypeList = $lbmanager->getInspectionTypeListInJson();
+        $itmanager = new InspectionTypeManager();
+        
+        $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson();
         $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
-        $inspectionTypesList = $lbmanager->getInspectionType();
-
-        $inspectionSubTypesList = $lbmanager->getInspectionSubTypeByTypeDescription($logbook->getInspectionType());
+        
+        $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
+        $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
+        
+        $lbmanager = new LogbookManager();
+        
+        $inspectionTypesList = json_decode($jsonInspectionalTypeList);
+        
+        $inspectionSubTypesList = $itmanager->getInspectionSubTypeByTypeDescription($logbook->getInspectionType());
 
         //get description
-        $logbookDescriptionsList = $lbmanager->getLogbookDescriptionsList();
+        $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
 
         //get inspection person list
         $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
 
         //get gauges
-        $gaugeList = $lbmanager->getGaugeList();
+        $gaugeList = $lbmanager->getGaugeList($facilityId);
         
         //getEquipmantList
         $equipmant = new Equipment($this->db);
         $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
         
         $this->smarty->assign('gaugeList', $gaugeList);
+        $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
         $this->smarty->assign('violationList', $violationList);
         $this->smarty->assign('inspectionPersonList', $inspectionPersonList);
         $this->smarty->assign('inspectionTypesList', $inspectionTypesList);

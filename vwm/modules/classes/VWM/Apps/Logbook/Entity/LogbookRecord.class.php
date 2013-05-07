@@ -178,6 +178,22 @@ class LogbookRecord extends Model
     * @var boolean
     */
     protected $replaced_bulbs = 0;
+    
+    /**
+     *
+     * min limit of gauge
+     * 
+     * @var int 
+     */
+    protected $min_gauge_range = 0;
+    
+    /**
+     *
+     * max limit of gauge
+     * 
+     * @var int
+     */
+    protected $max_gauge_range = 100;
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
@@ -416,7 +432,27 @@ class LogbookRecord extends Model
         $this->replaced_bulbs = $replacedBulbs;
     }
 
+    public function getMinGaugeRange()
+    {
+        return $this->min_gauge_range;
+    }
 
+    public function setMinGaugeRange($min_gauge_range)
+    {
+        $this->min_gauge_range = $min_gauge_range;
+    }
+
+    public function getMaxGaugeRange()
+    {
+        return $this->max_gauge_range;
+    }
+
+    public function setMaxGaugeRange($max_gauge_range)
+    {
+        $this->max_gauge_range = $max_gauge_range;
+    }
+
+    
      public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -496,10 +532,15 @@ class LogbookRecord extends Model
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "replaced_bulbs = {$db->sqltext($this->getReplacedBulbs())}, " .
+                "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
+                "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "qty = {$db->sqltext($qty)}";
 
         $db->query($sql);
         $id = $db->getLastInsertedID();
+        if(isset($id)){
+            $this->updateGaugeRange();
+        }
         $this->setId($id);
 
         return $id;
@@ -559,10 +600,16 @@ class LogbookRecord extends Model
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "replaced_bulbs = '{$db->sqltext($this->getReplacedBulbs())}', " .
+                "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
+                "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "qty = {$db->sqltext($qty)} " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
         $db->query($sql);
+        $id = $db->getLastInsertedID();
+        if(isset($id)){
+            $this->updateGaugeRange();
+        }
         return $this->getId();
     }
 
@@ -638,6 +685,22 @@ class LogbookRecord extends Model
 
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($query);
+    }
+    
+    /**
+     *  update logbook gauge range for facility 
+     */
+    private function updateGaugeRange()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+         
+        $query  = "UPDATE ". self::TABLE_NAME . " SET ".
+                  "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, ".
+                  "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())} ".
+                  "WHERE gauge_type = {$db->sqltext($this->getValueGaugeType())} AND ".
+                  "facility_id = {$db->sqltext($this->getFacilityId())}";
+                  
         $db->query($query);
     }
 

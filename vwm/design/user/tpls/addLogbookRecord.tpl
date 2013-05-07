@@ -11,7 +11,8 @@
 
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
-        itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
+        itlManager.setjSonInspectionType({/literal}{$jsonInspectionalTypeList}{literal});
+        itlManager.setjSonDescriptionType({/literal}{$jsonDescriptionTypeList}{literal});
         var facilityId ={/literal}'{$facilityId}'{literal};
         var inspectionPerson = new InspectionPersonSettings();
 
@@ -20,6 +21,7 @@
 
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
+            itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.equipmant.getEquipmantList();
 
@@ -142,16 +144,16 @@
                             <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
                                 <option value="null" selected='selected'>Select Gauge</option>
                                 {section name=i loop=$gaugeList}
-                                    <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
+                                    <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>
                                 {/section}
                             </select>
                         </div>
                         {*slider*}
                         <div id='gaugeSlider' hidden="hidden">
                             <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
-                                from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
-                                to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
-                                <a onclick="itlManager.gauges.changeGauge()">
+                                from<input type='number' id = 'gaugeRangeFrom'  name='gaugeRangeFrom' style="width:40px" value='{$logbook->getMinGaugeRange()}'>
+                                to<input type='number' id = 'gaugeRangeTo' name='gaugeRangeTo' style="width:40px" value='{$logbook->getMaxGaugeRange()}'>
+                                <a onclick="itlManager.gauges.updateGauge()">
                                     Update Gauge
                                 </a>
                             </div>
