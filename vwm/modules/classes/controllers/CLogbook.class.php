@@ -59,6 +59,7 @@ class CLogbook extends Controller
             } else {
                 $permit = 0;
             }
+            
             //init logbook
             $logbook->setFacilityId($facilityId);
             $logbook->setInspectionPersonId($post['InspectionPersons']);
@@ -84,6 +85,9 @@ class CLogbook extends Controller
                 $logbook->setValueGaugeType($post['gaugeType']);
                 $logbook->setGaugeValueFrom($gaugeValue[0]);
                 $logbook->setGaugeValueTo($gaugeValue[1]);
+                if($post['replacedBulbs']=='on'){
+                    $logbook->setReplacedBulbs(1);
+                }
             }
 
             if (isset($dateTime)) {
@@ -369,6 +373,23 @@ class CLogbook extends Controller
         $equipmant = new Equipment($this->db);
         $equipmantList = $equipmant->getEquipmentList($departmentId);
         echo json_encode($equipmantList);
+    }
+    
+    /**
+     * create Logbook Report
+     */
+    public function actionViewLogbookReports()
+    {
+        $facilityId = $this->getFromRequest('facilityId');
+        $category = 'facility';
+        
+        $this->setListCategoriesLeftNew($category, $facilityId);
+        $this->setPermissionsNew($category);
+        
+        $tpl = 'tpls/viewLogbookReports.tpl';
+        $this->smarty->assign('facilityId', $facilityId);
+        $this->smarty->assign('tpl', $tpl);
+        $this->smarty->display('tpls:index.tpl');
     }
 
 }

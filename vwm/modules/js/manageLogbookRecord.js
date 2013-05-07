@@ -112,8 +112,10 @@ function InspectionTypeList() {
         
         if(inspectionSubType.valueGauge == 0){
             $('#logbookValueGauge').hide();
+            $('#logbookReplacedBulbs').hide();
         }else{
             $('#logbookValueGauge').show();
+            $('#logbookReplacedBulbs').show();
         }
         
         if(inspectionType.permit == 0){
