@@ -220,7 +220,7 @@ function Equipmant(){
         $.ajax({
             url: "?action=getEquipmantList&category=logbook",
             data: {
-                departmentId: departmentId,
+                departmentId: departmentId
             },
             type: "POST",
             dataType: 'json',
@@ -310,7 +310,7 @@ function AddInspectionPerson(){
         $.ajax({
             url: "?action=loadAddInspectionPersonDetails&category=logbook",
             data: {
-                facilityId: inspectionPerson.facilityId,
+                facilityId: inspectionPerson.facilityId
             },
             type: "POST",
             dataType: "text",
@@ -467,7 +467,7 @@ function Gauges() {
             scale: scale,
             value: '-70:75',
             format: {format: '##.0', locale: 'de'},
-            dimension: '&nbsp;F',
+            dimension: '&nbsp;F'
         });
     }
 
