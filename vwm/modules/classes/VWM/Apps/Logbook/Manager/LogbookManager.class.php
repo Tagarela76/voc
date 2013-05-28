@@ -46,10 +46,11 @@ class LogbookManager
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
-
+        $query.=' GROUP BY date_time DESC';
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
+        
         $db->query($query);
         $rows = $db->fetch_all_array();
 
@@ -108,12 +109,31 @@ class LogbookManager
             'min' => $clarifierGaugeRange['min_gauge_range'],
             'max' => $clarifierGaugeRange['max_gauge_range']
         );
-
+        
+        //gas gauge 
+        $gasGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::GAS_GAUGE);
+        $gasGauge = array(
+            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'name' => 'Gas Gauge',
+            'min' => $gasGaugeRange['min_gauge_range'],
+            'max' => $gasGaugeRange['max_gauge_range']
+        );
+        
+        //electric gauge 
+        $electricGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::ELECTRIC_GAUGE);
+        $electricGauge = array(
+            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'name' => 'Electric Gauge',
+            'min' => $electricGaugeRange['min_gauge_range'],
+            'max' => $electricGaugeRange['max_gauge_range']
+        );
 
         $gaugeList = array(
             0 => $temperatuteGauge,
             1 => $manometerGauge,
-            2 => $clarifierGauge
+            2 => $clarifierGauge,
+            3 => $gasGauge,
+            4 => $electricGauge
         );
 
         return $gaugeList;

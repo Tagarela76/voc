@@ -50,7 +50,16 @@ class InspectionTypeManager
         return $inspectionDescriptionInJson;
     }
 
-    public function getInspectionSubTypeByTypeDescription($typeDescription = null)
+    /**
+     * 
+     * function for getting subtypes list
+     * 
+     * @param string $typeDescription
+     * 
+     * @return boolean
+     */
+    
+    public function getInspectionSubTypesByTypeDescription($typeDescription = null)
     {
         $json = $this->getInspectionTypeListInJson();
         $typeList = json_decode($json);
@@ -60,6 +69,87 @@ class InspectionTypeManager
         foreach ($typeList as $type) {
             if ($type->typeName == $typeDescription) {
                 return $type->subtypes;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     * function for getting addition type list
+     * 
+     * @param string $typeDescription
+     * 
+     * @return boolean
+     */
+    public function getInspectionAdditionTypesByTypeDescription($typeDescription = null)
+    {
+       $json = $this->getInspectionTypeListInJson();
+        $typeList = json_decode($json);
+        if (!isset($typeDescription) || $typeDescription == '') {
+            return $typeList[0]->additionFieldList;
+        }
+        foreach ($typeList as $type) {
+            if ($type->typeName == $typeDescription) {
+                return $type->additionFieldList;
+            }
+        }
+        return false; 
+    }
+    /**
+     * 
+     * getting inspection sub type by type and subtype description
+     * 
+     * @param string $typeDescription
+     * @param string $subTypeDescription
+     * 
+     * @return boolean|std
+     */
+    public function getInspectionSubTypeByTypeAndSubTypeDescription($typeDescription = null, $subTypeDescription = null)
+    {
+        $subtypes = $this->getInspectionSubTypesByTypeDescription($typeDescription);
+        foreach ($subtypes as $subtype) {
+            if ($subtype->name == $subTypeDescription) {
+                return $subtype;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     * getting Inspection Type by Type Name
+     * 
+     * @param string $typeName
+     * 
+     * @return boolean| std
+     */
+    public function getInspectionTypeByTypeName($typeName = null)
+    {
+        if(is_null($typeName)){
+            throw new Exception('type Name can\'t be NULL');
+        }
+        $inspectionTypeList = $this->getInspectionTypeListInJson();
+        $inspectionTypeList = json_decode($inspectionTypeList);
+        foreach($inspectionTypeList as $inspectionType){
+            if($inspectionType->typeName == $typeName){
+                
+                return $inspectionType;
+            }
+        }
+        return false;
+    }
+    
+    public function getLogbookDescriptionByDescriptionName($descriptionName = null)
+    {
+        if(is_null($descriptionName)){
+            throw new Exception('description name can\'t be NULL');
+        }
+        $logbookDescriptionList = $this->getLogbookDescriptionListInJson();
+        $logbookDescriptionList = json_decode($logbookDescriptionList);
+        foreach($logbookDescriptionList as $logbookDescription){
+            if($logbookDescription->name == $descriptionName){
+                return $logbookDescription;
             }
         }
         return false;

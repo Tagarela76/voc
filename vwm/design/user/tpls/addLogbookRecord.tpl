@@ -17,14 +17,16 @@
         var inspectionPerson = new InspectionPersonSettings();
 
        $(function() {
-            $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
-
+            $('#dateTime').datetimepicker({
+                                dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
+                                ampm: true
+                        });
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.equipmant.getEquipmantList();
-
+            itlManager.gauges.checkGaugeValueRange();
         });
     </script>
 {/literal}
@@ -80,6 +82,15 @@
                             {/section}
                         </select>
                     </div>
+                    <div id ='inspectionAdditionListTypeContainer' hidden="hidden">
+                        <select id ='inspectionAdditionListType' name='inspectionAdditionListType'  onchange="itlManager.inspectionTypeList.getSubTypesAdditionFields();itlManager.gauges.changeGauge()">
+                            {section name=i loop=$inspectionAdditionTypesList}
+                                <option value="{$inspectionAdditionTypesList[i]->name|escape}" {if $logbook->getInspectionAdditionType() == $inspectionAdditionTypesList[i]->name}selected='selected'{/if}>
+                                    {$inspectionAdditionTypesList[i]->name|escape}
+                                </option>
+                            {/section}
+                        </select>
+                    </div>    
                     <div>
                         <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()">
                             {section name=i loop=$inspectionSubTypesList}
@@ -130,7 +141,7 @@
                     Sub Type Notes
                 </td>
                 <td>
-                    <textarea name="subTypeNotes" id='subTypeNotes'>{$logbook->getSubTypeNotes()}</textarea>
+                    <textarea name="subTypeNotes" id='subTypeNotes'>{if $logbook->getSubTypeNotes() != 'NONE'}{$logbook->getSubTypeNotes()}{/if}</textarea>
                 </td>
             </tr>
             {*gauges*}
@@ -142,7 +153,7 @@
                     <td>
                         <div>
                             <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
-                                <option value="null" selected='selected'>Select Gauge</option>
+                                <option value="null">Select Gauge</option>
                                 {section name=i loop=$gaugeList}
                                     <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>
                                 {/section}
@@ -184,6 +195,9 @@
                 </td>
                 <td>
                     <select id="logBookDescription" name = "logBookDescription" onchange="itlManager.description.changeDescription();">
+                         <option value="None">
+                               None
+                         </option>
                         {section name=i loop=$logbookDescriptionsList}
                             <option value="{$logbookDescriptionsList[i]->name|escape}" {if $logbook->getDescription() == $logbookDescriptionsList[i]->name}selected='selected'{/if}>
                                 {$logbookDescriptionsList[i]->name|escape}
@@ -191,7 +205,7 @@
                         {/section}
                     </select>
                     <div>
-                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden">{$logbook->getDescriptionNotes()}</textarea>
+                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden">{if $logbook->getDescriptionNotes() != 'NONE'}{$logbook->getDescriptionNotes()}{/if}</textarea>
                     </div>
                 </td>
             </tr>
@@ -216,7 +230,7 @@
 
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
-                    Equipmant
+                    Equipment
                 </td>
                 <td>
                     <div>

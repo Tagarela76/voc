@@ -25,7 +25,7 @@ class LogbookInspectionPerson extends Model
     protected $name;
 
     const TABLE_NAME = 'inspection_persons';
-
+    
     public function getId()
     {
         return $this->id;
@@ -117,6 +117,18 @@ class LogbookInspectionPerson extends Model
     public function getAttributes()
     {
         
+    }
+    
+    /**
+     * delete inspection Person
+     */
+    public function delete()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+                "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($query);
     }
 
 }
