@@ -237,6 +237,24 @@ class XML2PDF extends PDF_MC_Table
             case 'EQUIPMENTDESC':
                 $this->header["EQUIPMENTDESC"] = $data;
                 break;
+            case 'COMPANYADDRESS':
+                $this->header["COMPANYADDRESS"] = $data;
+                break;
+            case 'CITYSTATEZIP':
+                $this->header["CITYSTATEZIP"] = $data;
+                break;
+            case 'FAX':
+                $this->header["FAX"] = $data;
+                break;
+            case 'PHONE':
+                $this->header["PHONE"] = $data;
+                break;
+            case 'COUNTRY':
+                $this->header["COUNTRY"] = $data;
+                break;
+            case 'PERMIT':
+                $this->header["PERMIT"] = $data;
+                break;
             case 'CATEGORYNAME':
                 $this->header["CATEGORYNAME"] = $data;
                 $this->header();
@@ -262,11 +280,19 @@ class XML2PDF extends PDF_MC_Table
             $this->SetFont('Arial', 'B', 15);
             $this->Cell(290, 10, $this->header['TITLE'], 0, 1, 'L');
             $this->SetFont('Arial', 'B', 8);
-            $this->Cell(290, 10, "Equipment: " . $this->header['EQUIPMENTDESC'], 0, 0, 'L');
+            $this->Cell(75, 10, "Address: " . $this->header['COMPANYADDRESS'], 0, 0, 'L');
+            $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENTDESC'], 0, 0, 'L');
             $this->Ln(5);
-            $this->Cell(290, 10, "Description: ", 0, 0, 'L');
+            $this->Cell(75, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
+            $this->Cell(75, 10, "Description: ", 0, 0, 'L');
             $this->Ln(5);
-            $this->Cell(290, 10, "Permit No: ", 0, 0, 'L');
+            $this->Cell(75, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
+            $this->Cell(75, 10, "Permit No: ". $this->header['PERMIT'], 0, 0, 'L');
+            $this->Ln(5);
+            $this->Cell(75, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
+            $this->Ln(5);
+            $this->Cell(75, 10, "Fax: " . $this->header['Fax'], 0, 0, 'L');
+            $this->Ln(5);
         }
     }
 
