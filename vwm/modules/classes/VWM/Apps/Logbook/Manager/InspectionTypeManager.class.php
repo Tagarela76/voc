@@ -1,7 +1,10 @@
 <?php
 
+use \VWM\Apps\Logbook\Entity\LogbookInspectionType;
+
 class InspectionTypeManager
 {
+
     const TB_INSPECTION_TYPE = 'inspection_type';
     const TB_DESCRIPTION_DESCRIPTION = 'inspection_description';
 
@@ -9,13 +12,20 @@ class InspectionTypeManager
      * 
      * getting inspection Type structure in json string
      * 
+     * @param int $facilityId
+     * 
      * @return string
      */
-    public function getInspectionTypeListInJson()
+    public function getInspectionTypeListInJson($facilityId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeInJson = array();
         $query = "SELECT settings FROM " . self::TB_INSPECTION_TYPE;
+        
+        if (!is_null($facilityId)) {
+            $query.= " WHERE facility_id = {$db->sqltext($facilityId)}";
+        }
+        
         $db->query($query);
         $result = $db->fetch_all_array();
 
@@ -58,7 +68,6 @@ class InspectionTypeManager
      * 
      * @return boolean
      */
-    
     public function getInspectionSubTypesByTypeDescription($typeDescription = null)
     {
         $json = $this->getInspectionTypeListInJson();
@@ -73,7 +82,7 @@ class InspectionTypeManager
         }
         return false;
     }
-    
+
     /**
      * 
      * function for getting addition type list
@@ -84,7 +93,7 @@ class InspectionTypeManager
      */
     public function getInspectionAdditionTypesByTypeDescription($typeDescription = null)
     {
-       $json = $this->getInspectionTypeListInJson();
+        $json = $this->getInspectionTypeListInJson();
         $typeList = json_decode($json);
         if (!isset($typeDescription) || $typeDescription == '') {
             return $typeList[0]->additionFieldList;
@@ -94,8 +103,9 @@ class InspectionTypeManager
                 return $type->additionFieldList;
             }
         }
-        return false; 
+        return false;
     }
+
     /**
      * 
      * getting inspection sub type by type and subtype description
@@ -115,7 +125,7 @@ class InspectionTypeManager
         }
         return false;
     }
-    
+
     /**
      * 
      * getting Inspection Type by Type Name
@@ -126,33 +136,70 @@ class InspectionTypeManager
      */
     public function getInspectionTypeByTypeName($typeName = null)
     {
-        if(is_null($typeName)){
+        if (is_null($typeName)) {
             throw new Exception('type Name can\'t be NULL');
         }
         $inspectionTypeList = $this->getInspectionTypeListInJson();
         $inspectionTypeList = json_decode($inspectionTypeList);
-        foreach($inspectionTypeList as $inspectionType){
-            if($inspectionType->typeName == $typeName){
-                
+        foreach ($inspectionTypeList as $inspectionType) {
+            if ($inspectionType->typeName == $typeName) {
+
                 return $inspectionType;
             }
         }
         return false;
     }
-    
+
+    /**
+     * 
+     * @param string $descriptionName
+     * 
+     * @return string|boolean
+     * @throws Exception
+     */
     public function getLogbookDescriptionByDescriptionName($descriptionName = null)
     {
-        if(is_null($descriptionName)){
+        if (is_null($descriptionName)) {
             throw new Exception('description name can\'t be NULL');
         }
         $logbookDescriptionList = $this->getLogbookDescriptionListInJson();
         $logbookDescriptionList = json_decode($logbookDescriptionList);
-        foreach($logbookDescriptionList as $logbookDescription){
-            if($logbookDescription->name == $descriptionName){
+        foreach ($logbookDescriptionList as $logbookDescription) {
+            if ($logbookDescription->name == $descriptionName) {
                 return $logbookDescription;
             }
         }
         return false;
+    }
+    
+    /**
+     * 
+     * get inspection type list
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookInspectionTyp[]
+     */
+    public function getInspectionTypeList($facilityId = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $inspectionTypeList = array();
+        $query = "SELECT * FROM " .LogbookInspectionType::TABLE_NAME;
+        
+        if (!is_null($facilityId)) {
+            $query.= " WHERE facility_id IN ({$db->sqltext($facilityId)})";
+        }
+        
+        $db->query($query);
+        $result = $db->fetch_all_array();
+
+        foreach ($result as $r) {
+            $inspectionType = new LogbookInspectionType();
+            $inspectionType->initByArray($r);
+            $inspectionTypeList[] = $inspectionType;
+        }
+        
+        return $inspectionTypeList;
     }
 
 }

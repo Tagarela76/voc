@@ -59,6 +59,10 @@
 				<div class="add_button button_alpha">
 					<input type="submit" name="action" value="addItem"  >
 				</div>
+            {elseif $request.category=="logbook"}
+                <div class="add_button button_alpha">
+                    <input type="submit" name="action" value="addItem"  >
+                </div>
 			{/if}
 
 		</div>
