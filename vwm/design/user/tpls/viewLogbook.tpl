@@ -63,7 +63,7 @@
                 {$logbook.inspectionPersonName}
             </td>
             <td class="border_users_b border_users_r">
-                <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}">
+                <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
                     {$logbook.inspectionType}
                 </a>
             </td>
@@ -77,6 +77,7 @@
         {/foreach}
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
+    <input type='hidden' name='tab' value='{$tab|escape}'>
 {*PAGINATION*}
 	{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}

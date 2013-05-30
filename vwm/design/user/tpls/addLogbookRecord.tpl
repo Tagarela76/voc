@@ -11,18 +11,22 @@
 
     <script type="text/javascript">
         var itlManager = new ManageLogbookRecord();
-        itlManager.setjSon({/literal}{$jsonInspectionalTypeList}{literal});
+        itlManager.setjSonInspectionType({/literal}{$jsonInspectionalTypeList}{literal});
+        itlManager.setjSonDescriptionType({/literal}{$jsonDescriptionTypeList}{literal});
         var facilityId ={/literal}'{$facilityId}'{literal};
         var inspectionPerson = new InspectionPersonSettings();
 
        $(function() {
-            $('#dateTime').datetimepicker({dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});
-
+            $('#dateTime').datetimepicker({
+                                dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
+                                ampm: true
+                        });
             itlManager.inspectionTypeList.getSubTypesAdditionFields();
             itlManager.description.showNotes();
+            itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.equipmant.getEquipmantList();
-
+            itlManager.gauges.checkGaugeValueRange();
         });
     </script>
 {/literal}
@@ -78,6 +82,15 @@
                             {/section}
                         </select>
                     </div>
+                    <div id ='inspectionAdditionListTypeContainer' hidden="hidden">
+                        <select id ='inspectionAdditionListType' name='inspectionAdditionListType'  onchange="itlManager.inspectionTypeList.getSubTypesAdditionFields();itlManager.gauges.changeGauge()">
+                            {section name=i loop=$inspectionAdditionTypesList}
+                                <option value="{$inspectionAdditionTypesList[i]->name|escape}" {if $logbook->getInspectionAdditionType() == $inspectionAdditionTypesList[i]->name}selected='selected'{/if}>
+                                    {$inspectionAdditionTypesList[i]->name|escape}
+                                </option>
+                            {/section}
+                        </select>
+                    </div>
                     <div>
                         <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()">
                             {section name=i loop=$inspectionSubTypesList}
@@ -128,51 +141,62 @@
                     Sub Type Notes
                 </td>
                 <td>
-                    <textarea name="subTypeNotes" id='subTypeNotes'>{$logbook->getSubTypeNotes()}</textarea>
+                    <textarea name="subTypeNotes" id='subTypeNotes'>{if $logbook->getSubTypeNotes() != 'NONE'}{$logbook->getSubTypeNotes()}{/if}</textarea>
                 </td>
             </tr>
             {*gauges*}
-            <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
-                <td class="border_users_l">
-                    Value Gauge
-                </td>
-                <td>
-                    <div>
-                        <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
-                            <option value="null" selected='selected'>Select Gauge</option>
-                            {section name=i loop=$gaugeList}
-                                <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i]}</option>
-                            {/section}
-                        </select>
-                    </div>
-                 {*slider*}
-                 <div id='gaugeSlider' hidden="hidden">
-                     <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
-                         from<input type='number' id = 'gaugeRangeFrom' style="width:40px" value='-100'>
-                         to<input type='number' id = 'gaugeRangeTo' style="width:40px" value='100'>
-                         <a onclick="itlManager.gauges.changeGauge()">
-                             Update Gauge
-                         </a>
-                     </div>
-                     <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
-                         <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
-                     </div>
-                     <div id='temperatureCelContainer'>
-                         The Temperature in Celsius
-                         from
-                         <input type='text' id='celFrom' disabled='disabled' style="width:50px">
-                         to
-                         <input type='text' id='celTo' disabled='disabled' style="width:50px">
-                     </div>
-                 </div>
-                </td>
-            </tr>
+                <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
+                    <td class="border_users_l">
+                        Value Gauge
+                    </td>
+                    <td>
+                        <div>
+                            <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
+                                <option value="null">Select Gauge</option>
+                                {section name=i loop=$gaugeList}
+                                    <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>
+                                {/section}
+                            </select>
+                        </div>
+                        {*slider*}
+                        <div id='gaugeSlider' hidden="hidden">
+                            <div id = 'gaugeRange' style="margin: 0 0 0 0; display: inline-block;">
+                                from<input type='number' id = 'gaugeRangeFrom'  name='gaugeRangeFrom' style="width:40px" value='{$logbook->getMinGaugeRange()}'>
+                                to<input type='number' id = 'gaugeRangeTo' name='gaugeRangeTo' style="width:40px" value='{$logbook->getMaxGaugeRange()}'>
+                                <a onclick="itlManager.gauges.updateGauge()">
+                                    Update Gauge
+                                </a>
+                            </div>
+                            <div style="width: 400px; padding: 25px 7px"  id='gaugeConteiner'>
+                                <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
+                            </div>
+                            <div id='temperatureCelContainer'>
+                                The Temperature in Celsius
+                                from
+                                <input type='text' id='celFrom' disabled='disabled' style="width:50px">
+                                to
+                                <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="border_users_b border_users_r" height='30' id='logbookReplacedBulbs' >
+                    <td class="border_users_l">
+                        Replaced Bulbs
+                    </td>
+                    <td>
+                        <input type='checkbox' id = 'replacedBulbs' name='replacedBulbs'>
+                    </td>
+                </tr>
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
                     Description
                 </td>
                 <td>
                     <select id="logBookDescription" name = "logBookDescription" onchange="itlManager.description.changeDescription();">
+                         <option value="None">
+                               None
+                         </option>
                         {section name=i loop=$logbookDescriptionsList}
                             <option value="{$logbookDescriptionsList[i]->name|escape}" {if $logbook->getDescription() == $logbookDescriptionsList[i]->name}selected='selected'{/if}>
                                 {$logbookDescriptionsList[i]->name|escape}
@@ -180,7 +204,7 @@
                         {/section}
                     </select>
                     <div>
-                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden">{$logbook->getDescriptionNotes()}</textarea>
+                        <textarea name="logBookDescriptionNotes" id="logBookDescriptionNotes" hidden="hidden">{if $logbook->getDescriptionNotes() != 'NONE'}{$logbook->getDescriptionNotes()}{/if}</textarea>
                     </div>
                 </td>
             </tr>
@@ -225,7 +249,7 @@
                     </div>
                     <div id='equipmantListContainer' hidden="hidden">
                         <div style="width: 150px">
-                            Select Equipmant
+                            Select Equipment
                         </div>
                         <select id ='equipmantList' name='equipmantId'>
 
@@ -240,15 +264,6 @@
                         {/foreach}
                 </td>
             </tr>
-            <!--<tr class="border_users_b border_users_r" height='30'>
-                <td class="border_users_l">
-                    Reports
-                </td>
-                <td>
-                    <select>
-                    </select>
-                </td>
-            </tr>-->
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 

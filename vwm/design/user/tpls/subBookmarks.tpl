@@ -74,3 +74,9 @@
 	{include file="tpls:tpls/subBookmarkDocuments.tpl"}
 {/if}
 {*DOCS*}
+
+{*LOGBOOK*}
+{if $request.bookmark == 'logbook'} 
+	{include file="tpls:tpls/subBookmarkLogbook.tpl"}
+{/if}
+{*LOGBOOK*}

@@ -30,8 +30,8 @@ function InspectionTypeList() {
      */
     this.getInspectionTypeByTypeName = function(inspectionTypeName) {
         var inspectionTypes = this.getInspectionTypes();
-        for(var i=0; i<inspectionTypes.length; i++){
-            if(inspectionTypes[i].typeName == inspectionTypeName){
+        for (var i = 0; i < inspectionTypes.length; i++) {
+            if (inspectionTypes[i].typeName == inspectionTypeName) {
                 return inspectionTypes[i];
             }
         }
@@ -47,6 +47,7 @@ function InspectionTypeList() {
         var inspectionTypeName = $('#inspectionType').val();
         //get subTypeList
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
+        //check for addition fields
         var html = '';
         for (var i = 0; i < inspectionType.subtypes.length; i++) {
             html += "<option value='" + inspectionType.subtypes[i].name + "'>";
@@ -56,8 +57,26 @@ function InspectionTypeList() {
         //change subType list
         $('#inspectionSubType').html(html);
         this.changeSubType();
+        this.getAdditionFieldTypesList();
     }
-    
+
+    this.getAdditionFieldTypesList = function() {
+        var inspectionTypeName = $('#inspectionType').val();
+        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
+        if (inspectionType.additionFieldList != undefined) {
+            $('#inspectionAdditionListTypeContainer').show();
+            var html = '';
+            for (var i = 0; i < inspectionType.additionFieldList.length; i++) {
+                html += "<option value='" + inspectionType.additionFieldList[i].name + "'>";
+                html += inspectionType.additionFieldList[i].name;
+                html += "</option>";
+            }
+            $('#inspectionAdditionListType').html(html);
+        } else {
+            $('#inspectionAdditionListTypeContainer').hide();
+        }
+    }
+
     /**
      * get sub type
      * 
@@ -66,10 +85,10 @@ function InspectionTypeList() {
      * 
      * @returns {std|Boolean}
      */
-    this.getInspectionSubType = function(inspectionTypeName, inspectionSubTypeName){
+    this.getInspectionSubType = function(inspectionTypeName, inspectionSubTypeName) {
         var inspectionTypes = this.getInspectionTypes();
         var inspectionSubTypes;
-        
+
         //get subTypes
         for (var i = 0; i < inspectionTypes.length; i++) {
             if (inspectionTypes[i].typeName == inspectionTypeName) {
@@ -77,63 +96,110 @@ function InspectionTypeList() {
                 break;
             }
         }
-        
+
         //get subtype
-        for(var i = 0; i < inspectionSubTypes.length; i++){
-            if(inspectionSubTypes[i].name == inspectionSubTypeName){
+        for (var i = 0; i < inspectionSubTypes.length; i++) {
+            if (inspectionSubTypes[i].name == inspectionSubTypeName) {
                 return inspectionSubTypes[i];
             }
         }
         return false;
     }
-    
+
+    /**
+     * 
+     * get addition type if exist
+     * 
+     * @param {string} inspectionTypeName
+     * @param {string} inspectionAdditionType
+     * @returns {std|Boolean}
+     */
+    this.getInspectionAdditionType = function(inspectionTypeName, inspectionAdditionTypeName) {
+        var inspectionTypes = this.getInspectionTypes();
+        var inspectionAdditionTypes;
+        //get addition Types
+        for (var i = 0; i < inspectionTypes.length; i++) {
+            if (inspectionTypes[i].typeName == inspectionTypeName) {
+                inspectionAdditionTypes = inspectionTypes[i].additionFieldList;
+                break;
+            }
+        }
+        if (inspectionAdditionTypes == undefined) {
+            return false;
+        } else {
+            for (var i = 0; i < inspectionAdditionTypes.length; i++) {
+                if (inspectionAdditionTypes[i].name == inspectionAdditionTypeName) {
+                    return inspectionAdditionTypes[i];
+                }
+            }
+        }
+    }
     /**
      * display sub type addition fields
      * 
      * @returns {null}
      */
-    this.getSubTypesAdditionFields = function(){
+    this.getSubTypesAdditionFields = function() {
         var inspectionTypeName = $('#inspectionType').val();
         var inspectionSubTypeName = $('#inspectionSubType').val();
+        var inspectionAdditionTypeName = $('#inspectionAdditionListType').val();
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
-        var inspectionSubType = this.getInspectionSubType(inspectionTypeName,inspectionSubTypeName);
-        
-        if(inspectionSubType.qty == 0){
+        var inspectionSubType = this.getInspectionSubType(inspectionTypeName, inspectionSubTypeName);
+        var inspectionAdditionListType = this.getInspectionAdditionType(inspectionTypeName, inspectionAdditionTypeName);
+
+        if (inspectionSubType.qty == 0) {
             $('#subTypeQty').hide();
-        }else{
+        } else {
             $('#subTypeQty').show();
         }
-        
+
         if (inspectionSubType.notes == 0) {
             $('#logBookSubTypeNotes').hide();
-        }else{
+        } else {
             $('#logBookSubTypeNotes').show();
         }
-        
-        if(inspectionSubType.valueGauge == 0){
+
+        if (inspectionSubType.valueGauge == 0) {
             $('#logbookValueGauge').hide();
-        }else{
+            $('#logbookReplacedBulbs').hide();
+        } else {
+            var gaugeType = 'null';
+            //get gauge type by sub type
+            if (inspectionAdditionListType) {
+                gaugeType = inspectionAdditionListType.gaugeType
+            }
+
+            if (inspectionSubType.gaugeType != undefined) {
+                gaugeType = inspectionSubType.gaugeType;
+            }
+
+            //set gauge type
+            $('#gaugeType').val(gaugeType);
             $('#logbookValueGauge').show();
+            $('#logbookReplacedBulbs').show();
         }
-        
-        if(inspectionType.permit == 0){
+
+        if (inspectionType.permit == 0) {
             $('#logBookPermit').hide();
-        }else{
+        } else {
             $('#logBookPermit').show();
         }
-        
-       
+
+        if (inspectionType.additionFieldList != undefined) {
+            $('#inspectionAdditionListTypeContainer').show();
+        } else {
+            $('#inspectionAdditionListTypeContainer').hide();
+        }
+
     }
-    
-    this.changeSubType = function(){
-        
+
+    this.changeSubType = function() {
         //clear addition field
         $('#qty').val('');
         $('#subTypeNotes').val('');
-        
-        $('#gaugeType').val('null');
-        itlManager.gauges.changeGauge();
+
         this.getSubTypesAdditionFields();
+        itlManager.gauges.changeGauge();
     }
 }
 
@@ -143,12 +209,12 @@ function InspectionTypeList() {
  */
 function Description() {
     var self = this;
-    
+
     var constructor = function() {
         var descriptionList = null;
         //setters
         self.setDescriptions = function(descriptions) {
-            
+
             descriptionList = descriptions;
         }
 
@@ -157,7 +223,7 @@ function Description() {
         }
     };
     constructor();
-    
+
     /**
      * 
      * get description by description name
@@ -166,23 +232,23 @@ function Description() {
      * 
      * @returns {std|Boolean}
      */
-    this.getDescriptionByName = function(descriptionName){
+    this.getDescriptionByName = function(descriptionName) {
         var descriptionList = this.getDescriptions();
-        for(var i=0; i<descriptionList.length; i++){
-            if(descriptionList[i].name == descriptionName){
+        for (var i = 0; i < descriptionList.length; i++) {
+            if (descriptionList[i].name == descriptionName) {
                 return descriptionList[i];
             }
         }
         return false;
     }
-    
+
     /**
      * 
      * change description
      * 
      * @returns null
      */
-    this.changeDescription = function(){
+    this.changeDescription = function() {
         $('#logBookDescriptionNotes').val('');
         this.showNotes();
     }
@@ -192,44 +258,44 @@ function Description() {
      * 
      * @returns {null}
      */
-    this.showNotes = function(){
+    this.showNotes = function() {
         var descriptionName = $('#logBookDescription').val();
         var description = this.getDescriptionByName(descriptionName);
-        if(description.notes == 0){
+        if (description.notes != 1) {
             $('#logBookDescriptionNotes').hide();
-        }else{
+        } else {
             $('#logBookDescriptionNotes').show();
         }
     };
 }
 
-function Equipmant(){
+function Equipmant() {
 
     this.getEquipmantList = function() {
         var departmentId = $('#equipmantdepartmentIdList').val();
-        if(departmentId=='null'){
+        if (departmentId == 'null') {
             $('#equipmantListContainer').hide();
-        }else{
+        } else {
             $('#equipmantListContainer').show();
         }
         $.ajax({
             url: "?action=getEquipmantList&category=logbook",
             data: {
-                departmentId: departmentId,
+                departmentId: departmentId
             },
             type: "POST",
             dataType: 'json',
             success: function(response) {
                 var html = ''
-                for (var i=0; i< response.length; i++){
-                    html += "<option value="+response[i].equipment_id+">";
+                for (var i = 0; i < response.length; i++) {
+                    html += "<option value=" + response[i].equipment_id + ">";
                     html += response[i].equip_desc;
                     html += "</option>";
                 }
                 $('#equipmantList').html(html);
             }
         });
-        
+
     }
 }
 
@@ -241,11 +307,13 @@ function ManageLogbookRecord() {
     this.equipmant = new Equipmant();
     this.gauges = new Gauges();
 
-    this.setjSon = function(json) {
-        self.inspectionTypeList.setInspectionTypes(json.inspectionTypes);
-        self.description.setDescriptions(json.description);
+    this.setjSonInspectionType = function(json) {
+        self.inspectionTypeList.setInspectionTypes(json);
     }
-    
+    this.setjSonDescriptionType = function(json) {
+        self.description.setDescriptions(json);
+    }
+
 }
 
 
@@ -257,18 +325,18 @@ function ManageLogbookRecord() {
  * 
  * @returns null
  */
-function AddInspectionPerson(){
+function AddInspectionPerson() {
     this.divId = 'addInspectionPersonContainer';
     this.isLoaded = false;
-    
+
     this.iniDialog = function(divId) {
         divId = typeof divId !== 'undefined' ? divId : this.divId;
-        if(divId != this.divId) {
+        if (divId != this.divId) {
             this.divId = divId;
         }
 
         var that = this;
-        $("#"+divId).dialog({
+        $("#" + divId).dialog({
             width: 350,
             height: 300,
             autoOpen: false,
@@ -288,53 +356,53 @@ function AddInspectionPerson(){
             }
         });
     }
-    
+
     this.openDialog = function() {
         $('#addInspectionPersonContainer').html('');
-        $('#'+this.divId).dialog('open');
-        if(!this.isLoaded) {
+        $('#' + this.divId).dialog('open');
+        if (!this.isLoaded) {
             this.loadContent();
         }
         return false;
     }
-    
+
     this.loadContent = function() {
         var that = this;
         $.ajax({
             url: "?action=loadAddInspectionPersonDetails&category=logbook",
             data: {
-                facilityId: inspectionPerson.facilityId,
+                facilityId: inspectionPerson.facilityId
             },
             type: "POST",
             dataType: "text",
-            success: function (response) {
-                $("#"+that.divId).html(response);
+            success: function(response) {
+                $("#" + that.divId).html(response);
                 that.isLoaded = true;
                 //check action
             }
         });
     }
-    
-    this.save = function(){
+
+    this.save = function() {
         var that = this;
         var InspectionPersonName = $('#InspectionPersonName').val();
         var facilityId = $('#facilityId').val();
         $.ajax({
-            url: "?action=saveInspectionPerson&category=logbook",
+            url: "?action=saveDialogInspectionPerson&category=logbook",
             data: {
                 personName: InspectionPersonName,
                 facilityId: facilityId
             },
             type: "POST",
             dataType: "html",
-            success: function (response) {
+            success: function(response) {
                 var id = response;
                 that.isLoaded = false;
                 var html = $('#InspectionPersons').html();
-                html += "<option value = '"+response+"'>";
+                html += "<option value = '" + response + "'>";
                 html += InspectionPersonName;
                 html += "</option>";
-                
+
                 $('#InspectionPersons').html(html);
             }
         });
@@ -342,11 +410,13 @@ function AddInspectionPerson(){
 }
 
 function InspectionPersonSettings() {
-   this.addInspectionPerson = new AddInspectionPerson();
-   this.facilityId = facilityId
+    this.addInspectionPerson = new AddInspectionPerson();
+    this.facilityId = facilityId
 }
 
 var inspectionPerson;
+
+
 /**
  * 
  * class gauges
@@ -354,117 +424,112 @@ var inspectionPerson;
  * @returns {Gauges}
  */
 function Gauges() {
-    
+    this.gaugeRanges = Array();
+    /**
+     * 
+     * get gauge range
+     * 
+     * @param {array} gauge
+     * 
+     * @returns {null}
+     */
+    this.setGaugeRanges = function(gauges) {
+        this.gaugeRanges = gauges;
+    }
+
     this.initGauges = function(from, to) {
-        
+
         jSlider("#LogbookGauge").slider({
             from: -100,
             to: 100,
             dimension: '',
-            onstatechange: function( value ){
+            onstatechange: function(value) {
                 var myarr = value.split(";");
-                var fromCel = (myarr[0]-32)*5/9;
-                var fromTo = (myarr[1]-32)*5/9;
-                fromCel = fromCel.toPrecision(2)+'C'
-                fromTo = fromTo.toPrecision(2)+'C'
-                 $('#celFrom').val(fromCel);
-                 $('#celTo').val(fromTo);
+                var fromCel = (myarr[0] - 32) * 5 / 9;
+                var fromTo = (myarr[1] - 32) * 5 / 9;
+                fromCel = fromCel.toPrecision(2) + 'C'
+                fromTo = fromTo.toPrecision(2) + 'C'
+                $('#celFrom').val(fromCel);
+                $('#celTo').val(fromTo);
             }
         });
-        
-       this.changeGauge();
+
+        this.updateGauge();
     }
-    
+
     /**
      * 
      * show or change gauge slider
      * 
      * @returns null
      */
-    this.changeGauge = function(){
-        
+    this.updateGauge = function() {
+        this.checkGaugeValueRange();
         var gaugeType = $('#gaugeType').val();
-        
-        if(gaugeType == 'null'){
+
+        if (gaugeType == 'null') {
             $('#gaugeSlider').hide();
-        }else{
+        } else {
             $('#gaugeSlider').show();
         }
+
         var from = parseInt($('#gaugeRangeFrom').val());
         var to = parseInt($('#gaugeRangeTo').val());
         /*calculate scale*/
-        var scaleStep = (to-from)/10;
+        var scaleStep = (to - from) / 10;
         var division = from;
-        
+
         var scale = new Array();
-        var i=1;
-        while(i!=10){
+        var i = 1;
+        while (i != 10) {
             division += scaleStep;
             scale.push(division.toPrecision(2));
             i++;
         }
         scale.push(to);
         $("#temperatureCelContainer").hide();
+        var dimension = '';
         if (gaugeType == 0) {
-            this.initTemperatureGauge(from, to, scale);
-        } else if (gaugeType == 1) {
-            this.initManometrGauge(from, to, scale);
+            dimension = '&nbsp;F';
+            $("#temperatureCelContainer").show();
         } else if (gaugeType == 2) {
-            this.initClarilfierGauge(from, to, scale);
+            dimension = '&nbsp;ph';
         }
-        
+        //var sliderValue = $('#LogbookGauge').val();
+
+        //$('#LogbookGauge').val(from+';'+from);
+        this.initNewGauge(from, to, scale, dimension);
+
+
     }
-    
+
+    /**
+     * 
+     * set defaul range parameters and update gauge slider
+     * 
+     * @returns {null}
+     */
+    this.changeGauge = function() {
+        var gaugeType = $('#gaugeType').val();
+        //set gauge range 
+
+        if (gaugeType == 'null') {
+            $('#gaugeRangeFrom').val(0);
+            $('#gaugeRangeTo').val(1);
+        } else {
+            $('#gaugeRangeFrom').val(this.gaugeRanges[gaugeType].min);
+            $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
+        }
+        this.updateGauge();
+    }
+
     /**
      * 
      * initialize temperature gauge
      * 
      * @returns null
      */
-    this.initTemperatureGauge = function(from, to,scale){
-        $("#temperatureCelContainer").show();
-        jSlider("#LogbookGauge").slider("redraw", {
-            from: from,
-            to: to,
-            step: 1,
-            round: 1,
-            scale:scale,
-            value: '-70:75',
-            format: { format: '##.0', locale: 'de' },
-            dimension: '&nbsp;F',
-            
-        });
-    }
-    
-    /**
-     * 
-     * initialize manometr gauge
-     * 
-     * @returns null
-     */
-    this.initManometrGauge = function(from, to, scale){
-          var step = 1;
-          var round =1;
-          var format = '##.0';
-          
-          if((to-from)<10){
-              step = 0.1;
-              round = 0.1;
-              format = '##.00';
-          }
-       
-         jSlider("#LogbookGauge").slider("redraw",{
-           from: from,
-           to: to,
-           scale:scale,
-           step: step,
-           round: round,
-           format: { format: format, locale: 'de' },
-           dimension: ''
-        });
-    }
-    
-    this.initClarilfierGauge = function(from, to, scale) {
+    this.initNewGauge = function(from, to, scale, dimension) {
         var step = 1;
         var round = 1;
         var format = '##.0';
@@ -482,11 +547,28 @@ function Gauges() {
             step: step,
             round: round,
             format: {format: format, locale: 'de'},
-            dimension: ''
+            dimension: dimension
         });
     }
-    
-    
+    /**
+     * 
+     * The function checks if the values ​​do not go out of range 
+     * 
+     * @returns {null}
+     */
+    this.checkGaugeValueRange = function() {
+        var values = $('#LogbookGauge').val();
+        var maxRangeTo = $('#gaugeRangeTo').val();
+        var minRangeFrom = $('#gaugeRangeFrom').val();
+        values = values.split(';');
+        //check if values less than max raunge
+        if ((maxRangeTo <= values[0]) && (maxRangeTo <= values[1])) {
+            $('.jslider-pointer-to').css('z-index', '-1');
+        }
+        if ((minRangeFrom >= values[0]) && (minRangeFrom >= values[1])) {
+            $('.jslider-pointer-to').css('z-index', '2');
+        }
+    }
 }
 
 $(function() {

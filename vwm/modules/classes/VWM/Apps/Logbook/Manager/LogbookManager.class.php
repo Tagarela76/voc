@@ -7,80 +7,7 @@ use \VWM\Apps\Logbook\Entity\LogbookRecord;
 
 class LogbookManager
 {
-
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
-
-    /**
-     * getting Inspection type and subtype from file
-     * 
-     * @return std[]
-     */
-    public function getInspectionType()
-    {
-        //get current directory
-        $path = getcwd();
-        //get file content
-        $json = file_get_contents($path . self::FILENAME);
-        //decode json information
-        $typeList = json_decode($json);
-        return $typeList->inspectionTypes;
-    }
-
-    /**
-     * get sub type list by type description
-     * 
-     * @param string $typeDescription
-     * 
-     * @return boolean| std[]
-     */
-    public function getInspectionSubTypeByTypeDescription($typeDescription = null){
-        //get current directory
-        $path = getcwd();
-        //get file content
-        $json = file_get_contents($path . self::FILENAME);
-        //decode json information
-        $typeList = json_decode($json);
-        if(!isset($typeDescription) || $typeDescription==''){
-           return $typeList->inspectionTypes[0]->subtypes;
-        }
-        foreach($typeList->inspectionTypes as $type){
-            if($type->typeName == $typeDescription){
-                return $type->subtypes;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 
-     * get description list
-     * 
-     * @return std[]
-     */
-    public function getLogbookDescriptionsList()
-    {
-        //get current directory
-        $path = getcwd();
-        //get file content
-        $json = file_get_contents($path . self::FILENAME);
-        //decode json information
-        $typeList = json_decode($json);
-        return $typeList->description;
-    }
-
-    /**
-     * 
-     * getting inspection Type structure in json string
-     * 
-     * @return string
-     */
-    public function getInspectionTypeListInJson()
-    {
-        $path = getcwd();
-        //get file content
-        $json = file_get_contents($path . self::FILENAME);
-        return $json;
-    }
 
     /**
      * 
@@ -92,19 +19,19 @@ class LogbookManager
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
-        $query = "SELECT * FROM ". LogbookInspectionPerson::TABLE_NAME." ".
-                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
+        $query = "SELECT * FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
+                "WHERE facility_Id = {$db->sqltext($facilityId)}";
         $db->query($query);
         $rows = $db->fetch_all_array();
-        foreach($rows as $row){
+        foreach ($rows as $row) {
             $inspectionPerson = new LogbookInspectionPerson();
             $inspectionPerson->initByArray($row);
             $inspectionPersonList[] = $inspectionPerson;
         }
-        
+
         return $inspectionPersonList;
     }
-    
+
     /**
      * 
      * @param int $facilityId
@@ -119,10 +46,11 @@ class LogbookManager
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
-
+        $query.=' GROUP BY date_time DESC';
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
+        
         $db->query($query);
         $rows = $db->fetch_all_array();
 
@@ -134,7 +62,7 @@ class LogbookManager
 
         return $logbookList;
     }
-    
+
     /**
      * 
      * get logbook List count by facility Id
@@ -150,23 +78,98 @@ class LogbookManager
                 "facility_id = {$db->sqltext($facilityId)}";
         $db->query($query);
         $row = $db->fetch(0);
-        
-        return $row->logbookListcCount; 
-        
+
+        return $row->logbookListcCount;
     }
-    
-    
-    public function getGaugeList()
+
+    public function getGaugeList($facilityId)
     {
-        $gaugeList = array(
-            0 => 'Temperature Gauge',
-            1 => 'Manometer Gauge',
-            2 => 'Clarifier Gauge'
+        //temperature gauge
+        $temperatureGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::TEMPERATURE_GAUGE);
+        $temperatuteGauge = array(
+            'id' => LogbookRecord::TEMPERATURE_GAUGE,
+            'name' => 'Temperature Gauge',
+            'min' => $temperatureGaugeRange['min_gauge_range'],
+            'max' => $temperatureGaugeRange['max_gauge_range']
+        );
+        //manometer gauge
+        $manometerGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::MANOMETER_GAUGE);
+        $manometerGauge = array(
+            'id' => LogbookRecord::MANOMETER_GAUGE,
+            'name' => 'Manometer Gauge',
+            'min' => $manometerGaugeRange['min_gauge_range'],
+            'max' => $manometerGaugeRange['max_gauge_range']
+        );
+
+        //clarifier gauge
+        $clarifierGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::CLARIFIER_GAUGE);
+        $clarifierGauge = array(
+            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'name' => 'Clarifier Gauge',
+            'min' => $clarifierGaugeRange['min_gauge_range'],
+            'max' => $clarifierGaugeRange['max_gauge_range']
         );
         
+        //gas gauge 
+        $gasGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::GAS_GAUGE);
+        $gasGauge = array(
+            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'name' => 'Gas Gauge',
+            'min' => $gasGaugeRange['min_gauge_range'],
+            'max' => $gasGaugeRange['max_gauge_range']
+        );
+        
+        //electric gauge 
+        $electricGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::ELECTRIC_GAUGE);
+        $electricGauge = array(
+            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'name' => 'Electric Gauge',
+            'min' => $electricGaugeRange['min_gauge_range'],
+            'max' => $electricGaugeRange['max_gauge_range']
+        );
+
+        $gaugeList = array(
+            0 => $temperatuteGauge,
+            1 => $manometerGauge,
+            2 => $clarifierGauge,
+            3 => $gasGauge,
+            4 => $electricGauge
+        );
+
         return $gaugeList;
     }
-                
+
+    /**
+     * 
+     * get logbook Range by facilityId and gauge type
+     * 
+     * @param int $facilityId
+     * @param int $gaugeType
+     * 
+     * @return int[]
+     */
+    private function getLogbookRange($facilityId, $gaugeType)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        if (is_null($facilityId) || is_null($gaugeType)) {
+            return false;
+        }
+        $query = "SELECT min_gauge_range, max_gauge_range " .
+                "FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "facility_id = {$db->sqltext($facilityId)} AND " .
+                "gauge_type = {$db->sqltext($gaugeType)} LIMIT 1";
+        $db->query($query);
+        $result = $db->fetch_all_array();
+
+        if (is_null($result[0]['min_gauge_range'])) {
+            $result[0]['min_gauge_range'] = 0;
+        }
+        if (is_null($result[0]['max_gauge_range'])) {
+            $result[0]['max_gauge_range'] = 100;
+        }
+
+        return $result[0];
+    }
 
 }
 ?>

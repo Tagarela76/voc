@@ -133,6 +133,14 @@
 								</div>
 							{/if}
 						{/if}
+
+                        {*create raport*}
+                        {if $request.bookmark == "logbook"}
+                            <div class="button_float_left">
+									<input type='button' id='edit' class='button' value='Create Logbook Report' onclick="location.href='?action=viewLogbookReports&category=logbook&facilityId={$request.id}'">
+                            </div>
+                        {/if}
+
 						{*EXPORT PAGE*}
 
 						{if $childCategoryItems|@count > 0 && $childCategoryItems}

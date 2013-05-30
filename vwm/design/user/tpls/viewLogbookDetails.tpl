@@ -1,6 +1,6 @@
 <div style="width: 100%; padding: 10px 13px;">
     <input type='button' class="button" value="<< Back" onclick="history.back();">
-    <input type='button' class="button" value="Edit" onclick="location.href='?action=addItem&category=logbook&logbookId={$logbook->getId()}&facilityID={$logbook->getFacilityID()}'">
+    <input type='button' class="button" value="Edit" onclick="location.href='?action=addItem&category=logbook&logbookId={$logbook->getId()}&facilityID={$logbook->getFacilityID()}&tab={$tab|escape}'">
 </div>
 <div>
     <table class="users" align="center" cellpadding="0" cellspacing="0">
@@ -127,14 +127,31 @@
                         Temperature Gauge
                     {elseif $logbook->getValueGaugeType() == '1'}
                         Manometer Gauge
-                    {else}
+                    {elseif $logbook->getValueGaugeType() == '2'}
                         Clarifier Gauge
+                    {elseif $logbook->getValueGaugeType() == '3'}
+                        Gas Gauge
+                    {else}
+                        Electric Gauge
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape}) F
+                    ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape}) 
+                    {if $logbook->getValueGaugeType() == '0'}
+                        F
+                    {/if}
+                    {if $logbook->getValueGaugeType() == '2'}
+                        ph
+                    {/if}
                 </td>
             </tr>
+            <!--<tr>
+                <td class="border_users_b border_users_r border_users_l">
+                    Permit
+                </td>
+                <td  class="border_users_b border_users_r">
+                </td>
+            </tr>-->
         {/if}
     </table>
         <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
