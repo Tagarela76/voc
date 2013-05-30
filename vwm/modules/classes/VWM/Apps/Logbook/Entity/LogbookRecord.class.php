@@ -285,12 +285,12 @@ class LogbookRecord extends Model
 
     public function getEquipmantId()
     {
-        return $this->equipment_id;
+        return $this->equipmant_id;
     }
 
-    public function setEquipmentId($equipment_id)
+    public function setEquipmantId($equipment_id)
     {
-        $this->equipment_id = $equipment_id;
+        $this->equipmant_id = $equipment_id;
     }
 
     public function getPermit()

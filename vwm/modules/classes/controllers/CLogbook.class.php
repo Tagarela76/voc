@@ -354,7 +354,7 @@ class CLogbook extends Controller
 
         //initialize equipmant
         $equipmant = new Equipment($this->db);
-        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmentId());
+        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
         $this->smarty->assign('equipmantDetails', $equipmantDetails);
 
         // set left menu
