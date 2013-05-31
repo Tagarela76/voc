@@ -1,0 +1,5 @@
+VWM\Apps\Logbook\Entity\InspectionTypeSettings:
+  properties:
+    typeName:	
+         - MaxLength: 100
+         - NotBlank: ~

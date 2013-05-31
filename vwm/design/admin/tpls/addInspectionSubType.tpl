@@ -5,7 +5,7 @@
                 Name
             </td>
             <td>
-                <input type='textbox' name='subTypeName' id='subTypeName'>
+                <input type='textbox' name='subTypeName' id='subTypeName' value=''>
             </td>
         </tr>
         <tr>

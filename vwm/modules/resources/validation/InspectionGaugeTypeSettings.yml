@@ -1,0 +1,5 @@
+VWM\Apps\Logbook\Entity\InspectionGaugeTypeSettings:
+  properties:
+    name:	
+         - MaxLength: 100
+         - NotBlank: ~

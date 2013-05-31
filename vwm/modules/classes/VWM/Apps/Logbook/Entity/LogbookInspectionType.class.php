@@ -102,12 +102,27 @@ class LogbookInspectionType extends Model
 
     protected function _insert()
     {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
+                "settings = '{$db->sqltext($this->getInspectionTypeRaw())}', " .
+                "facility_id = {$db->sqltext($this->getFacilityId())}";
+        $db->query($query);
+        $id = $db->getLastInsertedID();
+        $this->setId($id);
         
+        return $id;
     }
 
     protected function _update()
     {
-        
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "UPDATE " . self::TABLE_NAME . " SET " .
+                "settings = {$db->sqltext($this->getInspectionTypeRaw())}, " .
+                "facility_id = {$db->sqltext($this->getFacilityId())} " .
+                "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($query);
+
+        return $this->getId();
     }
 
     /*

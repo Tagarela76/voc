@@ -2,6 +2,7 @@
     <script type='text/javascript'>
         var logbookInspectionType = new LogbookInspectionType();
         var temporarySubTypeId = 0;
+        var temporaryGaugeTypeId = 0;
     </script>
 {/literal}
 <div class="padd7" align="center">
@@ -71,7 +72,7 @@
 
 <div class="padd7" align="center" id = 'subTypeList' hidden = 'hidden'>
     <div style = 'float: left; margin: 0 0 10px 18px;'>
-        <input type = 'button' class="button" value="Add SubType" onclick='inspection.inspectionSubTypeAddEdit.openDialog();'>
+        <input type = 'button' class="button" value="Add SubType" onclick='inspection.checkNewDialog(0, "add"); inspection.inspectionSubTypeAddDialog.openDialog();'>
         <input type = 'button' class="button" value="Delete SubTypes" onclick='manager.deleteInspectionSubTypes();'>
     </div>
     <table class="users"  cellspacing="0" cellpadding="0" id='inspectionSubTypeDetails'>
@@ -108,9 +109,10 @@
 
 <div class="padd7" align="center" id = 'gaugeTypeList' hidden="hidden">
     <div style = 'float: left; margin: 0 0 10px 18px;'>
-        <input type = 'button' class="button" value="Add Gauge Type">
+        <input type = 'button' class="button" value="Add Gauge Type" onclick="inspection.checkNewDialog(0, 'add');inspection.inspactionGaugeTypeDialog.openDialog()">
+        <input type = 'button' class="button" value="Delete Gauge Types" onclick='manager.deleteInspectionGaugeTypes();'>
     </div>
-    <table class="users"  cellspacing="0" cellpadding="0" id=''>
+    <table class="users"  cellspacing="0" cellpadding="0" id='inspectionGaugeTypeDetails'>
         <tr class="users_u_top_size users_top_brown">
             <td class="users_u_top_brown" width="5%">
                 All/None
@@ -128,8 +130,11 @@
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>
-<div>
+<div style='margin: 15px 10px 10px 20px'>
     <input type="button" class="button" value="Save" onclick="manager.saveInspectionType();">
+    <div id='typeSaveErrors' style='color: #ff0000; margin: 20px 1px 1px 1px;'>
+    </div>
 </div>
 
 <div id="addInspectionSubTypeContainer" title="Add new Inspection Sub Type" style="display:none;">Loading ...</div>
+<div id="inspectionGaugeTypeContainer" title="Add Inspection Gauge Type" style="display:none;">Loading ...</div>

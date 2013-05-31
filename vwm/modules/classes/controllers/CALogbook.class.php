@@ -3,6 +3,11 @@
 use VWM\Hierarchy\CompanyManager;
 use VWM\Hierarchy\FacilityManager;
 use VWM\Apps\Logbook\Entity\LogbookInspectionType;
+use \VWM\Apps\Logbook\Manager\LogbookManager;
+use \VWM\Apps\Logbook\Entity\LogbookInspectionTypeSetting;
+use \VWM\Apps\Logbook\Entity\InspectionSubTypeSettings;
+use \VWM\Apps\Logbook\Entity\InspectionGaugeTypeSettings;
+use \VWM\Apps\Logbook\Entity\InspectionTypeSettings;
 
 class CALogbook extends Controller
 {
@@ -33,12 +38,11 @@ class CALogbook extends Controller
         $facilityManager = new FacilityManager();
         $facilityList = $facilityManager->getFacilityListByCompanyId();
         $this->smarty->assign('facilityList', $facilityList);
-
+        
         //get Inspection Types
         $itManager = new InspectionTypeManager();
         $inspectionTypeList = $itManager->getInspectionTypeList();
         $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
-
         $jsSources = array(
             'modules/js/manageLogbookInspectionType.js'
         );
@@ -151,6 +155,9 @@ class CALogbook extends Controller
         echo $result;
     }
     
+    /**
+     * ajax method for loading add logbook sub type dialog window
+     */
     public function actionLoadAddLogbookInspectionSubType()
     {
         $tpl = 'tpls/addInspectionSubType.tpl';
@@ -158,15 +165,107 @@ class CALogbook extends Controller
         echo $result;
     }
     
+     /**
+     * ajax method for loading add logbook gauge type dialog window
+     */
+    public function actionLoadInspectionGaugeType()
+    {
+        $lManager = new LogbookManager();
+        $gaugeList = $lManager->getGaugeList();
+        
+        $this->smarty->assign('gaugeList',$gaugeList);
+        $tpl = 'tpls/addInspectionGaugeType.tpl';
+        $result = $this->smarty->fetch($tpl);
+        echo $result;
+    }
     public function actionSaveInspectionType()
     {
+        $isErrors = false;
+        $violationList = '';
         $inspectionTypeToJson = $this->getFromPost('inspectionTypeToJson');
         $inspectionType = json_decode($inspectionTypeToJson);
+        $facilityId = $inspectionType->facilityId;
+        $inspectionTypeId = $inspectionType->id;
+        $typeSubTypes = $inspectionType->subtypes;
+        $typeGaugeTypes = $inspectionType->additionFieldList;
         
-        $logbookInspectionType = new LogbookInspectionType($this->db);
+        //set subtype settings
+        $subTypes = array();
+        foreach($typeSubTypes as $typeSubType){
+            $subType = new InspectionSubTypeSettings();
+            $subType->setName($typeSubType->name);
+            $subType->setNotes($typeSubType->notes);
+            $subType->setQty($typeSubType->qty);
+            $subType->setValueGauge($typeSubType->valueGauge);
+            $subTypes[] = $subType->getAttributes();
+            //sub type type validate
+            if (count($subType->validate()) != 0) {
+                $isErrors = true;
+                $typeErrors = $subType->validate();
+                foreach ($typeErrors as $typeError) {
+                    $violationList .= '<div>Sub Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
+                }
+            }
+            
+        }
         
-        var_dump($inspectionTypeToJson);
+        //set gauge settings
+        $gaugeTypes = array();
+        foreach ($typeGaugeTypes as $typeGaugeType) {
+            $gaugeType = new InspectionGaugeTypeSettings();
+            $gaugeType->setName($typeGaugeType->name);
+            $gaugeType->setGaugeType($typeGaugeType->gaugeType);
+            $gaugeTypes[] = $gaugeType->getAttributes();
+            
+            //gauge type validate
+            if (count($gaugeType->validate()) != 0) {
+                $isErrors = true;
+                $typeErrors = $gaugeType->validate();
+                foreach ($typeErrors as $typeError) {
+                    $violationList .= '<div>Gauge Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
+                }
+            }
+            
+        }
+        
+        //create inspection setting
+        $inspectionTypeSettings = new InspectionTypeSettings();
+        $inspectionTypeSettings->setTypeName($inspectionType->typeName);
+        $inspectionTypeSettings->setPermit($inspectionType->permit);
+        $inspectionTypeSettings->setSubtypes($subTypes);
+        $inspectionTypeSettings->setAdditionFieldList($gaugeTypes);
+        $inspectionTypeSettingsToJson = $inspectionTypeSettings->toJson();
+        //save inspection type;        
+        $logbookInspectionType = new LogbookInspectionType();
+        $logbookInspectionType->setFacilityId($facilityId);
+        $logbookInspectionType->setInspectionTypeRaw($inspectionTypeSettingsToJson);
+        
+        
+        //inspection type validate
+        if (count($inspectionTypeSettings->validate()) != 0) {
+            $isErrors = true;
+            $typeErrors = $inspectionTypeSettings->validate();
+            foreach ($typeErrors as $typeError) {
+                $violationList .= '<div>Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
+            }
+        }
+        
+        
+        if ($isErrors) {
+            $errors = $violationList;
+        }else{
+            $errors = false;
+            $id = $logbookInspectionType->save();
+        }
+        
+        $response = array(
+            'link' => '?action=browseCategory&category=logbook',
+            'errors' => $errors
+        );
+        $response = json_encode($response);
+        echo $response;
     }
+    
 
 }
 ?>

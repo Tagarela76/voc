@@ -9,6 +9,7 @@ function LogbookInspectionType() {
     var id;
     var facilityId;
     var subTypes = [];
+    var gaugeTypes = [];
 
     // Private members are made by the constructor	
     var constructor = function() {
@@ -17,8 +18,9 @@ function LogbookInspectionType() {
         var id;
         var facilityId;
         var subTypes = [];
+        var gaugeTypes = [];
         var that = this;
-        
+
         //setters
         self.setId = function(typeId) {
             id = typeId;
@@ -32,11 +34,15 @@ function LogbookInspectionType() {
         self.setFacilityId = function(typeFacilityId) {
             facilityId = typeFacilityId;
         }
-        
+
         self.setSubTypes = function(typeSubTypes) {
             subTypes = typeSubTypes;
         }
         
+        self.setGaugeTypes = function(typeGaugeTypes) {
+            gaugeTypes = typeGaugeTypes;
+        }
+
         //getters
         self.getId = function() {
             return id
@@ -53,48 +59,76 @@ function LogbookInspectionType() {
         self.getSubTypes = function() {
             return subTypes
         }
+        self.getGaugeTypes = function() {
+            return gaugeTypes
+        }
+
+        self.addSubType = function(subType) {
+            subTypes.push(subType);
+        }
         
-        self.addSubType = function(subType){
-			subTypes.push(subType);
-		}
-        
+        self.addGaugeType = function(gaugeType){
+            gaugeTypes.push(gaugeType);
+        }
+
     }
-    
+
     constructor();
-	
-	//function for getting attributes
-	self.getAttributes = function(){
+
+    //function for getting attributes
+    self.getAttributes = function() {
         var typeSubTypes = [];
+        var typeGaugeTypes = [];
         var subTypes = self.getSubTypes();
-        for (var i=0; i<subTypes.length; i++){
+        var gaugeTypes = self.getGaugeTypes();
+        
+        for (var i = 0; i < subTypes.length; i++) {
             typeSubTypes.push(subTypes[i].getAttributes());
         }
-		var stepAttributes = {
-				typeId : self.getId(),
-				typeName : self.getName(),
-                typePermit : self.getPermit(),
-                typeFacilityId: self.getFacilityId(),
-                typeSubTypes: typeSubTypes,
-			}
-			return stepAttributes;
-	}
-	//Convert Wastes to JSON format string
-	self.toJson = function() {
-		var stepAttributes = self.getAttributes();
-		var encoded = $.toJSON(stepAttributes);
-		return encoded;
-	}
-    
+        
+        for (var i = 0; i < gaugeTypes.length; i++) {
+            typeGaugeTypes.push(gaugeTypes[i].getAttributes());
+        }
+        
+        var typeAttributes = {
+            typeId: self.getId(),
+            typeName: self.getName(),
+            permit: self.getPermit(),
+            facilityId: self.getFacilityId(),
+            subtypes: typeSubTypes,
+            additionFieldList: typeGaugeTypes
+        }
+        return typeAttributes;
+    }
+    //Convert Wastes to JSON format string
+    self.toJson = function() {
+        var typeAttributes = self.getAttributes();
+        var encoded = $.toJSON(typeAttributes);
+        return encoded;
+    }
+
     self.deleteSubType = function(id) {
-        subtypes = self.getSubTypes();
+        var subtypes = self.getSubTypes();
         var count = subtypes.length;
-			var newSubTypes = new Array();
-			for(var i = 0; i<count; i++){
-				if(subtypes[i].getId()!=id){
-					 newSubTypes.push(subtypes[i]);
-				}
-			}
-			self.setSubTypes(newSubTypes);
+        var newSubTypes = new Array();
+        for (var i = 0; i < count; i++) {
+            if (subtypes[i].getId() != id) {
+                newSubTypes.push(subtypes[i]);
+            }
+        }
+        self.setSubTypes(newSubTypes);
+    }
+    
+    self.deleteGaugeType = function(id) {
+        var gaugeTypes = self.getGaugeTypes();
+        var count = gaugeTypes.length;
+        var newGaugeTypes = new Array();
+        for (var i = 0; i < count; i++) {
+            if (gaugeTypes[i].getId() != id) {
+                newGaugeTypes.push(gaugeTypes[i]);
+            }
+        }
+        self.setSubTypes(newGaugeTypes);
     }
     /*
      * 
@@ -111,11 +145,45 @@ function LogbookInspectionType() {
             data: {
                 inspectionTypeToJson: inspectionTypeToJson,
             },
-            dataType: 'html',
+            dataType: 'json',
             success: function(response) {
-                $('#subTypeList').html(response);
+                if (response.errors == false) {
+                    window.location.href = response.link;
+                } else {
+                    //$('#showTypeError').show();
+                    $('#typeSaveErrors').html(response.errors);
+
+                }
             }
         });
+    }
+    
+    /**
+     * 
+     * @param {int} id
+     * 
+     * @returns {Boolean|LogbookInspectionSubType}
+     */
+    self.getSubTypeById = function(id){
+        var subtypes = self.getSubTypes();
+        var count = subtypes.length;
+        for(var i =0; i<count; i++){
+            if(subtypes[i].getId() == id){
+                return subtypes[i];
+            }
+        }
+        return false;
+    }
+    
+    self.getGaugeTypeById = function(id) {
+        var gaugetypes = self.getGaugeTypes();
+        var count = gaugetypes.length;
+        for (var i = 0; i < count; i++) {
+            if (gaugetypes[i].getId() == id) {
+                return gaugetypes[i];
+            }
+        }
+        return false;
     }
 }
 
@@ -186,14 +254,14 @@ function LogbookInspectionSubType() {
 
         //function for getting attributes
         self.getAttributes = function() {
-            var resourceAttributes = {
+            var subTypeAttributes = {
                 id: self.getId(),
                 name: self.getName(),
                 notes: self.getHasNotes(),
                 qty: self.getHasQty(),
                 valueGauge: self.getHasGauge(),
             }
-            return resourceAttributes;
+            return subTypeAttributes;
         }
 
         //Convert Wastes to JSON format string
@@ -206,5 +274,53 @@ function LogbookInspectionSubType() {
     };
     constructor();
 
+}
+
+function LogbookInspectionGaugeType() {
+    var self = this;
+    var id = null;
+    var name = null;
+    var gaugeTypeId = null;
+
+    // Private members are made by the constructor
+    var constructor = function() {
+        var id = null;
+        var name = null;
+        var gaugeType = null;
+        //setters
+        self.setId = function(gaugeId) {
+            id = gaugeId;
+        }
+        self.setName = function(gaugeTypeName) {
+            name = gaugeTypeName;
+        }
+        self.setGaugeType = function(gaugeTypeId) {
+            gaugeType = gaugeTypeId;
+        }
+        //getters
+        self.getId = function() {
+            return id
+        }
+        //getters
+        self.getName = function() {
+            return name
+        }
+        //getters
+        self.getGaugeType = function() {
+            return gaugeType
+        }
+        
+        //function for getting attributes
+        self.getAttributes = function() {
+            var gaugeAttributes = {
+                id: self.getId(),
+                name: self.getName(),
+                gaugeType: self.getGaugeType()
+            }
+            return gaugeAttributes;
+        }
+        
+    }
+    constructor();
 }
 
