@@ -17,7 +17,7 @@ class LogbookInspectionType extends Model
      *
      * @var int
      */
-    protected $facility_id;
+    protected $facilityIds=array();
 
     /**
      *
@@ -37,14 +37,23 @@ class LogbookInspectionType extends Model
         $this->id = $id;
     }
 
-    public function getFacilityId()
+    public function getFacilityIds()
     {
-        return $this->facility_id;
+        if (!empty($this->facilityIds)) {
+            return $this->facilityIds;
+        }
+        if(is_null($this->getId())){
+            return false;
+        }
+        $itManager = new \InspectionTypeManager();
+        $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($this->getId());
+        return $facilityIds;
+        
     }
 
-    public function setFacilityId($facility_id)
+    public function setFacilityIds($facilityIds)
     {
-        $this->facility_id = $facility_id;
+        $this->facilityIds = $facility_id;
     }
 
     public function getInspectionTypeRaw()
@@ -104,8 +113,7 @@ class LogbookInspectionType extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
-                "settings = '{$db->sqltext($this->getInspectionTypeRaw())}', " .
-                "facility_id = {$db->sqltext($this->getFacilityId())}";
+                "settings = '{$db->sqltext($this->getInspectionTypeRaw())}'";
         $db->query($query);
         $id = $db->getLastInsertedID();
         $this->setId($id);
@@ -117,11 +125,9 @@ class LogbookInspectionType extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
-                "settings = {$db->sqltext($this->getInspectionTypeRaw())}, " .
-                "facility_id = {$db->sqltext($this->getFacilityId())} " .
+                "settings = '{$db->sqltext($this->getInspectionTypeRaw())}' ".
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-
         return $this->getId();
     }
 
@@ -139,6 +145,13 @@ class LogbookInspectionType extends Model
      */
     public function delete()
     {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+                "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($query);
+        
+        $itManager = new \InspectionTypeManager();
+        $itManager->unAssignInspectionTypeToFacility($this->getId());
         
     }
 

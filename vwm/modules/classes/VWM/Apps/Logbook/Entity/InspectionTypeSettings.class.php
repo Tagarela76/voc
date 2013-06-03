@@ -7,6 +7,7 @@ use \VWM\Framework\Model;
 class InspectionTypeSettings extends Model
 {
 
+    
     /**
      *
      * @var string 

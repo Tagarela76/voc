@@ -38,17 +38,20 @@ class CALogbook extends Controller
         $facilityManager = new FacilityManager();
         $facilityList = $facilityManager->getFacilityListByCompanyId();
         $this->smarty->assign('facilityList', $facilityList);
-        
+
         //get Inspection Types
         $itManager = new InspectionTypeManager();
         $inspectionTypeList = $itManager->getInspectionTypeList();
+
         $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
         $jsSources = array(
-            'modules/js/manageLogbookInspectionType.js'
+            'modules/js/manageLogbookInspectionType.js',
+            'modules/js/checkBoxes.js'
         );
 
         $tpl = 'tpls/viewLogbookInspectionList.tpl';
-        
+
+        $this->smarty->assign('itemsCount', count($inspectionTypeList));
         $this->smarty->assign('action', $this->action);
         $this->smarty->assign('jsSources', $jsSources);
         $this->smarty->assign('tpl', $tpl);
@@ -60,22 +63,55 @@ class CALogbook extends Controller
      */
     public function actionAddItem()
     {
+        $isEdit = 0;
         //get companyList
         $companyManager = new CompanyManager();
         $companyList = $companyManager->getCompanyList();
         $this->smarty->assign('companyList', $companyList);
-        
+
         $companyId = $this->getFromRequest('companyId');
         $facilityId = $this->getFromRequest('facilityId');
-        if($companyId == 'null'){
+        if ($companyId == 'null') {
             $companyId = $companyList[0]['id'];
         }
-        
+
         //get Facility List By Company id
         $facilityManager = new FacilityManager();
         $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
         $this->smarty->assign('facilityList', $facilityList);
-        
+
+        //get gauge list
+        $lManager = new LogbookManager();
+        $gaugeList = $lManager->getGaugeList();
+        $this->smarty->assign('gaugeList', $gaugeList);
+        //get type id uf exist
+        $typeId = $this->getFromRequest('typeId');
+        $logbookInspectionType = new LogbookInspectionType();
+        if (isset($typeId)) {
+            $isEdit = 1;
+            $logbookInspectionType->setId($typeId);
+            $logbookInspectionType->load();
+            $facilityIds = $logbookInspectionType->getFacilityIds();
+            //if false show all company and all facility
+            if ($facilityIds) {
+                //show defined company and defined facility
+                $facilityIds = explode(',', $facilityIds);
+                $facilityId = $facilityIds[0];
+                $facility = new \VWM\Hierarchy\Facility($this->db, $facilityId);
+                $companyId = $facility->getCompanyId();
+            } else {
+                $facilityId = 'null';
+            }
+
+            //all facility and defined company
+            if (count($facilityIds) > 1) {
+                $facilityId = 'null';
+            }
+
+            $this->smarty->assign('settings', $logbookInspectionType->getInspectionType());
+            $this->smarty->assign('json', $logbookInspectionType->getInspectionTypeRaw());
+        }
+        $settings = $logbookInspectionType->getInspectionType();
         $jsSources = array(
             'modules/js/manageLogbookInspectionType.js',
             "modules/js/logbookInspectionTypeObject.js",
@@ -89,16 +125,19 @@ class CALogbook extends Controller
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/jquery.json-2.2.min.js",
             "modules/js/jquery-ui-1.8.2.custom/jquery-plugins/json/json2.js",
         );
-        
+
         $cssSources = array('modules/js/jquery-ui-1.8.2.custom/css/smoothness/jquery-ui-1.8.2.custom.css');
         $tpl = 'tpls/addLogbookInspectionType.tpl';
+        $this->smarty->assign('isEdit', $isEdit);
         $this->smarty->assign('cssSources', $cssSources);
         $this->smarty->assign('companyId', $companyId);
         $this->smarty->assign('facilityId', $facilityId);
         $this->smarty->assign('tpl', $tpl);
         $this->smarty->assign('jsSources', $jsSources);
+        $this->smarty->assign('logbookInspectionType', $logbookInspectionType);
         $this->smarty->display("tpls:index.tpl");
     }
+
     /**
      * ajax method for getting facility List
      */
@@ -147,14 +186,14 @@ class CALogbook extends Controller
             //get inspection type by facility id
             $inspectionTypeList = $itManager->getInspectionTypeList($facilityId);
         }
-        
+
         $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
 
         $tpl = 'tpls/logbookInspectionList.tpl';
         $result = $this->smarty->fetch($tpl);
         echo $result;
     }
-    
+
     /**
      * ajax method for loading add logbook sub type dialog window
      */
@@ -164,20 +203,21 @@ class CALogbook extends Controller
         $result = $this->smarty->fetch($tpl);
         echo $result;
     }
-    
-     /**
+
+    /**
      * ajax method for loading add logbook gauge type dialog window
      */
     public function actionLoadInspectionGaugeType()
     {
         $lManager = new LogbookManager();
         $gaugeList = $lManager->getGaugeList();
-        
-        $this->smarty->assign('gaugeList',$gaugeList);
+
+        $this->smarty->assign('gaugeList', $gaugeList);
         $tpl = 'tpls/addInspectionGaugeType.tpl';
         $result = $this->smarty->fetch($tpl);
         echo $result;
     }
+
     public function actionSaveInspectionType()
     {
         $isErrors = false;
@@ -185,13 +225,31 @@ class CALogbook extends Controller
         $inspectionTypeToJson = $this->getFromPost('inspectionTypeToJson');
         $inspectionType = json_decode($inspectionTypeToJson);
         $facilityId = $inspectionType->facilityId;
+        $companyId = $this->getFromPost('companyId');
         $inspectionTypeId = $inspectionType->id;
         $typeSubTypes = $inspectionType->subtypes;
         $typeGaugeTypes = $inspectionType->additionFieldList;
-        
+        $id = $this->getFromPost('id');
+        $ltManager = new InspectionTypeManager();
+        //get Facilities Ids
+        $facilityIds = array();
+        if ($facilityId == 'null') {
+            $facilityManager = new FacilityManager();
+            if ($companyId == 'null') {
+                $facilityList = $facilityManager->getFacilityListByCompanyId();
+            } else {
+                $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
+            }
+            foreach ($facilityList as $facility) {
+                $facilityIds[] = $facility->getFacilityId();
+            }
+        } else {
+            $facilityIds[] = $facilityId;
+        }
+
         //set subtype settings
         $subTypes = array();
-        foreach($typeSubTypes as $typeSubType){
+        foreach ($typeSubTypes as $typeSubType) {
             $subType = new InspectionSubTypeSettings();
             $subType->setName($typeSubType->name);
             $subType->setNotes($typeSubType->notes);
@@ -206,9 +264,8 @@ class CALogbook extends Controller
                     $violationList .= '<div>Sub Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
                 }
             }
-            
         }
-        
+
         //set gauge settings
         $gaugeTypes = array();
         foreach ($typeGaugeTypes as $typeGaugeType) {
@@ -216,7 +273,7 @@ class CALogbook extends Controller
             $gaugeType->setName($typeGaugeType->name);
             $gaugeType->setGaugeType($typeGaugeType->gaugeType);
             $gaugeTypes[] = $gaugeType->getAttributes();
-            
+
             //gauge type validate
             if (count($gaugeType->validate()) != 0) {
                 $isErrors = true;
@@ -225,9 +282,7 @@ class CALogbook extends Controller
                     $violationList .= '<div>Gauge Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
                 }
             }
-            
         }
-        
         //create inspection setting
         $inspectionTypeSettings = new InspectionTypeSettings();
         $inspectionTypeSettings->setTypeName($inspectionType->typeName);
@@ -237,10 +292,12 @@ class CALogbook extends Controller
         $inspectionTypeSettingsToJson = $inspectionTypeSettings->toJson();
         //save inspection type;        
         $logbookInspectionType = new LogbookInspectionType();
-        $logbookInspectionType->setFacilityId($facilityId);
+        if ($id != '') {
+            $logbookInspectionType->setId($id);
+        }
+        //$logbookInspectionType->setFacilityIds($facilityId);
         $logbookInspectionType->setInspectionTypeRaw($inspectionTypeSettingsToJson);
-        
-        
+
         //inspection type validate
         if (count($inspectionTypeSettings->validate()) != 0) {
             $isErrors = true;
@@ -249,15 +306,18 @@ class CALogbook extends Controller
                 $violationList .= '<div>Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
             }
         }
-        
-        
+
         if ($isErrors) {
             $errors = $violationList;
-        }else{
+        } else {
             $errors = false;
             $id = $logbookInspectionType->save();
+            $ltManager->unAssignInspectionTypeToFacility($id);
+            foreach ($facilityIds as $facilityId) {
+                $ltManager->assignInspectionTypeToFacility($id, $facilityId);
+            }
         }
-        
+
         $response = array(
             'link' => '?action=browseCategory&category=logbook',
             'errors' => $errors
@@ -265,7 +325,38 @@ class CALogbook extends Controller
         $response = json_encode($response);
         echo $response;
     }
-    
+
+    public function actionDeleteItem()
+    {
+        $itemsCount = $this->getFromRequest('itemsCount');
+        $itemForDelete = array();
+        for ($i = 0; $i < $itemsCount; $i++) {
+            if (!is_null($this->getFromRequest('item_' . $i))) {
+                $item = array();
+                $logbookInspectionType = new LogbookInspectionType();
+                $logbookInspectionType->setId($this->getFromRequest('item_' . $i));
+                $logbookInspectionType->load();
+                $item["id"] = $logbookInspectionType->getId();
+                $item["name"] = $logbookInspectionType->getInspectionType()->typeName;
+                $itemForDelete [] = $item;
+            }
+        }
+        $this->finalDeleteItemACommon($itemForDelete);
+    }
+
+    public function actionConfirmDelete()
+    {
+        $itemsCount = $this->getFromRequest('itemsCount');
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $id = $this->getFromRequest('item_' . $i);
+            $logbookInspectionType = new LogbookInspectionType();
+            $logbookInspectionType->setId($this->getFromRequest('item_' . $i));
+            $logbookInspectionType->load();
+            $logbookInspectionType->delete();
+        }
+        header('Location: admin.php?action=browseCategory&category=' . $this->getFromRequest('category'));
+        die();
+    }
 
 }
 ?>

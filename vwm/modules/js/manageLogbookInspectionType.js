@@ -10,7 +10,6 @@ function ManageInspectionType() {
     this.getFacilityList = function() {
         var companyId = $('#companyId').val();
         var action = $('#action').val();
-
         $.ajax({
             url: '?action=getFacilityList&category=logbook',
             type: 'post',
@@ -19,11 +18,7 @@ function ManageInspectionType() {
             },
             dataType: 'json',
             success: function(response) {
-                if (action == 'browseCategory') {
-                    var html = " <option value='null'>All</option>";
-                } else {
-                    var html = '';
-                }
+                var html = " <option value='null'>All</option>";
                 for (var i = 0; i < response.length; i++) {
                     html += "<option value='" + response[i].id + "'>";
                     html += response[i].name;

@@ -24,7 +24,7 @@
     <table  class="users"  cellspacing="0" cellpadding="0">
         <tr class="users_u_top_size users_top_brown">
             <td class="users_u_top_brown" width="5%">
-                All/None
+                <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a>
             </td>
             <td width="10%">
                 ID
@@ -42,34 +42,33 @@
                 Edit
             </td>
         </tr>
-        
-        {foreach from=$inspectionTypeList item=inspectionType}
-        {assign var="settings" value=$inspectionType->getInspectionType()}
+        {section name=i loop=$inspectionTypeList}
+        {assign var="settings" value=$inspectionTypeList[i]->getInspectionType()}
             <tr>
                 <td class="border_users_b border_users_r border_users_l" width="5%">
-                    <input type='checkbox'>
+                    <input type='checkbox' id='item_{$smarty.section.i.index}' name='item_{$smarty.section.i.index}' value="{$inspectionTypeList[i]->getId()|escape}">
                 </td>
                 <td class="border_users_b border_users_r" width="10%">
-                    {$inspectionType->getId()|escape}
+                    {$inspectionTypeList[i]->getId()|escape}
                 </td>
                 <td class="border_users_b border_users_r" width="25%">
                     {$settings->typeName|escape}
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$inspectionType->getFacilityId()|escape}
+                    {$inspectionTypeList[i]->getFacilityIds()|escape}
                 </td>
                 <td class="border_users_b border_users_r">
-                    {if $settings->permit}
+                    {if $settings->permit|escape}
                         yes
                     {else}
                         no
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    edit
+                    <a href='?action=addItem&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}'>edit</a>
                 </td>
             </tr>
-        {/foreach}
+            {/section}
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>

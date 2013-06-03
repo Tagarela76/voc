@@ -1,7 +1,7 @@
 <table  class="users"  cellspacing="0" cellpadding="0">
     <tr class="users_u_top_size users_top_brown">
         <td class="users_u_top_brown" width="5%">
-            All/None
+            <a onclick="CheckAll(this)" style='color:white'>All</a>/<a style='color:white' onclick="unCheckAll(this)" >None</a>
         </td>
         <td width="10%">
             ID
@@ -43,7 +43,7 @@
                 {/if}
             </td>
             <td class="border_users_b border_users_r">
-                edit
+                <a href='?action=addItem&category=logbook&typeId={$inspectionType->getId()|escape}'>edit</a>
             </td>
         </tr>
     {/foreach}

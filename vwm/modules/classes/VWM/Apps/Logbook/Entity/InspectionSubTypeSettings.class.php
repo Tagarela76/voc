@@ -5,7 +5,6 @@ use \VWM\Framework\Model;
 
 class InspectionSubTypeSettings extends Model
 {
-
     /**
      *
      * @var string 

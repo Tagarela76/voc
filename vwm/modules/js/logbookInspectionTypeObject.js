@@ -70,7 +70,46 @@ function LogbookInspectionType() {
         self.addGaugeType = function(gaugeType){
             gaugeTypes.push(gaugeType);
         }
+        
+        self.load = function(json){
+            var settings = eval('(' + json + ')');
+            
+            //intialize InspectionType
+            self.setName(settings.typeName);
+            self.setPermit(settings.permit);
+            
+            //initializa subtypes
+            if (settings.subtypes != undefined) {
+                var subtypesSettings = settings.subtypes;
+                var subtypes = [];
+                for (var i = 0; i < subtypesSettings.length; i++) {
+                    var subtype = new LogbookInspectionSubType()
+                    subtype.setId(i);
+                    subtype.setName(subtypesSettings[i].name);
+                    subtype.setHasNotes(subtypesSettings[i].notes);
+                    subtype.setHasQty(subtypesSettings[i].qty);
+                    subtype.setHasGauge(subtypesSettings[i].valueGauge);
+                    subtypes.push(subtype);
+                }
+                self.setSubTypes(subtypes);
+            }
+            
+            //initializa gauge typs if exist
+            if (settings.additionFieldList != undefined) {
+                var gaugetypesSettings = settings.additionFieldList;
+                var gaugetypes = [];
+                for (var i = 0; i < gaugetypesSettings.length; i++) {
+                    var gaugetype = new LogbookInspectionGaugeType()
+                    gaugetype.setId(i);
+                    gaugetype.setName(gaugetypesSettings[i].name);
+                    gaugetype.setGaugeType(gaugetypesSettings[i].gaugeType);
 
+                    gaugetypes.push(gaugetype);
+                    temporaryGaugeTypeId = i;
+                    self.setGaugeTypes(gaugetypes);
+                }
+            }
+        }
     }
 
     constructor();
@@ -128,7 +167,7 @@ function LogbookInspectionType() {
                 newGaugeTypes.push(gaugeTypes[i]);
             }
         }
-        self.setSubTypes(newGaugeTypes);
+        self.setGaugeTypes(newGaugeTypes);
     }
     /*
      * 
@@ -138,21 +177,24 @@ function LogbookInspectionType() {
      */
     self.save = function() {
         var inspectionTypeToJson = self.toJson();
-        
+        var id = $('#logbookInspectionTypeId').val();
+        var companyId = $('#companyId').val();
         $.ajax({
             url: '?action=SaveInspectionType&category=logbook',
             type: 'post',
             data: {
-                inspectionTypeToJson: inspectionTypeToJson,
+                id: id,
+                companyId:companyId,
+                inspectionTypeToJson: inspectionTypeToJson
             },
             dataType: 'json',
             success: function(response) {
+               //$('#typeSaveErrors').html(response);
                 if (response.errors == false) {
                     window.location.href = response.link;
                 } else {
-                    //$('#showTypeError').show();
+                    $('#showTypeError').show();
                     $('#typeSaveErrors').html(response.errors);
-
                 }
             }
         });
