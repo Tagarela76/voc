@@ -15,7 +15,7 @@
 
 <div class="padd7" align="center">
     <table class="users"  cellspacing="0" cellpadding="0">
-        <tr class="users_u_top_size users_top_brown">
+        <tr class="users_u_top_size users_top_brown" width='100%'>
             <td class="users_u_top_brown">
                 Edit Inspection Type
             </td>
@@ -28,7 +28,7 @@
                 Inspection Type Name
             </td>
             <td class="border_users_b border_users_r border_users_l">
-                <input type='textbox' name='inspectionTypeName' id='inspectionTypeName' style="width: 240px;" value='{$settings->typeName}'>
+                <input type='textbox' name='inspectionTypeName' id='inspectionTypeName' style="width: 240px;" value='{$settings->typeName|escape}'>
             </td>
         </tr>
         <tr>
@@ -66,7 +66,7 @@
                 Permit
             </td>
             <td class="border_users_b border_users_r border_users_l">
-                <input type='checkbox' id='inspectionTypePermit' {if $settings->permit|escape}checked = 'true'{/if}>
+                <input type='checkbox' id='inspectionTypePermit' {if $settings->permit}checked = 'true'{/if}>
             </td>
         </tr>
     </table>
@@ -76,11 +76,11 @@
 <div style='margin: 1px 0 0 25px; font-size: 20'>
     <div>
         Sub Types
-        <input type='checkbox' id='showSubTypesList' onchange="manager.showSubTypesList()" {if $settings->subtypes|escape}checked = 'true'{/if}>
+        <input type='checkbox' id='showSubTypesList' onchange="manager.showSubTypesList()" {if $settings->subtypes}checked = 'true'{/if}>
     </div>
 </div>
 
-<div class="padd7" align="center" id = 'subTypeList' {if !$settings->subtypes|escape}hidden = 'hidden'{/if}>
+<div class="padd7" align="center" id = 'subTypeList' {if !$settings->subtypes}hidden = 'hidden'{/if}>
     <div style = 'float: left; margin: 0 0 10px 18px;'>
         <input type = 'button' class="button" value="Add SubType" onclick='inspection.checkNewDialog(0, "add"); inspection.inspectionSubTypeAddDialog.openDialog();'>
         <input type = 'button' class="button" value="Delete SubTypes" onclick='manager.deleteInspectionSubTypes();'>
@@ -121,17 +121,17 @@
                     </td>
                     <td width="25%" class="border_users_b border_users_l">
                         <div id="subtype_notes_{$smarty.section.i.index}">
-                            {if $subtypes[i]->notes|escape}yes{else}no{/if}
+                            {if $subtypes[i]->notes}yes{else}no{/if}
                         </div>
                     </td>
                     <td width="10%" class="border_users_b border_users_l">
                         <div id="subtype_qty_{$smarty.section.i.index}">
-                            {if $subtypes[i]->qty|escape}yes{else}no{/if}
+                            {if $subtypes[i]->qty}yes{else}no{/if}
                         </div>
                     </td>
                     <td width="10%" class="border_users_b border_users_l">
                         <div id="subtype_gauge_{$smarty.section.i.index}">
-                            {if $subtypes[i]->valueGauge|escape}yes{else}no{/if}
+                            {if $subtypes[i]->valueGauge}yes{else}no{/if}
                         </div>
                     </td>
                     <td class="border_users_b border_users_r border_users_l">
@@ -148,11 +148,11 @@
 <div style='margin: 1px 0 0 25px; font-size: 20'>
     <div>
         Gauge Types
-        <input type='checkbox' id='showGaugeTypeList' onchange="manager.showGaugeTypeList()" {if $settings->additionFieldList|escape}checked='true'{/if}>
+        <input type='checkbox' id='showGaugeTypeList' onchange="manager.showGaugeTypeList()" {if $settings->additionFieldList}checked='true'{/if}>
     </div>
 </div>
 
-<div class="padd7" align="center" id = 'gaugeTypeList' {if !$settings->additionFieldList|escape}hidden = 'hidden'{/if}>
+<div class="padd7" align="center" id = 'gaugeTypeList' {if !$settings->additionFieldList}hidden = 'hidden'{/if}>
     <div style = 'float: left; margin: 0 0 10px 18px;'>
         <input type = 'button' class="button" value="Add Gauge Type" onclick="inspection.checkNewDialog(0, 'add');inspection.inspactionGaugeTypeDialog.openDialog()">
         <input type = 'button' class="button" value="Delete Gauge Types" onclick='manager.deleteInspectionGaugeTypes();'>

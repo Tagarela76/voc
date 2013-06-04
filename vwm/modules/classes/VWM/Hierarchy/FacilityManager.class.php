@@ -6,7 +6,6 @@ use VWM\Hierarchy\Facility;
 
 class FacilityManager
 {
-
     /**
      * 
      * get facility list

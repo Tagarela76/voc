@@ -7,7 +7,6 @@ use \VWM\Framework\Model;
 class InspectionTypeSettings extends Model
 {
 
-    
     /**
      *
      * @var string 
@@ -77,26 +76,23 @@ class InspectionTypeSettings extends Model
         $this->additionFieldList = $additionFieldList;
     }
 
-    
-    
     public function getAttributes()
     {
-        $inspectionTypeSettings = new \stdClass();
-        $inspectionTypeSettings->typeName = $this->getTypeName();
-        $inspectionTypeSettings->permit = $this->getPermit();
+        $inspectionTypeSettings = array();
+        $inspectionTypeSettings['typeName'] = $this->getTypeName();
+        $inspectionTypeSettings['permit'] = $this->getPermit();
         
         $subTypes = $this->getSubtypes();
         if(!empty($subTypes) &&  !is_null($subTypes)){
-            $inspectionTypeSettings->subtypes = $subTypes;
+            $inspectionTypeSettings['subtypes'] = $subTypes;
         }
         
         $additionFieldList = $this->getAdditionFieldList();
         if(!empty($additionFieldList) &&  !is_null($additionFieldList)){
-            $inspectionTypeSettings->additionFieldList = $additionFieldList;
+            $inspectionTypeSettings['additionFieldList'] = $additionFieldList;
         }
         
         return $inspectionTypeSettings;
     }
-
 }
 ?>

@@ -68,7 +68,6 @@ class InspectionSubTypeSettings extends Model
     {
         $this->valueGauge = $valueGauge;
     }
-
     
     public function __construct($id = null)
     {
@@ -77,14 +76,12 @@ class InspectionSubTypeSettings extends Model
     
     public function getAttributes()
     {
-        $subType = new \stdClass();
-        $subType->name = $this->getName();
-        $subType->notes = $this->getNotes();
-        $subType->qty = $this->getQty();
-        $subType->valueGauge = $this->getValueGauge();
-        
-        return $subType;
+        return array(
+            'name'=>$this->getName(),
+            'notes'=>$this->getNotes(),
+            'qty'=>$this->getQty(),
+            'valueGauge'=>$this->getValueGauge()
+        );
     }
-
 }
 ?>

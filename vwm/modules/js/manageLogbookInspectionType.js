@@ -25,9 +25,6 @@ function ManageInspectionType() {
                     html += "</option>";
                 }
                 $('#facilityId').html(html);
-                if (action == 'browseCategory') {
-                    self.getInspectionTypeList();
-                }
             }
         });
     }
@@ -35,19 +32,7 @@ function ManageInspectionType() {
     this.getInspectionTypeList = function() {
         var companyId = $('#companyId').val();
         var facilityId = $('#facilityId').val();
-
-        $.ajax({
-            url: '?action=getInspectionTypeList&category=logbook',
-            type: 'post',
-            data: {
-                companyId: companyId,
-                facilityId: facilityId
-            },
-            dataType: 'html',
-            success: function(response) {
-                $('#inspectionTypeList').html(response);
-            }
-        });
+        window.location.href = '?action=browseCategory&category=logbook&facilityId='+facilityId+'&companyId='+companyId;
     }
 
     this.showSubTypesList = function() {

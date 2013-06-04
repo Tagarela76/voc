@@ -4,10 +4,10 @@
 <div style="float: right; margin: 25px; width: 335px">
     <div style='float: left;'>
         Company List<br>
-        <select id='companyId' name='companyId' onchange="manager.getFacilityList();">
+        <select id='companyId' name='companyId' onchange="manager.getInspectionTypeList();">
             <option value='null'>All</option>
             {foreach from=$companyList item=company}
-                <option value='{$company.id|escape}'>{$company.name|escape}</option>
+                <option value='{$company.id|escape}' {if $companyId == $company.id}selected='selected'{/if}>{$company.name|escape}</option>
             {/foreach}
         </select>
     </div>
@@ -16,7 +16,7 @@
         <select id = 'facilityId' name='facilityId' onchange="manager.getInspectionTypeList();">
             <option value='null'>All</option>
             {foreach from=$facilityList item=facility}
-                <option value='{$facility->getFacilityId()|escape}'>{$facility->getName()|escape}</option>
+                <option value='{$facility->getFacilityId()|escape}' {if $facilityId == $facility->getFacilityId()}selected='selected'{/if}>{$facility->getName()|escape}</option>
             {/foreach}
         </select>
     </div>

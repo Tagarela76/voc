@@ -1,10 +1,11 @@
 <?php
 
+namespace VWM\Apps\Logbook\Manager;
+
 use \VWM\Apps\Logbook\Entity\LogbookInspectionType;
 
 class InspectionTypeManager
 {
-
     const TB_INSPECTION_TYPE = 'inspection_type';
     const TB_DESCRIPTION_DESCRIPTION = 'inspection_description';
     const TB_INSPECTION_TYPE2FACILITY = 'inspection_type2facility';
@@ -30,6 +31,7 @@ class InspectionTypeManager
                     "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
                     "WHERE facility_id IN ({$db->sqltext($facilityId)})";
             $db->query($sql);
+            
             $result = $db->fetch_all_array();
             foreach ($result as $r) {
                 $inspectionTypeIds[] = $r['inspection_type_id'];
@@ -42,9 +44,9 @@ class InspectionTypeManager
         if (!is_null($facilityId)) {
             $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
         }
+        
         $db->query($query);
         $result = $db->fetch_all_array();
-
         foreach ($result as $r) {
             $inspectionTypeInJson[] = $r['settings'];
         }
@@ -52,27 +54,6 @@ class InspectionTypeManager
         $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
         return $inspectionTypeInJson;
     }
-    /*public function getInspectionTypeListInJson($facilityId = null)
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        $inspectionTypeInJson = array();
-        $query = "SELECT settings FROM " . self::TB_INSPECTION_TYPE;
-        
-        if (!is_null($facilityId)) {
-            $query.= " WHERE facility_id = {$db->sqltext($facilityId)}";
-        }
-        
-        $db->query($query);
-        $result = $db->fetch_all_array();
-
-        foreach ($result as $r) {
-            $inspectionTypeInJson[] = $r['settings'];
-        }
-        $inspectionTypeInJson = implode(',', $inspectionTypeInJson);
-        $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
-        return $inspectionTypeInJson;
-    }*/
-
     /**
      * 
      * getting inspection description structure in json string
@@ -109,7 +90,7 @@ class InspectionTypeManager
         $json = $this->getInspectionTypeListInJson();
         $typeList = json_decode($json);
         if (!isset($typeDescription) || $typeDescription == '') {
-            return $typeList[0]->subtypes;
+            return false;
         }
         foreach ($typeList as $type) {
             if ($type->typeName == $typeDescription) {
@@ -291,28 +272,6 @@ class InspectionTypeManager
 
        return $result->count;
     }
-    /*public function getInspectionTypeList($facilityId = null)
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        $inspectionTypeList = array();
-        $query = "SELECT * FROM " .LogbookInspectionType::TABLE_NAME;
-        
-        if (!is_null($facilityId)) {
-            $query.= " WHERE facility_id IN ({$db->sqltext($facilityId)})";
-        }
-        
-        $db->query($query);
-        $result = $db->fetch_all_array();
-
-        foreach ($result as $r) {
-            $inspectionType = new LogbookInspectionType();
-            $inspectionType->initByArray($r);
-            $inspectionTypeList[] = $inspectionType;
-        }
-        
-        return $inspectionTypeList;
-    }*/
-    
     
     /**
      * 
@@ -326,9 +285,7 @@ class InspectionTypeManager
         $db = \VOCApp::getInstance()->getService('db');
         $query = "INSERT INTO ".self::TB_INSPECTION_TYPE2FACILITY." (	inspection_type_id, facility_id) VALUES " .
 				"({$db->sqltext($inspectionTypeId)}, {$db->sqltext($facilityId)})";
-         
         $db->query($query);
-        
     }
 
     /**
@@ -346,7 +303,6 @@ class InspectionTypeManager
         if (!is_null($facilityId)) {
             $query.="AND facility_id = {$db->sqltext($facilityId)}";
         }
-        
 		$db->query($query);
     }
     
@@ -371,7 +327,8 @@ class InspectionTypeManager
         foreach($result as $r){
             $facilityIds[] = $r['facility_id'];
         }
-        $facilityIds = implode(',', $facilityIds);
+        //$facilityIds = implode(',', $facilityIds);
+        
         return $facilityIds;
     }
 

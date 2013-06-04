@@ -6,7 +6,6 @@ use \VWM\Framework\Model;
 
 class LogbookInspectionType extends Model
 {
-
     /**
      *
      * @var int
@@ -17,7 +16,7 @@ class LogbookInspectionType extends Model
      *
      * @var int
      */
-    protected $facilityIds=array();
+    protected $facilityIds;
 
     /**
      *
@@ -45,9 +44,12 @@ class LogbookInspectionType extends Model
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = new \InspectionTypeManager();
+        $itManager = \VOCApp::getInstance()->getService('inspectionType');
         $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($this->getId());
-        return $facilityIds;
+        if (count($facilityIds)>1){
+            return 'All Facilities';
+        }
+        return $facilityIds[0];
         
     }
 
@@ -146,14 +148,11 @@ class LogbookInspectionType extends Model
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
+        $itManager = \VOCApp::getInstance()->getService('inspectionType');
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-        
-        $itManager = new \InspectionTypeManager();
         $itManager->unAssignInspectionTypeToFacility($this->getId());
-        
     }
-
 }
 ?>

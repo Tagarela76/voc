@@ -45,11 +45,10 @@ class InspectionGaugeTypeSettings extends Model
     
     public function getAttributes()
     {
-        $gaugeType = new \stdClass();
-        $gaugeType->name = $this->getName();
-        $gaugeType->gaugeType = $this->getGaugeType();
-            
-        return $gaugeType;
+        return array(
+            'name'=>$this->getName(),
+            'gaugeType'=>$this->getGaugeType()
+        );
     }
 
 }

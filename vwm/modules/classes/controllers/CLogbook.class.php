@@ -7,7 +7,6 @@ use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 
 class CLogbook extends Controller
 {
-
     public function __construct($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
@@ -125,20 +124,29 @@ class CLogbook extends Controller
             $this->smarty->assign('logbook', $logbook);
 
             //get inspection types list
-            $itmanager = new InspectionTypeManager();
-
+            $itmanager = \VOCApp::getInstance()->getService('inspectionType');
             $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
             $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
-
+            
             $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
             $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
-
+            
             $lbmanager = new LogbookManager();
-
             $inspectionTypesList = json_decode($jsonInspectionalTypeList);
-            $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($logbook->getInspectionType());
+            //check if this facility has inspection type
+            if(empty($inspectionTypesList)){
+                throw new \Exception('There is no any inspection type. Create inspection type for this facility first.');
+            }
+            //if add action get subtypes of first inspection type
+            if(is_null($logbook->getInspectionType())){
+                $inspectionTypesDescription = $inspectionTypesList[0]->typeName;
+            }else{
+                $inspectionTypesDescription = $logbook->getInspectionType();
+            }
+            
+            $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
             $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($logbook->getInspectionType());
-
+            
             //get description
             $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
 
@@ -266,7 +274,6 @@ class CLogbook extends Controller
             $this->smarty->assign('inspectionPerson', $inspectionPerson);
             $tpl = 'tpls/viewInspectionPerson.tpl';
         }
-
 
         $jsSources = array(
             'modules/js/autocomplete/jquery.autocomplete.js',

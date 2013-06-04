@@ -9,7 +9,6 @@ class LogbookManager
 {
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
     
-
     /**
      * 
      * @param int $facilityId
@@ -43,7 +42,6 @@ class LogbookManager
     public function getLogbookListByFacilityId($facilityId, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
-
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
