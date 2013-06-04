@@ -33,10 +33,10 @@
                 {$settings->typeName|escape}
             </td>
             <td class="border_users_b border_users_r">
-                {$inspectionType->getFacilityId()|escape}
+                {$inspectionType->getFacilityIds()|escape}
             </td>
             <td class="border_users_b border_users_r">
-                {if $settings->permit}
+                {if $settings->permit|escape}
                     yes
                 {else}
                     no

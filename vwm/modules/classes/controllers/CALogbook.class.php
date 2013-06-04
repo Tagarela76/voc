@@ -29,6 +29,7 @@ class CALogbook extends Controller
 
     public function actionBrowseCategory()
     {
+        $itManager = new InspectionTypeManager();
         //get companyList
         $companyManager = new CompanyManager();
         $companyList = $companyManager->getCompanyList();
@@ -39,9 +40,15 @@ class CALogbook extends Controller
         $facilityList = $facilityManager->getFacilityListByCompanyId();
         $this->smarty->assign('facilityList', $facilityList);
 
+        //set pagination
+            $logbookListCount = $itManager->getCountInspectionTypeByFacilityId($facilityId);
+            $url = "?" . $_SERVER["QUERY_STRING"];
+            $url = preg_replace("/\&page=\d*/", "", $url);
+            $pagination = new Pagination($logbookListCount);
+            $pagination->url = $url;
+            
         //get Inspection Types
-        $itManager = new InspectionTypeManager();
-        $inspectionTypeList = $itManager->getInspectionTypeList();
+        $inspectionTypeList = $itManager->getInspectionTypeList(null, $pagination);
 
         $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
         $jsSources = array(
@@ -50,7 +57,7 @@ class CALogbook extends Controller
         );
 
         $tpl = 'tpls/viewLogbookInspectionList.tpl';
-
+        $this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('itemsCount', count($inspectionTypeList));
         $this->smarty->assign('action', $this->action);
         $this->smarty->assign('jsSources', $jsSources);
@@ -188,7 +195,7 @@ class CALogbook extends Controller
         }
 
         $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
-
+        
         $tpl = 'tpls/logbookInspectionList.tpl';
         $result = $this->smarty->fetch($tpl);
         echo $result;

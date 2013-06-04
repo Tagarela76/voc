@@ -17,7 +17,42 @@ class InspectionTypeManager
      * 
      * @return string
      */
+    
     public function getInspectionTypeListInJson($facilityId = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $inspectionTypeInJson = array();
+        
+        //get inspection type ids by facility id
+        if (!is_null($facilityId)) {
+            $inspectionTypeIds = array();
+            $sql = "SELECT inspection_type_id " .
+                    "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
+                    "WHERE facility_id IN ({$db->sqltext($facilityId)})";
+            $db->query($sql);
+            $result = $db->fetch_all_array();
+            foreach ($result as $r) {
+                $inspectionTypeIds[] = $r['inspection_type_id'];
+            }
+            $inspectionTypeIds = implode(',', $inspectionTypeIds);
+        }
+         //get inspection Types id
+        $query = "SELECT * FROM " . LogbookInspectionType::TABLE_NAME;
+        
+        if (!is_null($facilityId)) {
+            $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
+        }
+        $db->query($query);
+        $result = $db->fetch_all_array();
+
+        foreach ($result as $r) {
+            $inspectionTypeInJson[] = $r['settings'];
+        }
+        $inspectionTypeInJson = implode(',', $inspectionTypeInJson);
+        $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
+        return $inspectionTypeInJson;
+    }
+    /*public function getInspectionTypeListInJson($facilityId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeInJson = array();
@@ -36,7 +71,7 @@ class InspectionTypeManager
         $inspectionTypeInJson = implode(',', $inspectionTypeInJson);
         $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
         return $inspectionTypeInJson;
-    }
+    }*/
 
     /**
      * 
@@ -181,7 +216,7 @@ class InspectionTypeManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookInspectionTyp[]
      */
-    public function getInspectionTypeList($facilityId = null)
+    public function getInspectionTypeList($facilityId = null, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeList = array();
@@ -205,6 +240,9 @@ class InspectionTypeManager
         if (!is_null($facilityId)) {
             $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
         }
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
         $db->query($query);
         $result = $db->fetch_all_array();
 
@@ -215,6 +253,43 @@ class InspectionTypeManager
         }
 
         return $inspectionTypeList;
+    }
+    /**
+     * 
+     * get count of inspection type list
+     * 
+     * @param int $facilityId
+     * 
+     * @return int
+     */
+    public function getCountInspectionTypeByFacilityId($facilityId = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $inspectionTypeList = array();
+
+        //get inspection type ids by facility id
+        if (!is_null($facilityId)) {
+            $inspectionTypeIds = array();
+            $sql = "SELECT inspection_type_id " .
+                    "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
+                    "WHERE facility_id IN ({$db->sqltext($facilityId)})";
+            $db->query($sql);
+            $result = $db->fetch_all_array();
+            foreach ($result as $r) {
+                $inspectionTypeIds[] = $r['inspection_type_id'];
+            }
+            $inspectionTypeIds = implode(',', $inspectionTypeIds);
+        }
+        //get inspection Types id
+        $query = "SELECT count(*) count FROM " . LogbookInspectionType::TABLE_NAME;
+        
+        if (!is_null($facilityId)) {
+            $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
+        }
+        $db->query($query);
+        $result = $db->fetch(0);
+
+       return $result->count;
     }
     /*public function getInspectionTypeList($facilityId = null)
     {

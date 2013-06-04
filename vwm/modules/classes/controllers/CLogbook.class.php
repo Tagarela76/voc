@@ -127,7 +127,7 @@ class CLogbook extends Controller
             //get inspection types list
             $itmanager = new InspectionTypeManager();
 
-            $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson();
+            $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
             $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
 
             $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
