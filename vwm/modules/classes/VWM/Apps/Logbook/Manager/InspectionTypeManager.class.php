@@ -195,7 +195,7 @@ class InspectionTypeManager
      * 
      * @param int $facilityId
      * 
-     * @return \VWM\Apps\Logbook\Entity\LogbookInspectionTyp[]
+     * @return \VWM\Apps\Logbook\Entity\LogbookInspectionType[]
      */
     public function getInspectionTypeList($facilityId = null, $pagination = null)
     {
