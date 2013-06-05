@@ -164,6 +164,31 @@
 
 		<input type="button" class="button" name="subaction" value="Unassign GOM(s)" onclick="submitFunc('browseCategory','Unassign GOM(s)')" >
 		{/if}
+    {elseif $request.category eq 'pfps'}
+    <!--PFPS-->
+		</td>
+
+	</tr>
+	<tr>
+
+		<td>
+		<select name="companyId">
+			<option value="All companies" {if $currentCompany == 0} selected {/if}>All companies {if $currentCompany == 0}(selected){/if}</option>
+			{section name=i loop=$companyList}
+				<option value="{$companyList[i].id}" {if $companyList[i].id == $currentCompany} selected {/if}>{$companyList[i].name|escape} {if $companyList[i].id == $currentCompany}(selected){/if}</option>
+			{/section}
+		</select>
+        <input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('filter','Filter')">
+		<br>
+        
+		
+    {if $itemsCount > 0}
+        {if $currentCompany == 0}
+				<input id='pfpAssign' type="button" class="button" name="subaction" value="Assign to company" onclick="submitFunc('assignPfpToComapny','Assign to company')" >
+        {else}
+                <input id='pfpAssign' type="button" class="button" name="subaction" value="Unassign product(s)" onclick="submitFunc('assignPfpToComapny','Unassign product(s)')" >
+        {/if}
+    {/if}
 <!-- ACCESSORY -->
 	{elseif $request.category eq 'logging'}
 <!-- LOGGING -->

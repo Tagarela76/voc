@@ -82,7 +82,7 @@ class PFPManager {
 		}
 
 		if ($companyID != 0) {
-			$query .= " AND pfp2c.company_id = ".$this->db->sqltext($companyID);
+			$query .= " AND pfp2c.pfp_id = pfp.id AND pfp2c.company_id = ".$this->db->sqltext($companyID);
 		}
 
 		$query .= " GROUP BY pfp.id";
@@ -188,7 +188,7 @@ class PFPManager {
 		}
 
 		if ($companyID !== null) {
-			$query .= " AND pfp2c.company_id = ".$this->db->sqltext($companyID);
+			$query .= " AND pfp2c.pfp_id=pfp.id AND pfp2c.company_id = ".$this->db->sqltext($companyID);
 		}
 
 		if (isset($idArray) and is_array($idArray) and count($idArray) > 0) {
@@ -210,6 +210,7 @@ class PFPManager {
 		if (isset($pagination)) {
 			$query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
 		}
+        
 		return $this->_processGetPFPListQuery($query);
 	}
 
@@ -519,7 +520,6 @@ class PFPManager {
 				$error = "Error!";
 			}
 		}
-
 
 		return $error;
 	}
