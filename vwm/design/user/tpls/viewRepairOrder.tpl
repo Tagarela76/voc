@@ -173,7 +173,7 @@
                             Overhead:
                         </td>
                         <td class="border_users_l border_users_b border_users_r">
-                            ${$repairOrder->getOverhead()|escape}
+                            ${$overhead|string_format:"%.2f"}
                         </td>
                     </tr>
                     <tr>
@@ -181,7 +181,7 @@
                             Profit:
                         </td>
                         <td class="border_users_l border_users_b border_users_r">
-                            ${$repairOrder->getProfit()|escape}
+                            ${$profit|string_format:"%.2f"}
                         </td>
                     </tr>
                     <tr>
@@ -189,7 +189,7 @@
                             Total:
                         </td>
                         <td class="border_users_l border_users_b border_users_r">
-                            <b>${$total|escape}</b>
+                            <b>${$total|string_format:"%.2f"}</b>
                         </td>
                     </tr>
 					<tr>
