@@ -11,97 +11,97 @@ abstract class WorkOrder extends Model
 
     /**
      *
-     * @var int 
+     * @var int
      */
     protected $id;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $number;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $description;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $customer_name;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $facility_id;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $status;
 
     /**
-     * 
+     *
      * @var int
      */
     protected $process_template_id = null;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     public $url;
 
     /**
-     * 
+     *
      * @var \MixOptimized[]
      */
     protected $mixes = array();
 
     /**
      *
-     * @var VWM\Apps\Process\ProcessTemplate; 
+     * @var VWM\Apps\Process\ProcessTemplate;
      */
     protected $processTemplate = null;
 
     /**
      *
-     * @var VWM\Apps\Process\ProcessInstance; 
+     * @var VWM\Apps\Process\ProcessInstance;
      */
     protected $processInstance = null;
 
     /**
      *
-     * @var int 
+     * @var int
      */
     protected $overhead = 0;
 
     /**
      *
-     * @var int 
+     * @var int
      */
     protected $profit = 0;
 
     /**
      *
-     * @var int profit unit type 
+     * @var int profit unit type
      */
     protected $profit_unit_type = 0;
 
     /**
      *
-     * @var int overhead unit type 
+     * @var int overhead unit type
      */
     protected $overhead_unit_type = 0;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $creation_time = '';
     protected $subTotals = 0;
@@ -233,9 +233,9 @@ abstract class WorkOrder extends Model
 
     /**
      * set profit unit type 0-amount 1-percent
-     * 
+     *
      * @param int $profit_unit_type
-     * 
+     *
      */
     public function setProfitUnitType($profit_unit_type)
     {
@@ -253,7 +253,7 @@ abstract class WorkOrder extends Model
     }
 
     /**
-     * delete Work Order  
+     * delete Work Order
      */
     public function delete()
     {
@@ -273,8 +273,8 @@ abstract class WorkOrder extends Model
 
     /**
      * function for getting Work Order Mixes
-     * 
-     * @return boolean|\MixOptimized[] 
+     *
+     * @return boolean|\MixOptimized[]
      */
     public function getMixes()
     {
@@ -306,8 +306,8 @@ abstract class WorkOrder extends Model
 
     /**
      * function for getting Work Order Process Template
-     * 
-     * @return \VWM\Apps\Process\ProcessTemplate 
+     *
+     * @return \VWM\Apps\Process\ProcessTemplate
      */
     public function getProcessTemplate()
     {
@@ -322,8 +322,8 @@ abstract class WorkOrder extends Model
 
     /**
      * function for getting Work Order Process Instance
-     * 
-     * @return boolean|\VWM\Apps\Process\ProcessInstance 
+     *
+     * @return boolean|\VWM\Apps\Process\ProcessInstance
      */
     public function getProcessInstance()
     {
@@ -347,11 +347,11 @@ abstract class WorkOrder extends Model
 
     /**
      * calculate Work Order Total Cost
-     * 
+     *
      * @param int $materialCost
      * @param int $laborCost
      * @param int $mixTotalPrice
-     * 
+     *
      * @return int
      */
     public function calculateSubTotalCost($materialCost, $laborCost, $mixTotalPrice)
@@ -363,11 +363,11 @@ abstract class WorkOrder extends Model
 
     /**
      * calculate Work Order Total Cost
-     * 
+     *
      * @param int $subTotalCost
      * @param int $overHead
      * @param int $profit
-     * 
+     *
      * @return int
      */
     public function calculateTotalCost($subTotalCost, $overHead = null, $profit = null)
@@ -378,7 +378,7 @@ abstract class WorkOrder extends Model
         if (is_null($profit)) {
             $profit = $this->getProfit();
         }
-        $totalCost = $subTotalCost + $overHead - $profit;
+        $totalCost = $subTotalCost + $overHead + $profit;
 
         return $totalCost;
     }
