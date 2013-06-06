@@ -213,6 +213,8 @@ class LogbookRecord extends Model
     const CLARIFIER_GAUGE = 2;
     const GAS_GAUGE = 3;
     const ELECTRIC_GAUGE = 4;
+    const MIN_GAUGE_RANGE = 0;
+    const MAX_GAUGE_RANGE = 100;
 
     public function __construct($id = null)
     {

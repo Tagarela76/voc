@@ -67,8 +67,8 @@
                     <a onclick='inspectionPerson.addInspectionPerson.openDialog()'>add Inspection Person</a>
                 </td>
             </tr>
-
-            <tr class="border_users_b border_users_r" height='30'>
+            {if $inspectionTypesList}
+            <tr class="border_users_b border_users_r" height='30' >
                 <td class="border_users_l">
                     Inspection Type
                 </td>
@@ -90,9 +90,9 @@
                                 </option>
                             {/section}
                         </select>
-                    </div>
-                    <div>
-                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()">
+                    </div>    
+                    <div >
+                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()" {if !$inspectionSubTypesList}hidden='hidden'{/if}>
                             {section name=i loop=$inspectionSubTypesList}
                                 <option value="{$inspectionSubTypesList[i]->name|escape}" {if $logbook->getInspectionSubType() == $inspectionSubTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionSubTypesList[i]->name|escape}
@@ -102,6 +102,7 @@
                     </div>
                 </td>
             </tr>
+            {/if}
             {* types and sub types addition fields*}
 
             <tr class="border_users_b border_users_r" height='30' id='logBookPermit' hidden="hidden">
@@ -145,6 +146,7 @@
                 </td>
             </tr>
             {*gauges*}
+
                 <tr class="border_users_b border_users_r" height='30' id='logbookValueGauge' hidden="hidden">
                     <td class="border_users_l">
                         Value Gauge

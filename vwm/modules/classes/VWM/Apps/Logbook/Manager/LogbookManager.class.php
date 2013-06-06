@@ -8,7 +8,7 @@ use \VWM\Apps\Logbook\Entity\LogbookRecord;
 class LogbookManager
 {
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
-
+    
     /**
      * 
      * @param int $facilityId
@@ -42,7 +42,6 @@ class LogbookManager
     public function getLogbookListByFacilityId($facilityId, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
-
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
@@ -82,50 +81,70 @@ class LogbookManager
         return $row->logbookListcCount;
     }
 
+    /**
+     * 
+     * @param int $facilityId
+     * @return array
+     */
     public function getGaugeList($facilityId)
     {
+        //default values
+        $gaugeRange = array(
+            'min_gauge_range'=>  LogbookRecord::MIN_GAUGE_RANGE,
+            'max_gauge_range'=> LogbookRecord::MAX_GAUGE_RANGE
+        );
         //temperature gauge
-        $temperatureGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::TEMPERATURE_GAUGE);
+        if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::TEMPERATURE_GAUGE);
+        }
         $temperatuteGauge = array(
             'id' => LogbookRecord::TEMPERATURE_GAUGE,
             'name' => 'Temperature Gauge',
-            'min' => $temperatureGaugeRange['min_gauge_range'],
-            'max' => $temperatureGaugeRange['max_gauge_range']
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
         );
         //manometer gauge
-        $manometerGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::MANOMETER_GAUGE);
+        if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::MANOMETER_GAUGE);
+        }
         $manometerGauge = array(
             'id' => LogbookRecord::MANOMETER_GAUGE,
             'name' => 'Manometer Gauge',
-            'min' => $manometerGaugeRange['min_gauge_range'],
-            'max' => $manometerGaugeRange['max_gauge_range']
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
         );
 
         //clarifier gauge
-        $clarifierGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::CLARIFIER_GAUGE);
+        if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::CLARIFIER_GAUGE);
+        }
         $clarifierGauge = array(
             'id' => LogbookRecord::CLARIFIER_GAUGE,
             'name' => 'Clarifier Gauge',
-            'min' => $clarifierGaugeRange['min_gauge_range'],
-            'max' => $clarifierGaugeRange['max_gauge_range']
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
         );
         
         //gas gauge 
-        $gasGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::GAS_GAUGE);
+        if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::GAS_GAUGE);
+        }
         $gasGauge = array(
-            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'id' => LogbookRecord::GAS_GAUGE,
             'name' => 'Gas Gauge',
-            'min' => $gasGaugeRange['min_gauge_range'],
-            'max' => $gasGaugeRange['max_gauge_range']
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
         );
         
         //electric gauge 
-        $electricGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::ELECTRIC_GAUGE);
+        if(!is_null($facilityId)){
+            $electricGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::ELECTRIC_GAUGE);
+        }
         $electricGauge = array(
-            'id' => LogbookRecord::CLARIFIER_GAUGE,
+            'id' => LogbookRecord::ELECTRIC_GAUGE,
             'name' => 'Electric Gauge',
-            'min' => $electricGaugeRange['min_gauge_range'],
-            'max' => $electricGaugeRange['max_gauge_range']
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
         );
 
         $gaugeList = array(
