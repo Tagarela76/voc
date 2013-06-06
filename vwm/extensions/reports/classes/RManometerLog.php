@@ -3,6 +3,7 @@
 use VWM\Apps\Logbook\Entity\LogbookRecord;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use VWM\Hierarchy\Facility;
+use VWM\Hierarchy\Company;
 
 class RManometerLog extends ReportCreator implements iReportCreator
 {
@@ -90,13 +91,20 @@ class RManometerLog extends ReportCreator implements iReportCreator
 
         $facility = new Facility($db, $this->getCategoryId());
         $companyId = $facility->getCompanyId();
+        $company = new Company($db, $companyId);
         $equipment = new Equipment($db);
         $equipmentDetails = $equipment->getEquipmentDetails($this->getEquipmentId());
 
         $orgInfo = array(
             'category' => "Facility",
             'name' => $facility->getName(),
-            'equipment' =>$equipmentDetails['equip_desc']
+            'equipment' =>$equipmentDetails['equip_desc'],
+            'address' => $company->getAddress(),
+            'cityStateZip'=>$company->getCity().','.$company->getState().','.$company->getZip(),
+            'country' => $company->getCountry(),
+            'phone' => $company->getPhone(),
+            'fax' => $company->getFax(),
+            'permit' => $equipmantDetails['permit']
         );
 
         $db->query($query);
@@ -202,6 +210,47 @@ class RManometerLog extends ReportCreator implements iReportCreator
         );
         $page->appendChild($equimpant);
 
+        //create address tag 
+        $address = $doc->createElement("companyAddress");
+        $address->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["address"]))
+        );
+        $page->appendChild($address);
+
+        //create city_State_Zip tag
+        $cityStateZip = $doc->createElement("cityStateZip");
+        $cityStateZip->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["cityStateZip"]))
+        );
+        $page->appendChild($cityStateZip);
+        
+        //create country tag
+        $country = $doc->createElement("country");
+        $country->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["country"]))
+        );
+        $page->appendChild($country);
+        //create phone tag
+        $phone = $doc->createElement("phone");
+        $phone->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["phone"]))
+        );
+        $page->appendChild($phone);
+        
+        //create fax tag
+        $fax = $doc->createElement("fax");
+        $fax->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["fax"]))
+        );
+        $page->appendChild($fax);
+        
+        //create permit tag
+        $permit = $doc->createElement("permit");
+        $permit->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["permit"]))
+        );
+        $page->appendChild($permit);
+        
         //create description tag
         $description = $doc->createElement("description");
         $description->appendChild(

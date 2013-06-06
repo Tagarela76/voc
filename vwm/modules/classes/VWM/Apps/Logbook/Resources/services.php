@@ -1,5 +1,6 @@
 <?php
 
 return array(
-    'pfp' => '\VWM\Apps\Logbook\Manager\LogbookManager',
+    'logbook' => '\VWM\Apps\Logbook\Manager\LogbookManager',
+    'inspectionType' => '\VWM\Apps\Logbook\Manager\InspectionTypeManager',
 );

@@ -4,6 +4,7 @@ use VWM\Apps\Logbook\Entity\LogbookRecord;
 use VWM\Hierarchy\Facility;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use VWM\Hierarchy\Department;
+use VWM\Hierarchy\Company;
 
 class RTemperatureLog extends ReportCreator implements iReportCreator
 {
@@ -92,6 +93,7 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
 
         $facility = new Facility($db, $this->getCategoryId());
         $companyId = $facility->getCompanyId();
+        $company = new Company($db, $companyId);
         $equipmantId = $this->getEquipmentId();
         $equipmant = new Equipment($db);
         $equipmantDetails = $equipmant->getEquipmentDetails($equipmantId);
@@ -99,7 +101,13 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         $orgInfo = array(
             'category' => "Facility",
             'name' => $facility->getName(),
-            'equipment' =>$equipmantDetails['equip_desc']
+            'equipment' =>$equipmantDetails['equip_desc'],
+            'address' => $company->getAddress(),
+            'cityStateZip'=>$company->getCity().','.$company->getState().','.$company->getZip(),
+            'country' => $company->getCountry(),
+            'phone' => $company->getPhone(),
+            'fax' => $company->getFax(),
+            'permit' => $equipmantDetails['permit']
         );
 
         $db->query($query);
@@ -204,6 +212,47 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
         );
         $page->appendChild($equimpant);
 
+        //create address tag 
+        $address = $doc->createElement("companyAddress");
+        $address->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["address"]))
+        );
+        $page->appendChild($address);
+
+        //create city_State_Zip tag
+        $cityStateZip = $doc->createElement("cityStateZip");
+        $cityStateZip->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["cityStateZip"]))
+        );
+        $page->appendChild($cityStateZip);
+        
+        //create country tag
+        $country = $doc->createElement("country");
+        $country->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["country"]))
+        );
+        $page->appendChild($country);
+        //create phone tag
+        $phone = $doc->createElement("phone");
+        $phone->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["phone"]))
+        );
+        $page->appendChild($phone);
+        
+        //create fax tag
+        $fax = $doc->createElement("fax");
+        $fax->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["fax"]))
+        );
+        $page->appendChild($fax);
+        
+        //create permit tag
+        $permit = $doc->createElement("permit");
+        $permit->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["permit"]))
+        );
+        $page->appendChild($permit);
+        
         //create description tag
         $description = $doc->createElement("description");
         $description->appendChild(
@@ -307,44 +356,5 @@ class RTemperatureLog extends ReportCreator implements iReportCreator
 
         $doc->save($fileName);
     }
-
-   /* public function getReportRequestByGetVars($companyID) {
-		//at first lets get data already filtered
-		$categoryType = $_REQUEST['categoryLevel'];
-		$id = $_REQUEST['id'];
-		$reportType = $_REQUEST['reportType'];
-		$format = $_REQUEST['format'];
-        $equipmentId = $_REQUEST['equipmentId'];
-
-		//and get them too
-		$dateBegin = new TypeChain($_GET['date_begin'],'date',$this->db,$companyID,'company');
-	    $dateEnd = new TypeChain($_GET['date_end'],'date',$this->db,$companyID,'company');
-
-		$extraVar['rule'] = $_REQUEST['logs'];
-
-		$data['responsiblePerson'] = (($_REQUEST['responsiblePerson'] == "[Responsible Person]") ? "" : $_REQUEST['responsiblePerson']);
-		$data['title'] = (($_REQUEST['title'] == "[Title]") ? "" : $_REQUEST['title']);
-		$data['notes'] = (($_REQUEST['notes'] == "[Notes]") ? "" : $_REQUEST['notes']);
-        $data['spentTime'] = (isset($_REQUEST['spentTime']) ? true : false);
-        $data['totalCost'] = (isset($_REQUEST['totalCost']) ? true : false);
-		$extraVar['data'] = $data;
-
-		//lets set extra vars in case its csv format
-		if ($format == "csv") {
-			$extraVar['commaSeparator'] = $_REQUEST['commaSeparator'];
-			$extraVar['textDelimiter'] = $_REQUEST['textDelimiter'];
-			if (strstr($extraVar['commaSeparator'],"\\")) {
-				$extraVar['commaSeparator'] = substr(strstr($extraVar['commaSeparator'],"\\"),1);
-			}
-			if (strstr($extraVar['textDelimiter'],"\\")) {
-				$extraVar['textDelimiter'] = str_replace("\\","",$extraVar['textDelimiter']);
-			}
-		}
-
-		//finally: lets get	reportRequest object!
-		$reportRequest = new ReportRequest($reportType, $categoryType, $id, $frequency, $format, $dateBegin, $dateEnd, $extraVar, $_SESSION['user_id'], $equipmentId);
-		return $reportRequest;
-	}*/
-
 }
 ?>

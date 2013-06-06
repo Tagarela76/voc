@@ -47,15 +47,21 @@ function InspectionTypeList() {
         var inspectionTypeName = $('#inspectionType').val();
         //get subTypeList
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
+        
         //check for addition fields
-        var html = '';
-        for (var i = 0; i < inspectionType.subtypes.length; i++) {
-            html += "<option value='" + inspectionType.subtypes[i].name + "'>";
-            html += inspectionType.subtypes[i].name;
-            html += "</option>";
+        if (inspectionType.subtypes != undefined) {
+            var html = '';
+            for (var i = 0; i < inspectionType.subtypes.length; i++) {
+                html += "<option value='" + inspectionType.subtypes[i].name + "'>";
+                html += inspectionType.subtypes[i].name;
+                html += "</option>";
+            }
+            //change subType list
+            $('#inspectionSubType').html(html);
+            $('#inspectionSubType').show();
+        }else{
+            $('#inspectionSubType').hide();
         }
-        //change subType list
-        $('#inspectionSubType').html(html);
         this.changeSubType();
         this.getAdditionFieldTypesList();
     }
@@ -98,9 +104,12 @@ function InspectionTypeList() {
         }
 
         //get subtype
-        for (var i = 0; i < inspectionSubTypes.length; i++) {
-            if (inspectionSubTypes[i].name == inspectionSubTypeName) {
-                return inspectionSubTypes[i];
+        if (inspectionSubTypes != undefined) {
+            for (var i = 0; i < inspectionSubTypes.length; i++) {
+                if (inspectionSubTypes[i].name == inspectionSubTypeName) {
+                    return inspectionSubTypes[i];
+                    break;
+                }
             }
         }
         return false;

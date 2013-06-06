@@ -67,6 +67,7 @@ class VOCApp
 
         $apps = array(
             new VWM\Apps\WorkOrder\WorkOrderApp(),
+            new VWM\Apps\Logbook\LogbookApp(),
         );
     }
 
