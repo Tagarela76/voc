@@ -25,6 +25,7 @@ function ManageInspectionType() {
                     html += "</option>";
                 }
                 $('#facilityId').html(html);
+                logbookTemplateManager.changelogbookTemplateList();
             }
         });
     }
@@ -32,7 +33,7 @@ function ManageInspectionType() {
     this.getInspectionTypeList = function() {
         var companyId = $('#companyId').val();
         var facilityId = $('#facilityId').val();
-        window.location.href = '?action=browseCategory&category=logbook&facilityId='+facilityId+'&companyId='+companyId;
+        window.location.href = '?action=browseCategory&category=logbook&facilityId=' + facilityId + '&companyId=' + companyId;
     }
 
     this.showSubTypesList = function() {
@@ -77,7 +78,7 @@ function ManageInspectionType() {
             $('#subType_detail_' + rowsToDelete[i]).remove();
         }
     }
-    
+
     this.deleteInspectionGaugeTypes = function() {
         var rowsToDelete = new Array();
         var checkboxes = $("#inspectionGaugeTypeDetails").find("input[type='checkbox']");
@@ -93,6 +94,68 @@ function ManageInspectionType() {
             logbookInspectionType.deleteGaugeType(rowsToDelete[i]);
             $('#gaugeType_detail_' + rowsToDelete[i]).remove();
         }
+    }
+
+}
+
+function ManagerLogbookTemplate() {
+    
+    /**
+     * 
+     * show company facility list
+     * 
+     * @param {int} id
+     * @returns {null}
+     */
+    this.showFacilityList = function(id) {
+        var isShowFacility = $('#showFacilityList_' + id + ':checked').val() ? 1 : 0;
+
+        if (isShowFacility) {
+            $('#companyFacilityList_' + id).show();
+        } else {
+            var checkboxes = $("#companyListContainer_" + id).find("input[type='checkbox']");
+            checkboxes.each(function(i) {
+                var id = this.id;
+                $("#" + id).removeAttr("checked");
+            });
+            $('#companyFacilityList_' + id).hide();
+        }
+    }
+
+    /**
+     * 
+     * check all facilities 
+     * 
+     * @returns {null}
+     */
+    this.checkAllFacilityTemplate = function() {
+        var companyCount = $('#companyCount').val();
+        CheckAll(this);
+        for (var i = 0; i < companyCount; i++) {
+            //show facility list of selected companies
+            $('#companyFacilityList_' + i).show();
+        }
+    }
+    /**
+     * 
+     * unCheck all facilities 
+     * 
+     * @returns {null}
+     */
+    this.unCheckAllFacilityTemplate = function() {
+        //get company count
+        var companyCount = $('#companyCount').val();
+        unCheckAll(this);
+        for (var i = 0; i < companyCount; i++) {
+            //hide facility list of not selected companies
+            $('#companyFacilityList_' + i).hide();
+        }
+    }
+    
+    this.changelogbookTemplateList = function(){
+        var companyId = $('#companyId').val();
+        var facilityId = $('#facilityId').val();
+        window.location.href = '?action=browseCategory&category=logbook&facilityId='+facilityId+'&companyId='+companyId;
     }
 
 }
@@ -156,17 +219,17 @@ function InspectionSubTypeAddDialog() {
             success: function(response) {
                 $("#" + that.divId).html(response);
                 that.isLoaded = true;
-                if(inspection.action == 'edit'){
+                if (inspection.action == 'edit') {
                     var id = inspection.elementId;
                     var subType = logbookInspectionType.getSubTypeById(id);
                     $('#subTypeName').val(subType.getName());
-                    if(subType.getHasNotes()){
+                    if (subType.getHasNotes()) {
                         $('input[name=hasNotes]').attr('checked', true);
                     }
-                    if(subType.getHasQty()){
+                    if (subType.getHasQty()) {
                         $('input[name=hasQty]').attr('checked', true);
                     }
-                    if(subType.getHasGauge()){
+                    if (subType.getHasGauge()) {
                         $('input[name=hasGauge]').attr('checked', true);
                     }
                 }
@@ -191,21 +254,21 @@ function InspectionSubTypeAddDialog() {
         var hasQty = $('#hasQty:checked').val() ? 1 : 0;
         var hasGauge = $('#hasGauge:checked').val() ? 1 : 0;
         var id = inspection.elementId;
-        $('#subtype_name_'+id).html(subTypeName);
-        if(hasNotes){
-            $('#subtype_notes_'+id).html('yes');
-        }else{
-            $('#subtype_notes_'+id).html('no');
+        $('#subtype_name_' + id).html(subTypeName);
+        if (hasNotes) {
+            $('#subtype_notes_' + id).html('yes');
+        } else {
+            $('#subtype_notes_' + id).html('no');
         }
-        if(hasQty){
-            $('#subtype_qty_'+id).html('yes');
-        }else{
-            $('#subtype_qty_'+id).html('no');
+        if (hasQty) {
+            $('#subtype_qty_' + id).html('yes');
+        } else {
+            $('#subtype_qty_' + id).html('no');
         }
-        if(hasGauge){
-            $('#subtype_gauge_'+id).html('yes');
-        }else{
-            $('#subtype_gauge_'+id).html('no');
+        if (hasGauge) {
+            $('#subtype_gauge_' + id).html('yes');
+        } else {
+            $('#subtype_gauge_' + id).html('no');
         }
         //update inspection Sub type 
         var newInspectionSubType = new LogbookInspectionSubType();
@@ -236,46 +299,46 @@ function InspectionSubTypeAddDialog() {
 
         var html = '';
         html += '<tr id="subType_detail_' + logbookInspectionSubType.getId() + '">';
-        html +=      '<td class="border_users_b border_users_r">';
-        html +=         '<div>';
-        html +=             '<input type="checkbox" value="' + logbookInspectionSubType.getId() + '">';
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div id="subtype_name_'+temporarySubTypeId+'">';
-        html +=             subTypeName;
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div id="subtype_notes_'+temporarySubTypeId+'">';
-                    if (hasNotes) {
-                            html += 'yes';
-                        } else {
-                            html += 'no';
-                    }
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div id="subtype_qty_'+temporarySubTypeId+'">';
-                if (hasQty) {
-                    html += 'yes';
-                } else {
-                    html += 'no';
-                }
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div id="subtype_gauge_'+temporarySubTypeId+'">';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div>';
+        html += '<input type="checkbox" value="' + logbookInspectionSubType.getId() + '">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div id="subtype_name_' + temporarySubTypeId + '">';
+        html += subTypeName;
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div id="subtype_notes_' + temporarySubTypeId + '">';
+        if (hasNotes) {
+            html += 'yes';
+        } else {
+            html += 'no';
+        }
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div id="subtype_qty_' + temporarySubTypeId + '">';
+        if (hasQty) {
+            html += 'yes';
+        } else {
+            html += 'no';
+        }
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div id="subtype_gauge_' + temporarySubTypeId + '">';
         if (hasGauge) {
             html += 'yes';
         } else {
             html += 'no';
         }
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<a onclick="inspection.checkNewDialog('+temporarySubTypeId+', \'edit\'); inspection.inspectionSubTypeAddDialog.openDialog();">edit</a>';
-        html +=     '</td>';
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<a onclick="inspection.checkNewDialog(' + temporarySubTypeId + ', \'edit\'); inspection.inspectionSubTypeAddDialog.openDialog();">edit</a>';
+        html += '</td>';
         html += '</tr>';
 
         $('#inspectionSubTypeDetails').append(html);
@@ -292,7 +355,7 @@ function InspectionSubTypeAddDialog() {
  * 
  * @returns {nspactionGaugeTypeDialog}
  */
-function InspactionGaugeTypeDialog(){
+function InspactionGaugeTypeDialog() {
     this.divId = 'inspectionGaugeTypeContainer';
 
     this.isLoaded = false;
@@ -340,18 +403,18 @@ function InspactionGaugeTypeDialog(){
             url: "?action=loadInspectionGaugeType&category=logbook",
             dataType: "text",
             success: function(response) {
-               $("#" + that.divId).html(response);
+                $("#" + that.divId).html(response);
                 that.isLoaded = true;
-                if(inspection.action == 'edit'){
+                if (inspection.action == 'edit') {
                     var id = inspection.elementId;
                     var gaugeType = logbookInspectionType.getGaugeTypeById(id);
                     $('#inspectionGaugeName').val(gaugeType.getName());
-                    $("#inspectionGaugeType [value='"+gaugeType.getGaugeType()+"']").attr("selected", "selected");
+                    $("#inspectionGaugeType [value='" + gaugeType.getGaugeType() + "']").attr("selected", "selected");
                 }
             }
         });
     }
-    
+
     //save function
     this.save = function() {
         if (inspection.action == 'add') {
@@ -372,57 +435,163 @@ function InspactionGaugeTypeDialog(){
         logbookInspectionGaugeType.setGaugeType(gaugeTypeId);
         logbookInspectionGaugeType.setName(gaugeName);
         logbookInspectionType.addGaugeType(logbookInspectionGaugeType);
-        
+
         var html = '';
         html += '<tr id="gaugeType_detail_' + temporaryGaugeTypeId + '">';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div>';
-        html +=             '<input type="checkbox" value="'+temporaryGaugeTypeId+'">';
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div id="gauge_name_'+temporaryGaugeTypeId+'">';
-        html +=             gaugeName
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r" id="gauge_type_'+temporaryGaugeTypeId+'">';
-        html +=         '<div>';
-        html +=             gaugeTypeName
-        html +=         '</div>';
-        html +=     '</td>';
-        html +=     '<td class="border_users_b border_users_r">';
-        html +=         '<div>';
-        html +=             '<a onclick="inspection.checkNewDialog('+temporaryGaugeTypeId+', \'edit\'); inspection.inspactionGaugeTypeDialog.openDialog();">edit</a>';
-        html +=         '</div>';
-        html +=     '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div>';
+        html += '<input type="checkbox" value="' + temporaryGaugeTypeId + '">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div id="gauge_name_' + temporaryGaugeTypeId + '">';
+        html += gaugeName
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r" id="gauge_type_' + temporaryGaugeTypeId + '">';
+        html += '<div>';
+        html += gaugeTypeName
+        html += '</div>';
+        html += '</td>';
+        html += '<td class="border_users_b border_users_r">';
+        html += '<div>';
+        html += '<a onclick="inspection.checkNewDialog(' + temporaryGaugeTypeId + ', \'edit\'); inspection.inspactionGaugeTypeDialog.openDialog();">edit</a>';
+        html += '</div>';
+        html += '</td>';
         html += '</tr>';
 
         $('#inspectionGaugeTypeDetails').append(html);
     }
-    
+
     this.saveEditGaugeType = function() {
         var logbookInspectionGaugeType = new LogbookInspectionGaugeType();
         var gaugeName = $('#inspectionGaugeName').val();
         var gaugeTypeId = $('#inspectionGaugeType').val();
         var gaugeTypeName = $('#inspectionGaugeType').find(':selected').text();
-        
+
         var id = inspection.elementId;
-        $('#gauge_name_'+id).html(gaugeName);
-        $('#gauge_type_'+id).html(gaugeTypeName);
-        
+        $('#gauge_name_' + id).html(gaugeName);
+        $('#gauge_type_' + id).html(gaugeTypeName);
+
         //update inspection Sub type 
         var newInspectionGaugeType = new LogbookInspectionGaugeType();
         newInspectionGaugeType.setId(id);
         newInspectionGaugeType.setName(gaugeName);
         newInspectionGaugeType.setGaugeType(gaugeTypeId);
-        
+
         //delete old sub type
         logbookInspectionType.deleteGaugeType(id);
         logbookInspectionType.addGaugeType(newInspectionGaugeType);
     }
 }
 
+/**
+ * 
+ * CLASS AddLogbookTemplateFacilityDialog
+ * 
+ * assign facility to logbook template
+ * 
+ * @returns {null}
+ */
+function AddLogbookTemplateFacilityDialog() {
+    this.divId = 'addLogbookTemplateFacilityContainer';
+
+    this.isLoaded = false;
+
+    this.iniDialog = function(divId) {
+        divId = typeof divId !== 'undefined' ? divId : this.divId;
+        if (divId != this.divId) {
+            this.divId = divId;
+        }
+
+        var that = this;
+        $("#" + divId).dialog({
+            width: 350,
+            height: 500,
+            autoOpen: false,
+            resizable: true,
+            dragable: true,
+            modal: true,
+            buttons: {
+                'Cancel': function() {
+                    that.isLoaded = false;
+                    $(this).dialog('close');
+                },
+                'Save': function() {
+                    that.save();
+                    $(this).dialog('close');
+                    that.isLoaded = false;
+                }
+            }
+        });
+    }
+
+    this.openDialog = function() {
+        $('#addLogbookTemplateFacilityContainer').html('');
+        $('#' + this.divId).dialog('open');
+        if (!this.isLoaded) {
+            this.loadContent();
+        }
+        return false;
+    }
+
+    this.loadContent = function() {
+        var that = this;
+        var facilityIds = $('#selectedFacilityIds').val();
+        var companyIds = $('#selectedCompanyIds').val();
+        $.ajax({
+            url: "?action=loadLogbookTemplateFacility&category=logbook",
+            data:{ 
+                selectedFacilityIds: facilityIds,
+                selectedCompanyIds: companyIds
+            },
+            dataType: "text",
+            success: function(response) {
+                $("#" + that.divId).html(response);
+                that.isLoaded = true;
+            }
+        });
+    }
+
+    //save function
+    this.save = function() {
+        var companyIds = new Array();
+        var facilityIds = new Array();
+        //get companies count
+        var companyCount = $('#companyCount').val();
+        
+        for (var i = 0; i < companyCount; i++) {
+            //if company checked
+            var isShowFacility = $('#showFacilityList_' + i + ':checked').val() ? 1 : 0;
+            if (isShowFacility) {
+                //add selected companies ids
+                companyIds.push($('#showFacilityList_' + i).val());
+                var checkboxes = $("#companyListContainer_" + i).find("input[type='checkbox']");
+                checkboxes.each(function(i) {
+                    var id = this.value;
+                    if (this.checked) {
+                        //add selected facilities ids
+                        facilityIds.push(id);
+                    }
+                });
+            }
+        }
+        //transform to string
+        companyIds = companyIds.join(',');
+        facilityIds = facilityIds.join(',');
+        //display facility ids
+        $('#addFacilityIdsContainer').html(facilityIds);
+        //save facility ids in hidden input
+        $('#selectedCompanyIds').val(companyIds);
+        $('#selectedFacilityIds').val(facilityIds);
+    }
+
+
+
+}
+
 var manager = new ManageInspectionType();
+var logbookTemplateManager = new ManagerLogbookTemplate();
 var inspection;
 
 
@@ -432,8 +601,9 @@ function InspectionTypeDialog() {
     var that = this;
     this.inspectionSubTypeAddDialog = new InspectionSubTypeAddDialog();
     this.inspactionGaugeTypeDialog = new InspactionGaugeTypeDialog();
-    
-    
+    this.addLogbookTemplateFacilityDialog = new AddLogbookTemplateFacilityDialog();
+
+
     /**
      * function for updating resource id in dialog window and for getting common action add or edit 
      * (We need distinguish resources and action as we use one template for dialog window)
@@ -455,7 +625,7 @@ function InspectionTypeDialog() {
             $("#inspectionGaugeTypeContainer").dialog('option', 'title', 'Edit inspection gauge type');
         }
     }
-    
+
 }
 
 $(function() {
@@ -463,4 +633,5 @@ $(function() {
     inspection = new InspectionTypeDialog();
     inspection.inspectionSubTypeAddDialog.iniDialog();
     inspection.inspactionGaugeTypeDialog.iniDialog();
+    inspection.addLogbookTemplateFacilityDialog.iniDialog();
 });

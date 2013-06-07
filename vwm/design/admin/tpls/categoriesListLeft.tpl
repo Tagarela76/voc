@@ -172,7 +172,7 @@
                     <div align="left" width="100%">
                         <ul class="link">
                             <li>
-                                <a href="admin.php?action=browseCategory&category=logbook" class="id_company">LOGBOOK</a>
+                                <a href="admin.php?action=browseCategory&category=logbook&bookmark=logbookSetupTemplate" class="id_company">LOGBOOK</a>
                             </li>
                         </ul>
                     </div>

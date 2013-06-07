@@ -44,7 +44,8 @@ class LogbookInspectionType extends Model
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
         $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($this->getId());
         if (count($facilityIds)>1){
             return 'All Facilities';
@@ -148,7 +149,8 @@ class LogbookInspectionType extends Model
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
