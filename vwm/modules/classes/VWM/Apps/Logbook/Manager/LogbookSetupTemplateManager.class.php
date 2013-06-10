@@ -121,6 +121,44 @@ class LogbookSetupTemplateManager
         
         return $facilityList;
     }
+    
+    public function getLogbookTemplateListByInspectionTypeId($inspectionTypeId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        $logbookTemplateList = array();
+        $logbookTemplateIds = array();
+
+        //get Logbook Template Id 
+        if (!is_null($inspectionTypeId)) {
+            $query = "SELECT logbook_setup_template_id FROM " . self::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
+                    "WHERE inspection_type_id IN ({$db->sqltext($inspectionTypeId)})";
+            $db->query($query);
+            $rows = $db->fetch_all_array();
+            //delete repetitive ids
+            foreach ($rows as $row) {
+                if (!in_array($row['logbook_setup_template_id'], $logbookTemplateIds)) {
+                    $logbookTemplateIds[] = $row['logbook_setup_template_id'];
+                }
+            }
+        } else {
+            $query = "SELECT id FROM " . LogbookSetupTemplate::TABLE_NAME;
+            $db->query($query);
+            $rows = $db->fetch_all_array();
+            foreach ($rows as $row) {
+                $logbookTemplateIds[] = $row['id'];
+            }
+        }
+
+        foreach ($logbookTemplateIds as $logbookTemplateId) {
+            $logbookTemplate = new LogbookSetupTemplate();
+            $logbookTemplate->setId($logbookTemplateId);
+            $logbookTemplate->load();
+            $logbookTemplateList[] = $logbookTemplate;
+        }
+
+        return $logbookTemplateList;
+    }
 
 }
 ?>

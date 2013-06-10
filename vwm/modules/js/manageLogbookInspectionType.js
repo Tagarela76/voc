@@ -30,11 +30,42 @@ function ManageInspectionType() {
         });
     }
 
+    /*this.getLogbookTemplateList = function(){
+        var facilityId = $('#facilityId').val();
+        var companyId = $('#companyId').val();
+        $.ajax({
+            url: '?action=getLogbookTemplateList&category=logbook',
+            type: 'post',
+            data: {
+                facilityId: facilityId,
+                companyId: companyId
+            },
+            dataType: 'json',
+            success: function(response){
+                var html = " <option value='null'>All</option>";
+                for (var i = 0; i < response.length; i++) {
+                    html += "<option value='" + response[i].id + "'>";
+                    html += response[i].name;
+                    html += "</option>";
+                }
+                $('#logbookTemplateId').html(html);
+            }
+                
+        });
+    }*/
+
+    /*this.getInspectionTypeList = function() {
+        var companyId = $('#companyId').val();
+        var facilityId = $('#facilityId').val();
+        window.location.href = '?action=browseCategory&category=logbook&facilityId=' + facilityId + '&companyId=' + companyId+'&bookmark=logbookInspectionType';
+    }*/
     this.getInspectionTypeList = function() {
         var companyId = $('#companyId').val();
         var facilityId = $('#facilityId').val();
-        window.location.href = '?action=browseCategory&category=logbook&facilityId=' + facilityId + '&companyId=' + companyId;
+        var logbookTemplateId = $('#logbookTemplateId').val();
+        window.location.href = '?action=browseCategory&category=logbook&facilityId=' + facilityId + '&companyId=' + companyId + '&logbookTemplateId='+logbookTemplateId+'&bookmark=logbookInspectionType';
     }
+    
 
     this.showSubTypesList = function() {
         if ($('#showSubTypesList').is(':checked')) {
@@ -55,7 +86,9 @@ function ManageInspectionType() {
     this.saveInspectionType = function() {
         var permit = $('#inspectionTypePermit:checked').val() ? 1 : 0;
         logbookInspectionType.setName($('#inspectionTypeName').val());
-        logbookInspectionType.setFacilityId($('#facilityId').val());
+        //logbookInspectionType.setFacilityId($('#facilityId').val());
+        logbookInspectionType.setlogbookTemplate($('#selectedLogbookTemplatesIds').val());
+        
         logbookInspectionType.setPermit(permit);
         logbookInspectionType.save();
     }
@@ -585,9 +618,97 @@ function AddLogbookTemplateFacilityDialog() {
         $('#selectedCompanyIds').val(companyIds);
         $('#selectedFacilityIds').val(facilityIds);
     }
+}
 
 
+/**
+ * 
+ * CLASS SetInspectionTypeToTemplateDialog
+ * 
+ * assign facility to logbook template
+ * 
+ * @returns {null}
+ */
+function SetInspectionTypeToTemplateDialog() {
+    this.divId = 'setInspectionTypeToTemplateContainer';
 
+    this.isLoaded = false;
+
+    this.iniDialog = function(divId) {
+        divId = typeof divId !== 'undefined' ? divId : this.divId;
+        if (divId != this.divId) {
+            this.divId = divId;
+        }
+
+        var that = this;
+        $("#" + divId).dialog({
+            width: 350,
+            height: 500,
+            autoOpen: false,
+            resizable: true,
+            dragable: true,
+            modal: true,
+            buttons: {
+                'Cancel': function() {
+                    that.isLoaded = false;
+                    $(this).dialog('close');
+                },
+                'Save': function() {
+                    that.save();
+                    $(this).dialog('close');
+                    that.isLoaded = false;
+                }
+            }
+        });
+    }
+
+    this.openDialog = function() {
+        $('#setInspectionTypeToTemplateContainer').html('');
+        $('#' + this.divId).dialog('open');
+        if (!this.isLoaded) {
+            this.loadContent();
+        }
+        return false;
+    }
+
+    this.loadContent = function() {
+        var that = this;
+        var logbookTemplatesIds = $('#selectedLogbookTemplatesIds').val();
+        var companyId = $('#companyId').val();
+        var facilityId = $('#facilityId').val();
+        $.ajax({
+            url: "?action=loadInspectionTypeLogbookTemplate&category=logbook",
+            data: {
+                logbookTemplatesIds: logbookTemplatesIds,
+                facilityId: facilityId,
+                companyId: companyId
+            },
+            dataType: "text",
+            success: function(response) {
+                $("#" + that.divId).html(response);
+                that.isLoaded = true;
+            }
+        });
+    }
+
+    //save function
+    this.save = function() {
+        var logbookTemplateIds = new Array();
+        var checkboxes = $("#logbookTemplateList").find("input[type='checkbox']");
+
+        checkboxes.each(function(i) {
+            var id = this.value;
+            if (this.checked) {
+                logbookTemplateIds.push(id);
+            }
+        });
+        logbookTemplateIds = logbookTemplateIds.join(',');
+        $('#selectedLogbookTemplatesIds').val(logbookTemplateIds);
+        $('#showSelectedLogbookTemplatesIds').html(logbookTemplateIds);
+        console.log(logbookTemplateIds);
+    }
+    
+    
 }
 
 var manager = new ManageInspectionType();
@@ -602,6 +723,7 @@ function InspectionTypeDialog() {
     this.inspectionSubTypeAddDialog = new InspectionSubTypeAddDialog();
     this.inspactionGaugeTypeDialog = new InspactionGaugeTypeDialog();
     this.addLogbookTemplateFacilityDialog = new AddLogbookTemplateFacilityDialog();
+    this.setInspectionTypeToTemplate = new SetInspectionTypeToTemplateDialog();
 
 
     /**
@@ -634,4 +756,5 @@ $(function() {
     inspection.inspectionSubTypeAddDialog.iniDialog();
     inspection.inspactionGaugeTypeDialog.iniDialog();
     inspection.addLogbookTemplateFacilityDialog.iniDialog();
+    inspection.setInspectionTypeToTemplate.iniDialog();
 });

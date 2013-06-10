@@ -124,8 +124,10 @@ class CLogbook extends Controller
             $this->smarty->assign('logbook', $logbook);
 
             //get inspection types list
-            $itmanager = \VOCApp::getInstance()->getService('inspectionType');
+            //$itmanager = \VOCApp::getInstance()->getService('inspectionType');
+            $itmanager = new VWM\Apps\Logbook\Manager\InspectionTypeManager();
             $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
+            
             $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
             
             $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
@@ -220,6 +222,7 @@ class CLogbook extends Controller
     protected function bookmarkLogbook($vars)
     {
         extract($vars);
+        
         $facilityId = $facilityDetails['facility_id'];
         //check for facility_id
         if (is_null($facilityId)) {

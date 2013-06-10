@@ -16,7 +16,8 @@ class InspectionTypeManagerTest extends Testing\DbTestCase
     public function testGetFacilityIdsByInspectionTypeId()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new InspectionTypeManager();
         $inspectionTypeId = 1;
         $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($inspectionTypeId);
         $query = "SELECT facility_id " .
@@ -31,7 +32,7 @@ class InspectionTypeManagerTest extends Testing\DbTestCase
         $this->assertEquals($facilityIds, $newFacilityIds);
     }
 
-    public function testAssignUnassignInspectionTypeToFacility()
+    /*public function testAssignUnassignInspectionTypeToFacility()
     {
         $db = \VOCApp::getInstance()->getService('db');
         $itManager = \VOCApp::getInstance()->getService('inspectionType');
@@ -55,12 +56,40 @@ class InspectionTypeManagerTest extends Testing\DbTestCase
         $result = $db->fetch_all_array();
 
         $this->assertTrue(empty($result));
-    }
+    }*/
 
+    public function testAssignUnassignInspectionTypeToLogbookTemplate()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new InspectionTypeManager();
+        $inspectionTypeId = 70;
+        $logbookTemplateId = 105;
+        $itManager->assignInspectionTypeToInspectionTemplate($inspectionTypeId, $logbookTemplateId);
+
+        $query = "SELECT * FROM " . InspectionTypeManager::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
+                "WHERE inspection_type_id = {$db->sqltext($inspectionTypeId)} " .
+                "AND logbook_setup_template_id = {$db->sqltext($logbookTemplateId)} LIMIT 1";
+        $db->query($query);
+        $result = $db->fetch_all_array();
+        $this->assertEquals($result[0]['inspection_type_id'], $inspectionTypeId);
+        $this->assertEquals($result[0]['logbook_setup_template_id'], $logbookTemplateId);
+
+        $itManager->unAssignInspectionTypeFromInspectionTemplate($inspectionTypeId, $logbookTemplateId);
+        $query = "SELECT * FROM " . InspectionTypeManager::TB_INSPECTION_TYPE2FACILITY . " " .
+                "WHERE inspection_type_id = {$db->sqltext($inspectionTypeId)} " .
+                "AND logbook_setup_template_id = {$db->sqltext($logbookTemplateId)} LIMIT 1";
+        $db->query($query);
+        $result = $db->fetch_all_array();
+
+        $this->assertTrue(empty($result));
+    }
+    
     public function testGetInspectionTypeList()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new InspectionTypeManager();
         $facilityId = 100;
         $inspectionTypeList = $itManager->getInspectionTypeList($facilityId);
         $this->assertInstanceOf('\VWM\Apps\Logbook\Entity\LogbookInspectionType', $inspectionTypeList[0]);

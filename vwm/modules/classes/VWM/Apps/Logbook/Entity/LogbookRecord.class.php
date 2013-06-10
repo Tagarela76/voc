@@ -683,7 +683,7 @@ class LogbookRecord extends Model
             $inspectionDescriptionName = $this->getDescription();
         }
 
-        $itmanager = new \InspectionTypeManager();
+        $itmanager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
 
         $inspectionType = $itmanager->getInspectionTypeByTypeName($inspectionTypeName);
         $inspectionSubType = $itmanager->getInspectionSubTypeByTypeAndSubTypeDescription($inspectionTypeName, $inspectionSubTypeName);

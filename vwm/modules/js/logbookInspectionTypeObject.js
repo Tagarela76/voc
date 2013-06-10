@@ -10,6 +10,7 @@ function LogbookInspectionType() {
     var facilityId;
     var subTypes = [];
     var gaugeTypes = [];
+    var logbookTemplateIds;
 
     // Private members are made by the constructor	
     var constructor = function() {
@@ -19,6 +20,7 @@ function LogbookInspectionType() {
         var facilityId;
         var subTypes = [];
         var gaugeTypes = [];
+        var logbookTemplateIds;
         var that = this;
 
         //setters
@@ -33,6 +35,10 @@ function LogbookInspectionType() {
         }
         self.setFacilityId = function(typeFacilityId) {
             facilityId = typeFacilityId;
+        }
+        
+        self.setlogbookTemplate = function(typeLogbookTemplate) {
+            logbookTemplateIds = typeLogbookTemplate;
         }
 
         self.setSubTypes = function(typeSubTypes) {
@@ -55,6 +61,9 @@ function LogbookInspectionType() {
         }
         self.getFacilityId = function() {
             return facilityId
+        }
+        self.getLogbookTemplate = function() {
+            return logbookTemplateIds
         }
         self.getSubTypes = function() {
             return subTypes
@@ -135,7 +144,8 @@ function LogbookInspectionType() {
             permit: self.getPermit(),
             facilityId: self.getFacilityId(),
             subtypes: typeSubTypes,
-            additionFieldList: typeGaugeTypes
+            additionFieldList: typeGaugeTypes,
+            logbookTemplateIds: self.getLogbookTemplate(),
         }
         return typeAttributes;
     }
@@ -189,7 +199,7 @@ function LogbookInspectionType() {
             },
             dataType: 'json',
             success: function(response) {
-               //$('#typeSaveErrors').html(response);
+              // $('#typeSaveErrors').html(response);
                 if (response.errors == false) {
                     window.location.href = response.link;
                 } else {
