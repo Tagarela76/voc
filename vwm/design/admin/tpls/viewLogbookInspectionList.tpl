@@ -46,7 +46,7 @@
                 Inspection Type Name
             </td>
             <td width="10%">
-                Facility Id
+                Facility Template Id
             </td>
             <td width="10%">
                 Has Permit
@@ -68,7 +68,7 @@
                     {$settings->typeName|escape}
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$inspectionTypeList[i]->getFacilityIds()|escape}
+                    {$inspectionTypeList[i]->getTemplateIds()|escape}
                 </td>
                 <td class="border_users_b border_users_r">
                     {if $settings->permit|escape}

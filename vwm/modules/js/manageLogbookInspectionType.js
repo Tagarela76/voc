@@ -88,7 +88,6 @@ function ManageInspectionType() {
         logbookInspectionType.setName($('#inspectionTypeName').val());
         //logbookInspectionType.setFacilityId($('#facilityId').val());
         logbookInspectionType.setlogbookTemplate($('#selectedLogbookTemplatesIds').val());
-        
         logbookInspectionType.setPermit(permit);
         logbookInspectionType.save();
     }

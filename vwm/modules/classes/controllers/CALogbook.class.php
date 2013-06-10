@@ -258,9 +258,11 @@ class CALogbook extends Controller
             $isEdit = 1;
             $logbookInspectionType->setId($typeId);
             $logbookInspectionType->load();
-            $facilityIds = $logbookInspectionType->getFacilityIds();
+            
+            $facilityIds = $logbookInspectionType->getTemplateIds();
+            
             //if false show all company and all facility
-            if ($facilityIds) {
+            if ($facilityIds) { 
                 //show defined company and defined facility
                 $facilityIds = explode(',', $facilityIds);
                 $facilityId = $facilityIds[0];
@@ -274,7 +276,6 @@ class CALogbook extends Controller
             if (count($facilityIds) > 1) {
                 $facilityId = 'null';
             }
-
             $this->smarty->assign('settings', $logbookInspectionType->getInspectionType());
             $this->smarty->assign('json', $logbookInspectionType->getInspectionTypeRaw());
         }
@@ -285,13 +286,14 @@ class CALogbook extends Controller
         $settings = $logbookInspectionType->getInspectionType();
         //get logbook Template ids 
         $ltManager = new LogbookSetupTemplateManager();
-        $logbookTemplateList = $ltManager->getLogbookTemplateListByInspectionTypeId($typeId);
-        $logbookTemplateIds = array();
-        foreach($logbookTemplateList as $logbookTemplate){
-            $logbookTemplateIds[] = $logbookTemplate->getId();
+        if (!is_null($typeId)) {
+            $logbookTemplateList = $ltManager->getLogbookTemplateListByInspectionTypeId($typeId);
+            $logbookTemplateIds = array();
+            foreach ($logbookTemplateList as $logbookTemplate) {
+                $logbookTemplateIds[] = $logbookTemplate->getId();
+            }
+            $logbookTemplateList = implode(',', $logbookTemplateIds);
         }
-        $logbookTemplateList = implode(',', $logbookTemplateIds);
-        
         
         $tpl = 'tpls/addLogbookInspectionType.tpl';
         $this->smarty->assign('isEdit', $isEdit);
@@ -526,13 +528,9 @@ class CALogbook extends Controller
             foreach ($logbookTemplateIds as $logbookTemplateId){
                 $itManager->assignInspectionTypeToInspectionTemplate($id, $logbookTemplateId);
             }
-            /*$itManager->unAssignInspectionTypeToFacility($id);
-            foreach ($facilityIds as $facilityId) {
-                $itManager->assignInspectionTypeToFacility($id, $facilityId);
-            }*/
         }
         $response = array(
-            'link' => '?action=browseCategory&category=logbook',
+            'link' => '?action=browseCategory&category=logbook&bookmark=logbookInspectionType',
             'errors' => $errors
         );
         $response = json_encode($response);
@@ -580,8 +578,6 @@ class CALogbook extends Controller
                 throw new Exception('404');
                 break;
         }
-        //var_dump($bookmark);die();
-
         $this->finalDeleteItemACommon($itemForDelete);
     }
 
@@ -627,7 +623,6 @@ class CALogbook extends Controller
         $facilityIds = explode(',', $facilityIds);
         $logbookSetupTemplateId = $this->getFromPost('logbookSetupTemplateId');
 
-        //$logbookTemplateManager = VOCApp::getInstance()->getService('logbookSetupTemplate');
         $logbookTemplateManager = new VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager();
 
         $logbookSetupTemplate = new LogbookSetupTemplate();
@@ -693,7 +688,6 @@ class CALogbook extends Controller
             $logbookSetupTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
         }
 
-        
         $this->smarty->assign('logbookTemplatesIds', $logbookTemplatesIds);
         $this->smarty->assign('logbookSetupTemplateList', $logbookSetupTemplateList);
         $this->smarty->assign('companyId', $companyId);

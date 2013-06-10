@@ -13,11 +13,12 @@ class LogbookInspectionType extends Model
     protected $id;
 
     /**
-     *
-     * @var int
+     * 
+     * var int[]
      */
-    protected $facilityIds;
 
+    protected $templateIds = array();
+    
     /**
      *
      * @var string
@@ -36,27 +37,34 @@ class LogbookInspectionType extends Model
         $this->id = $id;
     }
 
-    public function getFacilityIds()
+    public function getTemplateIds()
     {
-        if (!empty($this->facilityIds)) {
-            return $this->facilityIds;
+        if (!empty($this->templateIds)) {
+            return $this->$templateIds;
         }
         if(is_null($this->getId())){
             return false;
         }
-        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
         $itManager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
-        $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($this->getId());
-        if (count($facilityIds)>1){
-            return 'All Facilities';
+        $ltManager = new \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager();
+        
+        $templates = $ltManager->getLogbookTemplateListByInspectionTypeId($this->getId());
+        
+        $templatesIds = array();
+        foreach($templates as $template){
+            $templatesIds[] = $template->getId();
+        }
+        
+        if (count($templatesIds)>1){
+            return implode(',', $templatesIds);
         }
         return $facilityIds[0];
         
     }
 
-    public function setFacilityIds($facilityIds)
+    public function setTemplateIds($templateIds)
     {
-        $this->facilityIds = $facility_id;
+        $this->templateIds = $templateIds;
     }
 
     public function getInspectionTypeRaw()
