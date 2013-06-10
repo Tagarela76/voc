@@ -46,7 +46,7 @@
                 Inspection Type Name
             </td>
             <td width="10%">
-                Facility Template Id
+                LogbookTemplate Id
             </td>
             <td width="10%">
                 Has Permit
