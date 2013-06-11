@@ -1,5 +1,4 @@
-
-<div style="float: left;">
+<div style="float: left;margin-top: 3px">
     <div style='float: left;'>
         Company List<br>
         <select id='companyId' name='companyId' onchange="inspection.setInspectionTypeToTemplate.loadContent();">
@@ -20,7 +19,7 @@
     </div>
 </div>
 
-<table width="100%" cellpadding="0" cellspacing="0" class="popup_table" align="center" id='logbookTemplateList'>
+<table width="100%" cellpadding="0" cellspacing="0" class="popup_table" align="center" id='logbookTemplateList' style="margin-top: 40px">
     <tr class="table_popup_rule">
         <td>
             Logbook Templates
@@ -35,8 +34,8 @@
             </td>
             <td>
                 <input type = checkbox id='logbookItem_{$logbookSetupTemplate->getId()|escape}' value="{$logbookSetupTemplate->getId()|escape}"
-                       {if in_array($logbookSetupTemplate->getId(), $logbookTemplatesIds)}checked = 'true'{/if}>
-            </td>
-        </tr>
-    {/foreach}
+                {if in_array($logbookSetupTemplate->getId(), $logbookTemplatesIds)}checked = 'true'{/if}>
+        </td>
+    </tr>
+{/foreach}
 </table>

@@ -31,46 +31,16 @@
                 <input type='textbox' name='inspectionTypeName' id='inspectionTypeName' style="width: 240px;" value='{$settings->typeName|escape}'>
             </td>
         </tr>
-        <!-- <tr>
-             <td class="border_users_b border_users_r border_users_l" width ='10%' height = '30px'>
-                 Company
-             </td>
-             <td class="border_users_b border_users_r border_users_l">
-                 <select id='companyId' name='companyId' onchange="manager.getFacilityList();">
-                     <option value='null'>All</option>
-        {foreach from=$companyList item=company}
-            <option value='{$company.id|escape}' {if $companyId == $company.id} selected = 'selected'{/if}>
-            {$company.name|escape}
-        </option>
-        {/foreach}
-    </select>
-</td>
-</tr>
-<tr>
-<td class="border_users_b border_users_r border_users_l" width ='10%' height = '30px'>
-    Facility
-</td>
-<td class="border_users_b border_users_r border_users_l">
-    <select id = 'facilityId' name='facilityId' id = 'facilityId' >
-        <option value='null'>All</option>
-        {foreach from=$facilityList item=facility}
-            <option value='{$facility->getFacilityId()|escape}' {if $facilityId == $facility->getFacilityId()} selected = 'selected'{/if}>
-            {$facility->getName()|escape}
-        </option>
-        {/foreach}
-    </select>
-</td>
-</tr>-->
         <tr>
             <td class="border_users_b border_users_r border_users_l" width ='10%' height = '30px'>
                Set LogbookTemplate
             </td>
             <td class="border_users_b border_users_r border_users_l">
                 <div id = 'showSelectedLogbookTemplatesIds'>
-                    {$logbookTemplateList}
+                    {$logbookTemplateList|escape}
                 </div>
                 <a onclick = 'inspection.setInspectionTypeToTemplate.openDialog()'>set</a>
-                <input type='hidden' value = '{$logbookTemplateList}' id='selectedLogbookTemplatesIds'>
+                <input type='hidden' value = '{$logbookTemplateList|escape}' id='selectedLogbookTemplatesIds'>
             </td>
         </tr>
         
@@ -201,7 +171,7 @@
                 </td>
                 <td width="25%" class="border_users_b border_users_l" id="gauge_type_{$smarty.section.i.index}">
                     {assign var='gaugeId' value=$additionFieldList[i]->gaugeType}
-                    {$gaugeList[$gaugeId].name}
+                    {$gaugeList[$gaugeId].name|escape}
                 </td>
                 <td  class="border_users_b border_users_r border_users_l" width="10%">
                     <div>
@@ -220,7 +190,7 @@
     <div id='typeSaveErrors' style='color: #ff0000; margin: 20px 1px 1px 1px;'>
     </div>
 </div>
-<input type='hidden' id='logbookInspectionTypeId' value="{$logbookInspectionType->getId()}">
+<input type='hidden' id='logbookInspectionTypeId' value="{$logbookInspectionType->getId()|escape}">
 <div id="addInspectionSubTypeContainer" title="Add new Inspection Sub Type" style="display:none;">Loading ...</div>
 <div id="inspectionGaugeTypeContainer" title="Add Inspection Gauge Type" style="display:none;">Loading ...</div>
 <div id="setInspectionTypeToTemplateContainer" title="Set inspection template" style="display:none;">Loading ...</div>

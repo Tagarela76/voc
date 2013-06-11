@@ -7,7 +7,6 @@ use \VWM\Hierarchy\Facility;
 
 class LogbookSetupTemplateManager
 {
-
     const TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE = 'inspection_type2logbook_setup_template';
     const TB_LOGBOOK_SETUP_TEMPLATE2FACILITY = 'logbook_setup_template2facility';
 
@@ -24,9 +23,6 @@ class LogbookSetupTemplateManager
         if (is_null($logbookTemplateId) || is_null($facilityId)) {
             return false;
         }
-
-        /*$facility = new Facility($db, $facilityId);
-        $companyId = $facility->getCompanyId();*/
         $query = "INSERT INTO " . self::TB_LOGBOOK_SETUP_TEMPLATE2FACILITY . " SET " .
                 "logbook_setup_template_id = {$db->sqltext($logbookTemplateId)}, " .
                 "facility_id = {$db->sqltext($facilityId)}";
@@ -56,7 +52,7 @@ class LogbookSetupTemplateManager
      * 
      * @return boolean|\VWM\Apps\Logbook\Entity\LogbookSetupTemplate[]
      */
-    public function getLogbookTemplateListByFacilityIds($facilityIds = null)
+    public function getLogbookTemplateListByFacilityIds($facilityIds = null, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
 
@@ -67,6 +63,9 @@ class LogbookSetupTemplateManager
         if (!is_null($facilityIds)) {
             $query = "SELECT logbook_setup_template_id FROM " . self::TB_LOGBOOK_SETUP_TEMPLATE2FACILITY . " " .
                     "WHERE facility_id IN ({$db->sqltext($facilityIds)})";
+            if (isset($pagination)) {
+                $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+            }
             $db->query($query);
             $rows = $db->fetch_all_array();
             //delete repetitive ids
@@ -77,6 +76,9 @@ class LogbookSetupTemplateManager
             }
         } else {
             $query = "SELECT id FROM " . LogbookSetupTemplate::TABLE_NAME;
+            if (isset($pagination)) {
+                $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+            }
             $db->query($query);
             $rows = $db->fetch_all_array();
             foreach ($rows as $row) {
@@ -92,6 +94,37 @@ class LogbookSetupTemplateManager
         }
 
         return $logbookTemplateList;
+    }
+    
+    /**
+     * 
+     * get count of logbook template by facility ids
+     * 
+     * @param string $facilityIds
+     * 
+     * @return int
+     */
+    public function getCountLogbookTemplateListByFacilityIds($facilityIds = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        $logbookTemplateList = array();
+        $logbookTemplateIds = array();
+        //get Logbook Template Id 
+        if (!is_null($facilityIds)) {
+            $query = "SELECT logbook_setup_template_id FROM " . self::TB_LOGBOOK_SETUP_TEMPLATE2FACILITY . " " .
+                    "WHERE facility_id IN ({$db->sqltext($facilityIds)}) GROUP BY logbook_setup_template_id";
+                    
+            $db->query($query);
+            $rows = $db->fetch_all_array();
+            return count($rows);
+        } else {
+            $query = "SELECT count(*) count FROM " . LogbookSetupTemplate::TABLE_NAME;
+            $db->query($query);
+            $rows = $db->fetch(0);
+        }
+
+        return $rows->count;
     }
 
     /**
@@ -122,6 +155,13 @@ class LogbookSetupTemplateManager
         return $facilityList;
     }
     
+    /**
+     * 
+     * get logbookTemplate List By Inspection Type Id
+     * 
+     * @param int $inspectionTypeId
+     * @return \VWM\Apps\Logbook\Entity\LogbookSetupTemplate[]
+     */
     public function getLogbookTemplateListByInspectionTypeId($inspectionTypeId)
     {
         $db = \VOCApp::getInstance()->getService('db');

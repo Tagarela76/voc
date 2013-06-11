@@ -1,5 +1,4 @@
 <?php
-
 use VWM\Hierarchy\CompanyManager;
 use VWM\Hierarchy\FacilityManager;
 use VWM\Apps\Logbook\Entity\LogbookInspectionType;
@@ -14,7 +13,6 @@ use VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
 
 class CALogbook extends Controller
 {
-
     public function __construct($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
@@ -29,14 +27,18 @@ class CALogbook extends Controller
         if (method_exists($this, $functionName))
             $this->$functionName();
     }
-
+/**
+ * 
+ * action view logbook details
+ * 
+ * @throws Exception
+ */
     public function actionBrowseCategory()
     {
         $bookmark = $this->getFromRequest('bookmark');
         $facilityId = $this->getFromRequest('facilityId');
         $companyId = $this->getFromRequest('companyId');
         $logbookTemplateId = $this->getFromRequest('logbookTemplateId');
-        
 
         $itManager = new InspectionTypeManager();
         $ltManager = new LogbookSetupTemplateManager();
@@ -44,94 +46,90 @@ class CALogbook extends Controller
         if (is_null($bookmark)) {
             $bookmark = 'logbookSetupTemplate';
         }
-
+        //get companyList
+        $companyManager = new CompanyManager();
+        $companyList = $companyManager->getCompanyList();
+        $this->smarty->assign('companyList', $companyList);
+        //get Facility List By Company id
+        $facilityManager = new FacilityManager();
+        if ($companyId != 'null' || !isset($companyId)) {
+            $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
+        } else {
+            $facilityList = $facilityManager->getFacilityListByCompanyId();
+        }
+        $this->smarty->assign('facilityList', $facilityList);
+        
         switch ($bookmark) {
             case 'logbookSetupTemplate':
-                //get companyList
-                $companyManager = new CompanyManager();
-                $companyList = $companyManager->getCompanyList();
-                $this->smarty->assign('companyList', $companyList);
-
-                //get Facility List By Company id
-                $facilityManager = new FacilityManager();
-                if ($companyId != 'null' || !isset($companyId)) {
-                    $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
-                } else {
-                    $facilityList = $facilityManager->getFacilityListByCompanyId();
-                }
-                $this->smarty->assign('facilityList', $facilityList);
-
                 //get logbook Setup Template List
                 if ($facilityId == 'null' || !isset($facilityId)) {
                     if ($companyId == 'null' || !isset($companyId)) {
-                        $logbookSetupTemplateList = $ltManager->getLogbookTemplateListByFacilityIds();
+                        $facilityId = null;
                     } else {
                         $company = new Company();
                         $facilityIds = array();
                         foreach ($facilityList as $facility) {
                             $facilityIds[] = $facility->getFacilityId();
                         }
-                        $facilityIds = implode(',', $facilityIds);
-                        $logbookSetupTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityIds);
+                        $facilityId = implode(',', $facilityIds);
                     }
-                } else {
-                    $logbookSetupTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
                 }
-
+                //set pagination
+                $countLogbookSetupTemplateList = $ltManager->getCountLogbookTemplateListByFacilityIds($facilityId);
+                
+                $url = "?" . $_SERVER["QUERY_STRING"];
+                $url = preg_replace("/\&page=\d*/", "", $url);
+                $pagination = new Pagination($countLogbookSetupTemplateList);
+                $pagination->url = $url;
+                
+                $logbookSetupTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId,$pagination);
+                $this->smarty->assign('pagination', $pagination);
                 $this->smarty->assign('logbookSetupTemplateList', $logbookSetupTemplateList);
                 $this->smarty->assign('itemsCount', count($logbookSetupTemplateList));
                 $tpl = 'tpls/viewLogbookTemplateList.tpl';
                 break;
             case 'logbookInspectionType':
-                //$itManager = \VOCApp::getInstance()->getService('inspectionType');
-                if ($logbookTemplateId == 'null') {
-                    $logbookTemplateId = null;
-                }
-                if ($facilityId == 'null' || !isset($facilityId)) {
+                //get logbook template List by Facility Id
+                if($facilityId == 'null' || !isset($facilityId)){
                     if ($companyId == 'null' || !isset($companyId)) {
-                        //get all inspection types
-                        $facilityId = null;
-                        $companyId = null;
-                    } else {
-                        $facilityIds = array();
-                        $facilityManager = new FacilityManager();
-                        $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
-
+                        //get all templates
+                        $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds();
+                    }else{
+                        //get templates by company
                         foreach ($facilityList as $facility) {
                             $facilityIds[] = $facility->getFacilityId();
                         }
-                        //get inspection type by company id
-                        $facilityId = implode(',', $facilityIds);
+                        $facilityIds = implode(',', $facilityIds);
+                        $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityIds);
+                    }
+                }else{
+                    //get logbookTemplateList by facility
+                    $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
+                }
+                $this->smarty->assign('logbookTemplateList', $logbookTemplateList);
+               
+                //get Inspection Types ids
+                if ($logbookTemplateId == 'null' || !isset($logbookTemplateId)) {
+                    if (($facilityId == 'null' || !isset($facilityId)) && ($companyId == 'null' || !isset($companyId))) {
+                        $logbookTemplateId = null;
+                    } else {
+                        $logbookTemplateId = array();
+                        foreach ($logbookTemplateList as $logbookTemplate) {
+                            $logbookTemplateId[] = $logbookTemplate->getId();
+                        }
+                        $logbookTemplateId = implode(',', $logbookTemplateId);
                     }
                 }
-                //get companyList
-                $companyManager = new CompanyManager();
-                $companyList = $companyManager->getCompanyList();
-                $this->smarty->assign('companyList', $companyList);
-
-                //get Facility List By Company id
-                $facilityManager = new FacilityManager();
-                if ($companyId != 'null' || !isset($companyId)) {
-                    $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
-                } else {
-                    $facilityList = $facilityManager->getFacilityListByCompanyId();
-                }
-                $this->smarty->assign('facilityList', $facilityList);
-                //get logbook template List by Facility Id
-
-                $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
-                $this->smarty->assign('logbookTemplateList', $logbookTemplateList);
+                
                 //set pagination
-                $logbookListCount = $itManager->getCountInspectionTypeByFacilityId($facilityId);
+                $logbookListCount = $itManager->getCountInspectionTypeByTemplateId($logbookTemplateId);
                 $url = "?" . $_SERVER["QUERY_STRING"];
                 $url = preg_replace("/\&page=\d*/", "", $url);
-
+                
                 $pagination = new Pagination($logbookListCount);
                 $pagination->url = $url;
-
-                //get Inspection Types
                 $inspectionTypeList = $itManager->getInspectionTypeList($logbookTemplateId, $pagination);
-
+                
                 $this->smarty->assign('inspectionTypeList', $inspectionTypeList);
                 $tpl = 'tpls/viewLogbookInspectionList.tpl';
                 $this->smarty->assign('pagination', $pagination);
@@ -211,7 +209,6 @@ class CALogbook extends Controller
         if (!is_null($logbookSetupTemplateId)) {
             $logbookSetupTemplate->setId($logbookSetupTemplateId);
             $logbookSetupTemplate->load();
-
             $facilityList = $ltManager->getFacilityListByLogbookSetupTemplateId($logbookSetupTemplateId);
             $facilityIds = array();
             $companyIds = array();
@@ -247,6 +244,7 @@ class CALogbook extends Controller
         if ($companyId == 'null') {
             $companyId = $companyList[0]['id'];
         }
+        
         //get gauge list
         $lManager = new LogbookManager();
         $gaugeList = $lManager->getGaugeList();
@@ -258,31 +256,9 @@ class CALogbook extends Controller
             $isEdit = 1;
             $logbookInspectionType->setId($typeId);
             $logbookInspectionType->load();
-            
-            $facilityIds = $logbookInspectionType->getTemplateIds();
-            
-            //if false show all company and all facility
-            if ($facilityIds) { 
-                //show defined company and defined facility
-                $facilityIds = explode(',', $facilityIds);
-                $facilityId = $facilityIds[0];
-                $facility = new \VWM\Hierarchy\Facility($this->db, $facilityId);
-                $companyId = $facility->getCompanyId();
-            } else {
-                $facilityId = 'null';
-            }
-
-            //all facility and defined company
-            if (count($facilityIds) > 1) {
-                $facilityId = 'null';
-            }
             $this->smarty->assign('settings', $logbookInspectionType->getInspectionType());
             $this->smarty->assign('json', $logbookInspectionType->getInspectionTypeRaw());
         }
-        //get Facility List By Company id
-        $facilityManager = new FacilityManager();
-        $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
-        $this->smarty->assign('facilityList', $facilityList);
         $settings = $logbookInspectionType->getInspectionType();
         //get logbook Template ids 
         $ltManager = new LogbookSetupTemplateManager();
@@ -294,7 +270,6 @@ class CALogbook extends Controller
             }
             $logbookTemplateList = implode(',', $logbookTemplateIds);
         }
-        
         $tpl = 'tpls/addLogbookInspectionType.tpl';
         $this->smarty->assign('isEdit', $isEdit);
         $this->smarty->assign('logbookTemplateList', $logbookTemplateList);
@@ -303,7 +278,6 @@ class CALogbook extends Controller
         $this->smarty->assign('tpl', $tpl);
 
         $this->smarty->assign('logbookInspectionType', $logbookInspectionType);
-        //$this->smarty->display("tpls:index.tpl");
     }
 
     /**
@@ -350,7 +324,6 @@ class CALogbook extends Controller
                 $facilityId = implode(',', $facilityId);
             }
         }
-
         $ltManager = new LogbookSetupTemplateManager();
         $logbookTemplates = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
         $logbookTemplateList = array();
@@ -418,7 +391,6 @@ class CALogbook extends Controller
                 'facilityList' => $facilityList
             );
         }
-
         $this->smarty->assign('companyCount', count($companyList));
         $this->smarty->assign('companyList', $companyList);
         $this->smarty->assign('selectedFacilityIds', $selectedFacilityIds);
@@ -437,31 +409,13 @@ class CALogbook extends Controller
         $violationList = '';
         $inspectionTypeToJson = $this->getFromPost('inspectionTypeToJson');
         $inspectionType = json_decode($inspectionTypeToJson);
-        $facilityId = $inspectionType->facilityId;
         $companyId = $this->getFromPost('companyId');
         $inspectionTypeId = $inspectionType->id;
         $typeSubTypes = $inspectionType->subtypes;
         $typeGaugeTypes = $inspectionType->additionFieldList;
         $id = $this->getFromPost('id');
         $logbookTemplateIds = explode(',', $inspectionType->logbookTemplateIds);
-        
-        //$ltManager = \VOCApp::getInstance()->getService('inspectionType');
         $itManager = new InspectionTypeManager();
-        //get Facilities Ids
-        $facilityIds = array();
-        if ($facilityId == 'null') {
-            $facilityManager = new FacilityManager();
-            if ($companyId == 'null') {
-                $facilityList = $facilityManager->getFacilityListByCompanyId();
-            } else {
-                $facilityList = $facilityManager->getFacilityListByCompanyId($companyId);
-            }
-            foreach ($facilityList as $facility) {
-                $facilityIds[] = $facility->getFacilityId();
-            }
-        } else {
-            $facilityIds[] = $facilityId;
-        }
         //set subtype settings
         $subTypes = array();
         foreach ($typeSubTypes as $typeSubType) {
@@ -509,7 +463,6 @@ class CALogbook extends Controller
         if ($id != '') {
             $logbookInspectionType->setId($id);
         }
-        //$logbookInspectionType->setFacilityIds($facilityId);
         $logbookInspectionType->setInspectionTypeRaw($inspectionTypeSettingsToJson);
         //inspection type validate
         if (count($inspectionTypeSettings->validate()) != 0) {
@@ -547,7 +500,6 @@ class CALogbook extends Controller
         $itemForDelete = array();
         switch ($bookmark) {
             case 'logbookSetupTemplate':
-
                 for ($i = 0; $i < $itemsCount; $i++) {
                     if (!is_null($this->getFromRequest('item_' . $i))) {
                         $item = array();
@@ -561,7 +513,6 @@ class CALogbook extends Controller
                 }
                 break;
             case 'logbookInspectionType':
-
                 for ($i = 0; $i < $itemsCount; $i++) {
                     if (!is_null($this->getFromRequest('item_' . $i))) {
                         $item = array();
@@ -615,6 +566,9 @@ class CALogbook extends Controller
         die();
     }
 
+    /**
+     * save Logbook Template
+     */
     public function actionSaveLogbookTemplate()
     {
         $isErrors = false;
@@ -652,6 +606,10 @@ class CALogbook extends Controller
         $this->smarty->display("tpls:index.tpl");
     }
 
+    /**
+     * ajax method
+     * load Set Inspection type Logbook Template
+     */
     public function actionLoadInspectionTypeLogbookTemplate()
     {
         $companyId = $this->getFromRequest('companyId');
@@ -661,7 +619,6 @@ class CALogbook extends Controller
         //get companyList
         $companyManager = new CompanyManager();
         $companyList = $companyManager->getCompanyList();
-
         //get Facility List By Company id
         $facilityManager = new FacilityManager();
         if ($companyId != 'null' || !isset($companyId)) {
@@ -669,7 +626,6 @@ class CALogbook extends Controller
         } else {
             $facilityList = $facilityManager->getFacilityListByCompanyId();
         }
-
         //get logbook Setup Template List
         $ltManager = new LogbookSetupTemplateManager();
         if ($facilityId == 'null' || !isset($facilityId)) {

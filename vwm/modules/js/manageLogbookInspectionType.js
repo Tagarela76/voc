@@ -86,7 +86,6 @@ function ManageInspectionType() {
     this.saveInspectionType = function() {
         var permit = $('#inspectionTypePermit:checked').val() ? 1 : 0;
         logbookInspectionType.setName($('#inspectionTypeName').val());
-        //logbookInspectionType.setFacilityId($('#facilityId').val());
         logbookInspectionType.setlogbookTemplate($('#selectedLogbookTemplatesIds').val());
         logbookInspectionType.setPermit(permit);
         logbookInspectionType.save();
@@ -704,7 +703,6 @@ function SetInspectionTypeToTemplateDialog() {
         logbookTemplateIds = logbookTemplateIds.join(',');
         $('#selectedLogbookTemplatesIds').val(logbookTemplateIds);
         $('#showSelectedLogbookTemplatesIds').html(logbookTemplateIds);
-        console.log(logbookTemplateIds);
     }
     
     

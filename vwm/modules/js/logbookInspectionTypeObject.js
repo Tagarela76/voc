@@ -7,7 +7,6 @@ function LogbookInspectionType() {
     var name;
     var permit;
     var id;
-    var facilityId;
     var subTypes = [];
     var gaugeTypes = [];
     var logbookTemplateIds;
@@ -17,7 +16,6 @@ function LogbookInspectionType() {
         var name;
         var permit;
         var id;
-        var facilityId;
         var subTypes = [];
         var gaugeTypes = [];
         var logbookTemplateIds;
@@ -32,9 +30,6 @@ function LogbookInspectionType() {
         }
         self.setPermit = function(typePermit) {
             permit = typePermit;
-        }
-        self.setFacilityId = function(typeFacilityId) {
-            facilityId = typeFacilityId;
         }
         
         self.setlogbookTemplate = function(typeLogbookTemplate) {
@@ -59,9 +54,7 @@ function LogbookInspectionType() {
         self.getPermit = function() {
             return permit
         }
-        self.getFacilityId = function() {
-            return facilityId
-        }
+        
         self.getLogbookTemplate = function() {
             return logbookTemplateIds
         }
@@ -142,7 +135,6 @@ function LogbookInspectionType() {
             typeId: self.getId(),
             typeName: self.getName(),
             permit: self.getPermit(),
-            facilityId: self.getFacilityId(),
             subtypes: typeSubTypes,
             additionFieldList: typeGaugeTypes,
             logbookTemplateIds: self.getLogbookTemplate(),

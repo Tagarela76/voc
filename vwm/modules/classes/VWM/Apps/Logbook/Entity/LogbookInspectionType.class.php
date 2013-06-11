@@ -3,6 +3,8 @@
 namespace VWM\Apps\Logbook\Entity;
 
 use \VWM\Framework\Model;
+use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
+use \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
 
 class LogbookInspectionType extends Model
 {
@@ -45,8 +47,8 @@ class LogbookInspectionType extends Model
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
-        $ltManager = new \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager();
+        $itManager = new InspectionTypeManager();
+        $ltManager = new LogbookSetupTemplateManager();
         
         $templates = $ltManager->getLogbookTemplateListByInspectionTypeId($this->getId());
         
@@ -58,7 +60,7 @@ class LogbookInspectionType extends Model
         if (count($templatesIds)>1){
             return implode(',', $templatesIds);
         }
-        return $facilityIds[0];
+        return $templatesIds[0];
         
     }
 
@@ -158,11 +160,11 @@ class LogbookInspectionType extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
         //$itManager = \VOCApp::getInstance()->getService('inspectionType');
-        $itManager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
+        $itManager = new InspectionTypeManager();
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-        $itManager->unAssignInspectionTypeToFacility($this->getId());
+        $itManager->unAssignInspectionTypeFromInspectionTemplate($this->getId());
     }
 }
 ?>

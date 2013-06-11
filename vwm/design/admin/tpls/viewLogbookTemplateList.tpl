@@ -1,3 +1,6 @@
+{*PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
 <div style="float: right; margin: 25px; width: 335px">
     <div style='float: left;'>
         Company List<br>
@@ -55,3 +58,6 @@
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>
+{*PAGINATION*}
+{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
