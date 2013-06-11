@@ -3,6 +3,8 @@
 namespace VWM\Apps\Logbook\Entity;
 
 use \VWM\Framework\Model;
+use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
+use \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
 
 class LogbookInspectionType extends Model
 {
@@ -13,11 +15,12 @@ class LogbookInspectionType extends Model
     protected $id;
 
     /**
-     *
-     * @var int
+     * 
+     * var int[]
      */
-    protected $facilityIds;
 
+    protected $templateIds = array();
+    
     /**
      *
      * @var string
@@ -36,26 +39,34 @@ class LogbookInspectionType extends Model
         $this->id = $id;
     }
 
-    public function getFacilityIds()
+    public function getTemplateIds()
     {
-        if (!empty($this->facilityIds)) {
-            return $this->facilityIds;
+        if (!empty($this->templateIds)) {
+            return $this->$templateIds;
         }
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
-        $facilityIds = $itManager->getFacilityIdsByInspectionTypeId($this->getId());
-        if (count($facilityIds)>1){
-            return 'All Facilities';
+        $itManager = new InspectionTypeManager();
+        $ltManager = new LogbookSetupTemplateManager();
+        
+        $templates = $ltManager->getLogbookTemplateListByInspectionTypeId($this->getId());
+        
+        $templatesIds = array();
+        foreach($templates as $template){
+            $templatesIds[] = $template->getId();
         }
-        return $facilityIds[0];
+        
+        if (count($templatesIds)>1){
+            return implode(',', $templatesIds);
+        }
+        return $templatesIds[0];
         
     }
 
-    public function setFacilityIds($facilityIds)
+    public function setTemplateIds($templateIds)
     {
-        $this->facilityIds = $facility_id;
+        $this->templateIds = $templateIds;
     }
 
     public function getInspectionTypeRaw()
@@ -148,11 +159,12 @@ class LogbookInspectionType extends Model
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $itManager = new InspectionTypeManager();
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-        $itManager->unAssignInspectionTypeToFacility($this->getId());
+        $itManager->unAssignInspectionTypeFromInspectionTemplate($this->getId());
     }
 }
 ?>

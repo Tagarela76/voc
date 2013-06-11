@@ -7,18 +7,18 @@ function LogbookInspectionType() {
     var name;
     var permit;
     var id;
-    var facilityId;
     var subTypes = [];
     var gaugeTypes = [];
+    var logbookTemplateIds;
 
     // Private members are made by the constructor	
     var constructor = function() {
         var name;
         var permit;
         var id;
-        var facilityId;
         var subTypes = [];
         var gaugeTypes = [];
+        var logbookTemplateIds;
         var that = this;
 
         //setters
@@ -31,8 +31,9 @@ function LogbookInspectionType() {
         self.setPermit = function(typePermit) {
             permit = typePermit;
         }
-        self.setFacilityId = function(typeFacilityId) {
-            facilityId = typeFacilityId;
+        
+        self.setlogbookTemplate = function(typeLogbookTemplate) {
+            logbookTemplateIds = typeLogbookTemplate;
         }
 
         self.setSubTypes = function(typeSubTypes) {
@@ -53,8 +54,9 @@ function LogbookInspectionType() {
         self.getPermit = function() {
             return permit
         }
-        self.getFacilityId = function() {
-            return facilityId
+        
+        self.getLogbookTemplate = function() {
+            return logbookTemplateIds
         }
         self.getSubTypes = function() {
             return subTypes
@@ -133,9 +135,9 @@ function LogbookInspectionType() {
             typeId: self.getId(),
             typeName: self.getName(),
             permit: self.getPermit(),
-            facilityId: self.getFacilityId(),
             subtypes: typeSubTypes,
-            additionFieldList: typeGaugeTypes
+            additionFieldList: typeGaugeTypes,
+            logbookTemplateIds: self.getLogbookTemplate(),
         }
         return typeAttributes;
     }
@@ -189,7 +191,7 @@ function LogbookInspectionType() {
             },
             dataType: 'json',
             success: function(response) {
-               //$('#typeSaveErrors').html(response);
+              // $('#typeSaveErrors').html(response);
                 if (response.errors == false) {
                     window.location.href = response.link;
                 } else {

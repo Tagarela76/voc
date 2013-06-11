@@ -43,7 +43,7 @@ class LogbookInspectionTypeTest extends Testing\DbTestCase
         $facilityId = 120;
         $inspectionType = new LogbookInspectionType();
         $inspectionType->setInspectionTypeRaw($inspectionTypeSettingsToJson);
-        $inspectionType->setFacilityIds($facilityId);
+        
         $id = $inspectionType->save();
 
         $query = "SELECT * FROM " . LogbookInspectionType::TABLE_NAME . " " .
@@ -60,24 +60,35 @@ class LogbookInspectionTypeTest extends Testing\DbTestCase
         $this->assertEquals($newInspectionType->subtypes[0]->notes, $notes);
         $this->assertEquals($newInspectionType->subtypes[0]->valueGauge, $gauge);
     }
-
-    public function testAssignInspectionTypeToFacility()
+    
+    public function testDelete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $id = 6;
-        $facilityId = 100;
-        $ltManager = \VOCApp::getInstance()->getService('inspectionType');
-        //check save facility ti inspection type
-        $ltManager->assignInspectionTypeToFacility($id, $facilityId);
-        $query = "SELECT * FROM " . InspectionTypeManager::TB_INSPECTION_TYPE2FACILITY . " " .
-                "WHERE inspection_type_id=" . $id;
+        $typeName = 'testDeleteInspectionTypeName';
+        $permit = 1;
+        $subTypes = array();
+        //create inspection setting
+        $inspectionTypeSettings = new InspectionTypeSettings();
+        $inspectionTypeSettings->setTypeName($typeName);
+        $inspectionTypeSettings->setPermit($permit);
+        $inspectionTypeSettings->setSubtypes($subTypes);
+        $inspectionTypeSettingsToJson = $inspectionTypeSettings->toJson();
+
+        $facilityId = 120;
+        $inspectionType = new LogbookInspectionType();
+        $inspectionType->setInspectionTypeRaw($inspectionTypeSettingsToJson);
+        
+        $id = $inspectionType->save();
+
+        $query = "SELECT * FROM " . LogbookInspectionType::TABLE_NAME . " " .
+                "WHERE id=" . $id;
         $db->query($query);
-        $result = $db->fetch_all_array();
-        $typeFacilityId = $result[0]['facility_id'];
-        $typeId = $result[0]['inspection_type_id'];
-        $this->assertEquals($typeFacilityId, $facilityId);
-        $this->assertEquals($typeId, $id);
+        $this->assertFalse($db->num_rows() == 0);
+        $inspectionType->delete();
+        $this->assertTrue($db->num_rows() == 0);
     }
+
+    
 
 }
 ?>

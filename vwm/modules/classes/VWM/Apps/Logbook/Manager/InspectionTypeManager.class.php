@@ -9,6 +9,7 @@ class InspectionTypeManager
     const TB_INSPECTION_TYPE = 'inspection_type';
     const TB_DESCRIPTION_DESCRIPTION = 'inspection_description';
     const TB_INSPECTION_TYPE2FACILITY = 'inspection_type2facility';
+    const TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE = 'inspection_type2logbook_setup_template';
 
     /**
      * 
@@ -18,37 +19,23 @@ class InspectionTypeManager
      * 
      * @return string
      */
-    
     public function getInspectionTypeListInJson($facilityId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeInJson = array();
         
-        //get inspection type ids by facility id
-        if (!is_null($facilityId)) {
-            $inspectionTypeIds = array();
-            $sql = "SELECT inspection_type_id " .
-                    "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
-                    "WHERE facility_id IN ({$db->sqltext($facilityId)})";
-            $db->query($sql);
-            
-            $result = $db->fetch_all_array();
-            foreach ($result as $r) {
-                $inspectionTypeIds[] = $r['inspection_type_id'];
-            }
-            $inspectionTypeIds = implode(',', $inspectionTypeIds);
+        $ltManager = new LogbookSetupTemplateManager();
+        $itManager = new InspectionTypeManager();
+        $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
+        $logbookTemplateIds = array();
+        foreach($logbookTemplateList as $logbookTemplate){
+            $logbookTemplateIds[] = $logbookTemplate->getId();
         }
-         //get inspection Types id
-        $query = "SELECT * FROM " . LogbookInspectionType::TABLE_NAME;
+        $logbookTemplateIds= implode(',', $logbookTemplateIds);
+        $inspectionTypeList = $itManager->getInspectionTypeList($logbookTemplateIds);
         
-        if (!is_null($facilityId)) {
-            $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
-        }
-        
-        $db->query($query);
-        $result = $db->fetch_all_array();
-        foreach ($result as $r) {
-            $inspectionTypeInJson[] = $r['settings'];
+        foreach ($inspectionTypeList as $inspectionType) {
+            $inspectionTypeInJson[] = $inspectionType->getInspectionTypeRaw();
         }
         $inspectionTypeInJson = implode(',', $inspectionTypeInJson);
         $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
@@ -193,21 +180,21 @@ class InspectionTypeManager
      * 
      * get inspection type list
      * 
-     * @param int $facilityId
+     * @param int $logbookTemplateId
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookInspectionType[]
      */
-    public function getInspectionTypeList($facilityId = null, $pagination = null)
+    public function getInspectionTypeList($logbookTemplateId = null, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeList = array();
-
+        
         //get inspection type ids by facility id
-        if (!is_null($facilityId)) {
+        if (!is_null($logbookTemplateId)) {
             $inspectionTypeIds = array();
             $sql = "SELECT inspection_type_id " .
-                    "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
-                    "WHERE facility_id IN ({$db->sqltext($facilityId)})";
+                    "FROM " . self::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
+                    "WHERE logbook_setup_template_id IN ({$db->sqltext($logbookTemplateId)})";
             $db->query($sql);
             $result = $db->fetch_all_array();
             foreach ($result as $r) {
@@ -215,10 +202,11 @@ class InspectionTypeManager
             }
             $inspectionTypeIds = implode(',', $inspectionTypeIds);
         }
+        
         //get inspection Types id
         $query = "SELECT * FROM " . LogbookInspectionType::TABLE_NAME;
         
-        if (!is_null($facilityId)) {
+        if (!is_null($logbookTemplateId)) {
             $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
         }
         if (isset($pagination)) {
@@ -235,6 +223,7 @@ class InspectionTypeManager
 
         return $inspectionTypeList;
     }
+    
     /**
      * 
      * get count of inspection type list
@@ -243,17 +232,16 @@ class InspectionTypeManager
      * 
      * @return int
      */
-    public function getCountInspectionTypeByFacilityId($facilityId = null)
+    public function getCountInspectionTypeByTemplateId($templateId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeList = array();
-
         //get inspection type ids by facility id
-        if (!is_null($facilityId)) {
+        if (!is_null($templateId)) {
             $inspectionTypeIds = array();
             $sql = "SELECT inspection_type_id " .
-                    "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
-                    "WHERE facility_id IN ({$db->sqltext($facilityId)})";
+                    "FROM " . self::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
+                    "WHERE logbook_setup_template_id IN ({$db->sqltext($templateId)})";
             $db->query($sql);
             $result = $db->fetch_all_array();
             foreach ($result as $r) {
@@ -263,8 +251,7 @@ class InspectionTypeManager
         }
         //get inspection Types id
         $query = "SELECT count(*) count FROM " . LogbookInspectionType::TABLE_NAME;
-        
-        if (!is_null($facilityId)) {
+        if (!is_null($templateId)) {
             $query.= " WHERE id IN ({$db->sqltext($inspectionTypeIds)})";
         }
         $db->query($query);
@@ -275,16 +262,15 @@ class InspectionTypeManager
     
     /**
      * 
-     * Assign Inspection Type to Facility
+     * Assign Inspection Type to Inspection Template
      * 
      * @param int $inspectionType
      * @param int $facilityId
      */
-    public function assignInspectionTypeToFacility($inspectionTypeId, $facilityId = null)
-    {
+    public function assignInspectionTypeToInspectionTemplate($inspectionTypeId, $logbookSetupTemplateId){
         $db = \VOCApp::getInstance()->getService('db');
-        $query = "INSERT INTO ".self::TB_INSPECTION_TYPE2FACILITY." (	inspection_type_id, facility_id) VALUES " .
-				"({$db->sqltext($inspectionTypeId)}, {$db->sqltext($facilityId)})";
+        $query = "INSERT INTO ".self::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE." (	inspection_type_id, logbook_setup_template_id) VALUES " .
+				"({$db->sqltext($inspectionTypeId)}, {$db->sqltext($logbookSetupTemplateId)})";
         $db->query($query);
     }
 
@@ -295,13 +281,13 @@ class InspectionTypeManager
      * @param int $inspectionType
      * @param int $facilityId
      */
-    public function unAssignInspectionTypeToFacility($inspectionTypeId, $facilityId = null)
+     public function unAssignInspectionTypeFromInspectionTemplate($inspectionTypeId, $logbookSetupTemplateId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $query = "DELETE FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
+        $query = "DELETE FROM " . self::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
                 "WHERE inspection_type_id = {$db->sqltext($inspectionTypeId)} ";
-        if (!is_null($facilityId)) {
-            $query.="AND facility_id = {$db->sqltext($facilityId)}";
+        if (!is_null($logbookSetupTemplateId)) {
+            $query.="AND logbook_setup_template_id = {$db->sqltext($logbookSetupTemplateId)}";
         }
 		$db->query($query);
     }
@@ -314,9 +300,13 @@ class InspectionTypeManager
     public function getFacilityIdsByInspectionTypeId($inspectionTypeId)
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $query = "SELECT facility_id " .
-                "FROM " . self::TB_INSPECTION_TYPE2FACILITY . " " .
-                "WHERE inspection_type_id	= {$db->sqltext($inspectionTypeId)}";
+        $query = "SELECT lt2f.facility_id " .
+                "FROM " . LogbookSetupTemplateManager::TB_LOGBOOK_SETUP_TEMPLATE2FACILITY . " lt2f " .
+                "LEFT JOIN ".LogbookSetupTemplateManager::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE." it2lt ".
+                "ON it2lt.logbook_setup_template_id = lt2f.logbook_setup_template_id ".
+                "LEFT JOIN ".LogbookInspectionType::TABLE_NAME ." it ".
+                "ON it2lt.inspection_type_id = it.id ".
+                "WHERE it.id	= {$db->sqltext($inspectionTypeId)}";
         $db->query($query);
         if ($db->num_rows() == 0) {
             return false;
@@ -325,12 +315,14 @@ class InspectionTypeManager
         $result = $db->fetch_all_array();
         $facilityIds = array();
         foreach($result as $r){
-            $facilityIds[] = $r['facility_id'];
+            if (!in_array($r['facility_id'], $facilityIds)) {
+                $facilityIds[] = $r['facility_id'];
+            }
         }
-        //$facilityIds = implode(',', $facilityIds);
-        
         return $facilityIds;
     }
+    
+    
 
 }
 ?>

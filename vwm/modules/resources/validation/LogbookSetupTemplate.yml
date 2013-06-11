@@ -1,0 +1,5 @@
+VWM\Apps\Logbook\Entity\LogbookSetupTemplate:
+  properties:
+    name:
+      - MaxLength: 50
+      - NotBlank: ~
