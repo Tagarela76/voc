@@ -994,6 +994,21 @@ class MixOptimized extends Model
 
             $mixProduct->json = json_encode($mixProduct);
 
+            //get is Ratio 
+            $getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " ".
+                                "WHERE preformulated_products_id = {$this->db->sqltext($this->getPfpId())} ".
+                                "AND product_id = {$this->db->sqltext($productData->product_id)}";
+            $this->db->query($getProductsQuery);
+            $arr = $this->db->fetch_all_array();
+            $arr = $arr[0];
+            
+            if (!empty($arr['ratio_from_original']) && !empty($arr['ratio_to_original'])) {
+                $mixProduct->isRange = true;
+                $mixProduct->range_ratio = trim($arr['ratio_from_original']) . '-' . trim($arr['ratio_to_original']);
+            } else {
+                $mixProduct->isRange = false;
+            }
+            
             //	push to mix products
             array_push($this->products, $mixProduct);
         }
