@@ -336,18 +336,19 @@ class PaintProduct extends GeneralProduct {
 	}
 
 	public function load() {
+        $db = \VOCApp::getInstance()->getService('db');
 		if(!$this->getId()) {
 			throw new \Exception('Paint Product ID should be set before calling this method');
 		}
 
 		$sql = "SELECT * FROM ".self::TABLE_NAME." " .
-				"WHERE product_id = {$this->db->sqltext($this->getId())}";
-		$this->db->query($sql);
-		if($this->db->num_rows() == 0) {
+				"WHERE product_id = {$db->sqltext($this->getId())}";
+		$db->query($sql);
+		if($db->num_rows() == 0) {
 			return false;
 		}
 
-		$row = $this->db->fetch_array(0);
+		$row = $db->fetch_array(0);
 		$this->initByArray($row);
 
 		return true;

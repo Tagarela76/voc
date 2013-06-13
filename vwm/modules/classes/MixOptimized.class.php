@@ -967,6 +967,13 @@ class MixOptimized extends Model
         $productsData = $this->db->fetch_all();
 
         $unittype = new Unittype($this->db);
+        //get pfp if exist
+        $pfp = $this->getPfp();
+        $pfpProduct = array();
+        if($pfp){
+           $pfpProducts =  $pfp->getProducts();
+        }
+        
         foreach ($productsData as $productData) {
             $mixProduct = new MixProduct($this->db);
             foreach ($productData as $property => $value) {
@@ -993,26 +1000,22 @@ class MixOptimized extends Model
             $mixProduct->initUnittypeList($unittype);
 
             $mixProduct->json = json_encode($mixProduct);
-
             //get is Ratio 
-            $getProductsQuery = "SELECT * FROM " . TB_PFP2PRODUCT . " ".
-                                "WHERE preformulated_products_id = {$this->db->sqltext($this->getPfpId())} ".
-                                "AND product_id = {$this->db->sqltext($productData->product_id)}";
-            $this->db->query($getProductsQuery);
-            $arr = $this->db->fetch_all_array();
-            $arr = $arr[0];
-            
-            if (!empty($arr['ratio_from_original']) && !empty($arr['ratio_to_original'])) {
-                $mixProduct->isRange = true;
-                $mixProduct->range_ratio = trim($arr['ratio_from_original']) . '-' . trim($arr['ratio_to_original']);
-            } else {
-                $mixProduct->isRange = false;
+            foreach ($pfpProducts as $pfpProduct){
+                if($pfpProduct->getProductId() == $productData->product_id){
+                    if (!is_null($pfpProduct->getRatioFromOriginal()) && !is_null($pfpProduct->getRatioToOriginal())) {
+                        $mixProduct->isRange = true;
+                        $mixProduct->range_ratio = trim($pfpProduct->getRatioFromOriginal()) . '-' . trim($pfpProduct->getRatioToOriginal());
+                    } else {
+                        $mixProduct->isRange = false;
+                    }
+                    break;
+                }
             }
-            
             //	push to mix products
             array_push($this->products, $mixProduct);
         }
-
+        
         return $this->products;
     }
 
@@ -1685,6 +1688,24 @@ class MixOptimized extends Model
     public function getCreationTimeInUnixType()
     {
         return $this->creation_time;
+    }
+    
+    /**
+     * 
+     * get pfp
+     * 
+     * @return boolean|\VWM\Apps\WorkOrder\Entity\Pfp
+     */
+    public function getPfp()
+    {
+        $pfpId = $this->getPfpId();
+        if(is_null($pfpId)){
+            return false;
+        }
+        $pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+        $pfp->setId($pfpId);
+        $pfp->load();
+        return $pfp;
     }
 
 }
