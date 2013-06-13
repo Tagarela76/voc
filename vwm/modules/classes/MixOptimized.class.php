@@ -98,6 +98,12 @@ class MixOptimized extends Model
      */
     protected $stepInstance = null;
 
+    /**
+     *
+     * @var \VWM\Apps\WorkOrder\Entity\Pfp 
+     */
+    protected $pfp = null;
+
     const MIX_IS_VALID = 'valid';
     const MIX_IS_INVALID = 'invalid';
     const MIX_IS_EXPIRED = 'expired';
@@ -365,6 +371,34 @@ class MixOptimized extends Model
     public function setStepInstance($stepInstance)
     {
         $this->stepInstance = $stepInstance;
+    }
+
+    /**
+     * 
+     * get pfp
+     * 
+     * @return boolean|\VWM\Apps\WorkOrder\Entity\Pfp
+     */
+    public function getPfp()
+    {
+        if (!is_null($this->pfp)) {
+            return $this->pfp;
+        }
+        $pfpId = $this->getPfpId();
+        if (is_null($pfpId)) {
+            return false;
+        }
+        $pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
+        $pfp->setId($pfpId);
+        $pfp->load();
+        $this->setPfp($pfp);
+        
+        return $pfp;
+    }
+
+    public function setPfp(\VWM\Apps\WorkOrder\Entity\Pfp $pfp)
+    {
+        $this->pfp = $pfp;
     }
 
     /**
@@ -970,10 +1004,10 @@ class MixOptimized extends Model
         //get pfp if exist
         $pfp = $this->getPfp();
         $pfpProduct = array();
-        if($pfp){
-           $pfpProducts =  $pfp->getProducts();
+        if ($pfp) {
+            $pfpProducts = $pfp->getProducts();
         }
-        
+
         foreach ($productsData as $productData) {
             $mixProduct = new MixProduct($this->db);
             foreach ($productData as $property => $value) {
@@ -1001,8 +1035,8 @@ class MixOptimized extends Model
 
             $mixProduct->json = json_encode($mixProduct);
             //get is Ratio 
-            foreach ($pfpProducts as $pfpProduct){
-                if($pfpProduct->getProductId() == $productData->product_id){
+            foreach ($pfpProducts as $pfpProduct) {
+                if ($pfpProduct->getProductId() == $productData->product_id) {
                     if (!is_null($pfpProduct->getRatioFromOriginal()) && !is_null($pfpProduct->getRatioToOriginal())) {
                         $mixProduct->isRange = true;
                         $mixProduct->range_ratio = trim($pfpProduct->getRatioFromOriginal()) . '-' . trim($pfpProduct->getRatioToOriginal());
@@ -1015,7 +1049,7 @@ class MixOptimized extends Model
             //	push to mix products
             array_push($this->products, $mixProduct);
         }
-        
+
         return $this->products;
     }
 
@@ -1689,23 +1723,7 @@ class MixOptimized extends Model
     {
         return $this->creation_time;
     }
+
     
-    /**
-     * 
-     * get pfp
-     * 
-     * @return boolean|\VWM\Apps\WorkOrder\Entity\Pfp
-     */
-    public function getPfp()
-    {
-        $pfpId = $this->getPfpId();
-        if(is_null($pfpId)){
-            return false;
-        }
-        $pfp = new \VWM\Apps\WorkOrder\Entity\Pfp($this->db);
-        $pfp->setId($pfpId);
-        $pfp->load();
-        return $pfp;
-    }
 
 }
