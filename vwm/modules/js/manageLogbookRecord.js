@@ -148,14 +148,14 @@ function InspectionTypeList() {
      * 
      * @returns {null}
      */
-    this.getSubTypesAdditionFields = function() {
+    this.getSubTypesAdditionFields = function(gaugeType) {
         var inspectionTypeName = $('#inspectionType').val();
         var inspectionSubTypeName = $('#inspectionSubType').val();
         var inspectionAdditionTypeName = $('#inspectionAdditionListType').val();
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
         var inspectionSubType = this.getInspectionSubType(inspectionTypeName, inspectionSubTypeName);
         var inspectionAdditionListType = this.getInspectionAdditionType(inspectionTypeName, inspectionAdditionTypeName);
-
+        
         if (inspectionSubType.qty == 0) {
             $('#subTypeQty').hide();
         } else {
@@ -172,16 +172,18 @@ function InspectionTypeList() {
             $('#logbookValueGauge').hide();
             $('#logbookReplacedBulbs').hide();
         } else {
-            var gaugeType = 'null';
-            //get gauge type by sub type
-            if (inspectionAdditionListType) {
-                gaugeType = inspectionAdditionListType.gaugeType
-            }
+            
+            if (gaugeType == undefined) {
+                var gaugeType = 'null';
+                //get gauge type by sub type
+                if (inspectionAdditionListType != undefined) {
+                    gaugeType = inspectionAdditionListType.gaugeType
+                }
 
-            if (inspectionSubType.gaugeType != undefined) {
-                gaugeType = inspectionSubType.gaugeType;
+                if (inspectionSubType.gaugeType != undefined) {
+                    gaugeType = inspectionSubType.gaugeType;
+                }
             }
-
             //set gauge type
             $('#gaugeType').val(gaugeType);
             $('#logbookValueGauge').show();
@@ -462,7 +464,8 @@ function Gauges() {
                 $('#celTo').val(fromTo);
             }
         });
-
+        var gaugeType = $('#gaugeType').val();
+        
         this.updateGauge();
     }
 
@@ -497,19 +500,16 @@ function Gauges() {
         }
         scale.push(to);
         $("#temperatureCelContainer").hide();
-        var dimension = '';
+        //get Gauge Dimension
+        var dimension = $('#gaugeUnitTypeDescription').val();
+        //var dimension = '';
         if (gaugeType == 0) {
-            dimension = '&nbsp;F';
             $("#temperatureCelContainer").show();
-        } else if (gaugeType == 2) {
-            dimension = '&nbsp;ph';
-        }
-        //var sliderValue = $('#LogbookGauge').val();
-
+        } 
+        
         //$('#LogbookGauge').val(from+';'+from);
         this.initNewGauge(from, to, scale, dimension);
-
-
+        //this.changeGaugeUnitType
     }
 
     /**
@@ -521,7 +521,16 @@ function Gauges() {
     this.changeGauge = function() {
         var gaugeType = $('#gaugeType').val();
         //set gauge range 
-
+        switch (gaugeType) {
+                //temperature gauge
+            case '0':
+                $('#gaugeDimension').val('C');
+                break;
+            default:
+                $('#gaugeDimension').val('');
+                break;
+        }
+        
         if (gaugeType == 'null') {
             $('#gaugeRangeFrom').val(0);
             $('#gaugeRangeTo').val(1);
@@ -529,9 +538,33 @@ function Gauges() {
             $('#gaugeRangeFrom').val(this.gaugeRanges[gaugeType].min);
             $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
         }
+        
         this.updateGauge();
+        this.changeGaugeUnitType();
     }
 
+    /**
+     * 
+     * change temperature gauge
+     * 
+     * @returns {null}
+     */
+    this.changeGaugeUnitType = function() {
+        var gaugeType = $('#gaugeType').val();
+        var temperatureGaugeType = '';
+        var temperatureGaugeTypeDesc='';
+        
+        if(gaugeType==0){
+            temperatureGaugeType = $('#gaugeDimension option:selected').val();
+            temperatureGaugeTypeDesc = $('#gaugeDimension option:selected').text();
+        }
+        //set gauge dimension
+        $('#gaugeUnitTypeId').val(temperatureGaugeType);
+        $('#gaugeUnitTypeDescription').val(temperatureGaugeTypeDesc);
+        this.updateGauge();
+        
+        
+    }
     /**
      * 
      * initialize temperature gauge

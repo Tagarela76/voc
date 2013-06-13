@@ -136,13 +136,9 @@
                     {/if}
                 </td>
                 <td class="border_users_b border_users_r">
-                    ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape}) 
-                    {if $logbook->getValueGaugeType() == '0'}
-                        F
-                    {/if}
-                    {if $logbook->getValueGaugeType() == '2'}
-                        ph
-                    {/if}
+                    ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape})
+                    {assign var=unitType value=$logbook->getLogbookUnitType()}
+                    {$unitType->getName()|escape}
                 </td>
             </tr>
             <!--<tr>

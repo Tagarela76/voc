@@ -21,7 +21,7 @@
                                 dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
                                 ampm: true
                         });
-            itlManager.inspectionTypeList.getSubTypesAdditionFields();
+            itlManager.inspectionTypeList.getSubTypesAdditionFields({/literal}{$logbook->getValueGaugeType()}{literal});
             itlManager.description.showNotes();
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
@@ -59,7 +59,7 @@
                 <td>
                     <select id = 'InspectionPersons' name = 'InspectionPersons'>
                         {foreach from=$inspectionPersonList item=inspectionPerson}
-                            <option value="{$inspectionPerson->getId()}">
+                            <option value="{$inspectionPerson->getId()}" {if $inspectionPerson->getId()==$logbook->getInspectionPersonId()}selected='selected'{/if}>
                                 {$inspectionPerson->getName()}
                             </option>
                         {/foreach}
@@ -153,7 +153,7 @@
                     </td>
                     <td>
                         <div>
-                            <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge()" value='null'>
+                            <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge(); itlManager.gauges.checkGaugeValueRange();">
                                 <option value="null">Select Gauge</option>
                                 {section name=i loop=$gaugeList}
                                     <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>
@@ -173,12 +173,17 @@
                                 <input id="LogbookGauge" type="slider" name="gaugeValue" value="{$logbook->getGaugeValueFrom()};{$logbook->getGaugeValueTo()}" height="20"/>
                             </div>
                             <div id='temperatureCelContainer'>
-                                The Temperature in Celsius
-                                from
-                                <input type='text' id='celFrom' disabled='disabled' style="width:50px">
-                                to
-                                <input type='text' id='celTo' disabled='disabled' style="width:50px">
+                                <select onchange="itlManager.gauges.changeGaugeUnitType()" id='gaugeDimension'  style='width: 45px;'>
+                                    {section name=i loop=$temperatureUnitTypeList}
+                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='selected'{/if}>
+                                        {$temperatureUnitTypeList[i]->getName()}
+                                    </option>
+                                    {/section}
+                                </select>
                             </div>
+                            <input type='hidden' id='gaugeUnitTypeId' name='gaugeUnitType' value={$logbook->getUnittypeId()}>
+                            {assign var=unitType value=$logbook->getLogbookUnitType()}
+                            <input type='hidden' id='gaugeUnitTypeDescription' name='gaugeUnitTypeDescription' value={$unitType->getName()|escape}>
                         </div>
                     </td>
                 </tr>

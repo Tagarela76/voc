@@ -143,16 +143,28 @@ class LogbookManager
         $electricGauge = array(
             'id' => LogbookRecord::ELECTRIC_GAUGE,
             'name' => 'Electric Gauge',
-            'min' => $gaugeRange['min_gauge_range'],
-            'max' => $gaugeRange['max_gauge_range']
+            'min' => $electricGaugeRange['min_gauge_range'],
+            'max' => $electricGaugeRange['max_gauge_range']
         );
-
+        
+        if(!is_null($facilityId)){
+            $propanGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::PROPANE_GAS_GAUGE);
+        }
+        $propanGasGauge = array(
+            'id' => LogbookRecord::PROPANE_GAS_GAUGE,
+            'name' => 'Propan Gas Gauge',
+            'min' => $propanGaugeRange['min_gauge_range'],
+            'max' => $propanGaugeRange['max_gauge_range']
+        );
+        
+        //var_dump($electricGaugeRange);//die();
         $gaugeList = array(
             0 => $temperatuteGauge,
             1 => $manometerGauge,
             2 => $clarifierGauge,
             3 => $gasGauge,
-            4 => $electricGauge
+            4 => $electricGauge,
+            5 => $propanGasGauge
         );
 
         return $gaugeList;
@@ -178,6 +190,7 @@ class LogbookManager
                 "facility_id = {$db->sqltext($facilityId)} AND " .
                 "gauge_type = {$db->sqltext($gaugeType)} LIMIT 1";
         $db->query($query);
+        
         $result = $db->fetch_all_array();
 
         if (is_null($result[0]['min_gauge_range'])) {

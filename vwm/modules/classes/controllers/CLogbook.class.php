@@ -4,6 +4,7 @@ use VWM\Hierarchy\Facility;
 use VWM\Apps\Logbook\Manager\LogbookManager;
 use VWM\Apps\Logbook\Entity\LogbookRecord;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
+use \VWM\Apps\UnitType\Manager\UnitTypeManager;
 
 class CLogbook extends Controller
 {
@@ -63,6 +64,7 @@ class CLogbook extends Controller
                 } else {
                     $permit = 0;
                 }
+                
                 //init logbook
                 $logbook->setFacilityId($facilityId);
                 $logbook->setInspectionPersonId($post['InspectionPersons']);
@@ -74,7 +76,7 @@ class CLogbook extends Controller
                 $logbook->setDepartmentId($post['departmentId']);
                 $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                 $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
-
+                
                 //set addition fields
                 if (!is_null($post['inspectionAdditionListType'])) {
                     $logbook->setInspectionAdditionType($post['inspectionAdditionListType']);
@@ -89,6 +91,11 @@ class CLogbook extends Controller
                     $logbook->setSubTypeNotes($post['subTypeNotes']);
                 }
 
+                if($post['gaugeUnitType'] != ''){
+                    $logbook->setUnittypeId($post['gaugeUnitType']);
+                }
+                
+                
                 if ($post['gaugeType'] != 'null') {
                     $gaugeValue = explode(';', $post['gaugeValue']);
                     $logbook->setValueGaugeType($post['gaugeType']);
@@ -103,7 +110,7 @@ class CLogbook extends Controller
                     $logbook->setDateTime($dateTime);
                 }
                 $violationList = $logbook->validate();
-
+//var_dump($logbook);die();
                 if (count($violationList) == 0) {
                     $id = $logbook->save();
                     header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=".$tab);
@@ -157,11 +164,18 @@ class CLogbook extends Controller
 
             //get gauges
             $gaugeList = $lbmanager->getGaugeList($facilityId);
-
+            
             //getEquipmantList
             $equipmant = new Equipment($this->db);
             $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
 
+            //get temperature dimension
+            $utManager = new UnitTypeManager($this->db);
+            $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
+            $this->smarty->assign('temperatureUnitTypeList', $temperatureUnitTypeList);
+            //var_dump($temperatureUnitTypeList[0]->getName());die();
+            //$unitType = new Unit
+            
             $this->smarty->assign('gaugeList', $gaugeList);
             $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
             $this->smarty->assign('violationList', $violationList);
@@ -259,12 +273,23 @@ class CLogbook extends Controller
                 $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
                 $inspectionPerson->load();
 
+                //get notes subtype or description
+                $notes ='NONE';
+                $subtypeDesc = $logbookRecord->getSubTypeNotes();
+                if ($subtypeDesc == 'NONE' || is_null($subtypeDesc) || $subtypeDesc == 'NULL') {
+                    $notes = $logbookRecord->getDescriptionNotes();
+                } else {
+                    $notes = $subtypeDesc;
+                }
+
                 $logbook = array(
                     'logbookId' => $logbookRecord->getId(),
                     'inspectionType' => $logbookRecord->getInspectionType(),
                     'creationDate' => $creationDateTime[0],
                     'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                    'inspectionPersonName' => $inspectionPerson->getName()
+                    'inspectionPersonName' => $inspectionPerson->getName(),
+                    'condition' => $logbookRecord->getDescription(),
+                    'notes' => $notes
                 );
 
                 $logbookList[] = $logbook;

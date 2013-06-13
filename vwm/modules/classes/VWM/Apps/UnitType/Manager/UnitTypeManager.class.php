@@ -2,6 +2,8 @@
 
 namespace VWM\Apps\UnitType\Manager;
 
+use \VWM\Apps\UnitType\Entity\UnitType;
+
 
 class UnitTypeManager {
 
@@ -9,6 +11,8 @@ class UnitTypeManager {
 	
 	const TB_UNIT_TYPE = 'unittype';
 	const TB_UNIT_CLASS = 'unit_class';
+    
+    const TEMPERATURE_UNIT_CLASS = 9;
 
 	public function __construct(\db $db) {
 		$this->db = $db;
@@ -58,8 +62,10 @@ class UnitTypeManager {
 
 	/**
 	 * get Unit Type List By Unit Type Class if unitTypeList not isset select from db
+     * 
 	 * @param string $unitClass
 	 * @param array $unitTypeList[]
+     * 
 	 * return array
 	 */
 	public function getUnitTypeListByUnitClass($unitClass, $unitTypeList=null) {
@@ -93,9 +99,38 @@ class UnitTypeManager {
 		
 		return $unitTypes;
 	}
-	
-	
+    
+    /**
+     * 
+     * get UnitTypeList By Unit ClassId
+     * 
+     * @param int $unit_class_id
+     * 
+     * @return boolean|\VWM\Apps\UnitType\Entity\UnitType[]
+     */
+	public function getUnitTypeListByUnitClassId($unitClassId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
 
+        $unitTypes = array();
+
+        if (is_null($unitClassId)) {
+            return false;
+        }
+
+        $query = "SELECT * FROM " . self::TB_UNIT_TYPE . " " .
+                "WHERE unit_class_id = '{$db->sqltext($unitClassId)}'";
+        $this->db->query($query);
+        $unitList = $this->db->fetch_all_array();
+        foreach ($unitList as $unit) {
+            $unitType = new UnitType($db);
+            $unitType->initByArray($unit);
+            $unitTypes[] = $unitType;
+        }
+
+        return $unitTypes;
+    }
+	
 }
 
 ?>
