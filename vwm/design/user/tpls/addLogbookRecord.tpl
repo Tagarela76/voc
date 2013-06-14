@@ -59,8 +59,8 @@
                 <td>
                     <select id = 'InspectionPersons' name = 'InspectionPersons'>
                         {foreach from=$inspectionPersonList item=inspectionPerson}
-                            <option value="{$inspectionPerson->getId()}" {if $inspectionPerson->getId()==$logbook->getInspectionPersonId()}selected='selected'{/if}>
-                                {$inspectionPerson->getName()}
+                            <option value="{$inspectionPerson->getId()|escape}" {if $inspectionPerson->getId()==$logbook->getInspectionPersonId()}selected='selected'{/if}>
+                                {$inspectionPerson->getName()|escape}
                             </option>
                         {/foreach}
                     </select>
@@ -175,15 +175,15 @@
                             <div id='temperatureCelContainer'>
                                 <select onchange="itlManager.gauges.changeGaugeUnitType()" id='gaugeDimension'  style='width: 45px;'>
                                     {section name=i loop=$temperatureUnitTypeList}
-                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='selected'{/if}>
-                                        {$temperatureUnitTypeList[i]->getName()}
+                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()|escape}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='selected'{/if}>
+                                        {$temperatureUnitTypeList[i]->getName()|escape}
                                     </option>
                                     {/section}
                                 </select>
                             </div>
                             <input type='hidden' id='gaugeUnitTypeId' name='gaugeUnitType' value={$logbook->getUnittypeId()}>
-                            {assign var=unitType value=$logbook->getLogbookUnitType()}
-                            <input type='hidden' id='gaugeUnitTypeDescription' name='gaugeUnitTypeDescription' value={$unitType->getName()|escape}>
+                            {assign var=unitType value=$logbook->getLogbookUnitType()|escape}
+                            <input type='hidden' id='gaugeUnitTypeDescription' name='gaugeUnitTypeDescription' value='{if $unitType}{$unitType->getName()|escape}{/if}'>
                         </div>
                     </td>
                 </tr>

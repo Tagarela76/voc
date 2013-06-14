@@ -235,6 +235,7 @@ class LogbookRecord extends Model
     const PROPANE_GAS_GAUGE = 5;
     const MIN_GAUGE_RANGE = 0;
     const MAX_GAUGE_RANGE = 100;
+    const GAUGE_RANGE_STEP = 100;
 
     public function __construct($id = null)
     {
@@ -606,6 +607,12 @@ class LogbookRecord extends Model
             $unittypeId = 'NULL';
         }
 
+        //check gauge range
+        $minGaugeRange = $this->getMinGaugeRange();
+        $maxGaugeRange = $this->getMaxGaugeRange();
+        
+        //set nextGauge
+        
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
@@ -622,8 +629,8 @@ class LogbookRecord extends Model
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "replaced_bulbs = {$db->sqltext($this->getReplacedBulbs())}, " .
-                "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
-                "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
+                "min_gauge_range = {$db->sqltext($minGaugeRange)}, " .
+                "max_gauge_range = {$db->sqltext($maxGaugeRange)}, " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "qty = '{$db->sqltext($qty)}'";
@@ -631,7 +638,7 @@ class LogbookRecord extends Model
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-            $this->updateGaugeRange();
+           // $this->updateGaugeRange();
         }
         $this->setId($id);
 
@@ -711,7 +718,7 @@ class LogbookRecord extends Model
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-            $this->updateGaugeRange();
+           // $this->updateGaugeRange();
         }
         return $this->getId();
     }

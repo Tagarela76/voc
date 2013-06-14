@@ -45,7 +45,7 @@ class CLogbook extends Controller
             $logbook = new LogbookRecord();
             $logbook->setId($logbookId);
 
-            //add or update logbook if we need
+            //save add or update logbook if we need
             if (count($post) > 0) {
                 //transfer time to unix type
                 if ($post['dateTime'] != '') {
@@ -110,7 +110,6 @@ class CLogbook extends Controller
                     $logbook->setDateTime($dateTime);
                 }
                 $violationList = $logbook->validate();
-//var_dump($logbook);die();
                 if (count($violationList) == 0) {
                     $id = $logbook->save();
                     header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=".$tab);
@@ -118,6 +117,7 @@ class CLogbook extends Controller
                     $this->smarty->assign('creationTime', $post['dateTime']);
                 }
             } else {
+                
                 $logbook->load();
                 //check for add or edit
                 $creationTime = $logbook->getDateTime();
@@ -173,8 +173,6 @@ class CLogbook extends Controller
             $utManager = new UnitTypeManager($this->db);
             $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
             $this->smarty->assign('temperatureUnitTypeList', $temperatureUnitTypeList);
-            //var_dump($temperatureUnitTypeList[0]->getName());die();
-            //$unitType = new Unit
             
             $this->smarty->assign('gaugeList', $gaugeList);
             $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
