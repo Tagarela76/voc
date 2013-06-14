@@ -24,7 +24,7 @@ class InspectionTypeManager
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeInJson = array();
         
-        $ltManager = new LogbookSetupTemplateManager();
+        /*$ltManager = new LogbookSetupTemplateManager();
         $itManager = new InspectionTypeManager();
         $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
         $logbookTemplateIds = array();
@@ -32,10 +32,16 @@ class InspectionTypeManager
             $logbookTemplateIds[] = $logbookTemplate->getId();
         }
         $logbookTemplateIds= implode(',', $logbookTemplateIds);
-        $inspectionTypeList = $itManager->getInspectionTypeList($logbookTemplateIds);
+        $inspectionTypeList = $itManager->getInspectionTypeList($logbookTemplateIds);*/
+        $inspectionTypeList = $this->getInspectionTypeListByFacilityId($facilityId);
         
         foreach ($inspectionTypeList as $inspectionType) {
-            $inspectionTypeInJson[] = $inspectionType->getInspectionTypeRaw();
+            //TODO
+            $type = $inspectionType->getInspectionType();
+            $type->id = $inspectionType->getId();
+            $type = json_encode($type);
+            $inspectionTypeInJson[] = $type;
+            //$inspectionTypeInJson[] = $inspectionType->getInspectionTypeRaw();
         }
         $inspectionTypeInJson = implode(',', $inspectionTypeInJson);
         $inspectionTypeInJson = '[' . $inspectionTypeInJson . ']';
@@ -221,6 +227,32 @@ class InspectionTypeManager
             $inspectionTypeList[] = $inspectionType;
         }
 
+        return $inspectionTypeList;
+    }
+    
+    /**
+     * 
+     * get Inspection Type List By Facility Id
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookInspectionType[]
+     * 
+     */
+    public function getInspectionTypeListByFacilityId($facilityId)
+    {
+        $ltManager = new LogbookSetupTemplateManager();
+        //get inspection type templates ids
+        $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
+        $logbookTemplateIds = array();
+        
+        foreach($logbookTemplateList as $logbookTemplate){
+            $logbookTemplateIds[] = $logbookTemplate->getId();
+        }
+        $logbookTemplateIds = implode(',', $logbookTemplateIds);
+        //get inspection type list
+        $inspectionTypeList = $this->getInspectionTypeList($logbookTemplateIds);
+        
         return $inspectionTypeList;
     }
     

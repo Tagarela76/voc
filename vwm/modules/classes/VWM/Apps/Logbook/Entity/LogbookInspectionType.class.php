@@ -166,5 +166,6 @@ class LogbookInspectionType extends Model
         $db->query($query);
         $itManager->unAssignInspectionTypeFromInspectionTemplate($this->getId());
     }
+    
 }
 ?>

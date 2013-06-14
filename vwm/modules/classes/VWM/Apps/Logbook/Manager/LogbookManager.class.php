@@ -45,7 +45,7 @@ class LogbookManager
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
-        $query.=' GROUP BY date_time DESC';
+        $query.=' ORDER BY date_time DESC';
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }

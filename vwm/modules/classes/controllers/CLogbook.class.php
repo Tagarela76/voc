@@ -4,10 +4,10 @@ use VWM\Hierarchy\Facility;
 use VWM\Apps\Logbook\Manager\LogbookManager;
 use VWM\Apps\Logbook\Entity\LogbookRecord;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
-use \VWM\Apps\UnitType\Manager\UnitTypeManager;
+use VWM\Apps\UnitType\Manager\UnitTypeManager;
 use VWM\Apps\Logbook\Entity\LogbookEquipment;
 use VWM\Apps\Logbook\Manager\LogbookEquipmentManager;
-
+use VWM\Apps\Logbook\Entity\LogbookInspectionType;
 
 class CLogbook extends Controller
 {
@@ -72,7 +72,8 @@ class CLogbook extends Controller
                 //init logbook
                 $logbook->setFacilityId($facilityId);
                 $logbook->setInspectionPersonId($post['InspectionPersons']);
-                $logbook->setInspectionType($post['inspectionType']);
+                //$logbook->setInspectionType($post['inspectionType']);
+                $logbook->setInspectionTypeId($post['inspectionType']);
                 $logbook->setInspectionSubType($post['inspectionSubType']);
                 $logbook->setDescription($post['logBookDescription']);
                 $logbook->setPermit($permit);
@@ -94,11 +95,10 @@ class CLogbook extends Controller
                 if ($post['subTypeNotes'] != '') {
                     $logbook->setSubTypeNotes($post['subTypeNotes']);
                 }
-
                 if($post['gaugeUnitType'] != ''){
                     $logbook->setUnittypeId($post['gaugeUnitType']);
                 }
-                
+
                 if ($post['gaugeType'] != 'null') {
                     $gaugeValue = explode(';', $post['gaugeValue']);
                     $logbook->setValueGaugeType($post['gaugeType']);
@@ -145,19 +145,25 @@ class CLogbook extends Controller
 
             $lbmanager = new LogbookManager();
             $inspectionTypesList = json_decode($jsonInspectionalTypeList);
+           
             //check if this facility has inspection type
             if (empty($inspectionTypesList)) {
                 throw new \Exception('There is no any inspection type. Create inspection type for this facility first.');
             }
+            
+            $inspectionType = new LogbookInspectionType($this->db);
+            $inspectionType->setId($logbook->getInspectionTypeId());
+            $inspectionType->load();
             //if add action get subtypes of first inspection type
-            if (is_null($logbook->getInspectionType())) {
+
+            if(is_null($logbook->getInspectionTypeId())){
                 $inspectionTypesDescription = $inspectionTypesList[0]->typeName;
-            } else {
-                $inspectionTypesDescription = $logbook->getInspectionType();
+            }else{
+                $inspectionTypesDescription = $inspectionType->getInspectionType()->typeName;
             }
 
             $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
-            $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($logbook->getInspectionType());
+            $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($inspectionType->getInspectionType()->typeName);
 
             //get description
             $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
@@ -169,6 +175,7 @@ class CLogbook extends Controller
             $gaugeList = $lbmanager->getGaugeList($facilityId);
             
             //getEquipmantList
+
             $leManager = new LogbookEquipmentManager();
             $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
 
@@ -176,7 +183,6 @@ class CLogbook extends Controller
             $utManager = new UnitTypeManager($this->db);
             $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
             $this->smarty->assign('temperatureUnitTypeList', $temperatureUnitTypeList);
-            
             $this->smarty->assign('gaugeList', $gaugeList);
             $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
             $this->smarty->assign('logbookEquipmentList', $logbookEquipmentList);
@@ -262,6 +268,7 @@ class CLogbook extends Controller
         if (!isset($tab)) {
             $tab = 'logbook';
         }
+
         switch ($tab) {
             case 'logbook':
                 //set pagination
@@ -550,7 +557,6 @@ class CLogbook extends Controller
     public function actionGetEquipmantList()
     {
         $departmentId = $this->getFromPost('departmentId');
-
         $equipmant = new Equipment($this->db);
         $equipmantList = $equipmant->getEquipmentList($departmentId);
         echo json_encode($equipmantList);

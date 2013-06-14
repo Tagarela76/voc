@@ -7,7 +7,7 @@ VWM\Apps\Logbook\Entity\LogbookRecord:
     permit:
       - Min: 0
       - Max: 1
-    inspection_type:
+    inspection_type_id:
       - NotBlank: ~
     inspection_sub_type:
       - NotBlank: ~

@@ -50,6 +50,14 @@ class LogbookRecord extends Model
 
     /**
      *
+     * inspection type
+     *
+     * @var string
+     */
+    protected $inspection_type_id = null;
+
+    /**
+     *
      * inspection sub type
      *
      * @var string
@@ -150,13 +158,13 @@ class LogbookRecord extends Model
      *
      * @var int
      */
-    protected $gauge_value_from = 1;
+    protected $gauge_value_from = 0;
 
     /**
      *
      * @var int
      */
-    protected $gauge_value_to = 2;
+    protected $gauge_value_to = 0;
 
     /**
      *
@@ -536,6 +544,16 @@ class LogbookRecord extends Model
         $this->logbookUnitType = $logbookUnitType;
     }
 
+    public function getInspectionTypeId()
+    {
+        return $this->inspection_type_id;
+    }
+
+    public function setInspectionTypeId($inspection_type_id)
+    {
+        $this->inspection_type_id = $inspection_type_id;
+    }
+
     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -610,9 +628,9 @@ class LogbookRecord extends Model
         //check gauge range
         $minGaugeRange = $this->getMinGaugeRange();
         $maxGaugeRange = $this->getMaxGaugeRange();
-        
+
         //set nextGauge
-        
+
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
@@ -633,12 +651,13 @@ class LogbookRecord extends Model
                 "max_gauge_range = {$db->sqltext($maxGaugeRange)}, " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
+                "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
                 "qty = '{$db->sqltext($qty)}'";
 
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-           // $this->updateGaugeRange();
+            // $this->updateGaugeRange();
         }
         $this->setId($id);
 
@@ -712,13 +731,14 @@ class LogbookRecord extends Model
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
+                "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-           // $this->updateGaugeRange();
+            // $this->updateGaugeRange();
         }
         return $this->getId();
     }

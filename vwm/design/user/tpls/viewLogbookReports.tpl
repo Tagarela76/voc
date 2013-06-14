@@ -34,6 +34,22 @@
                         	Manometer Logbook Report
                    	 	</td>
                 	</tr>
+                    
+                    <tr class="choose_report_type">
+            			<td>
+            				<a style="color: black" href="?action=sendLogbookReport&reportType=Logbook&category=logbookReports&id={$facilityId}">Logbook Report&nbsp;</a>
+            			</td>
+            			<td>
+                        	Logbook Report
+                   	 	</td>
+                	</tr>
+                    <tr class="choose_report_type">
+                        <td>
+                        </td>
+                        <td align='right'>
+                            <input class="button" align="right" type="button" name="goBack" value="Back" onclick="location.href='?action=browseCategory&category=facility&id={$facilityId}&bookmark=logbook'">
+                        </td>
+                	</tr>
 
             </table>
             <br>
