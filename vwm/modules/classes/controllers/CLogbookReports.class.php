@@ -6,13 +6,11 @@ use \VWM\Apps\Logbook\Manager\LogbookManager;
 
 class CLogbookReports extends Controller
 {
-
     public function __construct($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
         $this->category = 'logbook';
     }
-
     /**
      * 
      * display logbook report settings 
@@ -143,8 +141,10 @@ class CLogbookReports extends Controller
         $userId = $_SESSION['user_id'];
         $equipmentId = $this->getFromRequest('equipmentId');
         $gaugeId = $this->getFromRequest('gaugeId');
-        $inspectionTypeId = $this->getFromRequest('inspectionTypeId');
-        
+        $inspectionTypeIds = $this->getFromRequest('inspectionTypeId');
+        $itManager = new InspectionTypeManager();
+        $inspectionTypeList = $itManager->getInspectionTypeListByFacilityId($facilityId);
+
         $facility = new Facility($this->db, $facilityId);
         $companyId = $facility->getCompanyId();
 
@@ -165,13 +165,13 @@ class CLogbookReports extends Controller
         } else {
             throw new Exception('Cannot find report of type '.$reportType);
         }
-
         
         $xml->setCategoryId($facilityId);
         $xml->setDateBegin($dateBegin);
         $xml->setDateEnd($dateEnd);
         $xml->setEquipmentId($equipmentId);
-
+        $xml->setInspectionTypeId($inspectionTypeIds);
+        $xml->setGaugeId($gaugeId);
         $xml->BuildXML($xmlFileName);
 
         $pdf = new PDFBuilder($xmlFileName, $reportType, $extraVar);

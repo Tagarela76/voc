@@ -192,9 +192,9 @@ class XML2PDF extends PDF_MC_Table
                 $this->SetFont('Arial', 'B', 7);
                 $h = 10;
                 $this->Cell($this->widths[0], $h, "Date", 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, "Temp. Start Reading (A)", 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, "Temp. End Reading (B)", 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, "Replaced Bulbs YES/NO", 1, 0, 'C');
+                $this->Cell($this->widths[1], $h, "Start Reading (A)", 1, 0, 'C');
+                $this->Cell($this->widths[2], $h, "End Reading (B)", 1, 0, 'C');
+                $this->Cell($this->widths[3], $h, "Description", 1, 0, 'C');
                 $this->Cell($this->widths[4], $h, "Inspected By", 1, 0, 'C');
                 $this->Cell($this->widths[5], $h, "GaugeType", 1, 0, 'C');
 
@@ -216,9 +216,9 @@ class XML2PDF extends PDF_MC_Table
                 $this->SetFont('Arial', 'B', 7);
                 $h = 5;
                 $this->Cell($this->widths[0], $h, $attribs['DATE'], 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, $attribs['TEMPSTART'], 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, $attribs['TEMPEND'], 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, $attribs['REPLACEDBULBS'], 1, 0, 'C');
+                $this->Cell($this->widths[1], $h, $attribs['START'], 1, 0, 'C');
+                $this->Cell($this->widths[2], $h, $attribs['END']." ".$attribs['UNITTYPE']." ", 1, 0, 'C');
+                $this->Cell($this->widths[3], $h, $attribs['DESCRIPTION'], 1, 0, 'C');
                 $this->Cell($this->widths[4], $h, $attribs['INSPECTEDPERSON'], 1, 0, 'C');
                 $this->Cell($this->widths[5], $h, $attribs['GAUGE'], 1, 0, 'C');
                 $this->ln();
@@ -251,8 +251,11 @@ class XML2PDF extends PDF_MC_Table
             case 'CITYSTATEZIP':
                 $this->header["CITYSTATEZIP"] = $data;
                 break;
-            case 'CATEGORYNAME':
-                $this->header["CATEGORYNAME"] = $data;
+            case 'FACILITYNAME':
+                $this->header["FACILITYNAME"] = $data;
+                break;
+            case 'COMPANYNAME':
+                $this->header["COMPANYNAME"] = $data;
                 $this->header();
                 break;
         }
@@ -276,14 +279,17 @@ class XML2PDF extends PDF_MC_Table
             $this->Ln(4);
             //display company address
             $this->SetFont('Arial', 'B', $fontSize);
-            $this->Cell(75, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
-            $this->Cell(75, 10, "Address: " . $this->header['COMPANYADDRESS'], 0, 0, 'R');
+            $this->Cell(100, 10, "Company: " . $this->header['COMPANYNAME'], 0, 0, 'L');
+            $this->Cell(75, 10, "Address: " . $this->header['COMPANYADDRESS'], 0, 0, 'L');
             $this->Ln(3);
-            $this->Cell(75, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
-            $this->Ln(3);
+            $this->Cell(100, 10, "Facility: " . $this->header['FACILITYNAME'], 0, 0, 'L');
             $this->Cell(75, 10, "Fax: " . $this->header['FAX'], 0, 0, 'L');
+            $this->Ln(3);
+            $this->Cell(100, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
+            $this->Ln(3);
+            $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
              $this->Ln(3);
-            $this->Cell(75, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
+            $this->Cell(100, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
         }
     }
 

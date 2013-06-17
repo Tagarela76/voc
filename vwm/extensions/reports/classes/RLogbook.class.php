@@ -6,6 +6,7 @@ use VWM\Apps\Logbook\Entity\LogbookRecord;
 use \VWM\Apps\Logbook\Entity\LogbookInspectionType;
 use \VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use \VWM\Apps\Logbook\Manager\LogbookManager;
+use VWM\Apps\UnitType\Entity\UnitType;
 
 class RLogbook extends ReportCreator implements iReportCreator
 {
@@ -38,6 +39,22 @@ class RLogbook extends ReportCreator implements iReportCreator
      * @var int
      */
     private $equipment_id;
+    
+    /**
+     *
+     * inspection type id
+     * 
+     * @var int|string 
+     */
+    private $inspection_type_id;
+    
+    /**
+     *
+     * gauge_id
+     * 
+     * @var int 
+     */
+    private $gauge_Id;
     
     function __construct($db, $reportRequest = null)
     {
@@ -94,6 +111,26 @@ class RLogbook extends ReportCreator implements iReportCreator
         $this->dateFormat = $dateFormat;
     }
     
+    public function getInspectionTypeId()
+    {
+        return $this->inspection_type_id;
+    }
+
+    public function setInspectionTypeId($inspectionTypeId)
+    {
+        $this->inspection_type_id = $inspectionTypeId;
+    }
+
+    public function getGaugeId()
+    {
+        return $this->gauge_Id;
+    }
+
+    public function setGaugeId($gaugeId)
+    {
+        $this->gauge_Id = $gaugeId;
+    }
+
     /*
      * get information for xml file
      */
@@ -105,15 +142,23 @@ class RLogbook extends ReportCreator implements iReportCreator
         $dateEndObj = $this->getDateEnd();
         
         $query = "SELECT lb.facility_id, lb.date_time, lb.inspection_type_id, i.name, " .
-                 "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to	".
+                 "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to, lb.description, lb.unittype_id ".
                  "FROM " . LogbookRecord::TABLE_NAME . " lb " .
                  "LEFT JOIN " . LogbookInspectionPerson::TABLE_NAME . " i " .
                  "ON lb.inspection_person_id = i.id " .
                  "WHERE lb.facility_id = {$db->sqltext($this->getCategoryId())} " .
                  "AND lb.date_time >= " . $dateBeginObj->getTimestamp() . " " .
-                 "AND lb.date_time <= " . $dateEndObj->getTimestamp() . " ";
-        
-                
+                 "AND lb.date_time <= " . $dateEndObj->getTimestamp();
+                 
+               
+        if($this->getInspectionTypeId() != 'all'){
+            $query.= " AND lb.inspection_type_id = {$db->sqltext($this->getInspectionTypeId())} ";
+        }
+                 
+        if($this->getGaugeId()!='all'){
+            $query.= " AND lb.gauge_type = {$db->sqltext($this->getGaugeId())}";
+        }
+        //die($query);
         $db->query($query);
         if ($db->num_rows()) {
             $rows = $db->fetch_all();
@@ -125,12 +170,17 @@ class RLogbook extends ReportCreator implements iReportCreator
         $companyId = $facility->getCompanyId();
         $company = new Company($db, $companyId);
         
+        $country = new Country($db);
+        $countryDetails = $country->getCountryDetails($company->getCountry());
+        
+        
         $orgInfo = array(
             'category' => "Facility",
-            'categoryName' => $facility->getName(),
+            'facilityName' => $facility->getName(),
+            'companyName' => $company->getName(),
             'companyAddress' => $company->getAddress(),
             'cityStateZip'=>$company->getCity().','.$company->getState().','.$company->getZip(),
-            'country' => $company->getCountry(),
+            'country' => $countryDetails['country_name'],
             'phone' => $company->getPhone(),
             'fax' => $company->getFax(),
         );
@@ -150,30 +200,34 @@ class RLogbook extends ReportCreator implements iReportCreator
         $timeFormat = $dataChain->getFromTypeController('getFormat');
         $gauge = '';
         foreach ($rows as $row){
+            $unittypeId = $row->unittype_id;
+            
             if(!is_null($row->gauge_type)){
                $gauge =  $gaugeList[$row->gauge_type]['name'];
             }else{
                 $gauge = 'NONE';
             }
-            var_dump($gauge);
                     
             $dateTime = $row->date_time;
             $dateTime = date($timeFormat . ' H:i', $dateTime);
             $dateTime = explode(' ', $dateTime);
             
-            $logbookInspectionType = new LogbookInspectionType($db);
-            $logbookInspectionType->setId($row->inspection_type_id);
-            $logbookInspectionType->load();
-            
-            $inspectionType = $logbookInspectionType->getInspectionType();
+            $unittype = new UnitType($db);
+            $unittype->setUnitTypeId($unittypeId);
+            $unittype->load();
+            $unitTypeName = $unittype->getName();
+            if(!is_null($unittype->getName())){
+                $unitTypeName = "(".$unittype->getName().")";
+            }
             
             $result = array(
                 'date' => $dateTime[0],
                 'inspectionPerson' => $row->name,
                 'gauge' => $gauge,
-                'tempStart' => $row->gauge_value_from,
-                'tempEnd' => $row->gauge_value_to,
-                'replacedBulbs' => $row->replaced_bulbs
+                'start' => $row->gauge_value_from,
+                'end' => $row->gauge_value_to,
+                'description' => $row->description,
+                'unittype' => $unitTypeName
             );
          $results[] = $result;
         }
@@ -290,12 +344,19 @@ class RLogbook extends ReportCreator implements iReportCreator
         );
         $page->appendChild($description);
         
-        //add facility if exist
-        $facilityName = $doc->createElement("categoryName");
+        //add facility 
+        $facilityName = $doc->createElement("facilityName");
         $facilityName->appendChild(
-                $doc->createTextNode(html_entity_decode($orgInfo["categoryName"]))
+                $doc->createTextNode(html_entity_decode($orgInfo["facilityName"]))
         );
         $page->appendChild($facilityName);
+        
+        //add company
+        $companyName = $doc->createElement("companyName");
+        $companyName->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["companyName"]))
+        );
+        $page->appendChild($companyName);
         
         //CREATE TABLE ELEMENT
         //create table
@@ -328,31 +389,32 @@ class RLogbook extends ReportCreator implements iReportCreator
            $logbookInspection->appendChild($inspectedPersonTag);
            
            //create Start
-            $tempStartTag = $doc->createAttribute('tempStart');
+            $tempStartTag = $doc->createAttribute('start');
             $tempStartTag->appendChild(
-                         $doc->createTextNode(html_entity_decode($result['tempStart']))
+                         $doc->createTextNode(html_entity_decode($result['start']))
                 );
            $logbookInspection->appendChild($tempStartTag);
 
            //create temp End
-           $tempEndTag = $doc->createAttribute('tempEnd');
+           $tempEndTag = $doc->createAttribute('end');
            $tempEndTag->appendChild(
-                        $doc->createTextNode(html_entity_decode($result['tempEnd']))
+                        $doc->createTextNode(html_entity_decode($result['end']))
                 );
            $logbookInspection->appendChild($tempEndTag);
            
-           //create replacedBulbs
-           if($result['replacedBulbs'] == 1){
-               $replacedBulbs = 'Yes';
-           }else{
-               $replacedBulbs = 'No';
-           }
-           $replacedBulbsTag = $doc->createAttribute('replacedBulbs');
-           $replacedBulbsTag->appendChild(
-                        $doc->createTextNode(html_entity_decode($replacedBulbs))
+           //create temp End
+           $descriptionTag = $doc->createAttribute('description');
+           $descriptionTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($result['description']))
                 );
-           $logbookInspection->appendChild($replacedBulbsTag);
+           $logbookInspection->appendChild($descriptionTag);
            
+           //create temp End
+           $unittypeTag = $doc->createAttribute('unittype');
+           $unittypeTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($result['unittype']))
+                );
+           $logbookInspection->appendChild($unittypeTag);
         }
         $doc->save($fileName);
     }

@@ -71,6 +71,7 @@
                                 </td>
                                 <td>
                                     <select name ='inspectionTypeId'>
+                                        <option value="all">All</option>
                                         {foreach from=$inspectionTypeList item=inspectionType}
                                             {assign var='inspectionTypeSettings' value=$inspectionType->getInspectionType()}
                                             <option value="{$inspectionType->getId()|escape}">
