@@ -25,7 +25,7 @@
             itlManager.description.showNotes();
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
-            itlManager.equipmant.getEquipmantList();
+            //itlManager.equipmant.getEquipmantList();
             itlManager.gauges.checkGaugeValueRange();
         });
     </script>
@@ -239,27 +239,17 @@
                     Equipment
                 </td>
                 <td>
-                    <div>
-                        <div style="width: 150px">
-                            Select Department
-                        </div>
-                        <select onchange="itlManager.equipmant.getEquipmantList();" id='equipmantdepartmentIdList' name='departmentId'>
-                            <option value="null">
-                                select
-                            </option>
-                            {foreach from=$departments item="department"}
-                                <option value="{$department->getDepartmentId()}" {if $logbook->getDepartmentId() == $department->getDepartmentId()}selected='selected'{/if}>
-                                    {$department->getName()}
-                                </option>
-                            {/foreach}
-                        </select>
-                    </div>
-                    <div id='equipmantListContainer' hidden="hidden">
+                    <div id='equipmantListContainer'>
                         <div style="width: 150px">
                             Select Equipment
                         </div>
+                        
                         <select id ='equipmantList' name='equipmantId'>
-
+                            {foreach from=$logbookEquipmentList item="logbookEquipment"}
+                                <option value="{$logbookEquipment->getId()|escape}">
+                                    {$logbookEquipment->getName()|escape}
+                                </option>
+                            {/foreach}
                         </select>
                     </div>
                     {foreach from=$violationList item="violation"}

@@ -5,9 +5,13 @@ use VWM\Apps\Logbook\Manager\LogbookManager;
 use VWM\Apps\Logbook\Entity\LogbookRecord;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use \VWM\Apps\UnitType\Manager\UnitTypeManager;
+use VWM\Apps\Logbook\Entity\LogbookEquipment;
+use VWM\Apps\Logbook\Manager\LogbookEquipmentManager;
+
 
 class CLogbook extends Controller
 {
+
     public function __construct($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
@@ -33,7 +37,7 @@ class CLogbook extends Controller
             throw new Exception('404');
         }
         $tab = $this->getFromRequest('tab');
-
+        /*         * **** VIEW ADD LOGBOOK **** */
         if ($tab == 'logbook') {
             //get data format
             $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
@@ -111,7 +115,7 @@ class CLogbook extends Controller
                 $violationList = $logbook->validate();
                 if (count($violationList) == 0) {
                     $id = $logbook->save();
-                    header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=".$tab);
+                    header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=" . $tab);
                 } else {
                     $this->smarty->assign('creationTime', $post['dateTime']);
                 }
@@ -133,28 +137,28 @@ class CLogbook extends Controller
             //$itmanager = \VOCApp::getInstance()->getService('inspectionType');
             $itmanager = new VWM\Apps\Logbook\Manager\InspectionTypeManager();
             $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
-            
+
             $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
-            
+
             $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
             $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
-            
+
             $lbmanager = new LogbookManager();
             $inspectionTypesList = json_decode($jsonInspectionalTypeList);
             //check if this facility has inspection type
-            if(empty($inspectionTypesList)){
+            if (empty($inspectionTypesList)) {
                 throw new \Exception('There is no any inspection type. Create inspection type for this facility first.');
             }
             //if add action get subtypes of first inspection type
-            if(is_null($logbook->getInspectionType())){
+            if (is_null($logbook->getInspectionType())) {
                 $inspectionTypesDescription = $inspectionTypesList[0]->typeName;
-            }else{
+            } else {
                 $inspectionTypesDescription = $logbook->getInspectionType();
             }
-            
+
             $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
             $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($logbook->getInspectionType());
-            
+
             //get description
             $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
 
@@ -165,8 +169,8 @@ class CLogbook extends Controller
             $gaugeList = $lbmanager->getGaugeList($facilityId);
             
             //getEquipmantList
-            $equipmant = new Equipment($this->db);
-            $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
+            $leManager = new LogbookEquipmentManager();
+            $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
 
             //get temperature dimension
             $utManager = new UnitTypeManager($this->db);
@@ -175,6 +179,7 @@ class CLogbook extends Controller
             
             $this->smarty->assign('gaugeList', $gaugeList);
             $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
+            $this->smarty->assign('logbookEquipmentList', $logbookEquipmentList);
             $this->smarty->assign('violationList', $violationList);
             $this->smarty->assign('inspectionPersonList', $inspectionPersonList);
             $this->smarty->assign('inspectionTypesList', $inspectionTypesList);
@@ -200,10 +205,11 @@ class CLogbook extends Controller
             );
         }
 
+        /*         * **** VIEW ADD INSPECTION PERSON **** */
         if ($tab == 'inspectionPerson') {
             $inspectionPersonId = $this->getFromRequest('inspectionPersonId');
             $inspectionPerson = new LogbookInspectionPerson($this->db);
-            if(!is_null($inspectionPersonId)){
+            if (!is_null($inspectionPersonId)) {
                 $inspectionPerson->setId($inspectionPersonId);
                 $inspectionPerson->load();
             }
@@ -212,9 +218,20 @@ class CLogbook extends Controller
             $tpl = 'tpls/viewAddInspectionPerson.tpl';
         }
 
+        /*         * **** VIEW ADD LOGBOOK EQUIPMENT**** */
+        if ($tab == 'logbookEquipment') {
+            $logbookEquipmentId = $this->getFromRequest('logbookEquipmentId');
+            $logbookEquipment = new LogbookEquipment();
+             if (!is_null($logbookEquipmentId)) {
+                $logbookEquipment->setId($logbookEquipmentId);
+                $logbookEquipment->load();
+            }
+            $this->smarty->assign('logbookEquipment', $logbookEquipment);
+            $tpl = 'tpls/viewAddLogbookEquipment.tpl';
+        }
         //set left menu
-            $this->setListCategoriesLeftNew($category, $categoryId);
-            $this->setPermissionsNew($category);
+        $this->setListCategoriesLeftNew($category, $categoryId);
+        $this->setPermissionsNew($category);
 
         $this->smarty->assign('tab', $tab);
         $this->smarty->assign('action', 'addItem');
@@ -233,7 +250,7 @@ class CLogbook extends Controller
     protected function bookmarkLogbook($vars)
     {
         extract($vars);
-        
+
         $facilityId = $facilityDetails['facility_id'];
         //check for facility_id
         if (is_null($facilityId)) {
@@ -242,62 +259,70 @@ class CLogbook extends Controller
         $lbManager = new LogbookManager();
 
         $tab = $this->getFromRequest('tab');
-        if(!isset($tab)){
+        if (!isset($tab)) {
             $tab = 'logbook';
         }
-        //check tab
-        if ($tab == 'logbook') {
+        switch ($tab) {
+            case 'logbook':
+                //set pagination
+                $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
+                $url = "?" . $_SERVER["QUERY_STRING"];
+                $url = preg_replace("/\&page=\d*/", "", $url);
+                $pagination = new Pagination($logbookListCount);
+                $pagination->url = $url;
 
-            //set pagination
-            $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
-            $url = "?" . $_SERVER["QUERY_STRING"];
-            $url = preg_replace("/\&page=\d*/", "", $url);
-            $pagination = new Pagination($logbookListCount);
-            $pagination->url = $url;
+                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
 
-            $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
+                $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
+                $timeFormat = $dataChain->getFromTypeController('getFormat');
 
-            $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
-            $timeFormat = $dataChain->getFromTypeController('getFormat');
+                $logbookList = array();
+                foreach ($logbookRecordList as $logbookRecord) {
+                    $creationDateTime = $logbookRecord->getDateTime();
+                    $creationDateTime = date($timeFormat . ' h:i a', $creationDateTime);
+                    $creationDateTime = explode(' ', $creationDateTime);
+                    //initialize inspection person
+                    $inspectionPerson = new LogbookInspectionPerson();
+                    $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
+                    $inspectionPerson->load();
 
-            $logbookList = array();
-            foreach ($logbookRecordList as $logbookRecord) {
-                $creationDateTime = $logbookRecord->getDateTime();
-                $creationDateTime = date($timeFormat . ' h:i a', $creationDateTime);
-                $creationDateTime = explode(' ', $creationDateTime);
-                //initialize inspection person
-                $inspectionPerson = new LogbookInspectionPerson();
-                $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
-                $inspectionPerson->load();
+                    $logbook = array(
+                        'logbookId' => $logbookRecord->getId(),
+                        'inspectionType' => $logbookRecord->getInspectionType(),
+                        'creationDate' => $creationDateTime[0],
+                        'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
+                        'inspectionPersonName' => $inspectionPerson->getName()
+                    );
 
-                //get notes subtype or description
-                $notes ='NONE';
-                $subtypeDesc = $logbookRecord->getSubTypeNotes();
-                if ($subtypeDesc == 'NONE' || is_null($subtypeDesc) || $subtypeDesc == 'NULL') {
-                    $notes = $logbookRecord->getDescriptionNotes();
-                } else {
-                    $notes = $subtypeDesc;
+                    $logbookList[] = $logbook;
                 }
-
-                $logbook = array(
-                    'logbookId' => $logbookRecord->getId(),
-                    'inspectionType' => $logbookRecord->getInspectionType(),
-                    'creationDate' => $creationDateTime[0],
-                    'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                    'inspectionPersonName' => $inspectionPerson->getName(),
-                    'condition' => $logbookRecord->getDescription(),
-                    'notes' => $notes
-                );
-
-                $logbookList[] = $logbook;
-            }
-            $tpl = 'tpls/viewLogbook.tpl';
-            $this->smarty->assign('pagination', $pagination);
-            $this->smarty->assign('logbookList', $logbookList);
-        } elseif ($tab == 'inspectionPerson') {
-            $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId);
-            $this->smarty->assign('inspectionPerson', $inspectionPerson);
-            $tpl = 'tpls/viewInspectionPerson.tpl';
+                $tpl = 'tpls/viewLogbook.tpl';
+                $this->smarty->assign('pagination', $pagination);
+                $this->smarty->assign('logbookList', $logbookList);
+                break;
+            case 'inspectionPerson':
+                $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId);
+                $this->smarty->assign('inspectionPerson', $inspectionPerson);
+                $tpl = 'tpls/viewInspectionPerson.tpl';
+                break;
+            case 'logbookEquipment':
+                $leManager = new LogbookEquipmentManager();
+                
+                $logbookEquipmentListCount = $leManager->getCountLogbookEquipmentByFacilityId($facilityId);
+                
+                $url = "?" . $_SERVER["QUERY_STRING"];
+                $url = preg_replace("/\&page=\d*/", "", $url);
+                $pagination = new Pagination($logbookEquipmentListCount);
+                $pagination->url = $url;
+                
+                $logbookEquipmantList = $leManager->getLogbookEquipmentListByFacilityId($facilityId, $pagination);
+                $this->smarty->assign('pagination', $pagination);
+                $this->smarty->assign('logbookEquipmantList', $logbookEquipmantList);
+                $tpl = 'tpls/viewLogbookEquipmant.tpl';
+                break;
+            default:
+                throw new Exception('tab is not exist');
+                break;
         }
 
         $jsSources = array(
@@ -341,9 +366,9 @@ class CLogbook extends Controller
         $personId = $this->getFromRequest('personId');
         $facilityId = $this->getFromRequest('facilityId');
         $inspectionPerson = new LogbookInspectionPerson();
-        if($personId != ''){
-           $inspectionPerson->setId($personId);
-           $inspectionPerson->load();
+        if ($personId != '') {
+            $inspectionPerson->setId($personId);
+            $inspectionPerson->load();
         }
         $inspectionPerson->setName($this->getFromRequest('personName'));
         $inspectionPerson->setFacilityId($facilityId);
@@ -415,37 +440,49 @@ class CLogbook extends Controller
         }
 
         $tab = $this->getFromRequest('tab');
-        //delete logbooks
-        if ($tab == 'logbook') {
-            $idArray = $this->getFromRequest('checkLogbook');
-            $itemsForDelete = array();
-            foreach ($idArray as $id) {
-                $logbook = new LogbookRecord();
-                $logbook->setId($id);
-                $logbook->load();
-                $itemForDelete = array(
-                    'id' => $id,
-                    'name' => $logbook->getDescription()
-                );
-                $itemsForDelete[] = $itemForDelete;
-            }
+        $itemsForDelete = array();
+        switch ($tab) {
+            //delete logbooks
+            case 'logbook':
+                $idArray = $this->getFromRequest('checkLogbook');
+                foreach ($idArray as $id) {
+                    $logbook = new LogbookRecord();
+                    $logbook->setId($id);
+                    $logbook->load();
+                    $itemForDelete = array(
+                        'id' => $id,
+                        'name' => $logbook->getDescription()
+                    );
+                    $itemsForDelete[] = $itemForDelete;
+                }
+                break;
+            case 'inspectionPerson':
+                $idArray = $this->getFromRequest('checkInspectionPerson');
+                foreach ($idArray as $id) {
+                    $inspectionPerson = new LogbookInspectionPerson();
+                    $inspectionPerson->setId($id);
+                    $inspectionPerson->load();
+                    $itemForDelete = array(
+                        'id' => $id,
+                        'name' => $inspectionPerson->getName()
+                    );
+                    $itemsForDelete[] = $itemForDelete;
+                }
+                break;
+            case 'logbookEquipment':
+                $idArray = $this->getFromRequest('checkLogbookEquipmant');
+                foreach ($idArray as $id) {
+                    $logbookEquipment = new LogbookEquipment();
+                    $logbookEquipment->setId($id);
+                    $logbookEquipment->load();
+                    $itemForDelete = array(
+                        'id' => $id,
+                        'name' => $logbookEquipment->getName()
+                    );
+                    $itemsForDelete[] = $itemForDelete;
+                }
+                break;
         }
-        //delete inspection Person
-        if($tab == 'inspectionPerson'){
-            $idArray = $this->getFromRequest('checkInspectionPerson');
-            $itemsForDelete = array();
-            foreach ($idArray as $id) {
-                $inspectionPerson = new LogbookInspectionPerson();
-                $inspectionPerson->setId($id);
-                $inspectionPerson->load();
-                $itemForDelete = array(
-                    'id' => $id,
-                    'name' => $inspectionPerson->getName()
-                );
-                $itemsForDelete[] = $itemForDelete;
-            }
-        }
-
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark' => 'logbook'));
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $this->setPermissionsNew('facility');
@@ -464,7 +501,6 @@ class CLogbook extends Controller
      */
     public function actionConfirmDelete()
     {
-
         $facility = new Facility($this->db, $this->getFromPost('facilityID'));
 
         if (!$this->user->checkAccess('logbook', $facility->getCompanyId())) {
@@ -472,26 +508,37 @@ class CLogbook extends Controller
         }
         $tab = $this->getFromPost('tab');
 
-        //confirm delete logbooks
-        if ($tab == 'logbook') {
-            $logbooksIds = $this->itemID;
-            foreach ($logbooksIds as $id) {
-                $logbook = new LogbookRecord($this->db);
-                $logbook->setId($id);
-                $logbook->delete();
-            }
+        switch ($tab) {
+            //confirm delete logbooks
+            case 'logbook':
+                $logbooksIds = $this->itemID;
+                foreach ($logbooksIds as $id) {
+                    $logbook = new LogbookRecord($this->db);
+                    $logbook->setId($id);
+                    $logbook->delete();
+                }
+                break;
+            //confirm delete inspection Person
+            case 'inspectionPerson':
+                $inspectionPersonsIds = $this->itemID;
+                foreach ($inspectionPersonsIds as $id) {
+                    $inspectionPerson = new LogbookInspectionPerson($this->db);
+                    $inspectionPerson->setId($id);
+                    $inspectionPerson->delete();
+                }
+                break;
+                //confirm delete logbook Equipment
+            case 'logbookEquipment':
+                $logbookEquipmentIds = $this->itemID;
+                foreach ($logbookEquipmentIds as $id) {
+                    $logbookEquipment = new LogbookEquipment($this->db);
+                    $logbookEquipment->setId($id);
+                    $logbookEquipment->delete();
+                }
+                break;
         }
-
-        if($tab == 'inspectionPerson'){
-           $inspectionPersonsIds = $this->itemID;
-           foreach ($inspectionPersonsIds as $id) {
-                $inspectionPerson = new LogbookInspectionPerson($this->db);
-                $inspectionPerson->setId($id);
-                $inspectionPerson->delete();
-            }
-        }
-
-        header("Location: ?action=browseCategory&category=facility&id=" . $facility->getFacilityId() . "&bookmark=logbook&tab=".$tab);
+        
+        header("Location: ?action=browseCategory&category=facility&id=" . $facility->getFacilityId() . "&bookmark=logbook&tab=" . $tab);
     }
 
     /**
@@ -521,6 +568,38 @@ class CLogbook extends Controller
         $this->smarty->assign('facilityId', $facilityId);
         $this->smarty->assign('tpl', $tpl);
         $this->smarty->display('tpls:index.tpl');
+    }
+
+    /**
+     * action save logbook equipment
+     */
+    public function actionSaveLogbookEquipment()
+    {
+        $facilityId = $this->getFromRequest('facilityId');
+        $logbookEquipmentName = $this->getFromRequest('logbookEquipmentName');
+        $logbookEquipmentId = $this->getFromRequest('logbookEquipmentId');
+        $logbookEquipment = new LogbookEquipment();
+        if($logbookEquipmentId != ''){
+            $logbookEquipment->setId($logbookEquipmentId);
+            $logbookEquipment->load();
+        }
+        $logbookEquipment->setFacilityId($facilityId);
+        $logbookEquipment->setName($logbookEquipmentName);
+        
+        $violationList = $logbookEquipment->validate();
+
+        if (count($violationList) == 0) {
+            $logbookEquipment->save();
+            header("Location:?action=browseCategory&category=facility&id={$facilityId}&bookmark=logbook&tab=logbookEquipment");
+        } else {
+            $this->smarty->assign('facilityId', $facilityId);
+            $this->smarty->assign('violationList', $violationList);
+            $this->smarty->assign('logbookEquipment', $logbookEquipment);
+            $tpl = 'tpls/viewAddLogbookEquipment.tpl';
+            $this->smarty->assign('tpl', $tpl);
+            $this->smarty->display('tpls:index.tpl');
+        }
+        die();
     }
 
 }

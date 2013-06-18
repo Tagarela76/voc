@@ -1,0 +1,4 @@
+VWM\Apps\Logbook\Entity\LogbookEquipment:
+  properties:
+    name:
+      - NotBlank: ~
