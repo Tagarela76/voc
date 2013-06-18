@@ -95,7 +95,6 @@ class CLogbook extends Controller
                     $logbook->setUnittypeId($post['gaugeUnitType']);
                 }
                 
-                
                 if ($post['gaugeType'] != 'null') {
                     $gaugeValue = explode(';', $post['gaugeValue']);
                     $logbook->setValueGaugeType($post['gaugeType']);
