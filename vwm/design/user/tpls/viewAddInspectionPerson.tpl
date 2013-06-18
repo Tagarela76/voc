@@ -1,4 +1,4 @@
-<form action="" method="get">
+<form action="?action=saveInspectionPerson&category=logbook" method="post">
     <div class="padd7">
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
@@ -14,20 +14,18 @@
                 <td class="border_users_l">
                     Inspection Person
                 </td>
-               <td class="border_users_l">
+                <td class="border_users_l">
                     <input type='text' name = 'personName' value='{$inspectionPerson->getName()|escape}'>
                 </td>
             </tr>
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
-        <input type='hidden' name="category" value="logbook">
-         <input type='hidden' name="action" value="saveInspectionPerson">
-         <input type='hidden' name="facilityId" value="{$facilityId|escape}">
-         <input type='hidden' name="personId" value="{$inspectionPerson->getId()|escape}">
+        <input type='hidden' name="facilityId" value="{$facilityId|escape}">
+        <input type='hidden' name="personId" value="{$inspectionPerson->getId()|escape}">
         <div align="right" style="padding: 12px 12px">
             <input type="submit" value="Save" class="button">
             <input type="button" value="Cancel" class="button" onclick='history.back()'>
-            <input type="button" value="Delete" class="button" onclick="location.href='?action=deleteItem&category=logbook&facilityID={$facilityId|escape}&checkInspectionPerson%5B%5D={$inspectionPerson->getId()|escape}&tab=inspectionPerson'">
+            <input type="button" value="Delete" class="button" onclick="location.href = '?action=deleteItem&category=logbook&facilityID={$facilityId|escape}&checkInspectionPerson%5B%5D={$inspectionPerson->getId()|escape}&tab=inspectionPerson'">
         </div>
     </div>
 </form>
