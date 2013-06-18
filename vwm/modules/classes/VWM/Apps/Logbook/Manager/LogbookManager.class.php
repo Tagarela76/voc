@@ -132,8 +132,8 @@ class LogbookManager
         $gasGauge = array(
             'id' => LogbookRecord::GAS_GAUGE,
             'name' => 'Gas Gauge',
-            'min' => $gaugeRange['min_gauge_range'],
-            'max' => $gaugeRange['max_gauge_range']
+            'min' => $gaugeRange['gauge_value_to'],
+            'max' => $gaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
         
         //electric gauge 
@@ -143,16 +143,28 @@ class LogbookManager
         $electricGauge = array(
             'id' => LogbookRecord::ELECTRIC_GAUGE,
             'name' => 'Electric Gauge',
-            'min' => $gaugeRange['min_gauge_range'],
-            'max' => $gaugeRange['max_gauge_range']
+            'min' => $electricGaugeRange['gauge_value_to'],
+            'max' => $electricGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
-
+        
+        if(!is_null($facilityId)){
+            $propanGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::PROPANE_GAS_GAUGE);
+        }
+        $propanGasGauge = array(
+            'id' => LogbookRecord::PROPANE_GAS_GAUGE,
+            'name' => 'Propan Gas Gauge',
+            'min' => $propanGaugeRange['gauge_value_to'],
+            'max' => $propanGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
+        );
+        
+        //var_dump($electricGaugeRange);//die();
         $gaugeList = array(
             0 => $temperatuteGauge,
             1 => $manometerGauge,
             2 => $clarifierGauge,
             3 => $gasGauge,
-            4 => $electricGauge
+            4 => $electricGauge,
+            5 => $propanGasGauge
         );
 
         return $gaugeList;
@@ -173,11 +185,39 @@ class LogbookManager
         if (is_null($facilityId) || is_null($gaugeType)) {
             return false;
         }
+        $query = "SELECT min_gauge_range, max_gauge_range, gauge_value_to " .
+                "FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "facility_id = {$db->sqltext($facilityId)} AND " .
+                "gauge_type = {$db->sqltext($gaugeType)} ".
+                "ORDER BY id DESC LIMIT 1";
+        $db->query($query);
+        $result = $db->fetch_all_array();
+        
+        if (is_null($result[0]['min_gauge_range'])) {
+            $result[0]['min_gauge_range'] = LogbookRecord::MIN_GAUGE_RANGE;
+        }
+        if (is_null($result[0]['max_gauge_range'])) {
+            $result[0]['max_gauge_range'] = LogbookRecord::MAX_GAUGE_RANGE;
+        }
+        //get last inserted value
+        if (is_null($result[0]['gauge_value_to'])) {
+            $result[0]['gauge_value_to'] = LogbookRecord::MIN_GAUGE_RANGE;
+        }
+
+        return $result[0];
+    }
+    /*private function getLogbookRange($facilityId, $gaugeType)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        if (is_null($facilityId) || is_null($gaugeType)) {
+            return false;
+        }
         $query = "SELECT min_gauge_range, max_gauge_range " .
                 "FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)} AND " .
                 "gauge_type = {$db->sqltext($gaugeType)} LIMIT 1";
         $db->query($query);
+        
         $result = $db->fetch_all_array();
 
         if (is_null($result[0]['min_gauge_range'])) {
@@ -188,7 +228,7 @@ class LogbookManager
         }
 
         return $result[0];
-    }
+    }*/
 
 }
 ?>

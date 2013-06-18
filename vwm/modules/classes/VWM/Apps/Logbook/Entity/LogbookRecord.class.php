@@ -3,6 +3,7 @@
 namespace VWM\Apps\Logbook\Entity;
 
 use \VWM\Framework\Model;
+use \VWM\Apps\UnitType\Entity\UnitType;
 
 class LogbookRecord extends Model
 {
@@ -24,7 +25,9 @@ class LogbookRecord extends Model
     protected $facility_id;
 
     /**
+     * 
      * department id
+     * 
      * @var int
      */
     protected $department_id = null;
@@ -197,6 +200,22 @@ class LogbookRecord extends Model
 
     /**
      *
+     * gauge unit type
+     * 
+     * @var int
+     */
+    protected $unittype_id = null;
+
+    /**
+     *
+     * gauge unit type
+     * 
+     * @var \VWM\Apps\UnitType\Entity\UnitType 
+     */
+    protected $logbookUnitType = null;
+
+    /**
+     *
      * max limit of gauge
      *
      * @var int
@@ -213,8 +232,10 @@ class LogbookRecord extends Model
     const CLARIFIER_GAUGE = 2;
     const GAS_GAUGE = 3;
     const ELECTRIC_GAUGE = 4;
+    const PROPANE_GAS_GAUGE = 5;
     const MIN_GAUGE_RANGE = 0;
     const MAX_GAUGE_RANGE = 100;
+    const GAUGE_RANGE_STEP = 100;
 
     public function __construct($id = null)
     {
@@ -485,6 +506,36 @@ class LogbookRecord extends Model
         $this->inspection_addition_type = $inspection_addition_type;
     }
 
+    public function getUnittypeId()
+    {
+        return $this->unittype_id;
+    }
+
+    public function setUnittypeId($unittype_id)
+    {
+        $this->unittype_id = $unittype_id;
+    }
+
+    public function getLogbookUnitType()
+    {
+        if (is_null($this->getUnittypeId())) {
+            return false;
+        }
+        if (is_null($this->logbookUnitType)) {
+            $db = \VOCApp::getInstance()->getService('db');
+            $unitType = new UnitType($db);
+            $unitType->setUnitTypeId($this->getUnittypeId());
+            $unitType->load();
+            $this->setLogbookUnitType($unitType);
+        }
+        return $this->logbookUnitType;
+    }
+
+    public function setLogbookUnitType(\VWM\Apps\UnitType\Entity\UnitType $logbookUnitType)
+    {
+        $this->logbookUnitType = $logbookUnitType;
+    }
+
     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -520,6 +571,7 @@ class LogbookRecord extends Model
         $gaugeValueTo = $this->getGaugeValueTo();
         $replacedBulbs = $this->getReplacedBulbs();
         $inspectionAdditionType = $this->getInspectionAdditionType();
+        $unittypeId = $this->getUnittypeId();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -551,7 +603,16 @@ class LogbookRecord extends Model
         if (is_null($inspectionAdditionType)) {
             $inspectionAdditionType = 'NULL';
         }
+        if (is_null($unittypeId)) {
+            $unittypeId = 'NULL';
+        }
 
+        //check gauge range
+        $minGaugeRange = $this->getMinGaugeRange();
+        $maxGaugeRange = $this->getMaxGaugeRange();
+        
+        //set nextGauge
+        
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
@@ -568,15 +629,16 @@ class LogbookRecord extends Model
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
                 "replaced_bulbs = {$db->sqltext($this->getReplacedBulbs())}, " .
-                "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
-                "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
+                "min_gauge_range = {$db->sqltext($minGaugeRange)}, " .
+                "max_gauge_range = {$db->sqltext($maxGaugeRange)}, " .
+                "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "qty = '{$db->sqltext($qty)}'";
 
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-            $this->updateGaugeRange();
+           // $this->updateGaugeRange();
         }
         $this->setId($id);
 
@@ -596,6 +658,7 @@ class LogbookRecord extends Model
         $gaugeValueFrom = $this->getGaugeValueFrom();
         $gaugeValueTo = $this->getGaugeValueTo();
         $inspectionAdditionType = $this->getInspectionAdditionType();
+        $unittypeId = $this->getUnittypeId();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -625,6 +688,9 @@ class LogbookRecord extends Model
         if (is_null($inspectionAdditionType)) {
             $inspectionAdditionType = 'NULL';
         }
+        if (is_null($unittypeId)) {
+            $unittypeId = 'NULL';
+        }
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
@@ -645,13 +711,14 @@ class LogbookRecord extends Model
                 "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
+                "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
-            $this->updateGaugeRange();
+           // $this->updateGaugeRange();
         }
         return $this->getId();
     }
@@ -662,7 +729,7 @@ class LogbookRecord extends Model
 
     public function getAttributes()
     {
-
+        
     }
 
     /**
@@ -690,8 +757,8 @@ class LogbookRecord extends Model
         $inspectionDescription = $itmanager->getLogbookDescriptionByDescriptionName($inspectionDescriptionName);
 
         /* set addition fields available */
-        if(!is_null($inspectionType->additionFieldList)){
-           $this->setHasInspectionAdditionType(1);
+        if (!is_null($inspectionType->additionFieldList)) {
+            $this->setHasInspectionAdditionType(1);
         }
         $this->setHasPermit($inspectionType->permit);
         $this->setHasQty($inspectionSubType->qty);
@@ -721,10 +788,20 @@ class LogbookRecord extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
 
+        $gaugeType = $this->getValueGaugeType();
+        $minGaugeRange = $this->getMinGaugeRange();
+        $maxGaugeRange = $this->getMaxGaugeRange();
+
+        //set min range for electric gauge 
+        if ($gaugeType == self::ELECTRIC_GAUGE || $gaugeType == self::GAS_GAUGE || $gaugeType == self::PROPANE_GAS_GAUGE) {
+            $minGaugeRange = $this->getGaugeValueTo();
+            $maxGaugeRange = $minGaugeRange + self::MAX_GAUGE_RANGE;
+        }
+
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
-                "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
-                "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())} " .
-                "WHERE gauge_type = {$db->sqltext($this->getValueGaugeType())} AND " .
+                "min_gauge_range = {$db->sqltext($minGaugeRange)}, " .
+                "max_gauge_range = {$db->sqltext($maxGaugeRange)} " .
+                "WHERE gauge_type = {$db->sqltext($gaugeType)} AND " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}";
 
         $db->query($query);

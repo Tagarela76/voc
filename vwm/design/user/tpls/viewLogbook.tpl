@@ -15,7 +15,7 @@
     
     <table class="users" align="center" cellpadding="0" cellspacing="0" >
         <tr class="users_u_top_size users_top_brown">
-            <td class="users_u_top_brown" width="27%" colspan="4">
+            <td class="users_u_top_brown" width="27%" colspan="6">
                 <span>List of last records at logbook</span>
             </td>
             <td class="users_u_top_r_brown" width="5%">
@@ -35,18 +35,18 @@
             <td class="border_users_b border_users_r" width = "10%">
                 Time
             </td>
-            <td class="border_users_b border_users_r" width = "20%">
+            <td class="border_users_b border_users_r" width = "10%">
                 Inspected By
             </td>
-            <td class="border_users_b border_users_r" width = "80%">
+            <td class="border_users_b border_users_r" width = "20%">
                 Inspection Type
             </td>
-            <!--<td class="border_users_b border_users_r" width = "80%">
+           <td class="border_users_b border_users_r" width = "30%">
                 Condition
             </td>
-            <td class="border_users_b border_users_r" width = "80%">
+            <td class="border_users_b border_users_r" width = "20%">
                 Notes
-            </td>-->
+            </td>
         </tr>
         {foreach from=$logbookList item=logbook}
              <tr>
@@ -67,12 +67,12 @@
                     {$logbook.inspectionType}
                 </a>
             </td>
-           <!-- <td class="border_users_b border_users_r">
-                {$null}
+           <td class="border_users_b border_users_r">
+                {$logbook.condition}
             </td>
             <td class="border_users_b border_users_r">
-                {$null}
-            </td>-->
+                {$logbook.notes}
+            </td>
         </tr>
         {/foreach}
     </table>
