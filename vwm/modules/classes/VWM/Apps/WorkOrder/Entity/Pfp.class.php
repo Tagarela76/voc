@@ -15,7 +15,7 @@ class Pfp extends Model
     public $creator_id;
     public $last_update_time;
     public $is_proprietary = 0;
-    public $products = array();
+    public $products = null;
     protected $supplier_id;
  
     const TABLE_NAME = 'preformulated_products';
@@ -95,7 +95,26 @@ class Pfp extends Model
      */
 	public function getProducts()
     {
-		return $this->products;
+        
+        $db = \VOCApp::getInstance()->getService('db');
+        if(!is_null($this->products)){
+            return $this->products;
+        }
+        $query = "SELECT * FROM ".self::TABLE_PFP2PRODUCT. " pfp2p " .
+                 "LEFT JOIN ".\VWM\Entity\Product\PaintProduct::TABLE_NAME." p ".
+                 "ON p.product_id = pfp2p.product_id ".
+                 "WHERE pfp2p.preformulated_products_id={$db->sqltext($this->getId())}";
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        $products = array();
+        foreach($rows as $row){
+            $product = new PfpProduct($db);
+            $product->initByArray($row);
+            $products[] = $product;
+        }
+        $this->setProducts($products);
+        
+		return $products;
 	}
 
     /**

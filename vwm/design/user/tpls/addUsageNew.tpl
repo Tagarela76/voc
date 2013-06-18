@@ -108,7 +108,7 @@ $(function()
 			if (isPfp) {
 			{/literal}
 				currentSelectedPFP = true;
-				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true,{$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if});
+				addProduct({$p->product_id}, {$p->quantity}, {$p->unit_type}, '{$p->unittypeDetails.unittypeClass}', true, {$p->is_primary}, {if !$p->ratio_to_save}null{else}{$p->ratio_to_save}{/if}{if $p->isRange} ,{$p->isRange}{/if});
 			{literal}
 			} else {
 			{/literal}

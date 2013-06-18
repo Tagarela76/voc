@@ -1148,10 +1148,9 @@ function clearProductsList() {
 }
 
 function addProduct(productID, quantity, unittypeId, unittypeClass,pfp, isPrimary, ratio, isRange) {
-
+    
     isPFP = typeof(pfp) != 'undefined' ? true : false;
-    isRange = typeof(isRange) != 'undefined' ? false : true;
-
+    //isRange = typeof(isRange) != 'undefined' ? false : true;
     if(isPFP == true) {
 
         products.addPFPProduct(productID, quantity, unittypeId, unittypeClass,ratio,isPrimary,isRange);
