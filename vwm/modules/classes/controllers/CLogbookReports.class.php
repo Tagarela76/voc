@@ -1,16 +1,21 @@
 <?php
 
 use VWM\Hierarchy\Facility;
+use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
+use \VWM\Apps\Logbook\Manager\LogbookManager;
 
 class CLogbookReports extends Controller
 {
-
     public function __construct($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
         $this->category = 'logbook';
     }
-
+    /**
+     * 
+     * display logbook report settings 
+     * 
+     */
     public function actionSendLogbookReport()
     {
         $request = $this->getFromRequest();
@@ -68,7 +73,9 @@ class CLogbookReports extends Controller
 
     /**
      * function prepareSendReport($params) - prepare params for smarty
+     * 
      * @param array $params - $db, $reportType, $companyID, $request
+     * 
      * @return array params prepared for smarty
      */
     public function prepareSendReport($params)
@@ -95,7 +102,16 @@ class CLogbookReports extends Controller
         //get Equipmant list
         $equipmants = new Equipment($db);
         $result['equipments'] = $equipmants->getEquipmentListByFacilityId($params['facilityID']);
-
+        
+        //get inspection Type List
+        $itManager = new InspectionTypeManager();
+        $inspectionTypeList = $itManager->getInspectionTypeListByFacilityId($params['facilityID']);
+        $result['inspectionTypeList'] = $inspectionTypeList;
+        
+        $lbManager = new LogbookManager();
+        $gaugeList = $lbManager->getGaugeList($facilityId);
+        $result['gaugeList'] = $gaugeList;
+        
         return $result;
     }
 
@@ -111,6 +127,12 @@ class CLogbookReports extends Controller
         return 'reports/design/logbookInput.tpl';
     }
 
+    /**
+     * 
+     * preapare logbook report information
+     * 
+     * @throws Exception
+     */
     public function actionPrepareSendLogbookReport()
     {
         $reportType = $this->getFromRequest('reportType');
@@ -118,6 +140,10 @@ class CLogbookReports extends Controller
         $facilityId = $this->getFromRequest('id');
         $userId = $_SESSION['user_id'];
         $equipmentId = $this->getFromRequest('equipmentId');
+        $gaugeId = $this->getFromRequest('gaugeId');
+        $inspectionTypeIds = $this->getFromRequest('inspectionTypeId');
+        $itManager = new InspectionTypeManager();
+        $inspectionTypeList = $itManager->getInspectionTypeListByFacilityId($facilityId);
 
         $facility = new Facility($this->db, $facilityId);
         $companyId = $facility->getCompanyId();
@@ -128,23 +154,24 @@ class CLogbookReports extends Controller
         $dateBegin = new TypeChain($this->getFromRequest('date_begin'), 'date', $this->db, $companyId, 'company');
         $dateEnd = new TypeChain($this->getFromRequest('date_end'), 'date', $this->db, $companyId, 'company');
 
-
         $frequency = null;
 
         //create xml
         $xmlFileName = 'tmp/reportByUser' . $userId . '.xml';
         $reportClassName = 'R'.$reportType;
+        
         if (class_exists($reportClassName)) {
             $xml = new $reportClassName($this->db);
         } else {
             throw new Exception('Cannot find report of type '.$reportType);
         }
-
+        
         $xml->setCategoryId($facilityId);
         $xml->setDateBegin($dateBegin);
         $xml->setDateEnd($dateEnd);
         $xml->setEquipmentId($equipmentId);
-
+        $xml->setInspectionTypeId($inspectionTypeIds);
+        $xml->setGaugeId($gaugeId);
         $xml->BuildXML($xmlFileName);
 
         $pdf = new PDFBuilder($xmlFileName, $reportType, $extraVar);

@@ -67,13 +67,45 @@
                             </tr>
                             <tr>
                                 <td class="pcenter">
+                                    Inspection Type
+                                </td>
+                                <td>
+                                    <select name ='inspectionTypeId'>
+                                        <option value="all">All</option>
+                                        {foreach from=$inspectionTypeList item=inspectionType}
+                                            {assign var='inspectionTypeSettings' value=$inspectionType->getInspectionType()}
+                                            <option value="{$inspectionType->getId()|escape}">
+                                                {$inspectionTypeSettings->typeName|escape}
+                                            </option>
+                                        {/foreach}
+                                    </select>
+                                    </td>
+                            </tr>
+                            <tr>
+                                <td class="pcenter">
+                                    Gauge
+                                </td>
+                                <td>
+                                    <select name ='gaugeId'>
+                                        <option value="all">All</option>
+                                        {foreach from=$gaugeList item=gauge}
+                                            <option value="{$gauge.id|escape}">
+                                                {$gauge.name|escape}
+                                            </option>
+                                        {/foreach}
+                                    </select>
+                                    </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="pcenter">
                                     Equipment
                                 </td>
                                 <td>
                                     <select name ='equipmentId'>
                                         {foreach from=$equipments item=equipment}
-                                            <option value="{$equipment.equipment_id}">
-                                                {$equipment.equip_desc}
+                                            <option value="{$equipment.equipment_id|escape}">
+                                                {$equipment.equip_desc|escape}
                                             </option>
                                         {/foreach}
                                     </select>

@@ -44,9 +44,11 @@ function InspectionTypeList() {
      * @returns null
      */
     this.changeSubTypeList = function() {
-        var inspectionTypeName = $('#inspectionType').val();
+        //var inspectionTypeName = $('#inspectionType').val();
+        var inspectionTypeName = $('#inspectionType option:selected').text();
+        
         //get subTypeList
-        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
+        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName.trim());
         
         //check for addition fields
         if (inspectionType.subtypes != undefined) {
@@ -67,8 +69,10 @@ function InspectionTypeList() {
     }
 
     this.getAdditionFieldTypesList = function() {
-        var inspectionTypeName = $('#inspectionType').val();
-        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName);
+        //var inspectionTypeName = $('#inspectionType').val();
+        var inspectionTypeName = $('#inspectionType option:selected').text();
+        
+        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName.trim());
         if (inspectionType.additionFieldList != undefined) {
             $('#inspectionAdditionListTypeContainer').show();
             var html = '';
@@ -148,8 +152,11 @@ function InspectionTypeList() {
      * 
      * @returns {null}
      */
-    this.getSubTypesAdditionFields = function(gaugeType) {
-        var inspectionTypeName = $('#inspectionType').val();
+    this.getSubTypesAdditionFields = function() {
+        //var inspectionTypeName = $('#inspectionType').val();
+        var inspectionTypeName = $('#inspectionType option:selected').text();
+        inspectionTypeName = inspectionTypeName.trim();
+
         var inspectionSubTypeName = $('#inspectionSubType').val();
         var inspectionAdditionTypeName = $('#inspectionAdditionListType').val();
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName)
@@ -167,11 +174,12 @@ function InspectionTypeList() {
         } else {
             $('#logBookSubTypeNotes').show();
         }
-
+        var gaugeType = 'null';
         if (inspectionSubType.valueGauge == 0) {
             $('#logbookValueGauge').hide();
             $('#logbookReplacedBulbs').hide();
         } else {
+
             
             if (gaugeType == undefined) {
                 var gaugeType = 'null';
@@ -180,16 +188,16 @@ function InspectionTypeList() {
                     gaugeType = inspectionAdditionListType.gaugeType
                 }
 
+
                 if (inspectionSubType.gaugeType != undefined) {
                     gaugeType = inspectionSubType.gaugeType;
                 }
             }
             //set gauge type
-            $('#gaugeType').val(gaugeType);
             $('#logbookValueGauge').show();
             $('#logbookReplacedBulbs').show();
         }
-
+        $('#gaugeType').val(gaugeType);
         if (inspectionType.permit == 0) {
             $('#logBookPermit').hide();
         } else {
@@ -521,6 +529,7 @@ function Gauges() {
     this.changeGauge = function() {
         var gaugeType = $('#gaugeType').val();
         //set gauge range 
+
         switch (gaugeType) {
                 //temperature gauge
             case '0':

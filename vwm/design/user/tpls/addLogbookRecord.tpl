@@ -26,6 +26,8 @@
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.gauges.checkGaugeValueRange();
+            itlManager.gauges.changeGauge();
+            
         });
     </script>
 {/literal}
@@ -75,7 +77,7 @@
                     <div>
                         <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList()">
                             {section name=i loop=$inspectionTypesList}
-                                <option value="{$inspectionTypesList[i]->typeName|escape}" {if $logbook->getInspectionType() == $inspectionTypesList[i]->typeName}selected='selected'{/if}>
+                                <option value="{$inspectionTypesList[i]->id|escape}" {if $logbook->getInspectionTypeId() == $inspectionTypesList[i]->id}selected='selected'{/if}>
                                     {$inspectionTypesList[i]->typeName|escape}
                                 </option>
                             {/section}

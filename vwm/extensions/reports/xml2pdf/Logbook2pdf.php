@@ -186,16 +186,17 @@ class XML2PDF extends PDF_MC_Table
             case 'TABLE':
                 $this->Ln(15);
 
-                $this->widths = array(30, 30, 40, 40, 25);
+                $this->widths = array(30, 30, 40, 40, 25, 25);
                 $this->SetWidths($this->widths);
                 $this->SetLineWidth(0.2);
                 $this->SetFont('Arial', 'B', 7);
                 $h = 10;
                 $this->Cell($this->widths[0], $h, "Date", 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, "Temp. Start Reading (A)", 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, "Temp. End Reading (B)", 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, "Replaced Bulbs YES/NO", 1, 0, 'C');
+                $this->Cell($this->widths[1], $h, "Start Reading (A)", 1, 0, 'C');
+                $this->Cell($this->widths[2], $h, "End Reading (B)", 1, 0, 'C');
+                $this->Cell($this->widths[3], $h, "Description", 1, 0, 'C');
                 $this->Cell($this->widths[4], $h, "Inspected By", 1, 0, 'C');
+                $this->Cell($this->widths[5], $h, "GaugeType", 1, 0, 'C');
 
                 $this->Ln();
                 break;
@@ -210,15 +211,16 @@ class XML2PDF extends PDF_MC_Table
         $this->DebugPrint("End: $tag\n");
         switch ($tag) {
             case 'LOGBOOKINSPECTION':
-                $this->widths = array(30, 30, 40, 40, 25);
+                $this->widths = array(30, 30, 40, 40, 25, 25);
                 $this->SetWidths($this->widths);
                 $this->SetFont('Arial', 'B', 7);
                 $h = 5;
                 $this->Cell($this->widths[0], $h, $attribs['DATE'], 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, $attribs['TEMPSTART'], 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, $attribs['TEMPEND'], 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, $attribs['REPLACEDBULBS'], 1, 0, 'C');
+                $this->Cell($this->widths[1], $h, $attribs['START'], 1, 0, 'C');
+                $this->Cell($this->widths[2], $h, $attribs['END']." ".$attribs['UNITTYPE']." ", 1, 0, 'C');
+                $this->Cell($this->widths[3], $h, $attribs['DESCRIPTION'], 1, 0, 'C');
                 $this->Cell($this->widths[4], $h, $attribs['INSPECTEDPERSON'], 1, 0, 'C');
+                $this->Cell($this->widths[5], $h, $attribs['GAUGE'], 1, 0, 'C');
                 $this->ln();
                 break;
         }
@@ -234,14 +236,11 @@ class XML2PDF extends PDF_MC_Table
             case "TITLE":
                 $this->header["TITLE"] = $data;
                 break;
-            case 'EQUIPMENTDESC':
-                $this->header["EQUIPMENTDESC"] = $data;
-                break;
             case 'COMPANYADDRESS':
                 $this->header["COMPANYADDRESS"] = $data;
                 break;
-            case 'CITYSTATEZIP':
-                $this->header["CITYSTATEZIP"] = $data;
+            case 'COUNTRY':
+                $this->header["COUNTRY"] = $data;
                 break;
             case 'FAX':
                 $this->header["FAX"] = $data;
@@ -249,14 +248,14 @@ class XML2PDF extends PDF_MC_Table
             case 'PHONE':
                 $this->header["PHONE"] = $data;
                 break;
-            case 'COUNTRY':
-                $this->header["COUNTRY"] = $data;
+            case 'CITYSTATEZIP':
+                $this->header["CITYSTATEZIP"] = $data;
                 break;
-            case 'PERMIT':
-                $this->header["PERMIT"] = $data;
+            case 'FACILITYNAME':
+                $this->header["FACILITYNAME"] = $data;
                 break;
-            case 'CATEGORYNAME':
-                $this->header["CATEGORYNAME"] = $data;
+            case 'COMPANYNAME':
+                $this->header["COMPANYNAME"] = $data;
                 $this->header();
                 break;
         }
@@ -273,26 +272,24 @@ class XML2PDF extends PDF_MC_Table
 
     function Header()
     {
-        if (isset($this->header["CATEGORYNAME"])) {
-            //write title
-            $this->SetX(-15);
-            $this->setY(0);
+        $fontSize = 7;
+        if (isset($this->header['TITLE'])) {
             $this->SetFont('Arial', 'B', 15);
-            $this->Cell(290, 10, $this->header['TITLE'], 0, 1, 'L');
-            $this->SetFont('Arial', 'B', 8);
+            $this->Cell(75, 0, $this->header['TITLE'], 0, 0, 'L');
+            $this->Ln(4);
+            //display company address
+            $this->SetFont('Arial', 'B', $fontSize);
+            $this->Cell(100, 10, "Company: " . $this->header['COMPANYNAME'], 0, 0, 'L');
             $this->Cell(75, 10, "Address: " . $this->header['COMPANYADDRESS'], 0, 0, 'L');
-            $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENTDESC'], 0, 0, 'L');
-            $this->Ln(5);
-            $this->Cell(75, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
-            $this->Cell(75, 10, "Description: ", 0, 0, 'L');
-            $this->Ln(5);
-            $this->Cell(75, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
-            $this->Cell(75, 10, "Permit No: ". $this->header['PERMIT'], 0, 0, 'L');
-            $this->Ln(5);
-            $this->Cell(75, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
-            $this->Ln(5);
-            $this->Cell(75, 10, "Fax: " . $this->header['Fax'], 0, 0, 'L');
-            $this->Ln(5);
+            $this->Ln(3);
+            $this->Cell(100, 10, "Facility: " . $this->header['FACILITYNAME'], 0, 0, 'L');
+            $this->Cell(75, 10, "Fax: " . $this->header['FAX'], 0, 0, 'L');
+            $this->Ln(3);
+            $this->Cell(100, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
+            $this->Ln(3);
+            $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
+             $this->Ln(3);
+            $this->Cell(100, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
         }
     }
 
