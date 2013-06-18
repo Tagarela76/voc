@@ -8,12 +8,21 @@ use VWM\Apps\Logbook\Entity\LogbookEquipment;
 class LogbookEquipmentManager
 {
 
-    public function getLogbookEquipmentListByFacilityId($facilityId = null, $pagination = null)
+    /**
+     * 
+     * get logbook Equipment List by Facility Id
+     * 
+     * @param int $facilityId
+     * @param \Pagination $pagination
+     * 
+     * @return boolean|\VWM\Apps\Logbook\Entity\LogbookEquipment
+     */
+    public function getLogbookEquipmentListByFacilityId($facilityId = null, \Pagination $pagination = null)
     {
         if (is_null($facilityId)) {
             return false;
         }
-
+        
         $db = \VOCApp::getInstance()->getService('db');
 
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
@@ -26,16 +35,24 @@ class LogbookEquipmentManager
         $db->query($query);
         $rows = $db->fetch_all_array();
 
-        $logbookEquipmenteList = array();
-
+        $logbookEquipmentList = array();
+        
         foreach ($rows as $row) {
-            $logbookEquipmente = new LogbookEquipment();
-            $logbookEquipmente->initByArray($row);
-            $newLogbookEquipmenteList[] = $logbookEquipmente;
+            $logbookEquipment = new LogbookEquipment();
+            $logbookEquipment->initByArray($row);
+            $logbookEquipmentList[] = $logbookEquipment;
         }
-        return $newLogbookEquipmenteList;
+        return $logbookEquipmentList;
     }
 
+    /**
+     * 
+     * get count of logbook equipment by facility id
+     * 
+     * @param int $facilityId
+     * 
+     * @return boolean
+     */
     public function getCountLogbookEquipmentByFacilityId($facilityId = null)
     {
         if (is_null($facilityId)) {

@@ -25,7 +25,6 @@
             itlManager.description.showNotes();
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
-            //itlManager.equipmant.getEquipmantList();
             itlManager.gauges.checkGaugeValueRange();
         });
     </script>
@@ -239,12 +238,12 @@
                     Equipment
                 </td>
                 <td>
-                    <div id='equipmantListContainer'>
+                    <div id='equipmentListContainer'>
                         <div style="width: 150px">
                             Select Equipment
                         </div>
                         
-                        <select id ='equipmantList' name='equipmantId'>
+                        <select id ='equipmentList' name='logbookEquipmentId'>
                             {foreach from=$logbookEquipmentList item="logbookEquipment"}
                                 <option value="{$logbookEquipment->getId()|escape}">
                                     {$logbookEquipment->getName()|escape}

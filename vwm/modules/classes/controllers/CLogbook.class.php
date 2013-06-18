@@ -76,7 +76,7 @@ class CLogbook extends Controller
                 $logbook->setInspectionSubType($post['inspectionSubType']);
                 $logbook->setDescription($post['logBookDescription']);
                 $logbook->setPermit($permit);
-                $logbook->setEquipmantId($post['equipmantId']);
+                $logbook->setEquipmantId($post['logbookEquipmentId']);
                 $logbook->setDepartmentId($post['departmentId']);
                 $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                 $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
@@ -278,6 +278,7 @@ class CLogbook extends Controller
 
                 $logbookList = array();
                 foreach ($logbookRecordList as $logbookRecord) {
+                    //get date and time
                     $creationDateTime = $logbookRecord->getDateTime();
                     $creationDateTime = date($timeFormat . ' h:i a', $creationDateTime);
                     $creationDateTime = explode(' ', $creationDateTime);
@@ -285,11 +286,13 @@ class CLogbook extends Controller
                     $inspectionPerson = new LogbookInspectionPerson();
                     $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
                     $inspectionPerson->load();
-
+                    //create logbook array for diplay and sort
                     $logbook = array(
                         'logbookId' => $logbookRecord->getId(),
                         'inspectionType' => $logbookRecord->getInspectionType(),
+                        //add date for sorting
                         'creationDate' => $creationDateTime[0],
+                        //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
                         'inspectionPersonName' => $inspectionPerson->getName()
                     );
@@ -318,7 +321,7 @@ class CLogbook extends Controller
                 $logbookEquipmantList = $leManager->getLogbookEquipmentListByFacilityId($facilityId, $pagination);
                 $this->smarty->assign('pagination', $pagination);
                 $this->smarty->assign('logbookEquipmantList', $logbookEquipmantList);
-                $tpl = 'tpls/viewLogbookEquipmant.tpl';
+                $tpl = 'tpls/viewLogbookEquipment.tpl';
                 break;
             default:
                 throw new Exception('tab is not exist');
@@ -363,14 +366,14 @@ class CLogbook extends Controller
      */
     protected function actionSaveInspectionPerson()
     {
-        $personId = $this->getFromRequest('personId');
-        $facilityId = $this->getFromRequest('facilityId');
+        $personId = $this->getFromPost('personId');
+        $facilityId = $this->getFromPost('facilityId');
         $inspectionPerson = new LogbookInspectionPerson();
         if ($personId != '') {
             $inspectionPerson->setId($personId);
             $inspectionPerson->load();
         }
-        $inspectionPerson->setName($this->getFromRequest('personName'));
+        $inspectionPerson->setName($this->getFromPost('personName'));
         $inspectionPerson->setFacilityId($facilityId);
         $id = $inspectionPerson->save();
         header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=inspectionPerson");
@@ -409,11 +412,11 @@ class CLogbook extends Controller
         $creationTime = date($timeFormat . ' h:i a', $creationTime);
         $this->smarty->assign('creationTime', $creationTime);
 
-        //initialize equipmant
-        $equipmant = new Equipment($this->db);
-        $equipmantDetails = $equipmant->getEquipmentDetails($logbook->getEquipmantId());
-        $this->smarty->assign('equipmantDetails', $equipmantDetails);
-
+        //initialize equipment
+        $logbookEquipment = new LogbookEquipment();
+        $logbookEquipment->setId($logbook->getEquipmantId());
+        $logbookEquipment->load();
+        $this->smarty->assign('logbookEquipment', $logbookEquipment);
         // set left menu
         $this->setListCategoriesLeftNew($category, $categoryId);
         $this->setPermissionsNew($category);
@@ -575,9 +578,9 @@ class CLogbook extends Controller
      */
     public function actionSaveLogbookEquipment()
     {
-        $facilityId = $this->getFromRequest('facilityId');
-        $logbookEquipmentName = $this->getFromRequest('logbookEquipmentName');
-        $logbookEquipmentId = $this->getFromRequest('logbookEquipmentId');
+        $facilityId = $this->getFromPost('facilityId');
+        $logbookEquipmentName = $this->getFromPost('logbookEquipmentName');
+        $logbookEquipmentId = $this->getFromPost('logbookEquipmentId');
         $logbookEquipment = new LogbookEquipment();
         if($logbookEquipmentId != ''){
             $logbookEquipment->setId($logbookEquipmentId);
@@ -587,7 +590,7 @@ class CLogbook extends Controller
         $logbookEquipment->setName($logbookEquipmentName);
         
         $violationList = $logbookEquipment->validate();
-
+        
         if (count($violationList) == 0) {
             $logbookEquipment->save();
             header("Location:?action=browseCategory&category=facility&id={$facilityId}&bookmark=logbook&tab=logbookEquipment");

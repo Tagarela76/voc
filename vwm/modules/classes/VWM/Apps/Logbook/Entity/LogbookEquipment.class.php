@@ -91,15 +91,6 @@ class LogbookEquipment extends Model
     public function _insert()
     {
         $db = \VOCApp::getInstance()->getService('db');
-
-        if (is_null($this->getFacilityId())) {
-            throw new \Exception('Please enter facility id first');
-        }
-
-        if (is_null($this->getName())) {
-            throw new \Exception('Please enter name first');
-        }
-
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "name = '{$db->sqltext($this->getName())}'";
@@ -115,14 +106,6 @@ class LogbookEquipment extends Model
 
     public function _update()
     {
-        if (is_null($this->getFacilityId())) {
-            throw new \Exception('Please enter facility id first');
-        }
-
-        if (is_null($this->getName())) {
-            throw new \Exception('Please enter name first');
-        }
-
         $db = \VOCApp::getInstance()->getService('db');
 
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
@@ -138,16 +121,23 @@ class LogbookEquipment extends Model
         }
     }
 
-    /*
-     * redefine abstract method
+    /**
+     * 
+     * get attributes
+     * 
+     * @return array
      */
 
     public function getAttributes()
     {
-        
+        return array(
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'facilityId' => $this->getFacilityId()
+        );
     }
     
-    /*
+    /**
      * delete logbook equipment
      */
     public function delete()

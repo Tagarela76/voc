@@ -1,4 +1,4 @@
-<form action="" method="get">
+<form action="?action=saveInspectionPerson&category=logbook" method="post">
     <div class="padd7">
         <table class="users" align="center" cellpadding="0" cellspacing="0">
             <tr class="users_u_top_size users_top">
@@ -20,8 +20,6 @@
             </tr>
         </table>
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
-        <input type='hidden' name="category" value="logbook">
-        <input type='hidden' name="action" value="saveInspectionPerson">
         <input type='hidden' name="facilityId" value="{$facilityId|escape}">
         <input type='hidden' name="personId" value="{$inspectionPerson->getId()|escape}">
         <div align="right" style="padding: 12px 12px">

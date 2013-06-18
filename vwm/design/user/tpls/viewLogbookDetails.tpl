@@ -56,7 +56,7 @@
                 Equipment Description
             </td>
             <td class="border_users_b border_users_r">
-                {$equipmantDetails.equip_desc|escape}
+                {$logbookEquipment->getName()|escape}
             </td>
         </tr>
         {if $logbook->getHasSubTypeNotes()}
