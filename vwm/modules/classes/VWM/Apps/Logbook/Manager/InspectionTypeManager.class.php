@@ -24,15 +24,7 @@ class InspectionTypeManager
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionTypeInJson = array();
         
-        /*$ltManager = new LogbookSetupTemplateManager();
-        $itManager = new InspectionTypeManager();
-        $logbookTemplateList = $ltManager->getLogbookTemplateListByFacilityIds($facilityId);
-        $logbookTemplateIds = array();
-        foreach($logbookTemplateList as $logbookTemplate){
-            $logbookTemplateIds[] = $logbookTemplate->getId();
-        }
-        $logbookTemplateIds= implode(',', $logbookTemplateIds);
-        $inspectionTypeList = $itManager->getInspectionTypeList($logbookTemplateIds);*/
+       
         $inspectionTypeList = $this->getInspectionTypeListByFacilityId($facilityId);
         
         foreach ($inspectionTypeList as $inspectionType) {

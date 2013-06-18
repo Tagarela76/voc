@@ -3,6 +3,7 @@
 use VWM\Hierarchy\Facility;
 use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use \VWM\Apps\Logbook\Manager\LogbookManager;
+use \VWM\Apps\Logbook\Manager\LogbookEquipmentManager;
 
 class CLogbookReports extends Controller
 {
@@ -100,8 +101,9 @@ class CLogbookReports extends Controller
         $result["monthes"] = $mas;
 
         //get Equipmant list
-        $equipmants = new Equipment($db);
-        $result['equipments'] = $equipmants->getEquipmentListByFacilityId($params['facilityID']);
+        $leManager = new LogbookEquipmentManager();
+        $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($params['facilityID']);
+        $result['equipments'] = $logbookEquipmentList;
         
         //get inspection Type List
         $itManager = new InspectionTypeManager();

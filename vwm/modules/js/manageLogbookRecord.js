@@ -152,7 +152,7 @@ function InspectionTypeList() {
      * 
      * @returns {null}
      */
-    this.getSubTypesAdditionFields = function() {
+    this.getSubTypesAdditionFields = function(gaugeType) {
         //var inspectionTypeName = $('#inspectionType').val();
         var inspectionTypeName = $('#inspectionType option:selected').text();
         inspectionTypeName = inspectionTypeName.trim();
@@ -174,21 +174,18 @@ function InspectionTypeList() {
         } else {
             $('#logBookSubTypeNotes').show();
         }
-        var gaugeType = 'null';
+        
+        
         if (inspectionSubType.valueGauge == 0) {
             $('#logbookValueGauge').hide();
             $('#logbookReplacedBulbs').hide();
         } else {
-
-            
             if (gaugeType == undefined) {
                 var gaugeType = 'null';
                 //get gauge type by sub type
                 if (inspectionAdditionListType != undefined) {
                     gaugeType = inspectionAdditionListType.gaugeType
                 }
-
-
                 if (inspectionSubType.gaugeType != undefined) {
                     gaugeType = inspectionSubType.gaugeType;
                 }

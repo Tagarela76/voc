@@ -77,7 +77,7 @@ class CLogbook extends Controller
                 $logbook->setInspectionSubType($post['inspectionSubType']);
                 $logbook->setDescription($post['logBookDescription']);
                 $logbook->setPermit($permit);
-                $logbook->setEquipmantId($post['logbookEquipmentId']);
+                $logbook->setEquipmentId($post['logbookEquipmentId']);
                 $logbook->setDepartmentId($post['departmentId']);
                 $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                 $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
@@ -134,7 +134,6 @@ class CLogbook extends Controller
             $this->smarty->assign('logbook', $logbook);
 
             //get inspection types list
-            //$itmanager = \VOCApp::getInstance()->getService('inspectionType');
             $itmanager = new VWM\Apps\Logbook\Manager\InspectionTypeManager();
             $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
 
@@ -174,8 +173,7 @@ class CLogbook extends Controller
             //get gauges
             $gaugeList = $lbmanager->getGaugeList($facilityId);
             
-            //getEquipmantList
-
+            //get Equipmen tList
             $leManager = new LogbookEquipmentManager();
             $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
 
@@ -220,7 +218,6 @@ class CLogbook extends Controller
                 $inspectionPerson->load();
             }
             $this->smarty->assign('inspectionPerson', $inspectionPerson);
-
             $tpl = 'tpls/viewAddInspectionPerson.tpl';
         }
 
@@ -277,12 +274,9 @@ class CLogbook extends Controller
                 $url = preg_replace("/\&page=\d*/", "", $url);
                 $pagination = new Pagination($logbookListCount);
                 $pagination->url = $url;
-
                 $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
-
                 $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
                 $timeFormat = $dataChain->getFromTypeController('getFormat');
-
                 $logbookList = array();
                 foreach ($logbookRecordList as $logbookRecord) {
                     //get date and time
@@ -293,6 +287,15 @@ class CLogbook extends Controller
                     $inspectionPerson = new LogbookInspectionPerson();
                     $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
                     $inspectionPerson->load();
+                    
+                    //get sub type notes or description notes
+                    $notes = '';
+                    if($logbookRecord->getSubTypeNotes()!='NONE'){
+                        $notes = $logbookRecord->getSubTypeNotes();
+                    }else{
+                        $notes = $logbookRecord->getDescriptionNotes();
+                    }
+                    
                     //create logbook array for diplay and sort
                     $logbook = array(
                         'logbookId' => $logbookRecord->getId(),
@@ -301,7 +304,9 @@ class CLogbook extends Controller
                         'creationDate' => $creationDateTime[0],
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                        'inspectionPersonName' => $inspectionPerson->getName()
+                        'inspectionPersonName' => $inspectionPerson->getName(),
+                        'condition' => $logbookRecord->getDescription(),
+                        'notes' => $notes
                     );
 
                     $logbookList[] = $logbook;
@@ -421,7 +426,7 @@ class CLogbook extends Controller
 
         //initialize equipment
         $logbookEquipment = new LogbookEquipment();
-        $logbookEquipment->setId($logbook->getEquipmantId());
+        $logbookEquipment->setId($logbook->getEquipmentId());
         $logbookEquipment->load();
         $this->smarty->assign('logbookEquipment', $logbookEquipment);
         // set left menu

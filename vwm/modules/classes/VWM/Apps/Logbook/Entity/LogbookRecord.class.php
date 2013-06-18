@@ -44,9 +44,9 @@ class LogbookRecord extends Model
      *
      * inspection type
      *
-     * @var string
+     * @var LogbookInspectionType
      */
-    protected $inspection_type;
+    protected $inspectionType;
 
     /**
      *
@@ -86,7 +86,7 @@ class LogbookRecord extends Model
      *
      * @var int
      */
-    protected $equipmant_id;
+    protected $equipment_id;
 
     /* Addition fields */
 
@@ -276,12 +276,26 @@ class LogbookRecord extends Model
 
     public function getInspectionType()
     {
-        return $this->inspection_type;
+        if(!is_null($this->inspectionType)){
+            return $this->inspectionType;
+        }
+        
+        if(is_null($this->inspection_type_id)){
+            return false;
+        }
+        
+        $logbookInspectionType = new LogbookInspectionType();
+        $logbookInspectionType->setId($this->inspection_type_id);
+        $logbookInspectionType->load();
+        $id = $logbookInspectionType->getId();
+        $logbookInspectionType = json_decode($logbookInspectionType->settings);
+        $logbookInspectionType->id = $id;
+        return $logbookInspectionType;
     }
 
-    public function setInspectionType($inspection_type)
+    public function setInspectionType($inspectionType)
     {
-        $this->inspection_type = $inspection_type;
+        $this->inspectionType = $inspectionType;
     }
 
     public function getInspectionSubType()
@@ -314,14 +328,14 @@ class LogbookRecord extends Model
         $this->date_time = $date_time;
     }
 
-    public function getEquipmantId()
+    public function getEquipmentId()
     {
-        return $this->equipmant_id;
+        return $this->equipment_id;
     }
 
-    public function setEquipmantId($equipment_id)
+    public function setEquipmentId($equipment_id)
     {
-        $this->equipmant_id = $equipment_id;
+        $this->equipment_id = $equipment_id;
     }
 
     public function getPermit()
@@ -634,7 +648,6 @@ class LogbookRecord extends Model
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_type = '{$db->sqltext($this->getInspectionType())}', " .
                 "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
@@ -645,7 +658,7 @@ class LogbookRecord extends Model
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
-                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
                 "replaced_bulbs = {$db->sqltext($this->getReplacedBulbs())}, " .
                 "min_gauge_range = {$db->sqltext($minGaugeRange)}, " .
                 "max_gauge_range = {$db->sqltext($maxGaugeRange)}, " .
@@ -714,7 +727,6 @@ class LogbookRecord extends Model
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_type = '{$db->sqltext($this->getInspectionType())}', " .
                 "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
@@ -725,7 +737,7 @@ class LogbookRecord extends Model
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
-                "equipmant_id = '{$db->sqltext($this->getEquipmantId())}', " .
+                "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
                 "replaced_bulbs = '{$db->sqltext($this->getReplacedBulbs())}', " .
                 "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
@@ -761,7 +773,7 @@ class LogbookRecord extends Model
     public function getAvailableLogbookAdditionFields($inspectionTypeName = null, $inspectionSubTypeName = null, $inspectionDescriptionName = null)
     {
         if (is_null($inspectionTypeName)) {
-            $inspectionTypeName = $this->getInspectionType();
+            $inspectionTypeName = $this->getInspectionType()->typeName;
         }
         if (is_null($inspectionSubTypeName)) {
             $inspectionSubTypeName = $this->getInspectionSubType();

@@ -11,8 +11,7 @@ class LogbookInspectionTypeTest extends Testing\DbTestCase
 {
 
     protected $fixtures = array(
-        LogbookInspectionType::TABLE_NAME,
-        InspectionTypeManager::TB_INSPECTION_TYPE2FACILITY
+        LogbookInspectionType::TABLE_NAME
     );
 
     public function testSave()
