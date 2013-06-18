@@ -40,7 +40,8 @@
                 Inspection Type
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getInspectionType()|escape}
+                {assign var='inspectionType' value=$logbook->getInspectionType()}
+                {$inspectionType->typeName|escape}
             </td>
         </tr>
         <tr>

@@ -28,6 +28,7 @@
             itlManager.gauges.checkGaugeValueRange();
             itlManager.gauges.changeGauge();
             
+            
         });
     </script>
 {/literal}

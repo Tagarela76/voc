@@ -103,9 +103,10 @@
                                 </td>
                                 <td>
                                     <select name ='equipmentId'>
+                                        <option value="all">All</option>
                                         {foreach from=$equipments item=equipment}
-                                            <option value="{$equipment.equipment_id|escape}">
-                                                {$equipment.equip_desc|escape}
+                                            <option value="{$equipment->getId()|escape}">
+                                                {$equipment->getName()|escape}
                                             </option>
                                         {/foreach}
                                     </select>

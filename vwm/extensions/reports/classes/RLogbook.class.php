@@ -140,6 +140,7 @@ class RLogbook extends ReportCreator implements iReportCreator
         $categoryId = $this->getCategoryId();
         $dateBeginObj = $this->getDateBegin();
         $dateEndObj = $this->getDateEnd();
+        $equipment = $this->getEquipmentId();
         
         $query = "SELECT lb.facility_id, lb.date_time, lb.inspection_type_id, i.name, " .
                  "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to, lb.description, lb.unittype_id ".
@@ -149,16 +150,18 @@ class RLogbook extends ReportCreator implements iReportCreator
                  "WHERE lb.facility_id = {$db->sqltext($this->getCategoryId())} " .
                  "AND lb.date_time >= " . $dateBeginObj->getTimestamp() . " " .
                  "AND lb.date_time <= " . $dateEndObj->getTimestamp();
-                 
-               
+        if($equipment != 'all' ){
+           $query.= " AND equipment_id = {$db->sqltext($equipment)}";
+        }                 
+                      
         if($this->getInspectionTypeId() != 'all'){
             $query.= " AND lb.inspection_type_id = {$db->sqltext($this->getInspectionTypeId())} ";
         }
                  
-        if($this->getGaugeId()!='all'){
+        if($this->getGaugeId() !='all'){
             $query.= " AND lb.gauge_type = {$db->sqltext($this->getGaugeId())}";
         }
-        //die($query);
+        
         $db->query($query);
         if ($db->num_rows()) {
             $rows = $db->fetch_all();
