@@ -54,13 +54,19 @@
                 <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook.creationDate}
+                <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                    {$logbook.creationDate}
+                </a>
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook.creationTime}
+                <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                    {$logbook.creationTime}
+                </a>
             </td>
              <td class="border_users_b border_users_r">
-                {$logbook.inspectionPersonName}
+                 <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                     {$logbook.inspectionPersonName}
+                 </a>
             </td>
             <td class="border_users_b border_users_r">
                 <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
@@ -68,10 +74,14 @@
                 </a>
             </td>
            <td class="border_users_b border_users_r">
-                {$logbook.condition}
+               <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                   {$logbook.condition}
+               </a>
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook.notes}
+                <a href="?action=viewLogbookDetails&category=logbook&facilityID={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                    {$logbook.notes}
+                </a>
             </td>
         </tr>
         {/foreach}
