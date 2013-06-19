@@ -244,15 +244,23 @@ function InspectionSubTypeAddDialog() {
 
     this.loadContent = function() {
         var that = this;
+        if (inspection.action == 'edit') {
+            var id = inspection.elementId;
+            var subType = logbookInspectionType.getSubTypeById(id);
+            var gaugeType = subType.getAttributes().gaugeType;
+        }
+        
         $.ajax({
             url: "?action=loadAddLogbookInspectionSubType&category=logbook",
+            type: 'post',
+            data:{
+                gaugeTypeId: gaugeType
+            },
             dataType: "text",
             success: function(response) {
                 $("#" + that.divId).html(response);
                 that.isLoaded = true;
                 if (inspection.action == 'edit') {
-                    var id = inspection.elementId;
-                    var subType = logbookInspectionType.getSubTypeById(id);
                     $('#subTypeName').val(subType.getName());
                     if (subType.getHasNotes()) {
                         $('input[name=hasNotes]').attr('checked', true);
@@ -262,6 +270,7 @@ function InspectionSubTypeAddDialog() {
                     }
                     if (subType.getHasGauge()) {
                         $('input[name=hasGauge]').attr('checked', true);
+                        $('#defaultGauge').show();
                     }
                 }
             }
@@ -284,6 +293,7 @@ function InspectionSubTypeAddDialog() {
         var hasNotes = $('#hasNotes:checked').val() ? 1 : 0;
         var hasQty = $('#hasQty:checked').val() ? 1 : 0;
         var hasGauge = $('#hasGauge:checked').val() ? 1 : 0;
+        var gaugeType = $('#gaugeType').val();
         var id = inspection.elementId;
         $('#subtype_name_' + id).html(subTypeName);
         if (hasNotes) {
@@ -308,6 +318,9 @@ function InspectionSubTypeAddDialog() {
         newInspectionSubType.setHasNotes(hasNotes);
         newInspectionSubType.setHasQty(hasQty);
         newInspectionSubType.setHasGauge(hasGauge);
+        if(gaugeType!='none'){
+            newInspectionSubType.setGaugeType(gaugeType);
+        }
         //delete old sub type
         logbookInspectionType.deleteSubType(id);
         logbookInspectionType.addSubType(newInspectionSubType);
@@ -319,6 +332,8 @@ function InspectionSubTypeAddDialog() {
         var hasNotes = $('#hasNotes:checked').val() ? 1 : 0;
         var hasQty = $('#hasQty:checked').val() ? 1 : 0;
         var hasGauge = $('#hasGauge:checked').val() ? 1 : 0;
+        var gaugeType = $('#gaugeType').val();
+        
         //setSubTypeId = 
         temporarySubTypeId++;
         logbookInspectionSubType.setId(temporarySubTypeId);
@@ -326,6 +341,10 @@ function InspectionSubTypeAddDialog() {
         logbookInspectionSubType.setHasNotes(hasNotes);
         logbookInspectionSubType.setHasQty(hasQty);
         logbookInspectionSubType.setHasGauge(hasGauge);
+        if(gaugeType!='none'){
+            logbookInspectionSubType.setGaugeType(gaugeType);
+        }
+        
         logbookInspectionType.addSubType(logbookInspectionSubType);
 
         var html = '';
@@ -366,6 +385,9 @@ function InspectionSubTypeAddDialog() {
             html += 'no';
         }
         html += '</div>';
+        html += '<div >';
+        html += '<input type="hidden" id="subtype_gauge_type_' + temporarySubTypeId + '" value="'+gaugeType+'">'
+        html += '</div>';
         html += '</td>';
         html += '<td class="border_users_b border_users_r">';
         html += '<a onclick="inspection.checkNewDialog(' + temporarySubTypeId + ', \'edit\'); inspection.inspectionSubTypeAddDialog.openDialog();">edit</a>';
@@ -374,6 +396,15 @@ function InspectionSubTypeAddDialog() {
 
         $('#inspectionSubTypeDetails').append(html);
 
+    }
+    
+    this.getSubTypeDefaultGauge = function(){
+        var checked = $('#hasGauge').is(':checked'); 
+        if(checked){
+            $('#defaultGauge').show();
+        }else{
+            $('#defaultGauge').hide();
+        }
     }
 
 }

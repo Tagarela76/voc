@@ -38,9 +38,22 @@
                 Gauge
             </td>
             <td>
-                <input type='checkbox' name='hasGauge' id='hasGauge'>
+                <input type='checkbox' name='hasGauge' id='hasGauge' onchange='inspection.inspectionSubTypeAddDialog.getSubTypeDefaultGauge()'>
             </td>
-        </tr>        
+        </tr>
+        <tr id = 'defaultGauge' hidden="hidden">
+            <td>
+                Default Gauge Type
+            </td>
+            <td>
+                <select id='gaugeType'>
+                    <option value="none" {if $gaugeTypeId == 'none'}selected='true'{/if}>NONE</option>
+                    {foreach from=$gaugeList item=gauge}
+                        <option value="{$gauge.id|escape}" {if $gaugeTypeId == $gauge.id}selected='true'{/if}>{$gauge.name|escape}</option>
+                    {/foreach}
+                </select>
+            </td>
+        </tr>   
     </table>
 
 </div>

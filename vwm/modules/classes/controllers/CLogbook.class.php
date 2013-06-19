@@ -253,7 +253,6 @@ class CLogbook extends Controller
     protected function bookmarkLogbook($vars)
     {
         extract($vars);
-
         $facilityId = $facilityDetails['facility_id'];
         //check for facility_id
         if (is_null($facilityId)) {
@@ -265,7 +264,6 @@ class CLogbook extends Controller
         if (!isset($tab)) {
             $tab = 'logbook';
         }
-
         switch ($tab) {
             case 'logbook':
                 //set pagination
@@ -316,7 +314,17 @@ class CLogbook extends Controller
                 $this->smarty->assign('logbookList', $logbookList);
                 break;
             case 'inspectionPerson':
-                $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId);
+                
+                $logbookInspectionPersonListCount = $lbManager->getCountLogbookInspectionPersonListByFacilityId($facilityId);
+                
+                $url = "?" . $_SERVER["QUERY_STRING"];
+                $url = preg_replace("/\&page=\d*/", "", $url);
+                $pagination = new Pagination($logbookInspectionPersonListCount);
+                $pagination->url = $url;
+                
+                $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId, $pagination);
+                
+                $this->smarty->assign('pagination', $pagination);
                 $this->smarty->assign('inspectionPerson', $inspectionPerson);
                 $tpl = 'tpls/viewInspectionPerson.tpl';
                 break;
@@ -387,8 +395,21 @@ class CLogbook extends Controller
         }
         $inspectionPerson->setName($this->getFromPost('personName'));
         $inspectionPerson->setFacilityId($facilityId);
-        $id = $inspectionPerson->save();
-        header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=inspectionPerson");
+        
+        $violationList = $inspectionPerson->validate();
+        
+        if (count($violationList) == 0) {
+            $id = $inspectionPerson->save();
+            header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=inspectionPerson");
+        } else {
+             $this->smarty->assign('facilityId', $facilityId);
+            $this->smarty->assign('violationList', $violationList);
+            $this->smarty->assign('inspectionPerson', $inspectionPerson);
+            $tpl = 'tpls/viewAddInspectionPerson.tpl';
+            $this->smarty->assign('tpl', $tpl);
+            $this->smarty->display('tpls:index.tpl');
+        }
+        
     }
 
     /**
