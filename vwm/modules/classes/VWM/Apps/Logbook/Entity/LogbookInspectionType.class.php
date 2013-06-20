@@ -5,6 +5,7 @@ namespace VWM\Apps\Logbook\Entity;
 use \VWM\Framework\Model;
 use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
+use \VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
 
 class LogbookInspectionType extends Model
 {
@@ -165,6 +166,9 @@ class LogbookInspectionType extends Model
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
         $itManager->unAssignInspectionTypeFromInspectionTemplate($this->getId());
+        
+        $ldManager = new LogbookDescriptionManager();
+        $ldManager->deleteDescriptionsByInspectionTypeId($this->getId());
     }
     
 }

@@ -8,6 +8,7 @@ use VWM\Apps\UnitType\Manager\UnitTypeManager;
 use VWM\Apps\Logbook\Entity\LogbookEquipment;
 use VWM\Apps\Logbook\Manager\LogbookEquipmentManager;
 use VWM\Apps\Logbook\Entity\LogbookInspectionType;
+use VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
 
 class CLogbook extends Controller
 {
@@ -138,7 +139,8 @@ class CLogbook extends Controller
             $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
 
             $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
-
+            //get logbookDescription List
+            $ldManager = new LogbookDescriptionManager();
             $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
             $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
 

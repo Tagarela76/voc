@@ -10,6 +10,8 @@ use VWM\Apps\Logbook\Entity\InspectionTypeSettings;
 use VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use VWM\Apps\Logbook\Entity\LogbookSetupTemplate;
 use VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
+use VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
+use VWM\Apps\Logbook\Entity\LogbookDescription;
 
 class CALogbook extends Controller
 {
@@ -258,7 +260,15 @@ class CALogbook extends Controller
             $logbookInspectionType->load();
             $this->smarty->assign('settings', $logbookInspectionType->getInspectionType());
             $this->smarty->assign('json', $logbookInspectionType->getInspectionTypeRaw());
+            
+            //logbookDescription
+            $ldManager = new LogbookDescriptionManager();
+            $logbookDescriptionListJson = $ldManager->getDescriptionListByInspectionTypeIdInJson($typeId);
+            $logbookDescriptionList = $ldManager->getDescriptionListByInspectionTypeId($typeId);
+            $this->smarty->assign('logbookDescriptionListJson', $logbookDescriptionListJson);
+            $this->smarty->assign('logbookDescriptionList', $logbookDescriptionList);
         }
+        
         $settings = $logbookInspectionType->getInspectionType();
         //get logbook Template ids 
         $ltManager = new LogbookSetupTemplateManager();
@@ -411,17 +421,21 @@ class CALogbook extends Controller
      */
     public function actionSaveInspectionType()
     {
+        $db = VOCApp::getInstance()->getService('db');
         $isErrors = false;
         $violationList = '';
         $inspectionTypeToJson = $this->getFromPost('inspectionTypeToJson');
         $inspectionType = json_decode($inspectionTypeToJson);
+        
         $companyId = $this->getFromPost('companyId');
         $inspectionTypeId = $inspectionType->id;
         $typeSubTypes = $inspectionType->subtypes;
         $typeGaugeTypes = $inspectionType->additionFieldList;
+        $logbookDescriptionList = $inspectionType->logbookDescriptions;
         $id = $this->getFromPost('id');
         $logbookTemplateIds = explode(',', $inspectionType->logbookTemplateIds);
         $itManager = new InspectionTypeManager();
+        
         //set subtype settings
         $subTypes = array();
         foreach ($typeSubTypes as $typeSubType) {
@@ -481,16 +495,60 @@ class CALogbook extends Controller
                 $violationList .= '<div>Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
             }
         }
-        if ($isErrors) {
-            $errors = $violationList;
-        } else {
-            $errors = false;
+        
+        //if we haven't got errors
+        if (!$isErrors) {
+            //begin transaction
+            $db->beginTransaction();
+            
+            //save inspection type
             $id = $logbookInspectionType->save();
+            
+            //assign inspection type to template
             $itManager ->unAssignInspectionTypeFromInspectionTemplate($id);
             foreach ($logbookTemplateIds as $logbookTemplateId){
                 $itManager->assignInspectionTypeToInspectionTemplate($id, $logbookTemplateId);
             }
+            
+            //save logbook description
+            $ldManager = new LogbookDescriptionManager();
+            $ldManager->deleteDescriptionsByInspectionTypeId($id);
+            foreach($logbookDescriptionList as $logbookDescription){
+              $newLogbookDescription = new LogbookDescription();
+              $newLogbookDescription->setDescription($logbookDescription->description);
+              $newLogbookDescription->setNotes($logbookDescription->notes);
+              $newLogbookDescription->setInspectionTypeId($id);
+              //logbook description type validate
+              if (count($newLogbookDescription->validate()) != 0) {
+                    $isErrors = true;
+                    $typeErrors = $newLogbookDescription->validate();
+                    foreach ($typeErrors as $typeError) {
+                        $violationList .= '<div>Type ' . $typeError->getPropertyPath() . ":" . $typeError->getMessage() . '<div>';
+                    }
+                } else {
+                    $descriptionId = $newLogbookDescription->save();
+                    //get errors
+                    if (!$descriptionId) {
+                        $isErrors = true;
+                        $violationList .= '<div> save logbook description error<div>';
+                    }
+                }
+              
+            }
+            //commit transaction if we haven't got errors
+            if (!$isErrors) {
+                $errors = false;
+                $db->commitTransaction();
+            }else{
+                //no sense save inspection type without description
+                 $errors = $violationList;
+                 $db->rollbackTransaction();
+            }
+        }else{
+            $errors = $violationList;
         }
+        
+        
         $response = array(
             'link' => '?action=browseCategory&category=logbook&bookmark=logbookInspectionType',
             'errors' => $errors
@@ -660,6 +718,17 @@ class CALogbook extends Controller
         $this->smarty->assign('facilityList', $facilityList);
         $this->smarty->assign('companyList', $companyList);
         $tpl = 'tpls/viewSetLogbookTemplateToInspectionType.tpl';
+        $result = $this->smarty->fetch($tpl);
+        echo $result;
+    }
+    
+    /**
+     * ajax method
+     * load add Logbook Description to Inspection type
+     */
+    public function actionLoadAddLogbookDescription()
+    {
+        $tpl = "tpls/viewAddLogbookDescription.tpl";
         $result = $this->smarty->fetch($tpl);
         echo $result;
     }
