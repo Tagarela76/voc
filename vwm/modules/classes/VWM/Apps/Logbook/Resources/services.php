@@ -1,7 +1,13 @@
 <?php
 
 return array(
-    'inspectionType' => '\VWM\Apps\Logbook\Manager\InspectionTypeManager',
-    'logbookSetupTemplate' => '\VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager',
-    'logbook' => '\VWM\Apps\Logbook\Manager\LogbookManager',
+    'inspectionType' => function($c) {
+        return new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
+    },
+    'logbookSetupTemplate' => function($c) {
+        return new \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager();
+    },
+    'logbook' => function($c) {
+        return new \VWM\Apps\Logbook\Manager\LogbookManager();
+    }
 );

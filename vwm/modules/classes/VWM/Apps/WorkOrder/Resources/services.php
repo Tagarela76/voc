@@ -1,5 +1,7 @@
 <?php
 
 return array(
-    'pfp' => '\VWM\Apps\WorkOrder\Manager\PfpManager',
+    'pfp' => function($c) {
+        return new \VWM\Apps\WorkOrder\Manager\PfpManager();
+    },
 );

@@ -106,15 +106,9 @@ class VOCApp
         return $this->container[$service];
     }
 
-    public function addSharedService($name, $class)
+    public function addSharedService($name, $callback)
     {
-        $this->container['tmpclass'] = $class;
-        $this->container[$name] = $this->container->share(function ($c) {
-            $service = new $c['tmpclass']();
-            unset($c['tmpclass']);
-
-            return $service;
-        });
+        $this->container[$name] = $this->container->share($callback);
     }
 
     /**
@@ -125,7 +119,7 @@ class VOCApp
     public function setDB($db)
     {
         $this->db = $db;
-        
+
         // add db to container as service
         $this->container['db'] = $this->db;
     }
