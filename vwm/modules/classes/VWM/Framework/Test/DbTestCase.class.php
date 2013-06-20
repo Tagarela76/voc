@@ -27,8 +27,8 @@ abstract class DbTestCase extends TestCase
     {
         if (\Phactory::getConnection() === null) {
             if (self::$pdo == null) {
-                //TODO: use constants from constants4unittests
-                self::$pdo = new \PDO($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD']);
+                $dsn = "mysql:dbname=".DB_NAME.";host=".DB_HOST;
+                self::$pdo = new \PDO($dsn, DB_USER, DB_PASS);
             }
 
             \Phactory::setConnection(self::$pdo);

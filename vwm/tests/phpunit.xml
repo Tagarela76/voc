@@ -5,13 +5,6 @@
 		convertWarningsToExceptions="true"
 		stopOnFailure="false">
 
-	<php>
-        <var name="DB_DSN" value="mysql:dbname=voc_test;host=localhost" />
-        <var name="DB_USER" value="root" />
-        <var name="DB_PASSWD" value="developer" />
-        <var name="DB_DBNAME" value="voc_test" />
-    </php>
-
 	<selenium>
 		<browser name="Internet Explorer" browser="*iexplore" />
 		<browser name="Firefox" browser="*firefox" />
