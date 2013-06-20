@@ -9,6 +9,7 @@ class SpentTimeGaugeTest extends DbTestCase
 
     protected $fixtures = array(
         TB_UNITTYPE,
+        TB_COMPANY,
         TB_FACILITY,
         TB_DEPARTMENT,
         TB_USAGE,
