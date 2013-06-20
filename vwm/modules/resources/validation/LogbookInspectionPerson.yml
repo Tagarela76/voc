@@ -1,0 +1,5 @@
+VWM\Apps\Logbook\Entity\LogbookInspectionPerson:
+  properties:
+    name:
+      - NotBlank: ~
+      - MaxLength: 64

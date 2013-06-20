@@ -29,6 +29,12 @@ class InspectionSubTypeSettings extends Model
      */
     protected $valueGauge;
     
+    /**
+     * 
+     * @return int
+     */
+    protected $gaugeTypeId;
+    
     public function getName()
     {
         return $this->name;
@@ -69,7 +75,17 @@ class InspectionSubTypeSettings extends Model
         $this->valueGauge = $valueGauge;
     }
     
-    public function __construct($id = null)
+    public function getGaugeTypeId()
+    {
+        return $this->gaugeTypeId;
+    }
+
+    public function setGaugeTypeId($gaugeTypeId)
+    {
+        $this->gaugeTypeId = $gaugeTypeId;
+    }
+
+        public function __construct($id = null)
     {
         $this->modelName = "InspectionSubTypeSettings";
     }
@@ -80,7 +96,8 @@ class InspectionSubTypeSettings extends Model
             'name'=>$this->getName(),
             'notes'=>$this->getNotes(),
             'qty'=>$this->getQty(),
-            'valueGauge'=>$this->getValueGauge()
+            'valueGauge'=>$this->getValueGauge(),
+            'gaugeType'=>  $this->getGaugeTypeId()
         );
     }
 }

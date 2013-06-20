@@ -12,15 +12,21 @@ class LogbookManager
     /**
      * 
      * @param int $facilityId
+     * @param \Pagination $pagination
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookInspectionPerson[]
      */
-    public function getLogbookInspectionPersonListByFacilityId($facilityId)
+    public function getLogbookInspectionPersonListByFacilityId($facilityId, \Pagination $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
         $query = "SELECT * FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
+                
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
+        
         $db->query($query);
         $rows = $db->fetch_all_array();
         foreach ($rows as $row) {
@@ -30,6 +36,26 @@ class LogbookManager
         }
 
         return $inspectionPersonList;
+    }
+    
+    /**
+     * 
+     * get inspection person count
+     * 
+     * @param int $facilityId
+     * 
+     * @return int
+     */
+    public function getCountLogbookInspectionPersonListByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $inspectionPersonList = array();
+        $query = "SELECT count(*) count FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
+                "WHERE facility_Id = {$db->sqltext($facilityId)}";
+        $db->query($query);
+        $count = $db->fetch(0);
+       
+        return $count->count;
     }
 
     /**
@@ -206,29 +232,7 @@ class LogbookManager
 
         return $result[0];
     }
-    /*private function getLogbookRange($facilityId, $gaugeType)
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        if (is_null($facilityId) || is_null($gaugeType)) {
-            return false;
-        }
-        $query = "SELECT min_gauge_range, max_gauge_range " .
-                "FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
-                "facility_id = {$db->sqltext($facilityId)} AND " .
-                "gauge_type = {$db->sqltext($gaugeType)} LIMIT 1";
-        $db->query($query);
-        
-        $result = $db->fetch_all_array();
-
-        if (is_null($result[0]['min_gauge_range'])) {
-            $result[0]['min_gauge_range'] = 0;
-        }
-        if (is_null($result[0]['max_gauge_range'])) {
-            $result[0]['max_gauge_range'] = 100;
-        }
-
-        return $result[0];
-    }*/
+    
 
 }
 ?>

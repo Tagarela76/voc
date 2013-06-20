@@ -342,6 +342,11 @@ class CALogbook extends Controller
      */
     public function actionLoadAddLogbookInspectionSubType()
     {
+        $gaugeTypeId = $this->getFromPost('gaugeTypeId');
+        $this->smarty->assign('gaugeTypeId', $gaugeTypeId);
+        $lManager = new LogbookManager();
+        $gaugeList = $lManager->getGaugeList();
+        $this->smarty->assign('gaugeList', $gaugeList);
         $tpl = 'tpls/addInspectionSubType.tpl';
         $result = $this->smarty->fetch($tpl);
         echo $result;
@@ -402,6 +407,7 @@ class CALogbook extends Controller
 
     /**
      * save inspection type
+     * ajax method
      */
     public function actionSaveInspectionType()
     {
@@ -424,6 +430,9 @@ class CALogbook extends Controller
             $subType->setNotes($typeSubType->notes);
             $subType->setQty($typeSubType->qty);
             $subType->setValueGauge($typeSubType->valueGauge);
+            if($typeSubType->valueGauge){
+                $subType->setGaugeTypeId($typeSubType->gaugeType);
+            }
             $subTypes[] = $subType->getAttributes();
             //sub type type validate
             if (count($subType->validate()) != 0) {

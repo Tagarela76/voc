@@ -1,3 +1,6 @@
+{*PAGINATION*}
+	{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}
 <div class="padd7">
     <table class="users" align="center" cellpadding="0" cellspacing="0" >
         <tr class="users_u_top_size users_top_brown">
@@ -44,3 +47,6 @@
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
     <input type='hidden' name='tab' value='{$tab|escape}'>
 </div>
+{*PAGINATION*}
+	{include file="tpls:tpls/pagination.tpl"}
+{*/PAGINATION*}

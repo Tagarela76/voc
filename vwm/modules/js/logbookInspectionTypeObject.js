@@ -91,6 +91,7 @@ function LogbookInspectionType() {
                     subtype.setHasNotes(subtypesSettings[i].notes);
                     subtype.setHasQty(subtypesSettings[i].qty);
                     subtype.setHasGauge(subtypesSettings[i].valueGauge);
+                    subtype.setGaugeType(subtypesSettings[i].gaugeType);
                     subtypes.push(subtype);
                 }
                 self.setSubTypes(subtypes);
@@ -181,6 +182,7 @@ function LogbookInspectionType() {
         var inspectionTypeToJson = self.toJson();
         var id = $('#logbookInspectionTypeId').val();
         var companyId = $('#companyId').val();
+        
         $.ajax({
             url: '?action=SaveInspectionType&category=logbook',
             type: 'post',
@@ -191,7 +193,6 @@ function LogbookInspectionType() {
             },
             dataType: 'json',
             success: function(response) {
-              // $('#typeSaveErrors').html(response);
                 if (response.errors == false) {
                     window.location.href = response.link;
                 } else {
@@ -244,6 +245,7 @@ function LogbookInspectionSubType() {
     var hasNotes = null;
     var hasQty = null;
     var hasGauge = null;
+    var gaugeType;
 
     // Private members are made by the constructor	
     var constructor = function() {
@@ -254,6 +256,7 @@ function LogbookInspectionSubType() {
         var hasQty = null;
         var hasGauge = null;
         var that = this;
+        var gaugeType;
         //setters
         self.setId = function(subTypeId) {
             id = subTypeId;
@@ -275,6 +278,9 @@ function LogbookInspectionSubType() {
             hasGauge = gauge;
         }
 
+        self.setGaugeType = function(type) {
+            gaugeType = type
+        }
         //getters
         self.getId = function() {
             return id
@@ -296,6 +302,10 @@ function LogbookInspectionSubType() {
             return hasGauge
         }
 
+        self.getGaugeType = function() {
+            return gaugeType
+        }
+
         //function for getting attributes
         self.getAttributes = function() {
             var subTypeAttributes = {
@@ -303,7 +313,8 @@ function LogbookInspectionSubType() {
                 name: self.getName(),
                 notes: self.getHasNotes(),
                 qty: self.getHasQty(),
-                valueGauge: self.getHasGauge()
+                valueGauge: self.getHasGauge(),
+                gaugeType: self.getGaugeType(),
             }
             return subTypeAttributes;
         }

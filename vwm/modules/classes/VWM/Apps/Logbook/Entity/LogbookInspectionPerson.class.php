@@ -58,6 +58,7 @@ class LogbookInspectionPerson extends Model
 
     public function __construct($id = null)
     {
+        $this->modelName = "LogbookInspectionPerson";
         if (isset($id)) {
             $this->setId($id);
             $this->load();

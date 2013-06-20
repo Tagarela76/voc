@@ -16,6 +16,13 @@
                 </td>
                 <td class="border_users_l">
                     <input type='text' name = 'personName' value='{$inspectionPerson->getName()|escape}'>
+                    {foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'name'}
+                            {*ERROR*}
+                            <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                                {*/ERROR*}
+                            {/if}
+                        {/foreach}
                 </td>
             </tr>
         </table>
