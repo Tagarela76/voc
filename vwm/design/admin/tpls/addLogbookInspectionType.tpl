@@ -190,7 +190,7 @@
 <div style='margin: 1px 0 0 25px; font-size: 20'>
     <div>
         Logbook Description
-        <input type='checkbox' id='showLogbookDescription' onchange="manager.showLogbookDescriptionList()">
+        <input type='checkbox' id='showLogbookDescription' onchange="manager.showLogbookDescriptionList()" {if $logbookDescriptionList}checked='true'{/if}>
     </div>
 </div>
 <div class="padd7" align="center" id = 'LogbookDescriptionList' {if !$logbookDescriptionList}hidden='hidden'{/if}>

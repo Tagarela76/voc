@@ -10,6 +10,7 @@ class InspectionTypeManager
     const TB_DESCRIPTION_DESCRIPTION = 'inspection_description';
     const TB_INSPECTION_TYPE2FACILITY = 'inspection_type2facility';
     const TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE = 'inspection_type2logbook_setup_template';
+    const SERVICE = 'inspectionType';
 
     /**
      * 

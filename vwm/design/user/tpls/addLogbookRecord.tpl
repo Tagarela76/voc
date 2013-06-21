@@ -76,7 +76,7 @@
                 </td>
                 <td>
                     <div>
-                        <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList()">
+                        <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList(); itlManager.inspectionTypeList.changeLogbookDescriptionList()">
                             {section name=i loop=$inspectionTypesList}
                                 <option value="{$inspectionTypesList[i]->id|escape}" {if $logbook->getInspectionTypeId() == $inspectionTypesList[i]->id}selected='selected'{/if}>
                                     {$inspectionTypesList[i]->typeName|escape}
@@ -207,8 +207,8 @@
                                None
                          </option>
                         {section name=i loop=$logbookDescriptionsList}
-                            <option value="{$logbookDescriptionsList[i]->name|escape}" {if $logbook->getDescription() == $logbookDescriptionsList[i]->name}selected='selected'{/if}>
-                                {$logbookDescriptionsList[i]->name|escape}
+                            <option value="{$logbookDescriptionsList[i]->id|escape}" {if $logbook->getDescriptionId() == $logbookDescriptionsList[i]->id}selected='selected'{/if}>
+                                {$logbookDescriptionsList[i]->description|escape}
                             </option>
                         {/section}
                     </select>
@@ -278,3 +278,5 @@
 
 {*add inspection perswon dialog container*}
 <div id='addInspectionPersonContainer' title="Add New Inspection Person" style="display:none;">Loading ...</div>
+
+

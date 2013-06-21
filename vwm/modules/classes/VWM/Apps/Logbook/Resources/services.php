@@ -9,5 +9,8 @@ return array(
     },
     'logbook' => function($c) {
         return new \VWM\Apps\Logbook\Manager\LogbookManager();
+    },
+    'logbookDescription' => function($c) {
+        return new \VWM\Apps\Logbook\Manager\LogbookDescriptionManager();
     }
 );

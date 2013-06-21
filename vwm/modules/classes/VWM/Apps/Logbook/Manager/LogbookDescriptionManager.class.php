@@ -9,6 +9,7 @@ class LogbookDescriptionManager
 {
 
     const LOGBOOK_DESCRIPTION_ORIGIN = 'inspection_type';
+    const SERVICE = 'logbookDescription';
     
     /**
      * 

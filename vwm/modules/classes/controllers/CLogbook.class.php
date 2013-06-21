@@ -9,6 +9,8 @@ use VWM\Apps\Logbook\Entity\LogbookEquipment;
 use VWM\Apps\Logbook\Manager\LogbookEquipmentManager;
 use VWM\Apps\Logbook\Entity\LogbookInspectionType;
 use VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
+use VWM\Apps\Logbook\Manager\InspectionTypeManager;
+use VWM\Apps\Logbook\Entity\LogbookDescription;
 
 class CLogbook extends Controller
 {
@@ -37,19 +39,40 @@ class CLogbook extends Controller
         } else {
             throw new Exception('404');
         }
+        
+        //get logbook Managers by service 
+        $ldManager = VOCApp::getInstance()->getService(LogbookDescriptionManager::SERVICE);
+        $itmanager = VOCApp::getInstance()->getService(InspectionTypeManager::SERVICE);
+        
         $tab = $this->getFromRequest('tab');
         /*         * **** VIEW ADD LOGBOOK **** */
         if ($tab == 'logbook') {
             //get data format
             $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
             $timeFormat = $dataChain->getFromTypeController('getFormat');
-
             $post = $this->getFromPost();
             //get id if exist
             $logbookId = $this->getFromRequest('logbookId');
+            
+            //get inspection types list
+            $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
+            $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
+            $inspectionTypesList = json_decode($jsonInspectionalTypeList);
+            
             $logbook = new LogbookRecord();
-            $logbook->setId($logbookId);
-
+            //initialize logbook if exist
+            if(!is_null($logbookId)){
+                $logbook->setId($logbookId);
+                $logbook->load();
+                $jsonDescriptionTypeList = $ldManager->getDescriptionListByInspectionTypeIdInJson($logbook->getInspectionTypeId()); 
+            }else{
+               //get logbook Description
+                $jsonDescriptionTypeList = $ldManager->getDescriptionListByInspectionTypeIdInJson($inspectionTypesList[0]->id); 
+            }
+            
+            $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
+            $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
+            
             //save add or update logbook if we need
             if (count($post) > 0) {
                 //transfer time to unix type
@@ -73,10 +96,9 @@ class CLogbook extends Controller
                 //init logbook
                 $logbook->setFacilityId($facilityId);
                 $logbook->setInspectionPersonId($post['InspectionPersons']);
-                //$logbook->setInspectionType($post['inspectionType']);
                 $logbook->setInspectionTypeId($post['inspectionType']);
                 $logbook->setInspectionSubType($post['inspectionSubType']);
-                $logbook->setDescription($post['logBookDescription']);
+                $logbook->setDescriptionId($post['logBookDescription']);
                 $logbook->setPermit($permit);
                 $logbook->setEquipmentId($post['logbookEquipmentId']);
                 $logbook->setDepartmentId($post['departmentId']);
@@ -122,7 +144,7 @@ class CLogbook extends Controller
                 }
             } else {
                 
-                $logbook->load();
+                
                 //check for add or edit
                 $creationTime = $logbook->getDateTime();
                 if (is_null($creationTime)) {
@@ -133,19 +155,7 @@ class CLogbook extends Controller
             }
 
             $this->smarty->assign('logbook', $logbook);
-
-            //get inspection types list
-            $itmanager = new VWM\Apps\Logbook\Manager\InspectionTypeManager();
-            $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
-
-            $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
-            //get logbookDescription List
-            $ldManager = new LogbookDescriptionManager();
-            $jsonDescriptionTypeList = $itmanager->getLogbookDescriptionListInJson();
-            $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
-
             $lbmanager = new LogbookManager();
-            $inspectionTypesList = json_decode($jsonInspectionalTypeList);
            
             //check if this facility has inspection type
             if (empty($inspectionTypesList)) {
@@ -166,8 +176,6 @@ class CLogbook extends Controller
             $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
             $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($inspectionType->getInspectionType()->typeName);
 
-            //get description
-            $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
 
             //get inspection person list
             $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
@@ -296,6 +304,9 @@ class CLogbook extends Controller
                         $notes = $logbookRecord->getDescriptionNotes();
                     }
                     
+                    $logbookDescription = new LogbookDescription();
+                    $logbookDescription->setId($logbookRecord->getDescriptionId());
+                    $logbookDescription->load();
                     //create logbook array for diplay and sort
                     $logbook = array(
                         'logbookId' => $logbookRecord->getId(),
@@ -305,7 +316,7 @@ class CLogbook extends Controller
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
                         'inspectionPersonName' => $inspectionPerson->getName(),
-                        'condition' => $logbookRecord->getDescription(),
+                        'condition' => $logbookDescription->getDescription(),
                         'notes' => $notes
                     );
 
@@ -428,6 +439,7 @@ class CLogbook extends Controller
         } else {
             throw new Exception('404');
         }
+        
         // initialize logbook
         $logbookId = $this->getFromRequest('id');
         $logbook = new LogbookRecord();
@@ -452,6 +464,12 @@ class CLogbook extends Controller
         $logbookEquipment->setId($logbook->getEquipmentId());
         $logbookEquipment->load();
         $this->smarty->assign('logbookEquipment', $logbookEquipment);
+        
+        //initialize description
+        $logbookDescription = new LogbookDescription();
+        $logbookDescription->setId($logbook->getDescriptionId());
+        $logbookDescription->load();
+        $this->smarty->assign('logbookDescription', $logbookDescription);
         // set left menu
         $this->setListCategoriesLeftNew($category, $categoryId);
         $this->setPermissionsNew($category);
@@ -637,6 +655,17 @@ class CLogbook extends Controller
             $this->smarty->display('tpls:index.tpl');
         }
         die();
+    }
+    
+    /**
+     * ajax method get LogbookDescription List
+     */
+    public function actionGetLogbookDescriptionList()
+    {
+        $inspectionTypeId = $this->getFromPost('inspectionTypeId');
+        $ldManager = VOCApp::getInstance()->getService(LogbookDescriptionManager::SERVICE);
+        $logbookDescriptionList = $ldManager->getDescriptionListByInspectionTypeIdInJson($inspectionTypeId);
+        echo $logbookDescriptionList;
     }
 
 }
