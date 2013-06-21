@@ -1,11 +1,11 @@
 <form action="?action=saveInspectionPerson&category=logbook" method="post">
     <div class="padd7">
         <table class="users" align="center" cellpadding="0" cellspacing="0">
-            <tr class="users_u_top_size users_top">
-                <td class="users_u_top">
+            <tr class="users_u_top_size users_top_brown">
+                <td class="users_u_top_brown">
                     <span >Add Inspection Person</span>
                 </td>
-                <td class="users_u_top_r">
+                <td class="users_u_top_r_brown">
                     &nbsp;
                 </td>
             </tr>
