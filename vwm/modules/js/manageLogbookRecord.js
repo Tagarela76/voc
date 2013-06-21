@@ -67,6 +67,26 @@ function InspectionTypeList() {
         this.changeSubType();
         this.getAdditionFieldTypesList();
     }
+    
+    this.changeLogbookDescriptionList = function(){
+        var inspectionTypeId = $('#inspectionType').val();
+        $.ajax({
+            url: "?action=getLogbookDescriptionList&category=logbook",
+            data: {
+                inspectionTypeId: inspectionTypeId
+            },
+            type: "POST",
+            dataType: 'json',
+            success: function(response) {
+                var html = '<option value="None">None</option>';
+                for(var i = 0;i<response.length; i++ ){
+                    html += '<option value="'+response[i].id+'">'+response[i].description+'</option>';
+                }
+                $('#logBookDescription').html(html);
+            }
+        });
+        
+    }
 
     this.getAdditionFieldTypesList = function() {
         //var inspectionTypeName = $('#inspectionType').val();
@@ -248,10 +268,10 @@ function Description() {
      * 
      * @returns {std|Boolean}
      */
-    this.getDescriptionByName = function(descriptionName) {
+    this.getDescriptionById = function(descriptionId) {
         var descriptionList = this.getDescriptions();
         for (var i = 0; i < descriptionList.length; i++) {
-            if (descriptionList[i].name == descriptionName) {
+            if (descriptionList[i].id == descriptionId) {
                 return descriptionList[i];
             }
         }
@@ -275,8 +295,9 @@ function Description() {
      * @returns {null}
      */
     this.showNotes = function() {
-        var descriptionName = $('#logBookDescription').val();
-        var description = this.getDescriptionByName(descriptionName);
+        var descriptionId = $('#logBookDescription').val();
+        
+        var description = this.getDescriptionById(descriptionId);
         if (description.notes != 1) {
             $('#logBookDescriptionNotes').hide();
         } else {
