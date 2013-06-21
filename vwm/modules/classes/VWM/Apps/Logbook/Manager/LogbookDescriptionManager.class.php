@@ -4,11 +4,13 @@ namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Framework\Model;
 use VWM\Apps\Logbook\Entity\LogbookDescription;
+use VWM\Apps\Logbook\Entity\LogbookCustomDescription;
 
 class LogbookDescriptionManager
 {
 
     const LOGBOOK_DESCRIPTION_ORIGIN = 'inspection_type';
+    const LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN = 'custom_description';
     const SERVICE = 'logbookDescription';
     
     /**
@@ -70,6 +72,86 @@ class LogbookDescriptionManager
         }
         $logbookDescriptionListJson = json_encode($logbookDescriptionListJson);
         return $logbookDescriptionListJson;
+    }
+    
+    /**
+     * 
+     * get logbook description list
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookCustomDescription[]
+     */
+    public function getCustomDescriptionListByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookCustomDescriptionList = array();
+        $query = "SELECT * FROM ".LogbookDescription::TABLE_NAME." ".
+                 "WHERE facility_id={$db->sqltext($facilityId)} ".
+                 "AND origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
+        $db ->query($query);
+        
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $logbookCustomDescription = new LogbookCustomDescription();
+            $logbookCustomDescription->initByArray($row);
+            $logbookCustomDescriptionList[] = $logbookCustomDescription;
+        }
+        
+        return $logbookCustomDescriptionList;
+    }
+    
+    /**
+     * 
+     * get All logbook description list in json
+     * 
+     * @param int $inspectionTypeId
+     * 
+     * @return json
+     */
+    public function getAllDescriptionListByInspectionTypeIdInJson($inspectionTypeId)
+    {
+        $logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId);
+        $logbookCustomDescriptionList = $this->getCustomDescriptionListByInspectionTypeId($inspectionTypeId);
+        
+        $logbookDescriptionListJson = array();
+        foreach ($logbookDescriptionList as $logbookDescription) {
+            $logbookDescriptionListJson[] = $logbookDescription->getAttributes();
+        }
+        
+        foreach ($logbookCustomDescriptionList as $logbookCustomDescription) {
+            $logbookDescriptionListJson[] = $logbookCustomDescription->getAttributes();
+        }
+        
+        $logbookDescriptionListJson = json_encode($logbookDescriptionListJson);
+        return $logbookDescriptionListJson;
+    }
+    /**
+     * 
+     * get logbook description list
+     * 
+     * @param int $inspectionTypeId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookDescription[]
+     */
+    public function getCustomDescriptionListByInspectionTypeId($inspectionTypeId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookCustomDescriptionList = array();
+        $query = "SELECT * FROM ".LogbookDescription::TABLE_NAME." ".
+                 "WHERE inspection_type_id={$db->sqltext($inspectionTypeId)} ".
+                 "AND origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
+        $db ->query($query);
+        
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $logbookCustomDescription = new LogbookCustomDescription();
+            $logbookCustomDescription->initByArray($row);
+            $logbookCustomDescriptionList[] = $logbookCustomDescription;
+            
+        }
+        
+        return $logbookCustomDescriptionList;
     }
 
 }

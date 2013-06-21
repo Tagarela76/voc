@@ -48,14 +48,6 @@ class LogbookDescription extends Model
     protected $inspection_type_id;
 
     /**
-     *
-     * facility_id;
-     * 
-     * @var int 
-     */
-    protected $facility_id;
-
-    /**
      * Description table name
      */
     const TABLE_NAME = 'logbook_description';
@@ -146,28 +138,6 @@ class LogbookDescription extends Model
     public function setInspectionTypeId($inspection_type_id)
     {
         $this->inspection_type_id = $inspection_type_id;
-    }
-
-    /**
-     * 
-     * get facility id
-     * 
-     * @return int
-     */
-    public function getFacilityId()
-    {
-        return $this->facility_id;
-    }
-
-    /**
-     * 
-     * set facility id
-     * 
-     * @param int $facility_id
-     */
-    public function setFacilityId($facility_id)
-    {
-        $this->facility_id = $facility_id;
     }
 
     /**
@@ -281,7 +251,6 @@ class LogbookDescription extends Model
             'notes' => $this->getNotes(),
             'origin' => $this->getOrigin(),
             'inspection_type_id' => $this->getInspectionTypeId(),
-            'facility_id' => $this->getFacilityId()
         );
     }
     
