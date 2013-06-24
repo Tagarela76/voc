@@ -822,7 +822,7 @@ class LogbookRecord extends Model
             $inspectionDescription = $this->getDescription();
         }
         
-        $itmanager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
+        $itmanager = \VOCApp::getInstance()->getService('inspectionType');
 
         $inspectionSubType = $itmanager->getInspectionSubTypeByTypeAndSubTypeDescription($inspectionType->typeName, $inspectionSubTypeName);
         

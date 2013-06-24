@@ -148,7 +148,7 @@ class LogbookSetupTemplate extends Model
         $query = "DELETE FROM ".  self::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-        $ltManager = new LogbookSetupTemplateManager();
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         $ltManager->unAssignLogbookTemplateFromFacility($this->getId());
         
     }

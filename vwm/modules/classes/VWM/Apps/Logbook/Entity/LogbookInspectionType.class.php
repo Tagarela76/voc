@@ -48,8 +48,8 @@ class LogbookInspectionType extends Model
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = new InspectionTypeManager();
-        $ltManager = new LogbookSetupTemplateManager();
+        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         
         $templates = $ltManager->getLogbookTemplateListByInspectionTypeId($this->getId());
         
