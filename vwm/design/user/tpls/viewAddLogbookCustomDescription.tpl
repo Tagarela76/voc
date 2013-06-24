@@ -56,6 +56,7 @@
         <div align="center" ><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
         
         <input type='hidden' name="facilityId" value="{$facilityId|escape}">
+        <input type='hidden' name="logbookCustomDescriptionId" value="{$logbookCustomDescription->getId()|escape}">
         
         <div align="right" style="padding: 12px 12px">
             <input type="submit" value="Save" class="button">

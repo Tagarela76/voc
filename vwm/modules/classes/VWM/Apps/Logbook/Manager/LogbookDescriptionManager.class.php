@@ -5,6 +5,7 @@ namespace VWM\Apps\Logbook\Manager;
 use VWM\Framework\Model;
 use VWM\Apps\Logbook\Entity\LogbookDescription;
 use VWM\Apps\Logbook\Entity\LogbookCustomDescription;
+use \VWM\Apps\Logbook\Entity\LogbookInspectionType;
 
 class LogbookDescriptionManager
 {
@@ -86,11 +87,12 @@ class LogbookDescriptionManager
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookCustomDescriptionList = array();
-        $query = "SELECT * FROM ".LogbookDescription::TABLE_NAME." ".
-                 "WHERE facility_id={$db->sqltext($facilityId)} ".
-                 "AND origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
+        $query = "SELECT lcd.* FROM ".LogbookDescription::TABLE_NAME." lcd ".
+                 "INNER JOIN ".LogbookInspectionType::TABLE_NAME." lit ".
+                 "ON lit.id = lcd.inspection_type_id ".
+                 "WHERE lcd.facility_id={$db->sqltext($facilityId)} ".
+                 "AND lcd.origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
         $db ->query($query);
-        
         $rows = $db->fetch_all_array();
         foreach($rows as $row){
             $logbookCustomDescription = new LogbookCustomDescription();

@@ -62,7 +62,7 @@ class LogbookRecord extends Model
      *
      * @var string
      */
-    protected $inspection_sub_type;
+    protected $inspection_sub_type = null;
 
     /**
      *
@@ -633,6 +633,7 @@ class LogbookRecord extends Model
         $replacedBulbs = $this->getReplacedBulbs();
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
+        $inspectionSubType = $this->getInspectionSubType();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -667,6 +668,9 @@ class LogbookRecord extends Model
         if (is_null($unittypeId)) {
             $unittypeId = 'NULL';
         }
+        if (is_null($inspectionSubType)) {
+            $inspectionSubType = 'NULL';
+        }
 
         //check gauge range
         $minGaugeRange = $this->getMinGaugeRange();
@@ -677,7 +681,7 @@ class LogbookRecord extends Model
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
+                "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
                 "description_id = '{$db->sqltext($this->getDescriptionId())}', " .
@@ -720,7 +724,7 @@ class LogbookRecord extends Model
         $gaugeValueTo = $this->getGaugeValueTo();
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
-
+        $inspectionSubType = $this->getInspectionSubType();
         if (is_null($qty)) {
             $qty = 'NULL';
         }
@@ -752,11 +756,14 @@ class LogbookRecord extends Model
         if (is_null($unittypeId)) {
             $unittypeId = 'NULL';
         }
+        if (is_null($inspectionSubType)) {
+            $inspectionSubType = 'NULL';
+        }
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
+                "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
                 "description_id = '{$db->sqltext($this->getDescriptionId())}', " .

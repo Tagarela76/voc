@@ -73,13 +73,14 @@ class LogbookSetupTemplate extends Model
             return false;
         }
         
-        $ltManager = new LogbookSetupTemplateManager();
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         $facilityList = $ltManager->getFacilityListByLogbookSetupTemplateId($this->getId());
+        
         $facilityIds = array();
         foreach($facilityList as $facility){
-            $facilityIds[] = $facility->getId();
+            $facilityIds[] = $facility->getFacilityId();
         }
-        
+        $facilityIds = implode(',', $facilityIds);
         return $facilityIds;
     }
 

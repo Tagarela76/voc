@@ -51,9 +51,9 @@
             <td width="10%">
                 Has Permit
             </td>
-            <td  class="users_u_top_r_brown" width="10%">
+            <!--<td  class="users_u_top_r_brown" width="10%">
                 Edit
-            </td>
+            </td>-->
         </tr>
         {section name=i loop=$inspectionTypeList}
             {assign var="settings" value=$inspectionTypeList[i]->getInspectionType()}
@@ -62,24 +62,32 @@
                     <input type='checkbox' id='item_{$smarty.section.i.index}' name='item_{$smarty.section.i.index}' value="{$inspectionTypeList[i]->getId()|escape}">
                 </td>
                 <td class="border_users_b border_users_r" width="10%">
-                    {$inspectionTypeList[i]->getId()|escape}
+                    <a href='?action=viewLogbookDetails&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}&bookmark=logbookInspectionType'>
+                        {$inspectionTypeList[i]->getId()|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r" width="25%">
-                    {$settings->typeName|escape}
+                    <a href='?action=viewLogbookDetails&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}&bookmark=logbookInspectionType'>
+                        {$settings->typeName|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$inspectionTypeList[i]->getTemplateIds()|escape}
+                    <a href='?action=viewLogbookDetails&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}&bookmark=logbookInspectionType'>
+                        {$inspectionTypeList[i]->getTemplateIds()|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    {if $settings->permit|escape}
-                        yes
-                    {else}
-                        no
-                    {/if}
+                    <a href='?action=viewLogbookDetails&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}&bookmark=logbookInspectionType'>
+                        {if $settings->permit|escape}
+                            yes
+                        {else}
+                            no
+                        {/if}
+                    </a>
                 </td>
-                <td class="border_users_b border_users_r">
+                <!--<td class="border_users_b border_users_r">
                     <a href='?action=addItem&category=logbook&typeId={$inspectionTypeList[i]->getId()|escape}&bookmark=logbookInspectionType'>edit</a>
-                </td>
+                </td>-->
             </tr>
         {/section}
     </table>

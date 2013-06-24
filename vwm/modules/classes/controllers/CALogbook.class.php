@@ -41,9 +41,9 @@ class CALogbook extends Controller
         $facilityId = $this->getFromRequest('facilityId');
         $companyId = $this->getFromRequest('companyId');
         $logbookTemplateId = $this->getFromRequest('logbookTemplateId');
-
-        $itManager = new InspectionTypeManager();
-        $ltManager = new LogbookSetupTemplateManager();
+        
+        $itManager = VOCApp::getInstance()->getService('inspectionType');
+        $ltManager = VOCApp::getInstance()->getService('logbookSetupTemplate');
 
         if (is_null($bookmark)) {
             $bookmark = 'logbookSetupTemplate';
@@ -731,6 +731,91 @@ class CALogbook extends Controller
         $tpl = "tpls/viewAddLogbookDescription.tpl";
         $result = $this->smarty->fetch($tpl);
         echo $result;
+    }
+    
+    public function actionViewLogbookDetails()
+    {
+        $bookmark = $this->getFromRequest('bookmark');
+        $ldManager = VOCApp::getInstance()->getService('logbookDescription');
+        
+        switch ($bookmark) {
+            case 'logbookSetupTemplate':
+                $logbookTemplateId = $this->getFromRequest('logbookTemplateId');
+                $logbookTemplate = new LogbookSetupTemplate();
+                $logbookTemplate->setId($logbookTemplateId);
+                $logbookTemplate->load();
+                
+                $logbookTemplate->getName();
+                $this->smarty->assign('logbookTemplate', $logbookTemplate);
+                $tpl = "tpls/viewLogbookTemplateDetails.tpl";
+                break;
+            case 'logbookInspectionType':
+                $inspectionTypeId = $this->getFromRequest('typeId');
+                $inspectionType = new LogbookInspectionType();
+                $inspectionType->setId($inspectionTypeId);
+                $inspectionType->load();
+                
+                $inspectionTypeSettings = $inspectionType->getInspectionType();
+                $permit = $inspectionTypeSettings->permit ? 'yes' : 'no';
+
+                //get subtypes
+                $subtypes = $inspectionTypeSettings->subtypes;
+                $subtypesName = array();
+                if (empty($subtypes)) {
+                    $subtypesName = 'NONE';
+                } else {
+                    foreach ($subtypes as $subtype) {
+                        $subtypesName[] = $subtype->name;
+                    }
+                    $subtypesName = implode(', ', $subtypesName);
+                }
+                
+                //get gauge type
+                $gaugeTypesName = array();
+                $gaugeTypes = $inspectionTypeSettings->additionFieldList;
+                if (empty($gaugeTypes)) {
+                    $gaugeTypesName = 'NONE';
+                } else {
+                    foreach ($gaugeTypes as $gaugeType) {
+                        $gaugeTypesName[] = $gaugeType->name;
+                    }
+                    $gaugeTypesName = implode(', ', $gaugeTypesName);
+                }
+                
+                //get Logbook Description
+                $logbookDescriptions = $ldManager->getDescriptionListByInspectionTypeId($inspectionType->getId());
+                $descriptions = array();
+                if (empty($logbookDescriptions)) {
+                    $descriptions = 'NONE';
+                } else {
+                    foreach ($logbookDescriptions as $logbookDescription) {
+                        $descriptions[] = $logbookDescription->getDescription();
+                    }
+                    $descriptions = implode(', ', $descriptions);
+                }
+                
+                
+                $logbookInspectionType = array(
+                    'id' => $inspectionType->getId(),
+                    'templateIds' => $inspectionType->getTemplateIds(),
+                    'name' => $inspectionTypeSettings->typeName,
+                    'permit' => $permit,
+                    'subtypes' => $subtypesName,
+                    'gaugeTypes' => $gaugeTypesName,
+                    'descriptions' => $descriptions
+                );
+                
+                $this->smarty->assign('logbookInspectionType', $logbookInspectionType);
+                $tpl = "tpls/viewLogbookInspectionTypeDetails.tpl";
+                break;
+            default :
+                throw new Exception('404');
+                break;
+        }
+        
+        $this->smarty->assign('tpl', $tpl);
+        $this->smarty->display("tpls:index.tpl");
+        
     }
 
 }

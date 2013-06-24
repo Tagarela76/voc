@@ -40,7 +40,7 @@
         <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>
 <div style='margin: 15px 10px 10px 20px'>
-    <input type="button" class="button" value="<<<Back" onclick="window.location = '?action=browseCategory&category=logbook'">
+    <input type="button" class="button" value="<<<Back" onclick="window.location = '?action=browseCategory&category=logbook&bookmark=logbookSetupTemplate'">
     <input type="submit" class="button" value="Save" onclick="">
     <div id='typeSaveErrors' style='color: #ff0000; margin: 20px 1px 1px 1px;'>
     </div>

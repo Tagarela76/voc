@@ -23,9 +23,9 @@
             <td class="border_users_b border_users_r" width = "40%">
                 Name
             </td>
-            <td class="border_users_b border_users_r" width = "10%">
+           <!-- <td class="border_users_b border_users_r" width = "10%">
                 edit
-            </td>
+            </td>-->
         </tr>
         {foreach from=$inspectionPerson item=person}
             <tr>
@@ -33,14 +33,18 @@
                     <input type="checkbox" name="checkInspectionPerson[]" value="{$person->getId()|escape}">
                 </td>	
                 <td class="border_users_b border_users_r" width="10%">
-                    {$person->getId()|escape}
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$person->getId()|escape}&tab=inspectionPerson">
+                        {$person->getId()|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r" width = "40%">
-                    {$person->getName()|escape}
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$person->getId()|escape}&tab=inspectionPerson">
+                        {$person->getName()|escape}
+                    </a>
                 </td>
-                <td class="border_users_b border_users_r" width = "10%">
+                <!--<td class="border_users_b border_users_r" width = "10%">
                     <a href="?action=addItem&category=logbook&facilityID={$facilityId|escape}&tab=inspectionPerson&inspectionPersonId={$person->getId()|escape}">edit</a>
-                </td>
+                </td>-->
             </tr>
         {/foreach}
     </table>
