@@ -157,7 +157,7 @@ class CLogbook extends Controller
                 }
 
                 $this->smarty->assign('logbook', $logbook);
-                $lbmanager = new LogbookManager();
+                $lbmanager = VOCApp::getInstance()->getService('logbook');
 
                 //check if this facility has inspection type
                 if (empty($inspectionTypesList)) {
@@ -185,7 +185,7 @@ class CLogbook extends Controller
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
 
                 //get Equipmen tList
-                $leManager = new LogbookEquipmentManager();
+                $leManager = VOCApp::getInstance()->getService('logbookEquipment');
                 $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
 
                 //get temperature dimension
@@ -286,7 +286,7 @@ class CLogbook extends Controller
         if (is_null($facilityId)) {
             throw new Exception('404');
         }
-        $lbManager = new LogbookManager();
+        $lbManager = VOCApp::getInstance()->getService('logbook');
         $tab = $this->getFromRequest('tab');
         if (!isset($tab)) {
             $tab = 'logbook';
@@ -362,7 +362,7 @@ class CLogbook extends Controller
                 $tpl = 'tpls/viewInspectionPerson.tpl';
                 break;
             case 'logbookEquipment':
-                $leManager = new LogbookEquipmentManager();
+                $leManager = VOCApp::getInstance()->getService('logbookEquipment');
 
                 $logbookEquipmentListCount = $leManager->getCountLogbookEquipmentByFacilityId($facilityId);
 

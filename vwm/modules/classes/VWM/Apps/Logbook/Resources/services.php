@@ -12,5 +12,8 @@ return array(
     },
     'logbookDescription' => function($c) {
         return new \VWM\Apps\Logbook\Manager\LogbookDescriptionManager();
+    },
+    'logbookEquipment' => function($c) {
+        return new \VWM\Apps\Logbook\Manager\LogbookEquipmentManager();
     }
 );
