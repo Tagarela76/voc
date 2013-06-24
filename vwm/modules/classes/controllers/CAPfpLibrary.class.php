@@ -28,11 +28,11 @@ class CAPfpLibrary extends Controller {
         }
 		extract($vars);
 		$abc = range('a', 'z');
-        
+
         $companyManager = new CompanyManager();
         $companyList = $companyManager->getCompanyList();
         $this->smarty->assign('companyList', $companyList);
-        
+
 		$manager = new PFPManager($this->db);
 		$suppl = new BookmarksManager($this->db);
 		$pagination = new Paginationabc(1300);
@@ -70,7 +70,7 @@ class CAPfpLibrary extends Controller {
 			$manager->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 			$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 		}
-        
+
 		$pfpsCount = $manager->countPFPAll($companyId, '', $this->getFromRequest('productCategory'), $supplierID);
 
 		$url = "?" . $_SERVER["QUERY_STRING"];
@@ -151,7 +151,7 @@ class CAPfpLibrary extends Controller {
 			$pfpproduct = $productspfp;
 		}
 */
-	
+
 		$this->smarty->assign('products', $pfpproduct);
 
 		$this->smarty->assign('companyList', $companyList);
@@ -264,7 +264,7 @@ class CAPfpLibrary extends Controller {
 			}
 			$pfpproduct = $productspfp;
 		}*/
-		
+
 		/* SORT PRODUCT BY TYPES */
 
 
@@ -368,18 +368,18 @@ class CAPfpLibrary extends Controller {
 		}*/
 		$itemForDelete = array();
 		foreach ($idArray as $id) {
-			$pfp = $manager->getPFP($id); 
+			$pfp = $manager->getPFP($id);
 			$delete["id"] = $id;
 			$delete["name"] = $pfp->getDescription();
 			$itemForDelete[] = $delete;
 		}
-		
+
 		$this->smarty->assign("gobackAction", "browseCategory");
 		$this->finalDeleteItemACommon($itemForDelete);
 	}
 
 	private function actionConfirmDelete() {
-		
+
 		$itemIDs = array();
 		$itemsCount = $this->getFromRequest('itemsCount');
 		for ($i = 0; $i < $itemsCount; $i++) {
@@ -393,8 +393,8 @@ class CAPfpLibrary extends Controller {
 			$manager->unassignPFPFromCompanies($itemID);
 			$pfp = $manager->getPFP($itemID);
 			$manager->remove($pfp);
-		}		
-		
+		}
+
 		header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=" . $this->getFromRequest('subBookmark') . "&letterpage=" . $this->getFromRequest('letterpage') . "&productCategory=" . $this->getFromRequest("productCategory") . "");
 		die();
 	}
@@ -408,7 +408,7 @@ class CAPfpLibrary extends Controller {
 		if(!$supplierDetails) {
 			throw new Exception(404);
 		}
-		
+
 		if ($_POST['assign'] == "Assign") {
 			$industry_type = $_POST['industryType'];
 			$company_id = $_POST['company'];
@@ -494,7 +494,7 @@ class CAPfpLibrary extends Controller {
 		// get company list
 		$cCompany = new Company($this->db);
 		$company_list = $cCompany->getCompanyList();
-		$this->smarty->assign("companyList", $company_list);		
+		$this->smarty->assign("companyList", $company_list);
 		$this->smarty->assign("supplierDetails",$supplierDetails);
 
 		$jsSources = array('modules/js/checkBoxes.js');
@@ -504,7 +504,7 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign('tpl', 'tpls/accessToCompany.tpl');
 		$this->smarty->display("tpls:index.tpl");
 	}
-    
+
     protected function actionAssignPfpToComapny()
     {
         $subaction = $this->getFromRequest('subaction');
@@ -516,24 +516,24 @@ class CAPfpLibrary extends Controller {
             foreach ($companyList as $company){
                 $companyIds[] = $company['id'];
             }
-            
+
         }else{
             $companyIds[] = $companyId;
         }
-        
+
         $pfpIds = $this->getFromRequest('id');
         $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
-        
+
         foreach ($pfpIds as $pfpId) {
             foreach ($companyIds as $id) {
                 if ($subaction == 'Unassign product(s)') {
-                    $pfpManager->unAssignPFP2Company($pfpId, $id);
+                    $pfpManager->unavailablePFPFromCompany($pfpId, $id);
                 } else {
-                    $pfpManager->assignPFP2Company($pfpId, $id);
+                    $pfpManager->availablePFP2Company($pfpId, $id);
                 }
             }
         }
-        
+
         header("Location: admin.php?action=browseCategory&category=pfps&bookmark=pfpLibrary&subBookmark=custom&letterpage=1a&productCategory=0&companyId=".$companyId);
         die();
     }
@@ -541,20 +541,20 @@ class CAPfpLibrary extends Controller {
     {
         //$bookmark = $this->getFromRequest('bookmark');
         $companyId = $this->getFromRequest('companyId');
-        
-        $industryType = new IndustryType($this->db);	 
+
+        $industryType = new IndustryType($this->db);
 		$productIndustryTypeList = $industryType->getTypesWithSubTypes();
 		$this->smarty->assign("productTypeList", $productIndustryTypeList);
-        
+
 		extract($vars);
-        
+
 		$abc = range('a', 'z');
         //get company List
         $companyManager = new CompanyManager();
         $companyList = $companyManager->getCompanyList();
         $this->smarty->assign('companyList', $companyList);
-        
-        
+
+
 		$manager = new PFPManager($this->db);
 		$suppl = new BookmarksManager($this->db);
 		$pagination = new Paginationabc(1300);
@@ -562,7 +562,7 @@ class CAPfpLibrary extends Controller {
 		$pagination->url = "?action=browseCategory&category=pfps&bookmark=pfpLibrary";
 		$this->smarty->assign('paginationabc', $pagination);
 
-		
+
 		$page = substr($this->getFromRequest("letterpage"), -1);
 
 		$tmp = $suppl->getOriginSupplier();
@@ -621,12 +621,12 @@ class CAPfpLibrary extends Controller {
 		$this->smarty->assign('tpl', 'tpls/pfpLibraryClass.tpl');
 		$jsSources = array('modules/js/checkBoxes.js', 'modules/js/autocomplete/jquery.autocomplete.js');
 		$this->smarty->assign('jsSources', $jsSources);
-        
+
         $request['action'] = 'browseCategory';
         $request['category'] = "pfps";
         $request['bookmark']='pfpLibrary';
         $request['productCategory'] = $productCategory;
-        
+
         $this->smarty->assign('request', $request);
 		$this->smarty->display("tpls:index.tpl");
     }

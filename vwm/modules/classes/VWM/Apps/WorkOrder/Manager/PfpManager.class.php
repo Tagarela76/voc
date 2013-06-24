@@ -285,9 +285,9 @@ class PfpManager extends Manager
 
     /**
      * function for getting pfp by Description
-     * 
+     *
      * @param string $description Description
-     * 
+     *
      * @return boolean|\VWM\Apps\WorkOrder\Entity\Pfp
      */
     public function getPfpByDescription($description)
@@ -314,7 +314,7 @@ class PfpManager extends Manager
         $db = \VOCApp::getInstance()->getService('db');
         //unassign pfp from company
         $this->unAssignPFP2Company($pfpId, $companyId);
-        
+
         $query = "INSERT INTO " . TB_PFP2COMPANY . " (pfp_id, company_id, is_available, is_assigned) " .
                 " VALUES (" . $pfpId . ", " . $companyId . ", 0, 1)";
         $db->query($query);
@@ -325,7 +325,7 @@ class PfpManager extends Manager
         }
         return $error;
     }
-    
+
     public function unAssignPFP2Company($pfpId, $companyId)
     {
         if(is_null($pfpId) || is_null($companyId)){
@@ -333,8 +333,49 @@ class PfpManager extends Manager
         }
         $db = \VOCApp::getInstance()->getService('db');
         $query = "DELETE FROM " . TB_PFP2COMPANY . " WHERE pfp_id = " . $pfpId . " AND company_id = " . $companyId;
-        
+
         $db->query($query);
     }
 
+    /**
+     * Allow company to use pfp. User should assign it to start create mixes
+     *
+     * @param int $pfpID
+     * @param int $companyID
+     *
+     * @return string
+     */
+    public function availablePFP2Company($pfpID, $companyID)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+		$sql_select = "SELECT * FROM ".TB_PFP2COMPANY." WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$db->query($sql_select);
+		if ($db->num_rows() == 0) {
+			$query = "INSERT INTO ".TB_PFP2COMPANY." (pfp_id, company_id, is_available, is_assigned) ".
+						" VALUES (".$pfpID.", ".$companyID.", 1, 0)";
+			$db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		} else {
+			$query = "UPDATE ".TB_PFP2COMPANY." SET is_available = 1 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+			$db->query($query);
+			if (mysql_errno() == 0) {
+				$error = "";
+			} else {
+				$error = "Error!";
+			}
+		}
+
+		return $error;
+	}
+
+    public function unavailablePFPFromCompany($pfpID, $companyID)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+		$query_unavailable = "UPDATE ".TB_PFP2COMPANY." SET is_available = 0, is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
+		$db->query($query_unavailable);
+	}
 }
