@@ -177,7 +177,7 @@
                             <div id='temperatureCelContainer'>
                                 <select onchange="itlManager.gauges.changeGaugeUnitType()" id='gaugeDimension'  style='width: 45px;'>
                                     {section name=i loop=$temperatureUnitTypeList}
-                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()|escape}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='selected'{/if}>
+                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()|escape}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='true'{/if}>
                                         {$temperatureUnitTypeList[i]->getName()|escape}
                                     </option>
                                     {/section}

@@ -9,8 +9,6 @@ VWM\Apps\Logbook\Entity\LogbookRecord:
       - Max: 1
     inspection_type_id:
       - NotBlank: ~
-    inspection_sub_type:
-      - NotBlank: ~
     department_id:
       - Min: 0
       

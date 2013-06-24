@@ -75,7 +75,7 @@ class CLogbook extends Controller
 
                 $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
                 $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
-
+                
                 //save add or update logbook if we need
                 if (count($post) > 0) {
                     //transfer time to unix type
@@ -139,6 +139,7 @@ class CLogbook extends Controller
                         $logbook->setDateTime($dateTime);
                     }
                     $violationList = $logbook->validate();
+                    
                     if (count($violationList) == 0) {
                         $id = $logbook->save();
                         header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=" . $tab);
@@ -146,8 +147,6 @@ class CLogbook extends Controller
                         $this->smarty->assign('creationTime', $post['dateTime']);
                     }
                 } else {
-
-
                     //check for add or edit
                     $creationTime = $logbook->getDateTime();
                     if (is_null($creationTime)) {
@@ -178,7 +177,6 @@ class CLogbook extends Controller
 
                 $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
                 $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($inspectionType->getInspectionType()->typeName);
-
 
                 //get inspection person list
                 $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
@@ -246,9 +244,14 @@ class CLogbook extends Controller
                 /*             * ***** VIEW ADD LOGBOOK EQUIPMENT****** */
             case 'logbookCustomDescription':
                 //get inspection types list
+                $logbookCustomDescriptionId = $this->getFromRequest('logbookCustomDescriptionId');
                 $inspectionTypesList = $itmanager->getInspectionTypeListByFacilityId($facilityId);
                 $this->smarty->assign('inspectionTypesList', $inspectionTypesList);
                 $logbookCustomDescription = new LogbookDescription();
+                if(!is_null($logbookCustomDescriptionId)){
+                    $logbookCustomDescription->setId($logbookCustomDescriptionId);
+                    $logbookCustomDescription->load();
+                }
                 $this->smarty->assign('logbookCustomDescription', $logbookCustomDescription);
                 $tpl = 'tpls/viewAddLogbookCustomDescription.tpl';
                 break;
@@ -321,6 +324,9 @@ class CLogbook extends Controller
                     $logbookDescription = new LogbookDescription();
                     $logbookDescription->setId($logbookRecord->getDescriptionId());
                     $logbookDescription->load();
+                    $condition = $logbookDescription->getDescription();
+                    $condition = is_null($condition) ? 'NONE':$condition;
+                    
                     //create logbook array for diplay and sort
                     $logbook = array(
                         'logbookId' => $logbookRecord->getId(),
@@ -330,7 +336,7 @@ class CLogbook extends Controller
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
                         'inspectionPersonName' => $inspectionPerson->getName(),
-                        'condition' => $logbookDescription->getDescription(),
+                        'condition' => $condition,
                         'notes' => $notes
                     );
 
@@ -374,7 +380,7 @@ class CLogbook extends Controller
                 $ldManager = VOCApp::getInstance()->getService(LogbookDescriptionManager::SERVICE);
                 $logbookCustomDescriptionList = $ldManager->getCustomDescriptionListByFacilityId($facilityId);
                 $this->smarty->assign('logbookCustomDescriptionList', $logbookCustomDescriptionList);
-                $tpl = 'tpls/viewLogbookCustomDecscription.tpl';
+                $tpl = 'tpls/viewLogbookCustomDescription.tpl';
                 break;
             default:
                 throw new Exception('tab is not exist');
@@ -449,9 +455,9 @@ class CLogbook extends Controller
      */
     protected function actionViewLogbookDetails()
     {
-        if ($this->getFromRequest('facilityID')) {
+        if ($this->getFromRequest('facilityId')) {
             $category = 'facility';
-            $categoryId = $this->getFromRequest('facilityID');
+            $categoryId = $this->getFromRequest('facilityId');
             $facility = new Facility($this->db, $categoryId);
             $companyId = $facility->getCompanyId();
             $facilityId = $categoryId;
@@ -459,43 +465,80 @@ class CLogbook extends Controller
             throw new Exception('404');
         }
 
-        // initialize logbook
-        $logbookId = $this->getFromRequest('id');
-        $logbook = new LogbookRecord();
-        $logbook->setId($logbookId);
-        $logbook->load();
+        $tab = $this->getFromRequest('tab');
+        $id = $this->getFromRequest('id');
+        
+        switch ($tab) {
+            case 'logbookEquipment':
+                $logbookEquipment = new LogbookEquipment();
+                $logbookEquipment->setId($id);
+                $logbookEquipment->load();
+                $this->smarty->assign('logbookEquipment', $logbookEquipment);
+                $tpl = 'tpls/viewLogbookEquipmentDetails.tpl';
+                break;
+            case 'inspectionPerson':
+                $person = new LogbookInspectionPerson();
+                $person->setId($id);
+                $person->load();
+                $this->smarty->assign('person', $person);
+                $tpl = 'tpls/viewLogbookPersonDetails.tpl';
+                break;
+            case 'logbookCustomDescription':
+                $logbookCustomDescription = new LogbookCustomDescription();
+                $logbookCustomDescription->setId($id);
+                $logbookCustomDescription->load();
 
-        //Initialize inspection Person
-        $inspectionPerson = new LogbookInspectionPerson();
-        $inspectionPerson->setId($logbook->getInspectionPersonId());
-        $inspectionPerson->load();
-        $this->smarty->assign('inspectionPerson', $inspectionPerson);
+                $tpl = 'tpls/viewLogbookCustomDescriptionDetails.tpl';
+                $this->smarty->assign('tab', 'logbookCustomDescription');
+                $this->smarty->assign('logbookCustomDescription', $logbookCustomDescription);
+                break;
+            case 'logbook':
+                // initialize logbook
+                $logbookId = $this->getFromRequest('id');
+                $logbook = new LogbookRecord();
+                $logbook->setId($logbookId);
+                $logbook->load();
 
-        //initialize date time
-        $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
-        $timeFormat = $dataChain->getFromTypeController('getFormat');
-        $creationTime = $logbook->getDateTime();
-        $creationTime = date($timeFormat . ' h:i a', $creationTime);
-        $this->smarty->assign('creationTime', $creationTime);
+                //Initialize inspection Person
+                $inspectionPerson = new LogbookInspectionPerson();
+                $inspectionPerson->setId($logbook->getInspectionPersonId());
+                $inspectionPerson->load();
+                $this->smarty->assign('inspectionPerson', $inspectionPerson);
 
-        //initialize equipment
-        $logbookEquipment = new LogbookEquipment();
-        $logbookEquipment->setId($logbook->getEquipmentId());
-        $logbookEquipment->load();
-        $this->smarty->assign('logbookEquipment', $logbookEquipment);
+                //initialize date time
+                $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
+                $timeFormat = $dataChain->getFromTypeController('getFormat');
+                $creationTime = $logbook->getDateTime();
+                $creationTime = date($timeFormat . ' h:i a', $creationTime);
+                $this->smarty->assign('creationTime', $creationTime);
 
-        //initialize description
-        $logbookDescription = new LogbookDescription();
-        $logbookDescription->setId($logbook->getDescriptionId());
-        $logbookDescription->load();
-        $this->smarty->assign('logbookDescription', $logbookDescription);
+                //initialize equipment
+                $logbookEquipment = new LogbookEquipment();
+                $logbookEquipment->setId($logbook->getEquipmentId());
+                $logbookEquipment->load();
+                $this->smarty->assign('logbookEquipment', $logbookEquipment);
+
+                //initialize description
+                $logbookDescription = new LogbookDescription();
+                $logbookDescription->setId($logbook->getDescriptionId());
+                $logbookDescription->load();
+                $description = $logbookDescription->getDescription();
+                $description = is_null($description) ? 'NONE' : $description;
+                $this->smarty->assign('description', $description);
+                
+                $tpl = 'tpls/viewLogbookDetails.tpl';
+                $this->smarty->assign('tab', 'logbook');
+                $this->smarty->assign('logbook', $logbook);
+                break;
+            default :
+                throw new Exception('404');
+                break;
+        }
+        
         // set left menu
         $this->setListCategoriesLeftNew($category, $categoryId);
         $this->setPermissionsNew($category);
-
-        $tpl = 'tpls/viewLogbookDetails.tpl';
-        $this->smarty->assign('tab', 'logbook');
-        $this->smarty->assign('logbook', $logbook);
+        $this->smarty->assign('facilityId', $facilityId);
         $this->smarty->assign('tpl', $tpl);
         $this->smarty->display('tpls:index.tpl');
     }
@@ -524,9 +567,14 @@ class CLogbook extends Controller
                     $logbook = new LogbookRecord();
                     $logbook->setId($id);
                     $logbook->load();
+                    $logbookDescription = new LogbookDescription();
+                    $logbookDescription->setId($logbook->getDescriptionId());
+                    $logbookDescription->load();
+                    $description = $logbookDescription->getDescription();
+                    $description = is_null($description) ? 'NONE':$description;
                     $itemForDelete = array(
                         'id' => $id,
-                        'name' => $logbook->getDescription()
+                        'name' => $description
                     );
                     $itemsForDelete[] = $itemForDelete;
                 }
@@ -722,19 +770,24 @@ class CLogbook extends Controller
      */
     public function actionSaveLogbookCustomDescription()
     {
-        $itmanager = VOCApp::getInstance()->getService(InspectionTypeManager::SERVICE);
+        $itmanager = VOCApp::getInstance()->getService('inspectionType');
         
         $description = $this->getFromPost('logbookCustomDescription');
         $notes = $this->getFromPost('notes');
         $inspectionTypeId = $this->getFromPost('inspectionType');
         $facilityId = $this->getFromPost('facilityId');
-        
+        $logbookCustomDescriptionId = $this->getFromPost('logbookCustomDescriptionId');
         if($notes == 'on'){
             $notes = 1;
         }else{
             $notes = 0;
         }
+        
         $logbookCustomDescription = new LogbookCustomDescription();
+        if($logbookCustomDescriptionId!=''){
+            $logbookCustomDescription->setId($logbookCustomDescriptionId);
+            $logbookCustomDescription->load();
+        }
         $logbookCustomDescription->setDescription($description);
         $logbookCustomDescription->setFacilityId($facilityId);
         $logbookCustomDescription->setInspectionTypeId($inspectionTypeId);
@@ -758,6 +811,40 @@ class CLogbook extends Controller
             $this->smarty->display('tpls:index.tpl');
         }
     }
+    
+    /*public function actionViewDetails()
+    {
+        if ($this->getFromRequest('facilityId')) {
+            $category = 'facility';
+            $categoryId = $this->getFromRequest('facilityId');
+            $facility = new Facility($this->db, $categoryId);
+            $companyId = $facility->getCompanyId();
+            $facilityId = $categoryId;
+        } else {
+            throw new Exception('404');
+        }
+        $tab = $this->getFromRequest('tab');
+        switch ($tab) {
+            case 'logbookCustomDescription':
+                $logbookCustomDescriptionId = $this->getFromRequest('id');
+                $logbookCustomDescription = new LogbookCustomDescription();
+                $logbookCustomDescription->setId($logbookCustomDescriptionId);
+                $logbookCustomDescription->load();
+
+                $tpl = 'tpls/viewLogbookCustomDescriptionDetails.tpl';
+                $this->smarty->assign('tab', 'logbook');
+                $this->smarty->assign('facilityId', $facilityId);
+                $this->smarty->assign('logbookCustomDescription', $logbookCustomDescription);
+                $this->smarty->assign('tpl', $tpl);
+                $this->smarty->display('tpls:index.tpl');
+                break;
+            default :
+                throw new Exception('')
+                break;
+        }
+        var_dump($_REQUEST);die();
+        
+    }*/
 
 }
 ?>
