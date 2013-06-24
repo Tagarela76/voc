@@ -71,7 +71,7 @@ class Reminder extends Model {
     {
         return array();
     }
-    
+
 	private function _load() {
 
 		if (!isset($this->id)) {

@@ -1,9 +1,23 @@
 <?php
 
-namespace VWM\Apps\Reminder\Manager;
+use VWM\Framework\Model;
 
-class ReminderManager
-{
+class ReminderManager extends Model {
+
+	function __construct(db $db) {
+		$this->db = $db;
+		$this->modelName = 'ReminderManager';
+	}
+
+    /**
+     * TODO: implement this method
+     *
+     * @return array property => value
+     */
+    public function getAttributes()
+    {
+        return array();
+    }
 
 	public function getReminders() {
 
