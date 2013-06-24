@@ -87,7 +87,7 @@
 
 		{if $request.category eq "pfps"}
 			{if !($request.subBookmark == "custom" ||  $request.subBookmark == "") }
-				<input type="button" class="button" value="Give access to company" onclick="location.href='admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.subBookmark|escape:'url'}'"/>
+				{* <input type="button" class="button" value="Give access to company" onclick="location.href='admin.php?action=accessToCompany&category=pfpLibrary&bookmark=pfps&supplier={$request.subBookmark|escape:'url'}'"/>*}
 			{/if}
 		{/if}
 
@@ -126,7 +126,7 @@
 		{/if}
 		<input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('browseCategory','Filter')">
 		<br>
-		
+
 		{if $itemsCount > 0}
 			{if $currentCompany == 0}
 				<input id='productAssign' type="button" class="button" name="subaction" value="Assign to company" onclick="submitFunc('browseCategory','Assign to company')" >
@@ -180,8 +180,8 @@
 		</select>
         <input type="button" class="button" name="subaction" value="Filter" onclick="submitFunc('filter','Filter')">
 		<br>
-        
-		
+
+
     {if $itemsCount > 0}
         {if $currentCompany == 0}
 				<input id='pfpAssign' type="button" class="button" name="subaction" value="Assign to company" onclick="submitFunc('assignPfpToComapny','Assign to company')" >
@@ -336,7 +336,7 @@
 			}
 		}
 			function hideButton(){
-				
+
 				if($("#facilityID :selected").val() == 'All facilities'
 						|| $("#facilityID :selected").val() == undefined){
 					$('#assign2facility').hide();
