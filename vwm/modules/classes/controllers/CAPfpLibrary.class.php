@@ -511,13 +511,13 @@ class CAPfpLibrary extends Controller {
         $companyId = $this->getFromRequest('companyId');
         $companyManager = new CompanyManager();
         $companyIds = array();
-        if($companyId = 'All Companies'){
+        if ($companyId == 'All Companies') {
             $companyList = $companyManager->getCompanyList();
-            foreach ($companyList as $company){
+            foreach ($companyList as $company) {
                 $companyIds[] = $company['id'];
             }
 
-        }else{
+        } else {
             $companyIds[] = $companyId;
         }
 
