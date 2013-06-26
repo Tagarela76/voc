@@ -1,18 +1,18 @@
 <?php
-	require_once ('modules/xnyo/smarty/Smarty.class.php');
+	require_once (dirname(__FILE__).'/../../../modules/xnyo/smarty/Smarty.class.php');
 	
 	$smarty = new Smarty();		 
-	$smarty->cache_dir = 'cache/user';	
+	$smarty->cache_dir = dirname(__FILE__).'/../../../cache/user';	
 	
 	if (REGION != DEFAULT_REGION) {
-		$smarty->template_dir = 'design/'.REGION.'/user';
+		$smarty->template_dir = dirname(__FILE__).'/../../../design/'.REGION.'/user';
 	} else {
-		$smarty->template_dir = 'design/user';	
+		$smarty->template_dir = dirname(__FILE__).'/../../../design/user';	
 	}
 	
-	$smarty->compile_dir = 'template_c/user';
+	$smarty->compile_dir = dirname(__FILE__).'/../../../template_c/user';
 	
 	//	Register tpl resource for Smarty
-	require ('modules/smartyTemplateSource.php');
+	require (dirname(__FILE__).'/../../../modules/smartyTemplateSource.php');
 	register_resource_tpls($smarty,'user');
 ?>

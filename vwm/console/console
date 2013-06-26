@@ -11,6 +11,7 @@ define ('site_path', $site_path);
 
 require($site_path.'config/constants.php');
 require_once ($site_path.'modules/xnyo/xnyo.class.php');
+require ($site_path.'modules/xnyo/smarty/startSmarty.php');
 
 //	Include Class Autoloader
 //require $site_path.'../vendor/autoload.php';
@@ -44,6 +45,7 @@ $xnyo->start();
 
 $GLOBALS["db"]->select_db(DB_NAME);
 VOCApp::getInstance()->setDB($GLOBALS["db"]);
+VOCApp::getInstance()->setSmarty($smarty);
 
 $application = new Application();
 $application->add(new ReminderCommand);

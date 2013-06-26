@@ -155,16 +155,11 @@ class ReminderManager
     	$from = AUTH_SENDER."@".DOMAIN;
         $messageSubject = "Reminder ";
         
-        $messageText = '';
-        $messageText.='<div>';
-        $messageText.='Reminder from VOC-VEB-MANAGER';
-        $messageText.='</div>';
-        $messageText.='<div>';
-        $messageText.='Please check following reminder';
-        $messageText.='</div>';
-        $messageText.='<div>';
-        $messageText.='<b>'.$reminder->getName().'</b>';
-        $messageText.='</div>';
+        $tpl = dirname(__FILE__).'/../../../../../../design/user/tpls/reminderNotification.tpl';
+        
+        $smarty = \VOCApp::getInstance()->getService('smarty');
+        $smarty->assign('reminder', $reminder);
+        $messageText = $smarty->fetch($tpl);
         
         if (count($users) != 0) {
             $text = '';
