@@ -8,6 +8,6 @@
         "pimple/pimple": "1.0.*@dev",
         "chriskite/phactory": "v0.4",
         "robmorgan/phinx": "*",
-        "symfony/finder": "2.3.*"
+        "symfony/console": "2.3.*"
     }
 }
