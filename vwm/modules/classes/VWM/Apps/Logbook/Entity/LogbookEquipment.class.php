@@ -63,7 +63,7 @@ class LogbookEquipment extends Model
         $this->name = $name;
     }
 
-    public function __construct()
+    public function __construct($id)
     {
         $this->modelName = "LogbookEquipment";
         if (isset($id)) {

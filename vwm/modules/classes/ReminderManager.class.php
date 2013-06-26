@@ -1,6 +1,6 @@
 <?php
 
-namespace VWM\Apps\Reminder\Manager;
+//namespace VWM\Apps\Reminder\Manager;
 
 class ReminderManager
 {

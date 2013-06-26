@@ -11,53 +11,54 @@ class Reminder extends Model
      *
      * @var int
      */
-    public $id;
+    protected $id;
 
     /**
      *
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * reminder date
      * @var int
      */
-    public $date;
+    protected $date;
 
     /**
      *
      * @var int
      */
-    public $facility_id;
+    protected $facility_id;
 
     /**
      *
      * @var string
      */
-    public $url;
+    protected $url;
 
     /**
      *
      * @var array
      */
-    public $users;
+    protected $users;
 
     /**
      *
      * @var Email
      */
-    public $email;
+    protected $email;
 
     const TABLE_NAME = 'reminder';
-
+    const TB_REMIND2USER = 'remind2user';
+    
     function __construct($id = null, EMail $email = null)
     {
         $this->modelName = 'Reminder';
 
         if (isset($id)) {
             $this->id = $id;
-            $this->_load();
+            $this->load();
         }
 
         if (!isset($this->users)) {
@@ -69,21 +70,81 @@ class Reminder extends Model
         }
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+
+    public function getFacilityId()
+    {
+        return $this->facility_id;
+    }
+
+    public function setFacilityId($facility_id)
+    {
+        $this->facility_id = $facility_id;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail(Email $email)
+    {
+        $this->email = $email;
+    }
+
     /**
      * @return array property => value
      */
     public function getAttributes()
     {
         return array(
-            'id'            => $this->id,
-            'name'          => $this->name,
-            'date'          => $this->date,
-            'facility_id'   => $this->facility_id,
-            'url'           => $this->url,
+            'id' => $this->id,
+            'name' => $this->name,
+            'date' => $this->date,
+            'facility_id' => $this->facility_id,
+            'url' => $this->url,
         );
     }
 
-    private function _load()
+    public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         if (!isset($this->id)) {
@@ -102,29 +163,28 @@ class Reminder extends Model
         $this->initByArray($row);
     }
 
-
     protected function _insert()
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "INSERT INTO " . self::TABLE_NAME . " (name, date, facility_id) VALUES ( " .
-				"'{$this->db->sqltext($this->name)}' " .
-				", {$this->db->sqltext($this->date)} " .
-				", {$this->db->sqltext($this->facility_id)} " .
-				")";
+                "'{$db->sqltext($this->name)}' " .
+                ", {$db->sqltext($this->date)} " .
+                ", {$db->sqltext($this->facility_id)} " .
+                ")";
         $db->exec($query);
-        $this->id = $this->db->getLastInsertedID();
+        $this->id = $db->getLastInsertedID();
 
-        return $this->id;
+        return $id;
     }
 
     protected function _update()
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "UPDATE " . self::TABLE_NAME . " " .
-				" SET name = '{$this->db->sqltext($this->name)}', " .
-                " date = {$this->db->sqltext($this->date)}, " .
-				" facility_id = {$this->db->sqltext($this->facility_id)} " .
-				"WHERE id = {$this->db->sqltext($this->id)}";
+                " SET name = '{$db->sqltext($this->name)}', " .
+                " date = {$db->sqltext($this->date)}, " .
+                " facility_id = {$db->sqltext($this->facility_id)} " .
+                "WHERE id = {$db->sqltext($this->id)}";
         $db->exec($query);
 
         return $this->id;
@@ -149,8 +209,8 @@ class Reminder extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
         $sql = "SELECT id FROM " . self::TABLE_NAME . "
-				 WHERE name = '{$this->db->sqltext($this->name)}' " .
-                "AND facility_id = {$this->db->sqltext($this->facility_id)}";
+				 WHERE name = '{$db->sqltext($this->name)}' " .
+                "AND facility_id = {$db->sqltext($this->facility_id)}";
         $db->query($sql);
 
         return ($db->num_rows() == 0) ? true : false;
@@ -187,7 +247,17 @@ class Reminder extends Model
      */
     public function getUsers()
     {
-        return $this->users;
+        $users = array();
+        if(!is_null($this->users)){
+            return $this->users;
+        }
+        $rManager = \VOCApp::getInstance()->getService('reminder');
+        if(is_null($this->getId())){
+            return false;
+        }
+        $users = $rManager->getUsersByReminderId($this->getId());
+        
+        return $users;
     }
 
     /**
@@ -197,49 +267,6 @@ class Reminder extends Model
     public function setUsers($users)
     {
         $this->users = $users;
-    }
-
-    /**
-     * set user to remind
-     * @param type int
-     */
-    public function setRemind2User($userId)
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        $query = "INSERT INTO " . TB_REMIND2USER . "(user_id, reminders_id)
-				VALUES ({$db->sqltext($userId)}, {$db->sqltext($this->id)})";
-        $db->query($query);
-    }
-
-    /**
-     * unset all users from remind
-     */
-    public function unSetRemind2User()
-    {
-        $db = \VOCApp::getInstance()->getService('db');
-        $sql = "DELETE FROM " . TB_REMIND2USER . "
-				 WHERE reminders_id={$db->sqltext($this->id)}";
-        $db->query($sql);
-    }
-
-    /**
-     *
-     */
-    public function sendRemind()
-    {
-        $to = array();
-        $users = $this->getUsers();
-        foreach ($users as $user) {
-            $to[] = $user["email"];
-        }
-
-        $from = REMIND_SENDER . "@" . DOMAIN;
-        $theme = "Notification ";
-        $message = $this->name;
-
-        if (count($to) != 0) {
-            $this->email->sendMail($from, $to, $theme, $message);
-        }
     }
 
     /**

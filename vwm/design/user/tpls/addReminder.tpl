@@ -2,8 +2,8 @@
 <script type="text/javascript">
 	$(function() {
 		//	global reminderPage object defined at manageReminders.js
-		reminderPage.facilityId = {/literal} {$data->facility_id} {literal};
-		reminderPage.remindId = {/literal} {$data->id} {literal};
+		reminderPage.facilityId = {/literal} {$data->getFacilityId()} {literal};
+		reminderPage.remindId = {/literal} '{$data->getId()}' {literal};
 	});
 </script>
 {/literal}
@@ -37,7 +37,7 @@
 					Name
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" style="float: left;">	<input type='text' name='name' value='{$data->name|escape}'></div>												
+					<div align="left" style="float: left;">	<input type='text' name='name' value='{$data->getName()|escape}'></div>												
 						{foreach from=$violationList item="violation"}
 							{if $violation->getPropertyPath() eq 'name' || $violation->getPropertyPath() eq 'uniqueName'}							
 							{*ERROR*}					
@@ -54,7 +54,7 @@
 					Date
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->date|escape}'></div>												
+					<div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->getDate()|escape}'></div>												
 						{foreach from=$violationList item="violation"}
 							{if $violation->getPropertyPath() eq 'date'}							
 							{*ERROR*}					
@@ -109,7 +109,7 @@
 		{*HIDDEN*}
 		<input type='hidden' name='action' id='action' value='{$request.action}'>	
 		{if $request.action eq "edit"}
-			<input type='hidden' id='id' name='id' value='{$data->id}'>
+			<input type='hidden' id='id' name='id' value='{$data->getId()|escape}'>
 		{/if}
 		<input type='hidden' id='facility_id' name='facility_id' value='{$request.facilityID}'>
 

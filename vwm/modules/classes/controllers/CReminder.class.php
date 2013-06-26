@@ -1,8 +1,8 @@
 <?php
+use  \VWM\Apps\Reminder\Entity\Reminder;
 
 class CReminder extends Controller
 {
-
     function CReminder($smarty, $xnyo, $db, $user, $action)
     {
         parent::Controller($smarty, $xnyo, $db, $user, $action);
@@ -16,7 +16,6 @@ class CReminder extends Controller
      */
     protected function bookmarkReminder($vars)
     {
-
         extract($vars);
         if (is_null($facilityDetails['facility_id'])) {
             throw new Exception('404');
@@ -70,6 +69,7 @@ class CReminder extends Controller
         $request['parent_id'] = $request['facilityID'];
         $request['parent_category'] = 'facility';
         $this->smarty->assign('request', $request);
+        $rManager = VOCApp::getInstance()->getService('reminder');
 
         $params = array("bookmark" => "reminder");
 
@@ -93,14 +93,15 @@ class CReminder extends Controller
         $usersList = implode(",", $usersName);
         $this->smarty->assign('usersList', $usersList);
         $this->smarty->assign('user_id', $user_id);
-
+        $reminder = new Reminder();
+        $reminder->setFacilityId($facilityId);
+        
         if (count($post) > 0) {
             $user = new User($this->db);
             $facilityID = $post['facility_id'];
-            $reminder = new Reminder($this->db);
-            $reminder->name = $post['name'];
-            $reminder->date = $post['date'];
-            $reminder->facility_id = $facilityID;
+            $reminder->setName($post['name']);
+            $reminder->setDate($post['date']);
+            $reminder->setFacilityId($facilityID);
             $userList = $post['user_id'];
             $reminderUsers = array();
             $reminderUser = array();
@@ -117,13 +118,15 @@ class CReminder extends Controller
             VOCApp::getInstance()->setDateFormat(NULL);
 
             $violationList = $reminder->validate();
+            
             if (count($violationList) == 0) {
                 $dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');
-                $reminder->date = $dataChain->getTimestamp();
-                $reminder->save();
+                $reminder->setDate($dataChain->getTimestamp());
+                $id = $reminder->save();
                 // set remind to users
+                
                 foreach ($userList as $userId) {
-                    $reminder->setRemind2User($userId);
+                    $rManager->setRemind2User($userId, $id);
                 }
                 // redirect
                 header("Location: ?action=browseCategory&category=facility&id=" . $facilityID . "&bookmark=reminder&notify=51");
@@ -134,14 +137,14 @@ class CReminder extends Controller
                 $this->smarty->assign('violationList', $violationList);
                 $usersName = array();
                 $user_id = array();
-                foreach ($reminder->users as $user) {
+                foreach ($reminder->getUsers() as $user) {
                     $usersName[] = $user["username"];
                     $user_id[] = $user["user_id"];
                 }
                 $usersList = implode(",", $usersName);
                 $this->smarty->assign('usersList', $usersList);
                 $this->smarty->assign('user_id', $user_id);
-                $this->smarty->assign('data', $post);
+                $this->smarty->assign('data', $reminder);
             }
         }
         //	set js scripts
@@ -169,7 +172,7 @@ class CReminder extends Controller
         $post->facility_id = $facilityId;
         $post->id = 0;
 
-        $this->smarty->assign('data', $post);
+        $this->smarty->assign('data', $reminder);
         $this->smarty->assign('request', $request);
         $this->smarty->assign('sendFormAction', '?action=addItem&category=' . $request['category'] . '&facilityID=' . $request['facilityID']);
         $this->smarty->assign('pleaseWaitReason', "Recalculating reminders at Facility.");
@@ -179,8 +182,9 @@ class CReminder extends Controller
 
     protected function actionViewDetails()
     {
-
-        $reminder = new Reminder($this->db, $this->getFromRequest('id'));
+        $reminder = new Reminder();
+        $reminder->setId($this->getFromRequest('id'));
+        $reminder->load();
 
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "reminder");
@@ -194,10 +198,11 @@ class CReminder extends Controller
         $facility = new Facility($this->db);
         $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
         $companyID = $facilityDetails["company_id"];
-        $dataChain = new TypeChain(date("y-m-d", $reminder->date), 'date', $this->db, $companyID, 'company');
-        $reminder->date = $dataChain->formatOutput();
+        $dataChain = new TypeChain(date("y-m-d", $reminder->getDate()), 'date', $this->db, $companyID, 'company');
+        $reminder->setDate($dataChain->formatOutput());
         $usersList = $reminder->getUsers();
         $usersName = array();
+        
         foreach ($usersList as $user) {
             $usersName[] = $user["username"];
         }
@@ -219,7 +224,6 @@ class CReminder extends Controller
 
     protected function actionDeleteItem()
     {
-
         $req_id = $this->getFromRequest('id');
         if (!is_array($req_id))
             $req_id = array($req_id);
@@ -230,12 +234,14 @@ class CReminder extends Controller
                 if (!$this->user->checkAccess('facility', $this->getFromRequest("facilityID"))) {
                     throw new Exception('deny');
                 }
-                $reminder = new Reminder($this->db, $reminderID);
+                $reminder = new Reminder();
+                $reminder->setId($reminderID);
+                $reminder->load();
                 $delete = array();
-                $delete["id"] = $reminder->id;
-                $delete["name"] = $reminder->name;
-                $delete["facility_id"] = $reminder->facility_id;
-                $delete["date"] = $reminder->date;
+                $delete["id"] = $reminder->getId();
+                $delete["name"] = $reminder->getName();
+                $delete["facility_id"] = $reminder->getFacilityId();
+                $delete["date"] = $reminder->getDate();
                 $itemForDelete[] = $delete;
             }
         }
@@ -254,11 +260,12 @@ class CReminder extends Controller
 
     protected function actionConfirmDelete()
     {
-
         foreach ($this->itemID as $ID) {
 
-            $reminder = new Reminder($this->db, $ID);
-            $facilityId = $reminder->facility_id;
+            $reminder = new Reminder();
+            $reminder->setId($ID);
+            $reminder->load();
+            $facilityId = $reminder->getFacilityId();
             $reminder->delete();
         }
         header("Location: ?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=reminder&notify=52");
@@ -273,9 +280,13 @@ class CReminder extends Controller
         $facility = new Facility($this->db);
         $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
         $companyID = $facilityDetails["company_id"];
-
-        $reminder = new Reminder($this->db, $this->getFromRequest('id'));
-
+        $rManager = VOCApp::getInstance()->getService('reminder');
+        $reminder = new Reminder();
+        $reminder->setId($this->getFromRequest('id'));
+        $reminder->load();
+        $dataChain = new TypeChain(date("y-m-d", $reminder->getDate()), 'date', $this->db, $companyID, 'company');
+        $reminder->setDate($dataChain->formatOutput());
+        
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "reminder");
 
@@ -286,9 +297,13 @@ class CReminder extends Controller
 
         if (count($post) > 0) {
             $facilityID = $post['facility_id'];
-            $reminder = new Reminder($this->db, $post['id']);
-            $reminder->name = $post['name'];
-            $reminder->date = $post['date'];
+            $reminder = new Reminder();
+            $reminder->setId($post['id']);
+           
+            $reminder->load();
+             
+            $reminder->setName($post['name']);
+            $reminder->setDate($post['date']);
             $userList = $post['user_id'];
             $reminderUsers = array();
             $reminderUser = array();
@@ -301,36 +316,37 @@ class CReminder extends Controller
                 $reminderUsers[] = $reminderUser;
             }
             $reminder->setUsers($reminderUsers);
-
             VOCApp::getInstance()->setCustomerID($companyID);
             VOCApp::getInstance()->setDateFormat(NULL);
             $violationList = $reminder->validate();
             if (count($violationList) == 0) {
-                $dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');
-                $reminder->date = $dataChain->getTimestamp();
-                $reminder->save();
+                $dataChain = new TypeChain($reminder->getDate(), 'date', $this->db, $companyID, 'company');
+                $reminder->setDate($dataChain->getTimestamp());
+                $id = $reminder->save();
+                
                 // unset all users from remind
-                $reminder->unSetRemind2User();
+                $rManager->unSetRemind2User($id);
+                
                 // set remind to users
                 foreach ($userList as $userId) {
-                    $reminder->setRemind2User($userId);
+                    $rManager->setRemind2User($userId, $id);
                 }
                 // redirect
-                header("Location: ?action=viewDetails&category=reminder&id=" . $reminder->id . "&facilityID=" . $facilityID . "&notify=53");
+                header("Location: ?action=viewDetails&category=reminder&id=" . $reminder->getId() . "&facilityID=" . $facilityID . "&notify=53");
             } else {
                 $notifyc = new Notify(null, $this->db);
                 $notify = $notifyc->getPopUpNotifyMessage(401);
                 $this->smarty->assign("notify", $notify);
                 $this->smarty->assign('violationList', $violationList);
                 $user_id = array();
-                foreach ($reminder->users as $user) {
+                foreach ($reminder->getUsers() as $user) {
                     $usersName[] = $user["username"];
                     $user_id[] = $user["user_id"];
                 }
                 $usersList = implode(",", $usersName);
                 $this->smarty->assign('usersList', $usersList);
                 $this->smarty->assign('user_id', $user_id);
-                $this->smarty->assign('data', $post);
+                $this->smarty->assign('data', $reminder);
             }
         }
         $jsSources = array(
@@ -384,10 +400,8 @@ class CReminder extends Controller
 
     protected function actionLoadUsers()
     {
-
         $usersList = array();
         $userItem = array();
-
         $facilityId = $this->getFromRequest('facilityId');
         $remindId = $this->getFromRequest('remindId');
         $reminderUsers = $this->getFromRequest('remindUsers');
@@ -413,7 +427,6 @@ class CReminder extends Controller
 
     protected function actionSetRemindToUser()
     {
-
         $rowsToSet = $this->getFromRequest('rowsToSet');
         $response = "";
         $user = new User($this->db);

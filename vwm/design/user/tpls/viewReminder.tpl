@@ -23,7 +23,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$reminder->name|escape}
+                    &nbsp; {$reminder->getName()|escape}
                 </div>
             </td>
         </tr>
@@ -33,7 +33,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp; {$reminder->date|escape}
+                    &nbsp; {$reminder->getDate()|escape}
                 </div>
             </td>
         </tr>
