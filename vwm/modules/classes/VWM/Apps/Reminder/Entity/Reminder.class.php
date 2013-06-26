@@ -173,8 +173,8 @@ class Reminder extends Model
                 ")";
         $db->exec($query);
         $this->id = $db->getLastInsertedID();
-
-        return $id;
+        
+        return $this->id;
     }
 
     protected function _update()

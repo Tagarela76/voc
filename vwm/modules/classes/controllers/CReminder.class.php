@@ -103,6 +103,7 @@ class CReminder extends Controller
             $reminder->setDate($post['date']);
             $reminder->setFacilityId($facilityID);
             $userList = $post['user_id'];
+            
             $reminderUsers = array();
             $reminderUser = array();
             foreach ($userList as $userId) {

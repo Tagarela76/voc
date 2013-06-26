@@ -154,8 +154,17 @@ class ReminderManager
         $email = new \EMail();
     	$from = AUTH_SENDER."@".DOMAIN;
         $messageSubject = "Reminder ";
-        $messageText = $reminder->getName();
-        $headers = "Content-type: text/html";
+        
+        $messageText = '';
+        $messageText.='<div>';
+        $messageText.='Reminder from VOC-VEB-MANAGER';
+        $messageText.='</div>';
+        $messageText.='<div>';
+        $messageText.='Please check following reminder';
+        $messageText.='</div>';
+        $messageText.='<div>';
+        $messageText.='<b>'.$reminder->getName().'</b>';
+        $messageText.='</div>';
         
         if (count($users) != 0) {
             $text = '';
