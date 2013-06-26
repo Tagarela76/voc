@@ -151,7 +151,7 @@ class ReminderManager
         
         $users = $this->getUsersByReminderId($reminderId);
         
-        $email = new \EMail();
+        $email = new \EMail(true);
     	$from = AUTH_SENDER."@".DOMAIN;
         $messageSubject = "Reminder ";
         
@@ -164,7 +164,7 @@ class ReminderManager
         if (count($users) != 0) {
             $text = '';
             foreach($users as $user){
-                if(($user["email"] == 'denis.kv@kttsoft.com') || ($user["email"]=='denis.nt@kttsoft.com')){
+                if(($user["email"] == 'denis.kv@kttsoft.com') || ($user["email"] == 'denis.nt@kttsoft.com') || ($user["email"] == 'jgypsyn@gyantgroup.com')){
                     $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
                 }
                     $text.='Reminder to '.$user["username"].' sent successfully;';
