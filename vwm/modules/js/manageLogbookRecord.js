@@ -48,7 +48,7 @@ function InspectionTypeList() {
         var inspectionTypeName = $('#inspectionType option:selected').text();
         
         //get subTypeList
-        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName.trim());
+        var inspectionType = this.getInspectionTypeByTypeName($.trim(inspectionTypeName));
         
         //check for addition fields
         var html = '';
@@ -92,7 +92,7 @@ function InspectionTypeList() {
         //var inspectionTypeName = $('#inspectionType').val();
         var inspectionTypeName = $('#inspectionType option:selected').text();
         
-        var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName.trim());
+        var inspectionType = this.getInspectionTypeByTypeName($.trim(inspectionTypeName));
         if (inspectionType.additionFieldList != undefined) {
             $('#inspectionAdditionListTypeContainer').show();
             var html = '';
@@ -175,7 +175,7 @@ function InspectionTypeList() {
     this.getSubTypesAdditionFields = function(gaugeType) {
         //var inspectionTypeName = $('#inspectionType').val();
         var inspectionTypeName = $('#inspectionType option:selected').text();
-        inspectionTypeName = inspectionTypeName.trim();
+        inspectionTypeName = $.trim(inspectionTypeName);
 
         var inspectionSubTypeName = $('#inspectionSubType').val();
         var inspectionAdditionTypeName = $('#inspectionAdditionListType').val();
