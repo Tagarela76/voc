@@ -377,7 +377,7 @@ function LogbookInspectionSubType() {
                 notes: self.getHasNotes(),
                 qty: self.getHasQty(),
                 valueGauge: self.getHasGauge(),
-                gaugeType: self.getGaugeType(),
+                gaugeType: self.getGaugeType()
             }
             return subTypeAttributes;
         }
