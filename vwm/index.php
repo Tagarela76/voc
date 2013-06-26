@@ -27,9 +27,7 @@ $xnyo->logout_redirect_url = '../voc_web_manager.html';
 
 //  Start VOC app
 VOCApp::getInstance()->setDB($db);
-
-
-
+VOCApp::getInstance()->setSmarty($smarty);
 
 $xnyo->filter_get_var('action', 'text');
 $xnyo->filter_post_var('action', 'text');

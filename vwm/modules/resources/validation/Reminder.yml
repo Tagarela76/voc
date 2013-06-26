@@ -1,4 +1,4 @@
-Reminder:
+VWM\Apps\Reminder\Entity\Reminder:
   getters:
     uniqueName:
       - "True": {message: "Name should be unique", groups: [add]}

@@ -1,11 +1,11 @@
 <?php
-	include('modules/mail/Mail.php');
-	include('modules/mail/mime.php');
+	include(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'modules/mail/Mail.php');
+	include(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'modules/mail/mime.php');
 	
 class EMail {
 
 	var $mimeType = "text/plain; charset=iso-8859-1";
-
+    
     function EMail($isHtml = false) {
 		if ($isHtml){
 			$this->mimeType = "text/html; charset=iso-8859-1";

@@ -68,6 +68,7 @@ class VOCApp
         $apps = array(
             new VWM\Apps\WorkOrder\WorkOrderApp(),
             new VWM\Apps\Logbook\LogbookApp(),
+            new VWM\Apps\Reminder\ReminderApp()
         );
     }
 
@@ -124,6 +125,19 @@ class VOCApp
         $this->container['db'] = $this->db;
     }
 
+    /**
+     * Setter for xnyo smarty
+     *
+     * @param \Smarty $smarty
+     */
+    public function setSmarty($smarty)
+    {
+        $this->smarty = $smarty;
+
+        // add db to container as service
+        $this->container['smarty'] = $this->smarty;
+    }
+    
     /**
      * Logged in User Id
      *

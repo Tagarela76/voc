@@ -41,14 +41,14 @@ function manageReminders() {
 		var that = this;
 		var userListInput = $("#usersList").find("input[type='hidden']"); 
 		var remindUsers = new Array();
-	
+        var facilityId = $('#facility_id').val();
 		userListInput.each(function(i){ 
 			var id = this.value;
 			remindUsers.push(id);
 		}); 
 		$.ajax({
 			url: "?action=loadUsers&category=reminder",
-			data: {facilityId: reminderPage.facilityId, remindId: reminderPage.remindId, remindUsers: remindUsers},
+			data: {facilityId: facilityId, remindId: reminderPage.remindId, remindUsers: remindUsers},
 			type: "GET",
 			dataType: "html",
 			success: function (response) {
