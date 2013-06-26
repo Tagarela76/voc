@@ -55,7 +55,7 @@ class LogbookSetupTemplateTest extends Testing\DbTestCase
         foreach ($rows as $row){
             $newFacilityIds[] = $row['facility_id'];
         }
-        //$newFacilityIds = implode(',', $newFacilityIds);
+        $newFacilityIds = implode(',', $newFacilityIds);
         $this->assertEquals($facilityIds, $newFacilityIds);
     }
     

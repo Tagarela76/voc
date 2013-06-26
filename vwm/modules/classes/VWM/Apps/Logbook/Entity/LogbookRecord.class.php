@@ -44,7 +44,7 @@ class LogbookRecord extends Model
      *
      * inspection type
      *
-     * @var LogbookInspectionType
+     * @var VWM\Apps\Logbook\Entity\LogbookInspectionType
      */
     protected $inspectionType;
 
@@ -62,7 +62,7 @@ class LogbookRecord extends Model
      *
      * @var string
      */
-    protected $inspection_sub_type;
+    protected $inspection_sub_type = null;
 
     /**
      *
@@ -70,7 +70,7 @@ class LogbookRecord extends Model
      *
      * @var string
      */
-    protected $description;
+    protected $description_id;
 
     /**
      *
@@ -224,6 +224,13 @@ class LogbookRecord extends Model
 
     /**
      *
+     * logbook Description
+     * 
+     * @var VWM\Apps\Logbook\Entity\LogbookDescription 
+     */
+    protected $description = null;
+    /**
+     *
      * max limit of gauge
      *
      * @var int
@@ -308,14 +315,14 @@ class LogbookRecord extends Model
         $this->inspection_sub_type = $inspection_sub_type;
     }
 
-    public function getDescription()
+    public function getDescriptionId()
     {
-        return $this->description;
+        return $this->description_id;
     }
 
-    public function setDescription($description)
+    public function setDescriptionId($descriptionId)
     {
-        $this->description = $description;
+        $this->description_id = $descriptionId;
     }
 
     public function getDateTime()
@@ -568,7 +575,29 @@ class LogbookRecord extends Model
         $this->inspection_type_id = $inspection_type_id;
     }
 
-    public function load()
+    public function getDescription()
+    {
+        if(!is_null($this->description)){
+            return $this->description;
+        }
+        if(is_null($this->description_id)){
+            return false;
+        }
+        
+        $description = new LogbookDescription();
+        $description->setId($this->description_id);
+        $description->load();
+        $this->description = $description;
+        return $description;
+        
+    }
+
+    public function setDescription(VWM\Apps\Logbook\Entity\LogbookDescription $description)
+    {
+        $this->description = $description;
+    }
+
+        public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         if (is_null($this->getId())) {
@@ -604,6 +633,7 @@ class LogbookRecord extends Model
         $replacedBulbs = $this->getReplacedBulbs();
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
+        $inspectionSubType = $this->getInspectionSubType();
 
         if (is_null($qty)) {
             $qty = 'NULL';
@@ -638,6 +668,9 @@ class LogbookRecord extends Model
         if (is_null($unittypeId)) {
             $unittypeId = 'NULL';
         }
+        if (is_null($inspectionSubType)) {
+            $inspectionSubType = 'NULL';
+        }
 
         //check gauge range
         $minGaugeRange = $this->getMinGaugeRange();
@@ -648,10 +681,10 @@ class LogbookRecord extends Model
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
+                "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
-                "description = '{$db->sqltext($this->getDescription())}', " .
+                "description_id = '{$db->sqltext($this->getDescriptionId())}', " .
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
@@ -691,7 +724,7 @@ class LogbookRecord extends Model
         $gaugeValueTo = $this->getGaugeValueTo();
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
-
+        $inspectionSubType = $this->getInspectionSubType();
         if (is_null($qty)) {
             $qty = 'NULL';
         }
@@ -723,14 +756,17 @@ class LogbookRecord extends Model
         if (is_null($unittypeId)) {
             $unittypeId = 'NULL';
         }
+        if (is_null($inspectionSubType)) {
+            $inspectionSubType = 'NULL';
+        }
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
-                "inspection_sub_type = '{$db->sqltext($this->getInspectionSubType())}', " .
+                "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
-                "description = '{$db->sqltext($this->getDescription())}', " .
+                "description_id = '{$db->sqltext($this->getDescriptionId())}', " .
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
                 "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
@@ -765,29 +801,31 @@ class LogbookRecord extends Model
     }
 
     /**
-     *
-     *  Getting addition fields of logbook from json file
-     *
+     * 
+     * Getting addition fields of logbook from json file
+     * 
+     * @param VWM\Apps\Logbook\Entity\LogbookInspectionType $inspectionTypeName
+     * @param string $inspectionSubTypeName
+     * @param VWM\Apps\Logbook\Entity\LogbookDescription $inspectionDescription
+     * 
      * @return boolean
      */
-    public function getAvailableLogbookAdditionFields($inspectionTypeName = null, $inspectionSubTypeName = null, $inspectionDescriptionName = null)
+    public function getAvailableLogbookAdditionFields($inspectionType = null, $inspectionSubTypeName = null, $inspectionDescription = null)
     {
-        if (is_null($inspectionTypeName)) {
-            $inspectionTypeName = $this->getInspectionType()->typeName;
+        if (is_null($inspectionType)) {
+            $inspectionType = $this->getInspectionType();
         }
         if (is_null($inspectionSubTypeName)) {
             $inspectionSubTypeName = $this->getInspectionSubType();
         }
-        if (is_null($inspectionDescriptionName)) {
-            $inspectionDescriptionName = $this->getDescription();
+        if (is_null($inspectionDescription)) {
+            $inspectionDescription = $this->getDescription();
         }
+        
+        $itmanager = \VOCApp::getInstance()->getService('inspectionType');
 
-        $itmanager = new \VWM\Apps\Logbook\Manager\InspectionTypeManager();
-
-        $inspectionType = $itmanager->getInspectionTypeByTypeName($inspectionTypeName);
-        $inspectionSubType = $itmanager->getInspectionSubTypeByTypeAndSubTypeDescription($inspectionTypeName, $inspectionSubTypeName);
-        $inspectionDescription = $itmanager->getLogbookDescriptionByDescriptionName($inspectionDescriptionName);
-
+        $inspectionSubType = $itmanager->getInspectionSubTypeByTypeAndSubTypeDescription($inspectionType->typeName, $inspectionSubTypeName);
+        
         /* set addition fields available */
         if (!is_null($inspectionType->additionFieldList)) {
             $this->setHasInspectionAdditionType(1);
@@ -795,7 +833,7 @@ class LogbookRecord extends Model
         $this->setHasPermit($inspectionType->permit);
         $this->setHasQty($inspectionSubType->qty);
         $this->setHasSubTypeNotes($inspectionSubType->notes);
-        $this->setHasDescriptionNotes($inspectionDescription->notes);
+        $this->setHasDescriptionNotes($inspectionDescription->getNotes());
         $this->setHasVolueGauge($inspectionSubType->valueGauge);
 
         return true;

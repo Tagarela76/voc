@@ -35,9 +35,9 @@
             <td width="25%">
                 Template Name
             </td>
-            <td  class="users_u_top_r_brown" width="10%">
+            <!--<td  class="users_u_top_r_brown" width="10%">
                 Edit
-            </td>
+            </td>-->
         </tr>
         {section name=i loop=$logbookSetupTemplateList}
             <tr>
@@ -45,14 +45,18 @@
                     <input type='checkbox' id='item_{$smarty.section.i.index}' name='item_{$smarty.section.i.index}' value="{$logbookSetupTemplateList[i]->getId()|escape}">
                 </td >
                 <td class="border_users_b border_users_r" width="10%">
-                    {$logbookSetupTemplateList[i]->getId()|escape}
+                    <a href="admin.php?action=viewLogbookDetails&category=logbook&bookmark=logbookSetupTemplate&logbookTemplateId={$logbookSetupTemplateList[i]->getId()|escape}">
+                        {$logbookSetupTemplateList[i]->getId()|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r" width="25%">
-                    {$logbookSetupTemplateList[i]->getName()|escape}
+                    <a href="?action=viewLogbookDetails&category=logbook&bookmark=logbookSetupTemplate&logbookTemplateId={$logbookSetupTemplateList[i]->getId()|escape}">
+                        {$logbookSetupTemplateList[i]->getName()|escape}
+                    </a>
                 </td>
-                <td  class="border_users_b border_users_r" class="users_u_top_r_brown" width="10%">
+                <!--<td  class="border_users_b border_users_r" class="users_u_top_r_brown" width="10%">
                     <a href = "admin.php?action=addItem&category=logbook&bookmark=logbookSetupTemplate&logbookTemplateId={$logbookSetupTemplateList[i]->getId()|escape}" >edit</a>
-                </td>
+                </td>-->
             </tr>
         {/section}
     </table>

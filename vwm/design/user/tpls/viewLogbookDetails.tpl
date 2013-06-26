@@ -49,7 +49,11 @@
                 Inspection Sub Type
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getInspectionSubType()|escape}
+                {if $logbook->getInspectionSubType() == 'NULL'}
+                    NONE
+                {else}
+                    {$logbook->getInspectionSubType()|escape}
+                {/if}
             </td>
         </tr>
         <tr>
@@ -75,7 +79,7 @@
                 Description
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getDescription()|escape}
+                {$description|escape}
             </td>
         </tr>
         {if $logbook->getHasDescriptionNotes()}

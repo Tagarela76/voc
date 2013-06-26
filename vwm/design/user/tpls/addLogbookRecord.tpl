@@ -45,11 +45,11 @@
 <form action="" method="post">
     <div class="padd7">
         <table class="users" align="center" cellpadding="0" cellspacing="0">
-            <tr class="users_u_top_size users_top">
-                <td class="users_u_top">
+            <tr class="users_u_top_size users_top_brown">
+                <td class="users_u_top_brown">
                     <span >Add Logbook record</span>
                 </td>
-                <td class="users_u_top_r">
+                <td class="users_u_top_r_brown">
                     &nbsp;
                 </td>
             </tr>
@@ -76,7 +76,7 @@
                 </td>
                 <td>
                     <div>
-                        <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList()">
+                        <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList(); itlManager.inspectionTypeList.changeLogbookDescriptionList()">
                             {section name=i loop=$inspectionTypesList}
                                 <option value="{$inspectionTypesList[i]->id|escape}" {if $logbook->getInspectionTypeId() == $inspectionTypesList[i]->id}selected='selected'{/if}>
                                     {$inspectionTypesList[i]->typeName|escape}
@@ -177,7 +177,7 @@
                             <div id='temperatureCelContainer'>
                                 <select onchange="itlManager.gauges.changeGaugeUnitType()" id='gaugeDimension'  style='width: 45px;'>
                                     {section name=i loop=$temperatureUnitTypeList}
-                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()|escape}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='selected'{/if}>
+                                    <option value='{$temperatureUnitTypeList[i]->getUnitTypeId()|escape}' {if $temperatureUnitTypeList[i]->getUnitTypeId() == $logbook->getUnittypeId()}selected='true'{/if}>
                                         {$temperatureUnitTypeList[i]->getName()|escape}
                                     </option>
                                     {/section}
@@ -207,8 +207,8 @@
                                None
                          </option>
                         {section name=i loop=$logbookDescriptionsList}
-                            <option value="{$logbookDescriptionsList[i]->name|escape}" {if $logbook->getDescription() == $logbookDescriptionsList[i]->name}selected='selected'{/if}>
-                                {$logbookDescriptionsList[i]->name|escape}
+                            <option value="{$logbookDescriptionsList[i]->id|escape}" {if $logbook->getDescriptionId() == $logbookDescriptionsList[i]->id}selected='selected'{/if}>
+                                {$logbookDescriptionsList[i]->description|escape}
                             </option>
                         {/section}
                     </select>
@@ -278,3 +278,5 @@
 
 {*add inspection perswon dialog container*}
 <div id='addInspectionPersonContainer' title="Add New Inspection Person" style="display:none;">Loading ...</div>
+
+

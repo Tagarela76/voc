@@ -9,6 +9,7 @@ function LogbookInspectionType() {
     var id;
     var subTypes = [];
     var gaugeTypes = [];
+    var logbookDescriptions = [];
     var logbookTemplateIds;
 
     // Private members are made by the constructor	
@@ -18,6 +19,7 @@ function LogbookInspectionType() {
         var id;
         var subTypes = [];
         var gaugeTypes = [];
+        var logbookDescriptions = [];
         var logbookTemplateIds;
         var that = this;
 
@@ -38,6 +40,10 @@ function LogbookInspectionType() {
 
         self.setSubTypes = function(typeSubTypes) {
             subTypes = typeSubTypes;
+        }
+        
+        self.setLogbookDescriptions = function(descriptions){
+            logbookDescriptions = descriptions;
         }
         
         self.setGaugeTypes = function(typeGaugeTypes) {
@@ -64,17 +70,24 @@ function LogbookInspectionType() {
         self.getGaugeTypes = function() {
             return gaugeTypes
         }
-
+        self.getLogbookDescriptions = function(){
+            return logbookDescriptions;
+        }
+        
         self.addSubType = function(subType) {
             subTypes.push(subType);
+        }
+        self.addLogbookDescription = function(description){
+            logbookDescriptions.push(description);
         }
         
         self.addGaugeType = function(gaugeType){
             gaugeTypes.push(gaugeType);
         }
         
-        self.load = function(json){
+        self.load = function(json, descriptionList){
             var settings = eval('(' + json + ')');
+            var descriptionList = eval('(' + descriptionList + ')');
             
             //intialize InspectionType
             self.setName(settings.typeName);
@@ -112,6 +125,24 @@ function LogbookInspectionType() {
                     self.setGaugeTypes(gaugetypes);
                 }
             }
+            
+            //check if we have description list
+            if(typeof descriptionList != 'undefined' && descriptionList.length>0){
+                var descriptions = [];
+                for (var i = 0; i < descriptionList.length; i++) {
+                    var description = new LogbookDescription();
+                    description.setId(i);
+                    description.setDescription(descriptionList[i].description);
+                    description.setNotes(descriptionList[i].notes);
+                    //set origin id
+                    description.setOriginId(descriptionList[i].id);
+                    
+                    descriptions.push(description);
+                }
+                temporaryLogbookDescriptionId = i;
+                self.setLogbookDescriptions(descriptions);
+            }
+            
         }
     }
 
@@ -121,8 +152,11 @@ function LogbookInspectionType() {
     self.getAttributes = function() {
         var typeSubTypes = [];
         var typeGaugeTypes = [];
+        var logbookDescriptions = [];
+        
         var subTypes = self.getSubTypes();
         var gaugeTypes = self.getGaugeTypes();
+        var descriptions = self.getLogbookDescriptions();
         
         for (var i = 0; i < subTypes.length; i++) {
             typeSubTypes.push(subTypes[i].getAttributes());
@@ -132,6 +166,10 @@ function LogbookInspectionType() {
             typeGaugeTypes.push(gaugeTypes[i].getAttributes());
         }
         
+        for (var i = 0; i < descriptions.length; i++) {
+            logbookDescriptions.push(descriptions[i].getAttributes());
+        }
+        
         var typeAttributes = {
             typeId: self.getId(),
             typeName: self.getName(),
@@ -139,6 +177,7 @@ function LogbookInspectionType() {
             subtypes: typeSubTypes,
             additionFieldList: typeGaugeTypes,
             logbookTemplateIds: self.getLogbookTemplate(),
+            logbookDescriptions: logbookDescriptions
         }
         return typeAttributes;
     }
@@ -172,6 +211,18 @@ function LogbookInspectionType() {
         }
         self.setGaugeTypes(newGaugeTypes);
     }
+    
+    self.deleteLogbookDescription = function(id){
+        var logbookDescriptions = self.getLogbookDescriptions();
+        var count = logbookDescriptions.length;
+        var newLogbookDescriptions = new Array();
+         for (var i = 0; i < count; i++) {
+            if (logbookDescriptions[i].getId() != id) {
+                newLogbookDescriptions.push(logbookDescriptions[i]);
+            }
+        }
+        self.setLogbookDescriptions(newLogbookDescriptions);
+    }
     /*
      * 
      * save logbookInspection Type
@@ -193,6 +244,7 @@ function LogbookInspectionType() {
             },
             dataType: 'json',
             success: function(response) {
+               //$('#typeSaveErrors').html(response);
                 if (response.errors == false) {
                     window.location.href = response.link;
                 } else {
@@ -226,6 +278,17 @@ function LogbookInspectionType() {
         for (var i = 0; i < count; i++) {
             if (gaugetypes[i].getId() == id) {
                 return gaugetypes[i];
+            }
+        }
+        return false;
+    }
+    
+    self.getLogbookDescriptionById = function(id) {
+        var logbookDescriptions = self.getLogbookDescriptions();
+        var count = logbookDescriptions.length;
+        for (var i = 0; i < count; i++) {
+            if (logbookDescriptions[i].getId() == id) {
+                return logbookDescriptions[i];
             }
         }
         return false;
@@ -375,6 +438,91 @@ function LogbookInspectionGaugeType() {
             return gaugeAttributes;
         }
         
+    }
+    constructor();
+}
+
+/**
+ * 
+ * logbook description class
+ * 
+ * @returns {undefined}
+ */
+function LogbookDescription() {
+    var self = this;
+    var id = null;
+    var description = null;
+    var notes = null;
+    var origin_id = null;
+    // Private members are made by the constructor
+    var constructor = function()
+    {
+        /**
+         * 
+         * inspection type description id
+         * 
+         * @int id
+         */
+        var id = null;
+        /**
+         * 
+         * logbook description
+         * 
+         * @string description
+         */
+        var description = null;
+        /**
+         * 
+         * logbook description notes
+         * 
+         * @bool notes
+         */
+        var notes = null;
+        /**
+         * 
+         * origin logbook Description type Id
+         * 
+         * @int originId
+         */
+        var origin_id = null;
+        
+        //setters
+        self.setId = function(gaugeId) {
+            id = gaugeId;
+        }
+        self.setDescription = function(logbookDescription) {
+            description = logbookDescription;
+        }
+        self.setNotes = function(logbookNotes) {
+            notes = logbookNotes;
+        }
+        self.setOriginId = function(originId) {
+            origin_id = originId;
+        }
+        //getters
+        self.getId = function() {
+            return id
+        }
+        self.getDescription = function() {
+            return description
+        }
+        self.getNotes = function() {
+            return notes
+        }
+        self.getOriginId = function() {
+            return origin_id
+        }
+        
+        //function for getting attributes
+        self.getAttributes = function() {
+            var gaugeAttributes = {
+                id: self.getId(),
+                description: self.getDescription(),
+                notes: self.getNotes(),
+                originId: self.getOriginId()
+            }
+            return gaugeAttributes;
+        }
     }
     constructor();
 }

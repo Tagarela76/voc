@@ -51,21 +51,41 @@ function InspectionTypeList() {
         var inspectionType = this.getInspectionTypeByTypeName(inspectionTypeName.trim());
         
         //check for addition fields
+        var html = '';
         if (inspectionType.subtypes != undefined) {
-            var html = '';
             for (var i = 0; i < inspectionType.subtypes.length; i++) {
                 html += "<option value='" + inspectionType.subtypes[i].name + "'>";
                 html += inspectionType.subtypes[i].name;
                 html += "</option>";
             }
             //change subType list
-            $('#inspectionSubType').html(html);
             $('#inspectionSubType').show();
         }else{
             $('#inspectionSubType').hide();
         }
+        $('#inspectionSubType').html(html);
         this.changeSubType();
         this.getAdditionFieldTypesList();
+    }
+    
+    this.changeLogbookDescriptionList = function(){
+        var inspectionTypeId = $('#inspectionType').val();
+        $.ajax({
+            url: "?action=getLogbookDescriptionList&category=logbook",
+            data: {
+                inspectionTypeId: inspectionTypeId
+            },
+            type: "POST",
+            dataType: 'json',
+            success: function(response) {
+                var html = '<option value="None">None</option>';
+                for(var i = 0;i<response.length; i++ ){
+                    html += '<option value="'+response[i].id+'">'+response[i].description+'</option>';
+                }
+                $('#logBookDescription').html(html);
+            }
+        });
+        
     }
 
     this.getAdditionFieldTypesList = function() {
@@ -163,20 +183,20 @@ function InspectionTypeList() {
         var inspectionSubType = this.getInspectionSubType(inspectionTypeName, inspectionSubTypeName);
         var inspectionAdditionListType = this.getInspectionAdditionType(inspectionTypeName, inspectionAdditionTypeName);
         
-        if (inspectionSubType.qty == 0) {
+        if (inspectionSubType.qty == 0 || inspectionSubType == false) {
             $('#subTypeQty').hide();
         } else {
             $('#subTypeQty').show();
         }
 
-        if (inspectionSubType.notes == 0) {
+        if (inspectionSubType.notes == 0 || inspectionSubType == false) {
             $('#logBookSubTypeNotes').hide();
         } else {
             $('#logBookSubTypeNotes').show();
         }
         
         
-        if (inspectionSubType.valueGauge == 0) {
+        if (inspectionSubType.valueGauge == 0 || inspectionSubType == false) {
             $('#logbookValueGauge').hide();
             $('#logbookReplacedBulbs').hide();
         } else {
@@ -248,10 +268,10 @@ function Description() {
      * 
      * @returns {std|Boolean}
      */
-    this.getDescriptionByName = function(descriptionName) {
+    this.getDescriptionById = function(descriptionId) {
         var descriptionList = this.getDescriptions();
         for (var i = 0; i < descriptionList.length; i++) {
-            if (descriptionList[i].name == descriptionName) {
+            if (descriptionList[i].id == descriptionId) {
                 return descriptionList[i];
             }
         }
@@ -275,8 +295,9 @@ function Description() {
      * @returns {null}
      */
     this.showNotes = function() {
-        var descriptionName = $('#logBookDescription').val();
-        var description = this.getDescriptionByName(descriptionName);
+        var descriptionId = $('#logBookDescription').val();
+        
+        var description = this.getDescriptionById(descriptionId);
         if (description.notes != 1) {
             $('#logBookDescriptionNotes').hide();
         } else {
@@ -530,13 +551,12 @@ function Gauges() {
         switch (gaugeType) {
                 //temperature gauge
             case '0':
-                $('#gaugeDimension').val('C');
+               // $('#gaugeDimension').val('49');
                 break;
             default:
                 $('#gaugeDimension').val('');
                 break;
         }
-        
         if (gaugeType == 'null') {
             $('#gaugeRangeFrom').val(0);
             $('#gaugeRangeTo').val(1);
@@ -568,9 +588,8 @@ function Gauges() {
         $('#gaugeUnitTypeId').val(temperatureGaugeType);
         $('#gaugeUnitTypeDescription').val(temperatureGaugeTypeDesc);
         this.updateGauge();
-        
-        
     }
+    
     /**
      * 
      * initialize temperature gauge

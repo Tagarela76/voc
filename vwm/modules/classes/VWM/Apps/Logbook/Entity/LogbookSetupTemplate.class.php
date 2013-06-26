@@ -73,13 +73,14 @@ class LogbookSetupTemplate extends Model
             return false;
         }
         
-        $ltManager = new LogbookSetupTemplateManager();
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         $facilityList = $ltManager->getFacilityListByLogbookSetupTemplateId($this->getId());
+        
         $facilityIds = array();
         foreach($facilityList as $facility){
-            $facilityIds[] = $facility->getId();
+            $facilityIds[] = $facility->getFacilityId();
         }
-        
+        $facilityIds = implode(',', $facilityIds);
         return $facilityIds;
     }
 
@@ -147,7 +148,7 @@ class LogbookSetupTemplate extends Model
         $query = "DELETE FROM ".  self::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
-        $ltManager = new LogbookSetupTemplateManager();
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         $ltManager->unAssignLogbookTemplateFromFacility($this->getId());
         
     }

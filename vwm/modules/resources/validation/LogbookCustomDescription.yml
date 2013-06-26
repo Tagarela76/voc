@@ -1,0 +1,13 @@
+VWM\Apps\Logbook\Entity\LogbookCustomDescription:
+  properties:
+    description:
+      - NotBlank: ~
+      - MaxLength: 64
+    inspection_type_id:
+      - NotBlank: ~
+      - Max: 9999999999
+      - NotNull: ~
+    facility_id:
+      - NotBlank: ~
+      - Max: 9999999999
+      - NotNull: ~

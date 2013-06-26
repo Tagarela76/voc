@@ -5,6 +5,7 @@ namespace VWM\Apps\Logbook\Entity;
 use \VWM\Framework\Model;
 use \VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use \VWM\Apps\Logbook\Manager\LogbookSetupTemplateManager;
+use \VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
 
 class LogbookInspectionType extends Model
 {
@@ -47,8 +48,8 @@ class LogbookInspectionType extends Model
         if(is_null($this->getId())){
             return false;
         }
-        $itManager = new InspectionTypeManager();
-        $ltManager = new LogbookSetupTemplateManager();
+        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        $ltManager = \VOCApp::getInstance()->getService('logbookSetupTemplate');
         
         $templates = $ltManager->getLogbookTemplateListByInspectionTypeId($this->getId());
         
@@ -150,7 +151,11 @@ class LogbookInspectionType extends Model
 
     public function getAttributes()
     {
-        
+        return array(
+            'id' => $this->getId(),
+            'templatesId' => $this->getTemplateIds(),
+            'settings' => $this->getInspectionTypeRaw()
+        );
     }
 
     /**
@@ -159,12 +164,19 @@ class LogbookInspectionType extends Model
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        //$itManager = \VOCApp::getInstance()->getService('inspectionType');
-        $itManager = new InspectionTypeManager();
+        $ldManaget = \VOCApp::getInstance()->getService('logbookDescription');
+        $itManager = \VOCApp::getInstance()->getService('inspectionType');
+        //delete inspection Type
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
+        /*
+        //delete inspection type to template connection
         $itManager->unAssignInspectionTypeFromInspectionTemplate($this->getId());
+        //delete logbook description
+        $ldManager->deleteDescriptionsByInspectionTypeId($this->getId());
+        //delete custom logbook description
+        $ldManager->deleteCustomDescriptionByInspectionTypeId($this->getId());*/
     }
     
 }

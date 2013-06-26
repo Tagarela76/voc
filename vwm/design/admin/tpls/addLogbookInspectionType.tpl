@@ -3,11 +3,12 @@
         var logbookInspectionType = new LogbookInspectionType();
         var temporarySubTypeId = 0;
         var temporaryGaugeTypeId = 0;
+        var temporaryLogbookDescriptionId = 0;
         var isEdit = '{/literal}{$isEdit}{literal}';
 
         //initialize inspection type if edit
         if (isEdit == '1') {
-            logbookInspectionType.load({/literal}'{$json}'{literal});
+            logbookInspectionType.load({/literal}'{$json}','{$logbookDescriptionListJson}'{literal});
         }
 
     </script>
@@ -184,7 +185,62 @@
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>
-<div style='margin: 15px 10px 10px 20px'>
+{*INSPECTION TYPE DESCRIPTION*}
+
+<div style='margin: 1px 0 0 25px; font-size: 20'>
+    <div>
+        Logbook Description
+        <input type='checkbox' id='showLogbookDescription' onchange="manager.showLogbookDescriptionList()" {if $logbookDescriptionList}checked='true'{/if}>
+    </div>
+</div>
+<div class="padd7" align="center" id = 'LogbookDescriptionList' {if !$logbookDescriptionList}hidden='hidden'{/if}>
+    <div style = 'float: left; margin: 0 0 10px 18px;'>
+        <input type = 'button' class="button" value="Add Logbook Description" onclick="inspection.checkNewDialog(0, 'add');inspection.addLogbookDescription.openDialog()">
+        <input type = 'button' class="button" value="Delete Logbook Description" onclick="manager.deleteLogbookDescription();">
+    </div>
+    
+    <table class="users"  cellspacing="0" cellpadding="0" id='inspectionLogbookDescriptionDetails'>
+        <tr class="users_u_top_size users_top_brown">
+            <td class="users_u_top_brown" width="5%">
+                All/None
+            </td>
+            <td width="10%">
+                Description
+            </td>
+            <td width="25%">
+                has Notes
+            </td>
+            <td  class="users_u_top_r_brown" width="10%">
+                Edit
+            </td>
+        </tr>
+        {section name=i loop=$logbookDescriptionList}
+            <tr id="logbook_description_detail_{$smarty.section.i.index}">
+                <td class="border_users_b border_users_r">
+                    <input type="checkbox" value="{$smarty.section.i.index}">
+                </td>
+                <td class="border_users_b border_users_r">
+                    <div id="description_description_{$smarty.section.i.index}">
+                        {$logbookDescriptionList[i]->getDescription()|escape}
+                    </div>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <div id="description_notes_{$smarty.section.i.index}">
+                        {if $logbookDescriptionList[i]->getNotes()|escape}yes{else}no{/if}
+                    </div>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a onclick="inspection.checkNewDialog('{$smarty.section.i.index}', 'edit'); inspection.addLogbookDescription.openDialog();">edit</a>
+                </td>
+            </tr>
+        {/section}
+    </table>
+    <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
+    
+</div>
+{************}    
+
+<div style='margin: 35px 10px 10px 20px'>
     <input type="button" class="button" value="<<<Back" onclick="window.location = '?action=browseCategory&category=logbook'">
     <input type="button" class="button" value="Save" onclick="manager.saveInspectionType();">
     <div id='typeSaveErrors' style='color: #ff0000; margin: 20px 1px 1px 1px;'>
@@ -194,3 +250,4 @@
 <div id="addInspectionSubTypeContainer" title="Add new Inspection Sub Type" style="display:none;">Loading ...</div>
 <div id="inspectionGaugeTypeContainer" title="Add Inspection Gauge Type" style="display:none;">Loading ...</div>
 <div id="setInspectionTypeToTemplateContainer" title="Set inspection template" style="display:none;">Loading ...</div>
+<div id="addLogbookDescriptionContainer" title="Add logbook description" style="display:none;">Loading ...</div>
