@@ -151,7 +151,7 @@ class ReminderManager
         
         $users = $this->getUsersByReminderId($reminderId);
         
-        $email = new \EMail();
+        $email = new \EMail(true);
     	$from = AUTH_SENDER."@".DOMAIN;
         $messageSubject = "Reminder ";
         
