@@ -10,14 +10,13 @@ use VWM\Framework\Model;
 /**
  * ReminderCommand Reminde user
  *
- * @author tagarela
  */
 class ReminderCommand extends Command
 {
     protected function configure()
     {
         $this
-                ->setName('demo:reminder')
+                ->setName('reminder')
                 ->setDescription('remind voc user');
     }
     

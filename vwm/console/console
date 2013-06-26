@@ -6,7 +6,7 @@ use Symfony\Component\Console\Command\ListCommand;
 use Symfony\Component\Console\Command\GreetCommand;
 use VWM\Apps\Reminder\Console\Command\ReminderCommand;
 
-$site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+$site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
 
 require($site_path.'config/constants.php');
