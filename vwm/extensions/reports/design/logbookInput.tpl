@@ -105,8 +105,8 @@
                                     <select name ='equipmentId'>
                                         <option value="all">All</option>
                                         {foreach from=$equipments item=equipment}
-                                            <option value="{$equipment->getId()|escape}">
-                                                {$equipment->getName()|escape}
+                                            <option value="{$equipment.id|escape}">
+                                                {$equipment.description|escape}
                                             </option>
                                         {/foreach}
                                     </select>

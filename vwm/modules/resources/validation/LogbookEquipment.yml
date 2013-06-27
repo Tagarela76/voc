@@ -1,5 +1,5 @@
 VWM\Apps\Logbook\Entity\LogbookEquipment:
   properties:
-    name:
+    equip_desc:
       - NotBlank: ~
       - MaxLength: 64

@@ -4,10 +4,10 @@ namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Framework\Model;
 use VWM\Apps\Logbook\Entity\LogbookEquipment;
+use VWM\Hierarchy\Facility;
 
 class LogbookEquipmentManager
 {
-
     /**
      * 
      * get logbook Equipment List by Facility Id
@@ -26,7 +26,8 @@ class LogbookEquipmentManager
         $db = \VOCApp::getInstance()->getService('db');
 
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE facility_id = {$db->sqltext($facilityId)}";
+                "WHERE facility_id = {$db->sqltext($facilityId)} ".
+                "AND voc_emissions = 0";
 
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
@@ -61,11 +62,52 @@ class LogbookEquipmentManager
         $db = \VOCApp::getInstance()->getService('db');
 
         $query = "SELECT count(*) count FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE facility_id = {$db->sqltext($facilityId)}";
+                "WHERE facility_id = {$db->sqltext($facilityId)} ".
+                "AND voc_emissions = 0";
         $db->query($query);
         $result = $db->fetch(0);
 
         return $result->count;
+    }
+    
+    /**
+     * 
+     * get equipment and logbookEquipment by Facility Id
+     * 
+     * @param int $facilityId
+     * 
+     * @return boolean|array
+     */
+    public function getAllEquipmentListByFacilityId($facilityId = null)
+    {
+        if (is_null($facilityId)) {
+            return false;
+        }
+        $db = \VOCApp::getInstance()->getService('db');
+        
+        $facility = new Facility($db, $facilityId);
+        $departments = $facility->getDepartments();
+        $departmentIds = array();
+        foreach($departments as $department){
+            $departmentIds[] = $department->getDepartmentId();
+        }
+        $departmentIds = implode(',', $departmentIds);
+        
+        $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
+                "WHERE facility_id = {$db->sqltext($facilityId)} ".
+                "OR department_id IN({$departmentIds}) ORDER BY facility_id";
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        $equipmentList = array();
+        
+        foreach($rows as $row){
+            $equipment = array(
+                'id' => $row['equipment_id'],
+                'description' => $row['equip_desc']
+            );
+            $equipmentList[] = $equipment;
+        }
+        return $equipmentList;
     }
 
 }

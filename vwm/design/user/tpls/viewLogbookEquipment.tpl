@@ -46,7 +46,7 @@
                 </td>
                 <td class="border_users_b border_users_r">
                     <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
-                        {$logbookEquipmant->getName()|escape}
+                        {$logbookEquipmant->getEquipDesc()|escape}
                     </a>
                 </td>
                 <!--<td class="border_users_b border_users_r">

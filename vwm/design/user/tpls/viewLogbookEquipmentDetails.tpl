@@ -32,7 +32,7 @@
                 Name
             </td>
             <td class="border_users_b border_users_r">
-                {$logbookEquipment->getName()|escape}
+                {$logbookEquipment->getEquipDesc()|escape}
             </td>
         </tr>
     </table>

@@ -14,7 +14,7 @@
                     Logbook Equipment
                 </td>
                 <td class="border_users_l">
-                    <input type='text' name = 'logbookEquipmentName' value='{$logbookEquipment->getName()|escape}'>
+                    <input type='text' name = 'logbookEquipmentName' value='{$logbookEquipment->getEquipDesc()|escape}'>
                     {foreach from=$violationList item="violation"}
                         {if $violation->getPropertyPath() eq 'name'}
                             {*ERROR*}

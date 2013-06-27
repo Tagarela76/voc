@@ -248,14 +248,14 @@
                         
                         <select id ='equipmentList' name='logbookEquipmentId'>
                             {foreach from=$logbookEquipmentList item="logbookEquipment"}
-                                <option value="{$logbookEquipment->getId()|escape}">
-                                    {$logbookEquipment->getName()|escape}
+                                <option value="{$logbookEquipment.id|escape}" {if $logbookEquipment.id == $logbook->getEquipmentId()}selected = 'selected'{/if}>
+                                    {$logbookEquipment.description|escape}
                                 </option>
                             {/foreach}
                         </select>
                     </div>
                     {foreach from=$violationList item="violation"}
-                        {if $violation->getPropertyPath() eq 'department_id'}
+                        {if $violation->getPropertyPath() eq 'equipment_id'}
                             {*ERROR*}
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
                                 {*/ERROR*}
