@@ -187,7 +187,7 @@ class CLogbook extends Controller
                 //get Equipmen tList
                 $leManager = VOCApp::getInstance()->getService('logbookEquipment');
                 $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
-
+                $logbookEquipmentList = $leManager->getAllEquipmentListByFacilityId($facilityId);
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
                 $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
@@ -600,7 +600,7 @@ class CLogbook extends Controller
                     $logbookEquipment->load();
                     $itemForDelete = array(
                         'id' => $id,
-                        'name' => $logbookEquipment->getName()
+                        'name' => $logbookEquipment->getEquipDesc()
                     );
                     $itemsForDelete[] = $itemForDelete;
                 }
@@ -736,7 +736,7 @@ class CLogbook extends Controller
             $logbookEquipment->load();
         }
         $logbookEquipment->setFacilityId($facilityId);
-        $logbookEquipment->setName($logbookEquipmentName);
+        $logbookEquipment->setEquipDesc($logbookEquipmentName);
 
         $violationList = $logbookEquipment->validate();
 
@@ -811,40 +811,5 @@ class CLogbook extends Controller
             $this->smarty->display('tpls:index.tpl');
         }
     }
-    
-    /*public function actionViewDetails()
-    {
-        if ($this->getFromRequest('facilityId')) {
-            $category = 'facility';
-            $categoryId = $this->getFromRequest('facilityId');
-            $facility = new Facility($this->db, $categoryId);
-            $companyId = $facility->getCompanyId();
-            $facilityId = $categoryId;
-        } else {
-            throw new Exception('404');
-        }
-        $tab = $this->getFromRequest('tab');
-        switch ($tab) {
-            case 'logbookCustomDescription':
-                $logbookCustomDescriptionId = $this->getFromRequest('id');
-                $logbookCustomDescription = new LogbookCustomDescription();
-                $logbookCustomDescription->setId($logbookCustomDescriptionId);
-                $logbookCustomDescription->load();
-
-                $tpl = 'tpls/viewLogbookCustomDescriptionDetails.tpl';
-                $this->smarty->assign('tab', 'logbook');
-                $this->smarty->assign('facilityId', $facilityId);
-                $this->smarty->assign('logbookCustomDescription', $logbookCustomDescription);
-                $this->smarty->assign('tpl', $tpl);
-                $this->smarty->display('tpls:index.tpl');
-                break;
-            default :
-                throw new Exception('')
-                break;
-        }
-        var_dump($_REQUEST);die();
-        
-    }*/
-
 }
 ?>

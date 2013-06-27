@@ -7,6 +7,8 @@ use \VWM\Apps\Logbook\Entity\LogbookInspectionType;
 use \VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use \VWM\Apps\Logbook\Manager\LogbookManager;
 use VWM\Apps\UnitType\Entity\UnitType;
+use VWM\Apps\Logbook\Entity\LogbookDescription;
+use VWM\Apps\Logbook\Entity\LogbookEquipment;
 
 class RLogbook extends ReportCreator implements iReportCreator
 {
@@ -143,10 +145,12 @@ class RLogbook extends ReportCreator implements iReportCreator
         $equipment = $this->getEquipmentId();
         
         $query = "SELECT lb.facility_id, lb.date_time, lb.inspection_type_id, i.name, " .
-                 "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to, lb.description, lb.unittype_id ".
+                 "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to, ld.description, lb.unittype_id ".
                  "FROM " . LogbookRecord::TABLE_NAME . " lb " .
                  "LEFT JOIN " . LogbookInspectionPerson::TABLE_NAME . " i " .
                  "ON lb.inspection_person_id = i.id " .
+                 "LEFT JOIN " . LogbookDescription::TABLE_NAME . " ld " .
+                 "ON lb.description_id = ld.id " .
                  "WHERE lb.facility_id = {$db->sqltext($this->getCategoryId())} " .
                  "AND lb.date_time >= " . $dateBeginObj->getTimestamp() . " " .
                  "AND lb.date_time <= " . $dateEndObj->getTimestamp();
@@ -176,6 +180,15 @@ class RLogbook extends ReportCreator implements iReportCreator
         $country = new Country($db);
         $countryDetails = $country->getCountryDetails($company->getCountry());
         
+        //getEquipment
+        $equipmentName = 'All Equipments';
+        
+        if($equipment != 'all'){
+            $logbookEquipment = new LogbookEquipment();
+            $logbookEquipment->setId($equipment);
+            $logbookEquipment->load();
+            $equipmentName = $logbookEquipment->getEquipDesc();
+        }
         
         $orgInfo = array(
             'category' => "Facility",
@@ -186,6 +199,7 @@ class RLogbook extends ReportCreator implements iReportCreator
             'country' => $countryDetails['country_name'],
             'phone' => $company->getPhone(),
             'fax' => $company->getFax(),
+            'equipment' => $equipmentName
         );
         
         $this->createXML($results, $orgInfo, $fileName);
@@ -361,6 +375,13 @@ class RLogbook extends ReportCreator implements iReportCreator
         );
         $page->appendChild($companyName);
         
+        
+        //add equipment
+        $equipment = $doc->createElement("equipment");
+        $equipment->appendChild(
+                $doc->createTextNode(html_entity_decode($orgInfo["equipment"]))
+        );
+        $page->appendChild($equipment);
         //CREATE TABLE ELEMENT
         //create table
         $table = $doc->createElement("table");

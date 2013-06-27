@@ -256,6 +256,9 @@ class XML2PDF extends PDF_MC_Table
                 break;
             case 'COMPANYNAME':
                 $this->header["COMPANYNAME"] = $data;
+                break;
+            case 'EQUIPMENT':
+                $this->header["EQUIPMENT"] = $data;
                 $this->header();
                 break;
         }
@@ -286,6 +289,7 @@ class XML2PDF extends PDF_MC_Table
             $this->Cell(75, 10, "Fax: " . $this->header['FAX'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
+            $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENT'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
              $this->Ln(3);

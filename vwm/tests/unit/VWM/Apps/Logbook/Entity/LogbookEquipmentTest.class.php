@@ -19,16 +19,16 @@ class LogbookEquipmentTest extends Testing\DbTestCase
         $facilityId = 1;
         $logbookEquipment = new LogbookEquipment();
         $logbookEquipment->setFacilityId($facilityId);
-        $logbookEquipment->setName($equipmentName);
+        $logbookEquipment->setEquipDesc($equipmentName);
         $id = $logbookEquipment->save();
 
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE id={$db->sqltext($id)} LIMIT 1";
+                "WHERE equipment_id = {$db->sqltext($id)} LIMIT 1";
         $db->query($query);
         $rows = $db->fetch_all_array();
         
         $this->assertEquals($facilityId, $rows[0]['facility_id']);
-        $this->assertEquals($equipmentName, $rows[0]['name']);
+        $this->assertEquals($equipmentName, $rows[0]['equip_desc']);
         
         //UPDATE
         $equipmentNewName = 'testUpdateEquipment';
@@ -38,15 +38,15 @@ class LogbookEquipmentTest extends Testing\DbTestCase
         $logbookEquipment->load();
         
         $logbookEquipment->setFacilityId($newFacilityId);
-        $logbookEquipment->setName($equipmentNewName);
+        $logbookEquipment->setEquipDesc($equipmentNewName);
         $logbookEquipment->save();
         
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE id={$db->sqltext($id)} LIMIT 1";
+                "WHERE equipment_id={$db->sqltext($id)} LIMIT 1";
         $db->query($query);
         $rows = $db->fetch_all_array();
         
-        $this->assertEquals($equipmentNewName, $rows[0]['name']);
+        $this->assertEquals($equipmentNewName, $rows[0]['equip_desc']);
         $this->assertEquals($newFacilityId, $rows[0]['facility_id']);
         
     }
@@ -58,11 +58,11 @@ class LogbookEquipmentTest extends Testing\DbTestCase
         $facilityId = 1;
         $logbookEquipment = new LogbookEquipment();
         $logbookEquipment->setFacilityId($facilityId);
-        $logbookEquipment->setName($equipmentName);
+        $logbookEquipment->setEquipDesc($equipmentName);
         $id = $logbookEquipment->save();
 
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE id={$db->sqltext($id)} LIMIT 1";
+                "WHERE equipment_id={$db->sqltext($id)} LIMIT 1";
         $db->query($query);
         $rows = $db->fetch_all_array();
         
@@ -71,7 +71,7 @@ class LogbookEquipmentTest extends Testing\DbTestCase
         $logbookEquipment->delete();
         
         $query = "SELECT * FROM " . LogbookEquipment::TABLE_NAME . " " .
-                "WHERE id={$db->sqltext($id)} LIMIT 1";
+                "WHERE equipment_id={$db->sqltext($id)} LIMIT 1";
         $db->query($query);
         $rows = $db->fetch_all_array();
         

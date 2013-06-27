@@ -13,7 +13,7 @@ class LogbookEquipment extends Model
      * 
      * @var int 
      */
-    protected $id;
+    protected $equipment_id;
 
     /**
      *
@@ -29,18 +29,20 @@ class LogbookEquipment extends Model
      * 
      * @var string 
      */
-    protected $name = null;
+    protected $equip_desc = null;
+    
+    protected $voc_emissions = 0;
 
-    const TABLE_NAME = 'logbook_equipment';
+    const TABLE_NAME = 'equipment';
 
     public function getId()
     {
-        return $this->id;
+        return $this->equipment_id;
     }
 
     public function setId($id)
     {
-        $this->id = $id;
+        $this->equipment_id = $id;
     }
 
     public function getFacilityId()
@@ -53,17 +55,28 @@ class LogbookEquipment extends Model
         $this->facility_id = $facilityId;
     }
 
-    public function getName()
+    public function getEquipDesc()
     {
-        return $this->name;
+        return $this->equip_desc;
     }
 
-    public function setName($name)
+    public function setEquipDesc($equipDesc)
     {
-        $this->name = $name;
+        $this->equip_desc = $equipDesc;
     }
 
-    public function __construct($id)
+    
+    public function getVocEmissions()
+    {
+        return $this->voc_emissions;
+    }
+
+    public function setVocEmissions($vocEmissions)
+    {
+        $this->voc_emissions = $vocEmissions;
+    }
+
+        public function __construct($id)
     {
         $this->modelName = "LogbookEquipment";
         if (isset($id)) {
@@ -77,7 +90,7 @@ class LogbookEquipment extends Model
         $db = \VOCApp::getInstance()->getService('db');
         $query = "SELECT * " .
                 "FROM " . self::TABLE_NAME . " " .
-                "WHERE id={$db->sqltext($this->getId())} " .
+                "WHERE equipment_id = {$db->sqltext($this->getId())} " .
                 "LIMIT 1";
         $db->query($query);
 
@@ -93,7 +106,8 @@ class LogbookEquipment extends Model
         $db = \VOCApp::getInstance()->getService('db');
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "name = '{$db->sqltext($this->getName())}'";
+                "equip_desc = '{$db->sqltext($this->getEquipDesc())}', ".
+                "voc_emissions = {$db->sqltext($this->getVocEmissions())}";
         $response = $db->exec($query);
         $id = $db->getLastInsertedID();
         if ($response) {
@@ -110,8 +124,9 @@ class LogbookEquipment extends Model
 
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "name = '{$db->sqltext($this->getName())}' " .
-                "WHERE id = {$db->sqltext($this->getId())}";
+                "equip_desc = '{$db->sqltext($this->getEquipDesc())}', " .
+                "voc_emissions = {$db->sqltext($this->getVocEmissions())} ".
+                "WHERE equipment_id = {$db->sqltext($this->getId())}";
         $response = $db->exec($query);
 
         if ($response) {
@@ -127,13 +142,13 @@ class LogbookEquipment extends Model
      * 
      * @return array
      */
-
     public function getAttributes()
     {
         return array(
             'id' => $this->getId(),
-            'name' => $this->getName(),
-            'facilityId' => $this->getFacilityId()
+            'name' => $this->getEquipDesc(),
+            'facilityId' => $this->getFacilityId(),
+            'voc_emissions' => $this->getVocEmissions()
         );
     }
     
@@ -144,7 +159,7 @@ class LogbookEquipment extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "DELETE FROM " .self::TABLE_NAME. " ".
-                 "WHERE id = {$db->sqltext($this->getId())}";
+                 "WHERE equipment_id = {$db->sqltext($this->getId())}";
         $db->query($query);
     }
 

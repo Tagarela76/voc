@@ -12,12 +12,26 @@ class Equipment extends EquipmentProperties
     private $trashRecord;
     private $parentTrashRecord;
 
+    protected $voc_emissions = 1;
+    
+    const TABLE_NAME = 'equipment';
+    
     function Equipment($db)
     {
         $this->db = $db;
     }
 
-    /**
+    public function getVocEmissions()
+    {
+        return $this->voc_emissions;
+    }
+
+    public function setVocEmissions($vocEmissions)
+    {
+        $this->voc_emissions = $vocEmissions;
+    }
+
+        /**
      * get equipment filters List for equipment
      * @param int equipemnt id
      * @return array|bool array of EquipmentFilter or false on failure
@@ -196,10 +210,10 @@ class Equipment extends EquipmentProperties
             $equipmentData[$key] = ($key != "expire") ? mysql_escape_string($value) : $value;
         }
 
-
+        
         //$this->db->select_db(DB_NAME);
 
-        $query = "INSERT INTO " . TB_EQUIPMENT . " (department_id, equip_desc, inventory_id, permit, expire, daily, dept_track, facility_track, model_number, serial_number, creater_id) VALUES (";
+        $query = "INSERT INTO " . TB_EQUIPMENT . " (department_id, equip_desc, inventory_id, permit, expire, daily, dept_track, facility_track, model_number, serial_number, creater_id, voc_emissions) VALUES (";
 
         $query .= "'" . $this->db->sqltext($equipmentData["department_id"]) . "', ";
         $query .= "'" . $this->db->sqltext($equipmentData["equip_desc"]) . "', ";
@@ -211,7 +225,8 @@ class Equipment extends EquipmentProperties
         $query .= "'" . $this->db->sqltext($equipmentData["facility_track"]) . "', ";
         $query .= "'" . $this->db->sqltext($equipmentData["model_number"]) . "', ";
         $query .= "'" . $this->db->sqltext($equipmentData["serial_number"]) . "', ";
-        $query .= "'" . $this->db->sqltext($equipmentData["creater_id"]) . "'";
+        $query .= "'" . $this->db->sqltext($equipmentData["creater_id"]) . "', ";
+        $query .= "'" . $this->db->sqltext($this->getVocEmissions()) . "'";
         $query .= ")";
 
         $this->db->query($query);
@@ -274,7 +289,8 @@ class Equipment extends EquipmentProperties
         $query.="facility_track='" . $this->db->sqltext($equipmentData["facility_track"]) . "', ";
         $query .= "model_number='" . $this->db->sqltext($equipmentData["model_number"]) . "', ";
         $query .= "serial_number='" . $this->db->sqltext($equipmentData["serial_number"]) . "', ";
-        $query.="creater_id='" . $this->db->sqltext($equipmentData["creater_id"]) . "'";
+        $query.="creater_id='" . $this->db->sqltext($equipmentData["creater_id"]) . "', ";
+        $query.="voc_emissions='" . $this->db->sqltext($this->getVocEmissions()) . "'";
 
         $query.=" WHERE equipment_id=" . $equipmentData['equipment_id'];
 
