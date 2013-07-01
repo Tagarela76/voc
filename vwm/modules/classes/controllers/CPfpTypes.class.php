@@ -153,9 +153,10 @@ class CPfpTypes extends Controller {
 				$pfp->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			}
-			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'));
-
-			$pagination = new Pagination(count($pfps));
+			
+            $countPfps = $pfp->getUnAssignPFP2TypeCount($companyId, $this->getFromRequest('id'));
+            
+			$pagination = new Pagination($countPfps);
 			$pagination->url = $url;
 			$pfps = $pfp->getUnAssignPFP2Type($companyId, $this->getFromRequest('id'), $pagination);
 		} else {
@@ -164,11 +165,11 @@ class CPfpTypes extends Controller {
 				$pfpTypes->searchCriteria = $this->convertSearchItemsToArray($this->getFromRequest('q'));
 				$this->smarty->assign('searchQuery', $this->getFromRequest('q'));
 			}
-			$pfpProducts = $pfpTypes->getPfpProducts();
+			$pfpProductsCount = $pfpTypes->getPfpProductsCount();
 
 			$url = "?" . $_SERVER["QUERY_STRING"];
 			$url = preg_replace("/\&page=\d*/", "", $url);
-			$pagination = new Pagination(count($pfpProducts));
+			$pagination = new Pagination($pfpProductsCount);
 			$pagination->url = $url;
 			$pfps = $pfpTypes->getPfpProducts($pagination);
 		}
@@ -201,7 +202,6 @@ class CPfpTypes extends Controller {
 			'modules/js/autocomplete/jquery.autocomplete.js',
 			'modules/js/pfpTypes.js');
 		$this->smarty->assign('jsSources', $jsSources);
-
 
 		//set tpl
 		$this->smarty->assign('tpl', 'tpls/viewPfpType.tpl');
