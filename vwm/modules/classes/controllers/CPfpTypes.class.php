@@ -273,7 +273,7 @@ class CPfpTypes extends Controller {
 		$exporter = new Exporter(Exporter::PDF);
 		$exporter->company = $companyDetails['name'];
 		$exporter->facility = $facilityDetails['name'];
-		$exporter->title = "{$pfpTypes->name} mixes";
+		$exporter->title = "{$pfpTypes->name} MIXES";
 
 		$widths = array(
 			'description' => '25',
