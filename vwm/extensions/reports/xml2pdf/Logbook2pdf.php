@@ -183,22 +183,16 @@ class XML2PDF extends PDF_MC_Table
                 }
                 $this->SetAutoPageBreak(true, 25);
                 break;
-            case 'TABLE':
-                $this->Ln(15);
-
-                $this->widths = array(30, 30, 40, 40, 25, 25);
-                $this->SetWidths($this->widths);
-                $this->SetLineWidth(0.2);
-                $this->SetFont('Arial', 'B', 7);
-                $h = 10;
-                $this->Cell($this->widths[0], $h, "Date", 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, "Start Reading (A)", 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, "End Reading (B)", 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, "Description", 1, 0, 'C');
-                $this->Cell($this->widths[4], $h, "Inspected By", 1, 0, 'C');
-                $this->Cell($this->widths[5], $h, "GaugeType", 1, 0, 'C');
-
-                $this->Ln();
+             case 'EQUIPMENT':
+                if (isset($this->equipment)) {
+                    $this->equipment = $attribs['DESCRIPTION'];
+                    $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
+                    $this->AddPage('p');
+                } else {
+                    $this->equipment = $attribs['DESCRIPTION'];
+                    $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
+                    $this->header();
+                }
                 break;
         }
     }
@@ -256,10 +250,7 @@ class XML2PDF extends PDF_MC_Table
                 break;
             case 'COMPANYNAME':
                 $this->header["COMPANYNAME"] = $data;
-                break;
-            case 'EQUIPMENT':
-                $this->header["EQUIPMENT"] = $data;
-                $this->header();
+                //$this->header();
                 break;
         }
     }
@@ -292,9 +283,26 @@ class XML2PDF extends PDF_MC_Table
             $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENT'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
-             $this->Ln(3);
+            $this->Ln(3);
             $this->Cell(100, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
+            /*             * *** */
+            $this->Ln(15);
+
+            $this->widths = array(30, 30, 40, 40, 25, 25);
+            $this->SetWidths($this->widths);
+            $this->SetLineWidth(0.2);
+            $this->SetFont('Arial', 'B', 7);
+            $h = 10;
+            $this->Cell($this->widths[0], $h, "Date", 1, 0, 'C');
+            $this->Cell($this->widths[1], $h, "Start Reading (A)", 1, 0, 'C');
+            $this->Cell($this->widths[2], $h, "End Reading (B)", 1, 0, 'C');
+            $this->Cell($this->widths[3], $h, "Description", 1, 0, 'C');
+            $this->Cell($this->widths[4], $h, "Inspected By", 1, 0, 'C');
+            $this->Cell($this->widths[5], $h, "GaugeType", 1, 0, 'C');
+
+            $this->Ln();
         }
+        
     }
 
     function Footer()
