@@ -1,10 +1,10 @@
 <?php
 
-namespace VWM\Apps\Logger\Manager;
+namespace VWM\Apps\Logger;
 
-use Monolog\Logger;
+use Monolog\Logger as MonologLogger;
 
-class LoggerManager extends Logger
+class Logger extends MonologLogger
 {
     /**
      * Adds a log record at the DEBUG level.
