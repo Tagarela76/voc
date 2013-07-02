@@ -141,6 +141,12 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				break;
 		}
 
+        //write log for getting dublicate bug for user
+        if($_SESSION['user_id'] == '299'){
+            $log = VOCApp::getInstance()->getService('dbLogger');
+            $log->addError('BUILD XML for USER '.$_SESSION['user_id']." query: '".$query."'");
+           
+        }
 		//$debug->printMicrotime(__LINE__,__FILE__);
 		$in = $this->group($query, $this->dateBegin, $this->dateEnd, $this->rule);
 		//$debug->printMicrotime(__LINE__,__FILE__);
@@ -891,9 +897,15 @@ class RvocLogs extends ReportCreator implements iReportCreator {
 				);
 				$query = "SELECT mix_id FROM ".TB_USAGE." WHERE equipment_id = ".$equipment['id']." AND rule_id = ".$ruleID;
 				$this->db->query($query);
-
+                
+                //write log for getting dublicate bug for user
+                if ($_SESSION['user_id'] == '299') {
+                    $log = VOCApp::getInstance()->getService('dbLogger');
+                    $log->addError('Get mixes for daily emission report for user ' . $_SESSION['user_id'] . " query: '" . $query . "'");
+                }
+                
 				if ($this->db->num_rows()) {
-
+                    
 					$mixesData = $this->db->fetch_all();
 
 					foreach ($mixesData as $mixData) {
