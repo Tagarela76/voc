@@ -2,10 +2,10 @@
 
 namespace VWM\Apps\Logger;
 
-use \VWM\Framework\App;
+use VWM\Framework\App;
 
 /**
- * Logbook responsible for Logbook
+ * Logger responsible for Logger
  */
 class LoggerApp extends App
 {

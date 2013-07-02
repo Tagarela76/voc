@@ -145,7 +145,6 @@ class RvocLogs extends ReportCreator implements iReportCreator {
         if($_SESSION['user_id'] == '299'){
             $log = VOCApp::getInstance()->getService('dbLogger');
             $log->addError('BUILD XML for USER '.$_SESSION['user_id']." query: '".$query."'");
-           
         }
 		//$debug->printMicrotime(__LINE__,__FILE__);
 		$in = $this->group($query, $this->dateBegin, $this->dateEnd, $this->rule);
