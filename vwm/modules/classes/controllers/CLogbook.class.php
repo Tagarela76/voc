@@ -234,11 +234,20 @@ class CLogbook extends Controller
             case 'logbookEquipment':
                 $logbookEquipmentId = $this->getFromRequest('logbookEquipmentId');
                 $logbookEquipment = new LogbookEquipment();
+                $hasPermit = 0;
                 if (!is_null($logbookEquipmentId)) {
                     $logbookEquipment->setId($logbookEquipmentId);
                     $logbookEquipment->load();
+                    if($logbookEquipment->getPermit()!=''){
+                        $hasPermit = 1; 
+                    }
+                    
                 }
+                $jsSources = array(
+                    'modules/js/manageLogbookEquipment.js'
+                    );
                 $this->smarty->assign('logbookEquipment', $logbookEquipment);
+                $this->smarty->assign('hasPermit', $hasPermit);
                 $tpl = 'tpls/viewAddLogbookEquipment.tpl';
                 break;
                 /*             * ***** VIEW ADD LOGBOOK EQUIPMENT****** */
@@ -730,6 +739,10 @@ class CLogbook extends Controller
         $facilityId = $this->getFromPost('facilityId');
         $logbookEquipmentName = $this->getFromPost('logbookEquipmentName');
         $logbookEquipmentId = $this->getFromPost('logbookEquipmentId');
+        $hasPermit = $this->getFromPost('hasPermit');
+        
+        $permit = $this->getFromPost('permitNumber');
+        
         $logbookEquipment = new LogbookEquipment();
         if ($logbookEquipmentId != '') {
             $logbookEquipment->setId($logbookEquipmentId);
@@ -737,9 +750,19 @@ class CLogbook extends Controller
         }
         $logbookEquipment->setFacilityId($facilityId);
         $logbookEquipment->setEquipDesc($logbookEquipmentName);
-
+        $logbookEquipment->setPermit($permit);
+        
+        //if we had not selected permit we would not valifate permit field 
+        if(!is_null($hasPermit)){
+            $logbookEquipment->setValidationGroup('hasPermit');
+        }
         $violationList = $logbookEquipment->validate();
-
+        
+        
+         $jsSources = array(
+                    'modules/js/manageLogbookEquipment.js'
+                    );
+         $this->smarty->assign('jsSources', $jsSources);
         if (count($violationList) == 0) {
             $logbookEquipment->save();
             header("Location:?action=browseCategory&category=facility&id={$facilityId}&bookmark=logbook&tab=logbookEquipment");
@@ -747,6 +770,7 @@ class CLogbook extends Controller
             $this->smarty->assign('facilityId', $facilityId);
             $this->smarty->assign('violationList', $violationList);
             $this->smarty->assign('logbookEquipment', $logbookEquipment);
+            $this->smarty->assign('hasPermit', $hasPermit);
             $tpl = 'tpls/viewAddLogbookEquipment.tpl';
             $this->smarty->assign('tpl', $tpl);
             $this->smarty->display('tpls:index.tpl');

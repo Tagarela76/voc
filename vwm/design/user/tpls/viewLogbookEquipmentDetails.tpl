@@ -35,6 +35,18 @@
                 {$logbookEquipment->getEquipDesc()|escape}
             </td>
         </tr>
+        <tr>
+            <td class="border_users_b border_users_r border_users_l">
+                Permit Number
+            </td>
+            <td class="border_users_b border_users_r">
+                {if $logbookEquipment->getPermit() == ''}
+                    NONE
+                {else}
+                    {$logbookEquipment->getPermit()|escape}
+                {/if}
+            </td>
+        </tr>
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>

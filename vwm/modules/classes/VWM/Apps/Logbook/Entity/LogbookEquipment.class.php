@@ -30,10 +30,26 @@ class LogbookEquipment extends Model
      * @var string 
      */
     protected $equip_desc = null;
-    
+
+    /**
+     *
+     * logbook equipment permit 
+     * 
+     * @var string 
+     */
+    protected $permit = null;
     protected $voc_emissions = 0;
 
     const TABLE_NAME = 'equipment';
+
+    public function __construct($id)
+    {
+        $this->modelName = "LogbookEquipment";
+        if (isset($id)) {
+            $this->setId($id);
+            $this->load();
+        }
+    }
 
     public function getId()
     {
@@ -65,7 +81,6 @@ class LogbookEquipment extends Model
         $this->equip_desc = $equipDesc;
     }
 
-    
     public function getVocEmissions()
     {
         return $this->voc_emissions;
@@ -76,16 +91,17 @@ class LogbookEquipment extends Model
         $this->voc_emissions = $vocEmissions;
     }
 
-        public function __construct($id)
+    public function getPermit()
     {
-        $this->modelName = "LogbookEquipment";
-        if (isset($id)) {
-            $this->setId($id);
-            $this->load();
-        }
+        return $this->permit;
     }
 
-    public function load()
+    public function setPermit($permit)
+    {
+        $this->permit = $permit;
+    }
+
+        public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "SELECT * " .
@@ -106,7 +122,8 @@ class LogbookEquipment extends Model
         $db = \VOCApp::getInstance()->getService('db');
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "equip_desc = '{$db->sqltext($this->getEquipDesc())}', ".
+                "equip_desc = '{$db->sqltext($this->getEquipDesc())}', " .
+                "permit = '{$db->sqltext($this->getPermit())}', " .
                 "voc_emissions = {$db->sqltext($this->getVocEmissions())}";
         $response = $db->exec($query);
         $id = $db->getLastInsertedID();
@@ -125,7 +142,8 @@ class LogbookEquipment extends Model
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "equip_desc = '{$db->sqltext($this->getEquipDesc())}', " .
-                "voc_emissions = {$db->sqltext($this->getVocEmissions())} ".
+                "permit = '{$db->sqltext($this->getPermit())}', " .
+                "voc_emissions = {$db->sqltext($this->getVocEmissions())} " .
                 "WHERE equipment_id = {$db->sqltext($this->getId())}";
         $response = $db->exec($query);
 
@@ -148,18 +166,19 @@ class LogbookEquipment extends Model
             'id' => $this->getId(),
             'name' => $this->getEquipDesc(),
             'facilityId' => $this->getFacilityId(),
-            'voc_emissions' => $this->getVocEmissions()
+            'voc_emissions' => $this->getVocEmissions(),
+            'permit' => $this->getPermit()
         );
     }
-    
+
     /**
      * delete logbook equipment
      */
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $query = "DELETE FROM " .self::TABLE_NAME. " ".
-                 "WHERE equipment_id = {$db->sqltext($this->getId())}";
+        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+                "WHERE equipment_id = {$db->sqltext($this->getId())}";
         $db->query($query);
     }
 
