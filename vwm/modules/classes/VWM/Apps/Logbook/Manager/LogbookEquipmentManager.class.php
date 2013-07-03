@@ -103,7 +103,8 @@ class LogbookEquipmentManager
         foreach($rows as $row){
             $equipment = array(
                 'id' => $row['equipment_id'],
-                'description' => $row['equip_desc']
+                'description' => $row['equip_desc'],
+                'permit' => $row['permit']
             );
             $equipmentList[] = $equipment;
         }

@@ -1,5 +1,8 @@
 VWM\Apps\Logbook\Entity\LogbookEquipment:
   properties:
     equip_desc:
-      - NotBlank: ~
-      - MaxLength: 64
+      - NotBlank: { groups: [hasPermit,Default] }
+      - MaxLength: { limit: 64, groups: [hasPermit,Default] }
+    permit:
+      - NotBlank: { groups: [hasPermit] }
+      - MaxLength: { limit: 64, groups: [hasPermit,Default] }

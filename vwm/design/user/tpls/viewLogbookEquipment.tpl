@@ -1,3 +1,4 @@
+
 {*PAGINATION*}
 {include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
@@ -22,12 +23,12 @@
             <td class="border_users_b border_users_r" width = "10%">
                 Facility ID
             </td>
-            <td class="border_users_b border_users_r" width = "70%">
+            <td class="border_users_b border_users_r" width = "50%">
                 Name
             </td>
-            <!--<td class="border_users_b border_users_r" width = "20%">
-                edit
-            </td>-->
+            <td class="border_users_b border_users_r" width = "20%">
+                Permit Number
+            </td>
         </tr>
         {foreach from=$logbookEquipmantList item=logbookEquipmant}
             <tr>
@@ -49,11 +50,15 @@
                         {$logbookEquipmant->getEquipDesc()|escape}
                     </a>
                 </td>
-                <!--<td class="border_users_b border_users_r">
-                     <a href="?action=addItem&category=logbook&facilityID={$logbookEquipmant->getFacilityId()|escape}&tab=logbookEquipment&logbookEquipmentId={$logbookEquipmant->getId()|escape}">
-                         edit
+                <td class="border_users_b border_users_r">
+                     <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
+                         {if $logbookEquipmant->getPermit() == ''}
+                             NONE
+                         {else}
+                             {$logbookEquipmant->getPermit()|escape}
+                         {/if}
                      </a>
-                 </td>-->
+                 </td>
             </tr>
         {/foreach}
     </table>

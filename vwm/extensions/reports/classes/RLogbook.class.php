@@ -203,17 +203,21 @@ class RLogbook extends ReportCreator implements iReportCreator
                 $logbookEquipmentList[$equipment['id']] = array(
                     'id' => $equipment['id'],
                     'description' => $equipment['description'],
+                    'permit' => $equipment['permit'],
                     'logbookList' => array()
                 );
             }
         }
-
+       
+        $state = new State($db);
+        $stateDetails = $state->getStateDetails($company->getState());
+         
         $orgInfo = array(
             'category' => "Facility",
             'facilityName' => $facility->getName(),
             'companyName' => $company->getName(),
             'companyAddress' => $company->getAddress(),
-            'cityStateZip' => $company->getCity() . ',' . $company->getState() . ',' . $company->getZip(),
+            'cityStateZip' => $company->getCity() . ',' . $stateDetails['name'] . ',' . $company->getZip(),
             'country' => $countryDetails['country_name'],
             'phone' => $company->getPhone(),
             'fax' => $company->getFax(),
@@ -341,11 +345,21 @@ class RLogbook extends ReportCreator implements iReportCreator
         $meta->appendChild($metaValue);
 
         //create title tag
-        $title = $doc->createElement("title");
-        $title->appendChild(
-                $doc->createTextNode("DAILY LOGBOOK REPORT")
+        if($this->getInspectionTypeId() == 'all'){
+            $title = "LOGBOOK REPORT";
+        }else{
+            $inspectionType = new LogbookInspectionType();
+            $inspectionType->setId($this->getInspectionTypeId());
+            $inspectionType->load();
+            $inspectionTypeSettings = $inspectionType->getInspectionType();
+            $title = strtoupper($inspectionTypeSettings->typeName);
+        }
+        
+        $titleTag = $doc->createElement("title");
+        $titleTag->appendChild(
+                $doc->createTextNode($title)
         );
-        $page->appendChild($title);
+        $page->appendChild($titleTag);
 
         //create category
         $categoryTag = $doc->createElement('category');
@@ -432,6 +446,14 @@ class RLogbook extends ReportCreator implements iReportCreator
                     $doc->createTextNode(html_entity_decode($result['description']))
             );
             $logbookEquipment->appendChild($equipmentDesc);
+            
+            //create equipment id attribute
+            $equipmentPermit = $doc->createAttribute('permit');
+            $equipmentPermit->appendChild(
+                    $doc->createTextNode(html_entity_decode($result['permit']))
+            );
+            $logbookEquipment->appendChild($equipmentPermit);
+            
             foreach ($result['logbookList'] as $logbook) {
                 $logbookInspection = $doc->createElement("logbookInspection");
                 $logbookEquipment->appendChild($logbookInspection);

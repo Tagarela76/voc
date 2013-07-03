@@ -16,7 +16,30 @@
                 <td class="border_users_l">
                     <input type='text' name = 'logbookEquipmentName' value='{$logbookEquipment->getEquipDesc()|escape}'>
                     {foreach from=$violationList item="violation"}
-                        {if $violation->getPropertyPath() eq 'name'}
+                        {if $violation->getPropertyPath() eq 'equip_desc'}
+                            {*ERROR*}
+                            <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()|escape}</span></div>
+                                {*/ERROR*}
+                            {/if}
+                        {/foreach}
+                </td>
+            </tr>
+            <tr class="border_users_b border_users_r" height='30'>
+                <td class="border_users_l">
+                    Permit
+                </td>
+                <td class="border_users_l">
+                    <input type='checkbox' name='hasPermit' id='hasPermit' onclick = 'showEquipment()' {if $hasPermit}checked='true'{/if}>
+                </td>
+            </tr>
+            <tr class="border_users_b border_users_r" height='30' id='showPermitNumber' {if !$hasPermit}hidden="hidden"{/if}>
+                <td class="border_users_l">
+                    Permit Number
+                </td>
+                <td class="border_users_l">
+                    <input type='text' name='permitNumber' id='permitNumber' value='{$logbookEquipment->getPermit()|escape}'>
+                    {foreach from=$violationList item="violation"}
+                        {if $violation->getPropertyPath() eq 'permit'}
                             {*ERROR*}
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()|escape}</span></div>
                                 {*/ERROR*}

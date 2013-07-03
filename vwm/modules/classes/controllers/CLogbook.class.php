@@ -121,6 +121,7 @@ class CLogbook extends Controller
                     if ($post['subTypeNotes'] != '') {
                         $logbook->setSubTypeNotes($post['subTypeNotes']);
                     }
+                    
                     if ($post['gaugeUnitType'] != '') {
                         $logbook->setUnittypeId($post['gaugeUnitType']);
                     }
@@ -183,15 +184,15 @@ class CLogbook extends Controller
 
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
-
+               // var_dump($logbook);
                 //get Equipmen tList
                 $leManager = VOCApp::getInstance()->getService('logbookEquipment');
                 $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
                 $logbookEquipmentList = $leManager->getAllEquipmentListByFacilityId($facilityId);
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
-                $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
-                $this->smarty->assign('temperatureUnitTypeList', $temperatureUnitTypeList);
+                $unitTypeList = $utManager->getUnitTypeListBuGaugeId($logbook->getValueGaugeType());
+                $this->smarty->assign('unitTypeList', $unitTypeList);
                 $this->smarty->assign('gaugeList', $gaugeList);
                 $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
                 $this->smarty->assign('logbookEquipmentList', $logbookEquipmentList);
@@ -234,11 +235,20 @@ class CLogbook extends Controller
             case 'logbookEquipment':
                 $logbookEquipmentId = $this->getFromRequest('logbookEquipmentId');
                 $logbookEquipment = new LogbookEquipment();
+                $hasPermit = 0;
                 if (!is_null($logbookEquipmentId)) {
                     $logbookEquipment->setId($logbookEquipmentId);
                     $logbookEquipment->load();
+                    if($logbookEquipment->getPermit()!=''){
+                        $hasPermit = 1; 
+                    }
+                    
                 }
+                $jsSources = array(
+                    'modules/js/manageLogbookEquipment.js'
+                    );
                 $this->smarty->assign('logbookEquipment', $logbookEquipment);
+                $this->smarty->assign('hasPermit', $hasPermit);
                 $tpl = 'tpls/viewAddLogbookEquipment.tpl';
                 break;
                 /*             * ***** VIEW ADD LOGBOOK EQUIPMENT****** */
@@ -468,6 +478,9 @@ class CLogbook extends Controller
         $tab = $this->getFromRequest('tab');
         $id = $this->getFromRequest('id');
         
+        $lbManager = VOCApp::getInstance()->getService('logbook');
+        
+        
         switch ($tab) {
             case 'logbookEquipment':
                 $logbookEquipment = new LogbookEquipment();
@@ -498,7 +511,7 @@ class CLogbook extends Controller
                 $logbook = new LogbookRecord();
                 $logbook->setId($logbookId);
                 $logbook->load();
-
+                
                 //Initialize inspection Person
                 $inspectionPerson = new LogbookInspectionPerson();
                 $inspectionPerson->setId($logbook->getInspectionPersonId());
@@ -525,6 +538,10 @@ class CLogbook extends Controller
                 $description = $logbookDescription->getDescription();
                 $description = is_null($description) ? 'NONE' : $description;
                 $this->smarty->assign('description', $description);
+                
+                //get logbook gauges
+                $gaugeList = $lbManager->getGaugeList($facilityId);
+                $this->smarty->assign('gaugeList', $gaugeList);
                 
                 $tpl = 'tpls/viewLogbookDetails.tpl';
                 $this->smarty->assign('tab', 'logbook');
@@ -730,6 +747,10 @@ class CLogbook extends Controller
         $facilityId = $this->getFromPost('facilityId');
         $logbookEquipmentName = $this->getFromPost('logbookEquipmentName');
         $logbookEquipmentId = $this->getFromPost('logbookEquipmentId');
+        $hasPermit = $this->getFromPost('hasPermit');
+        
+        $permit = $this->getFromPost('permitNumber');
+        
         $logbookEquipment = new LogbookEquipment();
         if ($logbookEquipmentId != '') {
             $logbookEquipment->setId($logbookEquipmentId);
@@ -737,9 +758,19 @@ class CLogbook extends Controller
         }
         $logbookEquipment->setFacilityId($facilityId);
         $logbookEquipment->setEquipDesc($logbookEquipmentName);
-
+        $logbookEquipment->setPermit($permit);
+        
+        //if we had not selected permit we would not valifate permit field 
+        if(!is_null($hasPermit)){
+            $logbookEquipment->setValidationGroup('hasPermit');
+        }
         $violationList = $logbookEquipment->validate();
-
+        
+        
+         $jsSources = array(
+                    'modules/js/manageLogbookEquipment.js'
+                    );
+         $this->smarty->assign('jsSources', $jsSources);
         if (count($violationList) == 0) {
             $logbookEquipment->save();
             header("Location:?action=browseCategory&category=facility&id={$facilityId}&bookmark=logbook&tab=logbookEquipment");
@@ -747,6 +778,7 @@ class CLogbook extends Controller
             $this->smarty->assign('facilityId', $facilityId);
             $this->smarty->assign('violationList', $violationList);
             $this->smarty->assign('logbookEquipment', $logbookEquipment);
+            $this->smarty->assign('hasPermit', $hasPermit);
             $tpl = 'tpls/viewAddLogbookEquipment.tpl';
             $this->smarty->assign('tpl', $tpl);
             $this->smarty->display('tpls:index.tpl');
@@ -810,6 +842,22 @@ class CLogbook extends Controller
             $this->smarty->assign('tpl', $tpl);
             $this->smarty->display('tpls:index.tpl');
         }
+    }
+    
+    /**
+     * ajax method for getting gauge unit type list
+     */
+    public function actionGetGaugeUnitTypeList()
+    {
+        $gaugeTypeId = $this->getFromPost('gaugeType');
+        $utManager = new UnitTypeManager($this->db);
+        $unitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
+
+        $this->smarty->assign('unitTypeList', $unitTypeList);
+        $tpl = 'tpls/viewUnitTypeList.tpl';
+        $result = $this->smarty->fetch($tpl);
+        
+        echo $result;
     }
 }
 ?>
