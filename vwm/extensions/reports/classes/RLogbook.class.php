@@ -346,7 +346,7 @@ class RLogbook extends ReportCreator implements iReportCreator
 
         //create title tag
         if($this->getInspectionTypeId() == 'all'){
-            $title = "DAILY LOGBOOK REPORT";
+            $title = "LOGBOOK REPORT";
         }else{
             $inspectionType = new LogbookInspectionType();
             $inspectionType->setId($this->getInspectionTypeId());
