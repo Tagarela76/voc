@@ -13,6 +13,8 @@ class UnitTypeManager {
 	const TB_UNIT_CLASS = 'unit_class';
     
     const TEMPERATURE_UNIT_CLASS = 9;
+    const TIME_UNIT_CLASS = 7;
+    const FUEL_UNIT_CLASS = 2;
 
 	public function __construct(\db $db) {
 		$this->db = $db;
@@ -127,8 +129,31 @@ class UnitTypeManager {
             $unitType->initByArray($unit);
             $unitTypes[] = $unitType;
         }
-
         return $unitTypes;
+    }
+    
+    /**
+     * 
+     * get unit type list by gauge id
+     * 
+     * @param int $gaugeTypeId
+     * 
+     * @return \VWM\Apps\UnitType\Entity\UnitType[]
+     */
+    public function getUnitTypeListBuGaugeId($gaugeTypeId)
+    {
+        switch($gaugeTypeId){
+            case 0:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
+                break;
+            case 6:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(UnitTypeManager::TIME_UNIT_CLASS);
+                break;
+            case 7:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(UnitTypeManager::FUEL_UNIT_CLASS);
+                break;
+        }
+        return $unitTypeList;
     }
 	
 }

@@ -553,6 +553,7 @@ class LogbookRecord extends Model
         if (is_null($this->getUnittypeId())) {
             return false;
         }
+        //var_dump($this->getUnittypeId());
         if (is_null($this->logbookUnitType)) {
             $db = \VOCApp::getInstance()->getService('db');
             $unitType = new UnitType($db);

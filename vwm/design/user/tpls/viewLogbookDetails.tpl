@@ -101,17 +101,13 @@
             </td>
         </tr>
         {*addition Fialds*}
-        {if $logbook->getHasPermit()}
+        {if $logbookEquipment->getPermit()|escape}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
                     Permit
                 </td>
                 <td class="border_users_b border_users_r">
-                    {if $logbook->getPermit()}
-                        yes
-                    {else}
-                        no
-                    {/if}
+                    {$logbookEquipment->getPermit()|escape}
                 </td>
             </tr>
         {/if}

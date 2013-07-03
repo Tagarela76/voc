@@ -121,6 +121,7 @@ class CLogbook extends Controller
                     if ($post['subTypeNotes'] != '') {
                         $logbook->setSubTypeNotes($post['subTypeNotes']);
                     }
+                    
                     if ($post['gaugeUnitType'] != '') {
                         $logbook->setUnittypeId($post['gaugeUnitType']);
                     }
@@ -183,15 +184,15 @@ class CLogbook extends Controller
 
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
-
+               // var_dump($logbook);
                 //get Equipmen tList
                 $leManager = VOCApp::getInstance()->getService('logbookEquipment');
                 $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
                 $logbookEquipmentList = $leManager->getAllEquipmentListByFacilityId($facilityId);
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
-                $temperatureUnitTypeList = $utManager->getUnitTypeListByUnitClassId(UnitTypeManager::TEMPERATURE_UNIT_CLASS);
-                $this->smarty->assign('temperatureUnitTypeList', $temperatureUnitTypeList);
+                $unitTypeList = $utManager->getUnitTypeListBuGaugeId($logbook->getValueGaugeType());
+                $this->smarty->assign('unitTypeList', $unitTypeList);
                 $this->smarty->assign('gaugeList', $gaugeList);
                 $this->smarty->assign('gaugeListJson', json_encode($gaugeList));
                 $this->smarty->assign('logbookEquipmentList', $logbookEquipmentList);
@@ -510,7 +511,7 @@ class CLogbook extends Controller
                 $logbook = new LogbookRecord();
                 $logbook->setId($logbookId);
                 $logbook->load();
-
+                
                 //Initialize inspection Person
                 $inspectionPerson = new LogbookInspectionPerson();
                 $inspectionPerson->setId($logbook->getInspectionPersonId());
@@ -841,6 +842,22 @@ class CLogbook extends Controller
             $this->smarty->assign('tpl', $tpl);
             $this->smarty->display('tpls:index.tpl');
         }
+    }
+    
+    /**
+     * ajax method for getting gauge unit type list
+     */
+    public function actionGetGaugeUnitTypeList()
+    {
+        $gaugeTypeId = $this->getFromPost('gaugeType');
+        $utManager = new UnitTypeManager($this->db);
+        $unitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
+
+        $this->smarty->assign('unitTypeList', $unitTypeList);
+        $tpl = 'tpls/viewUnitTypeList.tpl';
+        $result = $this->smarty->fetch($tpl);
+        
+        echo $result;
     }
 }
 ?>
