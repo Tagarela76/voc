@@ -468,6 +468,9 @@ class CLogbook extends Controller
         $tab = $this->getFromRequest('tab');
         $id = $this->getFromRequest('id');
         
+        $lbManager = VOCApp::getInstance()->getService('logbook');
+        
+        
         switch ($tab) {
             case 'logbookEquipment':
                 $logbookEquipment = new LogbookEquipment();
@@ -525,6 +528,10 @@ class CLogbook extends Controller
                 $description = $logbookDescription->getDescription();
                 $description = is_null($description) ? 'NONE' : $description;
                 $this->smarty->assign('description', $description);
+                
+                //get logbook gauges
+                $gaugeList = $lbManager->getGaugeList($facilityId);
+                $this->smarty->assign('gaugeList', $gaugeList);
                 
                 $tpl = 'tpls/viewLogbookDetails.tpl';
                 $this->smarty->assign('tab', 'logbook');

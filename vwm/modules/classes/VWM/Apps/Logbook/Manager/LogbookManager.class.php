@@ -129,6 +129,7 @@ class LogbookManager
             'min' => $gaugeRange['min_gauge_range'],
             'max' => $gaugeRange['max_gauge_range']
         );
+        
         //manometer gauge
         if(!is_null($facilityId)){
             $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::MANOMETER_GAUGE);
@@ -173,6 +174,7 @@ class LogbookManager
             'max' => $electricGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
         
+        //propane gauge
         if(!is_null($facilityId)){
             $propanGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::PROPANE_GAS_GAUGE);
         }
@@ -183,14 +185,37 @@ class LogbookManager
             'max' => $propanGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
         
-        //var_dump($electricGaugeRange);//die();
+        //time gauge
+       if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::TIME_GAUGE);
+        }
+        $timeGauge = array(
+            'id' => LogbookRecord::TIME_GAUGE,
+            'name' => 'Time Gauge',
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
+        );
+        
+        //Fuel gauge
+       if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::FUEL_GAUGE);
+        }
+        $fuelGauge = array(
+            'id' => LogbookRecord::FUEL_GAUGE,
+            'name' => 'Fuel Gauge',
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
+        );
+        
         $gaugeList = array(
             0 => $temperatuteGauge,
             1 => $manometerGauge,
             2 => $clarifierGauge,
             3 => $gasGauge,
             4 => $electricGauge,
-            5 => $propanGasGauge
+            5 => $propanGasGauge,
+            6 => $timeGauge,
+            7 => $fuelGauge,
         );
 
         return $gaugeList;
