@@ -187,10 +187,12 @@ class XML2PDF extends PDF_MC_Table
                 if (isset($this->equipment)) {
                     $this->equipment = $attribs['DESCRIPTION'];
                     $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
+                    $this->header['PERMIT'] = $attribs['PERMIT'];
                     $this->AddPage('p');
                 } else {
                     $this->equipment = $attribs['DESCRIPTION'];
                     $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
+                    $this->header['PERMIT'] = $attribs['PERMIT'];
                     $this->header();
                 }
                 break;
@@ -283,6 +285,7 @@ class XML2PDF extends PDF_MC_Table
             $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENT'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
+            $this->Cell(75, 10, "Permit Number: " . $this->header['PERMIT'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
             /*             * *** */

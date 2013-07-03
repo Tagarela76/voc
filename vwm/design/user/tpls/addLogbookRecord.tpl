@@ -107,7 +107,7 @@
             {/if}
             {* types and sub types addition fields*}
 
-            <tr class="border_users_b border_users_r" height='30' id='logBookPermit' hidden="hidden">
+            <!--<tr class="border_users_b border_users_r" height='30' id='logBookPermit' hidden="hidden">
                 <td class="border_users_l">
                     Permit
                 </td>
@@ -121,7 +121,7 @@
                     {*/ERROR*}
                     {/if}
                 {/foreach}
-            </tr>
+            </tr>-->
 
             <tr class="border_users_b border_users_r" height='30' id='subTypeQty' hidden="hidden">
                 <td class="border_users_l">
