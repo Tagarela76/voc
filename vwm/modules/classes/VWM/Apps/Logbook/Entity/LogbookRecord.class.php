@@ -248,6 +248,9 @@ class LogbookRecord extends Model
     const GAS_GAUGE = 3;
     const ELECTRIC_GAUGE = 4;
     const PROPANE_GAS_GAUGE = 5;
+    const TIME_GAUGE = 6;
+    const FUEL_GAUGE = 7;
+    
     const MIN_GAUGE_RANGE = 0;
     const MAX_GAUGE_RANGE = 100;
     const GAUGE_RANGE_STEP = 100;
