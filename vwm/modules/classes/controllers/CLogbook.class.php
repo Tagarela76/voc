@@ -60,6 +60,8 @@ class CLogbook extends Controller
                 
                 //get Equipmen List (check if we create logbook from equipment)
                 $leManager = VOCApp::getInstance()->getService('logbookEquipment');
+                $lbmanager = VOCApp::getInstance()->getService('logbook');
+                
                 if (is_null($logbookEquipmentId)) {
                     $successUrl = "?action=browseCategory&category=facility&id=" . $facilityId . "&bookmark=logbook&tab=" . $tab;
                     $logbookEquipmentList = $leManager->getLogbookEquipmentListByFacilityId($facilityId);
@@ -82,16 +84,22 @@ class CLogbook extends Controller
                 $inspectionTypesList = json_decode($jsonInspectionalTypeList);
 
                 $logbook = new LogbookRecord();
+                $inspectionPersonList = array();
                 //initialize logbook if exist
                 if (!is_null($logbookId)) {
                     $logbook->setId($logbookId);
                     $logbook->load();
                     $jsonDescriptionTypeList = $ldManager->getAllDescriptionListByInspectionTypeIdInJson($logbook->getInspectionTypeId());
+                    //get inspection person list
+                    $inspectionPerson = new LogbookInspectionPerson();
+                    $inspectionPerson->setName($logbook->getInspectionPersonName());
+                    $inspectionPersonList[] = $inspectionPerson;
                 } else {
                     //get logbook Description
+                    $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
                     $jsonDescriptionTypeList = $ldManager->getAllDescriptionListByInspectionTypeIdInJson($inspectionTypesList[0]->id);
                 }
-
+                
                 $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
                 $logbookDescriptionsList = json_decode($jsonDescriptionTypeList);
 
@@ -126,7 +134,12 @@ class CLogbook extends Controller
                     $logbook->setDepartmentId($post['departmentId']);
                     $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                     $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
-
+                    
+                    $logbooInspectionPerson = new LogbookInspectionPerson();
+                    $logbooInspectionPerson->setId($post['InspectionPersons']);
+                    $logbooInspectionPerson->load();
+                    $logbook->setInspectionPersonName($logbooInspectionPerson->getName());
+                    
                     //set addition fields
                     if (!is_null($post['inspectionAdditionListType'])) {
                         $logbook->setInspectionAdditionType($post['inspectionAdditionListType']);
@@ -177,7 +190,7 @@ class CLogbook extends Controller
                 }
 
                 $this->smarty->assign('logbook', $logbook);
-                $lbmanager = VOCApp::getInstance()->getService('logbook');
+                
 
                 //check if this facility has inspection type
                 if (empty($inspectionTypesList)) {
@@ -198,8 +211,6 @@ class CLogbook extends Controller
                 $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
                 $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($inspectionType->getInspectionType()->typeName);
 
-                //get inspection person list
-                $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
 
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
@@ -360,7 +371,7 @@ class CLogbook extends Controller
                         'creationDate' => $creationDateTime[0],
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                        'inspectionPersonName' => $inspectionPerson->getName(),
+                        'inspectionPersonName' => $logbookRecord->getInspectionPersonName(),
                         'condition' => $condition,
                         'notes' => $notes
                     );
@@ -517,11 +528,6 @@ class CLogbook extends Controller
                     $creationDateTime = $logbookRecord->getDateTime();
                     $creationDateTime = date($timeFormat . ' h:i a', $creationDateTime);
                     $creationDateTime = explode(' ', $creationDateTime);
-                    //initialize inspection person
-                    $inspectionPerson = new LogbookInspectionPerson();
-                    $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
-                    $inspectionPerson->load();
-
                     //get sub type notes or description notes
                     $notes = '';
                     if ($logbookRecord->getSubTypeNotes() != 'NONE') {
@@ -544,7 +550,7 @@ class CLogbook extends Controller
                         'creationDate' => $creationDateTime[0],
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                        'inspectionPersonName' => $inspectionPerson->getName(),
+                        'inspectionPersonName' => $logbookRecord->getInspectionPersonName(),
                         'condition' => $condition,
                         'notes' => $notes
                     );

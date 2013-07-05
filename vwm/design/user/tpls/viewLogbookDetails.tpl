@@ -32,7 +32,7 @@
                 Inspection Person
             </td>
             <td class="border_users_b border_users_r">
-                {$inspectionPerson->getName()|escape}
+                {$logbook->getInspectionPersonName()|escape}
             </td>
         </tr>
         <tr>
