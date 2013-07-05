@@ -274,6 +274,7 @@
 
     <input type='hidden' name="action" value="{$action}">
     <input type='hidden' name="category" value="{$category}">
+    <input type='hidden' name="addToEquipment" value="{$addToEquipment}">
 </form>
 
 {*add inspection perswon dialog container*}

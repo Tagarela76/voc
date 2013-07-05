@@ -258,6 +258,40 @@ class LogbookManager
         return $result[0];
     }
     
+    public function getLogbookListByEquipmentId($equipmentId, $pagination = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookList = array();
+        $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "equipment_id = {$db->sqltext($equipmentId)}";
+        $query.=' ORDER BY date_time DESC';
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
+        
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+
+        foreach ($rows as $row) {
+            $logbook = new LogbookRecord();
+            $logbook->initByArray($row);
+            $logbookList[] = $logbook;
+        }
+
+        return $logbookList;
+    }
+    
+    public function getCountLogbooksByEquipmentId($equipmentId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "SELECT count(*) logbookListCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "equipment_id = {$db->sqltext($equipmentId)}";
+        $db->query($query);
+        $row = $db->fetch(0);
+
+        return $row->logbookListCount;
+    }
+    
 
 }
 ?>
