@@ -46,6 +46,14 @@ class LogbookDescription extends Model
      * @var int 
      */
     protected $inspection_type_id;
+    
+    /**
+     *
+     * check if description exist
+     * 
+     * @var boolean 
+     */
+    protected $deleted = 0;
 
     /**
      * Description table name
@@ -162,7 +170,29 @@ class LogbookDescription extends Model
         $this->origin = $origin;
     }
 
-        
+    /**
+     * 
+     * get deleted
+     * 
+     * @return boolean
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * 
+     * set deleted
+     * 
+     * @param boolean $deleted
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
+    }
+
+    
     public function __construct()
     {
         $this->modelName = "LogbookDescription";
@@ -208,6 +238,7 @@ class LogbookDescription extends Model
                 "description = '{$db->sqltext($this->getDescription())}', " .
                 "notes = {$db->sqltext($this->getNotes())}, " .
                 "origin = '{$db->sqltext($this->getOrigin())}', " .
+                "deleted = 0, " .
                 "inspection_type_id = {$db->sqltext($this->getInspectionTypeId())} ";
         $response = $db->exec($query);
         $id = $db->getLastInsertedID();
@@ -227,6 +258,7 @@ class LogbookDescription extends Model
                 "description = '{$db->sqltext($this->getDescription())}', " .
                 "notes = {$db->sqltext($this->getNotes())}, " .
                 "origin = '{$db->sqltext($this->getOrigin())}', " .
+                "deleted = '{$db->sqltext($this->getDeleted())}', " .
                 "inspection_type_id = {$db->sqltext($this->getInspectionTypeId())} ".
                 "WHERE id={$db->sqltext($this->getId())}";
         $response = $db->exec($query);
@@ -251,6 +283,7 @@ class LogbookDescription extends Model
             'notes' => $this->getNotes(),
             'origin' => $this->getOrigin(),
             'inspection_type_id' => $this->getInspectionTypeId(),
+            'deleted' => $this->getDeleted()
         );
     }
     
@@ -265,7 +298,8 @@ class LogbookDescription extends Model
             return false;
         }
 
-        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+        $query = "UPDATE " . self::TABLE_NAME . " " .
+                "SET deleted = 1 ".
                 "WHERE id = {$db->sqltext($this->getId())}";
         $db->query($query);
     }

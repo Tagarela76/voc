@@ -62,7 +62,7 @@
                     <select id = 'InspectionPersons' name = 'InspectionPersons'>
                         {foreach from=$inspectionPersonList item=inspectionPerson}
                             <option value="{$inspectionPerson->getId()|escape}" {if $inspectionPerson->getId()==$logbook->getInspectionPersonId()}selected='selected'{/if}>
-                                {$inspectionPerson->getName()|escape}
+                                {$inspectionPerson->getName()|escape}{if $inspectionPerson->getDeleted()} (deleted){/if}
                             </option>
                         {/foreach}
                     </select>
@@ -209,6 +209,7 @@
                         {section name=i loop=$logbookDescriptionsList}
                             <option value="{$logbookDescriptionsList[i]->id|escape}" {if $logbook->getDescriptionId() == $logbookDescriptionsList[i]->id}selected='selected'{/if}>
                                 {$logbookDescriptionsList[i]->description|escape}
+                                {if $logbookDescriptionsList[i]->deleted|escape} (deleted){/if}
                             </option>
                         {/section}
                     </select>

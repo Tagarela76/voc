@@ -16,13 +16,16 @@ class LogbookManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookInspectionPerson[]
      */
-    public function getLogbookInspectionPersonListByFacilityId($facilityId, \Pagination $pagination = null)
+    public function getLogbookInspectionPersonListByFacilityId($facilityId, $deleted = null, \Pagination $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
         $query = "SELECT * FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
-                
+               
+        if(isset($deleted)){
+           $query .= " AND deleted = {$deleted}";
+        }        
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
@@ -46,15 +49,20 @@ class LogbookManager
      * 
      * @return int
      */
-    public function getCountLogbookInspectionPersonListByFacilityId($facilityId)
+    public function getCountLogbookInspectionPersonListByFacilityId($facilityId, $deleted = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
         $query = "SELECT count(*) count FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
+                
+        if (isset($deleted)) {
+            $query.= " AND deleted = {$deleted}";
+        }
+        
         $db->query($query);
         $count = $db->fetch(0);
-       
+
         return $count->count;
     }
 

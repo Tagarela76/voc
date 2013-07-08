@@ -93,11 +93,11 @@ class CLogbook extends Controller
                     //get inspection person list
                     $inspectionPerson = new LogbookInspectionPerson();
                     $inspectionPerson->setName($logbook->getInspectionPersonName());
-                    $inspectionPersonList[] = $inspectionPerson;
+                    $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
                 } else {
                     //get logbook Description
-                    $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
-                    $jsonDescriptionTypeList = $ldManager->getAllDescriptionListByInspectionTypeIdInJson($inspectionTypesList[0]->id);
+                    $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId, 0);
+                    $jsonDescriptionTypeList = $ldManager->getAllDescriptionListByInspectionTypeIdInJson($inspectionTypesList[0]->id, 0);
                 }
                 
                 $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
@@ -211,10 +211,8 @@ class CLogbook extends Controller
                 $inspectionSubTypesList = $itmanager->getInspectionSubTypesByTypeDescription($inspectionTypesDescription);
                 $inspectionAdditionTypesList = $itmanager->getInspectionAdditionTypesByTypeDescription($inspectionType->getInspectionType()->typeName);
 
-
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
-
 
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
@@ -371,7 +369,7 @@ class CLogbook extends Controller
                         'creationDate' => $creationDateTime[0],
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                        'inspectionPersonName' => $logbookRecord->getInspectionPersonName(),
+                        'inspectionPersonName' => $inspectionPerson->getName(),
                         'condition' => $condition,
                         'notes' => $notes
                     );
@@ -385,13 +383,13 @@ class CLogbook extends Controller
             case 'inspectionPerson':
 
                 $logbookInspectionPersonListCount = $lbManager->getCountLogbookInspectionPersonListByFacilityId($facilityId);
-
+                
                 $url = "?" . $_SERVER["QUERY_STRING"];
                 $url = preg_replace("/\&page=\d*/", "", $url);
                 $pagination = new Pagination($logbookInspectionPersonListCount);
                 $pagination->url = $url;
 
-                $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId, $pagination);
+                $inspectionPerson = $lbManager->getLogbookInspectionPersonListByFacilityId($facilityId, 0, $pagination);
 
                 $this->smarty->assign('pagination', $pagination);
                 $this->smarty->assign('inspectionPerson', $inspectionPerson);
@@ -413,8 +411,8 @@ class CLogbook extends Controller
                 $tpl = 'tpls/viewLogbookEquipment.tpl';
                 break;
             case 'logbookCustomDescription':
-                $ldManager = VOCApp::getInstance()->getService(LogbookDescriptionManager::SERVICE);
-                $logbookCustomDescriptionList = $ldManager->getCustomDescriptionListByFacilityId($facilityId);
+                $ldManager = VOCApp::getInstance()->getService('logbookDescription');
+                $logbookCustomDescriptionList = $ldManager->getCustomDescriptionListByFacilityId($facilityId, 0);
                 $this->smarty->assign('logbookCustomDescriptionList', $logbookCustomDescriptionList);
                 $tpl = 'tpls/viewLogbookCustomDescription.tpl';
                 break;
