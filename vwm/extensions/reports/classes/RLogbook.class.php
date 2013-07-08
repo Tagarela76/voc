@@ -195,6 +195,7 @@ class RLogbook extends ReportCreator implements iReportCreator
             $logbookEquipmentList[$equipmentId] = array(
                 'id' => $equipmentId,
                 'description' => $logbookEquipment->getEquipDesc(),
+                'permit' => $logbookEquipment->getPermit(),
                 'logbookList' => array()
             );
         } else {

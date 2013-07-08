@@ -263,8 +263,8 @@ class CALogbook extends Controller
             
             //logbookDescription
             $ldManager = new LogbookDescriptionManager();
-            $logbookDescriptionListJson = $ldManager->getDescriptionListByInspectionTypeIdInJson($typeId);
-            $logbookDescriptionList = $ldManager->getDescriptionListByInspectionTypeId($typeId);
+            $logbookDescriptionListJson = $ldManager->getDescriptionListByInspectionTypeIdInJson($typeId, 0);
+            $logbookDescriptionList = $ldManager->getDescriptionListByInspectionTypeId($typeId, 0);
             $this->smarty->assign('logbookDescriptionListJson', $logbookDescriptionListJson);
             $this->smarty->assign('logbookDescriptionList', $logbookDescriptionList);
         }
@@ -783,7 +783,7 @@ class CALogbook extends Controller
                 }
                 
                 //get Logbook Description
-                $logbookDescriptions = $ldManager->getDescriptionListByInspectionTypeId($inspectionType->getId());
+                $logbookDescriptions = $ldManager->getDescriptionListByInspectionTypeId($inspectionType->getId(), 0);
                 $descriptions = array();
                 if (empty($logbookDescriptions)) {
                     $descriptions = 'NONE';

@@ -23,6 +23,12 @@ class LogbookInspectionPerson extends Model
      * @var string
      */
     protected $name;
+    
+    /**
+     *
+     * @var boolean 
+     */
+    protected $deleted = 0;
 
     const TABLE_NAME = 'inspection_persons';
     
@@ -55,7 +61,18 @@ class LogbookInspectionPerson extends Model
     {
         $this->name = $name;
     }
+    
+    public function getIsDeleted()
+    {
+        return $this->deleted;
+    }
 
+    public function setIsDeleted($deleted)
+    {
+        $this->deleted = $deleted;
+    }
+
+    
     public function __construct($id = null)
     {
         $this->modelName = "LogbookInspectionPerson";
@@ -90,6 +107,7 @@ class LogbookInspectionPerson extends Model
 
         $query = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
+                "deleted = 0, " .
                 "name = '{$db->sqltext($this->getName())}'";
         $db->query($query);
         $id = $db->getLastInsertedID();
@@ -105,6 +123,7 @@ class LogbookInspectionPerson extends Model
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "name = '{$db->sqltext($this->getName())}' " .
+                "deleted = '{$db->sqltext($this->getIsDeleted())}' " .
                 "WHERE id = {$db->sqltext($this->getId())}";
         $db->query($query);
 
@@ -127,7 +146,8 @@ class LogbookInspectionPerson extends Model
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $query = "DELETE FROM " . self::TABLE_NAME . " " .
+        $query = "UPDATE " . self::TABLE_NAME . " " .
+                "SET deleted = 1 ".
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
     }

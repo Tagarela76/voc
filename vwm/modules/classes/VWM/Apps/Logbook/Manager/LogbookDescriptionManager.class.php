@@ -22,10 +22,15 @@ class LogbookDescriptionManager
      */
     public function deleteDescriptionsByInspectionTypeId($inspectionTypeId)
     {
-        $logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId);
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "DELETE FROM ".LogbookDescription::TABLE_NAME." ".
+                 "WHERE inspection_type_id	= {$db->sqltext($inspectionTypeId)} ".
+                 "AND origin = '".self::LOGBOOK_DESCRIPTION_ORIGIN."'";
+        $db->query($query);     
+        /*$logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId);
         foreach($logbookDescriptionList as $logbookDescription){
             $logbookDescription->delete();
-        }
+        }*/
     }
     
     /**
@@ -36,14 +41,17 @@ class LogbookDescriptionManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookDescription[]
      */
-    public function getDescriptionListByInspectionTypeId($inspectionTypeId)
+    public function getDescriptionListByInspectionTypeId($inspectionTypeId, $deleted = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookDescriptionList = array();
         $query = "SELECT * FROM ".LogbookDescription::TABLE_NAME." ".
                  "WHERE inspection_type_id={$db->sqltext($inspectionTypeId)} ".
                  "AND origin = '".self::LOGBOOK_DESCRIPTION_ORIGIN."'";
-        $db ->query($query);
+        if(isset($deleted)){
+            $query.= " AND deleted = {$deleted}";
+        }
+        $db->query($query);
         
         $rows = $db->fetch_all_array();
         foreach($rows as $row){
@@ -64,9 +72,9 @@ class LogbookDescriptionManager
      * 
      * @return json
      */
-    public function getDescriptionListByInspectionTypeIdInJson($inspectionTypeId)
+    public function getDescriptionListByInspectionTypeIdInJson($inspectionTypeId, $deleted)
     {
-        $logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId);
+        $logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId, $deleted);
         $logbookDescriptionListJson = array();
         foreach ($logbookDescriptionList as $logbookDescription) {
             $logbookDescriptionListJson[] = $logbookDescription->getAttributes();
@@ -83,7 +91,7 @@ class LogbookDescriptionManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookCustomDescription[]
      */
-    public function getCustomDescriptionListByFacilityId($facilityId)
+    public function getCustomDescriptionListByFacilityId($facilityId, $deleted = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookCustomDescriptionList = array();
@@ -92,6 +100,9 @@ class LogbookDescriptionManager
                  "ON lit.id = lcd.inspection_type_id ".
                  "WHERE lcd.facility_id={$db->sqltext($facilityId)} ".
                  "AND lcd.origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
+        if(isset($deleted)){
+          $query.= " AND lcd.deleted = {$deleted}";   
+        }
         $db ->query($query);
         $rows = $db->fetch_all_array();
         foreach($rows as $row){
@@ -111,10 +122,10 @@ class LogbookDescriptionManager
      * 
      * @return json
      */
-    public function getAllDescriptionListByInspectionTypeIdInJson($inspectionTypeId)
+    public function getAllDescriptionListByInspectionTypeIdInJson($inspectionTypeId, $deleted)
     {
         $logbookDescriptionList = $this->getDescriptionListByInspectionTypeId($inspectionTypeId);
-        $logbookCustomDescriptionList = $this->getCustomDescriptionListByInspectionTypeId($inspectionTypeId);
+        $logbookCustomDescriptionList = $this->getCustomDescriptionListByInspectionTypeId($inspectionTypeId, $deleted);
         
         $logbookDescriptionListJson = array();
         foreach ($logbookDescriptionList as $logbookDescription) {
@@ -136,23 +147,27 @@ class LogbookDescriptionManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookDescription[]
      */
-    public function getCustomDescriptionListByInspectionTypeId($inspectionTypeId)
+    public function getCustomDescriptionListByInspectionTypeId($inspectionTypeId, $deleted = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookCustomDescriptionList = array();
-        $query = "SELECT * FROM ".LogbookDescription::TABLE_NAME." ".
-                 "WHERE inspection_type_id={$db->sqltext($inspectionTypeId)} ".
-                 "AND origin = '".self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN."'";
-        $db ->query($query);
-        
+        $query = "SELECT * FROM " . LogbookDescription::TABLE_NAME . " " .
+                "WHERE inspection_type_id={$db->sqltext($inspectionTypeId)} " .
+                "AND origin = '" . self::LOGBOOK_CUSTOM_DESCRIPTION_ORIGIN . "'";
+
+        if (isset($deleted)) {
+            $query.= " AND deleted={$deleted}";
+        }
+
+        $db->query($query);
+
         $rows = $db->fetch_all_array();
-        foreach($rows as $row){
+        foreach ($rows as $row) {
             $logbookCustomDescription = new LogbookCustomDescription();
             $logbookCustomDescription->initByArray($row);
             $logbookCustomDescriptionList[] = $logbookCustomDescription;
-            
         }
-        
+
         return $logbookCustomDescriptionList;
     }
 
