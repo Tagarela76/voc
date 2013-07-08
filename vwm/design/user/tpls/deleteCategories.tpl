@@ -273,6 +273,9 @@
 			{if $request.tab}
 				<input type='hidden' name='tab' value="{$request.tab}">
 			{/if}
+            {if $equipmentId}
+				<input type='hidden' name='equipmentId' value="{$equipmentId}">
+			{/if}
         </div>
     </div>
 </form>

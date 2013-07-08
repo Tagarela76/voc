@@ -83,6 +83,7 @@ function InspectionTypeList() {
                     html += '<option value="'+response[i].id+'">'+response[i].description+'</option>';
                 }
                 $('#logBookDescription').html(html);
+                itlManager.setjSonDescriptionType(response);
             }
         });
         

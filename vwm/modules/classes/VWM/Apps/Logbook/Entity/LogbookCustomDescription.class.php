@@ -134,7 +134,8 @@ class LogbookCustomDescription extends LogbookDescription
             'notes' => $this->getNotes(),
             'origin' => $this->getOrigin(),
             'inspection_type_id' => $this->getInspectionTypeId(),
-            'facility_id' => $this->getFacilityId()
+            'facility_id' => $this->getFacilityId(),
+            'deleted' => $this->getIsDeleted()
         );
     }
     
