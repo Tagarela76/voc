@@ -237,13 +237,7 @@ class LogbookRecord extends Model
      */
     protected $max_gauge_range = 100;
     
-    /**
-     *
-     * inspection Person Name
-     * 
-     * @var string 
-     */
-    protected $inspection_person_name = null;
+    
     protected $inspection_addition_type = null;
 
     const TABLE_NAME = 'logbook_record';
@@ -609,27 +603,6 @@ class LogbookRecord extends Model
         $this->description = $description;
     }
 
-    public function getInspectionPersonName()
-    {
-        if (!is_null($this->inspection_person_name)) {
-            return $this->inspection_person_name;
-        }
-        if(is_null($this->inspection_person_id)){
-            return false;
-        }
-        $inspectionPerson = new LogbookInspectionPerson();
-        $inspectionPerson->setId($this->inspection_person_id);
-        $inspectionPerson->load();
-        $this->inspection_person_name = $inspectionPerson->getName();
-        return $this->inspection_person_name;
-    }
-
-    public function setInspectionPersonName($inspectionPersonName)
-    {
-        $this->inspection_person_name = $inspectionPersonName;
-    }
-
-        
     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -731,7 +704,6 @@ class LogbookRecord extends Model
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
-                "inspection_person_name = '{$db->sqltext($this->getInspectionPersonName())}', " .
                 "qty = '{$db->sqltext($qty)}'";
 
         $db->query($sql);
@@ -814,7 +786,6 @@ class LogbookRecord extends Model
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                // "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
-                //"inspection_person_name = '{$db->sqltext($this->getInspectionPersonName())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
 

@@ -62,7 +62,7 @@
                     <select id = 'InspectionPersons' name = 'InspectionPersons'>
                         {foreach from=$inspectionPersonList item=inspectionPerson}
                             <option value="{$inspectionPerson->getId()|escape}" {if $inspectionPerson->getId()==$logbook->getInspectionPersonId()}selected='selected'{/if}>
-                                {$inspectionPerson->getName()|escape}{if $inspectionPerson->getDeleted()} (deleted){/if}
+                                {$inspectionPerson->getName()|escape}{if $inspectionPerson->getIsDeleted()} (deleted){/if}
                             </option>
                         {/foreach}
                     </select>

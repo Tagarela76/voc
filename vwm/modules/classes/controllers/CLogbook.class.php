@@ -92,7 +92,6 @@ class CLogbook extends Controller
                     $jsonDescriptionTypeList = $ldManager->getAllDescriptionListByInspectionTypeIdInJson($logbook->getInspectionTypeId());
                     //get inspection person list
                     $inspectionPerson = new LogbookInspectionPerson();
-                    $inspectionPerson->setName($logbook->getInspectionPersonName());
                     $inspectionPersonList = $lbmanager->getLogbookInspectionPersonListByFacilityId($facilityId);
                 } else {
                     //get logbook Description
@@ -138,7 +137,7 @@ class CLogbook extends Controller
                     $logbooInspectionPerson = new LogbookInspectionPerson();
                     $logbooInspectionPerson->setId($post['InspectionPersons']);
                     $logbooInspectionPerson->load();
-                    $logbook->setInspectionPersonName($logbooInspectionPerson->getName());
+                    
                     
                     //set addition fields
                     if (!is_null($post['inspectionAdditionListType'])) {
@@ -539,7 +538,10 @@ class CLogbook extends Controller
                     $logbookDescription->load();
                     $condition = $logbookDescription->getDescription();
                     $condition = is_null($condition) ? 'NONE' : $condition;
-
+                    
+                    $inspectionPerson = new LogbookInspectionPerson();
+                    $inspectionPerson->setId($logbookRecord->getInspectionPersonId());
+                    $inspectionPerson->load();
                     //create logbook array for diplay and sort
                     $logbook = array(
                         'logbookId' => $logbookRecord->getId(),
@@ -548,7 +550,7 @@ class CLogbook extends Controller
                         'creationDate' => $creationDateTime[0],
                         //add time for sorting
                         'creationTime' => $creationDateTime[1] . ' ' . $creationDateTime[2],
-                        'inspectionPersonName' => $logbookRecord->getInspectionPersonName(),
+                        'inspectionPersonName' => $inspectionPerson->getName(),
                         'condition' => $condition,
                         'notes' => $notes
                     );

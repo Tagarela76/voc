@@ -62,12 +62,12 @@ class LogbookInspectionPerson extends Model
         $this->name = $name;
     }
     
-    public function getDeleted()
+    public function getIsDeleted()
     {
         return $this->deleted;
     }
 
-    public function setDeleted($deleted)
+    public function setIsDeleted($deleted)
     {
         $this->deleted = $deleted;
     }
@@ -123,7 +123,7 @@ class LogbookInspectionPerson extends Model
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "name = '{$db->sqltext($this->getName())}' " .
-                "deleted = '{$db->sqltext($this->getDeleted())}' " .
+                "deleted = '{$db->sqltext($this->getIsDeleted())}' " .
                 "WHERE id = {$db->sqltext($this->getId())}";
         $db->query($query);
 

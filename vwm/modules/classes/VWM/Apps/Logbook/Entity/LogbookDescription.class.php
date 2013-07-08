@@ -176,7 +176,7 @@ class LogbookDescription extends Model
      * 
      * @return boolean
      */
-    public function getDeleted()
+    public function getIsDeleted()
     {
         return $this->deleted;
     }
@@ -187,7 +187,7 @@ class LogbookDescription extends Model
      * 
      * @param boolean $deleted
      */
-    public function setDeleted($deleted)
+    public function setIsDeleted($deleted)
     {
         $this->deleted = $deleted;
     }
@@ -258,7 +258,7 @@ class LogbookDescription extends Model
                 "description = '{$db->sqltext($this->getDescription())}', " .
                 "notes = {$db->sqltext($this->getNotes())}, " .
                 "origin = '{$db->sqltext($this->getOrigin())}', " .
-                "deleted = '{$db->sqltext($this->getDeleted())}', " .
+                "deleted = '{$db->sqltext($this->getIsDeleted())}', " .
                 "inspection_type_id = {$db->sqltext($this->getInspectionTypeId())} ".
                 "WHERE id={$db->sqltext($this->getId())}";
         $response = $db->exec($query);
@@ -283,7 +283,7 @@ class LogbookDescription extends Model
             'notes' => $this->getNotes(),
             'origin' => $this->getOrigin(),
             'inspection_type_id' => $this->getInspectionTypeId(),
-            'deleted' => $this->getDeleted()
+            'deleted' => $this->getIsDeleted()
         );
     }
     
