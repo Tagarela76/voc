@@ -1,5 +1,5 @@
 <div style="width: 100%; padding: 10px 13px;">
-    <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id=125&bookmark=logbook&tab=logbookEquipment'">
+    <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id={$logbookEquipment->getFacilityId()|escape}&bookmark=logbook&tab=logbookEquipment'">
     <input type='button' class="button" value="Edit" onclick="location.href = '?action=addItem&category=logbook&facilityID={$logbookEquipment->getFacilityId()|escape}&tab=logbookEquipment&logbookEquipmentId={$logbookEquipment->getId()|escape}'">
 </div>
 <div>
