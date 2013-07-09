@@ -182,7 +182,7 @@ function ManagerLogbookTemplate() {
     this.changelogbookTemplateList = function(){
         var companyId = $('#companyId').val();
         var facilityId = $('#facilityId').val();
-        window.location.href = '?action=browseCategory&category=logbook&facilityId='+facilityId+'&companyId='+companyId;
+        window.location.href = '?action=browseCategory&category=logbook&facilityId='+facilityId+'&companyId='+companyId+'&bookmark=logbookSetupTemplate';
     }
 
 }
