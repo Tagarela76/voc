@@ -262,7 +262,7 @@ $(function()
                             }
 
                             $(document).ready(function(){
-                                 $('#calendar1').datepicker({ dateFormat: '{/literal}{$data->dateFormatForCalendar}{literal}' });
+                                 $('#calendar1').datepicker({ dateFormat: '{/literal}{$data->dateFormatForCalendar}{literal}', changeMonth: true, changeYear: true });
                             });
 
                         </script>
