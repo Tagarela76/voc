@@ -7,13 +7,16 @@ use VWM\Framework\Test\DbTestCase;
 class CribTest extends DbTestCase {
 			
 	protected $fixtures = array(
-		TB_FACILITY,
-		Crib::TABLE_NAME,
-		Bin::TABLE_NAME,
+//		TB_FACILITY,
+//		Crib::TABLE_NAME,
+//		Bin::TABLE_NAME,
 	);
+
 	
-	
-	public function testSave() {					
+	public function testSave()
+    {					
+        $this->markTestIncomplete();
+
 		$crib = new Crib($this->db);
 		$crib->setFacilityId('1');
 		$crib->setSerialNumber('Blah!');
@@ -45,7 +48,10 @@ class CribTest extends DbTestCase {
 	}	
 	
 	
-	public function testGetBins() {
+	public function testGetBins() 
+    {
+        $this->markTestIncomplete();
+
 		$cribId = 1;
 		$crib = new Crib($this->db, $cribId);
 		$bins = $crib->getBins();
@@ -63,8 +69,10 @@ class CribTest extends DbTestCase {
 		
 	}
 	
-	public function testCheckAddOrUpdate() {
-		
+	public function testCheckAddOrUpdate()
+    {
+	    $this->markTestIncomplete();
+
 		$crib = new Crib($this->db);
 		$crib->setFacilityId('1');
 		$crib->setSerialNumber('Blah!'); // unique
@@ -84,4 +92,3 @@ class CribTest extends DbTestCase {
 		$this->assertTrue(!is_null($updatedCribId));
 	}
 }
-?>
