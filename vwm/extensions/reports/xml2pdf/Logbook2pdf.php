@@ -207,16 +207,20 @@ class XML2PDF extends PDF_MC_Table
         $this->DebugPrint("End: $tag\n");
         switch ($tag) {
             case 'LOGBOOKINSPECTION':
-                $this->widths = array(30, 30, 40, 40, 25, 25);
+                $this->widths = array(15, 10, 27, 23, 30, 25, 30, 20, 15);
                 $this->SetWidths($this->widths);
                 $this->SetFont('Arial', 'B', 7);
                 $h = 5;
                 $this->Cell($this->widths[0], $h, $attribs['DATE'], 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, $attribs['START'], 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, $attribs['END']." ".$attribs['UNITTYPE']." ", 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, $attribs['DESCRIPTION'], 1, 0, 'C');
-                $this->Cell($this->widths[4], $h, $attribs['INSPECTEDPERSON'], 1, 0, 'C');
-                $this->Cell($this->widths[5], $h, $attribs['GAUGE'], 1, 0, 'C');
+                $this->Cell($this->widths[1], $h, $attribs['TIME'], 1, 0, 'C');
+                $this->Cell($this->widths[2], $h, $attribs['START'], 1, 0, 'C');
+                $this->Cell($this->widths[3], $h, $attribs['END']." ".$attribs['UNITTYPE']." ", 1, 0, 'C');
+                $this->Cell($this->widths[4], $h, $attribs['GAUGE'], 1, 0, 'C');
+                $this->Cell($this->widths[5], $h, $attribs['INSPECTEDPERSON'], 1, 0, 'C');
+                $this->Cell($this->widths[6], $h, $attribs['INSPECTIONTYPE'], 1, 0, 'C');
+                $this->Cell($this->widths[7], $h, $attribs[''], 1, 0, 'C');
+                $this->Cell($this->widths[8], $h, $attribs['DESCRIPTIONNOTES'], 1, 0, 'C');
+                
                 $this->ln();
                 break;
         }
@@ -291,17 +295,20 @@ class XML2PDF extends PDF_MC_Table
             /*             * *** */
             $this->Ln(15);
 
-            $this->widths = array(30, 30, 40, 40, 25, 25);
+            $this->widths = array(15, 10, 27, 23, 30, 25, 30, 20, 15);
             $this->SetWidths($this->widths);
             $this->SetLineWidth(0.2);
             $this->SetFont('Arial', 'B', 7);
-            $h = 10;
-            $this->Cell($this->widths[0], $h, "Date", 1, 0, 'C');
-            $this->Cell($this->widths[1], $h, "Start Reading (A)", 1, 0, 'C');
-            $this->Cell($this->widths[2], $h, "End Reading (B)", 1, 0, 'C');
-            $this->Cell($this->widths[3], $h, "Description", 1, 0, 'C');
-            $this->Cell($this->widths[4], $h, "Inspected By", 1, 0, 'C');
-            $this->Cell($this->widths[5], $h, "GaugeType", 1, 0, 'C');
+            $h = 15;
+            $this->Cell($this->widths[0], $h, "DATE", 1, 0, 'C');
+            $this->Cell($this->widths[1], $h, "TIME", 1, 0, 'C');
+            $this->Cell($this->widths[2], $h, "START READING\n (A)", 1, 0, 'C');
+            $this->Cell($this->widths[3], $h, "END READING (B)", 1, 0, 'C');
+            $this->Cell($this->widths[4], $h, "GAUGE TYPE", 1, 0, 'C');
+            $this->Cell($this->widths[5], $h, "INSPECTED BY", 1, 0, 'C');
+            $this->Cell($this->widths[6], $h, "INSPECTION TYPE", 1, 0, 'C');
+            $this->Cell($this->widths[7], $h, "CONDITION", 1, 0, 'C');
+            $this->Cell($this->widths[8], $h, "NOTES", 1, 0, 'C');
 
             $this->Ln();
         }

@@ -212,7 +212,7 @@ class CLogbook extends Controller
 
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
-
+                
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
                 $unitTypeList = $utManager->getUnitTypeListBuGaugeId($logbook->getValueGaugeType());
@@ -941,7 +941,7 @@ class CLogbook extends Controller
         $gaugeTypeId = $this->getFromPost('gaugeType');
         $utManager = new UnitTypeManager($this->db);
         $unitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
-
+        
         $this->smarty->assign('unitTypeList', $unitTypeList);
         $tpl = 'tpls/viewUnitTypeList.tpl';
         $result = $this->smarty->fetch($tpl);
