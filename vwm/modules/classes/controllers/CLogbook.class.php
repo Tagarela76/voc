@@ -95,7 +95,7 @@ class CLogbook extends Controller
                     } else {
                         $permit = 0;
                     }
-
+                    
                     //init logbook
                     $logbook->setFacilityId($facilityId);
                     $logbook->setInspectionPersonId($post['InspectionPersons']);
@@ -103,7 +103,11 @@ class CLogbook extends Controller
                     $logbook->setInspectionSubType($post['inspectionSubType']);
                     $logbook->setDescriptionId($post['logBookDescription']);
                     $logbook->setPermit($permit);
-                    $logbook->setEquipmentId($post['logbookEquipmentId']);
+                    if(isset($post['isEquipment'])){
+                        $logbook->setEquipmentId($post['logbookEquipmentId']);
+                    }else{
+                        $logbook->setEquipmentId(0);
+                    }
                     $logbook->setDepartmentId($post['departmentId']);
                     $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                     $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
@@ -523,8 +527,10 @@ class CLogbook extends Controller
 
                 //initialize equipment
                 $logbookEquipment = new LogbookEquipment();
-                $logbookEquipment->setId($logbook->getEquipmentId());
-                $logbookEquipment->load();
+                if ($logbook->getEquipmentId() != 0) {
+                    $logbookEquipment->setId($logbook->getEquipmentId());
+                    $logbookEquipment->load();
+                }
                 $this->smarty->assign('logbookEquipment', $logbookEquipment);
 
                 //initialize description

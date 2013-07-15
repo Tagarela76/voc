@@ -15,7 +15,7 @@
         itlManager.setjSonDescriptionType({/literal}{$jsonDescriptionTypeList}{literal});
         var facilityId ={/literal}'{$facilityId}'{literal};
         var inspectionPerson = new InspectionPersonSettings();
-
+        
        $(function() {
             $('#dateTime').datetimepicker({
                                 dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
@@ -27,6 +27,7 @@
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.gauges.checkGaugeValueRange();
             itlManager.gauges.changeGauge();
+            itlManager.equipmant.showEquipmentList();
             
             
         });
@@ -237,6 +238,14 @@
             </tr>
 
             <tr class="border_users_b border_users_r" height='30'>
+                <td class="border_users_l">
+                    Is Equipment
+                </td>
+                <td>
+                    <input type='checkbox' name="isEquipment" id='isEquipment' onchange="itlManager.equipmant.showEquipmentList();" {if $logbook->getEquipmentId()!='0'}checked='checked'{/if}>
+                </td>
+            </tr>
+            <tr class="border_users_b border_users_r" height='30' hidden="hidden" id = 'showEquipmentList'>
                 <td class="border_users_l">
                     Equipment
                 </td>

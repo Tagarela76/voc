@@ -65,7 +65,7 @@ class LogbookManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookRecord
      */
-    public function getLogbookListByFacilityId($facilityId, $pagination = null)
+    public function getLogbookListByFacilityId($facilityId, $type = null, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookList = array();
@@ -96,11 +96,17 @@ class LogbookManager
      * 
      * @return int
      */
-    public function getCountLogbooksByFacilityId($facilityId)
+    public function getCountLogbooksByFacilityId($facilityId, $type = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "SELECT count(*) logbookListcCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
+        if($type == 'equipment'){
+           $query .= " AND equipment_id <> 0 " ;
+        }
+        if($type == 'facility'){
+           $query .= " AND equipment_id == 0 " ;
+        }
         $db->query($query);
         $row = $db->fetch(0);
 

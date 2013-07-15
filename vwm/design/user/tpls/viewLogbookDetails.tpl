@@ -61,7 +61,11 @@
                 Equipment Description
             </td>
             <td class="border_users_b border_users_r">
-                {$logbookEquipment->getEquipDesc()|escape}
+                {if $logbook->getEquipmentId()!=0}
+                    {$logbookEquipment->getEquipDesc()|escape}
+                {else}
+                    NONE
+                {/if}
             </td>
         </tr>
         {if $logbook->getHasSubTypeNotes()}

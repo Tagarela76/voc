@@ -86,7 +86,7 @@ class LogbookRecord extends Model
      *
      * @var int
      */
-    protected $equipment_id;
+    protected $equipment_id = 0;
 
     /* Addition fields */
 

@@ -334,6 +334,16 @@ function Equipmant() {
         });
 
     }
+    this.showEquipmentList = function() {
+        var isShowEquipment = $('#isEquipment').is(':checked');
+        if (isShowEquipment) {
+            $('#showEquipmentList').show();
+            isShowEquipment = 1;
+        } else {
+            $('#showEquipmentList').hide();
+            isShowEquipment = 0;
+        }
+    }
 }
 
 function ManageLogbookRecord() {
@@ -643,4 +653,5 @@ function Gauges() {
 $(function() {
     //	ini global object
     inspectionPerson.addInspectionPerson.iniDialog();
+   
 });
