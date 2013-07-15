@@ -313,6 +313,7 @@ class ReminderManager
      * Get over that period will be re-sent reminder
      * 
      * @param int $periodicity
+     * @param int $currentDate
      * 
      * @return int
      */

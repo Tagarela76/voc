@@ -1,5 +1,6 @@
 <?php
-use  \VWM\Apps\Reminder\Entity\Reminder;
+use VWM\Apps\Reminder\Entity\Reminder;
+use VWM\Hierarchy\Facility;
 
 class CReminderUsers extends Controller
 {
@@ -21,17 +22,10 @@ class CReminderUsers extends Controller
         }
         
         $reminderManager = VOCApp::getInstance()->getService('reminder');
-        $facility = new Facility($this->db);
+        $facility = new Facility($this->db, $facilityDetails['facility_id']);
         $companyID = $facilityDetails["company_id"];
 
-        $remindersList = $facility->getRemindersList($facilityDetails['facility_id']);
-        $remindersListIds = array();
-        foreach($remindersList as $reminder){
-            $remindersListIds[] = $reminder->id;
-        }
-        $remindersListIds = implode(',', $remindersListIds);
-        
-        $reminderUsers = $reminderManager->getUserListByReminderIds($remindersListIds);
+        $reminderUsers = $facility->getReminderUsers();
         
         $this->smarty->assign('facilityId', $facilityDetails['facility_id']);
         $this->smarty->assign('usersList', $reminderUsers);

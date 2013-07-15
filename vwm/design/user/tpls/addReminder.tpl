@@ -111,7 +111,7 @@
                         <select id='periodicity' name='periodicity'>
                             {foreach from=$reminderTimingList item='reminderTiming'}
                                 <option value='{$reminderTiming.id}' {if $data->getPeriodicity() == $reminderTiming.id}selected='true'{/if}>
-                                    {$reminderTiming.description}
+                                    {$reminderTiming.description|escape}
                                 </option>
                             {/foreach}
                         </select>
@@ -127,7 +127,7 @@
                         <select id='priority' name='priority'>
                             {section name=number start=0 loop=105 step=5}
                                 <option value="{$smarty.section.number.index}" {if $data->getPriority() == $smarty.section.number.index}selected='true'{/if}>
-                                    {$smarty.section.number.index}%
+                                    {$smarty.section.number.index|escape}%
                                 </option>
                             {/section}
                         </select>

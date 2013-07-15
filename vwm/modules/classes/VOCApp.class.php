@@ -20,6 +20,7 @@ class VOCApp
     private $customer_id;
     private $date_format;
     private $date_format_js;
+    private $eventDispatcher;
 
     /**
      * @var User
@@ -69,8 +70,7 @@ class VOCApp
             new VWM\Apps\WorkOrder\WorkOrderApp(),
             new VWM\Apps\Logbook\LogbookApp(),
             new VWM\Apps\Reminder\ReminderApp(),
-            new VWM\Apps\Logger\LoggerApp(),
-            new VWM\Apps\EventDispatcher\EventDispatcherApp()
+            new VWM\Apps\Logger\LoggerApp()
         );
     }
 
@@ -138,6 +138,19 @@ class VOCApp
 
         // add db to container as service
         $this->container['smarty'] = $this->smarty;
+    }
+    
+    /**
+     * Setter for xnyo smarty
+     *
+     * @param \Smarty $smarty
+     */
+    public function setEventDispatcher($eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+
+        // add db to container as service
+        $this->container['eventDispatcher'] = $this->eventDispatcher;
     }
     
     /**

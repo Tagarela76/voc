@@ -39,7 +39,7 @@
                     <td class="border_users_b border_users_l">
                         <a {if $permissions.viewItem}href="{$reminder->url}"{/if}>
                             <div style="width:100%;">
-                                {$reminder->name}
+                                {$reminder->name|escape}
                             </div>
                         </a>
                     </td>

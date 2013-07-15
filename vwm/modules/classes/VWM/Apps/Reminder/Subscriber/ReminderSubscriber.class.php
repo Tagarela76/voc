@@ -4,7 +4,7 @@ namespace VWM\Apps\Reminder\Subscriber;
 
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use \VWM\Apps\EventDispatcher\StoreEvents;
+use VWM\Apps\Reminder\VWMReminderEvents\StoreEvents;
 
 use VWM\Apps\Reminder\Entity\Reminder;
 

@@ -14,6 +14,7 @@ class NewRemindersMigrations extends AbstractMigration
      */
     public function change()
     {
+        $this->getAdapter()->beginTransaction();
         $exists = $this->hasTable('reminder');
         if ($exists) {
             $rows = $this->query("ALTER TABLE `logbook_record` DROP `inspection_type`");
@@ -22,6 +23,7 @@ class NewRemindersMigrations extends AbstractMigration
         }else{
             die('table unit_class is not exist');
         }
+        $this->getAdapter()->commitTransaction();
     }
     
     

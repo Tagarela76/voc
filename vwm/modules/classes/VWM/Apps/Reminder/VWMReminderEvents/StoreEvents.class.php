@@ -1,5 +1,5 @@
 <?php
-namespace VWM\Apps\EventDispatcher;
+namespace VWM\Apps\Reminder\VWMReminderEvents;
 
 final class StoreEvents
 {
