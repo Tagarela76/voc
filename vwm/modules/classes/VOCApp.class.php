@@ -20,6 +20,7 @@ class VOCApp
     private $customer_id;
     private $date_format;
     private $date_format_js;
+    private $eventDispatcher;
 
     /**
      * @var User
@@ -137,6 +138,19 @@ class VOCApp
 
         // add db to container as service
         $this->container['smarty'] = $this->smarty;
+    }
+    
+    /**
+     * Setter for xnyo smarty
+     *
+     * @param \Smarty $smarty
+     */
+    public function setEventDispatcher($eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+
+        // add db to container as service
+        $this->container['eventDispatcher'] = $this->eventDispatcher;
     }
     
     /**
