@@ -1,5 +1,5 @@
 paths:
-    migrations: /home/developer/WorkSpace/voc/vwm/migrations
+    migrations: vwm/migrations/phinx
         
 environments:
     default_migration_table: phinxlog
@@ -9,7 +9,7 @@ environments:
         host: localhost
         name: voc
         user: root
-        pass: 'developer'
+        pass: ''
         port: 3306
                 
     development:
@@ -17,7 +17,7 @@ environments:
         host: localhost
         name: voc
         user: root
-        pass: 'developer'
+        pass: ''
         port: 3306
                     
     testing:
@@ -25,6 +25,6 @@ environments:
         host: localhost
         name: voc_test
         user: root
-        pass: 'developer'
+        pass: ''
         port: 3306
                  
