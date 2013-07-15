@@ -65,5 +65,18 @@ class ReminderManagerTest extends Testing\DbTestCase
         $this->assertTrue(count($reminders) == 3);
         $this->assertTrue($reminders[0] instanceof Reminder);
     }
+    
+    public function testGetNextRemindDate()
+    {
+        $rManager = VOCApp::getInstance()->getService('reminder');
+        //daily
+        $periodicity = 0;
+        $date = '01/01/2013';
+        $date = explode('/', $date);
+        $unitDate = mktime(0, 0, 0, $date[0], $date[1], $date[2]);
+        $nextDate = $rManager->getNextRemindDate($periodicity, $unitDate);
+        $nextDate = (date('d/m/Y', $nextDate));
+        $this->assertEquals($nextDate, '02/01/2013');
+    }
 
 }

@@ -184,7 +184,7 @@
 											</table>
 
 
-											{if $request.action == 'browseCategory' && !($request.bookmark == 'inventory' && $request.tab != 'orders')}
+											{if $request.action == 'browseCategory' && !($request.bookmark == 'inventory' && $request.tab != 'orders') && $request.bookmark != 'reminderUsers'}
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 
