@@ -25,9 +25,12 @@ $xnyo->load_plugin('auth');
 
 $xnyo->logout_redirect_url = '../voc_web_manager.html';
 
+$eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+
 //  Start VOC app
 VOCApp::getInstance()->setDB($db);
 VOCApp::getInstance()->setSmarty($smarty);
+VOCApp::getInstance()->setEventDispatcher($eventDispatcher);
 
 $xnyo->filter_get_var('action', 'text');
 $xnyo->filter_post_var('action', 'text');

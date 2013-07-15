@@ -83,6 +83,7 @@ function InspectionTypeList() {
                     html += '<option value="'+response[i].id+'">'+response[i].description+'</option>';
                 }
                 $('#logBookDescription').html(html);
+                itlManager.setjSonDescriptionType(response);
             }
         });
         
@@ -539,13 +540,12 @@ function Gauges() {
         //get Gauge Dimension
         var dimension = $('#gaugeUnitTypeDescription').val();
         //var dimension = '';
-        if (gaugeType == 0) {
+        if (gaugeType == 0 || gaugeType == 6 || gaugeType == 7) {
             $("#temperatureCelContainer").show();
         } 
         
         //$('#LogbookGauge').val(from+';'+from);
         this.initNewGauge(from, to, scale, dimension);
-        //this.changeGaugeUnitType
     }
 
     /**
@@ -556,17 +556,8 @@ function Gauges() {
      */
     this.changeGauge = function() {
         var gaugeType = $('#gaugeType').val();
-        //set gauge range 
-
-        switch (gaugeType) {
-                //temperature gauge
-            case '0':
-               // $('#gaugeDimension').val('49');
-                break;
-            default:
-                $('#gaugeDimension').val('');
-                break;
-        }
+        
+        this.getGaugeUnitTypeList(gaugeType);
         if (gaugeType == 'null') {
             $('#gaugeRangeFrom').val(0);
             $('#gaugeRangeTo').val(1);
@@ -575,8 +566,8 @@ function Gauges() {
             $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
         }
         
-        this.updateGauge();
-        this.changeGaugeUnitType();
+        //this.updateGauge();
+        //this.changeGaugeUnitType();
     }
 
     /**
@@ -587,17 +578,35 @@ function Gauges() {
      */
     this.changeGaugeUnitType = function() {
         var gaugeType = $('#gaugeType').val();
-        var temperatureGaugeType = '';
-        var temperatureGaugeTypeDesc='';
         
-        if(gaugeType==0){
-            temperatureGaugeType = $('#gaugeDimension option:selected').val();
-            temperatureGaugeTypeDesc = $('#gaugeDimension option:selected').text();
-        }
+        var gaugeUnitTypeId = '';
+        var gaugeUnitTypeDesc='';
+        
+        //get new Unit type
+        gaugeUnitTypeId = $('#gaugeDimension option:selected').val();
+        gaugeUnitTypeDesc = $('#gaugeDimension option:selected').text();
+        
         //set gauge dimension
-        $('#gaugeUnitTypeId').val(temperatureGaugeType);
-        $('#gaugeUnitTypeDescription').val(temperatureGaugeTypeDesc);
+        $('#gaugeUnitTypeId').val(gaugeUnitTypeId);
+        $('#gaugeUnitTypeDescription').val(gaugeUnitTypeDesc);
         this.updateGauge();
+    }
+    
+    this.getGaugeUnitTypeList = function(gaugeType) {
+        var that = this;
+        $.ajax({
+            url: "?action=getGaugeUnitTypeList&category=logbook",
+            data: {
+                gaugeType: gaugeType
+            },
+            type: "POST",
+            dataType: 'html',
+            success: function(response) {
+                $('#temperatureCelContainer').html(response);
+                that.changeGaugeUnitType();
+                
+            }
+        });
     }
     
     /**

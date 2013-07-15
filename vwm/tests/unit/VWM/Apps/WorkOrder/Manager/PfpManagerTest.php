@@ -10,7 +10,7 @@ class PfpManagerTest extends DbTestCase
 
     protected $fixtures = array(
         TB_COMPANY, TB_SUPPLIER, TB_PRODUCT, TB_PFP, TB_PFP2PRODUCT,
-		TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP2PFP_TYPES, TB_PFP_TYPES
+		TB_PFP2COMPANY, TB_PRODUCT2COMPANY, TB_PFP_TYPES, TB_PFP2PFP_TYPES
     );
 
     public function testFindById()

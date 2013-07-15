@@ -16,13 +16,16 @@ class LogbookManager
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookInspectionPerson[]
      */
-    public function getLogbookInspectionPersonListByFacilityId($facilityId, \Pagination $pagination = null)
+    public function getLogbookInspectionPersonListByFacilityId($facilityId, $deleted = null, \Pagination $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
         $query = "SELECT * FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
-                
+               
+        if(isset($deleted)){
+           $query .= " AND deleted = {$deleted}";
+        }        
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
@@ -46,15 +49,20 @@ class LogbookManager
      *
      * @return int
      */
-    public function getCountLogbookInspectionPersonListByFacilityId($facilityId)
+    public function getCountLogbookInspectionPersonListByFacilityId($facilityId, $deleted = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $inspectionPersonList = array();
         $query = "SELECT count(*) count FROM " . LogbookInspectionPerson::TABLE_NAME . " " .
                 "WHERE facility_Id = {$db->sqltext($facilityId)}";
+                
+        if (isset($deleted)) {
+            $query.= " AND deleted = {$deleted}";
+        }
+        
         $db->query($query);
         $count = $db->fetch(0);
-       
+
         return $count->count;
     }
 
@@ -144,6 +152,7 @@ class LogbookManager
             'min' => $gaugeRange['min_gauge_range'],
             'max' => $gaugeRange['max_gauge_range']
         );
+        
         //manometer gauge
         if(!is_null($facilityId)){
             $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::MANOMETER_GAUGE);
@@ -188,6 +197,7 @@ class LogbookManager
             'max' => $electricGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
         
+        //propane gauge
         if(!is_null($facilityId)){
             $propanGaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::PROPANE_GAS_GAUGE);
         }
@@ -198,14 +208,37 @@ class LogbookManager
             'max' => $propanGaugeRange['gauge_value_to']+LogbookRecord::GAUGE_RANGE_STEP
         );
         
-        //var_dump($electricGaugeRange);//die();
+        //time gauge
+       if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::TIME_GAUGE);
+        }
+        $timeGauge = array(
+            'id' => LogbookRecord::TIME_GAUGE,
+            'name' => 'Time Gauge',
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
+        );
+        
+        //Fuel gauge
+       if(!is_null($facilityId)){
+            $gaugeRange = $this->getLogbookRange($facilityId, LogbookRecord::FUEL_GAUGE);
+        }
+        $fuelGauge = array(
+            'id' => LogbookRecord::FUEL_GAUGE,
+            'name' => 'Fuel Gauge',
+            'min' => $gaugeRange['min_gauge_range'],
+            'max' => $gaugeRange['max_gauge_range']
+        );
+        
         $gaugeList = array(
             0 => $temperatuteGauge,
             1 => $manometerGauge,
             2 => $clarifierGauge,
             3 => $gasGauge,
             4 => $electricGauge,
-            5 => $propanGasGauge
+            5 => $propanGasGauge,
+            6 => $timeGauge,
+            7 => $fuelGauge,
         );
 
         return $gaugeList;
@@ -246,6 +279,40 @@ class LogbookManager
         }
 
         return $result[0];
+    }
+    
+    public function getLogbookListByEquipmentId($equipmentId, $pagination = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookList = array();
+        $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "equipment_id = {$db->sqltext($equipmentId)}";
+        $query.=' ORDER BY date_time DESC';
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
+        
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+
+        foreach ($rows as $row) {
+            $logbook = new LogbookRecord();
+            $logbook->initByArray($row);
+            $logbookList[] = $logbook;
+        }
+
+        return $logbookList;
+    }
+    
+    public function getCountLogbooksByEquipmentId($equipmentId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "SELECT count(*) logbookListCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
+                "equipment_id = {$db->sqltext($equipmentId)}";
+        $db->query($query);
+        $row = $db->fetch(0);
+
+        return $row->logbookListCount;
     }
     
 

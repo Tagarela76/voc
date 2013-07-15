@@ -9,6 +9,7 @@ use VWM\Apps\Gauge\Entity\QtyProductGauge;
 use VWM\Apps\Gauge\Entity\NoxGauge;
 use VWM\Apps\Gauge\Entity\VocGauge;
 use VWM\Apps\Process\ProcessTemplate;
+use \VWM\Apps\Reminder\Entity\Reminder;
 
 
 class Facility extends Model {
@@ -632,9 +633,42 @@ class Facility extends Model {
 		$this->unitTypes = $unitTypes;
 		return $unitTypes;
 	}
+    
+    /**
+     * 
+     * get reminder Users by facility id
+     * 
+     * @param int $facilityId
+     * @param \VWM\Hierarchy\Pagination $pagination
+     * 
+     * @return boolean
+     */
+    public function getReminderUsers($facilityId = null, Pagination $pagination = null)
+    {
+        if(is_null($facilityId)){
+            $facilityId = $this->getFacilityId();
+        }
+        
+        if(is_null($facilityId)){
+            return false;
+        }
+        
+        $db = \VOCApp::getInstance()->getService('db');
 
-
-
+        $sql = "SELECT u.user_id, u.username, u.email, u.mobile " .
+                "FROM " . TB_USER . " u" .
+                " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.user_id = u.user_id " .
+                " LEFT JOIN " . Reminder::TABLE_NAME . " r ON r2u.reminders_id = r.id " .
+                "WHERE r.facility_id ={$db->sqltext($facilityId)} ".
+                "GROUP BY u.user_id";
+        $db->query($sql);
+         
+        if ($db->num_rows() == 0) {
+            return array();
+        } else {
+            return $db->fetch_all_array();
+        }
+    }
 }
 
 ?>

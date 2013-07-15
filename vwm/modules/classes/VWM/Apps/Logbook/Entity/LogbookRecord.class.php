@@ -236,6 +236,8 @@ class LogbookRecord extends Model
      * @var int
      */
     protected $max_gauge_range = 100;
+    
+    
     protected $inspection_addition_type = null;
 
     const TABLE_NAME = 'logbook_record';
@@ -248,6 +250,9 @@ class LogbookRecord extends Model
     const GAS_GAUGE = 3;
     const ELECTRIC_GAUGE = 4;
     const PROPANE_GAS_GAUGE = 5;
+    const TIME_GAUGE = 6;
+    const FUEL_GAUGE = 7;
+    
     const MIN_GAUGE_RANGE = 0;
     const MAX_GAUGE_RANGE = 100;
     const GAUGE_RANGE_STEP = 100;
@@ -550,6 +555,7 @@ class LogbookRecord extends Model
         if (is_null($this->getUnittypeId())) {
             return false;
         }
+        //var_dump($this->getUnittypeId());
         if (is_null($this->logbookUnitType)) {
             $db = \VOCApp::getInstance()->getService('db');
             $unitType = new UnitType($db);
@@ -597,7 +603,7 @@ class LogbookRecord extends Model
         $this->description = $description;
     }
 
-        public function load()
+    public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
         if (is_null($this->getId())) {
@@ -677,7 +683,7 @@ class LogbookRecord extends Model
         $maxGaugeRange = $this->getMaxGaugeRange();
 
         //set nextGauge
-
+        
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
@@ -779,7 +785,7 @@ class LogbookRecord extends Model
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
-                "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
+               // "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
 

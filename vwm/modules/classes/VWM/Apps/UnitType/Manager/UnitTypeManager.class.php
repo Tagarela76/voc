@@ -12,7 +12,11 @@ class UnitTypeManager {
 	const TB_UNIT_TYPE = 'unittype';
 	const TB_UNIT_CLASS = 'unit_class';
     
+    const FUEL_UNIT_CLASS = 2;
+    const TIME_UNIT_CLASS = 7;
     const TEMPERATURE_UNIT_CLASS = 9;
+    const ACIDITY_UNIT_CLASS = 10;
+    
 
 	public function __construct(\db $db) {
 		$this->db = $db;
@@ -127,8 +131,35 @@ class UnitTypeManager {
             $unitType->initByArray($unit);
             $unitTypes[] = $unitType;
         }
-
         return $unitTypes;
+    }
+    
+    /**
+     * 
+     * get unit type list by gauge id
+     * 
+     * @param int $gaugeTypeId
+     * 
+     * @return \VWM\Apps\UnitType\Entity\UnitType[]
+     */
+    public function getUnitTypeListBuGaugeId($gaugeTypeId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        switch($gaugeTypeId){
+            case 0:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(self::TEMPERATURE_UNIT_CLASS);
+                break;
+            case 2:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(self::ACIDITY_UNIT_CLASS);
+                break;
+            case 6:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(self::TIME_UNIT_CLASS);
+                break;
+            case 7:
+                $unitTypeList = $this->getUnitTypeListByUnitClassId(self::FUEL_UNIT_CLASS);
+                break;
+        }
+        return $unitTypeList;
     }
 	
 }

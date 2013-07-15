@@ -56,7 +56,7 @@
 				<td class="border_users_l border_users_b border_users_r">
 					<div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->getDate()|escape}'></div>												
 						{foreach from=$violationList item="violation"}
-							{if $violation->getPropertyPath() eq 'date'}							
+							{if $violation->getPropertyPath() eq 'date' || $violation->getPropertyPath() eq 'CurrentDate'}							
 							{*ERROR*}					
 							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
 							{*/ERROR*}						    
@@ -83,6 +83,74 @@
 							{*/ERROR*}						    
 							{/if}
 						{/foreach}
+					</div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Type
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+                        <select id='reminderType' name='reminderType'>
+                            {foreach from=$reminderTypeList item='reminderType'}
+                                <option value='{$reminderType}' {if $data->getType() == $reminderType}selected='true'{/if}>
+                                    {$reminderType}
+                                </option>
+                            {/foreach}
+                        </select>
+					</div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Reminder timing
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+                    <div align="left" style="float: left;">
+                        <select id='periodicity' name='periodicity'>
+                            {foreach from=$reminderTimingList item='reminderTiming'}
+                                <option value='{$reminderTiming.id}' {if $data->getPeriodicity() == $reminderTiming.id}selected='true'{/if}>
+                                    {$reminderTiming.description|escape}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Priority Level
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+                        <select id='priority' name='priority'>
+                            {section name=number start=0 loop=105 step=5}
+                                <option value="{$smarty.section.number.index}" {if $data->getPriority() == $smarty.section.number.index}selected='true'{/if}>
+                                    {$smarty.section.number.index|escape}%
+                                </option>
+                            {/section}
+                        </select>
+					</div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Appointment
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+                        <input type='checkbox' id='appointmentEmail' name='appointmentEmail'>Email
+					</div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					ACTIVE
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+                        <input type='checkbox' id='active' name='active' {if $data->getActive()}checked='true'{/if}>
 					</div>												
 				</td>
 			</tr>

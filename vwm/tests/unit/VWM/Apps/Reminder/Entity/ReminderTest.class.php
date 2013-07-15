@@ -26,6 +26,9 @@ class ReminderTest extends Testing\DbTestCase {
         $date = date('Y-m-d');
         $date = time($date);
         $reminder->setDate($date);
+        $reminder->setNextDate($date);
+        $reminder->setType('Permit');
+        $reminder->setPriority(5);
         $reminder->setFacilityId('1');
         $reminder->save();
 
@@ -41,6 +44,8 @@ class ReminderTest extends Testing\DbTestCase {
         $reminder->load();
 		// updaete, set name is reminders_4
 		$reminder->setName('reminders_4');
+        $reminder->setPriority(100);
+        $reminder->setType('Permit');
 		$reminder->save();
 		// check
 		$myTestReminder = Phactory::get(TB_REMINDER, array('name'=>"reminders_4"));

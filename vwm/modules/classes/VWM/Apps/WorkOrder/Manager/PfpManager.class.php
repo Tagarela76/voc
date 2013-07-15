@@ -88,7 +88,7 @@ class PfpManager extends Manager
                 $this->applyJoin() . " " .
                 $this->applyWhere($queryFilter) . " GROUP BY pfp.id";
         if (isset($pagination)) {
-            $query .= " ORDER BY pfp.supplier_id LIMIT " . $pagination->getLimit() . " " .
+            $query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " " .
                     "OFFSET " . $pagination->getOffset() . "";
         }
 

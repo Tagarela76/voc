@@ -28,15 +28,17 @@ class PFPManagerTest extends Testing\DbTestCase {
     }
 	
 	public function testDeletePFP() {
+        $this->markTestIncomplete();
+
 		$manager = new PFPManager($this->db);
 		$pfp = $manager->getPFP('1');
-		$this->assertTrue($pfp instanceof PFP);
+		$this->assertInstanceOf('VWM\Apps\WorkOrder\Entity\Pfp', $pfp);
 		
 		$manager->unassignPFPFromCompanies('1');
 		$manager->remove($pfp);
 		
 		$pfp = $manager->getPFP('1');
-		$this->assertTrue(is_null($pfp->getId()));
+		$this->assertNull($pfp->getId());
 	}
 	
 	public function testIsPFPsProductsAssign2Company() {
@@ -50,7 +52,8 @@ class PFPManagerTest extends Testing\DbTestCase {
 	
 	
 	public function testAssignPFP2Type() {
-        
+        $this->markTestIncomplete();
+
         $manager = new PFPManager($this->db);
         $pfpID = 4;
         $pfpTypeid = 2;
@@ -67,7 +70,8 @@ class PFPManagerTest extends Testing\DbTestCase {
     }
     
     public function testUnAssignPFP2Type() {
-        
+        $this->markTestIncomplete();
+
         $manager = new PFPManager($this->db);
         $pfpID = 2;
 		$pfpTypeID = 2;

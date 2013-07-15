@@ -105,7 +105,9 @@
             </td>
         </tr>
         {*addition Fialds*}
+
         {if $logbookEquipment->getPermit()!=''}
+
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
                     Permit
@@ -128,17 +130,9 @@
         {if $logbook->getHasVolueGauge()}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
-                    {if $logbook->getValueGaugeType() == '0'}
-                        Temperature Gauge
-                    {elseif $logbook->getValueGaugeType() == '1'}
-                        Manometer Gauge
-                    {elseif $logbook->getValueGaugeType() == '2'}
-                        Clarifier Gauge
-                    {elseif $logbook->getValueGaugeType() == '3'}
-                        Gas Gauge
-                    {else}
-                        Electric Gauge
-                    {/if}
+                    {assign var = 'i' value= $logbook->getValueGaugeType()}
+                    {$gaugeList[$i].name}
+
                 </td>
                 <td class="border_users_b border_users_r">
                     ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape})
