@@ -240,15 +240,15 @@
 
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
-                    is Equipment 
+                    Equipment or H&S 
                 </td>
                 <td>
                     <select onchange="itlManager.equipmant.showEquipmentList();" id='isEquipment' name="isEquipment">
                         <option value="equipment" >
-                            Equipment  Inspection Types 
+                            Equipment 
                         </option>
                         <option value="facility" {if $logbook->getEquipmentId()=='0'}selected='selected'{/if}>
-                            Facility Health & Safety (H&S) Inspection Types 
+                            Facility Health & Safety (H&S)
                         </option>
                     </select>
                 </td>
