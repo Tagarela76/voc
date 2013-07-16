@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
@@ -13,7 +14,7 @@ class LogbookEquipmentTest extends Testing\DbTestCase
 
     public function testSave()
     {
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         //INSERT
         $equipmentName = 'testInsertEquipment';
         $facilityId = 1;
@@ -53,7 +54,7 @@ class LogbookEquipmentTest extends Testing\DbTestCase
     
     public function testDelete()
     {
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         $equipmentName = 'testInsertEquipment';
         $facilityId = 1;
         $logbookEquipment = new LogbookEquipment();

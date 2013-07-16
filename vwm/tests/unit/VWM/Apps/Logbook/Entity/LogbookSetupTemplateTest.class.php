@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Framework\Test as Testing;
 use \VWM\Apps\Logbook\Entity\LogbookSetupTemplate;
@@ -15,7 +16,7 @@ class LogbookSetupTemplateTest extends Testing\DbTestCase
     public function testSave()
     {
         $logbookName = 'TestName';
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         $logbookSetupTemplate = new LogbookSetupTemplate();
         $logbookSetupTemplate->setName($logbookName);
         $id = $logbookSetupTemplate->save();
@@ -38,7 +39,7 @@ class LogbookSetupTemplateTest extends Testing\DbTestCase
 
     public function testGetFasilityIds()
     {
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         $logbookSetupTemplateId = 1;
 
         $logbookSetupTemplate = new LogbookSetupTemplate();
@@ -62,7 +63,7 @@ class LogbookSetupTemplateTest extends Testing\DbTestCase
     public function testDelete()
     {
         $logbookName = 'TestName';
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         
         $logbookSetupTemplate = new LogbookSetupTemplate();
         $logbookSetupTemplate->setName($logbookName);
