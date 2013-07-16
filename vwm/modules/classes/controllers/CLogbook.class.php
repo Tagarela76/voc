@@ -121,7 +121,6 @@ class CLogbook extends Controller
                     } else {
                         $permit = 0;
                     }
-                    
                     //init logbook
                     $logbook->setFacilityId($facilityId);
                     $logbook->setInspectionPersonId($post['InspectionPersons']);
@@ -331,18 +330,18 @@ class CLogbook extends Controller
         switch ($tab) {
             case 'logbook':
                 //WIP add filter to logbook Record
-                $filter=new Filter($this->db,'logbookRecord');	
+                /*$filter=new Filter($this->db,'logbookRecord');	
                 $this->smarty->assign('filterArray',$filter->getJsonFilterArray());
-                $filterField = $this->getFromRequest('filterField');
+                $filterField = $this->getFromRequest('filterField');*/
                 
                 //set pagination
-                $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId, $filterField);
-                var_dump($logbookListCount);
+                $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
+                
                 $url = "?" . $_SERVER["QUERY_STRING"];
                 $url = preg_replace("/\&page=\d*/", "", $url);
                 $pagination = new Pagination($logbookListCount);
                 $pagination->url = $url;
-                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $filterField, $pagination);
+                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, null, $pagination);
                 $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
                 $timeFormat = $dataChain->getFromTypeController('getFormat');
                 $logbookList = array();

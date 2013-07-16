@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Logbook\Manager\LogbookManager;

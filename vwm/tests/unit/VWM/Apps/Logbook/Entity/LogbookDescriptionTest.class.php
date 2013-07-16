@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
@@ -13,7 +14,7 @@ class LogbookDescriptionTest extends Testing\DbTestCase
     public function testSave()
     {
         
-       $db = VOCApp::getInstance()->getService('db');
+       $db = \VOCApp::getInstance()->getService('db');
 
         // test INSERT
         $description = 'test logbook description insert';
@@ -101,7 +102,8 @@ class LogbookDescriptionTest extends Testing\DbTestCase
         $logbookDescription->delete();
         
         $db ->query($query);
-        $this->assertTrue($db->num_rows() == 0);
+        $rows = $db->fetch_all_array();
+        $this->assertEquals($rows[0]['deleted'], '1');
         
     }
 

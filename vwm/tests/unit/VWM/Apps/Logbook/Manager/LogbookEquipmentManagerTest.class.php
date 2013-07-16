@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
@@ -13,7 +14,7 @@ class LogbookEquipmentManagerTest extends Testing\DbTestCase
     
     public function testGetLogbookEquipmentListByFacilityId()
     {
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         
         //check for one Facility
         $facilityId = 1;

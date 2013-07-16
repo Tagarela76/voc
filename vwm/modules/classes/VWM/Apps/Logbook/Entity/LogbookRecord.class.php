@@ -785,10 +785,10 @@ class LogbookRecord extends Model
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
-               // "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
+                "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
-
+                
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {

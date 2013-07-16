@@ -107,7 +107,6 @@
         {*addition Fialds*}
 
         {if $logbookEquipment->getPermit()!=''}
-
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
                     Permit
