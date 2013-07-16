@@ -95,7 +95,6 @@
 													<td>
 													{*FILTER*}
 														{if $request.tab != "pfp" and ($request.bookmark == 'department' ||
-															$request.bookmark == 'logbook'||
 															$request.bookmark == 'product'||
 															$request.bookmark == 'mix')}
 

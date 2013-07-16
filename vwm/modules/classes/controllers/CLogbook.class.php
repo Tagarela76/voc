@@ -329,19 +329,18 @@ class CLogbook extends Controller
         }
         switch ($tab) {
             case 'logbook':
-                //WIP add filter to logbook Record
-                /*$filter=new Filter($this->db,'logbookRecord');	
-                $this->smarty->assign('filterArray',$filter->getJsonFilterArray());
-                $filterField = $this->getFromRequest('filterField');*/
-                
+                $filterConditionList = $lbManager->getFilterList();
+                $this->smarty->assign('filterConditionList', $filterConditionList);
+                $filter = $this->getFromRequest('filter');
+                $this->smarty->assign('filter', $filter);
                 //set pagination
-                $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
+                $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId, $filter);
                 
                 $url = "?" . $_SERVER["QUERY_STRING"];
                 $url = preg_replace("/\&page=\d*/", "", $url);
                 $pagination = new Pagination($logbookListCount);
                 $pagination->url = $url;
-                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, null, $pagination);
+                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $filter, $pagination);
                 $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
                 $timeFormat = $dataChain->getFromTypeController('getFormat');
                 $logbookList = array();
@@ -432,6 +431,7 @@ class CLogbook extends Controller
         $jsSources = array(
             'modules/js/autocomplete/jquery.autocomplete.js',
             'modules/js/checkBoxes.js',
+            'modules/js/manageLogbookRecord.js'
         );
 
         $this->smarty->assign('facilityId', $facilityId);

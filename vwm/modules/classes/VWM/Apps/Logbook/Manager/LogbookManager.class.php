@@ -113,15 +113,15 @@ class LogbookManager
      * 
      * @return int
      */
-    public function getCountLogbooksByFacilityId($facilityId, $type = null)
+    public function getCountLogbooksByFacilityId($facilityId, $filter = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "SELECT count(*) logbookListcCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
-        if($type == 'equipment'){
+        if($filter == 'equipment'){
            $query .= " AND equipment_id <> 0 " ;
         }
-        if($type == 'facility'){
+        if($filter == 'facility'){
            $query .= " AND equipment_id = 0 " ;
         }
         $db->query($query);
@@ -313,6 +313,24 @@ class LogbookManager
         $row = $db->fetch(0);
 
         return $row->logbookListCount;
+    }
+    
+    public function getFilterList()
+    {
+        return array(
+            0 => array(
+                'id' => 'all',
+                'name' => 'All',
+            ),
+            1 => array(
+                'id' => 'equipment',
+                'name' => 'Equipment  Inspection Types',
+            ),
+            2 => array(
+                'id' => 'facility',
+                'name' => 'Facility Health & Safety (H&S)',
+            )
+        );
     }
     
 
