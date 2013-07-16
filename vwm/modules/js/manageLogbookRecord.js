@@ -336,13 +336,12 @@ function Equipmant() {
 
     }
     this.showEquipmentList = function() {
-        var isShowEquipment = $('#isEquipment').is(':checked');
-        if (isShowEquipment) {
+        var isShowEquipment = $('#isEquipment').val();
+
+        if(isShowEquipment == 'equipment'){
             $('#showEquipmentList').show();
-            isShowEquipment = 1;
-        } else {
+        }else{
             $('#showEquipmentList').hide();
-            isShowEquipment = 0;
         }
     }
 }

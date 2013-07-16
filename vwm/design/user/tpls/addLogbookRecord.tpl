@@ -240,10 +240,17 @@
 
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
-                    Is Equipment
+                    is Equipment 
                 </td>
                 <td>
-                    <input type='checkbox' name="isEquipment" id='isEquipment' onchange="itlManager.equipmant.showEquipmentList();" {if $logbook->getEquipmentId()!='0'}checked='checked'{/if}>
+                    <select onchange="itlManager.equipmant.showEquipmentList();" id='isEquipment' name="isEquipment">
+                        <option value="equipment" >
+                            Equipment  Inspection Types 
+                        </option>
+                        <option value="facility" {if $logbook->getEquipmentId()=='0'}selected='selected'{/if}>
+                            Facility Health & Safety (H&S) Inspection Types 
+                        </option>
+                    </select>
                 </td>
             </tr>
             <tr class="border_users_b border_users_r" height='30' hidden="hidden" id = 'showEquipmentList'>
