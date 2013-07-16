@@ -1,8 +1,9 @@
 <?php
+namespace VWM\Apps\Reminder\Entity;
 
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Reminder\Entity\Reminder;
-use \VWM\Hierarchy\Facility;
+use VWM\Hierarchy\Facility;
 
 class ReminderTest extends Testing\DbTestCase {
 
@@ -16,7 +17,7 @@ class ReminderTest extends Testing\DbTestCase {
         $reminder = new Reminder();
         $reminder->setId($reminderId);
         $reminder->load();
-        $this->assertTrue($reminder instanceof VWM\Apps\Reminder\Entity\Reminder);
+        $this->assertTrue($reminder instanceof Reminder);
     }
 	
 	public function testSave()
@@ -26,13 +27,14 @@ class ReminderTest extends Testing\DbTestCase {
         $date = date('Y-m-d');
         $date = time($date);
         $reminder->setDate($date);
-        $reminder->setNextDate($date);
+        $reminder->setDeliveryDate($date);
         $reminder->setType('Permit');
         $reminder->setPriority(5);
         $reminder->setFacilityId('1');
         $reminder->save();
-
-        $myTestReminder = Phactory::get(TB_REMINDER, array('name' => "reminders_4"));
+        
+        
+        $myTestReminder = \Phactory::get(TB_REMINDER, array('name' => "reminders_4"));
         // i have 3 reminders in my test data base, so if i added a new reminder successfully - i can get this reminder as fourth in my data base
         $this->assertTrue($myTestReminder->id == '4');
         
@@ -48,9 +50,9 @@ class ReminderTest extends Testing\DbTestCase {
         $reminder->setType('Permit');
 		$reminder->save();
 		// check
-		$myTestReminder = Phactory::get(TB_REMINDER, array('name'=>"reminders_4"));
+		$myTestReminder = \Phactory::get(TB_REMINDER, array('name'=>"reminders_4"));
 		
-		$this->assertTrue($myTestReminder->id == '1');
+		$this->assertTrue($myTestReminder->getId() == '1');
     }
 	
 	
@@ -59,10 +61,10 @@ class ReminderTest extends Testing\DbTestCase {
 		$reminder = new Reminder();
         $reminder->setId('1');
         $reminder->load();
-		$selectedReminder = Phactory::get(TB_REMINDER, array('name'=>"reminders_1"));
+		$selectedReminder = \Phactory::get(TB_REMINDER, array('name'=>"reminders_1"));
 		$this->assertTrue(!is_null($selectedReminder));
 		$reminder->delete();
-		$deletedReminder = Phactory::get(TB_REMINDER, array('name'=>"reminders_1"));
+		$deletedReminder = \Phactory::get(TB_REMINDER, array('name'=>"reminders_1"));
 		$this->assertTrue(is_null($deletedReminder));
 	}
 	
@@ -82,15 +84,4 @@ class ReminderTest extends Testing\DbTestCase {
 		$remindersChecked->initByArray($row);
 		$this->assertEquals($remindersOriginal, $remindersChecked);
 	}
-    
-   /* public function testLoadUsers() {
-		
-		// get reminder with id = 1
-		$reminder = new Reminder($this->db, '1');
-        $users = $reminder->getUsers();
-      
-		$this->assertTrue(is_array($users));
-        $this->assertTrue(count($users) == 2);
-	}*/
-    
 }

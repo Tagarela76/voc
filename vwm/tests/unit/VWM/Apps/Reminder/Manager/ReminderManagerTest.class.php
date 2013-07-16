@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Reminder\Entity\Reminder;
@@ -8,14 +9,13 @@ class ReminderManagerTest extends Testing\DbTestCase
 {
 
     protected $fixtures = array(
-        //TB_FACILITY, TB_USER, TB_REMINDER, TB_REMIND2USER
         Facility::TABLE_NAME, TB_USER, Reminder::TABLE_NAME, Reminder::TB_REMIND2USER
     );
 
     public function testReminder()
     {
-        $rManager = VOCApp::getInstance()->getService('reminder');
-        $this->assertTrue($rManager instanceof VWM\Apps\Reminder\Manager\ReminderManager);
+        $rManager = \VOCApp::getInstance()->getService('reminder');
+        $this->assertTrue($rManager instanceof ReminderManager);
     }
 
     public function testSetRemind2User()
@@ -24,8 +24,7 @@ class ReminderManagerTest extends Testing\DbTestCase
         // get reminder with id = 1
         $reminderId = '1';
         $userId = '4';
-        $rManager = VOCApp::getInstance()->getService('reminder');
-        $rManager = new VWM\Apps\Reminder\Manager\ReminderManager();
+        $rManager = \VOCApp::getInstance()->getService('reminder');
 
         $users = $rManager->getUsersByReminderId($reminderId);
         $this->assertTrue(count($users) == 2);
@@ -38,7 +37,7 @@ class ReminderManagerTest extends Testing\DbTestCase
     public function testgetUsersByReminderId()
     {
         $reminderId = '1';
-        $rManager = VOCApp::getInstance()->getService('reminder');
+        $rManager = \VOCApp::getInstance()->getService('reminder');
         $users = $rManager->getUsersByReminderId($reminderId);
 
         $this->assertTrue(is_array($users));
@@ -48,7 +47,7 @@ class ReminderManagerTest extends Testing\DbTestCase
     public function testUnSetRemind2User()
     {
         $reminderId = '1';
-        $rManager = VOCApp::getInstance()->getService('reminder');
+        $rManager = \VOCApp::getInstance()->getService('reminder');
         $users = $rManager->getUsersByReminderId($reminderId);
 
         $this->assertTrue(count($users) == 2);
@@ -60,7 +59,7 @@ class ReminderManagerTest extends Testing\DbTestCase
 
     public function testGetReminders()
     {
-        $rManager = VOCApp::getInstance()->getService('reminder');
+        $rManager = \VOCApp::getInstance()->getService('reminder');
         $reminders = $rManager->getReminders();
         $this->assertTrue(count($reminders) == 3);
         $this->assertTrue($reminders[0] instanceof Reminder);
@@ -68,7 +67,7 @@ class ReminderManagerTest extends Testing\DbTestCase
     
     public function testGetNextRemindDate()
     {
-        $rManager = VOCApp::getInstance()->getService('reminder');
+        $rManager = \VOCApp::getInstance()->getService('reminder');
         //daily
         $periodicity = 0;
         $date = '01/01/2013';
