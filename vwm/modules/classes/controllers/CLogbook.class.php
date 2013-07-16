@@ -128,7 +128,8 @@ class CLogbook extends Controller
                     $logbook->setInspectionSubType($post['inspectionSubType']);
                     $logbook->setDescriptionId($post['logBookDescription']);
                     $logbook->setPermit($permit);
-                    if(isset($post['isEquipment'])){
+                    
+                    if($post['isEquipment'] == 'equipment'){
                         $logbook->setEquipmentId($post['logbookEquipmentId']);
                     }else{
                         $logbook->setEquipmentId(0);
