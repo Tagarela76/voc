@@ -188,11 +188,13 @@ class XML2PDF extends PDF_MC_Table
                     $this->equipment = $attribs['DESCRIPTION'];
                     $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
                     $this->header['PERMIT'] = $attribs['PERMIT'];
+                    $this->header['EQUIPMENTID'] = $attribs['ID'];
                     $this->AddPage('p');
                 } else {
                     $this->equipment = $attribs['DESCRIPTION'];
                     $this->header['EQUIPMENT'] = $attribs['DESCRIPTION'];
                     $this->header['PERMIT'] = $attribs['PERMIT'];
+                    $this->header['EQUIPMENTID'] = $attribs['ID'];
                     $this->header();
                 }
                 break;
@@ -207,21 +209,12 @@ class XML2PDF extends PDF_MC_Table
         $this->DebugPrint("End: $tag\n");
         switch ($tag) {
             case 'LOGBOOKINSPECTION':
-                $this->widths = array(15, 10, 27, 23, 30, 25, 30, 20, 15);
+                $this->widths = array(15, 10, 12, 12, 30, 25, 40, 25, 25);
                 $this->SetWidths($this->widths);
-                $this->SetFont('Arial', 'B', 7);
+                $this->SetFont('Arial', '', 7);
                 $h = 5;
-                $this->Cell($this->widths[0], $h, $attribs['DATE'], 1, 0, 'C');
-                $this->Cell($this->widths[1], $h, $attribs['TIME'], 1, 0, 'C');
-                $this->Cell($this->widths[2], $h, $attribs['START'], 1, 0, 'C');
-                $this->Cell($this->widths[3], $h, $attribs['END']." ".$attribs['UNITTYPE']." ", 1, 0, 'C');
-                $this->Cell($this->widths[4], $h, $attribs['GAUGE'], 1, 0, 'C');
-                $this->Cell($this->widths[5], $h, $attribs['INSPECTEDPERSON'], 1, 0, 'C');
-                $this->Cell($this->widths[6], $h, $attribs['INSPECTIONTYPE'], 1, 0, 'C');
-                $this->Cell($this->widths[7], $h, $attribs[''], 1, 0, 'C');
-                $this->Cell($this->widths[8], $h, $attribs['DESCRIPTIONNOTES'], 1, 0, 'C');
-                
-                $this->ln();
+                $this->rows = array($attribs['DATE'],$attribs['TIME'],$attribs['START'],$attribs['END'],$attribs['GAUGE'],$attribs['INSPECTEDPERSON'],$attribs['INSPECTIONTYPE'], $attribs['CONDITION'],$attribs['DESCRIPTIONNOTES']);								
+                $this->Row($this->rows);
                 break;
         }
     }
@@ -286,31 +279,29 @@ class XML2PDF extends PDF_MC_Table
             $this->Cell(75, 10, "Fax: " . $this->header['FAX'], 0, 0, 'L');
             $this->Ln(3);
             $this->Cell(100, 10, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
-            $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENT'], 0, 0, 'L');
+            if($this->header['EQUIPMENTID'] != 0){
+                $this->Cell(75, 10, "Equipment: " . $this->header['EQUIPMENT'], 0, 0, 'L');
+            }else{
+                $this->Cell(75, 10, $this->header['EQUIPMENT'], 0, 0, 'L');
+            }
             $this->Ln(3);
             $this->Cell(100, 10, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
-            $this->Cell(75, 10, "Permit Number: " . $this->header['PERMIT'], 0, 0, 'L');
+            if($this->header['EQUIPMENTID'] != 0){
+                $this->Cell(75, 10, "Permit Number: " . $this->header['PERMIT'], 0, 0, 'L');
+            }
             $this->Ln(3);
             $this->Cell(100, 10, "City,State,Zip: " . $this->header['CITYSTATEZIP'], 0, 0, 'L');
             /*             * *** */
             $this->Ln(15);
 
-            $this->widths = array(15, 10, 27, 23, 30, 25, 30, 20, 15);
+            $this->widths = array(15, 10, 12, 12, 30, 25, 40, 25, 25);
             $this->SetWidths($this->widths);
             $this->SetLineWidth(0.2);
             $this->SetFont('Arial', 'B', 7);
             $h = 15;
-            $this->Cell($this->widths[0], $h, "DATE", 1, 0, 'C');
-            $this->Cell($this->widths[1], $h, "TIME", 1, 0, 'C');
-            $this->Cell($this->widths[2], $h, "START READING\n (A)", 1, 0, 'C');
-            $this->Cell($this->widths[3], $h, "END READING (B)", 1, 0, 'C');
-            $this->Cell($this->widths[4], $h, "GAUGE TYPE", 1, 0, 'C');
-            $this->Cell($this->widths[5], $h, "INSPECTED BY", 1, 0, 'C');
-            $this->Cell($this->widths[6], $h, "INSPECTION TYPE", 1, 0, 'C');
-            $this->Cell($this->widths[7], $h, "CONDITION", 1, 0, 'C');
-            $this->Cell($this->widths[8], $h, "NOTES", 1, 0, 'C');
-
-            $this->Ln();
+            
+            $this->rows = array('DATE','TIME','START READING (A)','END READING (B)','GAUGE TYPE','INSPECTED BY','INSPECTION TYPE', 'CONDITION','NOTES');								
+			$this->Row($this->rows);
         }
         
     }

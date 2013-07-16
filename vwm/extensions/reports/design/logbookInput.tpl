@@ -109,6 +109,7 @@
                                                 {$equipment.description|escape}
                                             </option>
                                         {/foreach}
+                                        <option value="0">Facility Health & Safety (H&S) Inspection Types</option>
                                     </select>
                                     </td>
                             </tr>

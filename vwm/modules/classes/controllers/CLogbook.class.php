@@ -121,7 +121,6 @@ class CLogbook extends Controller
                     } else {
                         $permit = 0;
                     }
-                    
                     //init logbook
                     $logbook->setFacilityId($facilityId);
                     $logbook->setInspectionPersonId($post['InspectionPersons']);

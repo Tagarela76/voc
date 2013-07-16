@@ -187,7 +187,44 @@ class RLogbook extends ReportCreator implements iReportCreator
         $equipmentName = 'All equipments';
         $logbookEquipmentList = array();
         //create equipment structure
-        if ($equipmentId != 'all') {
+        // get Facility inspection type
+        $facilityInspectiontype = array(
+            'id' => 0,
+            'description' => 'Facility Health & Safety (H&S) Inspection Types',
+            'permit' => false,
+            'logbookList' => array()
+        );
+        switch ($equipmentId) {
+            case 'all':
+                $equipments = $leManager->getAllEquipmentListByFacilityId($categoryId);
+                $logbookEquipmentList[0] = $facilityInspectiontype;
+                foreach ($equipments as $equipment) {
+                    $logbookEquipmentList[$equipment['id']] = array(
+                        'id' => $equipment['id'],
+                        'description' => $equipment['description'],
+                        'permit' => $equipment['permit'],
+                        'logbookList' => array()
+                    );
+                }
+                break;
+            case 0;
+                //get Facility Health & Safety (H&S) Inspection Types
+                $logbookEquipmentList[0] = $facilityInspectiontype;
+                break;
+            default :
+                $logbookEquipment = new LogbookEquipment();
+                $logbookEquipment->setId($equipmentId);
+                $logbookEquipment->load();
+                $equipmentName = $logbookEquipment->getEquipDesc();
+                $logbookEquipmentList[$equipmentId] = array(
+                    'id' => $equipmentId,
+                    'description' => $logbookEquipment->getEquipDesc(),
+                    'permit' => $logbookEquipment->getPermit(),
+                    'logbookList' => array()
+                );
+                break;
+        }
+        /*if ($equipmentId != 'all') {
             $logbookEquipment = new LogbookEquipment();
             $logbookEquipment->setId($equipmentId);
             $logbookEquipment->load();
@@ -208,7 +245,7 @@ class RLogbook extends ReportCreator implements iReportCreator
                     'logbookList' => array()
                 );
             }
-        }
+        }*/
        
         $state = new State($db);
         $stateDetails = $state->getStateDetails($company->getState());
