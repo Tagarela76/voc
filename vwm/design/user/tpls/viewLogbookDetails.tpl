@@ -61,7 +61,11 @@
                 Equipment Description
             </td>
             <td class="border_users_b border_users_r">
-                {$logbookEquipment->getEquipDesc()|escape}
+                {if $logbook->getEquipmentId()!=0}
+                    {$logbookEquipment->getEquipDesc()|escape}
+                {else}
+                    NONE
+                {/if}
             </td>
         </tr>
         {if $logbook->getHasSubTypeNotes()}
@@ -101,7 +105,8 @@
             </td>
         </tr>
         {*addition Fialds*}
-        {if $logbookEquipment->getPermit()|escape}
+
+        {if $logbookEquipment->getPermit()!=''}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
                     Permit
@@ -126,7 +131,7 @@
                 <td class="border_users_b border_users_r border_users_l">
                     {assign var = 'i' value= $logbook->getValueGaugeType()}
                     {$gaugeList[$i].name}
-                    
+
                 </td>
                 <td class="border_users_b border_users_r">
                     ({$logbook->getGaugeValueFrom()|escape}) - ({$logbook->getGaugeValueTo()|escape})

@@ -5,7 +5,7 @@ use VWM\Framework\Test as Testing;
 class NoxEmissionManagerTest extends Testing\DbTestCase {
 
 	protected $fixtures = array(
-		TB_FACILITY, TB_DEPARTMENT, 'burner'
+    	TB_COMPANY,	TB_FACILITY, TB_DEPARTMENT, 'burner'
 	);
 	
 	public function testGetBurnerListByFacility() {

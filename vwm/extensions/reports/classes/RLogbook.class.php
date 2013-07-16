@@ -148,7 +148,7 @@ class RLogbook extends ReportCreator implements iReportCreator
         $leManager = VOCApp::getInstance()->getService('logbookEquipment');
 
         $query = "SELECT lb.facility_id, lb.date_time, lb.inspection_type_id, i.name, " .
-                "lb.gauge_type, lb.gauge_value_from, lb.gauge_value_to, ld.description, lb.unittype_id, lb.equipment_id, le.equip_desc " .
+                "lb.gauge_type, lb.description_notes, lb.gauge_value_from, lb.gauge_value_to, ld.description, lb.unittype_id, lb.equipment_id, le.equip_desc " .
                 "FROM " . LogbookRecord::TABLE_NAME . " lb " .
                 "LEFT JOIN " . LogbookInspectionPerson::TABLE_NAME . " i " .
                 "ON lb.inspection_person_id = i.id " .
@@ -187,7 +187,44 @@ class RLogbook extends ReportCreator implements iReportCreator
         $equipmentName = 'All equipments';
         $logbookEquipmentList = array();
         //create equipment structure
-        if ($equipmentId != 'all') {
+        // get Facility inspection type
+        $facilityInspectiontype = array(
+            'id' => 0,
+            'description' => 'Facility Health & Safety (H&S) Inspection Types',
+            'permit' => false,
+            'logbookList' => array()
+        );
+        switch ($equipmentId) {
+            case 'all':
+                $equipments = $leManager->getAllEquipmentListByFacilityId($categoryId);
+                $logbookEquipmentList[0] = $facilityInspectiontype;
+                foreach ($equipments as $equipment) {
+                    $logbookEquipmentList[$equipment['id']] = array(
+                        'id' => $equipment['id'],
+                        'description' => $equipment['description'],
+                        'permit' => $equipment['permit'],
+                        'logbookList' => array()
+                    );
+                }
+                break;
+            case 0;
+                //get Facility Health & Safety (H&S) Inspection Types
+                $logbookEquipmentList[0] = $facilityInspectiontype;
+                break;
+            default :
+                $logbookEquipment = new LogbookEquipment();
+                $logbookEquipment->setId($equipmentId);
+                $logbookEquipment->load();
+                $equipmentName = $logbookEquipment->getEquipDesc();
+                $logbookEquipmentList[$equipmentId] = array(
+                    'id' => $equipmentId,
+                    'description' => $logbookEquipment->getEquipDesc(),
+                    'permit' => $logbookEquipment->getPermit(),
+                    'logbookList' => array()
+                );
+                break;
+        }
+        /*if ($equipmentId != 'all') {
             $logbookEquipment = new LogbookEquipment();
             $logbookEquipment->setId($equipmentId);
             $logbookEquipment->load();
@@ -208,7 +245,7 @@ class RLogbook extends ReportCreator implements iReportCreator
                     'logbookList' => array()
                 );
             }
-        }
+        }*/
        
         $state = new State($db);
         $stateDetails = $state->getStateDetails($company->getState());
@@ -249,14 +286,18 @@ class RLogbook extends ReportCreator implements iReportCreator
 
             if (!is_null($row->gauge_type)) {
                 $gauge = $gaugeList[$row->gauge_type]['name'];
+                $from = $row->gauge_value_from;
+                $to = $row->gauge_value_to;
             } else {
                 $gauge = 'NONE';
+                $from = 'NONE';
+                $to = 'NONE';
             }
 
             $dateTime = $row->date_time;
             $dateTime = date($timeFormat . ' H:i', $dateTime);
             $dateTime = explode(' ', $dateTime);
-
+            
             $unittype = new UnitType($db);
             $unittype->setUnitTypeId($unittypeId);
             $unittype->load();
@@ -270,17 +311,25 @@ class RLogbook extends ReportCreator implements iReportCreator
             }else{
                 $description = $row->description;
             }
+            $logbookInspectionType = new LogbookInspectionType();
+            $logbookInspectionType->setId($row->inspection_type_id);
+            $logbookInspectionType->load();
+            $inspectionType = $logbookInspectionType->getInspectionType();
             
             $result = array(
                 'date' => $dateTime[0],
+                'time' => $dateTime[1],
                 'inspectionPerson' => $row->name,
                 'gauge' => $gauge,
-                'start' => $row->gauge_value_from,
-                'end' => $row->gauge_value_to,
+                'start' => $from,
+                'end' => $to,
                 'description' => $description,
                 'unittype' => $unitTypeName,
                 'equipmentId' => $row->equipment_id,
-                'equip_desc' => $row->equip_desc
+                'equip_desc' => $row->equip_desc,
+                'inspectionType' => $inspectionType->typeName,
+                'descriptionNotes' => $row->description_notes,
+                'condition' => $description
             );
             //group result by equipment List
             $logbookEquipmentList[$row->equipment_id]['logbookList'][] = $result;
@@ -464,6 +513,13 @@ class RLogbook extends ReportCreator implements iReportCreator
                         $doc->createTextNode(html_entity_decode($logbook['date']))
                 );
                 $logbookInspection->appendChild($dateTag);
+                
+                //create time
+                $timeTag = $doc->createAttribute('time');
+                $timeTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($logbook['time']))
+                );
+                $logbookInspection->appendChild($timeTag);
 
                 //create gauge type
                 $gaugeTag = $doc->createAttribute('gauge');
@@ -479,6 +535,13 @@ class RLogbook extends ReportCreator implements iReportCreator
                 );
                 $logbookInspection->appendChild($inspectedPersonTag);
 
+                //create inspection type Name
+                $inspectedTypeNameTag = $doc->createAttribute('inspectionType');
+                $inspectedTypeNameTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($logbook['inspectionType']))
+                );
+                $logbookInspection->appendChild($inspectedTypeNameTag);
+                
                 //create Start
                 $tempStartTag = $doc->createAttribute('start');
                 $tempStartTag->appendChild(
@@ -493,13 +556,20 @@ class RLogbook extends ReportCreator implements iReportCreator
                 );
                 $logbookInspection->appendChild($tempEndTag);
 
-                //create logbook Description
-                $descriptionTag = $doc->createAttribute('description');
-                $descriptionTag->appendChild(
-                        $doc->createTextNode(html_entity_decode($logbook['description']))
+                //create logbook Description Notes
+                $descriptionNotesTag = $doc->createAttribute('descriptionNotes');
+                $descriptionNotesTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($logbook['descriptionNotes']))
                 );
-                $logbookInspection->appendChild($descriptionTag);
-
+                $logbookInspection->appendChild($descriptionNotesTag);
+                
+                //create logbook Condition
+                $conditionTag = $doc->createAttribute('condition');
+                $conditionTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($logbook['condition']))
+                );
+                $logbookInspection->appendChild($conditionTag);
+                
                 //create unit type
                 $unittypeTag = $doc->createAttribute('unittype');
                 $unittypeTag->appendChild(

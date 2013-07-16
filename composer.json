@@ -9,6 +9,7 @@
         "chriskite/phactory": "v0.4",
         "robmorgan/phinx": "*",
         "symfony/console": "2.3.*",
-        "monolog/monolog": "1.2.*"
+        "monolog/monolog": "1.2.*",
+        "symfony/event-dispatcher": "2.4.*@dev"
     }
 }

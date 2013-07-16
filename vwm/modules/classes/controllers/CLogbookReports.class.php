@@ -103,6 +103,7 @@ class CLogbookReports extends Controller
         //get Equipmant list
         $leManager = new LogbookEquipmentManager();
         $logbookEquipmentList = $leManager->getAllEquipmentListByFacilityId($params['facilityID']);
+        
         $result['equipments'] = $logbookEquipmentList;
         
         //get inspection Type List

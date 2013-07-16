@@ -11,7 +11,5 @@ VWM\Apps\Logbook\Entity\LogbookRecord:
       - NotBlank: ~
     department_id:
       - Min: 0
-    equipment_id:
-      - NotBlank: ~
       
      

@@ -1,6 +1,7 @@
 <?php
 use  \VWM\Apps\Reminder\Entity\Reminder;
 
+
 class CReminder extends Controller
 {
     function CReminder($smarty, $xnyo, $db, $user, $action)
@@ -69,6 +70,7 @@ class CReminder extends Controller
         $request['parent_id'] = $request['facilityID'];
         $request['parent_category'] = 'facility';
         $this->smarty->assign('request', $request);
+        
         $rManager = VOCApp::getInstance()->getService('reminder');
 
         $params = array("bookmark" => "reminder");
@@ -96,12 +98,26 @@ class CReminder extends Controller
         $reminder = new Reminder();
         $reminder->setFacilityId($facilityId);
         
+        //get reminder timing list
+        $reminderTimingList = $rManager->getReminderTimingList();
+        $this->smarty->assign('reminderTimingList', $reminderTimingList);
+        
+        $reminderTypeList = $rManager->getReminderTypeList();
+        $this->smarty->assign('reminderTypeList', $reminderTypeList);
+        
         if (count($post) > 0) {
             $user = new User($this->db);
             $facilityID = $post['facility_id'];
+            $active = !is_null($post['active'])?1:0;
+            
             $reminder->setName($post['name']);
             $reminder->setDate($post['date']);
+            $reminder->setDeliveryDate($post['date']);
+            $reminder->setType($post['reminderType']);
+            $reminder->setPriority($post['priority']);
+            $reminder->setPeriodicity($post['periodicity']);
             $reminder->setFacilityId($facilityID);
+            $reminder->setActive($active);
             $userList = $post['user_id'];
             
             $reminderUsers = array();
@@ -123,6 +139,7 @@ class CReminder extends Controller
             if (count($violationList) == 0) {
                 $dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');
                 $reminder->setDate($dataChain->getTimestamp());
+                $reminder->setDeliveryDate($dataChain->getTimestamp());
                 $id = $reminder->save();
                 // set remind to users
                 
@@ -186,7 +203,11 @@ class CReminder extends Controller
         $reminder = new Reminder();
         $reminder->setId($this->getFromRequest('id'));
         $reminder->load();
-
+        
+        $reminderManager = VOCApp::getInstance()->getService('reminder');
+        $reminderTimingList = $reminderManager->getReminderTimingList();
+        $this->smarty->assign('reminderTimingList', $reminderTimingList);
+        
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $params = array("bookmark" => "reminder");
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), $params);
@@ -199,17 +220,24 @@ class CReminder extends Controller
         $facility = new Facility($this->db);
         $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
         $companyID = $facilityDetails["company_id"];
+        
         $dataChain = new TypeChain(date("y-m-d", $reminder->getDate()), 'date', $this->db, $companyID, 'company');
         $reminder->setDate($dataChain->formatOutput());
+        
+        
+        $dataChain = new TypeChain(date("y-m-d", $reminder->getDeliveryDate()), 'date', $this->db, $companyID, 'company');
+        $reminder->setDeliveryDate($dataChain->formatOutput());
+        
         $usersList = $reminder->getUsers();
         $usersName = array();
         
         foreach ($usersList as $user) {
             $usersName[] = $user["username"];
         }
-        $usersList = implode(",", $usersName);
+        $usersNames = implode(",", $usersName);
         $this->smarty->assign('reminder', $reminder);
         $this->smarty->assign("usersList", $usersList);
+        $this->smarty->assign("usersNames", $usersNames);
         //set js scripts
         $jsSources = array("modules/js/checkBoxes.js",
             "modules/js/autocomplete/jquery.autocomplete.js");
@@ -281,11 +309,29 @@ class CReminder extends Controller
         $facility = new Facility($this->db);
         $facilityDetails = $facility->getFacilityDetails($this->getFromRequest('facilityID'));
         $companyID = $facilityDetails["company_id"];
+        
         $rManager = VOCApp::getInstance()->getService('reminder');
+        
+        //get reminder timing list
+        $reminderTimingList = $rManager->getReminderTimingList();
+        $this->smarty->assign('reminderTimingList', $reminderTimingList);
+        
+        $reminderTypeList = $rManager->getReminderTypeList();
+        $this->smarty->assign('reminderTypeList', $reminderTypeList);
+        
         $reminder = new Reminder();
         $reminder->setId($this->getFromRequest('id'));
         $reminder->load();
-        $dataChain = new TypeChain(date("y-m-d", $reminder->getDate()), 'date', $this->db, $companyID, 'company');
+        
+        //check if delivery date is less then current date
+        $currentDate = date("m.d.Y");
+        $currentDate = explode('.', $currentDate);
+        $currentDate = mktime('0', '0', '0', $currentDate[0], $currentDate[1], $currentDate[2]);
+        if($currentDate>$reminder->getDeliveryDate()){
+            $reminder->setDeliveryDate($currentDate);
+        }    
+        
+        $dataChain = new TypeChain(date("y-m-d", strtotime('+1 days', $reminder->getDeliveryDate())), 'date', $this->db, $companyID, 'company');
         $reminder->setDate($dataChain->formatOutput());
         
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
@@ -295,16 +341,23 @@ class CReminder extends Controller
         $this->setPermissionsNew('viewReminder');
 
         $post = $this->getFromPost();
-
+        
         if (count($post) > 0) {
+            
             $facilityID = $post['facility_id'];
+            $active = !is_null($post['active'])?1:0;
+            
             $reminder = new Reminder();
             $reminder->setId($post['id']);
-           
             $reminder->load();
-             
+            
+            $reminder->setActive($active);
             $reminder->setName($post['name']);
             $reminder->setDate($post['date']);
+            $reminder->setType($post['reminderType']);
+            $reminder->setPriority($post['priority']);
+            $reminder->setPeriodicity($post['periodicity']);
+            $reminder->setDeliveryDate($post['date']);
             $userList = $post['user_id'];
             $reminderUsers = array();
             $reminderUser = array();
@@ -320,9 +373,11 @@ class CReminder extends Controller
             VOCApp::getInstance()->setCustomerID($companyID);
             VOCApp::getInstance()->setDateFormat(NULL);
             $violationList = $reminder->validate();
+            
             if (count($violationList) == 0) {
                 $dataChain = new TypeChain($reminder->getDate(), 'date', $this->db, $companyID, 'company');
                 $reminder->setDate($dataChain->getTimestamp());
+                $reminder->setDeliveryDate($dataChain->getTimestamp());
                 $id = $reminder->save();
                 
                 // unset all users from remind

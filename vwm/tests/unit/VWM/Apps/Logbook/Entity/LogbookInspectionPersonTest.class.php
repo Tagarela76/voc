@@ -1,4 +1,6 @@
 <?php
+namespace VWM\Apps\Logbook\Entity;
+
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use VWM\Framework\Model;

@@ -8,17 +8,19 @@ use VWM\Entity\Crib\Bin;
 class GomTest extends DbTestCase {
 	
 	protected $fixtures = array(
-		TB_FACILITY,
+/*		TB_FACILITY,
 		TB_SUPPLIER,
 		TB_PRODUCT,
 		TB_GOM,
 		Bin::TABLE_NAME,
-		BinContext::TABLE_NAME,
+		BinContext::TABLE_NAME,*/
 	);
 
 
-	public function testSave() {		
-				
+	public function testSave()
+    {		
+	    $this->markTestIncomplete();
+
 		$gom = new Gom($this->db);
 		$gom->setName("gom-test");
 		$gom->setProductNr("__gom-test");
@@ -55,8 +57,10 @@ class GomTest extends DbTestCase {
 	//	$this->assertEquals($expectedUpdatedGom, $gom);
 	}
 	
-	public function testCheckAddOrUpdate() {
-		
+	public function testCheckAddOrUpdate() 
+    {
+	    $this->markTestIncomplete();
+
 		$gom = new Gom($this->db);
 		$gom->setName("gom-test");
 		$gom->setProductNr("__gom-test");
@@ -83,4 +87,3 @@ class GomTest extends DbTestCase {
 	
 }
 
-?>

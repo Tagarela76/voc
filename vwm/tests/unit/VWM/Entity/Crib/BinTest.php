@@ -4,16 +4,21 @@ namespace VWM\Entity\Crib;
 
 use VWM\Framework\Test\DbTestCase;
 
-class BinTest extends DbTestCase {
+class BinTest extends DbTestCase
+{
 	
 	protected $fixtures = array(
+        TB_COMPANY,
 		TB_FACILITY,
-		Crib::TABLE_NAME,
-		Bin::TABLE_NAME,
+//		Crib::TABLE_NAME,
+//		Bin::TABLE_NAME,
 	);
 
 
-	public function testSave() {
+	public function testSave()
+    {
+        $this->markTestIncomplete();
+
 		$bin = new Bin($this->db);
 		$bin->setCribId('2');
 		$bin->setCapacity('1');
@@ -46,7 +51,10 @@ class BinTest extends DbTestCase {
 	//	$this->assertEquals($expectedUpdatedBin, $bin);
 	}
 	
-	public function testGetCrib() {
+	public function testGetCrib()
+    {
+        $this->markTestIncomplete();
+
 		$binId = 1;
 		$bin = new Bin($this->db, $binId);
 		$crib = $bin->getCrib();
@@ -56,8 +64,11 @@ class BinTest extends DbTestCase {
 		$this->assertEquals($expectedCrib, $crib);
 	}
 	
-	public function testCheckAddOrUpdate() {
+	public function testCheckAddOrUpdate()
+    {
 		
+        $this->markTestIncomplete();
+
 		$bin = new Bin($this->db);
 		$bin->setCribId('2');
 		$bin->setCapacity('1');
@@ -80,4 +91,3 @@ class BinTest extends DbTestCase {
 	}
 }
 
-?>

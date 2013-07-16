@@ -22,7 +22,7 @@
 				<td>
 					<span style='color:gray'>Field name</span>
 				</td> 
-				
+                {*WIP*}
 				<td>
 					<span style='color:gray'>Condition</span>
 				</td> 
@@ -30,7 +30,6 @@
 				<td>
 					<span style='color:gray' id='valueLabel'>Value</span>
 				</td> 
-				
 				<td>
 					&nbsp;
 				</td> 
@@ -40,18 +39,16 @@
 					<select id='filterField' filterClass='All' value='All'>						
 					</select>
 				</td> 
-				
 				<td>
 					<select id='filterCondition' name='filterCondition'>					
 					</select>
 				</td> 
-				
 				<td>
+                    
 					<input id='filterValue' name='filterValue' type='text'>
 					<input id='filterValueAll' type='text' disabled='true' style='display:none'>
 					<input id='filterValueDate' name='filterValue' type='text' disabled='true' style='display:none'>
 				</td> 
-				
 				<td>
 					<input type='submit' id='filterButton' class='button' value='Filter'>
 				</td> 

@@ -32,7 +32,7 @@ switch(VERSION)
 			case 'local':
 				define ('USE_MEMCACHED', false);
 				define ('DB_HOST', 'localhost');
-				define ('DB_NAME', 'voc');
+				define ('DB_NAME', 'voc_test');
 				define ('DB_IMPORT', 'voc_real');
 				define ('DB_USER', 'root');
 				define ('DB_PASS', 'fghbjhysq');
@@ -46,7 +46,7 @@ switch(VERSION)
 				define ('DEFAULT_DATE_FORMAT',"m/d/Y"); // USA date format
 				break;
 
-			//	KTTSOFT AREA	
+			//	KTTSOFT AREA
 			case 'work':
 				define ('DB_HOST', '192.168.1.2');
 				define ('DB_NAME', 'voc');
@@ -158,7 +158,7 @@ switch(VERSION)
 				define ('DEFAULT_DATE_FORMAT',"d/m/Y"); // Europe date format
 				break;
 
-			//	DEDICATED SERVER SANDBOX EUROPE - UNITED KINGDOM AREA			
+			//	DEDICATED SERVER SANDBOX EUROPE - UNITED KINGDOM AREA
 			case 'sandboxEU-UK':
 				define ('DB_HOST', 'localhost');
 				define ('DB_NAME', 'voc_uk_sandbox');
@@ -235,6 +235,7 @@ define ('TB_SOLVENT_OUTPUT', 'solvent_output');
 define ('TB_STORAGE', 'storage');
 define ('TB_STORAGE_EMPTY', 'storage_empty');
 define ('TB_STORAGE_DELETED','storage_deleted');
+define ('TB_PFP2PFP_TYPES', 'pfp2pfp_types');
 define ('TB_NOTIFY_TIME', 'notify_time');
 define ('TB_LIMITES', 'limites');
 define ('TB_LIMIT2USER', 'limit2user');
@@ -310,6 +311,7 @@ define ('TB_COMPANY_LEVEL_LABEL', 'company_level_label');
 define ('TB_INDUSTRY_TYPE2LABEL', 'industry_type2label');
 define ('TB_WO2DEPARTMENT', 'wo2department');
 define ('TB_QTY_PRODUCT_GAUGE', 'qty_product_gauge');
+define ('TB_SALES_BROCHURE', 'sales_brochure');
 
 //	XNYO CONSTANTS
 define ('AUTH_TYPE', 'sql');

@@ -335,6 +335,15 @@ function Equipmant() {
         });
 
     }
+    this.showEquipmentList = function() {
+        var isShowEquipment = $('#isEquipment').val();
+
+        if(isShowEquipment == 'equipment'){
+            $('#showEquipmentList').show();
+        }else{
+            $('#showEquipmentList').hide();
+        }
+    }
 }
 
 function ManageLogbookRecord() {
@@ -652,4 +661,5 @@ function Gauges() {
 $(function() {
     //	ini global object
     inspectionPerson.addInspectionPerson.iniDialog();
+   
 });

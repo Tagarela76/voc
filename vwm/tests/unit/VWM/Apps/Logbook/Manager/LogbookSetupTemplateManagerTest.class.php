@@ -1,4 +1,5 @@
 <?php
+namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
@@ -23,7 +24,7 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
 
         //$logbookTemplateManager = VOCApp::getInstance()->getService('logbookSetupTemplate');
         $logbookTemplateManager = new LogbookSetupTemplateManager();
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
 
         $logbookTemplateList = $logbookTemplateManager->getLogbookTemplateListByFacilityIds($facilityId);
 
@@ -80,7 +81,7 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
 
         //$logbookTemplateManager = VOCApp::getInstance()->getService('logbookSetupTemplate');
         $logbookTemplateManager = new LogbookSetupTemplateManager();
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
 
         $logbookTemplateManager->assignLogbookTemplateToFacility($logbookTemplateId, $facilityId);
 
@@ -102,7 +103,7 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
 
         //$logbookTemplateManager = VOCApp::getInstance()->getService('logbookSetupTemplate');
         $logbookTemplateManager = new LogbookSetupTemplateManager();
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
 
         //assign Logbook Template To Facility
         $logbookTemplateManager->assignLogbookTemplateToFacility($logbookTemplateId, $facilityId);
@@ -127,7 +128,7 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
 
     public function testGetFacilityListByLogbookSetupTemplateId()
     {
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         $logbookSetupTemplateId = 1;
 
         $logbookSetupTemplateManager = new LogbookSetupTemplateManager();
@@ -151,7 +152,7 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
         $inspectionTypeId = 1;
         $logbookSetupTemplateManager = new LogbookSetupTemplateManager();
         $templateList = $logbookSetupTemplateManager->getLogbookTemplateListByInspectionTypeId($inspectionTypeId);
-        $db = VOCApp::getInstance()->getService('db');
+        $db = \VOCApp::getInstance()->getService('db');
         
         $query = "SELECT logbook_setup_template_id FROM " . LogbookSetupTemplateManager::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE . " " .
                 "WHERE inspection_type_id IN ({$db->sqltext($inspectionTypeId)})";

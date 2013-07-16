@@ -121,7 +121,6 @@ class CLogbook extends Controller
                     } else {
                         $permit = 0;
                     }
-
                     //init logbook
                     $logbook->setFacilityId($facilityId);
                     $logbook->setInspectionPersonId($post['InspectionPersons']);
@@ -129,7 +128,12 @@ class CLogbook extends Controller
                     $logbook->setInspectionSubType($post['inspectionSubType']);
                     $logbook->setDescriptionId($post['logBookDescription']);
                     $logbook->setPermit($permit);
-                    $logbook->setEquipmentId($post['logbookEquipmentId']);
+                    
+                    if($post['isEquipment'] == 'equipment'){
+                        $logbook->setEquipmentId($post['logbookEquipmentId']);
+                    }else{
+                        $logbook->setEquipmentId(0);
+                    }
                     $logbook->setDepartmentId($post['departmentId']);
                     $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
                     $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
@@ -212,7 +216,7 @@ class CLogbook extends Controller
 
                 //get gauges
                 $gaugeList = $lbmanager->getGaugeList($facilityId);
-
+                
                 //get temperature dimension
                 $utManager = new UnitTypeManager($this->db);
                 $unitTypeList = $utManager->getUnitTypeListBuGaugeId($logbook->getValueGaugeType());
@@ -326,13 +330,19 @@ class CLogbook extends Controller
         }
         switch ($tab) {
             case 'logbook':
+                //WIP add filter to logbook Record
+                /*$filter=new Filter($this->db,'logbookRecord');	
+                $this->smarty->assign('filterArray',$filter->getJsonFilterArray());
+                $filterField = $this->getFromRequest('filterField');*/
+                
                 //set pagination
                 $logbookListCount = $lbManager->getCountLogbooksByFacilityId($facilityId);
+                
                 $url = "?" . $_SERVER["QUERY_STRING"];
                 $url = preg_replace("/\&page=\d*/", "", $url);
                 $pagination = new Pagination($logbookListCount);
                 $pagination->url = $url;
-                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, $pagination);
+                $logbookRecordList = $lbManager->getLogbookListByFacilityId($facilityId, null, $pagination);
                 $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
                 $timeFormat = $dataChain->getFromTypeController('getFormat');
                 $logbookList = array();
@@ -604,8 +614,10 @@ class CLogbook extends Controller
 
                 //initialize equipment
                 $logbookEquipment = new LogbookEquipment();
-                $logbookEquipment->setId($logbook->getEquipmentId());
-                $logbookEquipment->load();
+                if ($logbook->getEquipmentId() != 0) {
+                    $logbookEquipment->setId($logbook->getEquipmentId());
+                    $logbookEquipment->load();
+                }
                 $this->smarty->assign('logbookEquipment', $logbookEquipment);
 
                 //initialize description
@@ -941,7 +953,7 @@ class CLogbook extends Controller
         $gaugeTypeId = $this->getFromPost('gaugeType');
         $utManager = new UnitTypeManager($this->db);
         $unitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
-
+        
         $this->smarty->assign('unitTypeList', $unitTypeList);
         $tpl = 'tpls/viewUnitTypeList.tpl';
         $result = $this->smarty->fetch($tpl);

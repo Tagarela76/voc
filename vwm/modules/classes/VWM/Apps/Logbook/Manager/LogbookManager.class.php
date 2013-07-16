@@ -46,7 +46,7 @@ class LogbookManager
      * get inspection person count
      * 
      * @param int $facilityId
-     * 
+     *
      * @return int
      */
     public function getCountLogbookInspectionPersonListByFacilityId($facilityId, $deleted = null)
@@ -69,21 +69,29 @@ class LogbookManager
     /**
      * 
      * @param int $facilityId
+     * @param string $type
      * @param Pagination $pagination
      * 
      * @return \VWM\Apps\Logbook\Entity\LogbookRecord
      */
-    public function getLogbookListByFacilityId($facilityId, $pagination = null)
+    public function getLogbookListByFacilityId($facilityId, $type = null, $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $logbookList = array();
         $query = "SELECT * FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
+
+        if ($type == 'equipment') {
+            $query .= " AND equipment_id <> 0 ";
+        }
+        if ($type == 'facility') {
+            $query .= " AND equipment_id = 0 ";
+        }
         $query.=' ORDER BY date_time DESC';
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
-        
+
         $db->query($query);
         $rows = $db->fetch_all_array();
 
@@ -101,14 +109,21 @@ class LogbookManager
      * get logbook List count by facility Id
      * 
      * @param int $facilityId
+     * @param string $type
      * 
      * @return int
      */
-    public function getCountLogbooksByFacilityId($facilityId)
+    public function getCountLogbooksByFacilityId($facilityId, $type = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $query = "SELECT count(*) logbookListcCount FROM " . LogbookRecord::TABLE_NAME . " WHERE " .
                 "facility_id = {$db->sqltext($facilityId)}";
+        if($type == 'equipment'){
+           $query .= " AND equipment_id <> 0 " ;
+        }
+        if($type == 'facility'){
+           $query .= " AND equipment_id = 0 " ;
+        }
         $db->query($query);
         $row = $db->fetch(0);
 

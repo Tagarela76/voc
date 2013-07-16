@@ -15,7 +15,7 @@
         itlManager.setjSonDescriptionType({/literal}{$jsonDescriptionTypeList}{literal});
         var facilityId ={/literal}'{$facilityId}'{literal};
         var inspectionPerson = new InspectionPersonSettings();
-
+        
        $(function() {
             $('#dateTime').datetimepicker({
                                 dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
@@ -27,6 +27,7 @@
             itlManager.gauges.initGauges('{/literal}{$logbook->getGaugeValueFrom()}{literal}','{/literal}{$logbook->getGaugeValueTo()}{literal}');
             itlManager.gauges.checkGaugeValueRange();
             itlManager.gauges.changeGauge();
+            itlManager.equipmant.showEquipmentList();
             
             
         });
@@ -239,6 +240,21 @@
 
             <tr class="border_users_b border_users_r" height='30'>
                 <td class="border_users_l">
+                    Equipment or H&S 
+                </td>
+                <td>
+                    <select onchange="itlManager.equipmant.showEquipmentList();" id='isEquipment' name="isEquipment">
+                        <option value="equipment" >
+                            Equipment 
+                        </option>
+                        <option value="facility" {if $logbook->getEquipmentId()=='0'}selected='selected'{/if}>
+                            Facility Health & Safety (H&S)
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="border_users_b border_users_r" height='30' hidden="hidden" id = 'showEquipmentList'>
+                <td class="border_users_l">
                     Equipment
                 </td>
                 <td>
@@ -280,5 +296,6 @@
 
 {*add inspection perswon dialog container*}
 <div id='addInspectionPersonContainer' title="Add New Inspection Person" style="display:none;">Loading ...</div>
+
 
 
