@@ -1,3 +1,6 @@
+<script type="text/javascript">
+    var logbookListManager = new ManageLogbookList();
+</script>
 {if $color eq "green"}
     {include file="tpls:tpls/notify/greenNotify.tpl" text=$message}
 {/if}
@@ -8,11 +11,20 @@
     {include file="tpls:tpls/notify/blueNotify.tpl" text=$message}
 {/if}
 
+<div style="text-align: right; margin-right: 25px;">
+    <select onchange="logbookListManager.filterlogbookList()" id='logbookFilter'>
+        {foreach from=$filterConditionList  item=filterCondition}
+            <option value="{$filterCondition.id}" {if $filterCondition.id == $filter} selected='selected' {/if}>
+                {$filterCondition.name}
+            </option>
+        {/foreach}
+    </select>
+</div>
 {*PAGINATION*}
-	{include file="tpls:tpls/pagination.tpl"}
+{include file="tpls:tpls/pagination.tpl"}
 {*/PAGINATION*}
 <div class="padd7">
-    
+
     <table class="users" align="center" cellpadding="0" cellspacing="0" >
         <tr class="users_u_top_size users_top_brown">
             <td class="users_u_top_brown" width="27%" colspan="6">
@@ -41,7 +53,7 @@
             <td class="border_users_b border_users_r" width = "20%">
                 Inspection Type
             </td>
-           <td class="border_users_b border_users_r" width = "30%">
+            <td class="border_users_b border_users_r" width = "30%">
                 Condition
             </td>
             <td class="border_users_b border_users_r" width = "20%">
@@ -49,47 +61,47 @@
             </td>
         </tr>
         {foreach from=$logbookList item=logbook}
-             <tr>
-            <td class="border_users_b border_users_r border_users_l">
-                <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
-            </td>
-            <td class="border_users_b border_users_r">
-                <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                    {$logbook.creationDate}
-                </a>
-            </td>
-            <td class="border_users_b border_users_r">
-                <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                    {$logbook.creationTime}
-                </a>
-            </td>
-             <td class="border_users_b border_users_r">
-                 <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                     {$logbook.inspectionPersonName}
-                 </a>
-            </td>
-            <td class="border_users_b border_users_r">
-                <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                    {$logbook.inspectionType->typeName}
-                </a>
-            </td>
-           <td class="border_users_b border_users_r">
-               <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                   {$logbook.condition}
-               </a>
-            </td>
-            <td class="border_users_b border_users_r">
-                <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                    {$logbook.notes}
-                </a>
-            </td>
-        </tr>
+            <tr>
+                <td class="border_users_b border_users_r border_users_l">
+                    <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.creationDate}
+                    </a>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.creationTime}
+                    </a>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.inspectionPersonName}
+                    </a>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.inspectionType->typeName}
+                    </a>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.condition}
+                    </a>
+                </td>
+                <td class="border_users_b border_users_r">
+                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.notes}
+                    </a>
+                </td>
+            </tr>
         {/foreach}
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
     <input type='hidden' name='tab' value='{$tab|escape}'>
-{*PAGINATION*}
-	{include file="tpls:tpls/pagination.tpl"}
-{*/PAGINATION*}
+    {*PAGINATION*}
+    {include file="tpls:tpls/pagination.tpl"}
+    {*/PAGINATION*}
 
 </div>

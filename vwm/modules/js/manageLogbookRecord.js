@@ -463,7 +463,13 @@ function InspectionPersonSettings() {
 
 var inspectionPerson;
 
-
+function ManageLogbookList(){
+    
+    this.filterlogbookList = function(){
+        var logbookFilter = $('#logbookFilter').val();
+        location.href = '?action=browseCategory&category=facility&id=125&bookmark=logbook&tab=logbook&filter='+logbookFilter;
+    }
+}
 /**
  * 
  * class gauges
@@ -663,3 +669,4 @@ $(function() {
     inspectionPerson.addInspectionPerson.iniDialog();
    
 });
+
