@@ -315,6 +315,12 @@ class LogbookManager
         return $row->logbookListCount;
     }
     
+    /**
+     * 
+     * get filter for Logbook List
+     * 
+     * @return array();
+     */
     public function getFilterList()
     {
         return array(
@@ -331,6 +337,43 @@ class LogbookManager
                 'name' => 'Facility Health & Safety (H&S)',
             )
         );
+    }
+    
+    /**
+     * 
+     * get Recurring logbook List
+     * 
+     * @param int $facilityId
+     * @param Pagination $pagination
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookRecord
+     */
+    public function getRecurringLogbookList($facilityId = null, \Pagination $pagination)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $recurringLogbookList = array();
+        
+        $query = "SELECT * FROM ".LogbookRecord::TABLE_NAME." ".
+                 "WHERE is_recurring = 1";
+        
+        if(isset($facilityId)){
+            $query.=" AND facility_id = {$db->sqltext($facilityId)}";
+        }
+        
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
+        $db->query($query);
+        
+        $rows = $db->fetch_all_array();
+        
+        foreach ($rows as $row){
+            $recurringLogbook = new LogbookRecord();
+            $recurringLogbook->initByArray($row);
+            $recurringLogbookList[] = $recurringLogbook;
+        }
+        
+        return $recurringLogbookList;
     }
     
 

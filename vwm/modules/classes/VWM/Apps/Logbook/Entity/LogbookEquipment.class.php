@@ -38,6 +38,13 @@ class LogbookEquipment extends Model
      * @var string 
      */
     protected $permit = null;
+    
+    /**
+     *
+     * voc emissions
+     * 
+     * @var int 
+     */
     protected $voc_emissions = 0;
 
     const TABLE_NAME = 'equipment';
