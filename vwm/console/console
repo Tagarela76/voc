@@ -4,6 +4,8 @@
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\ListCommand;
 use Symfony\Component\Console\Command\GreetCommand;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 use VWM\Apps\Reminder\Console\Command\ReminderCommand;
 
 $site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
@@ -46,6 +48,7 @@ $xnyo->start();
 $GLOBALS["db"]->select_db(DB_NAME);
 VOCApp::getInstance()->setDB($GLOBALS["db"]);
 VOCApp::getInstance()->setSmarty($smarty);
+VOCApp::getInstance()->setEventDispatcher(new EventDispatcher());
 
 $application = new Application();
 $application->add(new ReminderCommand);
