@@ -1,6 +1,6 @@
 <div style="width: 100%; padding: 10px 13px;">
     <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id={$facilityId|escape}&bookmark=logbook&tab=logbookCustomDescription'">
-    <input type='button' class="button" value="Edit" onclick="location.href = '?action=addItem&category=logbook&facilityID={$facilityId|escape}&tab=logbookCustomDescription&logbookCustomDescriptionId={$logbookCustomDescription->getId()|escape}'">
+    <input type='button' class="button" value="Edit" onclick="location.href = '?action=editItem&category=logbook&facilityID={$facilityId|escape}&tab=logbookCustomDescription&logbookCustomDescriptionId={$logbookCustomDescription->getId()|escape}'">
 </div>
 
 <div>

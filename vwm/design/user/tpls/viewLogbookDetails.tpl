@@ -1,6 +1,6 @@
 <div style="width: 100%; padding: 10px 13px;">
     <input type='button' class="button" value="<< Back" onclick="history.back();">
-    <input type='button' class="button" value="Edit" onclick="location.href='?action=addItem&category=logbook&logbookId={$logbook->getId()}&facilityID={$logbook->getFacilityID()}&tab={$tab|escape}'">
+    <input type='button' class="button" value="Edit" onclick="location.href='?action=editItem&category=logbook&logbookId={$logbook->getId()}&facilityID={$logbook->getFacilityID()}&tab={$tab|escape}'">
 </div>
 <div>
     <table class="users" align="center" cellpadding="0" cellspacing="0">

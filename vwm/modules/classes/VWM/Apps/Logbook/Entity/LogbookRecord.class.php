@@ -229,6 +229,7 @@ class LogbookRecord extends Model
      * @var VWM\Apps\Logbook\Entity\LogbookDescription 
      */
     protected $description = null;
+
     /**
      *
      * max limit of gauge
@@ -236,13 +237,36 @@ class LogbookRecord extends Model
      * @var int
      */
     protected $max_gauge_range = 100;
-    
-    
     protected $inspection_addition_type = null;
+
+    /**
+     *
+     * is logbook record recursive
+     * 
+     * @var boolean 
+     */
+    protected $is_recurring = 0;
+
+    /**
+     *
+     * periodicity of recurring logbooks
+     * 
+     * @var int 
+     */
+    protected $periodicity = 0;
+    
+    /**
+     *
+     * id of parent recurring logbook
+     * 
+     * @var int 
+     */
+    protected $parentId = 0;
+
+    /* CONSTANTS */
 
     const TABLE_NAME = 'logbook_record';
     const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
-
     /* Type of Value Gauge */
     const TEMPERATURE_GAUGE = 0;
     const MANOMETER_GAUGE = 1;
@@ -252,10 +276,15 @@ class LogbookRecord extends Model
     const PROPANE_GAS_GAUGE = 5;
     const TIME_GAUGE = 6;
     const FUEL_GAUGE = 7;
-    
     const MIN_GAUGE_RANGE = 0;
     const MAX_GAUGE_RANGE = 100;
     const GAUGE_RANGE_STEP = 100;
+
+    //reminder periodicity
+    const DAILY = 0;
+    const WEEKLY = 1;
+    const MONTHLY = 2;
+    const YEARLY = 3;
 
     public function __construct($id = null)
     {
@@ -288,14 +317,14 @@ class LogbookRecord extends Model
 
     public function getInspectionType()
     {
-        if(!is_null($this->inspectionType)){
+        if (!is_null($this->inspectionType)) {
             return $this->inspectionType;
         }
-        
-        if(is_null($this->inspection_type_id)){
+
+        if (is_null($this->inspection_type_id)) {
             return false;
         }
-        
+
         $logbookInspectionType = new LogbookInspectionType();
         $logbookInspectionType->setId($this->inspection_type_id);
         $logbookInspectionType->load();
@@ -583,24 +612,53 @@ class LogbookRecord extends Model
 
     public function getDescription()
     {
-        if(!is_null($this->description)){
+        if (!is_null($this->description)) {
             return $this->description;
         }
-        if(is_null($this->description_id)){
+        if (is_null($this->description_id)) {
             return false;
         }
-        
+
         $description = new LogbookDescription();
         $description->setId($this->description_id);
         $description->load();
         $this->description = $description;
         return $description;
-        
     }
 
     public function setDescription(VWM\Apps\Logbook\Entity\LogbookDescription $description)
     {
         $this->description = $description;
+    }
+
+    public function getIsRecurring()
+    {
+        return $this->is_recurring;
+    }
+
+    public function setIsRecurring($isRecurring)
+    {
+        $this->is_recurring = $isRecurring;
+    }
+
+    public function getPeriodicity()
+    {
+        return $this->periodicity;
+    }
+
+    public function setPeriodicity($periodicity)
+    {
+        $this->periodicity = $periodicity;
+    }
+
+    public function getParentId()
+    {
+        return $this->parentId;
+    }
+
+    public function setParentId($parentId)
+    {
+        $this->parentId = $parentId;
     }
 
     public function load()
@@ -683,7 +741,7 @@ class LogbookRecord extends Model
         $maxGaugeRange = $this->getMaxGaugeRange();
 
         //set nextGauge
-        
+
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "department_id = {$db->sqltext($departmentId)}, " .
@@ -704,6 +762,9 @@ class LogbookRecord extends Model
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
+                "is_recurring = '{$db->sqltext($this->getIsRecurring())}', " .
+                "periodicity = '{$db->sqltext($this->getPeriodicity())}', " .
+                "parent_id = '{$db->sqltext($this->getParentId())}', " .
                 "qty = '{$db->sqltext($qty)}'";
 
         $db->query($sql);
@@ -786,9 +847,12 @@ class LogbookRecord extends Model
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
                 "inspection_type_id = '{$db->sqltext($this->getInspectionTypeId())}', " .
+                "is_recurring = '{$db->sqltext($this->getIsRecurring())}', " .
+                "periodicity = '{$db->sqltext($this->getPeriodicity())}', " .
+                "parent_id = '{$db->sqltext($this->getParentId())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
-                
+
         $db->query($sql);
         $id = $db->getLastInsertedID();
         if (isset($id)) {
@@ -827,11 +891,11 @@ class LogbookRecord extends Model
         if (is_null($inspectionDescription)) {
             $inspectionDescription = $this->getDescription();
         }
-        
+
         $itmanager = \VOCApp::getInstance()->getService('inspectionType');
 
         $inspectionSubType = $itmanager->getInspectionSubTypeByTypeAndSubTypeDescription($inspectionType->typeName, $inspectionSubTypeName);
-        
+
         /* set addition fields available */
         if (!is_null($inspectionType->additionFieldList)) {
             $this->setHasInspectionAdditionType(1);
