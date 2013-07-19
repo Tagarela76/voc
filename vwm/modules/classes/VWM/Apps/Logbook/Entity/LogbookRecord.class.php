@@ -25,14 +25,6 @@ class LogbookRecord extends Model
     protected $facility_id;
 
     /**
-     * 
-     * department id
-     * 
-     * @var int
-     */
-    protected $department_id = null;
-
-    /**
      *
      * inspection person id
      *
@@ -89,15 +81,7 @@ class LogbookRecord extends Model
     protected $equipment_id = 0;
 
     /* Addition fields */
-
-    /**
-     *
-     * Addition field - inspection type permit
-     *
-     * @var boolean
-     */
-    protected $permit = null;
-
+    
     /**
      *
      * Addition field - inspection sub type qty
@@ -192,14 +176,6 @@ class LogbookRecord extends Model
 
     /**
      *
-     * replaced bulbs
-     *
-     * @var boolean
-     */
-    protected $replaced_bulbs = 0;
-
-    /**
-     *
      * min limit of gauge
      *
      * @var int
@@ -280,7 +256,7 @@ class LogbookRecord extends Model
     const MAX_GAUGE_RANGE = 100;
     const GAUGE_RANGE_STEP = 100;
 
-    //reminder periodicity
+    //logbook periodicity
     const DAILY = 0;
     const WEEKLY = 1;
     const MONTHLY = 2;
@@ -379,16 +355,6 @@ class LogbookRecord extends Model
         $this->equipment_id = $equipment_id;
     }
 
-    public function getPermit()
-    {
-        return $this->permit;
-    }
-
-    public function setPermit($permit)
-    {
-        $this->permit = $permit;
-    }
-
     public function getQty()
     {
         return $this->qty;
@@ -427,16 +393,6 @@ class LogbookRecord extends Model
     public function setFacilityId($facility_id)
     {
         $this->facility_id = $facility_id;
-    }
-
-    public function getDepartmentId()
-    {
-        return $this->department_id;
-    }
-
-    public function setDepartmentId($department_id)
-    {
-        $this->department_id = $department_id;
     }
 
     public function getHasPermit()
@@ -527,16 +483,6 @@ class LogbookRecord extends Model
     public function setGaugeValueTo($gauge_value_to)
     {
         $this->gauge_value_to = $gauge_value_to;
-    }
-
-    public function getReplacedBulbs()
-    {
-        return $this->replaced_bulbs;
-    }
-
-    public function setReplacedBulbs($replacedBulbs)
-    {
-        $this->replaced_bulbs = $replacedBulbs;
     }
 
     public function getMinGaugeRange()
@@ -687,23 +633,18 @@ class LogbookRecord extends Model
         $db = \VOCApp::getInstance()->getService('db');
 
         $qty = $this->getQty();
-        $departmentId = $this->getDepartmentId();
         $subTipesNotes = $this->getSubTypeNotes();
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
         $gaugeType = $this->getValueGaugeType();
         $gaugeValueFrom = $this->getGaugeValueFrom();
         $gaugeValueTo = $this->getGaugeValueTo();
-        $replacedBulbs = $this->getReplacedBulbs();
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
         $inspectionSubType = $this->getInspectionSubType();
 
         if (is_null($qty)) {
             $qty = 'NULL';
-        }
-        if (is_null($departmentId)) {
-            $departmentId = 'NULL';
         }
         if (is_null($dateTime)) {
             $dateTime = time();
@@ -723,9 +664,6 @@ class LogbookRecord extends Model
         if (is_null($gaugeValueTo)) {
             $gaugeValueTo = 'NULL';
         }
-        if (is_null($replacedBulbs)) {
-            $replacedBulbs = 'NULL';
-        }
         if (is_null($inspectionAdditionType)) {
             $inspectionAdditionType = 'NULL';
         }
@@ -744,19 +682,16 @@ class LogbookRecord extends Model
 
         $sql = "INSERT INTO " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "department_id = {$db->sqltext($departmentId)}, " .
                 "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
                 "description_id = '{$db->sqltext($this->getDescriptionId())}', " .
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
-                "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = '{$db->sqltext($gaugeValueFrom)}', " .
                 "gauge_value_to = '{$db->sqltext($gaugeValueTo)}', " .
                 "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
-                "replaced_bulbs = {$db->sqltext($this->getReplacedBulbs())}, " .
                 "min_gauge_range = {$db->sqltext($minGaugeRange)}, " .
                 "max_gauge_range = {$db->sqltext($maxGaugeRange)}, " .
                 "unittype_id = '{$db->sqltext($unittypeId)}', " .
@@ -782,7 +717,6 @@ class LogbookRecord extends Model
         $db = \VOCApp::getInstance()->getService('db');
 
         $qty = $this->getQty();
-        $departmentId = $this->getDepartmentId();
         $subTipesNotes = $this->getSubTypeNotes();
         $dateTime = $this->getDateTime();
         $descriptionNotes = $this->getDescriptionNotes();
@@ -794,9 +728,6 @@ class LogbookRecord extends Model
         $inspectionSubType = $this->getInspectionSubType();
         if (is_null($qty)) {
             $qty = 'NULL';
-        }
-        if (is_null($departmentId)) {
-            $departmentId = 'NULL';
         }
         if (is_null($dateTime)) {
             $dateTime = time();
@@ -829,19 +760,16 @@ class LogbookRecord extends Model
 
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "department_id = {$db->sqltext($departmentId)}, " .
                 "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
                 "inspection_person_id = {$db->sqltext($this->getInspectionPersonId())}, " .
                 "date_time = {$db->sqltext($dateTime)}, " .
                 "description_id = '{$db->sqltext($this->getDescriptionId())}', " .
                 "description_notes = '{$db->sqltext($descriptionNotes)}', " .
-                "permit = {$db->sqltext($this->getPermit())}, " .
                 "sub_type_notes = '{$db->sqltext($subTipesNotes)}', " .
                 "gauge_type = {$db->sqltext($gaugeType)}, " .
                 "gauge_value_from = {$db->sqltext($gaugeValueFrom)}, " .
                 "gauge_value_to = {$db->sqltext($gaugeValueTo)}, " .
                 "equipment_id = '{$db->sqltext($this->getEquipmentId())}', " .
-                "replaced_bulbs = '{$db->sqltext($this->getReplacedBulbs())}', " .
                 "min_gauge_range = {$db->sqltext($this->getMinGaugeRange())}, " .
                 "max_gauge_range = {$db->sqltext($this->getMaxGaugeRange())}, " .
                 "inspection_addition_type = '{$db->sqltext($inspectionAdditionType)}', " .
@@ -900,7 +828,6 @@ class LogbookRecord extends Model
         if (!is_null($inspectionType->additionFieldList)) {
             $this->setHasInspectionAdditionType(1);
         }
-        $this->setHasPermit($inspectionType->permit);
         $this->setHasQty($inspectionSubType->qty);
         $this->setHasSubTypeNotes($inspectionSubType->notes);
         $this->setHasDescriptionNotes($inspectionDescription->getNotes());
@@ -945,6 +872,11 @@ class LogbookRecord extends Model
                 "facility_id = {$db->sqltext($this->getFacilityId())}";
 
         $db->query($query);
+    }
+    
+    final public function convertToLogbookRecordToDo()
+    {
+        
     }
 
 }

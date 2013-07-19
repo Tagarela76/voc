@@ -4,15 +4,14 @@ namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
-use VWM\Apps\Logbook\Entity\LogbookRecord;
+use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
 
-class LogbookRecordTest extends Testing\DbTestCase
+class LogbookRecordToDoTest extends Testing\DbTestCase
 {
-
     protected $fixtures = array(
-        LogbookRecord::TABLE_NAME
+        LogbookRecordToDo::TABLE_NAME
     );
-
+    
     public function testSave()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -21,7 +20,7 @@ class LogbookRecordTest extends Testing\DbTestCase
         $facilityId = 1;
         $inspectionPersonId = 1;
         $inspectionTypeId = 1;
-        $inspectionSubType = 'Subtype 4';
+        $inspectionSubType = 'subtype 4';
         $descriptionId = 1;
         $equipmentId = 0;
         $minGaugeRange = 0;
@@ -36,11 +35,11 @@ class LogbookRecordTest extends Testing\DbTestCase
         $gaugeValueTo = 15;
         $dateTime = time();
         $isRecurring = 0;
-        $periodicity = LogbookRecord::DAILY;
+        $periodicity = LogbookRecordToDo::DAILY;
         $parentId = 0;
             
         //initialize logbook
-        $logbook = new LogbookRecord();
+        $logbook = new LogbookRecordToDo();
         $logbook->setFacilityId($facilityId);
         $logbook->setInspectionPersonId($inspectionPersonId);
         $logbook->setInspectionTypeId($inspectionTypeId);
@@ -65,7 +64,7 @@ class LogbookRecordTest extends Testing\DbTestCase
         
         $logbookId = $logbook->save();
         
-        $query = "SELECT * FROM ".LogbookRecord::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookId)} LIMIT 1";
         $db->query($query);
         $result = $db->fetch_all_array();
@@ -111,10 +110,10 @@ class LogbookRecordTest extends Testing\DbTestCase
         $gaugeValueTo = 150;
         $dateTime = time();
         $isRecurring = 1;
-        $periodicity = LogbookRecord::WEEKLY;
+        $periodicity = LogbookRecordToDo::WEEKLY;
         $parentId = 1;
         //initialize logbook
-        $logbookUpdate = new LogbookRecord();
+        $logbookUpdate = new LogbookRecordToDo();
         $logbookUpdate->setId($logbookId);
         $logbookUpdate->load();
         
@@ -142,7 +141,7 @@ class LogbookRecordTest extends Testing\DbTestCase
         
         $logbookUpdate->save();
         
-        $query = "SELECT * FROM ".LogbookRecord::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookUpdate->getId())} LIMIT 1";
         $db->query($query);
         $result = $db->fetch_all_array();
@@ -152,6 +151,7 @@ class LogbookRecordTest extends Testing\DbTestCase
         $this->assertEquals($result[0]['inspection_sub_type'], $inspectionSubType);
         $this->assertEquals($result[0]['inspection_person_id'], $inspectionPersonId);
         $this->assertEquals($result[0]['date_time'], $dateTime);
+        $this->assertEquals($result[0]['description_id'], $descriptionId);
         $this->assertEquals($result[0]['description_notes'], $logBookDescriptionNotes);
         $this->assertEquals($result[0]['sub_type_notes'], $subtypeNotes);
         $this->assertEquals($result[0]['qty'], $qty);
@@ -169,37 +169,5 @@ class LogbookRecordTest extends Testing\DbTestCase
         $this->assertEquals($result[0]['parent_id'], $parentId);
     }
     
-    public function testConvertToLogbookRecordToDo()
-    {
-        $logbookId = 1;
-        $logbook = new LogbookRecord();
-        $logbook->setId($logbookId);
-        $logbookId->load();
-        $logbookRecordToDo = $logbook->convertToLogbookRecordToDo();
-        
-        $this->assertTrue($logbookRecordToDo instanceof LogbookRecordToDo);
-        
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-        $this->assertEquals($logbook, $logbookRecordToDo);
-    }
-
 }
 ?>

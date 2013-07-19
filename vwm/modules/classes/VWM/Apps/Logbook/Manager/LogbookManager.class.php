@@ -341,6 +341,29 @@ class LogbookManager
     
     /**
      * 
+     * get Count Recurring logbook List
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookRecord
+     */
+    public function getCountRecurringLogbookList($facilityId = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $query = "SELECT count(*) count FROM ".LogbookRecord::TABLE_NAME." ".
+                 "WHERE is_recurring = 1";
+        
+        if(isset($facilityId)){
+            $query.=" AND facility_id = {$db->sqltext($facilityId)}";
+        }
+        $db->query($query);
+        
+        $count = $db->fetch(0);
+        return $count->count;
+    }
+    
+    /**
+     * 
      * get Recurring logbook List
      * 
      * @param int $facilityId
@@ -374,6 +397,67 @@ class LogbookManager
         }
         
         return $recurringLogbookList;
+    }
+    
+     /**
+     * 
+     * get Logbook periodicity
+     * 
+     * @return array()
+     */
+    public function getLogbookPeriodicityList()
+    {
+        return array(
+            0 =>array(
+             'id' => LogbookRecord::DAILY,
+             'description' => 'daily'
+            ),
+            1 =>array(
+             'id' => LogbookRecord::WEEKLY,
+             'description' => 'weekly'
+            ),
+            2 =>array(
+             'id' => LogbookRecord::MONTHLY,
+             'description' => 'monthly'
+            ),
+            3 =>array(
+             'id' => LogbookRecord::YEARLY,
+             'description' => 'yearly'
+            ),
+        );
+    }
+    
+    /**
+     * get recurring logbooks with has been created today
+     */
+    public function getCurrentRecurringLogbookList()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $currentRecurringLogbook = array();
+        //get current date
+        $date = date('m/d/Y', time());
+        $date = explode('/', $date);
+        
+        //get date in unix considering time
+        $dateTimeFrom = mktime(0, 0, 0, $date[0], $date[1], $date[2]);
+        $dateTimeTo = mktime(23, 59, 59, $date[0], $date[1], $date[2]);
+        
+        $sql = "SELECT * FROM ".  LogbookRecord::TABLE_NAME." ".
+               "WHERE is_recurring = 1 ".
+               "AND date_time>={$db->sqltext($dateTimeFrom)} ".
+               "AND date_time<={$db->sqltext($dateTimeTo)}";
+        $db->query($sql); 
+        
+        if ($db->num_rows() == 0) {
+            return $currentRecurringLogbook;
+        }
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $logbookRecord = new LogbookRecord();
+            $logbookRecord->initByArray($row);
+            $currentRecurringLogbook[] = $logbookRecord;
+        }
+        return $currentRecurringLogbook;
     }
     
 
