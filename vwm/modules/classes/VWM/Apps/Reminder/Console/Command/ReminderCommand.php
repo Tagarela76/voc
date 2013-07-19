@@ -28,10 +28,17 @@ class ReminderCommand extends Command
         $rManager = \VOCApp::getInstance()->getService('reminder');
         
         $reminders = $rManager->getCurrentReminders();
-        
-        foreach ($reminders as $reminder){
+        if (!$reminders) {
+            $result .= 'No reminders to send';
+            $output->writeln($result);
+
+            return;
+        }
+
+        foreach ($reminders as $reminder) {
             
-            $result.= $rManager->sendRemindToUser($reminder->getId());
+            $result .= $rManager->sendRemindToUser($reminder);
+
             //update reminder using observer pattern
             //get event dispatcher
             $dispatcher = \VOCApp::getInstance()->getService('eventDispatcher');
@@ -44,4 +51,3 @@ class ReminderCommand extends Command
         $output->writeln($result);
     }
 }
-?>

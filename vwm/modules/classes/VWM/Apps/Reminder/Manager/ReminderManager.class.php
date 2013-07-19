@@ -78,20 +78,20 @@ class ReminderManager
      * 
      * @param int $reminderId
      * 
-     * @return boolean|array()
+     * @return array()
      */
     public function getUsersByReminderId($reminderId = null)
     {
-        $db = \VOCApp::getInstance()->getService('db');
-
-        if (is_null($reminderId)) {
-            return false;
+        if (!$reminderId) {
+            return array();
         }
+
+        $db = \VOCApp::getInstance()->getService('db');
 
         $sql = "SELECT u.user_id, u.username, u.email, u.mobile " .
                 "FROM " . TB_USER . " u" .
                 " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.user_id = u.user_id " .
-                "WHERE r2u.reminders_id={$db->sqltext($reminderId)}";
+                "WHERE r2u.reminders_id = {$db->sqltext($reminderId)}";
         $db->query($sql);
         
         if ($db->num_rows() == 0) {
@@ -141,22 +141,19 @@ class ReminderManager
     }
     
     /**
+     * Send reminder to users
      * 
-     * sent remind to user
-     * 
-     * @param int $reminderId
+     * @param \VWM\Apps\Reminder\Entity\Reminder $reminder
      * 
      * @return string
      */
-    public function sendRemindToUser($reminderId)
+    public function sendRemindToUser(\VWM\Apps\Reminder\Entity\Reminder $reminder)
     {
-        $reminder = new Reminder();
-        $reminder->setId($reminderId);
-        $reminder->load();
-        
-        $text = 'No users to remind with id '.$reminder->getName();
-        
         $users = $this->getUsersByReminderId($reminderId);
+        if (count($users) == 0) {
+
+            return false;
+        }
         
         $email = new \EMail(true);
     	$from = AUTH_SENDER."@".DOMAIN;
@@ -167,17 +164,16 @@ class ReminderManager
         $smarty = \VOCApp::getInstance()->getService('smarty');
         $smarty->assign('reminder', $reminder);
         $messageText = $smarty->fetch($tpl);
-        
-        if (count($users) != 0) {
-            $text = '';
-            foreach($users as $user){
-                if(($user["email"] == 'denis.kv@kttsoft.com') || ($user["email"] == 'denis.nt@kttsoft.com')){
-                    $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
-                }
-                    $text.='Reminder to '.$user["username"].' sent successfully;';
-                    $text.=' ';
+
+        $text = '';
+        foreach($users as $user){
+            if(($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')){
+                $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
             }
+            $text.='Reminder to '.$user["username"].' sent successfully;';
+            $text.=' ';
         }
+
         return $text;
     }
     
