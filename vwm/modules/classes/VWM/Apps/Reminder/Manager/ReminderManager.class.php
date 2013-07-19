@@ -33,12 +33,12 @@ class ReminderManager
     }
 
     /**
-     * 
+     *
      * set user to remind
-     * 
+     *
      * @param int $userId
      * @param int $reminderId
-     * 
+     *
      * @return boolean
      */
     public function setRemind2User($userId, $reminderId)
@@ -54,11 +54,11 @@ class ReminderManager
     }
 
     /**
-     * 
+     *
      * unset all users from remind
-     * 
+     *
      * @param int $reminderId
-     * 
+     *
      * @return boolean|NULL
      */
     public function unSetRemind2User($reminderId)
@@ -71,13 +71,13 @@ class ReminderManager
 				 WHERE reminders_id={$db->sqltext($reminderId)}";
         $db->query($sql);
     }
-    
+
     /**
-     * 
+     *
      * get Users by ReminderId
-     * 
+     *
      * @param int $reminderId
-     * 
+     *
      * @return array()
      */
     public function getUsersByReminderId($reminderId = null)
@@ -93,18 +93,18 @@ class ReminderManager
                 " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.user_id = u.user_id " .
                 "WHERE r2u.reminders_id = {$db->sqltext($reminderId)}";
         $db->query($sql);
-        
+
         if ($db->num_rows() == 0) {
             return array();
         } else {
             return $db->fetch_all_array();
         }
     }
-    
+
     /**
-     * 
+     *
      * get users wich we need remind today
-     * 
+     *
      * @param int $currentDate
      * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
      */
@@ -116,22 +116,22 @@ class ReminderManager
             $currentDate = explode('.', $currentDate);
             $deliveryDate = mktime('0', '0', '0', $currentDate[0], $currentDate[1], $currentDate[2]);
         }
-        
+
         $db = \VOCApp::getInstance()->getService('db');
         $reminders = array();
-        
+
         $sql = "SELECT * " .
                 "FROM " . Reminder::TABLE_NAME . " ".
                 "WHERE delivery_date = {$db->sqltext($deliveryDate)} ".
                 "AND active = 1";
-                
+
         $db->query($sql);
-        
+
         if ($db->num_rows() == 0) {
             return false;
         }
         $rows = $db->fetch_all_array();
-        
+
         foreach ($rows as $row) {
             $reminder = new Reminder();
             $reminder->initByArray($row);
@@ -139,28 +139,28 @@ class ReminderManager
         }
         return $reminders;
     }
-    
+
     /**
      * Send reminder to users
-     * 
+     *
      * @param \VWM\Apps\Reminder\Entity\Reminder $reminder
-     * 
+     *
      * @return string
      */
     public function sendRemindToUser(\VWM\Apps\Reminder\Entity\Reminder $reminder)
     {
-        $users = $this->getUsersByReminderId($reminderId);
+        $users = $this->getUsersByReminderId($reminder->getId());
         if (count($users) == 0) {
 
             return false;
         }
-        
+
         $email = new \EMail(true);
     	$from = AUTH_SENDER."@".DOMAIN;
         $messageSubject = "Reminder ";
-        
+
         $tpl = dirname(__FILE__).'/../../../../../../design/user/tpls/reminderNotification.tpl';
-        
+
         $smarty = \VOCApp::getInstance()->getService('smarty');
         $smarty->assign('reminder', $reminder);
         $messageText = $smarty->fetch($tpl);
@@ -176,11 +176,11 @@ class ReminderManager
 
         return $text;
     }
-    
+
     /**
-     * 
+     *
      * get Reminder Timing List
-     * 
+     *
      * @return array()
      */
     public function getReminderTimingList()
@@ -204,11 +204,11 @@ class ReminderManager
             ),
         );
     }
-    
+
     /**
-     * 
+     *
      * get Reminder Type List
-     * 
+     *
      * @return array()
      */
     public function getReminderTypeList()
@@ -219,13 +219,13 @@ class ReminderManager
             2 => 'Process'
         );
     }
-    
+
     /**
-     * 
+     *
      * get users by reminder ids
-     * 
+     *
      * @param string $remindersIds
-     * 
+     *
      * @return array
      */
     public function getUserListByReminderIds($remindersIds)
@@ -238,19 +238,19 @@ class ReminderManager
                 "WHERE r2u.reminders_id IN ({$db->sqltext($remindersIds)}) ".
                 "GROUP BY u.user_id";
         $db->query($sql);
-        
+
         if ($db->num_rows() == 0) {
             return array();
         } else {
             return $db->fetch_all_array();
         }
     }
-    
+
     /**
-     * 
+     *
      * @param int $userId
      * @param \Pagination $pagination
-     * 
+     *
      * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
      */
     public function getRemindersByUserId($userId, \Pagination $pagination = null)
@@ -280,13 +280,13 @@ class ReminderManager
         }
         return $reminders;
     }
-    
+
     /**
-     * 
+     *
      * get Reminder count
-     * 
+     *
      * @param int $userId
-     * 
+     *
      * @return int
      */
     public function countRemindersByUserId($userId)
@@ -297,20 +297,20 @@ class ReminderManager
                 "FROM " . Reminder::TABLE_NAME . " r" .
                 " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
                 "WHERE r2u.user_id = {$userId} LIMIT 1";
-        
+
         $db->query($sql);
         $result = $db->fetch(0);
-        
+
         return $result->count;
     }
-    
+
     /**
-     * 
+     *
      * Get over that period will be re-sent reminder
-     * 
+     *
      * @param int $periodicity
      * @param int $currentDate
-     * 
+     *
      * @return int
      */
     public function getNextRemindDate($periodicity, $currentDate)
@@ -334,7 +334,7 @@ class ReminderManager
         }
         return $date;
     }
-    
-    
+
+
 }
 ?>
