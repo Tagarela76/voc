@@ -4,12 +4,8 @@ VWM\Apps\Logbook\Entity\LogbookRecord:
       - Min: 0
     qty:
       - Min: 0
-    permit:
-      - Min: 0
-      - Max: 1
     inspection_type_id:
       - NotBlank: ~
-    department_id:
-      - Min: 0
+   
       
      

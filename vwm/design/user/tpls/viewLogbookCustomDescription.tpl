@@ -32,17 +32,17 @@
                     <input type="checkbox" name="checkCustomDescription[]" value="{$logbookCustomDescription->getId()|escape}">
                 </td>	
                 <td class="border_users_b border_users_r" width="10%">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
                         {$logbookCustomDescription->getId()|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r" width="50%">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
                         {$logbookCustomDescription->getDescription()|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r" width="10%">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
                     {if $logbookCustomDescription->getNotes()}
                         yes
                     {else}
@@ -51,7 +51,7 @@
                     </a>
                 </td>
                 <td class="border_users_b border_users_r" width="25%">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookCustomDescription->getId()|escape}&tab=logbookCustomDescription">
                         {$logbookCustomDescription->getInspectionTypeId()|escape}
                     </a>
                 </td>

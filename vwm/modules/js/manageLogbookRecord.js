@@ -216,11 +216,11 @@ function InspectionTypeList() {
             $('#logbookReplacedBulbs').show();
         }
         $('#gaugeType').val(gaugeType);
-        if (inspectionType.permit == 0) {
+        /*if (inspectionType.permit == 0) {
             $('#logBookPermit').hide();
         } else {
             $('#logBookPermit').show();
-        }
+        }*/
 
         if (inspectionType.additionFieldList != undefined) {
             $('#inspectionAdditionListTypeContainer').show();
@@ -359,6 +359,15 @@ function ManageLogbookRecord() {
     }
     this.setjSonDescriptionType = function(json) {
         self.description.setDescriptions(json);
+    }
+    
+    this.showLogbookPeriodicity = function(){
+        var showPeriodicity = $('#isRecurring').is(':checked');
+        if(showPeriodicity){
+            $('#periodicityContainer').show();
+        }else{
+            $('#periodicityContainer').hide();
+        }
     }
 
 }

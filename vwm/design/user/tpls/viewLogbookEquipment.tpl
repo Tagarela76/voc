@@ -36,22 +36,22 @@
                     <input type="checkbox" name="checkLogbookEquipmant[]" value="{$logbookEquipmant->getId()}">
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
                         {$logbookEquipmant->getId()|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
                         {$logbookEquipmant->getFacilityId()|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
                         {$logbookEquipmant->getEquipDesc()|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                     <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
+                     <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId|escape}&id={$logbookEquipmant->getId()|escape}&tab=logbookEquipment">
                          {if $logbookEquipmant->getPermit() == ''}
                              NONE
                          {else}
