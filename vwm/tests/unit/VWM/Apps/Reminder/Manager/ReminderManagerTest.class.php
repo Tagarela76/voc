@@ -1,4 +1,5 @@
 <?php
+
 namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Framework\Test as Testing;
@@ -65,7 +66,7 @@ class ReminderManagerTest extends Testing\DbTestCase
         $this->assertTrue(count($reminders) == 3);
         $this->assertTrue($reminders[0] instanceof Reminder);
     }
-    
+
     public function testGetNextRemindDate()
     {
         $rManager = \VOCApp::getInstance()->getService('reminder');

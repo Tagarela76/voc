@@ -28,8 +28,8 @@ class Reminder extends Model
     /**
      *
      * delivary date
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $delivery_date;
 
@@ -60,27 +60,27 @@ class Reminder extends Model
     /**
      *
      * priority level from 0% to 100%
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $priority = 0;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $type;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $appointment = 0;
 
     /**
      *
      * period daily/weekly/monthly/yearly/custom
-     * 
+     *
      * @var int
      */
     protected $periodicity = 0;
@@ -88,8 +88,8 @@ class Reminder extends Model
     /**
      *
      * get active reminder or not
-     * 
-     * @var boolean 
+     *
+     * @var boolean
      */
     protected $active = 0;
 
@@ -111,10 +111,10 @@ class Reminder extends Model
         if (isset($id)) {
             $this->id = $id;
             $this->load();
-        }
 
-        if (!isset($this->users)) {
-            $this->loadUsers();
+            if (!isset($this->users)) {
+               $this->loadUsers();
+            }
         }
 
         if (isset($email)) {

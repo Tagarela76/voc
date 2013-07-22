@@ -2,8 +2,7 @@
 
 namespace VWM\Apps\Reminder\Manager;
 
-use VWM\Framework\Model;
-use \VWM\Apps\Reminder\Entity\Reminder;
+use VWM\Apps\Reminder\Entity\Reminder;
 
 class ReminderManager
 {
@@ -147,7 +146,7 @@ class ReminderManager
      *
      * @return string
      */
-    public function sendRemindToUser(\VWM\Apps\Reminder\Entity\Reminder $reminder)
+    public function sendRemindToUser(Reminder $reminder)
     {
         $users = $this->getUsersByReminderId($reminder->getId());
         if (count($users) == 0) {
@@ -292,7 +291,7 @@ class ReminderManager
     public function countRemindersByUserId($userId)
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $reminders = array();
+
         $sql = "SELECT count(*) count " .
                 "FROM " . Reminder::TABLE_NAME . " r" .
                 " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
@@ -337,4 +336,4 @@ class ReminderManager
 
 
 }
-?>
+
