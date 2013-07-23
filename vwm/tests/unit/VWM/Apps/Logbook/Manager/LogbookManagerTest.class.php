@@ -6,7 +6,7 @@ use VWM\Framework\Test as Testing;
 use VWM\Apps\Logbook\Manager\LogbookManager;
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use VWM\Apps\Logbook\Entity\LogbookRecord;
-use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
+use VWM\Apps\Logbook\Entity\LogbookPendingRecord;
 
 class LogbookManagerTest extends Testing\DbTestCase
 {
@@ -14,7 +14,7 @@ class LogbookManagerTest extends Testing\DbTestCase
     protected $fixtures = array(
         LogbookInspectionPerson::TABLE_NAME,
         LogbookRecord::TABLE_NAME,
-        LogbookRecordToDo::TABLE_NAME
+        LogbookPendingRecord::TABLE_NAME
         
     );
 
@@ -189,19 +189,19 @@ class LogbookManagerTest extends Testing\DbTestCase
         
     }
     
-    public function testGetLogbookRecordToDoList()
+    public function testGetLogbookPendingRecordListByFacilityId()
     {
         $lbManager = \VOCApp::getInstance()->getService('logbook');
         $facilityId = 1;
 
-        $logbookRecordToDoList = $lbManager->getLogbookRecordToDoListByFacilityId($facilityId);
+        $logbookPendingRecordList = $lbManager->getLogbookPendingRecordListByFacilityId($facilityId);
 
-        $this->assertTrue($logbookRecordToDoList[0] instanceof LogbookRecordToDo);
-        $this->assertEquals(count($logbookRecordToDoList), 2);
+        $this->assertTrue($logbookPendingRecordList[0] instanceof LogbookPendingRecord);
+        $this->assertEquals(count($logbookPendingRecordList), 2);
 
     }
     
-    public function testDeleteAllLogbookToDoByParentId()
+    public function testDeleteAllLogbookPendingRecordByParentId()
     {
         $logbookId = 1;
         $lbManager = \VOCApp::getInstance()->getService('logbook');
@@ -209,11 +209,11 @@ class LogbookManagerTest extends Testing\DbTestCase
         $logbook = new LogbookRecord();
         $logbook->setId($logbookId);
         $logbook->load();
-        $sql = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $sql = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                "WHERE parent_id = {$db->sqltext($logbook->getId())}";
         $db->query($sql);
         $this->assertFalse($db->num_rows() == 0);
-        $lbManager->deleteAllLogbookToDoByParentId($logbook->getId());
+        $lbManager->deleteAllLogbookPendingRecordByParentId($logbook->getId());
         $this->assertTrue($db->num_rows() == 0);
     }
 

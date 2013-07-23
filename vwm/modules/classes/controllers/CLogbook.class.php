@@ -12,7 +12,7 @@ use VWM\Apps\Logbook\Manager\LogbookDescriptionManager;
 use VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use VWM\Apps\Logbook\Entity\LogbookDescription;
 use VWM\Apps\Logbook\Entity\LogbookCustomDescription;
-use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
+use VWM\Apps\Logbook\Entity\LogbookPendingRecord;
 
 class CLogbook extends Controller
 {
@@ -32,10 +32,7 @@ class CLogbook extends Controller
         try {
             //	logged in?
             $user = VOCApp::getInstance()->getUser();
-
-            if (!$user->isLoggedIn()) {
-                throw new Exception('deny');
-            }
+           
             //select category
             if ($this->getFromRequest('facilityID')) {
                 $category = 'facility';
@@ -49,6 +46,10 @@ class CLogbook extends Controller
                 throw new Exception('404');
             }
 
+            if (!$user->checkAccess('facility', $facilityId)) {
+                throw new Exception('deny');
+            }
+            
             $tab = $this->getFromRequest('tab');
 
             switch ($tab) {
@@ -72,9 +73,9 @@ class CLogbook extends Controller
                 case 'logbookCustomDescription':
                     $this->addLogbookCustomDescription($facilityId);
                     break;
-                /*                 * ***** VIEW ADD LOGBOOK TODO ****** */
-                case 'logbookTODO':
-                    $this->addLogbookToDo($facilityId);
+                /*                 * ***** VIEW ADD LOGBOOK PENDING RECORD ****** */
+                case 'logbookPendingRecord':
+                    $this->addLogbookPendingRecord($facilityId);
                     break;
                 default :
                     throw new Exception('tab not found!');
@@ -204,7 +205,6 @@ class CLogbook extends Controller
      */
     protected function addInspectionPerson($facilityId)
     {
-        $db = VOCApp::getInstance()->getService('db');
         $post = $this->getFromPost();
         $inspectionPerson = new LogbookInspectionPerson();
         //check for save
@@ -235,7 +235,7 @@ class CLogbook extends Controller
      * 
      * @throws \Exception
      */
-    protected function addLogbookToDo($facilityId)
+    protected function addLogbookPendingRecord($facilityId)
     {
         //get Services
         $itmanager = VOCApp::getInstance()->getService('inspectionType');
@@ -257,12 +257,12 @@ class CLogbook extends Controller
         $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
         $inspectionTypesList = json_decode($jsonInspectionalTypeList);
         //ini Logbook Record To Do for getting parent Id
-        $logbookToDo = new LogbookRecordToDo();
-        $logbookToDoId = $this->getFromRequest('logbookToDoId');
-        $logbookToDo->setId($logbookToDoId);
-        $logbookToDo->load();
+        $logbookPendingRecord = new LogbookPendingRecord();
+        $logbookPendingRecordId = $this->getFromRequest('logbookPendingRecordId');
+        $logbookPendingRecord->setId($logbookPendingRecordId);
+        $logbookPendingRecord->load();
 
-        $logbookId = $logbookToDo->getParentId();
+        $logbookId = $logbookPendingRecord->getParentId();
         //load new logbook for saving
         $logbook = new LogbookRecord();
         $logbook->setId($logbookId);
@@ -331,7 +331,7 @@ class CLogbook extends Controller
 
             if (count($violationList) == 0) {
                 $id = $logbook->save();
-                $logbookToDo->delete();
+                $logbookPendingRecord->delete();
                 header("Location: " . $successUrl);
                 die();
             } else {
@@ -393,7 +393,7 @@ class CLogbook extends Controller
         $this->smarty->assign('jsonInspectionalTypeList', $jsonInspectionalTypeList);
         $this->smarty->assign('jsonDescriptionTypeList', $jsonDescriptionTypeList);
         $this->smarty->assign('logbook', $logbook);
-        $this->smarty->assign('isLogbookToDo', 1);
+        $this->smarty->assign('isLogbookPendingRecord', 1);
         //get dateChain
         $this->smarty->assign('dataChain', $dataChain);
         $this->smarty->assign('tpl', $tpl);
@@ -605,11 +605,6 @@ class CLogbook extends Controller
         try {
             //	logged in?
             $user = VOCApp::getInstance()->getUser();
-
-            if (!$user->isLoggedIn()) {
-                throw new Exception('deny');
-            }
-
             //select category
             if ($this->getFromRequest('facilityID')) {
                 $category = 'facility';
@@ -623,6 +618,10 @@ class CLogbook extends Controller
                 throw new Exception('404');
             }
 
+            if (!$user->checkAccess('facility', $facilityId)) {
+                throw new Exception('deny');
+            }
+            
             //	Access control
             if (!$user->checkAccess('facility', $facilityId)) {
                 throw new Exception('deny');
@@ -809,9 +808,9 @@ class CLogbook extends Controller
             
             if (count($violationList) == 0) {
                 $id = $logbook->save();
-                //delete all logbooksTodo if logbook recurring is 0
+                //delete all logbookPendingRecord if logbook recurring is 0
                 if(!$logbook->getIsRecurring()){
-                    $lbmanager->deleteAllLogbookToDoByParentId($logbook->getId());
+                    $lbmanager->deleteAllLogbookPendingRecordByParentId($logbook->getId());
                 }
                 header("Location: " . $successUrl);
                 die();
@@ -1073,8 +1072,8 @@ class CLogbook extends Controller
             case 'logbookCustomDescription':
                 $this->viewLogbookCustomDescriptionList($facilityId);
                 break;
-            case 'logbookTODO':
-                $this->viewTodoLogbookList($facilityId);
+            case 'logbookPendingRecord':
+                $this->viewLogbookPendingRecordList($facilityId);
                 break;
             case 'logbookRecurring':
                 $this->viewLogbookRecurringList($facilityId);
@@ -1095,7 +1094,7 @@ class CLogbook extends Controller
         $this->smarty->assign('tab', $tab);
     }
 
-    protected function viewTodoLogbookList($facilityId)
+    protected function viewLogbookPendingRecordList($facilityId)
     {
         $lbManager = VOCApp::getInstance()->getService('logbook');
         
@@ -1103,35 +1102,35 @@ class CLogbook extends Controller
         $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
         
-        $countLogbookRecordToDoListByFacilityId = $lbManager->getCountLogbookRecordToDoListByFacilityId($facilityId);
+        $countLogbookPendingRecordListByFacilityId = $lbManager->getCountLogbookPendingRecordListByFacilityId($facilityId);
         
         $url = "?" . $_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/", "", $url);
-        $pagination = new Pagination($countLogbookRecordToDoListByFacilityId);
+        $pagination = new Pagination($countLogbookPendingRecordListByFacilityId);
         $pagination->url = $url;
         
-        $logbookRecordToDoList = $lbManager->getLogbookRecordToDoListByFacilityId($facilityId, $pagination);
+        $logbookPendingRecordList = $lbManager->getLogbookPendingRecordListByFacilityId($facilityId, $pagination);
         
-        foreach ($logbookRecordToDoList as $logbookRecordToDo) {
+        foreach ($logbookPendingRecordList as $logbookPendingRecord) {
             //get date and time
-            $creationDateTime = $logbookRecordToDo->getDateTime();
+            $creationDateTime = $logbookPendingRecord->getDateTime();
             $creationDateTime = date($timeFormat . ' h:i a', $creationDateTime);
             $creationDateTime = explode(' ', $creationDateTime);
             //initialize inspection person
             $inspectionPerson = new LogbookInspectionPerson();
-            $inspectionPerson->setId($logbookRecordToDo->getInspectionPersonId());
+            $inspectionPerson->setId($logbookPendingRecord->getInspectionPersonId());
             $inspectionPerson->load();
 
             //get sub type notes or description notes
             $notes = '';
-            if ($logbookRecordToDo->getSubTypeNotes() != 'NONE') {
-                $notes = $logbookRecordToDo->getSubTypeNotes();
+            if ($logbookPendingRecord->getSubTypeNotes() != 'NONE') {
+                $notes = $logbookPendingRecord->getSubTypeNotes();
             } else {
-                $notes = $logbookRecordToDo->getDescriptionNotes();
+                $notes = $logbookPendingRecord->getDescriptionNotes();
             }
 
             $logbookDescription = new LogbookDescription();
-            $logbookDescription->setId($logbookRecordToDo->getDescriptionId());
+            $logbookDescription->setId($logbookPendingRecord->getDescriptionId());
             $logbookDescription->load();
             $condition = $logbookDescription->getDescription();
             $condition = is_null($condition) ? 'NONE' : $condition;
@@ -1139,8 +1138,8 @@ class CLogbook extends Controller
             
             //create logbook array for diplay and sort
             $logbook = array(
-                'logbookId' => $logbookRecordToDo->getId(),
-                'inspectionType' => $logbookRecordToDo->getInspectionType(),
+                'logbookId' => $logbookPendingRecord->getId(),
+                'inspectionType' => $logbookPendingRecord->getInspectionType(),
                 //add date for sorting
                 'creationDate' => $creationDateTime[0],
                 //add time for sorting
@@ -1148,16 +1147,16 @@ class CLogbook extends Controller
                 'inspectionPersonName' => $inspectionPerson->getName(),
                 'condition' => $condition,
                 'notes' => $notes,
-                'periodicity' => $logbookPeriodicity[$logbookRecordToDo->getPeriodicity()]['description'],
-                'parentId' => $logbookRecordToDo->getParentId(),
+                'periodicity' => $logbookPeriodicity[$logbookPendingRecord->getPeriodicity()]['description'],
+                'parentId' => $logbookPendingRecord->getParentId(),
             );
 
             $logbookList[] = $logbook;
         }
         
-        $tpl = 'tpls/viewLogbookToDo.tpl';
+        $tpl = 'tpls/viewLogbookPending.tpl';
         
-        $this->smarty->assign('logbookRecordToDoList', $logbookList);
+        $this->smarty->assign('logbookPendingRecordList', $logbookList);
         $this->smarty->assign('pagination', $pagination);
         $this->smarty->assign('tpl', $tpl);
         $this->smarty->assign('facilityId', $facilityId);

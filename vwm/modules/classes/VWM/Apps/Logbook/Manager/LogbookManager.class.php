@@ -4,7 +4,7 @@ namespace VWM\Apps\Logbook\Manager;
 
 use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
 use VWM\Apps\Logbook\Entity\LogbookRecord;
-use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
+use VWM\Apps\Logbook\Entity\LogbookPendingRecord;
 
 class LogbookManager
 {
@@ -499,13 +499,14 @@ class LogbookManager
         return $date;
     }
     
-    
     /**
      * 
      * function for calculate nex logbook Date
      * 
      * @param int $periodicity
      * @param int $date
+     * 
+     * @return int
      */
     public function calculateNextLogbookDate($periodicity, $date)
     {
@@ -532,18 +533,18 @@ class LogbookManager
      * @param int $facilityId
      * @param \Pagination $pagination
      * 
-     * @return boolean|\VWM\Apps\Logbook\Entity\LogbookRecordToDo[]
+     * @return boolean|\VWM\Apps\Logbook\Entity\LogbookPendingRecord[]
      */
-    public function getLogbookRecordToDoListByFacilityId($facilityId, \Pagination $pagination = null)
+    public function getLogbookPendingRecordListByFacilityId($facilityId, \Pagination $pagination = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $logbookRecordToDoList = array();
+        $logbookRecordPendingList = array();
         
         if(is_null($facilityId)){
             return false;
         }
         
-        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE facility_id = {$db->sqltext($facilityId)}";
                  
         if (isset($pagination)) {
@@ -553,11 +554,11 @@ class LogbookManager
         $db->query($query);
         $rows = $db->fetch_all_array();
         foreach($rows as $row){
-            $logbookRecordToDo = new LogbookRecordToDo();
-            $logbookRecordToDo->initByArray($row);
-            $logbookRecordToDoList[] = $logbookRecordToDo;
+            $logbookPendingRecord = new LogbookPendingRecord();
+            $logbookPendingRecord->initByArray($row);
+            $logbookRecordPendingList[] = $logbookPendingRecord;
         }
-        return $logbookRecordToDoList;
+        return $logbookRecordPendingList;
     }
     
     /**
@@ -568,18 +569,16 @@ class LogbookManager
      * 
      * @return boolean|int
      */
-    public function getCountLogbookRecordToDoListByFacilityId($facilityId)
+    public function getCountLogbookPendingRecordListByFacilityId($facilityId)
     {
         $db = \VOCApp::getInstance()->getService('db');
-        $logbookRecordToDoList = array();
         
         if(is_null($facilityId)){
             return false;
         }
         
-        $query = "SELECT count(*) count FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT count(*) count FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE facility_id = {$db->sqltext($facilityId)} LIMIT 1";
-                 
         
         $db->query($query);
         $count = $db->fetch(0);
@@ -594,7 +593,7 @@ class LogbookManager
      * 
      * @param int $parentId
      */
-    public function deleteAllLogbookToDoByParentId($parentId = null)
+    public function deleteAllLogbookPendingRecordByParentId($parentId = null)
     {
         if(is_null($parentId)){
             return false;
@@ -602,7 +601,7 @@ class LogbookManager
         
         $db = \VOCApp::getInstance()->getService('db');
         
-        $query = "DELETE FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "DELETE FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE parent_id = {$db->sqltext($parentId)}";
                  
         $db->query($query);        

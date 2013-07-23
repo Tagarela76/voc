@@ -4,12 +4,12 @@ namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Framework\Test as Testing;
 use VWM\Framework\Model;
-use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
+use VWM\Apps\Logbook\Entity\LogbookLogbookPendingRecord;
 
-class LogbookRecordToDoTest extends Testing\DbTestCase
+class LogbookPendingRecordTest extends Testing\DbTestCase
 {
     protected $fixtures = array(
-        LogbookRecordToDo::TABLE_NAME
+        LogbookPendingRecord::TABLE_NAME
     );
     
     public function testSave()
@@ -35,11 +35,11 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         $gaugeValueTo = 15;
         $dateTime = time();
         $isRecurring = 0;
-        $periodicity = LogbookRecordToDo::DAILY;
+        $periodicity = LogbookPendingRecord::DAILY;
         $parentId = 0;
             
         //initialize logbook
-        $logbook = new LogbookRecordToDo();
+        $logbook = new LogbookPendingRecord();
         $logbook->setFacilityId($facilityId);
         $logbook->setInspectionPersonId($inspectionPersonId);
         $logbook->setInspectionTypeId($inspectionTypeId);
@@ -64,7 +64,7 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         
         $logbookId = $logbook->save();
         
-        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookId)} LIMIT 1";
         $db->query($query);
         $result = $db->fetch_all_array();
@@ -110,10 +110,10 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         $gaugeValueTo = 150;
         $dateTime = time();
         $isRecurring = 1;
-        $periodicity = LogbookRecordToDo::WEEKLY;
+        $periodicity = LogbookPendingRecord::WEEKLY;
         $parentId = 1;
         //initialize logbook
-        $logbookUpdate = new LogbookRecordToDo();
+        $logbookUpdate = new LogbookPendingRecord();
         $logbookUpdate->setId($logbookId);
         $logbookUpdate->load();
         
@@ -141,7 +141,7 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         
         $logbookUpdate->save();
         
-        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookUpdate->getId())} LIMIT 1";
         $db->query($query);
         $result = $db->fetch_all_array();
@@ -197,7 +197,7 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         $parentId = 0;
 
         //initialize logbook
-        $logbook = new LogbookRecordToDo();
+        $logbook = new LogbookPendingRecord();
         $logbook->setFacilityId($facilityId);
         $logbook->setInspectionPersonId($inspectionPersonId);
         $logbook->setInspectionTypeId($inspectionTypeId);
@@ -222,14 +222,14 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         $logbook->setNextDate($nextDate);
         $logbookId = $logbook->save();
         
-        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookId)}";
         $db->query($query);
         $this->assertTrue($db->num_rows() == 1);
         
         $logbook->delete();
         
-        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+        $query = "SELECT * FROM ".LogbookPendingRecord::TABLE_NAME." ".
                  "WHERE id={$db->sqltext($logbookId)}";
         $db->query($query);
         

@@ -33,40 +33,40 @@
                 Periodicity
             </td>
         </tr>
-        {foreach from=$logbookRecordToDoList item=logbook}
+        {foreach from=$logbookPendingRecordList item=logbook}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.parentId|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r border_users_l">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.creationDate|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.inspectionPersonName|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.inspectionType->typeName|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.condition|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.notes|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=addItem&category=logbook&logbookToDoId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
+                    <a href="?action=addItem&category=logbook&logbookPendingRecordId={$logbook.logbookId}&facilityID={$facilityId}&tab={$tab}">
                         {$logbook.periodicity|escape}
                     </a>
                 </td>
