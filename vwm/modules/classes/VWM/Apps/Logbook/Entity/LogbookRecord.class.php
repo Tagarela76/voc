@@ -241,7 +241,7 @@ class LogbookRecord extends Model
     
     /**
      *
-     * date for logbookTodo creating
+     * date for logbook Pending Record creating
      * 
      * @var int 
      */
@@ -250,7 +250,7 @@ class LogbookRecord extends Model
     /* CONSTANTS */
 
     const TABLE_NAME = 'logbook_record';
-    const FILENAME = '/modules/classes/VWM/Apps/Logbook/Resources/inspectionTypes.json';
+    
     /* Type of Value Gauge */
     const TEMPERATURE_GAUGE = 0;
     const MANOMETER_GAUGE = 1;
@@ -908,7 +908,7 @@ class LogbookRecord extends Model
         $db->query($query);
         
         //delete all logbookRecord To Do
-        $lbmanager->deleteAllLogbookToDoByParentId($this->getId());
+        $lbmanager->deleteAllLogbookPendingRecordByParentId($this->getId());
     }
 
     /**
@@ -937,7 +937,13 @@ class LogbookRecord extends Model
         $db->query($query);
     }
     
-    final public function convertToLogbookRecordToDo()
+    /**
+     * 
+     * conver LogbookRecord to LogbookPendingRecord
+     * 
+     * @return \VWM\Apps\Logbook\Entity\LogbookPendingRecord
+     */
+    final public function convertToLogbookPendingRecord()
     {
        $attributes = $this->getAttributes();
        unset($attributes['id']);
@@ -945,9 +951,9 @@ class LogbookRecord extends Model
        unset($attributes['gauge_value_to']);
        $attributes['parent_id'] = $this->getId();
        $attributes['is_recurring'] = 0;
-       $logbookToDo = new LogbookRecordToDo();
-       $logbookToDo->initByArray($attributes);
-       return $logbookToDo;
+       $logbookPendingRecord = new LogbookPendingRecord();
+       $logbookPendingRecord->initByArray($attributes);
+       return $logbookPendingRecord;
     }
 
 }

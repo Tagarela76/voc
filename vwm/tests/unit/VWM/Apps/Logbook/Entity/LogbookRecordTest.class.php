@@ -174,36 +174,36 @@ class LogbookRecordTest extends Testing\DbTestCase
         $this->assertEquals($result[0]['next_date'], $nextDate);
     }
     
-    public function testConvertToLogbookRecordToDo()
+    public function testConvertToLogbookPendingRecord()
     {
         $logbookId = 1;
         $logbook = new LogbookRecord();
         $logbook->setId($logbookId);
         $logbook->load();
-        $logbookRecordToDo = $logbook->convertToLogbookRecordToDo();
+        $logbookPemdingRecord = $logbook->convertToLogbookPendingRecord();
         
-        $this->assertTrue($logbookRecordToDo instanceof LogbookRecordToDo);
+        $this->assertTrue($logbookPemdingRecord instanceof LogbookPendingRecord);
         
-        $this->assertEquals($logbook->getId(), $logbookRecordToDo->getParentId());
-        $this->assertEquals($logbook->getDescription(), $logbookRecordToDo->getDescription());
-        $this->assertEquals($logbook->getDescriptionId(), $logbookRecordToDo->getDescriptionId());
-        $this->assertEquals($logbook->getDescriptionNotes(), $logbookRecordToDo->getDescriptionNotes());
-        $this->assertEquals($logbook->getFacilityId(), $logbookRecordToDo->getFacilityId());
-        $this->assertEquals($logbook->getDateTime(), $logbookRecordToDo->getDateTime());
-        $this->assertEquals($logbook->getEquipmentId(), $logbookRecordToDo->getEquipmentId());
-        $this->assertEquals($logbook->getHasInspectionAdditionType(), $logbookRecordToDo->getHasInspectionAdditionType());
-        $this->assertEquals($logbook->getHasQty(), $logbookRecordToDo->getHasQty());
-        $this->assertEquals($logbook->getGaugeValueFrom(), $logbookRecordToDo->getGaugeValueFrom());
-        $this->assertEquals($logbook->getGaugeValueTo(), $logbookRecordToDo->getGaugeValueTo());
-        $this->assertEquals($logbook->getInspectionPersonId(), $logbookRecordToDo->getInspectionPersonId());
-        $this->assertEquals($logbook->getPeriodicity(), $logbookRecordToDo->getPeriodicity());
-        $this->assertEquals($logbook->getIsRecurring(), $logbookRecordToDo->getIsRecurring());
-        $this->assertEquals($logbook->getLogbookUnitType(), $logbookRecordToDo->getLogbookUnitType());
-        $this->assertEquals($logbook->getSubTypeNotes(), $logbookRecordToDo->getSubTypeNotes());
-        $this->assertEquals($logbook->getQty(), $logbookRecordToDo->getQty());
-        $this->assertEquals($logbook->getInspectionTypeId(), $logbookRecordToDo->getInspectionTypeId());
-        $this->assertEquals($logbook->getInspectionSubType(), $logbookRecordToDo->getInspectionSubType());
-        $this->assertEquals($logbook->getHasSubTypeNotes(), $logbookRecordToDo->getHasSubTypeNotes());
+        $this->assertEquals($logbook->getId(), $logbookPemdingRecord->getParentId());
+        $this->assertEquals($logbook->getDescription(), $logbookPemdingRecord->getDescription());
+        $this->assertEquals($logbook->getDescriptionId(), $logbookPemdingRecord->getDescriptionId());
+        $this->assertEquals($logbook->getDescriptionNotes(), $logbookPemdingRecord->getDescriptionNotes());
+        $this->assertEquals($logbook->getFacilityId(), $logbookPemdingRecord->getFacilityId());
+        $this->assertEquals($logbook->getDateTime(), $logbookPemdingRecord->getDateTime());
+        $this->assertEquals($logbook->getEquipmentId(), $logbookPemdingRecord->getEquipmentId());
+        $this->assertEquals($logbook->getHasInspectionAdditionType(), $logbookPemdingRecord->getHasInspectionAdditionType());
+        $this->assertEquals($logbook->getHasQty(), $logbookPemdingRecord->getHasQty());
+        $this->assertEquals($logbook->getGaugeValueFrom(), $logbookPemdingRecord->getGaugeValueFrom());
+        $this->assertEquals($logbook->getGaugeValueTo(), $logbookPemdingRecord->getGaugeValueTo());
+        $this->assertEquals($logbook->getInspectionPersonId(), $logbookPemdingRecord->getInspectionPersonId());
+        $this->assertEquals($logbook->getPeriodicity(), $logbookPemdingRecord->getPeriodicity());
+        $this->assertEquals($logbook->getIsRecurring(), $logbookPemdingRecord->getIsRecurring());
+        $this->assertEquals($logbook->getLogbookUnitType(), $logbookPemdingRecord->getLogbookUnitType());
+        $this->assertEquals($logbook->getSubTypeNotes(), $logbookPemdingRecord->getSubTypeNotes());
+        $this->assertEquals($logbook->getQty(), $logbookPemdingRecord->getQty());
+        $this->assertEquals($logbook->getInspectionTypeId(), $logbookPemdingRecord->getInspectionTypeId());
+        $this->assertEquals($logbook->getInspectionSubType(), $logbookPemdingRecord->getInspectionSubType());
+        $this->assertEquals($logbook->getHasSubTypeNotes(), $logbookPemdingRecord->getHasSubTypeNotes());
     }
     
     

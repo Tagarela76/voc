@@ -21,10 +21,10 @@
         </tr>
         <tr>
             <td class="border_users_b border_users_r border_users_l">
-                Facility Id
+                Facility
             </td>
             <td class="border_users_b border_users_r">
-                {$logbook->getFacilityID()|escape}
+                {$facility->getName()|escape}
             </td>
         </tr>
         <tr>

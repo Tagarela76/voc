@@ -3,7 +3,7 @@ namespace VWM\Apps\Logbook\Entity;
 
 use VWM\Apps\Logbook\Entity\LogbookRecord;
 
-class LogbookRecordToDo extends LogbookRecord
+class LogbookPendingRecord extends LogbookRecord
 {
     const TABLE_NAME = 'logbook_record_to_do';
     

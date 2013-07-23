@@ -183,7 +183,7 @@
 											</table>
 
 
-											{if $request.action == 'browseCategory' && $request.tab != 'logbookTODO' && !($request.bookmark == 'inventory' && $request.tab != 'orders') && $request.bookmark != 'reminderUsers'}
+											{if $request.action == 'browseCategory' && $request.tab != 'logbookPendingRecord' && !($request.bookmark == 'inventory' && $request.tab != 'orders') && $request.bookmark != 'reminderUsers'}
 												{include file="tpls:tpls/controlChildCategoriesList.tpl"}
 											{/if}
 
