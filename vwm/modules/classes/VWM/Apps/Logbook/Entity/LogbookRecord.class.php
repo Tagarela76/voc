@@ -901,10 +901,14 @@ class LogbookRecord extends Model
     public function delete()
     {
         $db = \VOCApp::getInstance()->getService('db');
+        $lbmanager = \VOCApp::getInstance()->getService('logbook');
 
         $query = "DELETE FROM " . self::TABLE_NAME . " " .
                 "WHERE id={$db->sqltext($this->getId())}";
         $db->query($query);
+        
+        //delete all logbookRecord To Do
+        $lbmanager->deleteAllLogbookToDoByParentId($this->getId());
     }
 
     /**
@@ -937,6 +941,8 @@ class LogbookRecord extends Model
     {
        $attributes = $this->getAttributes();
        unset($attributes['id']);
+       unset($attributes['gauge_value_from']);
+       unset($attributes['gauge_value_to']);
        $attributes['parent_id'] = $this->getId();
        $attributes['is_recurring'] = 0;
        $logbookToDo = new LogbookRecordToDo();
