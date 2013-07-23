@@ -78,17 +78,24 @@
                 <td>
                     <div>
                         <select id='inspectionType' name='inspectionType' onchange="itlManager.inspectionTypeList.changeSubTypeList();
-            itlManager.inspectionTypeList.changeLogbookDescriptionList()">
+            itlManager.inspectionTypeList.changeLogbookDescriptionList()" {if $isLogbookToDo}disabled='disabled'{/if}>
                             {section name=i loop=$inspectionTypesList}
                                 <option value="{$inspectionTypesList[i]->id|escape}" {if $logbook->getInspectionTypeId() == $inspectionTypesList[i]->id}selected='selected'{/if}>
                                     {$inspectionTypesList[i]->typeName|escape}
                                 </option>
                             {/section}
                         </select>
+                            {foreach from=$violationList item="violation"}
+                                {if $violation->getPropertyPath() eq 'inspection_type_id'}
+                                    {*ERROR*}
+                                    <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                                    {*/ERROR*}
+                                {/if}
+                            {/foreach}
                     </div>
                     <div id ='inspectionAdditionListTypeContainer' hidden="hidden">
                         <select id ='inspectionAdditionListType' name='inspectionAdditionListType'  onchange="itlManager.inspectionTypeList.getSubTypesAdditionFields();
-            itlManager.gauges.changeGauge()">
+            itlManager.gauges.changeGauge()" {if $isLogbookToDo}disabled='disabled'{/if}>
                             {section name=i loop=$inspectionAdditionTypesList}
                                 <option value="{$inspectionAdditionTypesList[i]->name|escape}" {if $logbook->getInspectionAdditionType() == $inspectionAdditionTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionAdditionTypesList[i]->name|escape}
@@ -97,7 +104,8 @@
                         </select>
                     </div>    
                     <div >
-                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()" {if !$inspectionSubTypesList}hidden='hidden'{/if}>
+                        <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()"
+                        {if !$inspectionSubTypesList}hidden='hidden'{/if} {if $isLogbookToDo}disabled='disabled'{/if}>
                             {section name=i loop=$inspectionSubTypesList}
                                 <option value="{$inspectionSubTypesList[i]->name|escape}" {if $logbook->getInspectionSubType() == $inspectionSubTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionSubTypesList[i]->name|escape}
@@ -143,7 +151,7 @@
             <td>
                 <div>
                     <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge();
-            itlManager.gauges.checkGaugeValueRange();">
+            itlManager.gauges.checkGaugeValueRange();" {if $isLogbookToDo}disabled='disabled'{/if}>
                         <option value="null">Select Gauge</option>
                         {section name=i loop=$gaugeList}
                             <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>
@@ -223,7 +231,7 @@
             Equipment or H&S 
         </td>
         <td>
-            <select onchange="itlManager.equipmant.showEquipmentList();" id='isEquipment' name="isEquipment">
+            <select onchange="itlManager.equipmant.showEquipmentList();" id='isEquipment' name="isEquipment" {if $isLogbookToDo}disabled='disabled'{/if}>
                 <option value="equipment" >
                     Equipment 
                 </option>
@@ -243,7 +251,7 @@
                     Select Equipment
                 </div>
 
-                <select id ='equipmentList' name='logbookEquipmentId'>
+                <select id ='equipmentList' name='logbookEquipmentId' {if $isLogbookToDo}disabled='disabled'{/if}>
                     {foreach from=$logbookEquipmentList item="logbookEquipment"}
                         <option value="{$logbookEquipment.id|escape}" {if $logbookEquipment.id == $logbook->getEquipmentId()}selected = 'selected'{/if}>
                             {$logbookEquipment.description|escape}
@@ -265,7 +273,8 @@
             Is Recurring 
         </td>
         <td>
-            <input type='checkbox' id='isRecurring' name='isRecurring' onchange="itlManager.showLogbookPeriodicity()" {if $logbook->getIsRecurring()}checked='true'{/if}>
+            <input type='checkbox' id='isRecurring' name='isRecurring' onchange="itlManager.showLogbookPeriodicity()"
+        {if $logbook->getIsRecurring() && !$isLogbookToDo}checked='true'{/if} {if $isLogbookToDo}disabled='disabled'{/if}>
         </td>
     </tr>
     <tr class="border_users_b border_users_r" height='30' hidden="hidden" id='periodicityContainer'>

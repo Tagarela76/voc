@@ -2,8 +2,9 @@
 
 namespace VWM\Apps\Logbook\Manager;
 
-use \VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
-use \VWM\Apps\Logbook\Entity\LogbookRecord;
+use VWM\Apps\Logbook\Entity\LogbookInspectionPerson;
+use VWM\Apps\Logbook\Entity\LogbookRecord;
+use VWM\Apps\Logbook\Entity\LogbookRecordToDo;
 
 class LogbookManager
 {
@@ -430,7 +431,7 @@ class LogbookManager
     /**
      * get recurring logbooks with has been created today
      */
-    public function getCurrentRecurringLogbookList()
+    public function getCurrentRecurringLogbookList($facilityId = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $currentRecurringLogbook = array();
@@ -444,8 +445,12 @@ class LogbookManager
         
         $sql = "SELECT * FROM ".  LogbookRecord::TABLE_NAME." ".
                "WHERE is_recurring = 1 ".
-               "AND date_time>={$db->sqltext($dateTimeFrom)} ".
-               "AND date_time<={$db->sqltext($dateTimeTo)}";
+               "AND next_date>={$db->sqltext($dateTimeFrom)} ".
+               "AND next_date<={$db->sqltext($dateTimeTo)}";
+               
+        if(!is_null($facilityId)){
+            $sql.=" AND facility_id = {$db->sqltext($facilityId)}";
+        }
         $db->query($sql); 
         
         if ($db->num_rows() == 0) {
@@ -458,6 +463,128 @@ class LogbookManager
             $currentRecurringLogbook[] = $logbookRecord;
         }
         return $currentRecurringLogbook;
+    }
+    
+     /**
+     * 
+     * Get next Logbook Date
+     * 
+     * @param int $periodicity
+     * @param int $currentDate
+     * 
+     * @return int
+     */
+    public function getNextLogbookDate($periodicity, $currentDate)
+    {
+        $log = \VOCApp::getInstance()->getService('errorLogger');
+        switch ($periodicity) {
+            case LogbookRecord::DAILY :
+                $date = strtotime("+1 days", $currentDate);
+                break;
+            case LogbookRecord::WEEKLY :
+                $date = strtotime("+1 week", $currentDate);
+                break;
+            case LogbookRecord::MONTHLY :
+                $date = strtotime("+1 month", $currentDate);
+                break;
+            case LogbookRecord::YEARLY :
+                $date = strtotime("+1 year", $currentDate);
+                break;
+            default :
+                $log->addError('Inccorect tab of logbook periodicity! Periodicity Id='.$periodicity.' namespace:VWM\Apps\Logbook\Manager. function:getNextLogbookDate');
+                return false;
+                break;
+        }
+        
+        return $date;
+    }
+    
+    
+    /**
+     * 
+     * function for calculate nex logbook Date
+     * 
+     * @param int $periodicity
+     * @param int $date
+     */
+    public function calculateNextLogbookDate($periodicity, $date)
+    {
+        //get current Date;
+        $currentDate = date('d/m/Y' ,time());
+        $currentDate = explode('/', $currentDate);
+        //use time 23:59:59
+        $currentDate = mktime(23, 59, 59, $currentDate[1], $currentDate[0], $currentDate[2]);
+        
+        //update next logbook date while date less then current date
+        while ($date <= $currentDate){
+            $date = $this->getNextLogbookDate($periodicity, $date);
+            if(!$date){
+                break;
+            }
+        }
+        return $date;
+    }
+    
+    /**
+     * 
+     * get logbook record to do list by facility id
+     * 
+     * @param int $facilityId
+     * @param \Pagination $pagination
+     * 
+     * @return boolean|\VWM\Apps\Logbook\Entity\LogbookRecordToDo[]
+     */
+    public function getLogbookRecordToDoListByFacilityId($facilityId, \Pagination $pagination = null)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookRecordToDoList = array();
+        
+        if(is_null($facilityId)){
+            return false;
+        }
+        
+        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+                 "WHERE facility_id = {$db->sqltext($facilityId)}";
+                 
+        if (isset($pagination)) {
+            $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
+        }
+        
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $logbookRecordToDo = new LogbookRecordToDo();
+            $logbookRecordToDo->initByArray($row);
+            $logbookRecordToDoList[] = $logbookRecordToDo;
+        }
+        return $logbookRecordToDoList;
+    }
+    
+    /**
+     * 
+     * get count Logbook Record To Do
+     * 
+     * @param int $facilityId
+     * 
+     * @return boolean|int
+     */
+    public function getCountLogbookRecordToDoListByFacilityId($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbookRecordToDoList = array();
+        
+        if(is_null($facilityId)){
+            return false;
+        }
+        
+        $query = "SELECT count(*) count FROM ".LogbookRecordToDo::TABLE_NAME." ".
+                 "WHERE facility_id = {$db->sqltext($facilityId)} LIMIT 1";
+                 
+        
+        $db->query($query);
+        $count = $db->fetch(0);
+        
+        return $count->count;
     }
     
 
