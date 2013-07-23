@@ -29,7 +29,7 @@
             itlManager.gauges.changeGauge();
             itlManager.equipmant.showEquipmentList();
             
-            
+            inspectionPerson.addInspectionPerson.iniDialog();
         });
     </script>
 {/literal}

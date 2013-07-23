@@ -663,11 +663,3 @@ function Gauges() {
     }
 }
 
-
-
-$(function() {
-    //	ini global object
-    inspectionPerson.addInspectionPerson.iniDialog();
-   
-});
-
