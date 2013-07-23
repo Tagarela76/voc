@@ -200,6 +200,22 @@ class LogbookManagerTest extends Testing\DbTestCase
         $this->assertEquals(count($logbookRecordToDoList), 2);
 
     }
+    
+    public function testDeleteAllLogbookToDoByParentId()
+    {
+        $logbookId = 1;
+        $lbManager = \VOCApp::getInstance()->getService('logbook');
+        $db = \VOCApp::getInstance()->getService('db');
+        $logbook = new LogbookRecord();
+        $logbook->setId($logbookId);
+        $logbook->load();
+        $sql = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+               "WHERE parent_id = {$db->sqltext($logbook->getId())}";
+        $db->query($sql);
+        $this->assertFalse($db->num_rows() == 0);
+        $lbManager->deleteAllLogbookToDoByParentId($logbook->getId());
+        $this->assertTrue($db->num_rows() == 0);
+    }
 
 }
 ?>

@@ -587,6 +587,27 @@ class LogbookManager
         return $count->count;
     }
     
+    /**
+     * 
+     * delete all logbooksTodo by parent id
+     * call this function when we cancel recurring in logbook
+     * 
+     * @param int $parentId
+     */
+    public function deleteAllLogbookToDoByParentId($parentId = null)
+    {
+        if(is_null($parentId)){
+            return false;
+        }
+        
+        $db = \VOCApp::getInstance()->getService('db');
+        
+        $query = "DELETE FROM ".LogbookRecordToDo::TABLE_NAME." ".
+                 "WHERE parent_id = {$db->sqltext($parentId)}";
+                 
+        $db->query($query);        
+    }
+    
 
 }
 ?>

@@ -417,7 +417,8 @@ class CLogbook extends Controller
         $leManager = VOCApp::getInstance()->getService('logbookEquipment');
         $lbmanager = VOCApp::getInstance()->getService('logbook');
         $db = VOCApp::getInstance()->getService('db');
-
+        $logbook = new LogbookRecord();
+        
         //get data format
         $dataChain = new TypeChain(null, 'date', $db, $facilityId, 'facility');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
@@ -439,14 +440,13 @@ class CLogbook extends Controller
                 'description' => $logbookEquipment->getEquipDesc(),
                 'permit' => $logbookEquipment->getPermit()
             );
+            $logbook->setEquipmentId($logbookEquipmentId);
             $successUrl = "?action=viewItemDetails&category=logbook&facilityId=" . $facilityId . "&id=" . $logbookEquipmentId . "&tab=logbookEquipment";
         }
 
         //get inspection types list
         $jsonInspectionalTypeList = $itmanager->getInspectionTypeListInJson($facilityId);
         $inspectionTypesList = json_decode($jsonInspectionalTypeList);
-
-        $logbook = new LogbookRecord();
         
         $inspectionPersonList = array();
 
@@ -797,8 +797,8 @@ class CLogbook extends Controller
             
             //check is logbook recurring
             $isRecurring = $post['isRecurring']=='on'?1:0;
+            $logbook->setIsRecurring($isRecurring);
             if($isRecurring){
-                $logbook->setIsRecurring($isRecurring);
                 $logbook->setPeriodicity($post['periodicity']);
                 //calculate for next Date
                 $nextDate = $lbmanager->calculateNextLogbookDate($post['periodicity'], $dateTime);
@@ -809,6 +809,10 @@ class CLogbook extends Controller
             
             if (count($violationList) == 0) {
                 $id = $logbook->save();
+                //delete all logbooksTodo if logbook recurring is 0
+                if(!$logbook->getIsRecurring()){
+                    $lbmanager->deleteAllLogbookToDoByParentId($logbook->getId());
+                }
                 header("Location: " . $successUrl);
                 die();
             } else {
