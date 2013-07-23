@@ -5,6 +5,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\ListCommand;
 use Symfony\Component\Console\Command\GreetCommand;
 use VWM\Apps\Reminder\Console\Command\ReminderCommand;
+use VWM\Apps\Logbook\Console\Command\LogbookToDoCreateCommand;
 
 $site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
@@ -49,4 +50,5 @@ VOCApp::getInstance()->setSmarty($smarty);
 
 $application = new Application();
 $application->add(new ReminderCommand);
+$application->add(new LogbookToDoCreateCommand);
 $application->run();

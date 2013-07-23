@@ -78,7 +78,9 @@ class LogbookRecordToDo extends LogbookRecord
         if (is_null($inspectionSubType)) {
             $inspectionSubType = 'NULL';
         }
-
+        // The Logbook Record To Do always has a field of is_recurring 0
+        $this->setIsRecurring(0);
+        
         //check gauge range
         $minGaugeRange = $this->getMinGaugeRange();
         $maxGaugeRange = $this->getMaxGaugeRange();
@@ -188,6 +190,15 @@ class LogbookRecordToDo extends LogbookRecord
         $id = $db->getLastInsertedID();
         
         return $this->getId();
+    }
+    
+    
+    public function delete()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $sql = "DELETE FROM ".self::TABLE_NAME." ".
+               "WHERE id = {$db->sqltext($this->getId())}";
+        $db->query($sql);   
     }
 }
 ?>

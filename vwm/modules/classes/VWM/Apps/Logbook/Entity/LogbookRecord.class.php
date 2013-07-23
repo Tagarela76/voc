@@ -237,7 +237,15 @@ class LogbookRecord extends Model
      * 
      * @var int 
      */
-    protected $parentId = 0;
+    protected $parent_id = 0;
+    
+    /**
+     *
+     * date for logbookTodo creating
+     * 
+     * @var int 
+     */
+    protected $next_date = 0;
 
     /* CONSTANTS */
 
@@ -599,14 +607,25 @@ class LogbookRecord extends Model
 
     public function getParentId()
     {
-        return $this->parentId;
+        return $this->parent_id;
     }
 
     public function setParentId($parentId)
     {
-        $this->parentId = $parentId;
+        $this->parent_id = $parentId;
+    }
+    
+    public function getNextDate()
+    {
+        return $this->next_date;
     }
 
+    public function setNextDate($next_date)
+    {
+        $this->next_date = $next_date;
+    }
+
+    
     public function load()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -642,7 +661,9 @@ class LogbookRecord extends Model
         $inspectionAdditionType = $this->getInspectionAdditionType();
         $unittypeId = $this->getUnittypeId();
         $inspectionSubType = $this->getInspectionSubType();
-
+        if($this->getNextDate() == 0){
+            $this->setNextDate($this->getDateTime());
+        }
         if (is_null($qty)) {
             $qty = 'NULL';
         }
@@ -700,6 +721,7 @@ class LogbookRecord extends Model
                 "is_recurring = '{$db->sqltext($this->getIsRecurring())}', " .
                 "periodicity = '{$db->sqltext($this->getPeriodicity())}', " .
                 "parent_id = '{$db->sqltext($this->getParentId())}', " .
+                "next_date = '{$db->sqltext($this->getNextDate())}', " .
                 "qty = '{$db->sqltext($qty)}'";
 
         $db->query($sql);
@@ -758,6 +780,10 @@ class LogbookRecord extends Model
             $inspectionSubType = 'NULL';
         }
 
+        if($this->getNextDate() == 0){
+            $this->setNextDate($this->getDateTime());
+        }
+        
         $sql = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
                 "inspection_sub_type = '{$db->sqltext($inspectionSubType)}', " .
@@ -778,6 +804,7 @@ class LogbookRecord extends Model
                 "is_recurring = '{$db->sqltext($this->getIsRecurring())}', " .
                 "periodicity = '{$db->sqltext($this->getPeriodicity())}', " .
                 "parent_id = '{$db->sqltext($this->getParentId())}', " .
+                "next_date = '{$db->sqltext($this->getNextDate())}', " .
                 "qty = '{$db->sqltext($qty)}' " .
                 "WHERE id={$db->sqltext($this->getId())}";
 
@@ -795,7 +822,39 @@ class LogbookRecord extends Model
 
     public function getAttributes()
     {
-        
+        return array(
+            'id' => $this->getId(),
+            'facility_id' => $this->getFacilityId(),
+            'inspection_person_id' => $this->getInspectionPersonId(),
+            'inspectionType' => $this->getInspectionType(),
+            'inspection_type_id' => $this->getInspectionTypeId(),
+            'inspection_sub_type' => $this->getInspectionSubType(),
+            'description_id' => $this->getDescriptionId(),
+            'date_time' => $this->getDateTime(),
+            'next_date' => $this->getNextDate(),
+            'equipment_id' => $this->getEquipmentId(),
+            'qty' => $this->getQty(),
+            'description_notes' => $this->getDescriptionNotes(),
+            'sub_type_notes' => $this->getSubTypeNotes(),
+            'hasQty' => $this->getHasQty(),
+            'hasVolueGauge' => $this->getHasVolueGauge(),
+            'gauge_type' => $this->getValueGaugeType(),
+            'gauge_value_from' => $this->getGaugeValueFrom(),
+            'gauge_value_to' => $this->getGaugeValueTo(),
+            'hasDescriptionNotes' => $this->getHasDescriptionNotes(),
+            'hasSubTypeNotes' => $this->getHasSubTypeNotes(),
+            'hasInspectionAdditionType' => $this->getHasInspectionAdditionType(),
+            'min_gauge_range' => $this->getMinGaugeRange(),
+            'unittype_id' => $this->getMaxGaugeRange(),
+            'logbookUnitType' => $this->getLogbookUnitType(),
+            'description' => $this->getDescription(),
+            'max_gauge_range' => $this->getMaxGaugeRange(),
+            'min_gauge_range' => $this->getMinGaugeRange(),
+            'inspection_addition_type' => $this->getInspectionAdditionType(),
+            'is_recurring' => $this->getIsRecurring(),
+            'periodicity' => $this->getPeriodicity(),
+            'parent_id' => $this->getParentId()
+        );
     }
 
     /**
@@ -876,7 +935,13 @@ class LogbookRecord extends Model
     
     final public function convertToLogbookRecordToDo()
     {
-        
+       $attributes = $this->getAttributes();
+       unset($attributes['id']);
+       $attributes['parent_id'] = $this->getId();
+       $attributes['is_recurring'] = 0;
+       $logbookToDo = new LogbookRecordToDo();
+       $logbookToDo->initByArray($attributes);
+       return $logbookToDo;
     }
 
 }

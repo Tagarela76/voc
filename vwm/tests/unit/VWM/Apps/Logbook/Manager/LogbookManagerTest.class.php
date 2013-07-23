@@ -13,12 +13,13 @@ class LogbookManagerTest extends Testing\DbTestCase
 
     protected $fixtures = array(
         LogbookInspectionPerson::TABLE_NAME,
-        LogbookRecord::TABLE_NAME
+        LogbookRecord::TABLE_NAME,
+        LogbookRecordToDo::TABLE_NAME
+        
     );
 
     public function testGetLogbookInspectionPersonListByFacilityId()
     {
-
         $facilityId = 1;
         $manager = new LogbookManager();
         $inspectionPersonList = $manager->getLogbookInspectionPersonListByFacilityId($facilityId);
@@ -76,6 +77,7 @@ class LogbookManagerTest extends Testing\DbTestCase
         $gaugeValueFrom = 1;
         $gaugeValueTo = 15;
         $dateTime = time();
+        $nextDate = time();
         $isRecurring = 1;
         $periodicity = LogbookRecord::DAILY;
         $parentId = 0;
@@ -102,24 +104,101 @@ class LogbookManagerTest extends Testing\DbTestCase
             $logbook->setGaugeValueFrom($gaugeValueFrom);
             $logbook->setGaugeValueTo($gaugeValueTo);
             $logbook->setDateTime($dateTime);
+            $logbook->setNextDate($nextDate);
             $logbook->setIsRecurring($isRecurring);
             $logbook->setPeriodicity($periodicity);
             $logbook->setParentId($parentId);
-            
+
             $logbookId = $logbook->save();
         }
-        
+
         $lbManager = \VOCApp::getInstance()->getService('logbook');
         $currentRecurringLogbookList = $lbManager->getCurrentRecurringLogbookList();
-        
+
         $this->assertEquals(count($currentRecurringLogbookList), $i);
-        
+
         $this->assertTrue($currentRecurringLogbookList[0] instanceof LogbookRecord);
-        
-        foreach($currentRecurringLogbookList as $currentRecurringLogbook)
-        {
+
+        foreach ($currentRecurringLogbookList as $currentRecurringLogbook) {
             $this->assertEquals($currentRecurringLogbook->getIsRecurring(), $isRecurring);
         }
+    }
+
+    public function testGetNextLogbookDate()
+    {
+        $lbManager = \VOCApp::getInstance()->getService('logbook');
+        $currentDateString = '22/07/2013';
+        //expected date 
+        $dailyExpectedDate = '23/07/2013';
+        $weeklyExpectedDate = '29/07/2013';
+        $mothlyExpectedDate = '22/08/2013';
+        $yearlyExpectedDate = '22/07/2014';
+        
+        $currentDateString = explode('/', $currentDateString);
+        $unixCurrDate = mktime(0, 0, 0, $currentDateString[1], $currentDateString[0], $currentDateString[2]);
+        
+        //daily periodicity
+        $date = $lbManager->getNextLogbookDate(LogbookRecord::DAILY, $unixCurrDate);
+        $date = date('d/m/Y', $date);
+        $this->assertEquals($date, $dailyExpectedDate);
+        
+        //weekly periodicity
+        $date = $lbManager->getNextLogbookDate(LogbookRecord::WEEKLY, $unixCurrDate);
+        $date = date('d/m/Y', $date);
+        $this->assertEquals($date, $weeklyExpectedDate);
+        
+        //monthly periodicity
+        $date = $lbManager->getNextLogbookDate(LogbookRecord::MONTHLY, $unixCurrDate);
+        $date = date('d/m/Y', $date);
+        $this->assertEquals($date, $mothlyExpectedDate);
+        
+       //yearly periodicity
+        $date = $lbManager->getNextLogbookDate(LogbookRecord::YEARLY, $unixCurrDate);
+        $date = date('d/m/Y', $date);
+        $this->assertEquals($date, $yearlyExpectedDate);
+        
+    }
+    
+    public function testCalculateNextLogbookDate()
+    {
+        $lbManager = \VOCApp::getInstance()->getService('logbook');
+        
+        $currentDateString = '1/04/2013';
+        $currentDateString = explode('/', $currentDateString);
+        $currentDateString = mktime(0, 0, 0, $currentDateString[1], $currentDateString[0], $currentDateString[2]);
+        
+        $expectedDate = date('d/m/Y', time());
+        $expectedDate = explode('/', $expectedDate);
+        $expectedDate = mktime(0, 0, 0, $expectedDate[1], $expectedDate[0], $expectedDate[2]);
+        
+        //check Daily recurring
+        $nextLogbookDate = $lbManager->calculateNextLogbookDate(LogbookRecord::DAILY, $currentDateString);
+        $this->assertTrue($expectedDate<$nextLogbookDate);
+        
+        //check weekly recurring
+        $nextLogbookDate = $lbManager->calculateNextLogbookDate(LogbookRecord::WEEKLY, $currentDateString);
+        $this->assertTrue($expectedDate<$nextLogbookDate);
+        
+        //check Daily recurring
+        $nextLogbookDate = $lbManager->calculateNextLogbookDate(LogbookRecord::MONTHLY, $currentDateString);
+        $this->assertTrue($expectedDate<$nextLogbookDate);
+        
+        //check Daily recurring
+        $nextLogbookDate = $lbManager->calculateNextLogbookDate(LogbookRecord::YEARLY, $currentDateString);
+        $this->assertTrue($expectedDate<$nextLogbookDate);
+        
+    }
+    
+    public function testGetLogbookRecordToDoList()
+    {
+        $lbManager = \VOCApp::getInstance()->getService('logbook');
+        $facilityId = 1;
+
+        $logbookRecordToDoList = $lbManager->getLogbookRecordToDoListByFacilityId($facilityId);
+
+        $this->assertTrue($logbookRecordToDoList[0] instanceof LogbookRecordToDo);
+        $this->assertEquals(count($logbookRecordToDoList), 2);
+
     }
 
 }

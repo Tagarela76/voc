@@ -572,7 +572,7 @@ function Gauges() {
         var gaugeType = $('#gaugeType').val();
         
         this.getGaugeUnitTypeList(gaugeType);
-        if (gaugeType == 'null') {
+        if (gaugeType == 'null' || gaugeType == null) {
             $('#gaugeRangeFrom').val(0);
             $('#gaugeRangeTo').val(1);
         } else {

@@ -169,5 +169,72 @@ class LogbookRecordToDoTest extends Testing\DbTestCase
         $this->assertEquals($result[0]['parent_id'], $parentId);
     }
     
+    public function testDelete()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+
+        //data
+        $facilityId = 1;
+        $inspectionPersonId = 1;
+        $inspectionTypeId = 1;
+        $inspectionSubType = 'Subtype 4';
+        $descriptionId = 1;
+        $equipmentId = 0;
+        $minGaugeRange = 0;
+        $maxGaugeRange = 100;
+        $inspectionAdditionType = 'gauge';
+        $qty = 4;
+        $logBookDescriptionNotes = 'Description Notes 4';
+        $subtypeNotes = 'Sub Type Notes 4';
+        $gaugeUnitTypeId = 49;
+        $gaugeType = NULL;
+        $gaugeValueFrom = 1;
+        $gaugeValueTo = 15;
+        $dateTime = time();
+        $nextDate = $dateTime;
+        $isRecurring = 0;
+        $periodicity = LogbookRecord::DAILY;
+        $parentId = 0;
+
+        //initialize logbook
+        $logbook = new LogbookRecordToDo();
+        $logbook->setFacilityId($facilityId);
+        $logbook->setInspectionPersonId($inspectionPersonId);
+        $logbook->setInspectionTypeId($inspectionTypeId);
+        $logbook->setInspectionSubType($inspectionSubType);
+        $logbook->setDescriptionId($descriptionId);
+        $logbook->setEquipmentId($equipmentId);
+        $logbook->setMinGaugeRange($minGaugeRange);
+        $logbook->setMaxGaugeRange($maxGaugeRange);
+        //set addition fields
+        $logbook->setInspectionAdditionType($inspectionAdditionType);
+        $logbook->setQty($qty);
+        $logbook->setDescriptionNotes($logBookDescriptionNotes);
+        $logbook->setSubTypeNotes($subtypeNotes);
+        $logbook->setUnittypeId($gaugeUnitTypeId);
+        $logbook->setValueGaugeType($gaugeType);
+        $logbook->setGaugeValueFrom($gaugeValueFrom);
+        $logbook->setGaugeValueTo($gaugeValueTo);
+        $logbook->setDateTime($dateTime);
+        $logbook->setIsRecurring($isRecurring);
+        $logbook->setPeriodicity($periodicity);
+        $logbook->setParentId($parentId);
+        $logbook->setNextDate($nextDate);
+        $logbookId = $logbook->save();
+        
+        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+                 "WHERE id={$db->sqltext($logbookId)}";
+        $db->query($query);
+        $this->assertTrue($db->num_rows() == 1);
+        
+        $logbook->delete();
+        
+        $query = "SELECT * FROM ".LogbookRecordToDo::TABLE_NAME." ".
+                 "WHERE id={$db->sqltext($logbookId)}";
+        $db->query($query);
+        
+        $this->assertTrue($db->num_rows() == 0);
+    }
+    
 }
 ?>
