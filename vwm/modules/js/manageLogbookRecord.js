@@ -465,9 +465,10 @@ var inspectionPerson;
 
 function ManageLogbookList(){
     
-    this.filterlogbookList = function(){
+    this.filterlogbookList = function() {
+        var facilityId = $('#facilityId').val();
         var logbookFilter = $('#logbookFilter').val();
-        location.href = '?action=browseCategory&category=facility&id=125&bookmark=logbook&tab=logbook&filter='+logbookFilter;
+        location.href = '?action=browseCategory&category=facility&id='+facilityId+'&bookmark=logbook&tab=logbook&filter='+logbookFilter;
     }
 }
 /**
