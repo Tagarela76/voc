@@ -1,15 +1,17 @@
 <?php
+
 namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Reminder\Entity\Reminder;
-use \VWM\Hierarchy\Facility;
+use VWM\Hierarchy\Facility;
+use VWM\Hierarchy\Company;
 
 class ReminderManagerTest extends Testing\DbTestCase
 {
 
     protected $fixtures = array(
-        Facility::TABLE_NAME, TB_USER, Reminder::TABLE_NAME, Reminder::TB_REMIND2USER
+        Company::TABLE_NAME, Facility::TABLE_NAME, TB_USER, Reminder::TABLE_NAME, Reminder::TB_REMIND2USER
     );
 
     public function testReminder()
@@ -64,7 +66,7 @@ class ReminderManagerTest extends Testing\DbTestCase
         $this->assertTrue(count($reminders) == 3);
         $this->assertTrue($reminders[0] instanceof Reminder);
     }
-    
+
     public function testGetNextRemindDate()
     {
         $rManager = \VOCApp::getInstance()->getService('reminder');

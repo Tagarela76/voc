@@ -18,6 +18,7 @@ class LogbookToDoMigration extends AbstractMigration
         $this->getAdapter()->beginTransaction();
         
         $table = $this->table('logbook_record_to_do');
+
         $table->addColumn('facility_id', 'integer', array('limit' => 11))
                 ->addColumn('inspection_sub_type', 'string', array('limit' => 2000, 'default' => null))
                 ->addColumn('inspection_person_id', 'integer', array('limit' => 11))

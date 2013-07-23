@@ -2,7 +2,7 @@
 
 namespace VWM\Apps\Reminder;
 
-use \VWM\Framework\App;
+use VWM\Framework\App;
 
 /**
  * Reminder responsible for Logbook
@@ -14,5 +14,3 @@ class ReminderApp extends App
         $this->addServices(dirname(__FILE__));
     }
 }
-
-?>

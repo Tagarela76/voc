@@ -100,6 +100,8 @@
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
     <input type='hidden' name='tab' value='{$tab|escape}'>
+    <input type='hidden' id="facilityId" name='facilityId' value='{$facilityId}'>
+    
     {*PAGINATION*}
     {include file="tpls:tpls/pagination.tpl"}
     {*/PAGINATION*}
