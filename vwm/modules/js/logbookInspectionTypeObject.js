@@ -5,7 +5,7 @@
 function LogbookInspectionType() {
     var self = this;
     var name;
-    var permit;
+    //var permit;
     var id;
     var subTypes = [];
     var gaugeTypes = [];
@@ -15,7 +15,7 @@ function LogbookInspectionType() {
     // Private members are made by the constructor	
     var constructor = function() {
         var name;
-        var permit;
+        //var permit;
         var id;
         var subTypes = [];
         var gaugeTypes = [];
@@ -30,9 +30,9 @@ function LogbookInspectionType() {
         self.setName = function(typeName) {
             name = typeName;
         }
-        self.setPermit = function(typePermit) {
+        /*self.setPermit = function(typePermit) {
             permit = typePermit;
-        }
+        }*/
         
         self.setlogbookTemplate = function(typeLogbookTemplate) {
             logbookTemplateIds = typeLogbookTemplate;
@@ -57,9 +57,9 @@ function LogbookInspectionType() {
         self.getName = function() {
             return name
         }
-        self.getPermit = function() {
+        /*self.getPermit = function() {
             return permit
-        }
+        }*/
         
         self.getLogbookTemplate = function() {
             return logbookTemplateIds
@@ -91,7 +91,7 @@ function LogbookInspectionType() {
             
             //intialize InspectionType
             self.setName(settings.typeName);
-            self.setPermit(settings.permit);
+           // self.setPermit(settings.permit);
             
             //initializa subtypes
             if (settings.subtypes != undefined) {
@@ -173,7 +173,7 @@ function LogbookInspectionType() {
         var typeAttributes = {
             typeId: self.getId(),
             typeName: self.getName(),
-            permit: self.getPermit(),
+           // permit: self.getPermit(),
             subtypes: typeSubTypes,
             additionFieldList: typeGaugeTypes,
             logbookTemplateIds: self.getLogbookTemplate(),

@@ -44,15 +44,6 @@
                 <input type='hidden' value = '{$logbookTemplateList|escape}' id='selectedLogbookTemplatesIds'>
             </td>
         </tr>
-        
-        <tr>
-            <td class="border_users_b border_users_r border_users_l" width ='10%' height = '30px'>
-                Permit
-            </td>
-            <td class="border_users_b border_users_r border_users_l">
-                <input type='checkbox' id='inspectionTypePermit' {if $settings->permit}checked = 'true'{/if}>
-            </td>
-        </tr>
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
 </div>

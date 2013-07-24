@@ -1,6 +1,6 @@
 <div style="width: 100%; padding: 10px 13px;">
-    <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id=125&bookmark=logbook&tab=inspectionPerson'">
-    <input type='button' class="button" value="Edit" onclick="location.href = '?action=addItem&category=logbook&facilityID={$person->getFacilityId()|escape}&tab=inspectionPerson&inspectionPersonId={$person->getId()|escape}'">
+    <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id={$person->getFacilityId()|escape}&bookmark=logbook&tab=inspectionPerson'">
+    <input type='button' class="button" value="Edit" onclick="location.href = '?action=editItem&category=logbook&facilityID={$person->getFacilityId()|escape}&tab=inspectionPerson&inspectionPersonId={$person->getId()|escape}'">
 </div>
 <div>
     <table class="users" align="center" cellpadding="0" cellspacing="0">

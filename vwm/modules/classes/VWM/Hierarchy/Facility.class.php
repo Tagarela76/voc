@@ -98,7 +98,7 @@ class Facility extends Model {
 		if($id !== null) {
 			$this->setFacilityId($id);
 			if(!$this->_load()) {
-				throw new Exception('404');
+				throw new \Exception('404');
 			}
 		}
 	}

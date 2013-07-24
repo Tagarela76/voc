@@ -66,33 +66,33 @@
                     <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.creationDate}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.creationDate|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.creationTime}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.creationTime|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.inspectionPersonName}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.inspectionPersonName|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.inspectionType->typeName}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.inspectionType->typeName|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.condition}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.condition|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.notes}
+                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                        {$logbook.notes|escape}
                     </a>
                 </td>
             </tr>

@@ -112,7 +112,7 @@ class LogbookInspectionPerson extends Model
         $db->query($query);
         $id = $db->getLastInsertedID();
         $this->setId($id);
-
+        
         return $id;
     }
 
@@ -122,11 +122,11 @@ class LogbookInspectionPerson extends Model
 
         $query = "UPDATE " . self::TABLE_NAME . " SET " .
                 "facility_id = {$db->sqltext($this->getFacilityId())}, " .
-                "name = '{$db->sqltext($this->getName())}' " .
+                "name = '{$db->sqltext($this->getName())}', " .
                 "deleted = '{$db->sqltext($this->getIsDeleted())}' " .
                 "WHERE id = {$db->sqltext($this->getId())}";
         $db->query($query);
-
+        
         return $this->getId();
     }
 
