@@ -103,6 +103,7 @@ class ReminderManager
     /**
      *
      * get users wich we need remind today
+     * do not include the time
      *
      * @param int $currentDate
      * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
@@ -159,11 +160,14 @@ class ReminderManager
         $messageSubject = "Reminder ";
 
         $tpl = dirname(__FILE__).'/../../../../../../design/user/tpls/reminderNotification.tpl';
-
+        
+        $iconPath = 'http://'.DOMAIN.'/vwm/images/gyantcompliance_small.jpg';
+                
         $smarty = \VOCApp::getInstance()->getService('smarty');
         $smarty->assign('reminder', $reminder);
+        $smarty->assign('iconPath', $iconPath);
         $messageText = $smarty->fetch($tpl);
-
+        echo $messageText;die();
         $text = '';
         foreach($users as $user){
             if(($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')){
@@ -200,6 +204,14 @@ class ReminderManager
             3 =>array(
              'id' => Reminder::YEARLY,
              'description' => 'yearly'
+            ),
+            4 =>array(
+             'id' => Reminder::EVERY2YEAR,
+             'description' => 'every 2 year'
+            ),
+            5 =>array(
+             'id' => Reminder::EVERY3YEAR,
+             'description' => 'every 3 year'
             ),
         );
     }
@@ -326,6 +338,12 @@ class ReminderManager
                 break;
             case Reminder::YEARLY :
                 $date = strtotime("+1 year", $currentDate);
+                break;
+            case Reminder::EVERY2YEAR :
+                $date = strtotime("+2 year", $currentDate);
+                break;
+            case Reminder::EVERY3YEAR :
+                $date = strtotime("+3 year", $currentDate);
                 break;
             default :
                 throw new Exception("Inccorect next send perion");
