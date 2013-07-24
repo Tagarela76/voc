@@ -40,48 +40,56 @@
                 Periodicity
             </td>
         </tr>
-        {foreach from=$logbookList item=logbook}
+        {if !empty($logbookList)}
+            {foreach from=$logbookList item=logbook}
+                <tr>
+                    <td class="border_users_b border_users_r border_users_l">
+                        <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.creationDate|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.creationTime|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.inspectionPersonName|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.inspectionType->typeName|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.condition|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.notes|escape}
+                        </a>
+                    </td>
+                    <td class="border_users_b border_users_r">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
+                            {$logbook.periodicity|escape}
+                        </a>
+                    </td>
+                </tr>
+            {/foreach}
+        {else}
             <tr>
-                <td class="border_users_b border_users_r border_users_l">
-                    <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.creationDate|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.creationTime|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.inspectionPersonName|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.inspectionType->typeName|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.condition|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.notes|escape}
-                    </a>
-                </td>
-                <td class="border_users_b border_users_r">
-                    <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab={$tab}">
-                        {$logbook.periodicity|escape}
-                    </a>
+                <td colspan="7"class="border_users_l border_users_r" align="center">
+                    No reccuring logbook records in facility
                 </td>
             </tr>
-        {/foreach}
+        {/if}
     </table>
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
     <input type='hidden' name='tab' value='{$tab|escape}'>

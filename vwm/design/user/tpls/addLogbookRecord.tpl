@@ -21,6 +21,7 @@
                 dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}',
                 ampm: true
             });
+            itlManager.isPending = '{/literal}{$isLogbookPendingRecord}{literal}';
             itlManager.inspectionTypeList.getSubTypesAdditionFields({/literal}{$logbook->getValueGaugeType()}{literal});
             itlManager.description.showNotes();
             itlManager.gauges.setGaugeRanges({/literal}{$gaugeListJson}{literal});
@@ -105,7 +106,7 @@
                     </div>    
                     <div >
                         <select id='inspectionSubType' name='inspectionSubType' onchange="itlManager.inspectionTypeList.changeSubType()"
-                        {if !$inspectionSubTypesList}hidden='hidden'{/if} {if $isLogbookPendingRecord}disabled='disabled'{/if}>
+                        {if !$inspectionSubTypesList}hidden='hidden'{/if}>
                             {section name=i loop=$inspectionSubTypesList}
                                 <option value="{$inspectionSubTypesList[i]->name|escape}" {if $logbook->getInspectionSubType() == $inspectionSubTypesList[i]->name}selected='selected'{/if}>
                                     {$inspectionSubTypesList[i]->name|escape}
@@ -151,7 +152,7 @@
             <td>
                 <div>
                     <select name="gaugeType" id='gaugeType' onchange="itlManager.gauges.changeGauge();
-            itlManager.gauges.checkGaugeValueRange();" {if $isLogbookPendingRecord}disabled='disabled'{/if}>
+            itlManager.gauges.checkGaugeValueRange();">
                         <option value="null">Select Gauge</option>
                         {section name=i loop=$gaugeList}
                             <option value="{$smarty.section.i.index}" {if $logbook->getValueGaugeType() == $smarty.section.i.index}selected='selected'{/if}>{$gaugeList[i].name}</option>

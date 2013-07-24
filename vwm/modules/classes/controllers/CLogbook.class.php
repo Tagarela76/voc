@@ -13,6 +13,9 @@ use VWM\Apps\Logbook\Manager\InspectionTypeManager;
 use VWM\Apps\Logbook\Entity\LogbookDescription;
 use VWM\Apps\Logbook\Entity\LogbookCustomDescription;
 use VWM\Apps\Logbook\Entity\LogbookPendingRecord;
+use VWM\Apps\Logbook\Subscriber\LogbookSubscriber;
+use VWM\Apps\Logbook\VWMLogbookEvents\LogbookEvents;
+use VWM\Apps\Logbook\Event\EventLogbook;
 
 class CLogbook extends Controller
 {
@@ -298,9 +301,12 @@ class CLogbook extends Controller
             $logbook->setDescriptionId($post['logBookDescription']);
             $logbook->setMinGaugeRange($post['gaugeRangeFrom']);
             $logbook->setMaxGaugeRange($post['gaugeRangeTo']);
+            $logbook->setInspectionSubType($post['inspectionSubType']);
             //child logbook can't be recurring
             $logbook->setIsRecurring(0);
-            
+            if(isset($post['gaugeType'])){
+               $logbook->setValueGaugeType($post['gaugeType']);
+            }
             //set addition fields
             if (!is_null($post['inspectionAdditionListType'])) {
                 $logbook->setInspectionAdditionType($post['inspectionAdditionListType']);
@@ -331,7 +337,13 @@ class CLogbook extends Controller
 
             if (count($violationList) == 0) {
                 $id = $logbook->save();
-                $logbookPendingRecord->delete();
+                //get event dispatcher
+                $dispatcher = \VOCApp::getInstance()->getService('eventDispatcher');
+                $subscriper = new LogbookSubscriber();
+                $dispatcher->addSubscriber($subscriper);
+                $event = new EventLogbook($logbookPendingRecord);
+                $dispatcher->dispatch(LogbookEvents::SAVE_LOGBOOK, $event);
+                
                 header("Location: " . $successUrl);
                 die();
             } else {
@@ -1429,11 +1441,11 @@ class CLogbook extends Controller
                 throw new Exception('404');
                 break;
         }
-
         // set left menu
         $this->setListCategoriesLeftNew($category, $categoryId);
         $this->setPermissionsNew($category);
         $this->smarty->assign('facilityId', $facilityId);
+        $this->smarty->assign('facility', $facility);
         $this->smarty->assign('tab', $tab);
         $this->smarty->display('tpls:index.tpl');
     }
@@ -1675,10 +1687,29 @@ class CLogbook extends Controller
                     $itemsForDelete[] = $itemForDelete;
                 }
                 break;
+            case 'logbookRecurring':
+                $idArray = $this->getFromRequest('checkLogbook');
+                foreach ($idArray as $id) {
+                    $logbook = new LogbookRecord();
+                    $logbook->setId($id);
+                    $logbook->load();
+                    $logbookDescription = new LogbookDescription();
+                    $logbookDescription->setId($logbook->getDescriptionId());
+                    $logbookDescription->load();
+                    $description = $logbookDescription->getDescription();
+                    $description = is_null($description) ? 'NONE' : $description;
+                    $itemForDelete = array(
+                        'id' => $id,
+                        'name' => $description
+                    );
+                    $itemsForDelete[] = $itemForDelete;
+                }
+                break;
             default :
                 throw new Exception('Can\'t delete this element. No such tag!');
                 break;
         }
+        
         $this->setListCategoriesLeftNew('facility', $this->getFromRequest('facilityID'), array('bookmark' => 'logbook'));
         $this->setNavigationUpNew('facility', $this->getFromRequest('facilityID'));
         $this->setPermissionsNew('facility');
@@ -1747,6 +1778,15 @@ class CLogbook extends Controller
                     $logbookCustomDescription->setId($id);
                     $logbookCustomDescription->load();
                     $logbookCustomDescription->delete();
+                }
+                break;
+                //confirm delete logbooks
+            case 'logbookRecurring':
+                $logbooksIds = $this->itemID;
+                foreach ($logbooksIds as $id) {
+                    $logbook = new LogbookRecord($this->db);
+                    $logbook->setId($id);
+                    $logbook->delete();
                 }
                 break;
             default:

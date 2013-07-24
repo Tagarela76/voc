@@ -337,17 +337,27 @@ function Equipmant() {
     }
     this.showEquipmentList = function() {
         var isShowEquipment = $('#isEquipment').val();
-
+        //we can't create recurring in equipment and if is pending
         if(isShowEquipment == 'equipment'){
             $('#showEquipmentList').show();
+            $('#isRecurring').attr("disabled", "disabled");
+            $('#isRecurring').attr('checked', false);
         }else{
             $('#showEquipmentList').hide();
+            $('#isRecurring').removeAttr("disabled");   
         }
+        
+        if(itlManager.isPending){
+          $('#isRecurring').attr("disabled", "disabled");  
+        }
+        itlManager.showLogbookPeriodicity();
+        
     }
 }
 
 function ManageLogbookRecord() {
     var self = this;
+    this.isPending = 0;
 
     this.inspectionTypeList = new InspectionTypeList();
     this.description = new Description();
@@ -580,7 +590,7 @@ function Gauges() {
             $('#gaugeRangeFrom').val(this.gaugeRanges[gaugeType].min);
             $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
         }
-        
+        //this.checkGaugeValueRange();
         //this.updateGauge();
         //this.changeGaugeUnitType();
     }

@@ -66,7 +66,6 @@ function ManageInspectionType() {
         var permit = $('#inspectionTypePermit:checked').val() ? 1 : 0;
         logbookInspectionType.setName($('#inspectionTypeName').val());
         logbookInspectionType.setlogbookTemplate($('#selectedLogbookTemplatesIds').val());
-        logbookInspectionType.setPermit(permit);
         logbookInspectionType.save();
     }
 
