@@ -15,7 +15,7 @@ class LogbookSubscriber implements EventSubscriberInterface
 
     /**
      *
-     * event for recurce updating reminder delivery time
+     * event for creating logbook from recurring logbook
      *
      * @param EventReminder $event
      */
@@ -25,11 +25,30 @@ class LogbookSubscriber implements EventSubscriberInterface
         $logbookPendingRecord = $event->getLogbookPendingRecord();
         $logbookPendingRecord->delete();
     }
+    
+    /**
+     *
+     * event for recurce updating  recurring logbook
+     *
+     * @param EventReminder $event
+     */
+    public function deleteAllLogbookPendingRecordByParentId($event)
+    {
+        $lbManager = \VOCApp::getInstance()->getService('logbook');
+        //get Logbook Pending Record
+        $logbookPendingRecord = $event->getLogbookPendingRecord();
+        
+        $lbManager->deleteAllLogbookPendingRecordByParentId($logbookPendingRecord->getParentId());
+        
+    }
 
     public static function getSubscribedEvents()
     {
         return array(
-            LogbookEvents::SAVE_LOGBOOK => array(
+            LogbookEvents::EDIT_RECURRING_LOGBOOK => array(
+                array('deleteAllLogbookPendingRecordByParentId'),
+            ),
+            LogbookEvents::ADD_PENDING_LOGBOOK => array(
                 array('deletePendingLogbook'),
             ),
         );

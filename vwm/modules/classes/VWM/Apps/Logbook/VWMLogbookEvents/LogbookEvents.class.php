@@ -6,8 +6,9 @@ final class LogbookEvents
 {
     /**
      * event apear when we save logbook from recurring one
-     * We need delete padding logbook
+     * We need delete pending logbook
      */
-    const SAVE_LOGBOOK = 'vwm.apps.logbook.event.logbookerevent.deletependinglogbook';
+    const EDIT_RECURRING_LOGBOOK = 'vwm.apps.logbook.event.logbookerevent.editrecurringlogbook';
+    const ADD_PENDING_LOGBOOK = 'vwm.apps.logbook.event.logbookerevent.addpendinglogbook';
 
 }

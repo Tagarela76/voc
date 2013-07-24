@@ -342,7 +342,7 @@ class CLogbook extends Controller
                 $subscriper = new LogbookSubscriber();
                 $dispatcher->addSubscriber($subscriper);
                 $event = new EventLogbook($logbookPendingRecord);
-                $dispatcher->dispatch(LogbookEvents::SAVE_LOGBOOK, $event);
+                $dispatcher->dispatch(LogbookEvents::ADD_PENDING_LOGBOOK, $event);
                 
                 header("Location: " . $successUrl);
                 die();
@@ -821,8 +821,14 @@ class CLogbook extends Controller
             if (count($violationList) == 0) {
                 $id = $logbook->save();
                 //delete all logbookPendingRecord if logbook recurring is 0
-                if(!$logbook->getIsRecurring()){
-                    $lbmanager->deleteAllLogbookPendingRecordByParentId($logbook->getId());
+                if (!$logbook->getIsRecurring()) {
+                    $logbookPendingRecord = $logbook->convertToLogbookPendingRecord();
+                    //get event dispatcher
+                    $dispatcher = \VOCApp::getInstance()->getService('eventDispatcher');
+                    $subscriper = new LogbookSubscriber();
+                    $dispatcher->addSubscriber($subscriper);
+                    $event = new EventLogbook($logbookPendingRecord);
+                    $dispatcher->dispatch(LogbookEvents::EDIT_RECURRING_LOGBOOK, $event);
                 }
                 header("Location: " . $successUrl);
                 die();
