@@ -216,11 +216,11 @@ function InspectionTypeList() {
             $('#logbookReplacedBulbs').show();
         }
         $('#gaugeType').val(gaugeType);
-        if (inspectionType.permit == 0) {
+        /*if (inspectionType.permit == 0) {
             $('#logBookPermit').hide();
         } else {
             $('#logBookPermit').show();
-        }
+        }*/
 
         if (inspectionType.additionFieldList != undefined) {
             $('#inspectionAdditionListTypeContainer').show();
@@ -337,17 +337,27 @@ function Equipmant() {
     }
     this.showEquipmentList = function() {
         var isShowEquipment = $('#isEquipment').val();
-
+        //we can't create recurring in equipment and if is pending
         if(isShowEquipment == 'equipment'){
             $('#showEquipmentList').show();
+            $('#isRecurring').attr("disabled", "disabled");
+            $('#isRecurring').attr('checked', false);
         }else{
             $('#showEquipmentList').hide();
+            $('#isRecurring').removeAttr("disabled");   
         }
+        
+        if(itlManager.isPending){
+          $('#isRecurring').attr("disabled", "disabled");  
+        }
+        itlManager.showLogbookPeriodicity();
+        
     }
 }
 
 function ManageLogbookRecord() {
     var self = this;
+    this.isPending = 0;
 
     this.inspectionTypeList = new InspectionTypeList();
     this.description = new Description();
@@ -359,6 +369,15 @@ function ManageLogbookRecord() {
     }
     this.setjSonDescriptionType = function(json) {
         self.description.setDescriptions(json);
+    }
+    
+    this.showLogbookPeriodicity = function(){
+        var showPeriodicity = $('#isRecurring').is(':checked');
+        if(showPeriodicity){
+            $('#periodicityContainer').show();
+        }else{
+            $('#periodicityContainer').hide();
+        }
     }
 
 }
@@ -465,9 +484,10 @@ var inspectionPerson;
 
 function ManageLogbookList(){
     
-    this.filterlogbookList = function(){
+    this.filterlogbookList = function() {
+        var facilityId = $('#facilityId').val();
         var logbookFilter = $('#logbookFilter').val();
-        location.href = '?action=browseCategory&category=facility&id=125&bookmark=logbook&tab=logbook&filter='+logbookFilter;
+        location.href = '?action=browseCategory&category=facility&id='+facilityId+'&bookmark=logbook&tab=logbook&filter='+logbookFilter;
     }
 }
 /**
@@ -563,14 +583,14 @@ function Gauges() {
         var gaugeType = $('#gaugeType').val();
         
         this.getGaugeUnitTypeList(gaugeType);
-        if (gaugeType == 'null') {
+        if (gaugeType == 'null' || gaugeType == null) {
             $('#gaugeRangeFrom').val(0);
             $('#gaugeRangeTo').val(1);
         } else {
             $('#gaugeRangeFrom').val(this.gaugeRanges[gaugeType].min);
             $('#gaugeRangeTo').val(this.gaugeRanges[gaugeType].max);
         }
-        
+        //this.checkGaugeValueRange();
         //this.updateGauge();
         //this.changeGaugeUnitType();
     }
@@ -661,12 +681,4 @@ function Gauges() {
         }
     }
 }
-
-
-
-$(function() {
-    //	ini global object
-    inspectionPerson.addInspectionPerson.iniDialog();
-   
-});
 

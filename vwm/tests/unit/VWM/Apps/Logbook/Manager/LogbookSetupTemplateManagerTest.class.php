@@ -11,10 +11,11 @@ class LogbookSetupTemplateManagerTest extends Testing\DbTestCase
 {
 
     protected $fixtures = array(
+        TB_COMPANY,
+        Facility::TABLE_NAME,
         LogbookSetupTemplateManager::TB_INSPECTION_TYPE2LOGBOOK_SETUP_TEMPLATE,
         LogbookSetupTemplateManager::TB_LOGBOOK_SETUP_TEMPLATE2FACILITY,
-        LogbookSetupTemplate::TABLE_NAME,
-        Facility::TABLE_NAME
+        LogbookSetupTemplate::TABLE_NAME
     );
 
     public function testGetLogbookTemplateListByFacilityIds()

@@ -1,6 +1,6 @@
 <div style="width: 100%; padding: 10px 13px;">
     <input type='button' class="button" value="<< Back" onclick="location.href = '?action=browseCategory&category=facility&id={$logbookEquipment->getFacilityId()|escape}&bookmark=logbook&tab=logbookEquipment'">
-    <input type='button' class="button" value="Edit" onclick="location.href = '?action=addItem&category=logbook&facilityID={$logbookEquipment->getFacilityId()|escape}&tab=logbookEquipment&logbookEquipmentId={$logbookEquipment->getId()|escape}'">
+    <input type='button' class="button" value="Edit" onclick="location.href = '?action=editItem&category=logbook&facilityID={$logbookEquipment->getFacilityId()|escape}&tab=logbookEquipment&logbookEquipmentId={$logbookEquipment->getId()|escape}'">
 </div>
 <div>
     <table class="users" align="center" cellpadding="0" cellspacing="0">
@@ -106,32 +106,32 @@
                         <input type="checkbox" name="checkLogbook[]" value="{$logbook.logbookId}">
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.creationDate}
                         </a>
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.creationTime}
                         </a>
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.inspectionPersonName}
                         </a>
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.inspectionType->typeName}
                         </a>
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.condition}
                         </a>
                     </td>
                     <td class="border_users_b border_users_r">
-                        <a href="?action=viewLogbookDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
+                        <a href="?action=viewItemDetails&category=logbook&facilityId={$facilityId}&id={$logbook.logbookId}&tab=logbook">
                             {$logbook.notes}
                         </a>
                     </td>
