@@ -31,6 +31,7 @@
             itlManager.equipmant.showEquipmentList();
             itlManager.showLogbookPeriodicity()
             inspectionPerson.addInspectionPerson.iniDialog();
+            itlManager.inspectionTypeList.changeSubTypeList()
         });
     </script>
 {/literal}
@@ -274,7 +275,7 @@
             Is Recurring 
         </td>
         <td>
-            <input type='checkbox' id='isRecurring' name='isRecurring' onchange="itlManager.showLogbookPeriodicity()"
+            <input type='checkbox' id='isRecurring' name='isRecurring' onclick="itlManager.showLogbookPeriodicity()"
         {if $logbook->getIsRecurring() && !$isLogbookPendingRecord}checked='true'{/if} {if $isLogbookPendingRecord}disabled='disabled'{/if}>
         </td>
     </tr>
