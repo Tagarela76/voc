@@ -109,7 +109,6 @@ class CReminder extends Controller
             $user = new User($this->db);
             $facilityID = $post['facility_id'];
             $active = !is_null($post['active'])?1:0;
-            
             $reminder->setName($post['name']);
             $reminder->setDate($post['date']);
             $reminder->setDeliveryDate($post['date']);
@@ -118,6 +117,11 @@ class CReminder extends Controller
             $reminder->setPeriodicity($post['periodicity']);
             $reminder->setFacilityId($facilityID);
             $reminder->setActive($active);
+            //set description if we need
+            if($post['reminderDescription']!=''){
+                $reminder->setDescription($post['reminderDescription']);
+            }
+            
             $userList = $post['user_id'];
             
             $reminderUsers = array();
@@ -358,6 +362,11 @@ class CReminder extends Controller
             $reminder->setPriority($post['priority']);
             $reminder->setPeriodicity($post['periodicity']);
             $reminder->setDeliveryDate($post['date']);
+            //set description if we need
+            if($post['reminderDescription']!=''){
+                $reminder->setDescription($post['reminderDescription']);
+            }
+            
             $userList = $post['user_id'];
             $reminderUsers = array();
             $reminderUser = array();

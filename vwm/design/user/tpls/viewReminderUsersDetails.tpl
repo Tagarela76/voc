@@ -155,7 +155,7 @@
                     <td style="width:250px;" class="border_users_b border_users_l border_users_r">
                         <div style="width:100%;">
                             <a href="?action=viewDetails&category=reminder&id={$reminder->id|escape}&facilityID={$facilityId}">
-                                {$reminder->getDate()|escape}
+                                {$reminder->getDateInOutputFormat()|escape}
                             </a>
                         </div>
                     </td>
