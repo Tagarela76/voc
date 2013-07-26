@@ -1,11 +1,19 @@
 <?php
 
 use VWM\Framework\Test as Testing;
+use VWM\Apps\Process\ProcessTemplate;
 
-class FacilityTest extends Testing\DbTestCase {
+class FacilityTest extends Testing\DbTestCase
+{
 
 	protected $fixtures = array(
-		TB_COMPANY, TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_PFP_TYPES, TB_REMINDER
+		TB_COMPANY,
+        TB_FACILITY,
+        TB_DEPARTMENT,
+        ProcessTemplate::TABLE_NAME,
+        TB_WORK_ORDER,
+        TB_PFP_TYPES,
+        TB_REMINDER
 	);
 
 	public function testGetRepairOrdersList() {

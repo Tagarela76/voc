@@ -5,6 +5,7 @@ namespace VWM\Hierarchy;
 use VWM\Framework\Test\DbTestCase;
 use VWM\Apps\Gauge\Entity\Gauge;
 use VWM\Apps\Gauge\Entity\QtyProductGauge;
+use VWM\Apps\Process\ProcessTemplate;
 
 class DepartmentTest extends DbTestCase {
 
@@ -14,6 +15,7 @@ class DepartmentTest extends DbTestCase {
 		Facility::TABLE_NAME,
 		Department::TABLE_NAME,
 		QtyProductGauge::TABLE_NAME,
+        ProcessTemplate::TABLE_NAME,
 		TB_WORK_ORDER,
 		TB_WO2DEPARTMENT,
 		TB_PFP,
@@ -184,7 +186,7 @@ class DepartmentTest extends DbTestCase {
 	}
 	public function testGetMixList(){
 		$departmentId =1;
-		
+
         $query = "SELECT m.*, wo.id, wo.customer_name, wo.description woDescription, wo.vin ".
                  "FROM ".TB_USAGE." m  ".
                  "LEFT JOIN ".TB_WORK_ORDER." wo ON m.wo_id = wo.id ".
@@ -197,7 +199,7 @@ class DepartmentTest extends DbTestCase {
 		$mixList = $department->getMixList();
 		$this->assertEquals($mixList[0]->getDepartmentId(), $rows[0]['department_id']);
         $this->assertEquals($mixList[0]->getDescription(), $rows[0]['description']);
-        
+
 	}
 
 

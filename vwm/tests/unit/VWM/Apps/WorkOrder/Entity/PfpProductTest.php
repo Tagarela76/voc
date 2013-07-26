@@ -17,8 +17,8 @@ class PfpProductTest extends DbTestCase {
         $ratio = 12;
         $isPrimary = 1;
         $productId = 1;
-        $preformulatedProductsId = 1;
-        
+        $preformulatedProductsId = 5;
+
 		$pfpProduct = new PfpProduct();
         $pfpProduct->setName('testProduct');
         $pfpProduct->setProductId($productId);
@@ -26,9 +26,10 @@ class PfpProductTest extends DbTestCase {
         $pfpProduct->setPreformulatedProductsId($preformulatedProductsId);
         $pfpProduct->setRatio($ratio);
         $id = $pfpProduct->save();
-        
+
         $sql = "SELECT * FROM ".PfpProduct::TABLE_NAME." ".
-                "WHERE id=".$id;
+                "WHERE preformulated_products_id = {$pfpProduct->getPreformulatedProductsId()} AND " .
+                "product_id = {$pfpProduct->getProductId()}";
         $this->db->query($sql);
 
 		$result = $this->db->fetch_all_array();
@@ -37,7 +38,7 @@ class PfpProductTest extends DbTestCase {
         $this->assertEquals($pfpProduct->getPreformulatedProductsId(), $result[0]['preformulated_products_id']);
         $this->assertEquals($pfpProduct->getIsPrimary(), $result[0]['isPrimary']);
 	}
-    
+
 }
 
 ?>

@@ -2,10 +2,14 @@
 
 namespace VWM\Apps\Process\ProcessTemplate;
 
+use VWM\Apps\WorkOrder\Entity\WorkOrder;
 use VWM\Framework\Test\DbTestCase;
-use \VWM\Apps\Process\ProcessTemplate;
-use \VWM\Apps\Process\ProcessInstance;
-use \VWM\Apps\Process\StepInstance;
+use VWM\Apps\Process\ProcessTemplate;
+use VWM\Apps\Process\ProcessInstance;
+use VWM\Apps\Process\StepInstance;
+use VWM\Hierarchy\Facility;
+use VWM\Hierarchy\Company;
+
 
 class ProcessInstanceTest extends DbTestCase
 {
@@ -15,6 +19,10 @@ class ProcessInstanceTest extends DbTestCase
     const TB_PROCESS = 'process_instance';
 
     public $fixtures = array(
+        Company::TABLE_NAME,
+        Facility::TABLE_NAME,
+        ProcessTemplate::TABLE_NAME,
+        WorkOrder::TABLE_NAME,
         self::TB_PROCESS,
         self::TB_STEP,
         self::TB_TEMPLATE_STEP
