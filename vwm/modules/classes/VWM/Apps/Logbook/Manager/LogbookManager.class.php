@@ -425,6 +425,10 @@ class LogbookManager
              'id' => LogbookRecord::YEARLY,
              'description' => 'yearly'
             ),
+            4 =>array(
+             'id' => LogbookRecord::QUARTERLY,
+             'description' => 'quarterly'
+            )
         );
     }
     
@@ -489,6 +493,9 @@ class LogbookManager
                 break;
             case LogbookRecord::YEARLY :
                 $date = strtotime("+1 year", $currentDate);
+                break;
+            case LogbookRecord::QUARTERLY :
+                $date = strtotime("+3 month", $currentDate);
                 break;
             default :
                 $log->addError('Inccorect tab of logbook periodicity! Periodicity Id='.$periodicity.' namespace:VWM\Apps\Logbook\Manager. function:getNextLogbookDate');
