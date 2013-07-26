@@ -93,6 +93,13 @@
 				<td class="border_users_l border_users_b border_users_r">
                     <div align="left" style="float: left;">	
                         <textarea name="reminderDescription" id="reminderDescription" cols="45" rows="5">{$data->getDescription()|escape}</textarea>
+                        {foreach from=$violationList item="violation"}
+							{if $violation->getPropertyPath() eq 'description' || $violation->getPropertyPath() eq 'uniqueName'}							
+							{*ERROR*}					
+							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+							{*/ERROR*}						    
+							{/if}
+						{/foreach}
                     </div>												
 				</td>
 			</tr>

@@ -433,7 +433,10 @@ class Reminder extends Model
         $this->users = $users;
     }
     /**
+     * 
      * get date in facility date format
+     * 
+     * @return string
      */
     public function getDateInOutputFormat()
     {

@@ -1,7 +1,6 @@
 <div>
     <div>
         <img src='{$iconPath}' height="42" width="60"/>
-        
     </div>
     <div style="margin: 20px 0 0 0;">
         <div>
@@ -9,7 +8,10 @@
         </div>
         <div style="margin: 10px 0 10px 0;">
             Reminder: <b>{$reminder->getName()|escape}</b><br>
-            Description: <b>{$reminder->getDescription()|escape}</b>
+            {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
+                Description: <b>{$reminder->getDescription()|escape}</b>
+            {/if}
+
         </div>    
         <div>
             Thank you for your continued business with us!

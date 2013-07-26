@@ -53,7 +53,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    {if $reminder->getDescription()}
+                    {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
                         &nbsp; {$reminder->getDescription()|escape}
                     {else}
                             &nbsp; NONE

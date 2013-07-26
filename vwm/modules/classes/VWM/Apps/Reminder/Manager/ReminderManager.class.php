@@ -167,7 +167,6 @@ class ReminderManager
         $smarty->assign('reminder', $reminder);
         $smarty->assign('iconPath', $iconPath);
         $messageText = $smarty->fetch($tpl);
-        echo $messageText;die();
         $text = '';
         foreach($users as $user){
             if(($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')){
