@@ -88,6 +88,23 @@
 			</tr>
             <tr>
 				<td class="border_users_l border_users_b" width="15%" height="20">
+                    Description
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+                    <div align="left" style="float: left;">	
+                        <textarea name="reminderDescription" id="reminderDescription" cols="45" rows="5">{$data->getDescription()|escape}</textarea>
+                        {foreach from=$violationList item="violation"}
+							{if $violation->getPropertyPath() eq 'description' || $violation->getPropertyPath() eq 'uniqueName'}							
+							{*ERROR*}					
+							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+							{*/ERROR*}						    
+							{/if}
+						{/foreach}
+                    </div>												
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
 					Type
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
@@ -188,7 +205,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){      
 			//	set calendar
-			$('#reminderDate').datepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}'});												
+			$('#reminderDate').datepicker({ dateFormat: '{/literal}{$dataChain->getFromTypeController('getFormatForCalendar')}{literal}', changeMonth: true, changeYear: true});												
 		});
 	</script>
 {/literal}
