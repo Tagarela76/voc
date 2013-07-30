@@ -145,13 +145,12 @@ class CReminder extends Controller
             //Check reminder if we need
             $showReminderBeforeHand = $this->getFromPost('showReminderBeforeContainer');
             if(!is_null($showReminderBeforeHand) && $post['date']!='' && $post['timeNumber']!=''){
-                $reminder->setValidationGroup("beforhand");
                 $beforehandReminderDate = $rManager->calculateTimeByNumberAndUnitType($unixDateTime, $post['timeNumber'], $post['reminderUnitTypeList']);
                 $reminder->setBeforehandReminderDate($beforehandReminderDate);
             } 
             
             $violationList = $reminder->validate();
-            var_dump($violationList);
+            
             if (count($violationList) == 0) {
                 $dataChain = new TypeChain($reminder->date, 'date', $this->db, $companyID, 'company');
                 $reminder->setDate($unixDateTime);
@@ -411,7 +410,6 @@ class CReminder extends Controller
             $unixDateTime = $dataChain->getTimestamp();
             $showReminderBeforeHand = $this->getFromPost('showReminderBeforeContainer');
             if(!is_null($showReminderBeforeHand)){
-                $reminder->setValidationGroup("beforhand");
                 $beforehandReminderDate = $rManager->calculateTimeByNumberAndUnitType($unixDateTime, $post['timeNumber'], $post['reminderUnitTypeList']);
                 $reminder->setBeforehandReminderDate($beforehandReminderDate);
                 $reminder->setTimeNumber($post['timeNumber']);
@@ -423,7 +421,7 @@ class CReminder extends Controller
             } 
             
             $violationList = $reminder->validate();
-            var_dump($violationList);
+            
             if (count($violationList) == 0) {
                 $reminder->setDate($unixDateTime);
                 $reminder->setDeliveryDate($unixDateTime);

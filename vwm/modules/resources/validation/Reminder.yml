@@ -3,29 +3,27 @@ VWM\Apps\Reminder\Entity\Reminder:
     uniqueName:
       - "True": {message: "Name should be unique", groups: [add]}
     atLeastOneUserSelect:
-      - "True": {message: "You should select at least one user", groups: [add,Default,beforhand]}
+      - "True": {message: "You should select at least one user", groups: [add,Default]}
     currentDate:
-      - "True": {message: "Select a date more than today", groups: [Default,beforhand]}
+      - "True": {message: "Select a date more than today", groups: [Default]}
     actualBeforehandReminder:
-      - "True": {message: "Date reminders passed", groups: [beforhand]}
+      - "True": {message: "Date reminders passed", groups: [add, Default]}
   properties:
     name: 
-      - NotBlank: { groups: [add,Default,beforhand] }
-      - MaxLength: { limit: 200, groups: [add,Default,beforhand] }
+      - NotBlank: { groups: [add,Default] }
+      - MaxLength: { limit: 200, groups: [add,Default] }
     date:
-      - NotBlank: { groups: [add,Default,beforhand] }
-      - VWM\Framework\Validator\Constraints\Date: { groups: [add,Default,beforhand] }
+      - NotBlank: { groups: [add,Default] }
+      - VWM\Framework\Validator\Constraints\Date: { groups: [add,Default] }
     type:
-      - NotBlank: { groups: [add,Default,beforhand] }
+      - NotBlank: { groups: [add,Default] }
     appointment:
       - Min: { limit: 0, groups: [add,Default]} 
     periodicity:
       - Min: 0 
     description:
       - MaxLength:  {limit: 200, groups: [add,Default]}
-      - Min: { limit: 0, groups: [add,Default]} 
     time_number:
-      - Min: { limit: 1, groups: [beforhand]}
-      - NotBlank: { groups: [beforhand] }
-
+      - Min: { limit: 1, groups: [add,Default]}
+      - NotBlank: { groups: [add,Default] }
       

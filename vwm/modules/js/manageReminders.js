@@ -12,6 +12,8 @@ function ReminderManager() {
             $('#remindBeforhandContainer').show();
         }else{
             $('#remindBeforhandContainer').hide();
+            //set 1 for default to bypass the validation on the server
+            $('#timeNumber').val(1);
         }
     }
     

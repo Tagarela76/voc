@@ -534,6 +534,10 @@ class Reminder extends Model
 
     public function isActualBeforehandReminder()
     {
+        //check if user select to remind him about reminder
+        if($this->getBeforehandReminderDate()==0){
+            return true;
+        }
         $currentDate = time();
         $beforhandDate = $this->getBeforehandReminderDate();
         return ($currentDate < $beforhandDate) ? true : false;

@@ -189,7 +189,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left" style="float: left;">	
-                        <input type='number' style='width: 50px' name='timeNumber' value={$data->getTimeNumber()|escape}>
+                        <input type='number' style='width: 50px' name='timeNumber' id='timeNumber' value={$data->getTimeNumber()|escape}>
                     </div>
                     <div align="left" style="float: left;" id='reminderUnitTypeListContainer'>	
                         <select style="width: 100px" id='reminderUnitTypeList' name='reminderUnitTypeList'>

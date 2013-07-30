@@ -11,7 +11,6 @@
             {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
                 Description: <b>{$reminder->getDescription()|escape}</b>
             {/if}
-
         </div>    
         <div>
             Thank you for your continued business with us!
