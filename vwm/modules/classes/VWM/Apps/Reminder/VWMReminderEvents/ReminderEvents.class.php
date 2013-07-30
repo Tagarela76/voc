@@ -9,5 +9,7 @@ final class ReminderEvents
      * We need check and update delivery time
      */
     const SET_NEXT_REMINDER_TIME = 'vwm.apps.reminder.event.reminderevent.setnextremindertime';
+    
+    const SEND_BEFOREHAND_REMINDER = 'vwm.apps.reminder.event.reminderevent.sendbeforehandreminder';
 
 }

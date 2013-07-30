@@ -1,3 +1,39 @@
+function ReminderManager() {
+    
+    /**
+     * 
+     * show Reminder Beforhand Container
+     * 
+     * @returns {null}
+     */
+    this.showReminderBeforhandContainer = function(){
+        var showReminderBeforhandContainer = $('#showReminderBeforeContainer').is(':checked');
+        if(showReminderBeforhandContainer){
+            $('#remindBeforhandContainer').show();
+        }else{
+            $('#remindBeforhandContainer').hide();
+        }
+    }
+    
+    /**
+     * 
+     * ajax method for getting unittype
+     * 
+     * @returns {null}
+     */
+    this.getReminderUnitTypeList = function(){
+        var periodicity = $('#periodicity').val();
+        $.ajax({
+            url: '?action=getReminderUnitTypeList&category=reminder',
+            data : {periodicity: periodicity},
+            type: "POST",
+            success: function(responce){
+                $('#reminderUnitTypeListContainer').html(responce);
+            } 
+        });
+    }
+}
+
 function manageReminders() {
 	this.divId = 'setRemind2UserContainer';
 	this.divUsersListId = 'usersListContainer';
@@ -86,6 +122,7 @@ function manageReminders() {
 		
 function ReminderPage() {
 	this.manageReminders = new manageReminders();
+    this.reminderManager = new ReminderManager();
 	this.facilityId = false;
 	this.remindId = false;
 }

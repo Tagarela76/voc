@@ -101,6 +101,30 @@ class Reminder extends Model
      */
     protected $description = null;
 
+    /**
+     *
+     * date for reminder the remonder
+     * 
+     * @var int 
+     */
+    protected $beforehand_reminder_date = 0;
+
+    /**
+     *
+     * How much time is needed for the reminder alert
+     * 
+     * @var int 
+     */
+    protected $time_number = 0;
+
+    /**
+     *
+     * reminder id
+     * 
+     * @var int
+     */
+    protected $reminder_unit_type_id = 0;
+
     const TABLE_NAME = 'reminder';
     const TB_REMIND2USER = 'remind2user';
     const APPOINTMENT_EMAIL = 1;
@@ -123,7 +147,7 @@ class Reminder extends Model
             $this->load();
 
             if (!isset($this->users)) {
-               $this->loadUsers();
+                $this->loadUsers();
             }
         }
 
@@ -262,7 +286,37 @@ class Reminder extends Model
         $this->description = $description;
     }
 
-    
+
+    public function getBeforehandReminderDate()
+    {
+        return $this->beforehand_reminder_date;
+    }
+
+    public function setBeforehandReminderDate($beforeReminderDate)
+    {
+        $this->beforehand_reminder_date = $beforeReminderDate;
+    }
+
+    public function getTimeNumber()
+    {
+        return $this->time_number;
+    }
+
+    public function setTimeNumber($time_number)
+    {
+        $this->time_number = $time_number;
+    }
+
+    public function getReminderUnitTypeId()
+    {
+        return $this->reminder_unit_type_id;
+    }
+
+    public function setReminderUnitTypeId($reminderUnitTypeId)
+    {
+        $this->reminder_unit_type_id = $reminderUnitTypeId;
+    }
+
     /**
      * @return array property => value
      */
@@ -313,7 +367,10 @@ class Reminder extends Model
         $description = (is_null($this->getDescription()))?'NULL':$this->getDescription();
         
         $db = \VOCApp::getInstance()->getService('db');
-        $query = "INSERT INTO " . self::TABLE_NAME . " (name, date, delivery_date, facility_id, priority, type, appointment, periodicity, description, active) VALUES ( " .
+
+        $query = "INSERT INTO " . self::TABLE_NAME . " " .
+                "(name, date, delivery_date, facility_id, priority, type, appointment, periodicity, description, active, beforehand_reminder_date, time_number, reminder_unit_type_id) " .
+                "VALUES ( " .
                 "'{$db->sqltext($this->getName())}' " .
                 ", {$db->sqltext($this->getDate())} " .
                 ", {$db->sqltext($nextDate)} " .
@@ -324,6 +381,9 @@ class Reminder extends Model
                 ", {$db->sqltext($this->getPeriodicity())} " .
                 ", '{$db->sqltext($description)}' " .
                 ", {$db->sqltext($this->getActive())} " .
+                ", {$db->sqltext($this->getBeforehandReminderDate())} " .
+                ", {$db->sqltext($this->getTimeNumber())} " .
+                ", {$db->sqltext($this->getReminderUnitTypeId())} " .
                 ")";
 
         $db->exec($query);
@@ -347,6 +407,9 @@ class Reminder extends Model
                 " periodicity = {$db->sqltext($this->getPeriodicity())}, " .
                 " active = {$db->sqltext($this->getActive())}, " .
                 " description = '{$db->sqltext($description)}', " .
+                " beforehand_reminder_date = {$db->sqltext($this->getBeforehandReminderDate())}, " .
+                " time_number = {$db->sqltext($this->getTimeNumber())}, " .
+                " reminder_unit_type_id = {$db->sqltext($this->getReminderUnitTypeId())}, " .
                 " facility_id = {$db->sqltext($this->getFacilityId())} " .
                 "WHERE id = {$db->sqltext($this->getId())}";
         $db->exec($query);
@@ -467,6 +530,13 @@ class Reminder extends Model
         $deliveryDate = ($dataChain->getTimestamp());
 
         return ($currentDate < $deliveryDate) ? true : false;
+    }
+
+    public function isActualBeforehandReminder()
+    {
+        $currentDate = time();
+        $beforhandDate = $this->getBeforehandReminderDate();
+        return ($currentDate < $beforhandDate) ? true : false;
     }
 
 }
