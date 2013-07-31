@@ -55,7 +55,7 @@
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
                     <div align="left" style="float: left;">	
-                        <textarea name="reminderDescription" id="reminderDescription" cols="45" rows="5">{$data->getDescription()|escape}</textarea>
+                        <textarea name="reminderDescription" id="reminderDescription" cols="45" rows="5">{if $data->getDescription() != 'NULL'}{$data->getDescription()|escape}{/if}</textarea>
                         {foreach from=$violationList item="violation"}
 							{if $violation->getPropertyPath() eq 'description' || $violation->getPropertyPath() eq 'uniqueName'}							
 							{*ERROR*}					
