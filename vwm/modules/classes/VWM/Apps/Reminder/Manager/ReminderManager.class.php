@@ -3,9 +3,11 @@
 namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Apps\Reminder\Entity\Reminder;
+use VWM\Apps\UnitType\Entity\UnitType;
 
 class ReminderManager
 {
+
     public function getReminders()
     {
         $db = \VOCApp::getInstance()->getService('db');
@@ -62,7 +64,7 @@ class ReminderManager
      */
     public function unSetRemind2User($reminderId)
     {
-        if(is_null($reminderId)){
+        if (is_null($reminderId)) {
             return false;
         }
         $db = \VOCApp::getInstance()->getService('db');
@@ -106,6 +108,7 @@ class ReminderManager
      * do not include the time
      *
      * @param int $currentDate
+     * 
      * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
      */
     public function getCurrentReminders($currentDate = null)
@@ -121,8 +124,48 @@ class ReminderManager
         $reminders = array();
 
         $sql = "SELECT * " .
-                "FROM " . Reminder::TABLE_NAME . " ".
-                "WHERE delivery_date = {$db->sqltext($deliveryDate)} ".
+                "FROM " . Reminder::TABLE_NAME . " " .
+                "WHERE delivery_date = {$db->sqltext($deliveryDate)} " .
+                "AND active = 1";
+
+        $db->query($sql);
+
+        if ($db->num_rows() == 0) {
+            return false;
+        }
+        $rows = $db->fetch_all_array();
+
+        foreach ($rows as $row) {
+            $reminder = new Reminder();
+            $reminder->initByArray($row);
+            $reminders[] = $reminder;
+        }
+        return $reminders;
+    }
+
+    /**
+     * get beforehand reminders wich we need remind today
+     * do not include the time
+     * 
+     * @param int $currentDate
+     * 
+     * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
+     */
+    public function getBeforehandCurrentReminders($currentDate = null)
+    {
+        //get current date
+        if (is_null($currentDate)) {
+            $currentDate = date("m.d.Y");
+            $currentDate = explode('.', $currentDate);
+            $date = mktime('0', '0', '0', $currentDate[0], $currentDate[1], $currentDate[2]);
+        }
+
+        $db = \VOCApp::getInstance()->getService('db');
+        $reminders = array();
+
+        $sql = "SELECT * " .
+                "FROM " . Reminder::TABLE_NAME . " " .
+                "WHERE beforehand_reminder_date = {$db->sqltext($date)} " .
                 "AND active = 1";
 
         $db->query($sql);
@@ -147,7 +190,7 @@ class ReminderManager
      *
      * @return string
      */
-    public function sendRemindToUser(Reminder $reminder)
+    public function sendRemindToUser(Reminder $reminder, $beforehand = 0)
     {
         $users = $this->getUsersByReminderId($reminder->getId());
         if (count($users) == 0) {
@@ -156,23 +199,25 @@ class ReminderManager
         }
 
         $email = new \EMail(true);
-    	$from = AUTH_SENDER."@".DOMAIN;
+        $from = AUTH_SENDER . "@" . DOMAIN;
         $messageSubject = "Reminder ";
 
-        $tpl = dirname(__FILE__).'/../../../../../../design/user/tpls/reminderNotification.tpl';
-        
-        $iconPath = 'http://'.DOMAIN.'/vwm/images/gyantcompliance_small.jpg';
-                
+        $tpl = dirname(__FILE__) . '/../../../../../../design/user/tpls/reminderNotification.tpl';
+
+        $iconPath = 'http://' . DOMAIN . '/vwm/images/gyantcompliance_small.jpg';
+
         $smarty = \VOCApp::getInstance()->getService('smarty');
         $smarty->assign('reminder', $reminder);
         $smarty->assign('iconPath', $iconPath);
+        $smarty->assign('isBeforehandReminder', $beforehand);
+
         $messageText = $smarty->fetch($tpl);
         $text = '';
-        foreach($users as $user){
-            if(($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')){
+        foreach ($users as $user) {
+            if (($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')) {
                 $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
             }
-            $text.='Reminder to '.$user["username"].' sent successfully;';
+            $text.='Reminder to ' . $user["username"] . ' sent successfully;';
             $text.=' ';
         }
 
@@ -188,29 +233,29 @@ class ReminderManager
     public function getReminderTimingList()
     {
         return array(
-            0 =>array(
-             'id' => Reminder::DAILY,
-             'description' => 'daily'
+            0 => array(
+                'id' => Reminder::DAILY,
+                'description' => 'daily'
             ),
-            1 =>array(
-             'id' => Reminder::WEEKLY,
-             'description' => 'weekly'
+            1 => array(
+                'id' => Reminder::WEEKLY,
+                'description' => 'weekly'
             ),
-            2 =>array(
-             'id' => Reminder::MONTHLY,
-             'description' => 'monthly'
+            2 => array(
+                'id' => Reminder::MONTHLY,
+                'description' => 'monthly'
             ),
-            3 =>array(
-             'id' => Reminder::YEARLY,
-             'description' => 'yearly'
+            3 => array(
+                'id' => Reminder::YEARLY,
+                'description' => 'yearly'
             ),
-            4 =>array(
-             'id' => Reminder::EVERY2YEAR,
-             'description' => 'every 2 year'
+            4 => array(
+                'id' => Reminder::EVERY2YEAR,
+                'description' => 'every 2 year'
             ),
-            5 =>array(
-             'id' => Reminder::EVERY3YEAR,
-             'description' => 'every 3 year'
+            5 => array(
+                'id' => Reminder::EVERY3YEAR,
+                'description' => 'every 3 year'
             ),
         );
     }
@@ -245,7 +290,7 @@ class ReminderManager
         $sql = "SELECT u.user_id, u.username, u.email, u.mobile " .
                 "FROM " . TB_USER . " u" .
                 " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.user_id = u.user_id " .
-                "WHERE r2u.reminders_id IN ({$db->sqltext($remindersIds)}) ".
+                "WHERE r2u.reminders_id IN ({$db->sqltext($remindersIds)}) " .
                 "GROUP BY u.user_id";
         $db->query($sql);
 
@@ -351,6 +396,29 @@ class ReminderManager
         return $date;
     }
 
+    /**
+     * 
+     * calculate remind date in seconds;
+     * 
+     * @param int $unixTime
+     * @param int $number
+     * @param int $unitTypeId
+     * 
+     * @return int 
+     */
+    public function calculateTimeByNumberAndUnitType($unixTime, $number, $unitTypeId)
+    {
+        if (is_null($unixTime) || is_null($number) || is_null($unitTypeId)) {
+            return false;
+        }
+        $db = \VOCApp::getInstance()->getService('db');
+        $unitType = new UnitType($db);
+        $unitType->setUnitTypeId($unitTypeId);
+        $unitType->load();
+
+        $unixTime = strtotime("-" . $number . " " . $unitType->getName(), $unixTime);
+
+        return $unixTime;
+    }
 
 }
-

@@ -11,8 +11,12 @@
             {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
                 Description: <b>{$reminder->getDescription()|escape}</b>
             {/if}
-
-        </div>    
+        </div>
+        {if $isBeforehandReminder}
+            <div  style="margin: 10px 0 10px 0;">
+                Reminder Delivary date <b>{$reminder->getDeliveryDateInOutputFormat()|escape}</b><br>
+            </div>
+        {/if}
         <div>
             Thank you for your continued business with us!
         </div>
