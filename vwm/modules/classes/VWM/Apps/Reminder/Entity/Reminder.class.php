@@ -103,7 +103,7 @@ class Reminder extends Model
 
     /**
      *
-     * date for reminder the remonder
+     * beforehand reminder date
      * 
      * @var int 
      */
@@ -111,7 +111,7 @@ class Reminder extends Model
 
     /**
      *
-     * How much time is needed for the reminder alert
+     * The number of unit type for which we need to remind the reminder
      * 
      * @var int 
      */
@@ -509,6 +509,20 @@ class Reminder extends Model
        $date = $dataChain->formatOutput();
        return $date;
     }
+    /**
+     * 
+     * get delivery date in facility date format
+     * 
+     * @return string
+     */
+    public function getDeliveryDateInOutputFormat()
+    {
+       $db = \VOCApp::getInstance()->getService('db');
+       $facilityId = $this->getFacilityId();
+       $dataChain = new \TypeChain(date("y-m-d", $this->getDeliveryDate()), 'date', $db, $facilityId, 'facility');
+       $date = $dataChain->formatOutput();
+       return $date;
+    }
 
     /**
      *
@@ -532,6 +546,13 @@ class Reminder extends Model
         return ($currentDate < $deliveryDate) ? true : false;
     }
 
+    /**
+     * 
+     * get is beforehand reminder is actual
+     * it might be more then current time
+     * 
+     * @return boolean
+     */
     public function isActualBeforehandReminder()
     {
         //check if user select to remind him about reminder

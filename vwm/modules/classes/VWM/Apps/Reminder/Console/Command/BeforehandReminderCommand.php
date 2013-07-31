@@ -35,15 +35,15 @@ class BeforehandReminderCommand extends Command
 
         foreach ($reminders as $reminder) {
 
-            $result .= $rManager->sendBeforehandReminderToUser($reminder);
+            $result .= $rManager->sendRemindToUser($reminder, 1);
             
             //update reminder using observer pattern
             //get event dispatcher
             $dispatcher = \VOCApp::getInstance()->getService('eventDispatcher');
-            $subscriper = new \VWM\Apps\Reminder\Subscriber\BeforehandReminderSubscriber();
+            $subscriper = new \VWM\Apps\Reminder\Subscriber\ReminderSubscriber();
             $dispatcher->addSubscriber($subscriper);
             $event = new EventReminder($reminder);
-            $dispatcher->dispatch(ReminderEvents::SEND_BEFOREHAND_REMINDER, $event);
+            $dispatcher->dispatch(ReminderEvents::BEFOREHAND_REMINDER_SENT, $event);
         }
 
         $output->writeln($result);

@@ -112,5 +112,30 @@ class ReminderManagerTest extends Testing\DbTestCase
         $this->assertEquals($beforeReminderDate, $expectedDate);
         
     }
+    
+    public function testGetBeforehandCurrentReminders()
+    {
+        $rManager = \VOCApp::getInstance()->getService('reminder');
+        $reminders = $rManager->getBeforehandCurrentReminders();
+        
+        $this->assertTrue($reminders == 0);
+        
+        $date = date('d/m/Y');
+        $date = explode('/', $date);
+        $date = mktime(0, 0, 0, $date[1], $date[0], $date[2]);
+        
+        $reminder = new Reminder();
+        $reminder->setName('reminders_4');
+        $reminder->setDate($date);
+        $reminder->setDeliveryDate($date);
+        $reminder->setType('Permit');
+        $reminder->setPriority(5);
+        $reminder->setBeforehandReminderDate($date);
+        $reminder->setFacilityId('1');
+        $reminder->save();
+        
+        $reminders = $rManager->getBeforehandCurrentReminders();
+        $this->assertTrue(count($reminders) == 1);
+    }
 
 }

@@ -21,7 +21,7 @@ class CReminder extends Controller
         if (is_null($facilityDetails['facility_id'])) {
             throw new Exception('404');
         }
-
+        
         $facility = new Facility($this->db);
         $companyID = $facilityDetails["company_id"];
 
@@ -182,7 +182,7 @@ class CReminder extends Controller
         }
         //get reminder unit Type List
         $utManager = VOCApp::getInstance()->getService('unitType');
-        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($reminder->getPeriodicity());
+        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($reminder->getPeriodicity());
         
         //	set js scripts
         $jsSources = array(
@@ -454,7 +454,7 @@ class CReminder extends Controller
         }
         //get reminder unit Type List
         $utManager = VOCApp::getInstance()->getService('unitType');
-        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($reminder->getPeriodicity());
+        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($reminder->getPeriodicity());
         
         $jsSources = array(
             "modules/js/checkBoxes.js",
@@ -556,7 +556,7 @@ class CReminder extends Controller
     {
         $periodicity = $this->getFromPost('periodicity');
         $utManager = VOCApp::getInstance()->getService('unitType');
-        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($periodicity);
+        $reminderUnitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($periodicity);
         $this->smarty->assign('reminderUnitTypeList', $reminderUnitTypeList);
         $result = $this->smarty->fetch('tpls/reminderUnitTypeList.tpl');
         echo $result;

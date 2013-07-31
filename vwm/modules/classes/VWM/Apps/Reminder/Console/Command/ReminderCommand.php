@@ -44,7 +44,7 @@ class ReminderCommand extends Command
             $subscriper = new \VWM\Apps\Reminder\Subscriber\ReminderSubscriber();
             $dispatcher->addSubscriber($subscriper);
             $event = new EventReminder($reminder);
-            $dispatcher->dispatch(ReminderEvents::SET_NEXT_REMINDER_TIME, $event);
+            $dispatcher->dispatch(ReminderEvents::REMINDER_SENT, $event);
         }
 
         $output->writeln($result);

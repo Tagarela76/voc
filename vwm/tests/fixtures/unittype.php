@@ -44,7 +44,7 @@ return array(
     array('name' => 'each', 'unittype_desc' => 'each', 'formula' => NULL, 'type_id' => '7', 'system' => 'metric', 'unit_class_id' => '6'),
     array('name' => 'LF', 'unittype_desc' => 'linear feet', 'formula' => NULL, 'type_id' => '3', 'system' => 'metric', 'unit_class_id' => '2'),
     array('name' => 'LS', 'unittype_desc' => 'Lump Sum', 'formula' => NULL, 'type_id' => '7', 'system' => 'USA', 'unit_class_id' => '6'),
-    array('name' => 'weeks', 'unittype_desc' => 'weeks', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
-    array('name' => 'months', 'unittype_desc' => 'months', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
-    array('name' => 'years', 'unittype_desc' => 'years', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7')
+    array('name' => 'week', 'unittype_desc' => 'weeks', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
+    array('name' => 'month', 'unittype_desc' => 'months', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7'),
+    array('name' => 'year', 'unittype_desc' => 'years', 'formula' => NULL, 'type_id' => '8', 'system' => 'time', 'unit_class_id' => '7')
 );

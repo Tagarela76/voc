@@ -108,6 +108,7 @@ class ReminderManager
      * do not include the time
      *
      * @param int $currentDate
+     * 
      * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
      */
     public function getCurrentReminders($currentDate = null)
@@ -141,7 +142,15 @@ class ReminderManager
         }
         return $reminders;
     }
-    
+
+    /**
+     * get beforehand reminders wich we need remind today
+     * do not include the time
+     * 
+     * @param int $currentDate
+     * 
+     * @return boolean|\VWM\Apps\Reminder\Entity\Reminder
+     */
     public function getBeforehandCurrentReminders($currentDate = null)
     {
         //get current date
@@ -181,50 +190,11 @@ class ReminderManager
      *
      * @return string
      */
-    public function sendRemindToUser(Reminder $reminder)
+    public function sendRemindToUser(Reminder $reminder, $beforehand = 0)
     {
         $users = $this->getUsersByReminderId($reminder->getId());
         if (count($users) == 0) {
 
-            return false;
-        }
-
-        $email = new \EMail(true);
-        $from = AUTH_SENDER . "@" . DOMAIN;
-        $messageSubject = "Reminder ";
-
-        $tpl = dirname(__FILE__).'/../../../../../../design/user/tpls/reminderNotification.tpl';
-        
-        $iconPath = 'http://'.DOMAIN.'/vwm/images/gyantcompliance_small.jpg';
-                
-        $smarty = \VOCApp::getInstance()->getService('smarty');
-        $smarty->assign('reminder', $reminder);
-        $smarty->assign('iconPath', $iconPath);
-        $messageText = $smarty->fetch($tpl);
-        $text = '';
-        foreach ($users as $user) {
-            if (($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')) {
-                $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
-            }
-            $text.='Reminder to ' . $user["username"] . ' sent successfully;';
-            $text.=' ';
-        }
-
-        return $text;
-    }
-    
-    /**
-     * 
-     * send beforehandReminder 
-     * 
-     * @param \VWM\Apps\Reminder\Entity\Reminder $reminder
-     * 
-     * @return boolean|string
-     */
-    public function sendBeforehandReminderToUser(Reminder $reminder)
-    {
-        $users = $this->getUsersByReminderId($reminder->getId());
-        if (count($users) == 0) {
             return false;
         }
 
@@ -234,10 +204,14 @@ class ReminderManager
 
         $tpl = dirname(__FILE__) . '/../../../../../../design/user/tpls/reminderNotification.tpl';
 
+        $iconPath = 'http://' . DOMAIN . '/vwm/images/gyantcompliance_small.jpg';
+
         $smarty = \VOCApp::getInstance()->getService('smarty');
         $smarty->assign('reminder', $reminder);
-        $messageText = $smarty->fetch($tpl);
+        $smarty->assign('iconPath', $iconPath);
+        $smarty->assign('isBeforehandReminder', $beforehand);
 
+        $messageText = $smarty->fetch($tpl);
         $text = '';
         foreach ($users as $user) {
             if (($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')) {
@@ -275,13 +249,13 @@ class ReminderManager
                 'id' => Reminder::YEARLY,
                 'description' => 'yearly'
             ),
-            4 =>array(
-             'id' => Reminder::EVERY2YEAR,
-             'description' => 'every 2 year'
+            4 => array(
+                'id' => Reminder::EVERY2YEAR,
+                'description' => 'every 2 year'
             ),
-            5 =>array(
-             'id' => Reminder::EVERY3YEAR,
-             'description' => 'every 3 year'
+            5 => array(
+                'id' => Reminder::EVERY3YEAR,
+                'description' => 'every 3 year'
             ),
         );
     }
@@ -395,7 +369,7 @@ class ReminderManager
      * @return int
      */
     public function getNextRemindDate($periodicity, $currentDate)
-    {            
+    {
         switch ($periodicity) {
             case Reminder::DAILY :
                 $date = strtotime("+1 days", $currentDate);
@@ -422,30 +396,29 @@ class ReminderManager
         return $date;
     }
 
-    
     /**
      * 
-     * calculate remind date;
+     * calculate remind date in seconds;
      * 
-     * @param int $time
+     * @param int $unixTime
      * @param int $number
      * @param int $unitTypeId
      * 
-     * @return int
+     * @return int 
      */
-    public function calculateTimeByNumberAndUnitType($time, $number, $unitTypeId)
+    public function calculateTimeByNumberAndUnitType($unixTime, $number, $unitTypeId)
     {
-        if(is_null($time) || is_null($number) || is_null($unitTypeId)){
+        if (is_null($unixTime) || is_null($number) || is_null($unitTypeId)) {
             return false;
         }
         $db = \VOCApp::getInstance()->getService('db');
         $unitType = new UnitType($db);
         $unitType->setUnitTypeId($unitTypeId);
         $unitType->load();
-        
-        $time = strtotime("-".$number." ".$unitType->getName(), $time);
-      
-        return $time;
+
+        $unixTime = strtotime("-" . $number . " " . $unitType->getName(), $unixTime);
+
+        return $unixTime;
     }
 
 }

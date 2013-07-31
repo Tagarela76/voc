@@ -90,13 +90,32 @@ class ReminderTest extends Testing\DbTestCase
     public function testGetDateInOutputFormat()
     {
         $dateTime = 1374820438;
-        $dateString = date('m/d/Y',$dateTime);
+        $dateString = date('m/d/Y', $dateTime);
         $reminder = new Reminder();
         $reminder->setId(1);
         $reminder->load();
         $reminder->setDate($dateTime);
         $date = $reminder->getDateInOutputFormat();
         $this->assertEquals($dateString, $date);
+    }
+
+    public function testIsActualBeforehandReminder()
+    {
+        $date = mktime(0, 0, 0, 1, 15, 2013);
+        
+        $reminder = new Reminder();
+        $reminder->setName('reminders_4');
+        $date = date('Y-m-d');
+        $date = time($date);
+        $reminder->setDate($date);
+        $reminder->setDeliveryDate($date);
+        $reminder->setType('Permit');
+        $reminder->setPriority(5);
+        $reminder->setBeforehandReminderDate($date);
+        $reminder->setFacilityId('1');
+        
+        $result = $reminder->isActualBeforehandReminder();
+        $this->assertFalse($result);
     }
 
 }

@@ -171,7 +171,7 @@ class UnitTypeManager
      * 
      * @return \VWM\Apps\UnitType\Entity\UnitType[]
      */
-    public function getTimeUnitTypeListByReminderPeriodicity($periodicity = null)
+    public function getTimeUnitTypeListByPeriodicity($periodicity = null)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $unitTypes = array();
@@ -201,9 +201,11 @@ class UnitTypeManager
      * 
      * get conditions
      * 
-     * @param string $query
+     * @param string $unitTypes[]
      * @param int $periodicity
+     * 
      * @return string
+     * 
      * @throws Exception
      */
     public function getUnitTypesByPeriodicity($unitTypes, $periodicity = null)
@@ -213,31 +215,43 @@ class UnitTypeManager
         } else {
             switch ($periodicity) {
                 case Reminder::DAILY:
-                    if (!in_array('days', $unitTypes)) {
+                    if (!in_array("'days'", $unitTypes)) {
                         $unitTypes[] = "'days'";
                     }
                     $this->getUnitTypesByPeriodicity($unitTypes);
                     break;
                 case Reminder::WEEKLY:
-                    if (!in_array('days', $unitTypes)) {
+                    if (!in_array("'days'", $unitTypes)) {
                         $unitTypes[] = "'days'";
                     }
                     $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::DAILY);
                     break;
                 case Reminder::MONTHLY:
-                    if (!in_array('weeks', $unitTypes)) {
+                    if (!in_array("'weeks'", $unitTypes)) {
                         $unitTypes[] = "'week'";
                     }
                     $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::WEEKLY);
                     break;
                 case Reminder::YEARLY:
-                    if(!in_array('months', $unitTypes)){
-                        $unitTypes[]="'month'";
+                    if (!in_array("'months'", $unitTypes)) {
+                        $unitTypes[] = "'month'";
                     }
                     $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::MONTHLY);
                     break;
+                case Reminder::EVERY2YEAR:
+                    if (!in_array("'year'", $unitTypes)) {
+                        $unitTypes[] = "'year'";
+                    }
+                    $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::YEARLY);
+                    break;
+                case Reminder::EVERY3YEAR:
+                    if (!in_array("'year'", $unitTypes)) {
+                        $unitTypes[] = "'year'";
+                    }
+                    $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::YEARLY);
+                    break;
                 default :
-                    throw new Exception('no such periodicity');
+                    throw new \Exception('no such periodicity');
                     break;
             }
         }

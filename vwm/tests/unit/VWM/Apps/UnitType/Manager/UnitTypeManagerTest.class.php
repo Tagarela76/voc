@@ -12,7 +12,7 @@ class UnitTypeManagerTest extends Testing\DbTestCase
         UnitTypeManager::TB_UNIT_TYPE
     );
 
-    public function testGetTimeUnitTypeListByReminderPeriodicity()
+    public function testGetTimeUnitTypeListByPeriodicity()
     {
         $utManager = \VOCApp::getInstance()->getService('unitType');
         $daily = Reminder::DAILY;
@@ -20,17 +20,31 @@ class UnitTypeManagerTest extends Testing\DbTestCase
         $monthly = Reminder::MONTHLY;
         $yearly = Reminder::YEARLY;
         
-        $unitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($daily);
+        $unitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($daily);
         $this->assertTrue(count($unitTypeList) == 1);
 
-        $unitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($weekly);
+        $unitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($weekly);
         $this->assertTrue(count($unitTypeList) == 1);
 
-        $unitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($monthly);
+        $unitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($monthly);
         $this->assertTrue(count($unitTypeList) == 2);
 
-        $unitTypeList = $utManager->getTimeUnitTypeListByReminderPeriodicity($yearly);
+        $unitTypeList = $utManager->getTimeUnitTypeListByPeriodicity($yearly);
         $this->assertTrue(count($unitTypeList) == 3);
+    }
+    
+    public function testGetUnitTypesByPeriodicity()
+    {
+        $utManager = \VOCApp::getInstance()->getService('unitType');
+        $daily = Reminder::DAILY;
+        $yearly = Reminder::YEARLY;
+        
+        $unitTypes = array();
+        
+        $condition = $utManager->getUnitTypesByPeriodicity($unitTypes, $daily);
+        $this->assertEquals($condition[0], "'days'");
+        $condition = $utManager->getUnitTypesByPeriodicity($unitTypes, $yearly);
+        $this->assertTrue(count($condition) == 3);
     }
 
 }
