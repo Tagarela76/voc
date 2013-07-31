@@ -7,7 +7,9 @@ VWM\Apps\Reminder\Entity\Reminder:
     currentDate:
       - "True": {message: "Select a date more than today", groups: [Default]}
     actualBeforehandReminder:
-      - "True": {message: "Date reminders passed", groups: [add, Default]}
+      - "True": {message: "This value can't be less then current time", groups: [add, Default]}
+    currentDate:
+      - "True": {message: "This value can't be less then current time", groups: [add, Default]}
   properties:
     name: 
       - NotBlank: { groups: [add,Default] }

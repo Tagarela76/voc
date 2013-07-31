@@ -73,7 +73,7 @@
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->getDate()|escape}'></div>												
                         {foreach from=$violationList item="violation"}
-                            {if $violation->getPropertyPath() eq 'date' || $violation->getPropertyPath() eq 'CurrentDate'}							
+                            {if $violation->getPropertyPath() eq 'date' || $violation->getPropertyPath() eq 'currentDate'}							
                                 {*ERROR*}					
                             <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
                                 {*/ERROR*}						    
@@ -176,38 +176,34 @@
                     Remind me beforehand
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
-                    <div align="left" style="float: left;">	
+                    <div align="left" style="float: left; margin: 4px 0 0 0">	
                         <input type='checkbox' id='showReminderBeforeContainer' 
-                               name='showReminderBeforeContainer' onclick='reminderPage.reminderManager.showReminderBeforhandContainer();reminderPage.reminderManager.getReminderUnitTypeList()'
+                               name='showReminderBeforeContainer' style='margin: 0 15px 0 0'
+                               onclick='reminderPage.reminderManager.showReminderBeforhandContainer();reminderPage.reminderManager.getReminderUnitTypeList()'
                                {if $data->getBeforehandReminderDate()!=0  || $showReminderBeforeHand}checked='checked'{/if}>
-                    </div>												
-                </td>
-            </tr>
-            <tr  hidden='hidden' id='remindBeforhandContainer'>
-                <td class="border_users_l border_users_b" width="15%" height="20">
-                    Remind me through
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left" style="float: left;">	
-                        <input type='number' style='width: 50px' name='timeNumber' id='timeNumber' value={$data->getTimeNumber()|escape}>
                     </div>
-                    <div align="left" style="float: left;" id='reminderUnitTypeListContainer'>	
-                        <select style="width: 100px" id='reminderUnitTypeList' name='reminderUnitTypeList'>
-                            {foreach from=$reminderUnitTypeList item='reminderUnitType'}
-                                <option value="{$reminderUnitType->getUnitTypeId()|escape}" 
-                                {if $reminderUnitType->getUnitTypeId()==$data->getReminderUnitTypeId()} selected='selected'{/if}>
-                                {$reminderUnitType->getName()|escape}
-                                </option>
-                            {/foreach}
-                        </select>
+                    <div hidden='hidden' id='remindBeforhandContainer'>
+                       <div align="left" style="float: left; margin: 4px 15px 0 0">	
+                           <input type='number' style='width: 50px' name='timeNumber' id='timeNumber' value={$data->getTimeNumber()|escape}>
+                       </div>
+                      <div align="left" style="float: left;" id='reminderUnitTypeListContainer'>	
+                          <select style="width: 100px" id='reminderUnitTypeList' name='reminderUnitTypeList'>
+                             {foreach from=$reminderUnitTypeList item='reminderUnitType'}
+                                    <option value="{$reminderUnitType->getUnitTypeId()|escape}" 
+                                    {if $reminderUnitType->getUnitTypeId()==$data->getReminderUnitTypeId()} selected='selected'{/if}>
+                                           {$reminderUnitType->getName()|escape}
+                                    </option>
+                              {/foreach}
+                          </select>
+                      </div>
+                        {foreach from=$violationList item="violation"}
+                           {if $violation->getPropertyPath() eq 'actualBeforehandReminder' || $violation->getPropertyPath() eq 'time_number'}							
+                             {*ERROR*}					
+                                   <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+                             {*/ERROR*}						    
+                           {/if}
+                        {/foreach}	
                     </div>
-                            {foreach from=$violationList item="violation"}
-                                {if $violation->getPropertyPath() eq 'actualBeforehandReminder' || $violation->getPropertyPath() eq 'time_number'}							
-                                    {*ERROR*}					
-                                    <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                                    {*/ERROR*}						    
-                                {/if}
-                            {/foreach}	
                 </td>
             </tr>
             <tr>
