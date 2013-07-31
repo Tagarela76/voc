@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use VWM\Apps\Reminder\Console\Command\ReminderCommand;
 use VWM\Apps\Logbook\Console\Command\LogbookPendingRecordCreateCommand;
+use VWM\Apps\Reminder\Console\Command\BeforehandReminderCommand;
 
 $site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
 define ('site_path', $site_path);
@@ -54,6 +55,7 @@ VOCApp::getInstance()->setEventDispatcher(new EventDispatcher());
 $application = new Application();
 $application->add(new ReminderCommand);
 $application->add(new LogbookPendingRecordCreateCommand);
+$application->add(new BeforehandReminderCommand);
 $application->run();
 
 

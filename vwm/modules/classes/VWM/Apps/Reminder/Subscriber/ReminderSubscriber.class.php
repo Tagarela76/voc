@@ -42,11 +42,39 @@ class ReminderSubscriber implements EventSubscriberInterface
 
     }
 
+    /**
+     *
+     * event for recurce updating reminder delivery time
+     *
+     * @param EventReminder $event
+     */
+    public function setNextBeforeReminderTime($event)
+    {
+        $rManager = \VOCApp::getInstance()->getService('reminder');
+        //get Reminder
+        $reminder = $event->getReminder();
+        
+        $beforeReminderDate = $reminder->getBeforehandReminderDate();
+        
+        if ($beforeReminderDate != 0) {
+            // get over that period will be re-sent reminder
+            $periodicity = $reminder->getPeriodicity();
+            $beforeReminderDate = $rManager->getNextRemindDate($periodicity, $beforeReminderDate);
+        }
+        
+        $reminder->setBeforehandReminderDate($beforeReminderDate);
+        $reminder->save();
+
+    }
+    
     public static function getSubscribedEvents()
     {
         return array(
-            ReminderEvents::SET_NEXT_REMINDER_TIME => array(
+            ReminderEvents::REMINDER_SENT => array(
                 array('setNextReminderTime'),
+            ),
+            ReminderEvents::BEFOREHAND_REMINDER_SENT => array(
+                array('setNextBeforeReminderTime'),
             ),
         );
     }

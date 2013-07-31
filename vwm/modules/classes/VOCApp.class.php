@@ -70,7 +70,8 @@ class VOCApp
             new VWM\Apps\WorkOrder\WorkOrderApp(),
             new VWM\Apps\Logbook\LogbookApp(),
             new VWM\Apps\Reminder\ReminderApp(),
-            new VWM\Apps\Logger\LoggerApp()
+            new VWM\Apps\Logger\LoggerApp(),
+            new \VWM\Apps\UnitType\UnitTypeApp()
         );
     }
 
