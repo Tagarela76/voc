@@ -6,7 +6,7 @@ use VWM\Framework\Model;
 use VWM\Apps\Logbook\Entity\LogbookCustomDescription;
 
 
-class LogbookDescriptionTest extends Testing\DbTestCase
+class LogbookCustomDescriptionTest extends Testing\DbTestCase
 {
     protected $fixtures = array(
         LogbookCustomDescription::TABLE_NAME
