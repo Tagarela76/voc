@@ -384,6 +384,7 @@ class CReminder extends Controller
             $reminder->setPriority($post['priority']);
             $reminder->setPeriodicity($post['periodicity']);
             $reminder->setDeliveryDate($post['date']);
+            $reminder->setTimeNumber($post['timeNumber']);
 
             //set description if we need
             if($post['reminderDescription']!=''){
@@ -409,14 +410,13 @@ class CReminder extends Controller
             $dataChain = new TypeChain($reminder->getDate(), 'date', $this->db, $companyID, 'company');
             $unixDateTime = $dataChain->getTimestamp();
             $showReminderBeforeHand = $this->getFromPost('showReminderBeforeContainer');
+            
             if(!is_null($showReminderBeforeHand)){
                 $beforehandReminderDate = $rManager->calculateTimeByNumberAndUnitType($unixDateTime, $post['timeNumber'], $post['reminderUnitTypeList']);
                 $reminder->setBeforehandReminderDate($beforehandReminderDate);
-                $reminder->setTimeNumber($post['timeNumber']);
                 $reminder->setReminderUnitTypeId($post['reminderUnitTypeList']);
             }else{
                 $reminder->setBeforehandReminderDate(0);
-                $reminder->setTimeNumber(0);
                 $reminder->setReminderUnitTypeId(0);
             } 
             
