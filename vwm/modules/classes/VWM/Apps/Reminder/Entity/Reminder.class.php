@@ -472,7 +472,7 @@ class Reminder extends Model
      *
      * @return array
      */
-    public function getUsers()
+   /* public function getUsers()
     {
         $users = array();
         if (!is_null($this->users)) {
@@ -485,8 +485,22 @@ class Reminder extends Model
         $users = $rManager->getUsersByReminderId($this->getId());
 
         return $users;
-    }
+    }*/
 
+    public function getUsers()
+    {
+        $users = array();
+        if (!is_null($this->users)) {
+            return $this->users;
+        }
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        if (is_null($this->getId())) {
+            return false;
+        }
+        $users = $rUManager->getReminderUsersByReminderId($this->getId());
+
+        return $users;
+    }
     /**
      *
      * @param type array

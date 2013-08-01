@@ -132,7 +132,7 @@
 
 <div class="padd7">
 
-    <table class="users" align="center" cellpadding="0" cellspacing="0" >
+    <!--<table class="users" align="center" cellpadding="0" cellspacing="0" >
         <tr class="users_top_yellowgreen users_u_top_size">
             <td class="users_u_top_yellowgreen" width="27%" colspan="3">
                 <span>Reminder Users</span>
@@ -170,7 +170,7 @@
                 </td>
             </tr>
         {/foreach}
-    </table>
+    </table>-->
     <div align="center"><div class="users_bottom"><div class="users_u_bottom"><div class="users_u_bottom_r"></div></div></div></div>
     <input type='hidden' name='tab' value='{$tab|escape}'>
     {*PAGINATION*}
