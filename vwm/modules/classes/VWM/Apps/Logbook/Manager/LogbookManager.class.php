@@ -425,6 +425,10 @@ class LogbookManager
              'id' => LogbookRecord::YEARLY,
              'description' => 'yearly'
             ),
+            4 =>array(
+             'id' => LogbookRecord::QUARTERLY,
+             'description' => 'quarterly'
+            )
         );
     }
     
@@ -490,6 +494,9 @@ class LogbookManager
             case LogbookRecord::YEARLY :
                 $date = strtotime("+1 year", $currentDate);
                 break;
+            case LogbookRecord::QUARTERLY :
+                $date = strtotime("+3 month", $currentDate);
+                break;
             default :
                 $log->addError('Inccorect tab of logbook periodicity! Periodicity Id='.$periodicity.' namespace:VWM\Apps\Logbook\Manager. function:getNextLogbookDate');
                 return false;
@@ -516,13 +523,20 @@ class LogbookManager
         //use time 23:59:59
         $currentDate = mktime(23, 59, 59, $currentDate[1], $currentDate[0], $currentDate[2]);
         
-        //update next logbook date while date less then current date
-        while ($date <= $currentDate){
+        //check creating date to exclude logbook duplication;
+        //if creating current date less then date we need increase date as we have created such logbook yet
+        if ($date > $currentDate) {
             $date = $this->getNextLogbookDate($periodicity, $date);
-            if(!$date){
-                break;
+        } else {
+            //update next logbook date while date less then current date
+            while ($date <= $currentDate) {
+                $date = $this->getNextLogbookDate($periodicity, $date);
+                if (!$date) {
+                    break;
+                }
             }
         }
+        
         return $date;
     }
     

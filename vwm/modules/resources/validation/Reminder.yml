@@ -4,8 +4,12 @@ VWM\Apps\Reminder\Entity\Reminder:
       - "True": {message: "Name should be unique", groups: [add]}
     atLeastOneUserSelect:
       - "True": {message: "You should select at least one user", groups: [add,Default]}
-    CurrentDate:
-      - "True": {message: "Select a date more than today", groups: [Default]}  
+    currentDate:
+      - "True": {message: "Select a date more than today", groups: [Default]}
+    actualBeforehandReminder:
+      - "True": {message: "This value can't be less then current time", groups: [add, Default]}
+    currentDate:
+      - "True": {message: "This value can't be less then current time", groups: [add, Default]}
   properties:
     name: 
       - NotBlank: { groups: [add,Default] }
@@ -16,7 +20,12 @@ VWM\Apps\Reminder\Entity\Reminder:
     type:
       - NotBlank: { groups: [add,Default] }
     appointment:
-      - Min: 0 
+      - Min: { limit: 0, groups: [add,Default]} 
     periodicity:
       - Min: 0 
+    description:
+      - MaxLength:  {limit: 200, groups: [add,Default]}
+    time_number:
+      - Min: { limit: 1, groups: [add,Default]}
+      - NotBlank: { groups: [add,Default] }
       

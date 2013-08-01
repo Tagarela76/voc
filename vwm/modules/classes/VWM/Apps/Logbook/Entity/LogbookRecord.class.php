@@ -269,6 +269,7 @@ class LogbookRecord extends Model
     const WEEKLY = 1;
     const MONTHLY = 2;
     const YEARLY = 3;
+    const QUARTERLY = 4;
 
     public function __construct($id = null)
     {

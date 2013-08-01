@@ -49,6 +49,20 @@
         </tr>
         <tr>
             <td class="border_users_l border_users_b" height="20">
+                Reminder Description:
+            </td>
+            <td class="border_users_l border_users_b border_users_r">
+                <div align="left">
+                    {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
+                        &nbsp; {$reminder->getDescription()|escape}
+                    {else}
+                            &nbsp; NONE
+                    {/if}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="border_users_l border_users_b" height="20">
                 Priority Level:
             </td>
             <td class="border_users_l border_users_b border_users_r">
@@ -92,6 +106,18 @@
                 </div>
             </td>
         </tr>
+        {if $reminder->getBeforehandReminderDate()!=0}
+            <tr>
+                <td class="border_users_l border_users_b" height="20">
+                    Remind me for 
+                </td>
+                <td class="border_users_l border_users_b border_users_r">
+                    <div align="left" id="usersList">
+                        &nbsp;{$reminder->getTimeNumber()|escape}&nbsp;{$unitType->getName()|escape}
+                    </div>
+                </td>
+            </tr>
+        {/if}
         <tr>
             <td height="20" class="users_u_bottom">
             </td>
