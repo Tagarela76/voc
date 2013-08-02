@@ -192,12 +192,12 @@ class ReminderManager
      */
     public function sendRemindToUser(Reminder $reminder, $beforehand = 0)
     {
-        $users = $this->getUsersByReminderId($reminder->getId());
-        if (count($users) == 0) {
-
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $reminderUsers = $rUManager->getReminderUsersByReminderId($reminder->getId());
+        if (count($reminderUsers) == 0) {
             return false;
         }
-
+        
         $email = new \EMail(true);
         $from = AUTH_SENDER . "@" . DOMAIN;
         $messageSubject = "Reminder ";
@@ -213,11 +213,12 @@ class ReminderManager
 
         $messageText = $smarty->fetch($tpl);
         $text = '';
-        foreach ($users as $user) {
-            if (($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')) {
-                $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
+        
+        foreach ($reminderUsers as $reminderUser) {
+            if (($reminderUser->getEmail() == 'jgypsyn@gyantgroup.com') || ($reminderUser->getEmail() == 'denis.nt@kttsoft.com')) {
+                $result = $email->sendMail($from, $reminderUser->getEmail(), $messageSubject, $messageText);
             }
-            $text.='Reminder to ' . $user["username"] . ' sent successfully;';
+            $text.='Reminder to ' . $reminderUser->getEmail() . ' sent successfully;';
             $text.=' ';
         }
 
