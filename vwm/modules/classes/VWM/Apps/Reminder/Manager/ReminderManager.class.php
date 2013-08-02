@@ -4,6 +4,7 @@ namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Apps\Reminder\Entity\Reminder;
 use VWM\Apps\UnitType\Entity\UnitType;
+use VWM\Apps\Reminder\Entity\ReminderUser;
 
 class ReminderManager
 {
@@ -313,11 +314,12 @@ class ReminderManager
     {
         $db = \VOCApp::getInstance()->getService('db');
         $reminders = array();
-        $sql = "SELECT * " .
-                "FROM " . Reminder::TABLE_NAME . " r" .
-                " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
-                "WHERE r2u.user_id = {$userId}";
-
+        
+        $sql = "SELECT r.id FROM " . Reminder::TABLE_NAME . " r" .
+                " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
+                " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .
+                "WHERE ru.user_id = {$userId}";
+                
         if (isset($pagination)) {
             $sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
@@ -331,7 +333,8 @@ class ReminderManager
 
         foreach ($rows as $row) {
             $reminder = new Reminder();
-            $reminder->initByArray($row);
+            $reminder->setId($row['id']);
+            $reminder->load();
             $reminders[] = $reminder;
         }
         return $reminders;
@@ -351,8 +354,9 @@ class ReminderManager
 
         $sql = "SELECT count(*) count " .
                 "FROM " . Reminder::TABLE_NAME . " r" .
-                " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
-                "WHERE r2u.user_id = {$userId} LIMIT 1";
+                " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
+                " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .
+                "WHERE ru.user_id = {$userId} LIMIT 1";
 
         $db->query($sql);
         $result = $db->fetch(0);

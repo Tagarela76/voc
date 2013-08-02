@@ -107,20 +107,20 @@ class ReminderUserManager
 
         $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " " .
                 "WHERE facility_id = {$db->sqltext($facilityId)}";
-                
-                switch ($registered){
-                    case 'all':
-                        break;
-                    case 'registered':
-                        $sql.= " AND user_id <> 0";
-                        break;
-                    case 'unregistered':
-                        $sql.= " AND user_id = 0";
-                        break;
-                    default :
-                        throw new Exception('case does not exist!');
-                        break;
-                }
+
+        switch ($registered) {
+            case 'all':
+                break;
+            case 'registered':
+                $sql.= " AND user_id <> 0";
+                break;
+            case 'unregistered':
+                $sql.= " AND user_id = 0";
+                break;
+            default :
+                throw new Exception('case does not exist!');
+                break;
+        }
         $db->query($sql);
         $rows = $db->fetch_all_array();
         foreach ($rows as $row) {
@@ -154,6 +154,28 @@ class ReminderUserManager
             $reminder->initByArray($rows[0]);
             return $reminder;
         }
+    }
+
+    /**
+     * 
+     * @param int $facilityId
+     * 
+     * @return VWM\Apps\Reminder\Entity\ReminderUser[]
+     */
+    public function getReminderUserListByFacility($facilityId)
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $reminderUserList = array();
+        $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " " .
+                "WHERE facility_id={$db->sqltext($facilityId)}";
+        $db->query($sql);
+        $rows = $db->fetch_all_array();
+        foreach ($rows as $row) {
+            $reminderUser = new ReminderUser();
+            $reminderUser->initByArray($row);
+            $reminderUserList[] = $reminderUser;
+        }
+        return $reminderUserList;
     }
 
 }

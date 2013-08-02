@@ -22,6 +22,8 @@ class User extends Model
     protected $creater_id;
     protected $terms_conditions;
 
+    const TABLE_NAME = 'user';
+    
     public function getUserId()
     {
         return $this->user_id;
@@ -32,22 +34,22 @@ class User extends Model
         $this->user_id = $userId;
     }
 
-    public function getUsername()
+    public function getUserName()
     {
         return $this->username;
     }
 
-    public function setUsername($username)
+    public function setUserName($username)
     {
         $this->username = $username;
     }
 
-    public function getAccessname()
+    public function getAccessName()
     {
         return $this->accessname;
     }
 
-    public function setAccessname($accessname)
+    public function setAccessName($accessname)
     {
         $this->accessname = $accessname;
     }
@@ -162,9 +164,29 @@ class User extends Model
         $this->terms_conditions = $termsConditions;
     }
 
+    
     public function getAttributes()
     {
         
+    }
+    
+    public function load()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        if (!isset($this->user_id)) {
+            return false;
+        }
+        $sql = "SELECT * " .
+                "FROM " . self::TABLE_NAME . " " .
+                "WHERE user_id={$db->sqltext($this->user_id)} " .
+                "LIMIT 1";
+        $db->query($sql);
+
+        if ($db->num_rows() == 0) {
+            return false;
+        }
+        $row = $db->fetch(0);
+        $this->initByArray($row);
     }
 }
 ?>

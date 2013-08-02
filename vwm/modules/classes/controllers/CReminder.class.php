@@ -329,6 +329,7 @@ class CReminder extends Controller
         $this->smarty->assign('reminder', $reminder);
         $this->smarty->assign("userList", $userList);
         $this->smarty->assign("usersNames", $usersNames);
+        $this->smarty->assign("facilityID", $this->getFromRequest('facilityID'));
         //set js scripts
         $jsSources = array("modules/js/checkBoxes.js",
             "modules/js/autocomplete/jquery.autocomplete.js");

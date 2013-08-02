@@ -1,6 +1,7 @@
 <?php
 use VWM\Apps\Reminder\Entity\Reminder;
 use VWM\Hierarchy\Facility;
+use VWM\Apps\User\Entity\User;
 
 class CReminderUsers extends Controller
 {
@@ -21,14 +22,32 @@ class CReminderUsers extends Controller
             throw new Exception('404');
         }
         
-        $reminderManager = VOCApp::getInstance()->getService('reminder');
-        $facility = new Facility($this->db, $facilityDetails['facility_id']);
-        $companyID = $facilityDetails["company_id"];
-
-        $reminderUsers = $facility->getReminderUsers();
+        $rUManager = VOCApp::getInstance()->getService('reminderUser');
+        $reminderUserList = $rUManager->getReminderUserListByFacility($facilityDetails['facility_id']);
+        $usersList = array();
+        foreach($reminderUserList as $reminderUser){
+            if($reminderUser->getUserId() != 0){
+               $user = new User();
+               $user->setUserId($reminderUser->getUserId());
+               $user->load();
+               $userId = $reminderUser->getUserId();
+               $name = $user->getUserName();
+               $phone = $user->getMobile();
+            }else{
+               $userId = '-';
+               $name = '-';
+               $phone = '-';
+            }
+            $usersList[] = array(
+                'user_id'=>$userId,
+                'username' => $name,
+                'email'=>$reminderUser->getEmail(),
+                'mobile'=>$phone
+            );
+        }
         
         $this->smarty->assign('facilityId', $facilityDetails['facility_id']);
-        $this->smarty->assign('usersList', $reminderUsers);
+        $this->smarty->assign('usersList', $usersList);
         $this->smarty->assign('tpl', 'tpls/viewReminderUsers.tpl');
     }
     
@@ -38,8 +57,9 @@ class CReminderUsers extends Controller
         $rManager = VOCApp::getInstance()->getService('reminder');
         
         $userId = $this->getFromRequest('userId');
-        $user = new User($db);
-        $userDetails = $user->getUserDetails($userId);
+        $user = new User();
+        $user->setUserId($userId);
+        $user->load();
         
         $remindersCount = $rManager->countRemindersByUserId($userId);
         $url = "?" . $_SERVER["QUERY_STRING"];
@@ -56,7 +76,7 @@ class CReminderUsers extends Controller
         $this->setPermissionsNew('viewReminder');
         
         $this->smarty->assign('childCategoryItems', $reminderList);
-        $this->smarty->assign('user', $userDetails);
+        $this->smarty->assign('user', $user);
         $this->smarty->assign('facilityId', $this->getFromRequest('facilityId'));
         $this->smarty->assign('tpl', 'tpls/viewReminderUsersDetails.tpl');
 		$this->smarty->display("tpls:index.tpl");
