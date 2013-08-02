@@ -36,96 +36,6 @@ function ReminderManager() {
         });
     }
 }
-/*function ReminderUserManager() {
- this.reminderUserList = [];
- var self = this;
- /**
- * 
- * set Reminder to User
- * 
- * @returns {null}
- */
-/* this.addReminderUser = function()
- {
- var email = $('#userEmail').val();
- var isEmail = this.is_email(email);
- if (!isEmail) {
- $('#emailError').show();
- return false;
- } else {
- $('#emailError').hide();
- $('#userEmail').val('')
- }
- temporaryReminderUserId++;
- //create reminder User
- var reminderUser = new ReminderUser();
- reminderUser.setEmail(email);
- reminderUser.setTemporaryId(temporaryReminderUserId);
- self.reminderUserList.push(reminderUser);
- //add html with new user to table
- var html = '';
- html += '<tr id="remined_user_details_' + reminderUser.getTemporaryId() + '">';
- html += '<td height="20">';
- html += reminderUser.getEmail();
- html += '</td>';
- html += '<td height="20">';
- html += '<a onclick="reminderUserManager.deleteReminderUser(' + reminderUser.getTemporaryId() + ')">delete</a>';
- html += '</td>';
- html += '</tr>';
- $('#dialogReminderUsersListContainer').append(html);
- }
- 
- /**
- * 
- * delete reminder user
- * 
- * @param {int} id
- * 
- * @returns {null}
- */
-/* this.deleteReminderUser = function(id)
- {
- var count = self.reminderUserList.length;
- var newReminderUser = [];
- for (var i = 0; i < count; i++) {
- var temporaryId = self.reminderUserList[i].getTemporaryId()
- if (temporaryId != id) {
- newReminderUser.push(self.reminderUserList[i]);
- }
- }
- self.reminderUserList = newReminderUser;
- $('#remined_user_details_' + id).remove();
- }
- 
- /**
- * function is_email check is email is correct
- * true - correct
- * false - incorrect
- *
- */
-/* this.is_email = function(email)
- {
- // список доменов верхнего уровня, в которых больше двух символов
- var reg = /^[a-z0-9][a-z0-9\-._]*[a-z0-9]@[a-z0-9][a-z\-._]*[a-z0-9]\.(biz|com|edu|gov|info|int|mil|name|net|org|aero|asia|cat|coop|jobs|mobi|museum|pro|tel|travel|arpa|eco|xxx|[a-z]{2})$/i;
- 
- return reg.test(email);
- }
- this.initialize = function(reminderUsersEmailList){
- reminderUsersEmailList = $.parseJSON(reminderUsersEmailList)
- var count = reminderUsersEmailList.length
- for (var i = 0; i < count; i++) {
- temporaryReminderUserId++;
- //create reminder User
- var reminderUser = new ReminderUser();
- reminderUser.setEmail(reminderUsersEmailList[i]);
- reminderUser.setTemporaryId(temporaryReminderUserId);
- self.reminderUserList.push(reminderUser);
- }
- console.log(reminderUserList);
- }
- }*/
-
-
 
 function ReminderUserManager() {
     this.reminderUserList = [];
@@ -276,9 +186,10 @@ function manageReminderUsers() {
         var that = this;
         var facilityId = $('#facility_id').val();
         var reminderId = reminderPage.remindId;
+        var selectedIds = $('#reminderUsersIdsList').val();
         $.ajax({
             url: "?action=loadReminderUsers&category=reminder",
-            data: {facilityId: facilityId, reminderId: reminderId},
+            data: {facilityId: facilityId, reminderId: reminderId,selectedIds: selectedIds },
             type: "post",
             dataType: "html",
             success: function(response) {
@@ -368,6 +279,7 @@ function manageReminders() {
             var id = this.value;
             remindUsers.push(id);
         });
+        
         $.ajax({
             url: "?action=loadUsers&category=reminder",
             data: {facilityId: facilityId, remindId: reminderPage.remindId, remindUsers: remindUsers},

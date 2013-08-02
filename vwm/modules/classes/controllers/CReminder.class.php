@@ -96,7 +96,7 @@ class CReminder extends Controller
         foreach ($userReminderList as $userReminder) {
             $userDetails = $user->getUserDetails($userReminder->getUserId());
             $usersName[] = $userDetails["username"];
-            $user_id[] = $userReminder->getUserId();
+            $user_id[] = $userReminder->getId();
             $registeredReminderUserIds[] = $userReminder->getId();
         }
         $registeredReminderUserIds = implode(',', $registeredReminderUserIds);
@@ -117,7 +117,6 @@ class CReminder extends Controller
         
         if (count($post) > 0) {
             
-            $user = new User($this->db);
             $facilityID = $post['facility_id'];
             $active = !is_null($post['active'])?1:0;
             $reminder->setName($post['name']);
@@ -149,8 +148,7 @@ class CReminder extends Controller
             $reminderUsersIdsList = explode(',', $reminderUsersIdsList);
             
             //get reminders user registered in VOC
-            $registeredReminderUserIdsList = $post['registeredReminderUserIds'];
-            $registeredReminderUserIdsList = explode(',', $registeredReminderUserIdsList);
+            $registeredReminderUserIdsList = $post['user_id'];
             
             foreach ($reminderUsersIdsList as $reminderUsersId){
                 if ($reminderUsersId != '') {
@@ -204,12 +202,25 @@ class CReminder extends Controller
                 $this->smarty->assign('violationList', $violationList);
                 $usersName = array();
                 $user_id = array();
-                foreach ($reminder->getUsers() as $user) {
-                    $usersName[] = $user["username"];
-                    $user_id[] = $user["user_id"];
+                $reminderUsersEmailList = array();
+                $reminderUsersIdsList = array();
+                foreach ($reminder->getUsers() as $userReminder) {
+                    if ($userReminder->getUserId() != 0) {
+                        $userDetails = $user->getUserDetails($userReminder->getUserId());
+                        $usersName[] = $userDetails["username"];
+                        $user_id[] = $userReminder->getId();
+                    }else{
+                        $reminderUsersEmailList[] = $userReminder->getEmail();
+                        $reminderUsersIdsList[] = $userReminder->getId();
+                    }
                 }
+                
+                $reminderUsersEmailList = implode(',', $reminderUsersEmailList);
+                $reminderUsersIdsList = implode(',', $reminderUsersIdsList);
                 $usersList = implode(",", $usersName);
                 $this->smarty->assign('usersList', $usersList);
+                $this->smarty->assign('reminderUsersEmailList', $reminderUsersEmailList);
+                $this->smarty->assign('reminderUsersIdsList', $reminderUsersIdsList);
                 $this->smarty->assign('user_id', $user_id);
                 $this->smarty->assign('data', $reminder);
             }
@@ -284,32 +295,34 @@ class CReminder extends Controller
 
         $user = new User($this->db);
 
-        
         $dataChain = new TypeChain(date("y-m-d", $reminder->getDeliveryDate()), 'date', $this->db, $companyID, 'company');
         $reminder->setDeliveryDate($dataChain->formatOutput());
         
         $reminderUserList = $reminder->getUsers();
         $usersName = array();
         $userList = array();
+        
         foreach ($reminderUserList as $reminderUser) {
-            $userDetails = $user->getUserDetails($reminderUser->getUserId());
-            $usersName[] = $userDetails['username'];
+            if($reminderUser->getUserId() != 0){
+                $userDetails = $user->getUserDetails($reminderUser->getUserId());
+                $usersName[] = $userDetails['username'];
+                $mobile = $userDetails['username'];
+                $userName = $userDetails['username'];
+            }else{
+                $mobile = '-';
+                $userName = '-';
+            }
             $userList[] = array(
                 'user_id' => $reminderUser->getUserId(),
                 'email' => $reminderUser->getEmail(),
-                'username' => $userDetails['username'],
-                'mobile' => $userDetails['mobile']
+                'username' => $userName,
+                'mobile' => $mobile
             );
         }
         
-
         $unitType = new UnitType($db);
         $unitType->setUnitTypeId($reminder->getReminderUnitTypeId());
         $unitType->load();
-        
-        /*foreach ($usersList as $user) {
-            $usersName[] = $user["username"];
-        }*/
 
         $usersNames = implode(",", $usersName);
         $this->smarty->assign('unitType', $unitType);
@@ -506,9 +519,10 @@ class CReminder extends Controller
                 $this->smarty->assign("notify", $notify);
                 $this->smarty->assign('violationList', $violationList);
                 $user_id = array();
+                
                 foreach ($reminder->getUsers() as $user) {
                     $usersName[] = $user["username"];
-                    $user_id[] = $user["user_id"];
+                    $user_id[] = $user->getId();
                 }
                 $usersList = implode(",", $usersName);
                 $this->smarty->assign('usersList', $usersList);
@@ -554,28 +568,30 @@ class CReminder extends Controller
         }
         $this->smarty->assign('dataChain', $dataChain);
         $reminder->date = $dataChain->formatOutput();
-
+        /*GET USER REMINDER LIST*/
         $reminderUsersList = $reminder->getUsers();
         $reminderUsersEmailList = array();
         $usersName = array();
         $user_id = array(); 
-        
+        $reminderUsersIdsList = array();
         foreach ($reminderUsersList as $reminderUsers) {
             if ($reminderUsers->getUserId() != 0) {
                 //get users registered in VOC
                 $userDetails = $user->getUserDetails($reminderUsers->getUserId());
                 $usersName[] = $userDetails["username"];
-                $user_id[] = $userDetails["user_id"];
+                $user_id[] = $reminderUsers->getId();
             }else{
                 //get user Emails unregistered voc
                 $reminderUsersEmailList[] = $reminderUsers->getEmail();
+                $reminderUsersIdsList[] = $reminderUsers->getId();
             }
         }
-        
+        $reminderUsersIdsList = implode(',', $reminderUsersIdsList);
         $reminderUsersEmailList = implode(',', $reminderUsersEmailList);
        
         $usersList = implode(",", $usersName);
         $this->smarty->assign('reminderUsersEmailList', $reminderUsersEmailList);
+        $this->smarty->assign('reminderUsersIdsList', $reminderUsersIdsList);
         $this->smarty->assign('usersList', $usersList);
         $this->smarty->assign('user_id', $user_id);
         $this->smarty->assign('data', $reminder);
@@ -591,22 +607,17 @@ class CReminder extends Controller
         
         $facilityId = $this->getFromRequest('facilityId');
         $remindId = $this->getFromRequest('remindId');
-        
+        $reminderUsersIds = $this->getFromRequest('remindUsers');
         $rUManager = VOCApp::getInstance()->getService('reminderUser');
         //get Reminders Users by facilityId
         $reminderUsersList = $rUManager->getReminderUserListByFacilityId($facilityId, 'registered');
         $user = new User($this->db);
-        //get User wich already connect to reminder
-        $reminderUsers = $rUManager->getReminderUsersByReminderId($remindId);
-        $reminderUsersNames = array();
-        foreach($reminderUsers as $reminderUser){
-            $reminderUsersIds[] = $reminderUser->getId();
-        }
+        
         foreach ($reminderUsersList as $reminderUser) {
             $userDetails = $user->getUserDetails($reminderUser->getUserId());
             $userItem['id'] = $reminderUser->getId();
             $userItem['name'] = $userDetails["username"];
-            if (in_array($userItem['id'], $reminderUsersIds)) {
+            if (in_array($reminderUser->getId(), $reminderUsersIds)) {
                 $userItem['check'] = 1;
             } else {
                 $userItem['check'] = 0;
@@ -658,6 +669,9 @@ class CReminder extends Controller
     {
         $facilityId = $this->getFromPost('facilityId');
         $reminderId = $this->getFromPost('reminderId');
+        $reminderUsersIds = $this->getFromPost('selectedIds');
+        
+        $reminderUsersIds = explode(',', $reminderUsersIds);
         $facilityReminderUsersEmailListJSon = array();
         $rUManager = VOCApp::getInstance()->getService('reminderUser');
         //get Reminders Emails by facilityId
@@ -667,13 +681,6 @@ class CReminder extends Controller
         }
         
         $facilityReminderUsersEmailListJSon = json_encode($facilityReminderUsersEmailListJSon);
-        //get reminder Users in this reminder
-        $reminderUserList = $rUManager->getReminderUsersByReminderId($reminderId);
-        
-        $reminderUsersIds = array();
-        foreach($reminderUserList as $reminderUser){
-            $reminderUsersIds[] = $reminderUser->getId();
-        }
 
         $this->smarty->assign('facilityReminderUsersEmailListJSon', $facilityReminderUsersEmailListJSon);
         $this->smarty->assign('facilityReminderUsersEmailList', $facilityReminderUsersEmailList);

@@ -42,7 +42,7 @@ class ReminderUserManagerTest extends Testing\DbTestCase
         $db = \VOCApp::getInstance()->getService('db');
         $rUManager = \VOCApp::getInstance()->getService('reminderUser');
         $users = $rUManager->getReminderUsersByReminderId(1);
-        $this->assertEquals(count($users), 2);
+        $this->assertEquals(count($users), 4);
         $this->assertTrue($users[0] instanceof ReminderUser);
     }
 
@@ -58,7 +58,7 @@ class ReminderUserManagerTest extends Testing\DbTestCase
         $db->query($sql);
         $rows = $db->fetch_all_array();
 
-        $this->assertEquals(count($rows), 2);
+        $this->assertEquals(count($rows), 4);
 
         $rUManager->unSetReminder2ReminderUser($reminderId);
 
@@ -77,10 +77,29 @@ class ReminderUserManagerTest extends Testing\DbTestCase
         $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId);
         
         $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
+        $this->assertEquals(count($reminderUsers), 4);
+        
+        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, 'registered');
+        
+        $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
         $this->assertEquals(count($reminderUsers), 2);
         
+        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, 'unregistered');
+        
+        $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
+        $this->assertEquals(count($reminderUsers), 2);
+        
+    }
+    
+    public function testGetReminderUserByUserId()
+    {
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $userId = 1;
+        $reminderUser = $rUManager->getReminderUserByUserId($userId);
+        
+        $this->assertTrue($reminderUser instanceof ReminderUser);
+        $this->assertEquals($reminderUser->getUserId(), $userId);
     }
 
 }
 ?>
-1

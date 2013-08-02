@@ -54,7 +54,6 @@ class ReminderUserManager
                 "WHERE reminder_id = {$db->sqltext($reminderId)}";
         $db->query($sql);
         $rows = $db->fetch_all_array();
-
         $remindersUsers = array();
         foreach ($rows as $row) {
             $reminderUser = new ReminderUser();
@@ -88,9 +87,14 @@ class ReminderUserManager
 
     /**
      * 
-     * @param type $facilityId
-     * @param type $registered
-     * @return boolean|\VWM\Apps\Reminder\Entity\ReminderUser
+     * get reminder User List By Facility id
+     * registered values: all, registered, unregistered
+     * 
+     * @param int $facilityId
+     * @param string $registered
+     * 
+     * @return boolean|\VWM\Apps\Reminder\Entity\ReminderUser[]
+     * @throws Exception
      */
     public function getReminderUserListByFacilityId($facilityId, $registered = 'all')
     {
@@ -128,17 +132,26 @@ class ReminderUserManager
         return $reminderUserList;
     }
 
-    public function getReminderUserByUserId($id)
+    /**
+     * 
+     * get reminder User by user id
+     * 
+     * @param int $userId
+     * 
+     * @return boolean|\VWM\Apps\Reminder\Entity\ReminderUser
+     */
+    public function getReminderUserByUserId($userId)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " " .
-                "WHERE user_id = {$db->sqltext($id)}";
+                "WHERE user_id = {$db->sqltext($userId)}";
         $db->query($sql);
+        $rows = $db->fetch_all_array();
         if ($db->num_rows() == 0) {
             return false;
         } else {
             $reminder = new ReminderUser();
-            $reminder->initByArray();
+            $reminder->initByArray($rows[0]);
             return $reminder;
         }
     }

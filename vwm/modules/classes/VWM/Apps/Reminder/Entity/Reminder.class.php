@@ -422,9 +422,14 @@ class Reminder extends Model
      */
     public function delete()
     {
+        if(is_null($this->getId())){
+            throw new Exception('can\'t delete reminder. Id is null');
+        }
         $db = \VOCApp::getInstance()->getService('db');
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $rUManager->unSetReminder2ReminderUser($this->getId());
         $sql = "DELETE FROM " . self::TABLE_NAME . "
-				 WHERE id={$db->sqltext($this->id)}";
+				 WHERE id={$db->sqltext($this->getId())}";
 
         $db->exec($sql);
     }
@@ -469,24 +474,11 @@ class Reminder extends Model
     }
 
     /**
-     *
-     * @return array
+     * 
+     * get Users
+     * 
+     * @return boolean|VWM\Apps\Reminder\Entity\ReminderUser[]
      */
-   /* public function getUsers()
-    {
-        $users = array();
-        if (!is_null($this->users)) {
-            return $this->users;
-        }
-        $rManager = \VOCApp::getInstance()->getService('reminder');
-        if (is_null($this->getId())) {
-            return false;
-        }
-        $users = $rManager->getUsersByReminderId($this->getId());
-
-        return $users;
-    }*/
-
     public function getUsers()
     {
         $users = array();
@@ -498,7 +490,7 @@ class Reminder extends Model
             return false;
         }
         $users = $rUManager->getReminderUsersByReminderId($this->getId());
-
+        
         return $users;
     }
     /**

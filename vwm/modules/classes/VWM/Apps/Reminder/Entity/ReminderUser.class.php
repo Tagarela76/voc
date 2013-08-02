@@ -126,6 +126,7 @@ class ReminderUser extends Model
      */
     public function _insert()
     {
+        $logger = \VOCApp::getInstance()->getService('dbLogger');
         $userId = $this->getUserId();
         $userId = is_null($userId)?'NULL':$userId;
         
@@ -143,6 +144,7 @@ class ReminderUser extends Model
         if (isset($id)) {
             $this->setId($id);
         } else {
+            $logger->addError('Save User Reminder Error query: ' . $query);
             return false;
         }
         return $this->getId();
