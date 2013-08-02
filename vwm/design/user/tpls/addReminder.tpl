@@ -84,7 +84,6 @@
 							{/if}
 						{/foreach}
 					</div>
-                    <input type='hidden' name='registeredReminderUserIds' id='registeredReminderUserIds' value="{$registeredReminderUserIds}" />
 				</td>
 			</tr>
             <tr>

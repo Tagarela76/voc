@@ -391,6 +391,7 @@ function manageReminders() {
                 rowsToSet.push(id);
             }
         });
+        
         $.ajax({
             url: "?action=setRemindToUser&category=reminder",
             data: {rowsToSet: rowsToSet},

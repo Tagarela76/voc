@@ -8,11 +8,13 @@ function ReminderUser() {
     var self = this;
     var email = null;
     var reminderUserId = null;
+    var userId = null
     
     // Private members are made by the constructor	
     var constructor = function() {
         var email = null;
         var reminderUserId = null;
+        var userId = null
         
         //setters
         self.setEmail = function(userEmail){
@@ -20,6 +22,9 @@ function ReminderUser() {
         }
         self.setReminderId = function(id){
             reminderUserId = id;
+        }
+        self.setUserId = function(id){
+            userId = id;
         }
         
         //getters
@@ -31,11 +36,15 @@ function ReminderUser() {
             return reminderUserId;
         }
         
+        self.getUserId = function(){
+            return userId;
+        }
         //function for getting attributes
         self.getAttributes = function() {
             var reminderUsersAttributes = {
                 temporaryId: self.getReminderId(),
-                email: self.getEmail()
+                email: self.getEmail(),
+                userId: self.getUserId()
             }
             return reminderUsersAttributes;
         }

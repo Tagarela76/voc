@@ -128,21 +128,6 @@ class ReminderUserManager
         return $reminderUserList;
     }
 
-    /* public function getReminderUserById($id)
-      {
-      $db = \VOCApp::getInstance()->getService('db');
-      $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " " .
-      "WHERE id = {$db->sqltext($id)}";
-      $db->query($sql);
-      if ($db->num_rows() == 0) {
-      return false;
-      } else {
-      $reminder = new ReminderUser();
-      $reminder->initByArray();
-      return $reminder;
-      }
-      } */
-
     public function getReminderUserByUserId($id)
     {
         $db = \VOCApp::getInstance()->getService('db');
