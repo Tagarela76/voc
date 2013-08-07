@@ -4,6 +4,7 @@ use VWM\Apps\Reminder\Entity\ReminderUser;
 use VWM\Apps\Reminder\Event\EventReminderUser;
 use VWM\Apps\Reminder\Subscriber\ReminderSubscriber;
 use VWM\Apps\Reminder\VWMReminderEvents\ReminderEvents;
+use VWM\Apps\User\VWMUserEvents\UserEvents;
 
 class CAUsers extends Controller
 {
@@ -133,7 +134,7 @@ class CAUsers extends Controller
                     $subscriper = new ReminderSubscriber();
                     $dispatcher->addSubscriber($subscriper);
                     $event = new EventReminderUser($reminderUser);
-                    $dispatcher->dispatch(ReminderEvents::SAVE_USER, $event);
+                    $dispatcher->dispatch(UserEvents::SAVE_USER, $event);
                 }
                 header('Location: admin.php?action=browseCategory&category=users&bookmark=' . $this->getFromRequest('bookmark'));
                 die();
@@ -239,7 +240,7 @@ class CAUsers extends Controller
                     $subscriper = new ReminderSubscriber();
                     $dispatcher->addSubscriber($subscriper);
                     $event = new EventReminderUser($reminderUser);
-                    $dispatcher->dispatch(ReminderEvents::SAVE_USER, $event);
+                    $dispatcher->dispatch(UserEvents::SAVE_USER, $event);
                 }
                 
                 header('Location: admin.php?action=browseCategory&category=users&bookmark=' . $this->getFromRequest('bookmark'));
@@ -345,6 +346,16 @@ class CAUsers extends Controller
             //next 2 lines was used for old notify system... is voc needs it now?!
             //$userDetails=$this->user->getUserDetails($id);
             //$itemForDeleteName[]=	$userDetails["username"];
+            //update reminder user if we need
+            $rManager = VOCApp::getInstance()->getService('reminderUser');
+            $reminderUser = $rManager->getReminderUserByUserId($id);
+            if ($reminderUser) {
+                $dispatcher = \VOCApp::getInstance()->getService('eventDispatcher');
+                $subscriper = new ReminderSubscriber();
+                $dispatcher->addSubscriber($subscriper);
+                $event = new EventReminderUser($reminderUser);
+                $dispatcher->dispatch(UserEvents::DELETE_USER, $event);
+            }
             $this->user->deleteUser($id);
         }
         header('Location: admin.php?action=browseCategory&category=' . $this->getFromRequest('category') . '&bookmark=' . $this->getFromRequest('bookmark'));

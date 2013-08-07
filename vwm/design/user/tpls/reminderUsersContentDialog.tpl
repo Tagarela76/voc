@@ -14,7 +14,7 @@
         </td>
         <td width='50%' >
             <input type='text' id='userEmail'>
-            <div style="color: #B22222" id='emailError' hidden="hidden">Invalid Email Address</div>
+            <div style="color: #B22222" id='emailError' hidden="hidden"></div>
         </td>
         <td width='20%'>
             <div style='text-align: right'>

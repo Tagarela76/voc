@@ -4,6 +4,7 @@ use VWM\Apps\Reminder\Entity\Reminder;
 use VWM\Hierarchy\Facility;
 use VWM\Apps\User\Entity\User;
 use VWM\Apps\Reminder\Entity\ReminderUser;
+use VWM\Apps\Reminder\Manager\ReminderUserManager;
 
 class CReminderUsers extends Controller
 {
@@ -122,14 +123,14 @@ class CReminderUsers extends Controller
         $reminderUserList = array();
         $rUManager = VOCApp::getInstance()->getService('reminderUser');
         
-        $reminderUserListCount = $rUManager->countReminderUserListByFacilityId($facilityId, 'unregistered');
+        $reminderUserListCount = $rUManager->countReminderUserListByFacilityId($facilityId, ReminderUserManager::UNREGISTERED_USERS);
         $url = "?" . $_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/", "", $url);
         $pagination = new Pagination($reminderUserListCount);
         $pagination->url = $url;
         $this->smarty->assign('pagination', $pagination);
         
-        $reminderUserList = $rUManager->getReminderUserListByFacilityId($facilityId, 'unregistered', $pagination);
+        $reminderUserList = $rUManager->getReminderUserListByFacilityId($facilityId, ReminderUserManager::UNREGISTERED_USERS, $pagination);
         
         $this->smarty->assign('reminderUserList', $reminderUserList);
         $this->smarty->assign('tpl', 'tpls/viewReminderEmails.tpl');

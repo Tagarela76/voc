@@ -8,9 +8,19 @@ use VWM\Apps\Reminder\Entity\Reminder;
 
 class ReminderUserManager
 {
-
     const TABLE_NAME = 'reminder2reminder_user';
-
+    /**
+     * all users
+     */
+    const ALL_USERS = 'all';
+    /**
+     * users wich registered in VOC
+     */
+    const REGISTERED_USERS = 'registered';
+    /**
+     * users unregistered in VOC
+     */
+    const UNREGISTERED_USERS = 'unregistered';
     /**
      * 
      * set reminder to reminder user
@@ -117,10 +127,10 @@ class ReminderUserManager
     /**
      * 
      * get reminder User List By Facility id
-     * registered values: all, registered, unregistered
      * 
      * @param int $facilityId
      * @param string $registered
+     * values can be one of constants ALL_USERS, REGISTERED_USERS, UNREGISTERED_USERS or one of values(all, registered, unregistered)
      * @param \Pagination $pagination
      * 
      * @return boolean|\VWM\Apps\Reminder\Entity\ReminderUser[]
@@ -139,12 +149,12 @@ class ReminderUserManager
                 "WHERE facility_id = {$db->sqltext($facilityId)}";
 
         switch ($registered) {
-            case 'all':
+            case self::ALL_USERS:
                 break;
-            case 'registered':
+            case self::REGISTERED_USERS:
                 $sql.= " AND user_id <> 0";
                 break;
-            case 'unregistered':
+            case self::UNREGISTERED_USERS:
                 $sql.= " AND user_id = 0";
                 break;
             default :

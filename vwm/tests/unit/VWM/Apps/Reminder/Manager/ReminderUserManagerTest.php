@@ -83,12 +83,12 @@ class ReminderUserManagerTest extends Testing\DbTestCase
         $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
         $this->assertEquals(count($reminderUsers), 4);
         
-        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, 'registered');
+        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, ReminderUserManager::REGISTERED_USERS);
         
         $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
         $this->assertEquals(count($reminderUsers), 2);
         
-        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, 'unregistered');
+        $reminderUsers = $rUManager->getReminderUserListByFacilityId($facilityId, ReminderUserManager::UNREGISTERED_USERS);
         
         $this->assertTrue($reminderUsers[0] instanceof ReminderUser);
         $this->assertEquals(count($reminderUsers), 2);

@@ -52,39 +52,37 @@ function ReminderUserManager() {
     {
         var email = $('#userEmail').val();
         var facilityId = $('#facilityId').val();
-        
-        var isEmail = this.is_email(email);
-        if (!isEmail) {
-            $('#emailError').show();
-            return false;
-        } else {
-            $('#emailError').hide();
-            $('#userEmail').val('')
-        }
 
         $.ajax({
             url: "?action=SaveReminderUser&category=reminder",
             data: {facilityId: self.facilityId, email: email},
             type: "post",
-            dataType: "html",
+            dataType: "json",
             success: function(response) {
                 if (response) {
-                    var reminderUser = new ReminderUser();
-                    reminderUser.setEmail(email);
-                    reminderUser.setReminderId(response);
-                    self.reminderUserList.push(reminderUser); 
-                    
-                    //add html with new user to table
-                    var html = '';
-                    html += '<tr id="remined_user_details_' + response + '">';
-                    html += '<td height="20">';
-                    html += '<input type="checkbox" id="reminderUserEmail_'+response+'" value="'+response+'" >';
-                    html += '</td>';
-                    html += '<td height="20">';
-                    html += email;
-                    html += '</td>';
-                    html += '</tr>';
-                    $('#dialogReminderUsersListContainer').append(html);
+
+                    if (response.error) {
+                        $('#emailError').show();
+                        var errorHtml = response.errorMessage.email + '<br>';
+                        $('#emailError').html(errorHtml);
+                    } else {
+                        $('#emailError').hide();
+                        var reminderUser = new ReminderUser();
+                        reminderUser.setEmail(email);
+                        reminderUser.setReminderId(response.userId);
+                        self.reminderUserList.push(reminderUser);
+                        var html = '';
+                        html += '<tr id="remined_user_details_' + response.userId + '">';
+                        html += '<td height="20">';
+                        html += '<input type="checkbox" id="reminderUserEmail_' + response.userId + '" value="' + response.userId + '" >';
+                        html += '</td>';
+                        html += '<td height="20">';
+                        html += email;
+                        html += '</td>';
+                        html += '</tr>';
+                        $('#dialogReminderUsersListContainer').append(html);
+                        $('#userEmail').val('')
+                    }
                 }
             }
         });
@@ -128,7 +126,6 @@ function ReminderUserManager() {
             reminderUser.setReminderId(registeredReminderList[i].id);
             self.registeredReminderList.push(reminderUser); 
         }
-        console.log(self.registeredReminderList);
     }
     
     this.getReminderById = function(id){
