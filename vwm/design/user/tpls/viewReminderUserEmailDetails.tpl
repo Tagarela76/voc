@@ -1,3 +1,8 @@
+<div>
+    <input type='button' class="button" value="<<<Back" style="margin: 0 0 10px 25px;" onclick='window.history.back()'>
+    <input type='button' class="button" value="Delete" style="margin: 0 0 0 5px;" onclick='location.href="?action=deleteItem&category=reminderUsers&reminderUserId={$reminderUser->getId()}&facilityId={$reminderUser->getFacilityId()}"'>
+</div>
+
 <div style="padding:7px;">
     <table class="users" align="center" cellpadding="0" cellspacing="0">
         <tbody><tr class="users_top_yellowgreen users_u_top_size">
@@ -8,53 +13,11 @@
                 </td>
             </tr>
             <tr>
-                <td class="border_users_l border_users_b" height="20">
-                    User Id:
+                <td height="20" class="border_users_l border_users_b">
+                    User Email
                 </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left">
-                        &nbsp;{$user->getUserId()|escape} 
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="border_users_l border_users_b" height="20">
-                    User Name:
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left">
-                        &nbsp; {$user->getUserName()|escape}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="border_users_l border_users_b" height="20">
-                    User Email:
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left">
-                        &nbsp; {$user->getEmail()|escape}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="border_users_l border_users_b" height="20">
-                    User Phone:
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left">
-                        &nbsp; {$user->getPhone()|escape}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="border_users_l border_users_b" height="20">
-                    User Mobile:
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left">
-                        &nbsp; {$user->getMobile()|escape}
-                    </div>
+                <td height="20" class="border_users_l border_users_b border_users_r">
+                    {$reminderUser->getEmail()|escape}
                 </td>
             </tr>
             <tr>

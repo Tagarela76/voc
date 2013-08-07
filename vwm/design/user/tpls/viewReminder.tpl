@@ -56,7 +56,7 @@
                     {if $reminder->getDescription() && $reminder->getDescription()!='NULL'}
                         &nbsp; {$reminder->getDescription()|escape}
                     {else}
-                            &nbsp; NONE
+                        &nbsp; NONE
                     {/if}
                 </div>
             </td>
@@ -101,7 +101,7 @@
                     {if $reminder->getActive()}
                         &nbsp; on
                     {else}
-                       &nbsp; off
+                        &nbsp; off
                     {/if}
                 </div>
             </td>
@@ -154,19 +154,27 @@
                 Telephone Number
             </td>
         </tr>
-        {foreach from=$usersList item=user}
+        {foreach from=$userList item=user}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
-                    {$user.user_id|escape}
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
+                        {$user.user_id|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$user.username|escape}
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
+                        {$user.username|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$user.email|escape}
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
+                        {$user.email|escape}
+                    </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    {$user.mobile|escape}
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
+                        {$user.mobile|escape}
+                    </a>
                 </td>
             </tr>
         {/foreach}

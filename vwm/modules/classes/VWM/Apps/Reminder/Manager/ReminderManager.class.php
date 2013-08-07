@@ -4,6 +4,7 @@ namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Apps\Reminder\Entity\Reminder;
 use VWM\Apps\UnitType\Entity\UnitType;
+use VWM\Apps\Reminder\Entity\ReminderUser;
 
 class ReminderManager
 {
@@ -192,12 +193,14 @@ class ReminderManager
      */
     public function sendRemindToUser(Reminder $reminder, $beforehand = 0)
     {
-        $users = $this->getUsersByReminderId($reminder->getId());
-        if (count($users) == 0) {
-
+        $reminderLog = \VOCApp::getInstance()->getService('reminderLogger');
+        $reminderLog->addAlert("Start sending a reminder with id:".$reminder->getId()." to users");
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $reminderUsers = $rUManager->getReminderUsersByReminderId($reminder->getId());
+        if (count($reminderUsers) == 0) {
             return false;
         }
-
+        
         $email = new \EMail(true);
         $from = AUTH_SENDER . "@" . DOMAIN;
         $messageSubject = "Reminder ";
@@ -213,11 +216,13 @@ class ReminderManager
 
         $messageText = $smarty->fetch($tpl);
         $text = '';
-        foreach ($users as $user) {
-            if (($user["email"] == 'jgypsyn@gyantgroup.com') || ($user["email"] == 'denis.nt@kttsoft.com')) {
-                $result = $email->sendMail($from, $user["email"], $messageSubject, $messageText);
+        
+        foreach ($reminderUsers as $reminderUser) {
+            if (($reminderUser->getEmail() == 'jgypsyn@gyantgroup.com') || ($reminderUser->getEmail() == 'denis.nt@kttsoft.com')) {
+                $result = $email->sendMail($from, $reminderUser->getEmail(), $messageSubject, $messageText);
             }
-            $text.='Reminder to ' . $user["username"] . ' sent successfully;';
+            $reminderLog->addAlert('Reminder to ' . $reminderUser->getEmail() . ' sent successfully;');
+            $text.='Reminder to ' . $reminderUser->getEmail() . ' sent successfully;';
             $text.=' ';
         }
 
@@ -312,11 +317,12 @@ class ReminderManager
     {
         $db = \VOCApp::getInstance()->getService('db');
         $reminders = array();
-        $sql = "SELECT * " .
-                "FROM " . Reminder::TABLE_NAME . " r" .
-                " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
-                "WHERE r2u.user_id = {$userId}";
-
+        
+        $sql = "SELECT r.id FROM " . Reminder::TABLE_NAME . " r" .
+                " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
+                " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .
+                "WHERE ru.user_id = {$userId} GROUP BY r.id";
+                
         if (isset($pagination)) {
             $sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
@@ -330,7 +336,8 @@ class ReminderManager
 
         foreach ($rows as $row) {
             $reminder = new Reminder();
-            $reminder->initByArray($row);
+            $reminder->setId($row['id']);
+            $reminder->load();
             $reminders[] = $reminder;
         }
         return $reminders;
@@ -348,10 +355,11 @@ class ReminderManager
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $sql = "SELECT count(*) count " .
+        $sql = "SELECT count(DISTINCT(r.id)) count " .
                 "FROM " . Reminder::TABLE_NAME . " r" .
-                " LEFT JOIN " . Reminder::TB_REMIND2USER . " r2u ON r2u.reminders_id = r.id " .
-                "WHERE r2u.user_id = {$userId} LIMIT 1";
+                " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
+                " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .
+                "WHERE ru.user_id = {$userId} LIMIT 1";
 
         $db->query($sql);
         $result = $db->fetch(0);
