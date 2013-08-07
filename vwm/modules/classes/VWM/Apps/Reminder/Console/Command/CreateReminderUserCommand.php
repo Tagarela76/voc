@@ -31,7 +31,7 @@ class CreateReminderUserCommand extends Command
         
         $facilityList = $fManager->getAllFacilityList();
         foreach ($facilityList as $facility) {
-            $users = $uManager->getUserByFacilityId($facility->getFacilityId());
+            $users = $uManager->getUserListByFacilityId($facility->getFacilityId());
             $userList = array_merge($userList, $users);
         }
 

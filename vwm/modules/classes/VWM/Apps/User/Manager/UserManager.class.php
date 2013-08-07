@@ -6,7 +6,15 @@ use VWM\Apps\User\Entity\User;
 
 class UserManager
 {
-    public function getUserByFacilityId($facilityId)
+    /**
+     * 
+     * get User List by Facility Id
+     * 
+     * @param int $facilityId
+     * 
+     * @return \VWM\Apps\User\Entity\User[]
+     */
+    public function getUserListByFacilityId($facilityId)
     {
         $db = \VOCApp::getInstance()->getService('db');
         $userList = array();

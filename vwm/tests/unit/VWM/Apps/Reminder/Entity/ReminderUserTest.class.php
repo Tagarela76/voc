@@ -82,6 +82,31 @@ class ReminderUserTest extends Testing\DbTestCase
         $this->assertEquals($emailUpdate, $rows[0]['email']);
         $this->assertEquals($facilityId, $rows[0]['facility_id']);
     }
+    
+    public function testDelete()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $userId = 1;
+        $email = 'tagarela@gmail.com';
+        $facilityId = 1;
+        $reminderUser = new ReminderUser();
+        $reminderUser->setUserId($userId);
+        $reminderUser->setEmail($email);
+        $reminderUser->setFacilityId($facilityId);
+        $id = $reminderUser->save();
+        
+        $sql = "SELECT * FROM ".ReminderUser::TABLE_NAME;
+        $db->query($sql);
+        $rows = $db->fetch_all_array();
+        $this->assertEquals(count($rows), 5);
+              
+        //delete reminder User
+        $reminderUser->delete();
+        
+        $db->query($sql);
+        $rows = $db->fetch_all_array();
+        $this->assertEquals(count($rows), 4);
+    }
 
 }
 ?>

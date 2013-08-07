@@ -157,22 +157,22 @@
         {foreach from=$userList item=user}
             <tr>
                 <td class="border_users_b border_users_r border_users_l">
-                    <a href="?action=viewReminderUserDetails&category=reminderUsers&userId={$user.user_id}&facilityId={$facilityID}">
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
                         {$user.user_id|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewReminderUserDetails&category=reminderUsers&userId={$user.user_id}&facilityId={$facilityID}">
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
                         {$user.username|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewReminderUserDetails&category=reminderUsers&userId={$user.user_id}&facilityId={$facilityID}">
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
                         {$user.email|escape}
                     </a>
                 </td>
                 <td class="border_users_b border_users_r">
-                    <a href="?action=viewReminderUserDetails&category=reminderUsers&userId={$user.user_id}&facilityId={$facilityID}">
+                    <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminder_user_id}&facilityId={$facilityID}">
                         {$user.mobile|escape}
                     </a>
                 </td>

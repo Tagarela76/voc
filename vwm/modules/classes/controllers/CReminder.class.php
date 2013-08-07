@@ -269,6 +269,7 @@ class CReminder extends Controller
     protected function actionViewDetails()
     {
         $db = VOCApp::getInstance()->getService('db');
+        $rUManager = VOCApp::getInstance()->getService('reminderUser');
         $reminder = new Reminder();
         $reminder->setId($this->getFromRequest('id'));
         $reminder->load();
@@ -298,7 +299,15 @@ class CReminder extends Controller
         $dataChain = new TypeChain(date("y-m-d", $reminder->getDeliveryDate()), 'date', $this->db, $companyID, 'company');
         $reminder->setDeliveryDate($dataChain->formatOutput());
         
-        $reminderUserList = $reminder->getUsers();
+        
+        $reminderUserListCount = $rUManager->countReminderUsersByReminderId($reminder->getId());
+        $url = "?" . $_SERVER["QUERY_STRING"];
+        $url = preg_replace("/\&page=\d*/", "", $url);
+        $pagination = new Pagination($reminderUserListCount);
+        $pagination->url = $url;
+        $this->smarty->assign('pagination', $pagination);
+        
+        $reminderUserList = $rUManager->getReminderUsersByReminderId($reminder->getId(), $pagination);
         $usersName = array();
         $userList = array();
         
@@ -316,7 +325,8 @@ class CReminder extends Controller
                 'user_id' => $reminderUser->getUserId(),
                 'email' => $reminderUser->getEmail(),
                 'username' => $userName,
-                'mobile' => $mobile
+                'mobile' => $mobile,
+                'reminder_user_id' => $reminderUser->getId()
             );
         }
         
@@ -382,7 +392,6 @@ class CReminder extends Controller
     protected function actionConfirmDelete()
     {
         foreach ($this->itemID as $ID) {
-
             $reminder = new Reminder();
             $reminder->setId($ID);
             $reminder->load();

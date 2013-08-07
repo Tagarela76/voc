@@ -193,6 +193,8 @@ class ReminderManager
      */
     public function sendRemindToUser(Reminder $reminder, $beforehand = 0)
     {
+        $reminderLog = \VOCApp::getInstance()->getService('reminderLogger');
+        $reminderLog->addAlert("Start sending a reminder with id:".$reminder->getId()." to users");
         $rUManager = \VOCApp::getInstance()->getService('reminderUser');
         $reminderUsers = $rUManager->getReminderUsersByReminderId($reminder->getId());
         if (count($reminderUsers) == 0) {
@@ -219,6 +221,7 @@ class ReminderManager
             if (($reminderUser->getEmail() == 'jgypsyn@gyantgroup.com') || ($reminderUser->getEmail() == 'denis.nt@kttsoft.com')) {
                 $result = $email->sendMail($from, $reminderUser->getEmail(), $messageSubject, $messageText);
             }
+            $reminderLog->addAlert('Reminder to ' . $reminderUser->getEmail() . ' sent successfully;');
             $text.='Reminder to ' . $reminderUser->getEmail() . ' sent successfully;';
             $text.=' ';
         }
@@ -318,7 +321,7 @@ class ReminderManager
         $sql = "SELECT r.id FROM " . Reminder::TABLE_NAME . " r" .
                 " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
                 " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .
-                "WHERE ru.user_id = {$userId}";
+                "WHERE ru.user_id = {$userId} GROUP BY r.id";
                 
         if (isset($pagination)) {
             $sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
@@ -352,7 +355,7 @@ class ReminderManager
     {
         $db = \VOCApp::getInstance()->getService('db');
 
-        $sql = "SELECT count(*) count " .
+        $sql = "SELECT count(DISTINCT(r.id)) count " .
                 "FROM " . Reminder::TABLE_NAME . " r" .
                 " LEFT JOIN " . ReminderUserManager::TABLE_NAME . " r2u ON r2u.reminder_id = r.id " .
                 " LEFT JOIN " . ReminderUser::TABLE_NAME . " ru ON ru.id = r2u.reminder_user_id " .

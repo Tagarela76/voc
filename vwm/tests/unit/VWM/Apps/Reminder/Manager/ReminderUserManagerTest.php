@@ -4,13 +4,17 @@ namespace VWM\Apps\Reminder\Manager;
 
 use VWM\Framework\Test as Testing;
 use VWM\Apps\Reminder\Entity\ReminderUser;
+use VWM\Apps\Reminder\Entity\Reminder;
+use VWM\Apps\User\Entity\User;
 
 class ReminderUserManagerTest extends Testing\DbTestCase
 {
 
     protected $fixtures = array(
         ReminderUser::TABLE_NAME,
-        ReminderUserManager::TABLE_NAME
+        ReminderUserManager::TABLE_NAME,
+        Reminder::TABLE_NAME,
+        User::TABLE_NAME
     );
 
     public function testReminderUserManager()
@@ -23,7 +27,7 @@ class ReminderUserManagerTest extends Testing\DbTestCase
     {
         $userId = 1;
         $reminderId = 2;
-
+        
         $db = \VOCApp::getInstance()->getService('db');
         $rManager = \VOCApp::getInstance()->getService('reminderUser');
         $id = $rManager->setReminder2ReminderUser($userId, $reminderId);
@@ -99,6 +103,53 @@ class ReminderUserManagerTest extends Testing\DbTestCase
         
         $this->assertTrue($reminderUser instanceof ReminderUser);
         $this->assertEquals($reminderUser->getUserId(), $userId);
+    }
+    
+   public function testGetUsersWithReminderByFacilityId()
+    {
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $db =  \VOCApp::getInstance()->getService('db');
+        $facilityId = 1;
+        
+        $reminderUser = new ReminderUser();
+        $reminderUser->setEmail('test@mail.ru');
+        $reminderUser->setFacilityId($facilityId);
+        $reminderUser->setUserId(0);
+        $reminderUser->save();
+        
+        $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " " .
+                "WHERE facility_id={$db->sqltext($facilityId)}";
+                
+        $db->query($sql);
+        $rows = $db->fetch_all_array();
+        
+        $this->assertEquals(count($rows), 5);
+        
+        $reminderUsersList = $rUManager->getUsersWithReminderByFacilityId($facilityId);
+        $this->assertEquals(count($reminderUsersList), 4);
+    }
+    
+    public function testGetReminderListByReminderUserId()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        $reminderUserId = 1;
+               
+        $reminderList = $rUManager->getReminderListByReminderUserId($reminderUserId);
+        
+        $this->assertTrue($reminderList[0] instanceof \VWM\Apps\Reminder\Entity\Reminder);
+        $this->assertEquals(count($reminderList), 1);
+    }
+    
+    public function testGetUserByReminderUserId()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $rUManager = \VOCApp::getInstance()->getService('reminderUser');
+        
+        $userId = 1;
+        $user = $rUManager->getUserByReminderUserId($userId);
+        
+        $this->assertTrue($user instanceof \VWM\Apps\User\Entity\User);
     }
 
 }

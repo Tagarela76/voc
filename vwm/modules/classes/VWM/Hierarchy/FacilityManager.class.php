@@ -4,6 +4,7 @@ namespace VWM\Hierarchy;
 
 use VWM\Hierarchy\Facility;
 
+
 class FacilityManager
 {
     /**
@@ -68,6 +69,7 @@ class FacilityManager
         
         return $facilityList;
     }
+    
 
 }
 ?>

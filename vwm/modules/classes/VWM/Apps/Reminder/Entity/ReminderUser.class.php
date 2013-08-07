@@ -3,6 +3,7 @@
 namespace VWM\Apps\Reminder\Entity;
 
 use VWM\Framework\Model;
+use VWM\Apps\Reminder\Manager\ReminderUserManager;
 
 class ReminderUser extends Model
 {
@@ -172,9 +173,18 @@ class ReminderUser extends Model
         return $this->getId();
     }
     
-    public function _delete()
+    public function delete()
     {
-        
+        $db = \VOCApp::getInstance()->getService('db');
+        if(is_null($this->getId())){
+            throw new Exception("Can not delete. Id can not be null");
+        }
+        $sql = "DELETE FROM ".self::TABLE_NAME." ".
+               "WHERE id={$db->sqltext($this->getId())}";
+        $db->query($sql);
+        $sql = "DELETE FROM " .ReminderUserManager::TABLE_NAME. " " .
+                "WHERE reminder_user_id = {$db->sqltext($this->getId())}";
+        $db->query($sql);
     }
 
 }
