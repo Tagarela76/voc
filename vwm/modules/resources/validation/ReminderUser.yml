@@ -1,0 +1,5 @@
+VWM\Apps\Reminder\Entity\ReminderUser:
+  properties:
+    email: 
+      - NotBlank: ~
+      - Email: ~

@@ -48,7 +48,58 @@
                         {/foreach}	
                 </td>
             </tr>
-
+			<tr>
+			<tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Date
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->getDate()|escape}'></div>												
+						{foreach from=$violationList item="violation"}
+							{if $violation->getPropertyPath() eq 'date' || $violation->getPropertyPath() eq 'CurrentDate'}							
+							{*ERROR*}					
+							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+							{*/ERROR*}						    
+							{/if}
+						{/foreach}	
+				</td>
+			</tr>
+			<tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Users
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+						<div id="usersList">{$usersList|escape} 
+							{foreach from=$user_id item="user"}
+								<input type='hidden' name='user_id[]' id='user_id[]' value="{$user}" />
+							{/foreach}	
+						</div>
+						<a href="#" onclick="reminderPage.manageReminders.openDialog();">edit</a>
+						{foreach from=$violationList item="violation"}
+							{if $violation->getPropertyPath() eq 'atLeastOneUserSelect'}							
+							{*ERROR*}					
+							<div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
+							{*/ERROR*}						    
+							{/if}
+						{/foreach}
+					</div>
+				</td>
+			</tr>
+            <tr>
+				<td class="border_users_l border_users_b" width="15%" height="20">
+					Users Emails
+				</td>
+				<td class="border_users_l border_users_b border_users_r">
+					<div align="left" style="float: left;">	
+						<div id="reminderUsersListContainer">
+							{$reminderUsersEmailList}
+						</div>
+                        <input type='hidden' name='reminderUsersIdsList' id='reminderUsersIdsList' value="{$reminderUsersIdsList}" />
+						<a href="#" onclick="reminderPage.manageReminderUsers.openDialog();">edit</a>
+					</div>												
+				</td>
+			</tr>
             <tr>
 				<td class="border_users_l border_users_b" width="15%" height="20">
                     Description
@@ -66,43 +117,6 @@
                     </div>												
 				</td>
 			</tr>
-            <tr>
-                <td class="border_users_l border_users_b" width="15%" height="20">
-                    Date
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left" style="float: left;">	<input type='text' name="date" id="reminderDate" class="calendarFocus" value='{$data->getDate()|escape}'></div>												
-                        {foreach from=$violationList item="violation"}
-                            {if $violation->getPropertyPath() eq 'date' || $violation->getPropertyPath() eq 'currentDate'}							
-                                {*ERROR*}					
-                            <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                                {*/ERROR*}						    
-                            {/if}
-                        {/foreach}	
-                </td>
-            </tr>
-            <tr>
-                <td class="border_users_l border_users_b" width="15%" height="20">
-                    Users
-                </td>
-                <td class="border_users_l border_users_b border_users_r">
-                    <div align="left" style="float: left;">	
-                        <div id="usersList">{$usersList|escape} 
-                            {foreach from=$user_id item="user"}
-                                <input type='hidden' name='user_id[]' id='user_id[]' value="{$user}" />
-                            {/foreach}	
-                        </div>
-                        <a href="#" onclick="reminderPage.manageReminders.openDialog();">edit</a>
-                        {foreach from=$violationList item="violation"}
-                            {if $violation->getPropertyPath() eq 'atLeastOneUserSelect'}							
-                                {*ERROR*}					
-                                <div class="error_img" style="float: left;"><span class="error_text">{$violation->getMessage()}</span></div>
-                                    {*/ERROR*}						    
-                                {/if}
-                            {/foreach}
-                    </div>												
-                </td>
-            </tr>
             <tr>
                 <td class="border_users_l border_users_b" width="15%" height="20">
                     Type
@@ -235,7 +249,8 @@
 
     </form>
 </div>
-<div id="setRemind2UserContainer" title="set remind to user" style="display:none;">Loading ...</div>	
+<div id="setRemind2UserContainer" title="set remind to user" style="display:none;">Loading ...</div>
+<div id="setRemind2ReminderUserContainer" title="set remind to reminder user" style="display:none;">Loading ...</div>
 {literal}
 	<script type="text/javascript">
 		$(document).ready(function(){      
