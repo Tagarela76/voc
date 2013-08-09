@@ -108,7 +108,16 @@ class MixOptimized extends Model
     const MIX_IS_INVALID = 'invalid';
     const MIX_IS_EXPIRED = 'expired';
     const MIX_IS_PREEXPIRED = 'preexpired';
+    
 
+    /**
+     *
+     * array of allowable unit types for mixes
+     * 
+     * @var string[] 
+     */
+    public static $MIX_ALLOWABLE_UNIT_CLASS_NAMES = array('USAWght', 'USALiquid');
+    
     public function __construct($db, $mix_id = null)
     {
         $this->db = $db;
