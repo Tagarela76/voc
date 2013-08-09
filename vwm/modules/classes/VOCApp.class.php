@@ -73,6 +73,7 @@ class VOCApp
             new VWM\Apps\Logger\LoggerApp(),
             new VWM\Apps\UnitType\UnitTypeApp(),
             new VWM\Apps\User\UserApp()
+
         );
     }
 

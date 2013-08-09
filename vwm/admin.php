@@ -23,7 +23,6 @@ $eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
 
 VOCApp::getInstance()->setDB($db);
 VOCApp::getInstance()->setEventDispatcher($eventDispatcher);
-
 //	deny access to system while updating jobs
 if (MAINTENANCE) {
 	$smarty->display('tpls:errors/maintenance.tpl');
