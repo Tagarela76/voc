@@ -54,8 +54,7 @@ class Department extends Model
 	const TB_TYPE = 'type';
 	const TB_UNITCLASS = 'unit_class';
 	const CATEGORY = 'department';
-
-
+    
 	/**
 	 * Constructor
 	 * @param \db $db
