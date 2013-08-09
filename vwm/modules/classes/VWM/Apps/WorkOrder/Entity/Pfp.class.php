@@ -3,6 +3,9 @@
 namespace VWM\Apps\WorkOrder\Entity;
 
 use VWM\Framework\Model;
+use VWM\Apps\WorkOrder\Subscriber\PfpSubscriber;
+use VWM\Apps\WorkOrder\Event\EventPfp;
+use VWM\Apps\Events\VWMLogbookEvents\PfpEvents;
 
 /**
  * Preformulated product
@@ -17,7 +20,22 @@ class Pfp extends Model
     public $is_proprietary = 0;
     public $products = null;
     protected $supplier_id;
- 
+    /**
+     *
+     * description in pfp for sorting pfps by letters
+     * 
+     * @var string 
+     */
+    protected $weight_letter_sort = null;
+    
+    /**
+     *
+     * number in pfp description for sorting pfps by number
+     * 
+     * @var int 
+     */
+    protected $weight_number_sort = null;
+ 	
     const TABLE_NAME = 'preformulated_products';
     const TABLE_PFP2COMPANY = 'pfp2company';
     const TABLE_PFP2PRODUCT = 'pfp2product';
@@ -90,7 +108,27 @@ class Pfp extends Model
 		$this->last_update_time = $last_update_time;
 	}
 
-    /**
+    public function getWeightLetterSort()
+    {
+        return $this->weight_letter_sort;
+    }
+
+    public function setWeightLetterSort($weightLetterSort)
+    {
+        $this->weight_letter_sort = $weightLetterSort;
+    }
+
+    public function getWeightNumberSort()
+    {
+        return $this->weight_number_sort;
+    }
+
+    public function setWeightNumberSort($weightNumberSort)
+    {
+        $this->weight_number_sort = $weightNumberSort;
+    }
+
+        /**
      * @return VWM\Apps\WorkOrder\Entity\PfpProduct[]
      */
 	public function getProducts()
@@ -150,6 +188,45 @@ class Pfp extends Model
         $this->supplier_id = $supplierId;
     }
 
+    /**
+     * 
+     * redefine save method
+     * 
+     * @return int
+     */
+    public function save()
+    {
+        $this->setLastUpdateTime(date(MYSQL_DATETIME_FORMAT));
+
+        $this->setSortColumns();
+        
+        if ($this->getId()) {
+            return $this->_update();
+        } else {
+            return $this->_insert();
+        }
+    }
+    
+    /**
+     * initialize $weight_letter_sort & $weight_number_sort fields
+     */
+    public function setSortColumns()
+    {
+        $pfpManager = \VOCApp::getInstance()->getService('pfp');
+        
+        $description = $this->getDescription();
+        
+        if($description == ''){
+            return false;
+        }
+        //get letter sort column
+        $weightLetterSort = $pfpManager->getWeightLetterFromPfpDescription($this);
+        //get number sort column
+        $weightNumberSort = $pfpManager->getWeightNumberFromPfpDescription($this);
+        
+        $this->setWeightLetterSort($weightLetterSort);
+        $this->setWeightNumberSort($weightNumberSort);
+    }
     
     protected function _insert()
     {
@@ -157,16 +234,20 @@ class Pfp extends Model
         $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$db->sqltext($this->getLastUpdateTime())}'" : "'NULL'";
         $supplierId = ($this->getSupplierId()) ? "'{$db->sqltext($this->getSupplierId())}'" : "'NULL'";
         $companyId = ($this->getCompanyId()) ? "'{$db->sqltext($this->getCompanyId())}'" : "'NULL'";
-
+        $weightLetterSort = !is_null($this->getWeightLetterSort()) ? "{$db->sqltext($this->getWeightLetterSort())}" : "NULL";
+        $weightNumberSort = !is_null($this->getWeightNumberSort()) ? "{$db->sqltext($this->getWeightNumberSort())}" : 0;
+        
         $sql = "INSERT INTO " . self::TABLE_NAME .
-                "(description, company_id, creater_id, last_update_time, supplier_id, is_proprietary" .
+                "(description, company_id, creater_id, last_update_time, supplier_id, is_proprietary, weight_letter_sort, weight_number_sort" .
                 ") VALUES (" .
                 "'{$db->sqltext($this->getDescription())}', " .
                 "{$companyId}, " .
                 "NULL, " .
                 "{$lastUpdateTime}, " .
                 "{$supplierId}, " .
-                "{$db->sqltext($this->getIsProprietary())})";
+                "{$db->sqltext($this->getIsProprietary())}, ".
+                "'{$db->sqltext($weightLetterSort)}', ".
+                "'{$db->sqltext($weightNumberSort)}')";
                 
         $response = $db->exec($sql);
         if ($response) {
@@ -192,11 +273,16 @@ class Pfp extends Model
         $lastUpdateTime = ($this->getLastUpdateTime()) ? "'{$db->sqltext($this->getLastUpdateTime())}'" : "'NULL'";
         $supplierId = ($this->getSupplierId()) ? "'{$db->sqltext($this->getSupplierId())}'" : "'NULL'";
         $companyId = ($this->getCompanyId()) ? "'{$db->sqltext($this->getCompanyId())}'" : "'NULL'";
+        $weightLetterSort = !is_null($this->getWeightLetterSort()) ? "{$db->sqltext($this->getWeightLetterSort())}" : "NULL";
+        $weightNumberSort = !is_null($this->getWeightNumberSort()) ? "{$db->sqltext($this->getWeightNumberSort())}" : 0;
         
         $sql = "UPDATE preformulated_products SET " .
                 "company_id = {$companyId}, " .
                 "is_proprietary = {$db->sqltext($this->getIsProprietary())}, " .
                 "last_update_time = {$lastUpdateTime}, " .
+                "weight_letter_sort = '{$weightLetterSort}', " .
+                "weight_number_sort = '{$weightNumberSort}', " .
+                "description = '{$db->sqltext($this->getDescription())}', " .
                 "supplier_id = {$supplierId} " .        
                 "WHERE id = {$db->sqltext($this->getId())}";
 
