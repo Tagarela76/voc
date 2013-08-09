@@ -249,7 +249,7 @@ class PfpTypes
             $query .= ") ";
         }
 
-        $query .= " ORDER BY pfp.description";
+        $query .= " ORDER BY pfp.weight_letter_sort, pfp.weight_number_sort";
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";
         }
