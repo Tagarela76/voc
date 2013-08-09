@@ -319,9 +319,9 @@ class Unittype
 
         $db = VOCApp::getInstance()->getService('db');
         $query = "SELECT * FROM " . TB_DEFAULT . " " .
-                "WHERE id_of_object=" . (int) $id . " " .
+                "WHERE id_of_object={$db->sqltext((int) $id)} " .
                 "AND subject='unittype'" . " " .
-                "AND object = '" . $category . "'";
+                "AND object = '{$db->sqltext($category)}'";
 
         $db->query($query);
         
