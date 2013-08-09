@@ -70,6 +70,7 @@ class PfpManager extends Manager
     /**
      * Find all allowed pfps. Allowed Pfp is that Pfp which is open to use for
      * company. Company should assign it to department to let department use it
+     * 
      * @param bool $isAvailable
      * @param \Pagination $pagination
      * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
@@ -88,7 +89,7 @@ class PfpManager extends Manager
                 $this->applyJoin() . " " .
                 $this->applyWhere($queryFilter) . " GROUP BY pfp.id";
         if (isset($pagination)) {
-            $query .= " ORDER BY pfp.description LIMIT " . $pagination->getLimit() . " " .
+            $query .= " ORDER BY pfp.weight_letter_sort, pfp.weight_number_sort	LIMIT " . $pagination->getLimit() . " " .
                     "OFFSET " . $pagination->getOffset() . "";
         }
 
@@ -378,4 +379,57 @@ class PfpManager extends Manager
 		$query_unavailable = "UPDATE ".TB_PFP2COMPANY." SET is_available = 0, is_assigned = 0 WHERE pfp_id = ".$pfpID." AND company_id = ".$companyID;
 		$db->query($query_unavailable);
 	}
+    
+    /**
+     * 
+     * get all pfp from  preformulated_products table
+     * 
+     * @return \VWM\Apps\WorkOrder\Entity\Pfp[]
+     */
+    public function getAllPfp()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $pfps = array();
+        $query = "SELECT * FROM ".Pfp::TABLE_NAME;
+        $db->query($query);
+        $rows = $db->fetch_all_array();
+        foreach($rows as $row){
+            $pfp = new Pfp();
+            $pfp->initByArray($row);
+            $pfps[] = $pfp;
+        }
+        return $pfps;
+    }
+    
+    /**
+     * 
+     * get number from pfp description
+     * 
+     * @param VWM\Apps\WorkOrder\Entity\Pfp[] $pfp
+     * 
+     * @return int
+     */
+    public function getWeightNumberFromPfpDescription($pfp)
+    {
+        $description = $pfp->getDescription();
+        $pattern = '/\d{1,}/';
+        $result = preg_match($pattern, $description, $number);
+        return $number[0];
+    }
+    
+    /**
+     * 
+     * get strinf before number from pfp description
+     * 
+     * @param VWM\Apps\WorkOrder\Entity\Pfp[] $pfp
+     * 
+     * @return string
+     */
+    public function getWeightLetterFromPfpDescription($pfp)
+    {
+        $description = $pfp->getDescription();
+        $pattern = '/^(\D*)/';
+        $result = preg_match($pattern, $description, $letter);
+        return $letter[0];
+    }
 }
