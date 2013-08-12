@@ -316,7 +316,7 @@ class CReminder extends Controller
             if ($reminderUser->getUserId() != 0) {
                 $userDetails = $user->getUserDetails($reminderUser->getUserId());
                 $usersName[] = $userDetails['username'];
-                $mobile = $userDetails['username'];
+                $mobile = $userDetails['mobile'];
                 $userName = $userDetails['username'];
             } else {
                 $mobile = '-';

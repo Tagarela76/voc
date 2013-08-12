@@ -43,7 +43,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user->getPhone()|escape}
+                        &nbsp; {$user->getPhone()|phone_format|escape}
                     </div>
                 </td>
             </tr>
@@ -53,7 +53,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user->getMobile()|escape}
+                        &nbsp; {$user->getMobile()|phone_format|escape}
                     </div>
                 </td>
             </tr>
