@@ -92,7 +92,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.phone|escape}
+                    &nbsp;{$company.phone|phone_format|escape}
                 </div>
             </td>
         </tr>

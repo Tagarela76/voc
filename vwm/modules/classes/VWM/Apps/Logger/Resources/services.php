@@ -30,7 +30,7 @@ return array(
         return $log;
     },
     'reminderLogger'=> function($c) {
-        $log = new \VWM\Apps\Logger\Logger('error logger');
+        $log = new \VWM\Apps\Logger\Logger('send reminder logger');
         $dir = dirname(__FILE__) . '/../../../../../../tmp/logs/';
         if (!file_exists($dir)) {
             mkdir($dir);

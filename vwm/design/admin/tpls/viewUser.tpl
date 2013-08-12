@@ -26,7 +26,7 @@
 								User ID
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >&nbsp;{$user.user_id}</div>
+								<div align="left" >&nbsp;{$user.user_id|escape}</div>
 							
 								
 							</td>
@@ -37,7 +37,7 @@
 								Accessname*
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.accessname}</div>						
+								<div align="left" >	&nbsp;{$user.accessname|escape}</div>						
 							</td>
 						</tr>												
 						
@@ -46,7 +46,7 @@
 								Username**
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.username}</div>						
+								<div align="left" >	&nbsp;{$user.username|escape}</div>						
 							</td>
 						</tr>
 							
@@ -55,7 +55,7 @@
 								Phone
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.phone}</div>						
+								<div align="left" >	&nbsp;{$user.phone|phone_format|escape}</div>						
 							</td>
 						</tr>
 						
@@ -64,7 +64,7 @@
 								Mobile
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.mobile}</div>						
+								<div align="left" >	&nbsp;{$user.mobile|phone_format|escape}</div>						
 							</td>
 						</tr>					
 						
@@ -73,7 +73,7 @@
 								E-mail
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.email}</div>						
+								<div align="left" >	&nbsp;{$user.email|escape}</div>						
 							</td>
 						</tr>
 						
@@ -82,7 +82,7 @@
 								Access level
 							</td>
 							<td class="border_users_l border_users_b border_users_r">
-								<div align="left" >	&nbsp;{$user.accesslevel_id}</div>						
+								<div align="left" >	&nbsp;{$user.accesslevel_id|escape}</div>						
 							</td>
 						</tr>																														
 						

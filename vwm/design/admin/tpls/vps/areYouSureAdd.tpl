@@ -74,7 +74,7 @@
 					</tr>
 					<tr height="20" class="hov_company">
 						<td class="border_users_l border_users_b border_users_r">
-							MSDS Default Limit 
+							SDS Default Limit 
 						</td>						
 						<td class="border_users_r border_users_b">
 							{$newPlan.MSDSDefaultLimit}
@@ -83,7 +83,7 @@
 					</tr>															
 					<tr height="20" class="hov_company">
 						<td class="border_users_l border_users_b border_users_r">
-							Extra MSDS Cost 
+							Extra SDS Cost 
 						</td>						
 						<td class="border_users_r border_users_b">
 							$ {$newPlan.MSDSIncreaseCost}

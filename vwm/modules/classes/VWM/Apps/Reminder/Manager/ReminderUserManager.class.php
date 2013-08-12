@@ -289,7 +289,7 @@ class ReminderUserManager
     {
         $db = \VOCApp::getInstance()->getService('db');
         $reminderUserList = array();
-        $sql = "SELECT * FROM " . ReminderUser::TABLE_NAME . " ru " .
+        $sql = "SELECT ru.id, ru.user_id, ru.email, ru.facility_id FROM " . ReminderUser::TABLE_NAME . " ru " .
                 "RIGHT JOIN ".ReminderUserManager::TABLE_NAME." r2ru ".
                 "ON ru.id = reminder_user_id ".
                 "WHERE ru.facility_id={$db->sqltext($facilityId)} GROUP BY ru.id";
