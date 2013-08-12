@@ -4,6 +4,7 @@ namespace VWM\Hierarchy;
 
 use VWM\Hierarchy\Facility;
 
+
 class FacilityManager
 {
     /**
@@ -43,6 +44,32 @@ class FacilityManager
 
         return $facilityList;
     }
+    
+    /**
+     * 
+     * get all facility List
+     * 
+     * @return \VWM\Hierarchy\Facility[]
+     */
+    public function getAllFacilityList()
+    {
+        $db = \VOCApp::getInstance()->getService('db');
+        $facilityList = array();
+        
+        $sql = "SELECT * FROM ".Facility::TABLE_NAME;
+        
+        $db->query($sql);
+        $rows = $db->fetch_all_array();
+        
+        foreach ($rows as $row){
+            $facility = new Facility();
+            $facility->initByArray($row);
+            $facilityList[] = $facility;
+        }
+        
+        return $facilityList;
+    }
+    
 
 }
 ?>

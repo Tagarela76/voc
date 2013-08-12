@@ -17,9 +17,9 @@
         <td valign="top" class="report_uploader_c_msds">
             {*shadow_table*}
             <center>
-                <h1><b>MSDS UPLOADER</b></h1>
+                <h1><b>SDS UPLOADER</b></h1>
             </center>
-            MSDS sheets will be assigned to products by name. Sample: "17-033-A.pdf" = product 17-033-A. 
+            SDS sheets will be assigned to products by name. Sample: "17-033-A.pdf" = product 17-033-A. 
             <form name="form" enctype="multipart/form-data" action="?action=msdsUploaderBasic&itemID={$request.category}&id={$request.id}" method="post">
                 <input type="hidden" name="MAX_FILE_SIZE" value="52430000" />
                 <table>

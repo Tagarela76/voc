@@ -927,13 +927,13 @@ class PFPManager
             $searchSql = array();
             $query .= " AND ( ";
             foreach ($this->searchCriteria as $pfp) {
-                $searchSql[] = " description LIKE ('%" . $this->db->sqltext($pfp) . "%')";
+                $searchSql[] = " pfp.description LIKE ('%" . $this->db->sqltext($pfp) . "%')";
             }
             $query .= implode(' OR ', $searchSql);
             $query .= ") ";
         }
 
-        $query .= " GROUP BY pfp.id ORDER BY description";
+        $query .= " GROUP BY pfp.id ORDER BY pfp.weight_letter_sort, pfp.weight_number_sort";
 
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";

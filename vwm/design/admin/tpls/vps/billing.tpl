@@ -274,7 +274,7 @@
 			<td></td>		
 				{section name=i loop=2}
 					<td colspan="2">											
-						Extra MSDS						
+						Extra SDS						
 					</td>
 					<td colspan="2" style="border-right:0px solid #fff;">											
 						Extra memory						
@@ -388,8 +388,8 @@
 				<td>ONE TIME SETUP CHARGE</td>
 				<td>COST</td>
 				<td>TYPE</td>
-				<td>MSDS LIMIT</td>
-				<td>EXTRA MSDS COST</td>
+				<td>SDS LIMIT</td>
+				<td>EXTRA SDS COST</td>
 				<td>MEMORY LIMIT</td>
 				<td>EXTRA MEMORY COST</td>
 			</tr>

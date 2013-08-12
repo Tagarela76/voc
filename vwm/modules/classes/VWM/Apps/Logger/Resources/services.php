@@ -28,5 +28,19 @@ return array(
         }
         $log->pushHandler(new Monolog\Handler\StreamHandler($dir.'error_logger.log', \VWM\Apps\Logger\Logger::DEBUG));
         return $log;
+    },
+    'reminderLogger'=> function($c) {
+        $log = new \VWM\Apps\Logger\Logger('send reminder logger');
+        $dir = dirname(__FILE__) . '/../../../../../../tmp/logs/';
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        if (!file_exists($dir.'reminder_logger.log')) {
+            $fp = fopen($dir.'reminder_logger.log', "a+");
+            fclose($fp);
+            chmod($dir.'error_logger.log', 0777);
+        }
+        $log->pushHandler(new Monolog\Handler\StreamHandler($dir.'reminder_logger.log', \VWM\Apps\Logger\Logger::DEBUG));
+        return $log;
     }
 );

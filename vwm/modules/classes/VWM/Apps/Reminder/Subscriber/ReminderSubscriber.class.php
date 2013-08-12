@@ -5,6 +5,8 @@ namespace VWM\Apps\Reminder\Subscriber;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use VWM\Apps\Reminder\VWMReminderEvents\ReminderEvents;
+use VWM\Apps\Reminder\Event\EventReminderUser; 
+use VWM\Apps\User\VWMUserEvents\UserEvents;
 
 use VWM\Apps\Reminder\Entity\Reminder;
 
@@ -67,6 +69,31 @@ class ReminderSubscriber implements EventSubscriberInterface
 
     }
     
+    /**
+     * 
+     * add reminder User
+     * 
+     * @param \VWM\Apps\Reminder\Event\EventReminderUser $event
+     */
+    public function addReminderUser(EventReminderUser $event)
+    {
+        $reminderUser = $event->getReminderUser();
+        $reminderUser->save();
+    }
+    
+    /**
+     * 
+     * delete reminder User
+     * 
+     * @param \VWM\Apps\Reminder\Event\EventReminderUser $event
+     */
+    public function deleteReminderUser(EventReminderUser $event)
+    {
+        $reminderUser = $event->getReminderUser();
+        $reminderUser->delete();
+    }
+
+
     public static function getSubscribedEvents()
     {
         return array(
@@ -76,6 +103,12 @@ class ReminderSubscriber implements EventSubscriberInterface
             ReminderEvents::BEFOREHAND_REMINDER_SENT => array(
                 array('setNextBeforeReminderTime'),
             ),
+            UserEvents::SAVE_USER => array(
+                array('addReminderUser')
+            ),
+            UserEvents::DELETE_USER => array(
+                array('deleteReminderUser')
+            )
         );
     }
 

@@ -1258,7 +1258,7 @@ function ManageUnittype() {
 		var that = this;
 		$.ajax({
 			url: "?action=loadUnitType",
-			data: {facilityId: categoryUnittype.Id,
+			data: {categoryId: categoryUnittype.Id,
 				   category: categoryUnittype.category},
 			type: "POST",
 			dataType: "html",

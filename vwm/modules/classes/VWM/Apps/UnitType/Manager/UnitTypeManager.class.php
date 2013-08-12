@@ -74,7 +74,6 @@ class UnitTypeManager
      */
     public function getUnitTypeListByUnitClass($unitClass, $unitTypeList = null)
     {
-
         $unitTypes = array();
 
         if (is_null($unitClass)) {

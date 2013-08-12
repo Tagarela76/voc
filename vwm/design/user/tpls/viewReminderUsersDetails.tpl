@@ -13,7 +13,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp;{$user.user_id|escape} 
+                        &nbsp;{$user->getUserId()|escape} 
                     </div>
                 </td>
             </tr>
@@ -23,7 +23,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user.username|escape}
+                        &nbsp; {$user->getUserName()|escape}
                     </div>
                 </td>
             </tr>
@@ -33,7 +33,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user.email|escape}
+                        &nbsp; {$user->getEmail()|escape}
                     </div>
                 </td>
             </tr>
@@ -43,7 +43,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user.phone|escape}
+                        &nbsp; {$user->getPhone()|phone_format|escape}
                     </div>
                 </td>
             </tr>
@@ -53,7 +53,7 @@
                 </td>
                 <td class="border_users_l border_users_b border_users_r">
                     <div align="left">
-                        &nbsp; {$user.mobile|escape}
+                        &nbsp; {$user->getMobile()|phone_format|escape}
                     </div>
                 </td>
             </tr>
@@ -165,7 +165,7 @@
 
             {*BEGIN	EMPTY LIST*}
             <tr>
-                <td colspan="3"class="border_users_l border_users_r" align="center">
+                <td colspan="6"class="border_users_l border_users_r" align="center">
                     No reminders in the list
                 </td>
             </tr>

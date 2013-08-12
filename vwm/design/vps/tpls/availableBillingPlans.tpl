@@ -187,13 +187,13 @@
 	<br>
 	<table border="0" width="100%" cellspacing="0" cellpadding="5" >
 		<tr bgcolor="#ffffff">
-			<td align="center"><b>Note!</b> {$billingPlan.limits.MSDS.increase_step} {$billingPlan.limits.MSDS.unit_type} Extra MSDS price: {$currentCurrency.sign} {$billingPlan.limits.MSDS.increase_cost}</td>
+			<td align="center"><b>Note!</b> {$billingPlan.limits.MSDS.increase_step} {$billingPlan.limits.MSDS.unit_type} Extra SDS price: {$currentCurrency.sign} {$billingPlan.limits.MSDS.increase_cost}</td>
 			<td align="center"><b>Note!</b> {$billingPlan.limits.memory.increase_step} {$billingPlan.limits.memory.unit_type} Extra Memory Storage price: {$currentCurrency.sign} {$billingPlan.limits.memory.increase_cost}</td>
 		</tr>		
 		<tr class="billingPlans">
 			<td width="50%" align="center" class="billingPlans_bot" style="border-left:1px solid #fff;">				
 				<form action="vps.php" method="get">
-					Extra MSDS input 
+					Extra SDS input 
 					<select name="plusTo">						
 						{section name=i loop=$list.MSDS}
 							<option value="{$list.MSDS[i]}">+{$list.MSDS[i]} {$billingPlan.limits.MSDS.unit_type}</option>

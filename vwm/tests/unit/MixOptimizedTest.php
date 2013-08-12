@@ -1,13 +1,24 @@
 <?php
 
 use VWM\Framework\Test as Testing;
+use VWM\Apps\Process\ProcessTemplate;
 
-
-class MixOptimizedTest extends Testing\DbTestCase {
+class MixOptimizedTest extends Testing\DbTestCase
+{
 
 	protected $fixtures = array(
-		TB_TYPE, TB_UNITTYPE, TB_DEPARTMENT, TB_SUPPLIER, TB_PRODUCT, TB_WORK_ORDER, TB_USAGE,
-		TB_MIXGROUP, 'price4product'
+		TB_TYPE,
+        TB_UNITTYPE,
+        TB_COMPANY,
+        TB_FACILITY,
+        TB_DEPARTMENT,
+        TB_SUPPLIER,
+        TB_PRODUCT,
+        ProcessTemplate::TABLE_NAME,
+        TB_WORK_ORDER,
+        TB_USAGE,
+		TB_MIXGROUP,
+        'price4product'
 	);
 
 
@@ -15,18 +26,18 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		//	--UPDATE--
 		$mixID = 1;
 		$mix = new MixOptimized($this->db, $mixID);
-  
+
 		$mix->description = "WO12-020220-UPDATED";
 		$mix->spent_time = 120;
 		$this->assertEquals($mixID, $mix->save(false));
 
-		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID)); 
+		$wo12Mix = Phactory::get(TB_USAGE, array('mix_id'=>$mixID));
 		$this->assertEquals($wo12Mix->description, $mix->description);
 		$this->assertEquals($mix->spent_time, $wo12Mix->spent_time);
 
 		//	did we lost products?
 		$this->assertTrue(count($mix->products) == 2);
-		
+
 		$this->assertTrue($mix->products[0] instanceof MixProduct);
 		$this->assertTrue($mix->products[0]->product_nr == '470C0191');
 
@@ -110,7 +121,7 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$mix->products[] = $badMixProduct;
 		$this->assertTrue($mix->doesProductsHaveDuplications() === true);
 	}
-	
+
 	public function testGetMixPrice() {
 		$mixID = '1';
 		$mixOptimized = new MixOptimized($this->db, $mixID);
@@ -118,20 +129,20 @@ class MixOptimizedTest extends Testing\DbTestCase {
 		$this->assertTrue(!is_null($mixPrice));
 		$this->assertTrue($mixPrice == 195.74);
 	}
-	
-	
+
+
 	public function testGetRepairOrder() {
 		$mixId = 1;
 		$mix = new MixOptimized($this->db, $mixId);
 		$wo = $mix->getRepairOrder();
 		$this->assertInstanceOf('RepairOrder', $wo);
 		$this->assertEquals('joh smith', $wo->customer_name);
-		
+
 		$mixIdWithoutWo = 7;
 		$mixWithoutWo = new MixOptimized($this->db, $mixIdWithoutWo);
 		$false = $mixWithoutWo->getRepairOrder();
 		$this->assertFalse($false);
-		
+
 	}
 
 }

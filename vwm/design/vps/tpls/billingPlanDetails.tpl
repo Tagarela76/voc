@@ -221,7 +221,7 @@ Also you have:
 			<table border="0" align="center" width="440px" class="dashboard" cellspacing="0">
 				<tr>
 					<td class="pcenter">
-						MSDS Count Limit:
+						SDS Count Limit:
 					</td>
 					<td class="pcenter">
 						{$billingPlan.limits.MSDS.max_value}

@@ -42,7 +42,7 @@
                     <td  class="border_users_r border_users_b">
                         <a href="{$category[i].url}" >
                             <div style="width:100%;">
-                                {$category[i].id}
+                                {$category[i].id|escape}
                             </div >
                         </a>
                     </td>
@@ -50,7 +50,7 @@
                     <td class="border_users_r border_users_b">
                         <a href="{$category[i].url}">
                             <div style="width:300px;">
-                                {$category[i].name}	
+                                {$category[i].name|escape}	
                             </div >
                         </a>
                     </td>
@@ -58,7 +58,7 @@
                     <td  class="border_users_r border_users_b">
                         <a href="{$category[i].url}" >
                             <div style="width:300px;">
-                                {$category[i].address}	
+                                {$category[i].address|escape}	
                             </div >
                         </a>
                     </td>
@@ -66,14 +66,14 @@
                     <td  class="border_users_r border_users_b">
                         <a href="{$category[i].url}" >
                             <div style="width:300px;">
-                                {$category[i].contact}	
+                                {$category[i].contact|escape}	
                             </div >
                         </a>
                     </td>
                     <td  class="border_users_r border_users_b">
                         <a href="{$category[i].url}" >
                             <div style="width:100%;">
-                                {$category[i].phone}	
+                                {$category[i].phone|phone_format|escape}	
                             </div >
                         </a>
                     </td>

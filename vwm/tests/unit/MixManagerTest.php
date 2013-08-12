@@ -1,11 +1,18 @@
 <?php
 
 use VWM\Framework\Test as Testing;
+use VWM\Apps\Process\ProcessTemplate;
 
-class MixManagerTest extends Testing\DbTestCase {
+class MixManagerTest extends Testing\DbTestCase
+{
 
 	protected $fixtures = array(
-		TB_COMPANY, TB_FACILITY, TB_DEPARTMENT, TB_WORK_ORDER, TB_USAGE, TB_WO2DEPARTMENT
+		TB_COMPANY,
+        TB_FACILITY,
+        TB_DEPARTMENT,
+        ProcessTemplate::TABLE_NAME,
+        TB_WORK_ORDER,
+        TB_USAGE, TB_WO2DEPARTMENT
 	);
 
 	public function testCountMixes() {
@@ -93,16 +100,16 @@ class MixManagerTest extends Testing\DbTestCase {
 		$sql = "SELECT * FROM ".TB_USAGE.
 			" WHERE `department_id` =".$departmentId.
 			" OR  `wo_id` IN (SELECT  `wo_id` FROM " .TB_WO2DEPARTMENT ." WHERE `department_id` =".$departmentId.")";
-		
+
 		$this->db->query($sql);
 		$expectedMixList = $this->db->fetch_all_array();
-		
+
 		$mixManager = new MixManager($this->db);
 		$mixList = $mixManager->getMixListInDepartment($departmentId);
-		
+
 		$this->assertEquals(count($mixList), count($expectedMixList));
 		$this->assertEquals($mixList[0]['mix_id'], $expectedMixList[0]['mix_id']);
-		
+
 	}
 
 }

@@ -71,7 +71,9 @@ class VOCApp
             new VWM\Apps\Logbook\LogbookApp(),
             new VWM\Apps\Reminder\ReminderApp(),
             new VWM\Apps\Logger\LoggerApp(),
-            new \VWM\Apps\UnitType\UnitTypeApp()
+            new VWM\Apps\UnitType\UnitTypeApp(),
+            new VWM\Apps\User\UserApp()
+
         );
     }
 
