@@ -23,7 +23,7 @@
                 <table>
 					<tr>
 						<td>
-							<input type="radio" name="fileType[]" value="msds" checked onclick="$('#typeOfFile').html('MSDS');"/>&nbsp;MSDS File<br/>
+							<input type="radio" name="fileType[]" value="msds" checked onclick="$('#typeOfFile').html('MSDS');"/>&nbsp;SDS File<br/>
 						</td>
 						<td>
 							<input type="radio" name="fileType[]" value="techsheet" onclick="$('#typeOfFile').html('TECH SHEET');"/>&nbsp;Tech Sheet File<br/>

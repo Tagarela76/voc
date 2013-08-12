@@ -219,7 +219,7 @@ class Mix extends MixProperties {
 		$this->db->query($query);
 
 		$usageDetails = $this->db->fetch_array(0);
-		//var_dump($usageDetails,$query);
+		
 		$usageDetails['creationTime'] = date('m-d-Y', $usageDetails['creationTime']);//strtotime($usageDetails['creationTime']));
 
 
@@ -479,7 +479,7 @@ class Mix extends MixProperties {
 			case "mix_id":
 			default:
 				$usageData = $this->getMixDetails($id);
-				//var_Dump($usageData);
+				
 				$date = new DateTime();
 
 				$date->setTimestamp($usageData['creation_time']);

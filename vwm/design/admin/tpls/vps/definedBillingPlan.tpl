@@ -140,7 +140,7 @@
 		</tr>
 		<tr>
 			<td class="DefinedBillingPlanDetails_vps_td">
-				MSDS Default Limit
+				SDS Default Limit
 			</td>
 			<td>				
 				<input type="text" name="MSDSDefaultLimit" value="{$definedPlans.0.limits.MSDS.default_limit}"> {$definedPlans.0.MSDS.memory.unit_type}
@@ -154,7 +154,7 @@
 		</tr>
 		<tr>
 			<td class="DefinedBillingPlanDetails_vps_td">
-				Extra MSDS Cost ({$curentCurrency.sign})
+				Extra SDS Cost ({$curentCurrency.sign})
 			</td>
 			<td>				
 				<input type="text" name="MSDSIncreaseCost" value="{$definedPlans.0.limits.MSDS.increase_cost}">

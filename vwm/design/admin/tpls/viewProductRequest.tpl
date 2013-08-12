@@ -58,7 +58,7 @@
 
 			<tr>
 				<td class="border_users_l border_users_b" height="20">
-					MSDS File:
+					SDS File:
 				</td>
 				<td class="border_users_l border_users_r border_users_b">
 					{assign var=msds value=$productRequest->getMsds()}

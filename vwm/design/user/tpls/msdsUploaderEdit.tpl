@@ -1,6 +1,6 @@
 <div align="center" class="padd7">
     Assign product <b>{$productDetails.product_nr}</b>
-    to MSDS sheet:
+    to SDS sheet:
 </div>
 	
 {*PAGINATION*}
@@ -27,12 +27,12 @@
             </td>
         </tr>
         {if !$unlinkedMsdsSheets}
-        {* NO FREE MSDS SHEETS *}
+        {* NO FREE SDS SHEETS *}
         <tr class="">
             <td colspan="5" class="border_users_l border_users_r middle" align="center" height="100">
-                There are no unassigned MSDS sheets at VOC WEB MANAGER.
+                There are no unassigned SDS sheets at VOC WEB MANAGER.
                 <br>
-                To upload new MSDS sheets go to <a href="?action=msdsUploader&step=main&itemID=equipment&id={$id}">MSDS Uploader.</a>
+                To upload new SDS sheets go to <a href="?action=msdsUploader&step=main&itemID=equipment&id={$id}">SDS Uploader.</a>
             </td>
         </tr>
         {else}

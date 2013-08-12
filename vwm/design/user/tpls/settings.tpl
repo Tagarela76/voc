@@ -44,12 +44,12 @@
                 <tr>
                     <td>
                         {if $permissions.company.view}{*<a style="color: black" href="?action=msdsUploader&step=main&itemID={$itemID}&id={$id}"><h2>MSDS Uploader</h2></a>*}
-						<a style="color: black" href="?action=msdsUploader&step=main&itemID={$request.category}&id={$request.id}"><h2>MSDS Uploader</h2></a>
-                        {else}<h2>MSDS Uploader (no permissions)</h2>
+						<a style="color: black" href="?action=msdsUploader&step=main&itemID={$request.category}&id={$request.id}"><h2>SDS Uploader</h2></a>
+                        {else}<h2>SDS Uploader (no permissions)</h2>
                         {/if}
                     </td>
                     <td>
-                        Uploads MSDS sheets to VOC WEB MANAGER and assigns them to products.
+                        Uploads SDS sheets to VOC WEB MANAGER and assigns them to products.
                     </td>
                 </tr>
                 <tr>
