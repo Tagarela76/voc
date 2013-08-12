@@ -163,7 +163,7 @@ class RproductQuants extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("MSDS Submittal")
+			$doc->createTextNode("SDS Submittal")
 		);
 		$page->appendChild( $title );
 
