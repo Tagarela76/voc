@@ -132,7 +132,7 @@
             </td>
             <td class="border_users_l border_users_b border_users_r">
                 <div align="left">
-                    &nbsp;{$facility.phone|escape}
+                    &nbsp;{$facility.phone|phone_format|escape}
                 </div>
             </td>
         </tr>

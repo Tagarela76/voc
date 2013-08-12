@@ -53,7 +53,7 @@
 		</tr>
 		<tr>
 			<td>
-				MSDS Limit
+				SDS Limit
 			</td>
 			<td>				
 				<input type="text" name="MSDSDefaultLimit" value="{$request.MSDSDefaultLimit}">

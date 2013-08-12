@@ -54,7 +54,7 @@
                 </td>
                 <td class="border_users_b border_users_r">
                     <a href="?action=viewItemDetails&category=reminderUsers&reminderUserId={$user.reminderUserId|escape}&facilityId={$facilityId|escape}">
-                        {$user.mobile|escape}
+                        {$user.mobile|phone_format|escape}
                     </a>
                 </td>
             </tr>

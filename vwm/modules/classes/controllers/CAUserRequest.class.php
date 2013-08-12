@@ -56,7 +56,7 @@ class CAUserRequest extends Controller {
 				$requests['change'][] = $row;
 			}
 		}
-		//var_dump($requests); die();
+		
 		$this->smarty->assign('doNotShowControls', true);
 		$this->smarty->assign('requests' ,$requests);
 		$this->smarty->assign('tpl', 'tpls/userRequest.tpl');

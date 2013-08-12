@@ -141,7 +141,7 @@
 			</tr>
 					<tr height="20" class="hov_company">
 						<td class="border_users_l border_users_b border_users_r">
-							MSDS Count Limit
+							SDS Count Limit
 						</td>
 						<td class="border_users_r border_users_b">
 							 {$from.limits.MSDS.max_value} {$from.limits.MSDS.unit_type}

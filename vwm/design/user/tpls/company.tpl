@@ -56,7 +56,7 @@
 					<td class="border_users_b border_users_l">
 						<a {if $permissions.viewItem}href="{$facility.url}"{/if}>
 							<div style="width:100%;">
-								{$facility.address|escape},&nbsp;{$facility.contact|escape}&nbsp({$facility.phone|escape})
+								{$facility.address|escape},&nbsp;{$facility.contact|escape}&nbsp({$facility.phone|phone_format|escape})
 							</div>
 						</a>
 					</td>

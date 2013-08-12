@@ -57,7 +57,7 @@ class bulkUploader4GOM {
 				}
 			}
 		}
-		//var_dump($actionLog);
+		
 
 		$actionLog .= "--------------------------------\n";
 		$actionLog .= "(" . date("m.d.Y H:i:s") . ") Uploading of " . $input['realFileName'] . " is successfuly finished.\n";

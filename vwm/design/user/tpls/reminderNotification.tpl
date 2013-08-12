@@ -4,7 +4,7 @@
     </div>
     <div style="margin: 20px 0 0 0;">
         <div>
-            A friendly reminder from your friends at Gyant compliance:
+            A friendly reminder from your friends at Gyant Compliance:
         </div>
         <div style="margin: 10px 0 10px 0;">
             Reminder: <b>{$reminder->getName()|escape}</b><br>

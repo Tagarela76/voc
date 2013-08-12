@@ -1066,7 +1066,7 @@ class CLogbook extends Controller
         extract($vars);
         
         $facilityId = $facilityDetails['facility_id'];
-
+        $lbManager = VOCApp::getInstance()->getService('logbook');
         //check for facility_id
         if (is_null($facilityId)) {
             throw new Exception('404');
@@ -1077,6 +1077,14 @@ class CLogbook extends Controller
             $tab = 'logbook';
         }
 
+        //check if user has pending logbooks
+        $countLogbookPendingRecordListByFacilityId = $lbManager->getCountLogbookPendingRecordListByFacilityId($facilityId);
+        if($countLogbookPendingRecordListByFacilityId!=0){
+            $this->smarty->assign('hasPending',1);
+        }else{
+            $this->smarty->assign('hasPending',0);
+        }
+        
         switch ($tab) {
             case 'logbook':
                 $this->viewLogbookList($facilityId);
@@ -1091,7 +1099,7 @@ class CLogbook extends Controller
                 $this->viewLogbookCustomDescriptionList($facilityId);
                 break;
             case 'logbookPendingRecord':
-                $this->viewLogbookPendingRecordList($facilityId);
+                $this->viewLogbookPendingRecordList($facilityId, $countLogbookPendingRecordListByFacilityId);
                 break;
             case 'logbookRecurring':
                 $this->viewLogbookRecurringList($facilityId);
@@ -1100,7 +1108,7 @@ class CLogbook extends Controller
                 throw new Exception('tab is not exist');
                 break;
         }
-
+        
         $jsSources = array(
             'modules/js/autocomplete/jquery.autocomplete.js',
             'modules/js/checkBoxes.js',
@@ -1112,15 +1120,13 @@ class CLogbook extends Controller
         $this->smarty->assign('tab', $tab);
     }
 
-    protected function viewLogbookPendingRecordList($facilityId)
+    protected function viewLogbookPendingRecordList($facilityId, $countLogbookPendingRecordListByFacilityId)
     {
         $lbManager = VOCApp::getInstance()->getService('logbook');
         
         $logbookPeriodicity = $lbManager->getLogbookPeriodicityList();
         $dataChain = new TypeChain(null, 'date', $this->db, $facilityId, 'facility');
         $timeFormat = $dataChain->getFromTypeController('getFormat');
-        
-        $countLogbookPendingRecordListByFacilityId = $lbManager->getCountLogbookPendingRecordListByFacilityId($facilityId);
         
         $url = "?" . $_SERVER["QUERY_STRING"];
         $url = preg_replace("/\&page=\d*/", "", $url);
