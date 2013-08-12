@@ -79,7 +79,7 @@
 				{if $request.action != 'addItem' && $request.action != 'deleteItem'}
 					<i>{$address|escape}</i>
 					<br>
-					<i>{$contact|escape}&nbsp;( {$phone|escape} )</i>
+					<i>{$contact|escape}&nbsp;( {$phone|phone_format|escape} )</i>
 					<br>
 				{/if}
             {/if}
