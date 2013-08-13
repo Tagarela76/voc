@@ -622,7 +622,8 @@ function Gauges() {
         $.ajax({
             url: "?action=getGaugeUnitTypeList&category=logbook",
             data: {
-                gaugeType: gaugeType
+                gaugeType: gaugeType,
+                facilityId:facilityId
             },
             type: "POST",
             dataType: 'html',
