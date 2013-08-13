@@ -249,6 +249,12 @@ class UnitTypeManager
                     }
                     $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::YEARLY);
                     break;
+                case Reminder::EVERY5YEAR:
+                    if (!in_array("'year'", $unitTypes)) {
+                        $unitTypes[] = "'year'";
+                    }
+                    $unitTypes = $this->getUnitTypesByPeriodicity($unitTypes, Reminder::YEARLY);
+                    break;
                 default :
                     throw new \Exception('no such periodicity');
                     break;

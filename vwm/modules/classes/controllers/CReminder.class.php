@@ -20,7 +20,7 @@ class CReminder extends Controller
      * @vars $vars array of variables: $facility, $facilityDetails, $moduleMap
      */
     protected function bookmarkReminder($vars)
-    {
+    {   
         extract($vars);
         if (is_null($facilityDetails['facility_id'])) {
             throw new Exception('404');
