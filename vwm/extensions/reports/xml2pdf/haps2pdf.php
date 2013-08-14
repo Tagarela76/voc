@@ -322,7 +322,6 @@ class XML2PDF extends PDF_MC_Table
 
     function Header()
     {
-
         if (isset($this->header["CATEGORYNAME"])) {
             //write title
             $this->SetX(-15);
@@ -334,77 +333,73 @@ class XML2PDF extends PDF_MC_Table
             $this->SetFont('Arial', 'B', 15);
             $this->Cell(290, 10, $this->header['PERIOD'], 0, 0, 'L');
 
-            $this->Ln(3);
-
             $this->Ln(5);
 
             $this->SetFont('Arial', 'B', 10);
             $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, $this->header['CATEGORY'] . " Name:", 0, 0, 'L');
+            $this->SetY(17.5);
+            $this->SetX(42);
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['CATEGORYNAME']);
-
+            $this->MultiCell(80, 5, $this->header['CATEGORYNAME'],0,'L');
+            //$this->setY(24);
             //WRITE FACILITYID
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH, 10, $this->header['CATEGORY'] . " ID:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, $this->header['CATEGORY'] . " ID:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH, 10, $this->header['FACILITYID']);
-            $this->Ln(5);
+            $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH, 5, $this->header['FACILITYID'],0,1);
 
             //second row
             //write address
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Address:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, "Address:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['ADDRESS']);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 5, $this->header['ADDRESS'],0,1);
             $this->SetFont('Arial', 'B', 10);
             /*   $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"SIC Code:",0,0,'L');
               $this->SetFont('Arial','',10);
               $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
-            $this->Ln(5);
 
             //third row
             //write zip code
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "City, State, Zip:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, "City, State, Zip:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['CITYSTATEZIP']);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 5, $this->header['CITYSTATEZIP'],0,1);
             $this->SetFont('Arial', 'B', 10);
             /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"GRC-Pirk#:",0,0,'L');
               $this->SetFont('Arial','',10);
               $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
-            $this->Ln(5);
-
+            
             //fourth row
             //write country
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "County:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, "County:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['COUNTY']);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 5, $this->header['COUNTY'],0,1);
             $this->SetFont('Arial', 'B', 10);
             /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Site Mapk#:",0,0,'L');
               $this->SetFont('Arial','',10);
               $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
-            $this->Ln(5);
-
+            
             //fifth row
             //write phone
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Phone:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, "Phone:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['PHONE']);
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 5, $this->header['PHONE'],0,1);
             $this->SetFont('Arial', 'B', 10);
             /* $this->Cell(self::HEADER_SECOND_COLUM_FIELD_LENGTH,10,"Applied Rule#:",0,0,'L');
               $this->SetFont('Arial','',10);
               $this->Cell(self::HEADER_SECOND_COLUM_VALUE_LENGTH,10,'VALUE'); */
-            $this->Ln(5);
-
+            
             //write fax
             $this->SetFont('Arial', 'B', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 10, "Fax:", 0, 0, 'L');
+            $this->Cell(self::HEADER_FIRST_COLUM_FIELD_LENGTH, 5, "Fax:", 0, 0, 'L');
             $this->SetFont('Arial', '', 10);
-            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 10, $this->header['FAX']);
-            $this->Ln(5);
-
+            $this->Cell(self::HEADER_FIRST_COLUM_VALUE_LENGTH, 5, $this->header['FAX'],0,1);
+            //get last Y 
+            $y = $this->getY();
+            
             $this->SetY(20);
             $this->SetX(140);
             $this->SetFont('Arial', 'B', 10);
@@ -423,11 +418,11 @@ class XML2PDF extends PDF_MC_Table
             //draw a box around the information
             $this->SetLineWidth(0.2);
             $this->SetFillColor(0, 255, 0);
-            $this->Line(10, 20, 10, 50);
-            $this->Line(127, 20, 127, 50);
-            $this->Line(10, 20, 127, 20);
-            $this->Line(10, 50, 127, 50);
-            $this->SetY(57);
+            $this->Line(10, 18, 10, $y);
+            $this->Line(127, 18, 127, $y);
+            $this->Line(10, 18, 127, 18);
+            $this->Line(10, $y, 127, $y);
+            $this->SetY($y+5);
 
             //set table header for units
             $this->widths = array(30, 90, 30, 20, 25);
