@@ -218,9 +218,7 @@ class ReminderManager
         $text = '';
         
         foreach ($reminderUsers as $reminderUser) {
-            if (($reminderUser->getEmail() == 'jgypsyn@gyantgroup.com') || ($reminderUser->getEmail() == 'denis.nt@kttsoft.com')) {
-                $result = $email->sendMail($from, $reminderUser->getEmail(), $messageSubject, $messageText);
-            }
+            $result = $email->sendMail($from, $reminderUser->getEmail(), $messageSubject, $messageText);
             $reminderLog->addAlert('Reminder to ' . $reminderUser->getEmail() . ' sent successfully;');
             $text.='Reminder to ' . $reminderUser->getEmail() . ' sent successfully;';
             $text.=' ';
