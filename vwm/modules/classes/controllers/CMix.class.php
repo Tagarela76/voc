@@ -1927,6 +1927,7 @@ class CMix extends Controller
 
         $uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
         $groupedAllUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+        $groupedUnitClasses = array();
         //In mix creating we allowed only such types as 'USAWght', 'USALiquid';
         foreach($groupedAllUnitClasses as $groupedAllUnitClass){
             if(in_array($groupedAllUnitClass->getName(), MixOptimized::$MIX_ALLOWABLE_UNIT_CLASS_NAMES)){
@@ -1960,9 +1961,20 @@ class CMix extends Controller
         $mix->iniWaste(false, $unittypeOldListDefault);
 
         // TMP SOLUTION
-        //	rewrite umnittypes
-        $mix->waste['unittypeClass'] = $groupedUnitClasses[0]->getName();
-        $mix->waste['unitTypeList'] = $groupedUnitClasses[0]->getUnitTypes();
+        //	rewrite umnittypes check if user set up unittype on department level
+        if (!empty($groupedUnitClasses)) {
+            $mix->waste['unittypeClass'] = $groupedUnitClasses[0]->getName();
+            $mix->waste['unitTypeList'] = $groupedUnitClasses[0]->getUnitTypes();
+        } else {
+            $notifyc = new Notify(null, $this->db);
+            $errorText = 'Please setup unittype for department level!';
+            $additionalParams = array(
+                'color'=>'#FFFFFF',
+                'backgroundColor'=>'#FF0000'
+            );
+            $notify = $notifyc->getPopUpNotifyMessage(null,$additionalParams,$errorText);
+            $this->smarty->assign("notify", $notify);
+        }
 
         $mix->iniRecycle(false, $unittypeOldListDefault);
         $mix->department_id = $department->getDepartmentId();
