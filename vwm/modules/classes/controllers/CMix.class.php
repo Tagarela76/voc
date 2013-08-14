@@ -2093,10 +2093,27 @@ class CMix extends Controller
         //	Unit types
         $unitTypes = $department->getUnitTypeList();
         $uManager = new \VWM\Apps\UnitType\Manager\UnitTypeManager($this->db);
-        $groupedUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+        $groupedAllUnitClasses = $uManager->getUnitClassListByUnitTypeList($unitTypes);
+        $groupedUnitClasses = array();
+        //In mix creating we allowed only such types as 'USAWght', 'USALiquid';
+        foreach($groupedAllUnitClasses as $groupedAllUnitClass){
+            if(in_array($groupedAllUnitClass->getName(), MixOptimized::$MIX_ALLOWABLE_UNIT_CLASS_NAMES)){
+                $groupedUnitClasses[] = $groupedAllUnitClass;
+            }
+        }
         $this->smarty->assign('groupedUnitClasses', $groupedUnitClasses);
         $unitTypeClasses = $uManager->getUnitTypeListByUnitClass('USA Weight', $unitTypes);
-
+        //show unit type error if we have empty type list
+        if (empty($groupedUnitClasses)) {
+            $notifyc = new Notify(null, $this->db);
+            $errorText = 'Please setup unittype for department level!';
+            $additionalParams = array(
+                'color'=>'#FFFFFF',
+                'backgroundColor'=>'#FF0000'
+            );
+            $notify = $notifyc->getPopUpNotifyMessage(null,$additionalParams,$errorText);
+            $this->smarty->assign("notify", $notify);
+        }
 
         $unitTypeEx = $uManager->getUnitTypeEx($unitTypes);
         if (!$unitTypeEx) {
