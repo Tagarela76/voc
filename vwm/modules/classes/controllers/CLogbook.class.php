@@ -1853,10 +1853,33 @@ class CLogbook extends Controller
      */
     public function actionGetGaugeUnitTypeList()
     {
+        $db = VOCApp::getInstance()->getService('db');
         $gaugeTypeId = $this->getFromPost('gaugeType');
-        $utManager = new UnitTypeManager($this->db);
-        $unitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
-
+        $facilityId = $this->getFromPost('facilityId');
+        
+        $unitTypeList = array();
+         //	Get UnitType list by facility
+        $unitType = new Unittype($db);
+        $facilityUnitTypeIds = $unitType->getDefaultCategoryUnitTypeList($facilityId, 'facility');
+        
+        // Get UnitType list by gauge
+        $utManager = new UnitTypeManager($db);
+        $gaugeUnitTypeList = $utManager->getUnitTypeListBuGaugeId($gaugeTypeId);
+        
+        //get unit Type by facility Id
+        foreach($gaugeUnitTypeList as $gaugeUnitType){
+            if(in_array($gaugeUnitType->getUnitTypeId(), $facilityUnitTypeIds)){
+               $unitTypeList[] =  $gaugeUnitType;
+            }
+        }
+        if (empty($unitTypeList)){
+            $unitType = new VWM\Apps\UnitType\Entity\UnitType($db);
+            $unitType->setUnitTypeId(50);
+            $unitType->load();
+            $unitTypeList[] = $unitType; 
+        }
+        
+        $unitTypeList = array_reverse($unitTypeList);
         $this->smarty->assign('unitTypeList', $unitTypeList);
         $tpl = 'tpls/viewUnitTypeList.tpl';
         $result = $this->smarty->fetch($tpl);

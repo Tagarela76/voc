@@ -137,6 +137,7 @@ class Reminder extends Model
     const YEARLY = 3;
     const EVERY2YEAR = 4;
     const EVERY3YEAR = 5;
+    const EVERY5YEAR = 6;
 
     function __construct($id = null, EMail $email = null)
     {

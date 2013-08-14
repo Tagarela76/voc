@@ -262,6 +262,10 @@ class ReminderManager
                 'id' => Reminder::EVERY3YEAR,
                 'description' => 'every 3 year'
             ),
+            6 => array(
+                'id' => Reminder::EVERY5YEAR,
+                'description' => 'every 5 year'
+            )
         );
     }
 
@@ -396,6 +400,9 @@ class ReminderManager
                 break;
             case Reminder::EVERY3YEAR :
                 $date = strtotime("+3 year", $currentDate);
+                break;
+            case Reminder::EVERY5YEAR :
+                $date = strtotime("+5 year", $currentDate);
                 break;
             default :
                 throw new Exception("Inccorect next send perion");
