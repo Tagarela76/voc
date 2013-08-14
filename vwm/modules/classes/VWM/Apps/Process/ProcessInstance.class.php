@@ -38,19 +38,20 @@ class ProcessInstance extends Process
 
 	public function load()
 	{
+        $db = \VOCApp::getInstance()->getService('db');
 		if (is_null($this->getId())) {
 			return false;
 		}
 		$sql = "SELECT * " .
 				"FROM " . self::TABLE_NAME . " " .
-				"WHERE id = {$this->db->sqltext($this->getId())} " .
+				"WHERE id = {$db->sqltext($this->getId())} " .
 				"LIMIT 1";
 
-		$this->db->query($sql);
-		if ($this->db->num_rows() == 0) {
+		$db->query($sql);
+		if ($db->num_rows() == 0) {
 			return false;
 		}
-		$row = $this->db->fetch(0);
+		$row = $db->fetch(0);
 		$this->initByArray($row);
 	}
 

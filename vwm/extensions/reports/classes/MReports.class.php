@@ -167,7 +167,7 @@ class MReports {
 			}
 		}
 		//$debug->printMicrotime(__LINE__,__FILE__);
-		//var_dump($reportRequest);
+		
 		//exit;
 		$result = new Report($reportRequest, $db);
 
