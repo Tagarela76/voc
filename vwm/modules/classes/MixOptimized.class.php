@@ -116,7 +116,7 @@ class MixOptimized extends Model
      * 
      * @var string[] 
      */
-    public static $MIX_ALLOWABLE_UNIT_CLASS_NAMES = array('USAWght', 'USALiquid');
+    public static $MIX_ALLOWABLE_UNIT_CLASS_NAMES = array('USAWght', 'USALiquid', 'MetricWght');
     
     public function __construct($db, $mix_id = null)
     {
