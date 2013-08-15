@@ -129,7 +129,7 @@ class Rcosting extends ReportCreator implements iReportCreator
         $categoryId = $this->getCategoryId();
         switch ($this->getCategoryType()) {
             case "company":
-                $company = new Company();
+                $company = new Company($db,$categoryId);
                 $fManager = new FacilityManager($db, $categoryId);
                 $facilityList = $fManager->getFacilityListByCompanyId($categoryId);
                 $facilityIds = array();
@@ -143,7 +143,6 @@ class Rcosting extends ReportCreator implements iReportCreator
                         "WHERE w.creation_time >= " . $dateBeginObj->getTimestamp() . " " .
                         "AND  w.creation_time <= " . $dateEndObj->getTimestamp() . " " .
                         "AND  w.facility_id IN ({$facilityIds})";
-                        
                 $categoryName = $company->getName();
                 $category = 'Company';
                 break;
@@ -171,6 +170,10 @@ class Rcosting extends ReportCreator implements iReportCreator
                         "AND  w.creation_time <= " . $dateEndObj->getTimestamp() . " " .
                         "AND  w.facility_id = {$db->sqltext($facilityId)} ";
                 break;
+                
+                $facility = new Facility($db, $categoryId);
+                $categoryName = $facility->getName();
+                $category = 'Facility';
         }
 
         $orgInfo = array(
@@ -221,7 +224,7 @@ class Rcosting extends ReportCreator implements iReportCreator
         $page->appendChild($pageRightMargin);
         
         //create new element meta
-        /*$meta = $doc->createElement("meta");
+        $meta = $doc->createElement("meta");
         $page->appendChild($meta);
 
         $metaName = $doc->createAttribute("name");
@@ -234,7 +237,15 @@ class Rcosting extends ReportCreator implements iReportCreator
         $metaValue->appendChild(
                 $doc->createTextNode("times")
         );
-        $meta->appendChild($metaValue);*/
+        $meta->appendChild($metaValue);
+        
+        
+        //create title tag
+        $title = $doc->createElement("title");
+        $title->appendChild(
+                $doc->createTextNode("Coasting Report")
+        );
+        $page->appendChild($title);
         
         //crteate period tag
         $periodTag = $doc->createElement("period");
@@ -257,18 +268,12 @@ class Rcosting extends ReportCreator implements iReportCreator
         );
         $page->appendChild($categoryNameTag);
         
-        //create title tag
-        $title = $doc->createElement("title");
-        $title->appendChild(
-                $doc->createTextNode("Coasting Report")
-        );
-        $page->appendChild($title);
-        
         //create table
         $table = $doc->createElement("table");
         $page->appendChild($table);
         
         foreach($workOrderList as $workOrder){
+            $totalWorkOrderCoast = 0;
             //create work Order
             $workOrderComponent = $doc->createElement("workOrder");
             $table->appendChild($workOrderComponent);
@@ -293,12 +298,14 @@ class Rcosting extends ReportCreator implements iReportCreator
             );
             $workOrderComponent->appendChild($workOrderOverheadTag);
             
+            //count Wo Toatl Cost
+            $totalWorkOrderCoast += $workOrder['overhead']+$workOrder['profit'];
+                
             //create mixes component
             $mixList = $workOrder['mixList'];
             foreach ($mixList as $mix) {
                 $mixComponent = $doc->createElement("mix");
                 $workOrderComponent->appendChild($mixComponent);
-                
                 //create material cost
                 $mixMaterialCostTag = $doc->createAttribute('materialCost');
                 $mixMaterialCostTag->appendChild(
@@ -319,7 +326,42 @@ class Rcosting extends ReportCreator implements iReportCreator
                         $doc->createTextNode(html_entity_decode($mix['paint']))
                 );
                 $mixComponent->appendChild($mixPaintCostTag);
+                
+                //create step Number
+                $mixStepTag = $doc->createAttribute('step');
+                $mixStepTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($mix['stepNumber']))
+                );
+                $mixComponent->appendChild($mixStepTag);
+                
+                //create total cost
+                $mixTotalCostTag = $doc->createAttribute('totalCost');
+                $mixTotalCostTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($mix['total']))
+                );
+                $mixComponent->appendChild($mixTotalCostTag);
+                //count Wo Toatl Cost
+                $totalWorkOrderCoast += $mix['total'];
+                //create mix description
+                $mixDescriptionTag = $doc->createAttribute('mixDescription');
+                $mixDescriptionTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($mix['description']))
+                );
+                $mixComponent->appendChild($mixDescriptionTag);
+                
+                //create mix creation time
+                $mixCreationTimeTag = $doc->createAttribute('creationTime');
+                $mixCreationTimeTag->appendChild(
+                        $doc->createTextNode(html_entity_decode($mix['creationTime']))
+                );
+                $mixComponent->appendChild($mixCreationTimeTag);
             }
+            //create wo total attribute
+            $workOrderTotalTag = $doc->createAttribute('total');
+            $workOrderTotalTag->appendChild(
+                    $doc->createTextNode(html_entity_decode($totalWorkOrderCoast))
+            );
+            $workOrderComponent->appendChild($workOrderTotalTag);
         }
         $doc->save($fileName);
     }
@@ -328,7 +370,7 @@ class Rcosting extends ReportCreator implements iReportCreator
     {
         $db = VOCApp::getInstance()->getService('db');
         $workOderList = array();
-
+        
         foreach ($rows as $row) {
             $query = "SELECT * FROM " . Mix::TABLE_NAME .
                     " WHERE wo_id={$db->sqltext($row['work_order_id'])}";
@@ -345,8 +387,10 @@ class Rcosting extends ReportCreator implements iReportCreator
                 }
                 $woMixes[] = $mix;
             }
+            
             // get mix step id, if we have, for correct sorting
             $mixStepsIds = array();
+            //var_dump($woMixes[0]->getCreationTime());die();
             foreach ($woMixes as $woMix) {
                 //get mix cost
                 $paint = $woMix->getMixPrice();
@@ -378,12 +422,16 @@ class Rcosting extends ReportCreator implements iReportCreator
                 } else {
                     $stepNumber = '-';
                 }
+                $time = $woMix->getCreationTimeInUnixType();
+                $time = date('Y/d/m', $time);
                 $mix = array(
                     'stepNumber' => $stepNumber,
                     'material' => $material,
                     'labor' => $labor,
                     'paint' => $paint,
-                    'total' => $paint + $labor + $material
+                    'total' => $paint + $labor + $material,
+                    'description' => $woMix->description,
+                    'creationTime'=> $time
                 );
                 $mixList[$stepNumber] = $mix;
             }
@@ -397,7 +445,7 @@ class Rcosting extends ReportCreator implements iReportCreator
                     "AND id NOT IN ({$db->sqltext($mixStepsIds)})";
             $db->query($query);
             $emptyMixSteps = $db->fetch_all_array();
-
+            
             foreach ($emptyMixSteps as $emptyMixStep) {
                 //get resources by empty Step
                 $query = "SELECT * FROM " . ResourceInstance::TABLE_NAME . " " .
@@ -411,12 +459,15 @@ class Rcosting extends ReportCreator implements iReportCreator
                     $material+=$resource['material_cost'];
                     $labor+=$resource['labor_cost'];
                 }
+                
                 $mix = array(
                     'stepNumber' => $emptyMixStep['number'],
                     'material' => $material,
                     'labor' => $labor,
                     'paint' => 0,
-                    'total' => $material + $labor
+                    'total' => $material + $labor,
+                    'description' => $emptyMixStep['description'],
+                    'creationTime'=> str_replace('-','/',$emptyMixStep['last_update_time'])
                 );
                 $mixList[$emptyMixStep['number']] = $mix;
             }

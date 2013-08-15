@@ -159,10 +159,11 @@ class XML2PDF extends PDF_MC_Table
     //handles the "beginning" of a tag  and sets parameters appropriatly
     function startElement($path)
     {
-        $attribs = &$this->parser->structure[$path]["Attributes"];
+        //attributes
+        $attribs = $this->parser->structure[$path]["Attributes"];
         $tag = $this->parser->structure[$path]["Tag"];
         $this->DebugPrint("Start: $tag\n");
-        
+
         switch ($tag) {
             case 'PAGE':
                 $this->SetWidths(array(55, 45, 45, 45));
@@ -183,24 +184,39 @@ class XML2PDF extends PDF_MC_Table
                 }
                 $this->SetAutoPageBreak(true, 25);
                 break;
-            case "WORKORDER":
-                $this->widths = array(10,25,25,25,25,25,25);
-                $this->SetWidths($this->widths);
-                $this->SetLineWidth(0.4);
-                $this->SetFont('Arial','B',10);
+            case 'TABLE':
+                $this->header();
+                break;
+            case 'WORKORDER':
+                $this->header['NUMBER'] = $attribs['NUMBER'];
+                $this->header['PROFIT'] = $attribs['PROFIT'];
+                $this->header['OVERHEAD'] = $attribs['OVERHEAD'];
+                $widths = array(10, 65, 20, 20, 20, 20, 20);
+                $this->SetWidths($widths);
+                $this->SetFont('Arial', '', 15);
                 $h = 10;
-                $costWidth = $this->widths[3]+$this->widths[4]+$this->widths[5]+$this->widths[6];
-                $this->SetFont('Arial','B',7);
                 
-				$this->Cell($this->widths[0],$h,"Step",1,0,'C');
-                $this->Cell($this->widths[1],$h,"Description",1,0,'C');
-                $this->Cell($this->widths[2],$h,"Date",1,0,'C');
+                $this->Ln(5);
+                $this->Cell(75, 0, "WorkOrder: ".$attribs['NUMBER'], 0, 0, 'C');
+                $this->Ln(4);
+                $this->SetFont('Arial', '', 10);
+                // write table head
+                $this->Cell($widths[0], $h, "Step", 1, 0, 'C');
+                $this->Cell($widths[1], $h, "Description", 1, 0, 'C');
+                $this->Cell($widths[2], $h, "Date", 1, 0, 'C');
+                //get x and y for breakdown cost cell
                 $x = $this->getX();
                 $y = $this->getY();
-				$this->Cell($costWidth,$h/2,"Cost",1,0,'C');
-                $this->SetX($x);
-                $this->SetY($y+$h/2);
-                $this->Cell($this->widths[3],$h/2,"Date",1,0,'C');
+                //get cost cell lenght
+                $costLenth = $widths[3] + $widths[4] + $widths[5] + $widths[6];
+
+                $this->Cell($costLenth, $h / 2, "Cost", 1, 0, 'C');
+                $this->setXY($x, $y + $h / 2);
+
+                $this->Cell($widths[3], $h / 2, "Material", 1, 0, 'C');
+                $this->Cell($widths[4], $h / 2, "Labor", 1, 0, 'C');
+                $this->Cell($widths[5], $h / 2, "Paint", 1, 0, 'C');
+                $this->Cell($widths[6], $h / 2, "Total", 1, 0, 'C');
                 $this->Ln();
                 break;
         }
@@ -209,14 +225,45 @@ class XML2PDF extends PDF_MC_Table
     //handles the "end" of a tag and (un)sets parameters appropriatly
     function endElement($path)
     {
-        $this->Ln(5);
+        $attribs = &$this->parser->structure[$path]["Attributes"];
+        $tag = $this->parser->structure[$path]["Tag"];
+        $this->DebugPrint("End: $tag\n");
+        switch ($tag) {
+            case 'MIX':
+                $widths = array(10, 65, 20, 20, 20, 20, 20);
+                $this->SetFont('Arial', '', 10);
+                $h = 5;
+                $this->rows = array($attribs['STEP'], $attribs['MIXDESCRIPTION'], $attribs['CREATIONTIME'], $attribs['MATERIALCOST'], $attribs['LABORCOST'], $attribs['PAINTCOST'], $attribs['TOTALCOST']);
+                $this->Row($this->rows);
+                break;
+            case 'WORKORDER':
+                 $widths = array(10, 65, 20, 20, 20, 20, 20);
+                 $workOrderLenght = array_sum($widths)-$widths[6];
+                 $h = 5;
+                 
+                 $this->Cell($workOrderLenght, $h, "Overhead", 1, 0, 'C');
+                 $this->Cell($widths[6], $h, $attribs['OVERHEAD'], 1, 0, 'C');
+                 $this->Ln();
+                 
+                $this->Cell($workOrderLenght, $h, "Profit", 1, 0, 'C');
+                $this->Cell($widths[6], $h, $attribs['PROFIT'], 1, 0, 'C');
+                $this->Ln();
+
+                $this->Cell($workOrderLenght, $h, "Total", 1, 0, 'C');
+                $this->Cell($widths[6], $h, $attribs['TOTAL'], 1, 0, 'C');
+                 
+                 
+                 $this->Ln(5);
+                break;
+        }
     }
 
 //end Element
-
+//get valuem of tag
     function characterData($tag, $attribs, $data, $path, $parentpath)
     {
         $this->DebugPrint("CharData tag=$tag data=\"$data\"");
+
         switch ($tag) {
             case "TITLE":
                 $this->header["TITLE"] = $data;
@@ -224,13 +271,12 @@ class XML2PDF extends PDF_MC_Table
             case "PERIOD":
                 $this->header["PERIOD"] = $data;
                 break;
-            case 'CATEGORYNAME':
+            case "CATEGORY":
+                $this->header["CATEGORY"] = $data;
+                break;
+            case "CATEGORYNAME":
                 $this->header["CATEGORYNAME"] = $data;
                 break;
-            case 'CATEGORY':
-				$this->header['CATEGORY'] = $data;
-                $this->header();
-				break;
         }
     }
 
@@ -245,21 +291,42 @@ class XML2PDF extends PDF_MC_Table
 
     function Header()
     {
-        $fontSize = 7;
         if (isset($this->header['TITLE'])) {
             $this->SetFont('Arial', 'B', 15);
             $this->Cell(75, 0, $this->header['TITLE'], 0, 0, 'L');
-            $this->Ln(4);
-           //write period
-            $this->SetFont('Arial', 'B', 15);
-            $this->Cell(290, 10, $this->header['PERIOD'], 0, 0, 'L');
 
-            $this->Ln(5);
-            
-            $this->SetFont('Arial', 'B', 10);
-            $this->Cell(32, 10, $this->header['CATEGORY'] . " Name:", 0, 0, 'L');
-            $this->SetFont('Arial', '', 10);
-            $this->Cell(80, 10, $this->header['CATEGORYNAME'],0,'L');
+            $this->SetFont('Arial', '', 12);
+            $this->Cell(100, 0, $this->header['PERIOD'], 0, 0, 'R');
+
+            $this->Ln(7);
+            $this->SetFont('Arial', '', 12);
+            $this->Cell(125, 0, $this->header['CATEGORY'] . ": " . $this->header['CATEGORYNAME'], 0, 0, 'L');
+
+            $this->Ln(7);
+            if (isset($this->header['WORKORDER'])) {
+                /* $widths = array(10, 25, 12, 20, 12, 12, 12);
+                  $this->SetWidths($widths);
+                  $h = 10;
+                  // write table head
+                  $this->Cell($widths[0], $h, "Step", 1, 0, 'L');
+                  $this->Cell($widths[1], $h, "Description", 1, 0, 'L');
+                  $this->Cell($widths[2], $h, "Date", 1, 0, 'L');
+                  //get x and y for breakdown cost cell
+                  $x = $this->getX();
+                  $y = $this->getY();
+                  //get cost cell lenght
+                  $costLenth = $widths[3]+$widths[4]+$widths[5]+$widths[6];
+
+                  $this->Cell($costLenth, $h/2, "Cost", 1, 0, 'C');
+                  $this->setXY($x, $y+$h/2);
+
+                  $this->Cell($widths[3], $h/2, "Material", 1, 0, 'C');
+                  $this->Cell($widths[4], $h/2, "Labor", 1, 0, 'C');
+                  $this->Cell($widths[5], $h/2, "Paint", 1, 0, 'C');
+                  $this->Cell($widths[6], $h/2, "Total", 1, 0, 'C');
+
+                  $this->Ln(); */
+            }
         }
     }
 
@@ -268,7 +335,6 @@ class XML2PDF extends PDF_MC_Table
         $this->SetY(-15);
         $this->SetX(-15);
         $this->Cell(0, 10, $this->PageNo(), 0, 0, 'C');
-        //$this->SetY(52);
     }
 
     //DebugPrint wrapper..Only prints when debug==1
