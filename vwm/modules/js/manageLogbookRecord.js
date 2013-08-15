@@ -340,11 +340,9 @@ function Equipmant() {
         //we can't create recurring in equipment and if is pending
         if(isShowEquipment == 'equipment'){
             $('#showEquipmentList').show();
-            $('#isRecurring').attr("disabled", "disabled");
             $('#isRecurring').attr('checked', false);
         }else{
             $('#showEquipmentList').hide();
-            $('#isRecurring').removeAttr("disabled");   
         }
         
         if(itlManager.isPending){
