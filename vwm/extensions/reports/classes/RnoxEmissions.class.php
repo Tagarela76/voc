@@ -181,7 +181,7 @@ class RnoxEmissions extends ReportCreator implements iReportCreator {
 		
 		$title = $doc->createElement( "title" );
 		$title->appendChild(
-			$doc->createTextNode("NOx Emissions") 
+			$doc->createTextNode("Facility NOx Emissions") 
 		);
 		$page->appendChild( $title );
 		

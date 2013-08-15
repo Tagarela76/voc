@@ -99,7 +99,7 @@ class CProduct extends Controller {
 			$exporter->company = $companyDetails['name'];
 			$exporter->facility = $facilityDetails['name'];
 			$exporter->department = $departmentDetails['name'];
-			$exporter->title = "Products of department " . $departmentDetails['name'];
+			$exporter->title = "Products of Department " . $departmentDetails['name'];
 			if ($this->getFromRequest('searchAction') == 'search') {
 				$exporter->search_term = $this->getFromRequest('q');
 			} else {

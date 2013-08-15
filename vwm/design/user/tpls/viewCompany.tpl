@@ -102,7 +102,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.fax|escape}
+                    &nbsp;{$company.fax|phone_format|escape}
                 </div>
             </td>
         </tr>
