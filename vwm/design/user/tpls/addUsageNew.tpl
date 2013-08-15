@@ -496,17 +496,21 @@ $(function()
 					<div class="floatleft">
 
 						<select name="selectRecycleUnittypeClass" id="selectRecycleUnittypeClass" onchange="getUnittypes(document.getElementById('selectRecycleUnittypeClass'), {$departmentID}, {$companyEx})" >
-							{foreach from=$groupedUnitClasses item=unitClass}
-								<option>{$unitClass->getDescription()}</option>
-							{/foreach}
+                            {if !empty($groupedUnitClasses)}
+                                {foreach from=$groupedUnitClasses item=unitClass}
+                                    <option>{$unitClass->getDescription()|escape}</option>
+                                {/foreach}
+                            {/if}
 							<option value='percent' {if $data->recycle.unittypeClass == '%'}selected="selected"{/if}>%</option>
 						</select>
 					</div>
 					<div class="floatleft padd_left">
 						<select name="selectRecycleUnittype" id="selectRecycleUnittype" onchange="getUnittypes(document.getElementById('selectRecycleUnittype'), {$departmentID}, {$companyEx})">
-							{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
-								<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
-							{/foreach}
+                            {if !empty($groupedUnitClasses)}
+                                {foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+                                    <option value='{$unitType->getUnitTypeId()|escape}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
+                                {/foreach}
+                            {/if}
 						</select>
 					</div>
 
@@ -625,17 +629,20 @@ $(function()
 						<td class="border_users_r border_users_b">
 							<div class="floatleft">
 								<select name="selectUnittypeClass" id="selectUnittypeClass" onchange="getUnittypes(this, {$departmentID}, {$companyEx}); checkUnittypeWeightWarning();">
-
-									{foreach from=$groupedUnitClasses item=unitClass}
-										<option>{$unitClass->getDescription()}</option>
-									{/foreach}
+                                    {if !empty($groupedUnitClasses)}
+                                        {foreach from=$groupedUnitClasses item=unitClass}
+                                            <option>{$unitClass->getDescription()}</option>
+                                        {/foreach}
+                                    {/if}
 								</select>
 							</div>
 							<div class="floatleft padd_left">
 								<select name="selectUnittype" id="selectUnittype" onchange="checkUnittypeWeightWarning();">
-									{foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
-										<option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
-									{/foreach}
+                                    {if !empty($groupedUnitClasses)}
+                                        {foreach from=$groupedUnitClasses.0->getUnitTypes() item=unitType}
+                                            <option value='{$unitType->getUnitTypeId()}' {if $unitType->getUnitTypeId() == $data->recycle.unittypeID}selected="selected"{/if}>{$unitType->getUnitTypeDesc()}</option>
+                                        {/foreach}
+                                    {/if}
 								</select>
 							</div>
 							<div class="error_img" id="errorProductWeight" style="display:none;"><span class="error_text">Failed to convert weight unit to volume because product density is underfined! You can set density for this product or use volume units.</span></div>
@@ -833,10 +840,14 @@ $(function()
 
 <div align="right" class="buttonpadd">
 	<!--  <input type='submit' name='save' class="button" value='Add product to list'>-->
-    {if $request.action eq "edit"}
-        <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
+    {if !empty($groupedUnitClasses)}
+        {if $request.action eq "edit"}
+            <input type='button' id="btnSave" name='save' class="button" value='Save' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
+        {else}
+            <input type='button' id="btnSave" name='save' class="button" value='Finish' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
+        {/if}
     {else}
-        <input type='button' id="btnSave" name='save' class="button" value='Finish' onclick="addMix()" title="Press Finish when {$repairOrderLabel} entry is completed"/>
+        <input type='button' class='button' disabled='disabled' value='Finish' style='background:#CDC9C9'/>
     {/if}
 
 </div>
