@@ -574,7 +574,7 @@
 							ID
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.company_id}&nbsp;
+							{$customer.company_id|escape}&nbsp;
 						</td>
 					</tr>				
 					<tr height="20" class="hov_company">
@@ -582,7 +582,7 @@
 							Name
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.name}&nbsp;
+							{$customer.name|escape}&nbsp;
 						</td>
 					</tr>
 					<tr height="20" class="hov_company">
@@ -590,7 +590,7 @@
 							Address
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.address}&nbsp;
+							{$customer.address|escape}&nbsp;
 						</td>
 					</tr>	
 					<tr height="20" class="hov_company">
@@ -598,7 +598,7 @@
 							City
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.city}&nbsp;
+							{$customer.city|escape}&nbsp;
 						</td>
 					</tr>
 					<tr height="20" class="hov_company">
@@ -606,7 +606,7 @@
 							Zip
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.zip}&nbsp;
+							{$customer.zip|escape}&nbsp;
 						</td>
 					</tr>
 					<tr height="20" class="hov_company">
@@ -614,7 +614,7 @@
 							Phone
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.phone}&nbsp;
+							{$customer.phone|phone_format|escape}&nbsp;
 						</td>
 					</tr>
 					<tr height="20" class="hov_company">
@@ -622,7 +622,7 @@
 							Fax
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.fax}&nbsp;
+							{$customer.fax|phone_format|escape}&nbsp;
 						</td>
 					</tr>
 					<tr height="20" class="hov_company">
@@ -630,7 +630,7 @@
 							Email
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.email}&nbsp;
+							{$customer.email|escape}&nbsp;
 						</td>
 					</tr>	
 					<tr height="20" class="hov_company">
@@ -638,7 +638,7 @@
 							Contact Person
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.contact}&nbsp;
+							{$customer.contact|escape}&nbsp;
 						</td>
 					</tr>	
 					<tr height="20" class="hov_company">
@@ -646,7 +646,7 @@
 							Title
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							{$customer.title}&nbsp;
+							{$customer.title|escape}&nbsp;
 						</td>
 					</tr>	
 					<tr height="20" class="hov_company">
@@ -654,7 +654,7 @@
 							Trial Period End
 						</td>
 						<td class="border_users_r border_users_b" colspan="2">
-							<b>{$customer.trial_end_date}</b>&nbsp;
+							<b>{$customer.trial_end_date|escape}</b>&nbsp;
 						</td>
 					</tr>			
 {elseif $itemID eq "modules"}

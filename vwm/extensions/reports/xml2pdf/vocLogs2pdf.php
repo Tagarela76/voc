@@ -95,8 +95,8 @@ class XML2PDF extends PDF_MC_Table
     /**
      * width of horizontal line for mandatary colums 
      */
-    const HORIZONTAL_LINE = 260;
-    const TOTAL_TABLE_WIDTH = 250;
+    const HORIZONTAL_LINE = 262;
+    const TOTAL_TABLE_WIDTH = 252;
 
     public function getShowSpentTime()
     {
@@ -409,7 +409,7 @@ class XML2PDF extends PDF_MC_Table
                 $this->header['FACILITYID'] = " ";
                 $this->AddPage('l');
 
-                $width = array(15, 20, 85, 16, 16, 20, 20, 20, 20, 18);
+                $width = array(15, 21, 85, 16, 16, 20, 20, 20, 21, 18);
                 //$this->SetWidths(array(25,30,85,20,20,20,20,20,20,20));
 
                 if ($this->getShowSpentTime()) {

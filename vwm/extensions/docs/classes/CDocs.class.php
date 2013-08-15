@@ -285,12 +285,21 @@ class CDocs extends Controller
 			'facilityID' => $this->getFromRequest('id')
 		);
 		$result = $mDocs->prepareView($params);
-
+        //sort documents by file name
+        $docList = $result['InfoTree'];
+        usort($docList, function($a,$b) {
+                    return strcmp($a["info"]["name"], $b["info"]["name"]);
+                });
+        $result['InfoTree'] = $docList;
+        
 		foreach($result as $key => $data) {
 			$this->smarty->assign($key,$data);
 		}
 
 		$this->smarty->assign('tpl','docs/design/documentsList.tpl');
 	}
+    
+    
+
 }
 ?>

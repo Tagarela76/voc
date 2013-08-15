@@ -933,7 +933,7 @@ class PFPManager
             $query .= ") ";
         }
 
-        $query .= " GROUP BY pfp.id ORDER BY pfp.weight_letter_sort, pfp.weight_number_sort";
+        $query .= " GROUP BY pfp.id ORDER BY pfp.weight_letter_sort, pfp.weight_number_sort, pfp.description";
 
         if (isset($pagination)) {
             $query .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset() . "";

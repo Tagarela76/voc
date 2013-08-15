@@ -138,13 +138,13 @@
 						 {if $request.bookmark != "pfpTypes"}
                             <div class="deactiveBookmark">
                                 <div class="deactiveBookmark_right">
-                                    PFP types&nbsp;
+                                    PFP Types&nbsp;
                                 </div>
                             </div>
                             {else}
                             <div class="activeBookmark">
                                 <div class="activeBookmark_right">
-                                    PFP types&nbsp;
+                                    PFP Types&nbsp;
                                 </div>
                             </div>
                             {/if}
