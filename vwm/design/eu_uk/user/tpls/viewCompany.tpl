@@ -22,7 +22,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.name} 
+                    &nbsp;{$company.name|escape} 
                 </div>
             </td>
         </tr>
@@ -32,7 +32,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.address}
+                    &nbsp;{$company.address|escape}
                 </div>
             </td>
         </tr>
@@ -42,7 +42,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.city}
+                    &nbsp;{$company.city|escape}
                 </div>
             </td>
         </tr>
@@ -52,7 +52,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.county}
+                    &nbsp;{$company.county|escape}
                 </div>
             </td>
         </tr>
@@ -62,7 +62,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.country}
+                    &nbsp;{$company.country|escape}
                 </div>
             </td>
         </tr>
@@ -82,7 +82,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.zip}
+                    &nbsp;{$company.zip|escape}
                 </div>
             </td>
         </tr>
@@ -92,7 +92,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.phone}
+                    &nbsp;{$company.phone|phone_format|escape}
                 </div>
             </td>
         </tr>
@@ -102,7 +102,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.fax}
+                    &nbsp;{$company.fax|phone_format|escape}
                 </div>
             </td>
         </tr>
@@ -112,7 +112,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.email}
+                    &nbsp;{$company.email|escape}
                 </div>
             </td>
         </tr>
@@ -122,7 +122,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.contact} 
+                    &nbsp;{$company.contact|escape} 
                 </div>
             </td>
         </tr>
@@ -132,7 +132,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$company.title}
+                    &nbsp;{$company.title|escape}
                 </div>
             </td>
         </tr>
@@ -142,7 +142,7 @@
             </td>
             <td class="border_users_r border_users_l border_users_b">
                 <div align="left">
-                    &nbsp;{$voc_unittype_desc}
+                    &nbsp;{$voc_unittype_desc|escape}
                 </div>
             </td>
         </tr>

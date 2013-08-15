@@ -14,7 +14,7 @@
 					Company:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->company}</div>								
+					<div align="left" >&nbsp;{$contact->company|escape}</div>								
 				</td>
 			</tr>		
 			
@@ -23,7 +23,7 @@
 					Contact:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->contact}</div>								
+					<div align="left" >&nbsp;{$contact->contact|escape}</div>								
 				</td>
 			</tr>
 			
@@ -32,7 +32,7 @@
 					Title:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->title}</div>								
+					<div align="left" >&nbsp;{$contact->title|escape}</div>								
 				</td>
 			</tr>
 			
@@ -41,7 +41,7 @@
 					Phone:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->phone}</div>								
+					<div align="left" >&nbsp;{$contact->phone|phone_format|escape}</div>								
 				</td>
 			</tr>
 			
@@ -50,7 +50,7 @@
 					Cell/mobile phone:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->cellphone}</div>								
+					<div align="left" >&nbsp;{$contact->cellphone|phone_format|escape}</div>								
 				</td>
 			</tr>
 			
@@ -59,7 +59,7 @@
 					Fax:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->fax}</div>								
+					<div align="left" >&nbsp;{$contact->fax|phone_format|escape}</div>								
 				</td>
 			</tr>
 			
@@ -68,7 +68,7 @@
 					Email:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->email}</div>								
+					<div align="left" >&nbsp;{$contact->email|escape}</div>								
 				</td>
 			</tr>
 			
@@ -77,7 +77,7 @@
 					Website:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->website}</div>								
+					<div align="left" >&nbsp;{$contact->website|escape}</div>								
 				</td>
 			</tr>	
 			
@@ -86,7 +86,7 @@
 					Mailing address:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->mail}</div>								
+					<div align="left" >&nbsp;{$contact->mail|escape}</div>								
 				</td>
 			</tr>
 												
@@ -95,7 +95,7 @@
 					Industry:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->industry}</div>								
+					<div align="left" >&nbsp;{$contact->industry|escape}</div>								
 				</td>
 			</tr>
 			
@@ -104,7 +104,7 @@
 					Comments:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->getCommentsHTML()}</div>								
+					<div align="left" >&nbsp;{$contact->getCommentsHTML()|escape}</div>								
 				</td>
 			</tr>
 			
@@ -113,7 +113,7 @@
 					State:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->state_name}</div>								
+					<div align="left" >&nbsp;{$contact->state_name|escape}</div>								
 				</td>
 			</tr>
 
@@ -122,7 +122,7 @@
 					City:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->city}</div>								
+					<div align="left" >&nbsp;{$contact->city|escape}</div>								
 				</td>
 			</tr>
 			
@@ -131,7 +131,7 @@
 					Zip Code:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->zip_code}</div>								
+					<div align="left" >&nbsp;{$contact->zip_code|escape}</div>								
 				</td>
 			</tr>
 			
@@ -140,7 +140,7 @@
 					Country:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->country_name}</div>								
+					<div align="left" >&nbsp;{$contact->country_name|escape}</div>								
 				</td>
 			</tr>
 			
@@ -149,7 +149,7 @@
 					State:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->state_name}</div>								
+					<div align="left" >&nbsp;{$contact->state_name|escape}</div>								
 				</td>
 			</tr>
 			
@@ -158,7 +158,7 @@
 					Account number:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->acc_number}</div>								
+					<div align="left" >&nbsp;{$contact->acc_number|escape}</div>								
 				</td>
 			</tr>	
 			
@@ -167,7 +167,7 @@
 					Paint Supplier:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->paint_supplier}</div>								
+					<div align="left" >&nbsp;{$contact->paint_supplier|escape}</div>								
 				</td>
 			</tr>	
 			
@@ -176,7 +176,7 @@
 					Paint System:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->paint_system}</div>								
+					<div align="left" >&nbsp;{$contact->paint_system|escape}</div>								
 				</td>
 			</tr>	
 			
@@ -185,7 +185,7 @@
 					Jobber:
 				</td>
 				<td class="border_users_l border_users_b border_users_r">
-					<div align="left" >&nbsp;{$contact->jobber}</div>								
+					<div align="left" >&nbsp;{$contact->jobber|escape}</div>								
 				</td>
 			</tr>
 
