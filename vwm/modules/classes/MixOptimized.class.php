@@ -1677,7 +1677,7 @@ class MixOptimized extends Model
 				AND (pp.jobber_id != 0 OR pp.jobber_id IS NULL)
 				AND d.department_id = m.department_id
 				AND mg.mix_id = m.mix_id";
-
+                
         $this->db->query($query);
         $resultData = $this->db->fetch_all();
         $price = 0;

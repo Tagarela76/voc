@@ -110,7 +110,29 @@ class Facility extends Model {
      */
     public function getAttributes()
     {
-        return array();
+        return array(
+            'facility_id' => $this->getFacilityId(),
+            'company_id' => $this->getCompanyId(),
+            'name' => $this->getName(),
+            'epa' => $this->getEpa(),
+            'address' => $this->getAddress(),
+            'city' => $this->getCity(),
+            'zip' => $this->getZip(),
+            'county' => $this->getCounty(),
+            'state' => $this->getState(),
+            'country' => $this->getCountry(),
+            'phone' => $this->getPhone(),
+            'fax' => $this->getFax(),
+            'email' => $this->getEmail(),
+            'contact' => $this->getContact(),
+            'title' => $this->getTitle(),
+            'creater_id' => $this->getCreaterId(),
+            'voc_limit' => $this->getVocLimit(),
+            'gcg_id' => $this->getGcgId(),
+            'monthly_nox_limit' => $this->getMonthlyNoxLimit(),
+            'client_facility_id' => $this->getClientFacilityId(),
+            'last_update_time' => $this->getLastUpdateTime()
+        );
     }
 
 	public function getFacilityId() {
