@@ -191,13 +191,12 @@ class XML2PDF extends PDF_MC_Table
                 $this->header['NUMBER'] = $attribs['NUMBER'];
                 $this->header['PROFIT'] = $attribs['PROFIT'];
                 $this->header['OVERHEAD'] = $attribs['OVERHEAD'];
-                $widths = array(10, 65, 20, 20, 20, 20, 20);
+                $widths = array(10, 85, 20, 20, 20, 20, 20);
                 $this->SetWidths($widths);
                 $this->SetFont('Arial', '', 15);
                 $h = 10;
-                
-                $this->Ln(5);
-                $this->Cell(75, 0, "WorkOrder: ".$attribs['NUMBER'], 0, 0, 'C');
+
+                $this->Cell(200, 0, "WorkOrder: " . $attribs['NUMBER'], 0, 0, 'L');
                 $this->Ln(4);
                 $this->SetFont('Arial', '', 10);
                 // write table head
@@ -219,6 +218,12 @@ class XML2PDF extends PDF_MC_Table
                 $this->Cell($widths[6], $h / 2, "Total", 1, 0, 'C');
                 $this->Ln();
                 break;
+            case 'SUMMARY':
+                $this->header['TOTALLABORCOST'] = $attribs['TOTALLABORCOST'];
+                $this->header['TATALMATERIALCOST'] = $attribs['TATALMATERIALCOST'];
+                $this->header['TOTALPAINTCOST'] = $attribs['TOTALPAINTCOST'];
+                $this->AddPage('p');
+                break;
         }
     }
 
@@ -230,30 +235,48 @@ class XML2PDF extends PDF_MC_Table
         $this->DebugPrint("End: $tag\n");
         switch ($tag) {
             case 'MIX':
-                $widths = array(10, 65, 20, 20, 20, 20, 20);
+                $widths = array(10, 85, 20, 20, 20, 20, 20);
                 $this->SetFont('Arial', '', 10);
                 $h = 5;
+                if($attribs['MIXDESCRIPTION']==''){
+                    $attribs['MIXDESCRIPTION']="NONE";
+                }
                 $this->rows = array($attribs['STEP'], $attribs['MIXDESCRIPTION'], $attribs['CREATIONTIME'], $attribs['MATERIALCOST'], $attribs['LABORCOST'], $attribs['PAINTCOST'], $attribs['TOTALCOST']);
                 $this->Row($this->rows);
                 break;
             case 'WORKORDER':
-                 $widths = array(10, 65, 20, 20, 20, 20, 20);
-                 $workOrderLenght = array_sum($widths)-$widths[6];
-                 $h = 5;
-                 
-                 $this->Cell($workOrderLenght, $h, "Overhead", 1, 0, 'C');
-                 $this->Cell($widths[6], $h, $attribs['OVERHEAD'], 1, 0, 'C');
-                 $this->Ln();
-                 
-                $this->Cell($workOrderLenght, $h, "Profit", 1, 0, 'C');
+                $widths = array(10, 85, 20, 20, 20, 20, 20);
+                $workOrderLenght = array_sum($widths) - $widths[6];
+                $h = 5;
+
+                $this->Cell($workOrderLenght, $h, "Overhead", 1, 0, 'R');
+                $this->Cell($widths[6], $h, $attribs['OVERHEAD'], 1, 0, 'C');
+                $this->Ln();
+
+                $this->Cell($workOrderLenght, $h, "Profit", 1, 0, 'R');
                 $this->Cell($widths[6], $h, $attribs['PROFIT'], 1, 0, 'C');
                 $this->Ln();
 
-                $this->Cell($workOrderLenght, $h, "Total", 1, 0, 'C');
+                $this->Cell($workOrderLenght, $h, "Total", 1, 0, 'R');
+                $this->SetFont('Arial', 'B', 10);
                 $this->Cell($widths[6], $h, $attribs['TOTAL'], 1, 0, 'C');
-                 
-                 
-                 $this->Ln(5);
+                $this->SetFont('Arial', '', 10);
+
+                $this->Ln(15);
+                break;
+            case 'SUMMARY':
+                $widths = array(48, 48, 48, 48);
+                
+                $this->Cell($widths[0], 10, "Material", 1, 0, 'C');
+                $this->Cell($widths[1], 10, "Labor", 1, 0, 'C');
+                $this->Cell($widths[2], 10, "Paint", 1, 0, 'C');
+                $this->Cell($widths[3], 10, "Total", 1, 0, 'C');
+                $this->Ln();
+                
+                $this->Cell($widths[0], 10, $attribs['TOTALMATERIALCOST'], 1, 0, 'C');
+                $this->Cell($widths[1], 10, $attribs['TOTALLABORCOST'], 1, 0, 'C');
+                $this->Cell($widths[2], 10, $attribs['TOTALPAINTCOST'], 1, 0, 'C');
+                $this->Cell($widths[3], 10, $attribs['TOTALTOTALCOST'], 1, 0, 'C');
                 break;
         }
     }
@@ -274,8 +297,26 @@ class XML2PDF extends PDF_MC_Table
             case "CATEGORY":
                 $this->header["CATEGORY"] = $data;
                 break;
+            case "COUNTRY":
+                $this->header["COUNTRY"] = $data;
+                break;
+            case "ADDRESS":
+                $this->header["ADDRESS"] = $data;
+                break;
             case "CATEGORYNAME":
                 $this->header["CATEGORYNAME"] = $data;
+                break;
+            case "PHONE":
+                $this->header["PHONE"] = $data;
+                break;
+            case "FAX":
+                $this->header["FAX"] = $data;
+                break;
+            case "ZIP":
+                $this->header["ZIP"] = $data;
+                break;
+            case "CITY":
+                $this->header["CITY"] = $data;
                 break;
         }
     }
@@ -293,40 +334,29 @@ class XML2PDF extends PDF_MC_Table
     {
         if (isset($this->header['TITLE'])) {
             $this->SetFont('Arial', 'B', 15);
-            $this->Cell(75, 0, $this->header['TITLE'], 0, 0, 'L');
-
-            $this->SetFont('Arial', '', 12);
-            $this->Cell(100, 0, $this->header['PERIOD'], 0, 0, 'R');
-
+            $this->Cell(75, 10, $this->header['TITLE'], 0, 0, 'L');
             $this->Ln(7);
             $this->SetFont('Arial', '', 12);
-            $this->Cell(125, 0, $this->header['CATEGORY'] . ": " . $this->header['CATEGORYNAME'], 0, 0, 'L');
-
+            $this->Cell(100, 10, $this->header['PERIOD'], 0, 0, 'L');
             $this->Ln(7);
-            if (isset($this->header['WORKORDER'])) {
-                /* $widths = array(10, 25, 12, 20, 12, 12, 12);
-                  $this->SetWidths($widths);
-                  $h = 10;
-                  // write table head
-                  $this->Cell($widths[0], $h, "Step", 1, 0, 'L');
-                  $this->Cell($widths[1], $h, "Description", 1, 0, 'L');
-                  $this->Cell($widths[2], $h, "Date", 1, 0, 'L');
-                  //get x and y for breakdown cost cell
-                  $x = $this->getX();
-                  $y = $this->getY();
-                  //get cost cell lenght
-                  $costLenth = $widths[3]+$widths[4]+$widths[5]+$widths[6];
-
-                  $this->Cell($costLenth, $h/2, "Cost", 1, 0, 'C');
-                  $this->setXY($x, $y+$h/2);
-
-                  $this->Cell($widths[3], $h/2, "Material", 1, 0, 'C');
-                  $this->Cell($widths[4], $h/2, "Labor", 1, 0, 'C');
-                  $this->Cell($widths[5], $h/2, "Paint", 1, 0, 'C');
-                  $this->Cell($widths[6], $h/2, "Total", 1, 0, 'C');
-
-                  $this->Ln(); */
-            }
+            
+            $this->SetFont('Arial', '', 7);
+            $this->Cell(110, 5, $this->header['CATEGORY'] . ": " . $this->header['CATEGORYNAME'], 0, 0, 'L');
+            $this->Cell(75, 5, "Phone: " . $this->header['PHONE'], 0, 0, 'L');
+            $this->Ln(3);
+            
+            $this->Cell(110, 5, "Country: " . $this->header['COUNTRY'], 0, 0, 'L');
+            $this->Cell(75, 5, "Fax: " . $this->header['FAX'], 0, 0, 'L');
+            $this->Ln(3);
+            
+            $this->Cell(110, 5, "City: " . $this->header['CITY'], 0, 0, 'L');
+            $this->Cell(75, 5, "Zip: " . $this->header['ZIP'], 0, 0, 'L');
+            $this->Ln(3);
+            
+            $this->Cell(110, 5, "Address: " . $this->header['ADDRESS'], 0, 0, 'L');
+            $this->Ln(10);
+            
+            
         }
     }
 

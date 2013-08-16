@@ -57,7 +57,28 @@ class Company extends Model {
      */
     public function getAttributes()
     {
-        return array();
+        return array(
+            'company_id' => $this->getCompanyId(),
+            'name' => $this->getName(),
+            'address' => $this->getAddress(),
+            'city' => $this->getCity(),
+            'zip' => $this->getZip(),
+            'county' => $this->getCounty(),
+            'state' => $this->getState(),
+            'phone' => $this->getPhone(),
+            'fax' => $this->getFax(),
+            'email' => $this->getEmail(),
+            'contact' => $this->getContact(),
+            'title' => $this->getTitle(),
+            'creater_id' => $this->getCreaterId(),
+            'country' => $this->getCountry(),
+            'gcg_id' => $this->getGcgId(),
+            'creation_date' => $this->getCreationDate(),
+            'voc_unittype_id' => $this->getVocUnittypeId(),
+            'date_format_id' => $this->getDateFormatId(),
+            'last_update_time' => $this->getLastUpdateTime(),
+            'industryType' => $this->getIndustryType()
+        );
     }
 
     public function getCompanyId() {
