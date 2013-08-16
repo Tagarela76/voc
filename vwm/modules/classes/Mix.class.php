@@ -12,7 +12,8 @@ class Mix extends MixProperties {
 	private $trashRecord;	//	tracking system trash obj
 	private $parentTrashRecord;
 
-
+    const TABLE_NAME = 'mix';
+    
 	function Mix($mixRecords, $mixProperties = false) {
 		if (!$mixProperties) {
 			$db = $mixRecords;
