@@ -41,7 +41,7 @@
 					</tr>
                     <tr>
 						<td height="20">
-							<b>{$repairOrderLabel} creation time:</b> {$repairOrder->getCreationTime()|escape}
+							<b>{$repairOrderLabel} creation time:</b> {$creationTime|escape}
 						</td>
 					</tr>
                     <tr>
@@ -52,6 +52,16 @@
 					<tr>
 						<td height="20">
 							<b>{$repairOrderLabel} VIN number:</b> {$repairOrder->vin|escape}
+						</td>
+					</tr>
+                    <tr>
+						<td height="20">
+							<b>{$repairOrderLabel} Profit:</b> {$profit|escape} $
+						</td>
+					</tr>
+                    <tr>
+						<td height="20">
+							<b>{$repairOrderLabel} Overhead:</b> {$overhead|escape} $
 						</td>
 					</tr>
 				</table>
@@ -65,30 +75,40 @@
 			<td valign="top" style="padding:0 2px 0 5px" colspan="2">
 				<table width="100%" align="center" cellpadding="0" cellspacing="0" style="font-size: 11px;">
 					<tr>
-						<td width="10%" height="30">
+						<td width="5%" height="30">
 							<b>Mix ID</b>
 						</td>
-						<td width="20%">
+						<td width="15%">
 							<b>Product Name</b>
 						</td>
-						<td width="20%">
+						<td width="25%">
 							<b>Description</b>
 						</td>
-						<td width="10%">
+						<td width="5%">
 							<b>VOC</b>
 						</td>
-						<td width="20%">
+						<td width="10%">
 							<b>Creation Date</b>
 						</td>
-						<td  width="20%">
-							<b>Price</b>
+                        <td width="10%">
+							<b>Material cost</b>
+						</td>
+                        <td width="10%">
+							<b>Labor cost</b>
+						</td>
+                        <td width="10%">
+							<b>Paint cost</b>
+						</td>
+						<td  width="10%">
+							<b>Mix Total Price</b>
 						</td>
 					</tr>
 				{*BEGIN LIST*}
 				{foreach from=$mixList item=mix}
+                {assign var="index" value=$mix->mix_id}
 				<tr height="10px">
 					<td>
-						{$mix->mix_id|escape} &nbsp;
+						{$mixesCosts[$index].stepNumber|escape} &nbsp;
 					</td>
 					<td>
 						{assign var="products" value=$mix->getProducts()}
@@ -107,16 +127,41 @@
 					<td>
 						{$mix->creation_time|escape} &nbsp;
 					</td>
+                    <td class="border_users_b border_users_r">
+						$ {$mixesCosts[$index].materialCost|escape} &nbsp;
+					</td>
+                    <td class="border_users_b border_users_r">
+						$ {$mixesCosts[$index].laborCost|escape} &nbsp;
+					</td>
+                    <td class="border_users_b border_users_r">
+						$ {$mixesCosts[$index].paintCost|escape} &nbsp;
+					</td>
 					<td class="border_users_b border_users_r">
-						$ {$mix->price|escape} &nbsp;
+						$ {$mixesCosts[$index].totalCost|escape} &nbsp;
 					</td>
 				</tr>
 				{/foreach}
 				<tr	height="10px">
 					<td colspan="5">
 					</td>
+                    <td>
+						<b> Total Material Cost: </b> $ {$totalMaterialCost|escape} &nbsp;
+					</td>
+                    <td>
+						<b> Total Labor Cost: </b> $ {$totalLaborCost|escape} &nbsp;
+					</td>
+                    <td>
+						<b> Total Paint Cost: </b> $ {$totalPaintCost|escape} &nbsp;
+					</td>
 					<td>
 						<b> Total: </b> $ {$mixTotalPrice|escape} &nbsp;
+					</td>
+				</tr>
+                <tr	height="10px">
+					<td colspan="8">
+					</td>
+					<td>
+						<b> Work Order Total Price: </b> $ {$workOrdetTotalPrice|escape} &nbsp;
 					</td>
 				</tr>
 				</table>

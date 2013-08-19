@@ -93,7 +93,6 @@ class CRepairOrder extends Controller
         $woDateFormat = $dataChain->getFromTypeController('getFormat');
         
         //get process information
-
         $processId = $workOrder->getProcessTemplateId();
         $isHaveProcess = false;
 
@@ -123,7 +122,6 @@ class CRepairOrder extends Controller
             $this->smarty->assign('processInstanceId', $processInstance->getId());
             //create array of steps numbers
             $usedStepNumbers = array();
-
 
             foreach ($stepInstances as $stepInstance) {
                 $usedStepNumbers[] = $stepInstance->getNumber();
@@ -219,7 +217,6 @@ class CRepairOrder extends Controller
         }
 
         // create empty steps for display
-
         foreach ($emptyMixSteps as $emptyMixStep) {
             $mixCosts = array(
                 "materialCost" => 0,
@@ -272,7 +269,6 @@ class CRepairOrder extends Controller
         
         $this->smarty->assign('overhead', $overhead);
         $this->smarty->assign('profit', $profit);
-        
         
         //display creation_time
 		$woCreationDate = date($woDateFormat, $workOrder->getCreationTime());
@@ -825,24 +821,156 @@ class CRepairOrder extends Controller
         $this->smarty->display("tpls:index.tpl");
     }
 
+    /**
+     * print Work Order
+     */
     protected function actionCreateLabel()
     {
+        //get WorkOrder
         $repairOrder = new RepairOrder($this->db, $this->getFromRequest('id'));
+        
+        // get Date Format on Facility level
+        $dataChain = new TypeChain(null, 'date', $this->db, $repairOrder->facility_id, 'facility');
+        $woDateFormat = $dataChain->getFromTypeController('getFormat');
+        //array of mix list
         $mixList = array();
         // get child mixes
         $mixTotalPrice = 0;
+        // work order material cost
+        $materialCost = 0;
+        // work order labor cost
+        $laborCost = 0;
+        // work order paint cost
+        $paintCost = 0;
+        //get all mixes in work Order
         $mixes = $repairOrder->getMixes();
-        foreach ($mixes as $mix) {
+        
+        $mixStepsIds = array();
+        //get All Mixes with and without step in Work Order
+         foreach ($mixes as $mix) {
+             $mixCosts = array(
+                "materialCost" => 0,
+                "laborCost" => 0,
+                "totalCost" => 0,
+                "paintCost" => 0,
+                "stepNumber" => '--',
+                "stepEmpty" => false,
+                "stepId" => 0
+            );
+            // count mix price
             $mixOptimized = new MixOptimized($this->db, $mix->mix_id);
-            $mix->price = $mixOptimized->getMixPrice();
-            $mixTotalPrice += $mix->price;
-            $mixList[] = $mix;
+            $mixCosts["paintCost"] = $mixOptimized->getMixPrice();
+            $paintCost += $mixCosts["paintCost"];
+            //count mix material and labor prices if has step id
+            if (!is_null($mix->getStepId())) {
+                $step = new StepInstance($this->db, $mix->getStepId());
+                //get mix resources
+                $resources = $step->getResources();
+                $stepNumber = $step->getNumber();
+                //get step Ids
+                $mixStepsIds[] = $step->getId();
+                //count mix price by resource
+                $spentTime = $mix->spent_time;
+                // flag for getting first time price for counting mix time price
+                $timeResourceCount = 0;
+                foreach ($resources as $resource) {
+                    //count material mix cost
+                    if ($resource->getResourceTypeId() == self::GOM) {
+                        $mixCosts['materialCost'] = $resource->getMaterialCost();
+                        $materialCost += $resource->getMaterialCost();
+                    }
+                    //count labor mix cost
+                    if ($resource->getResourceTypeId() == self::TIME && $timeResourceCount == 0) {
+                        $laborCost += $spentTime * $resource->getRate();
+                        $mixCosts['laborCost'] = $spentTime * $resource->getRate();
+                        $timeResourceCount = 1;
+                    }
+                }
+                $mixCosts['stepNumber'] = $step->getNumber();
+            } else {
+                $stepNumber = $mix->mix_id;
+                $mixCosts['stepNumber'] = $mix->mix_id;
+            }
+            
+            $mixList[$stepNumber] = $mix;
+            //set mix costs
+            $mixCosts['totalCost'] = $mixCosts['materialCost'] + $mixCosts['laborCost'] + $mixCosts["paintCost"];
+            //count total work order count
+            $mixTotalPrice += $mixCosts['totalCost'];
+            $mixCosts['stepId'] = $mix->getStepId();
+            $mixesCosts[$mix->mix_id] = $mixCosts;
         }
+        
+        //GET EMPTY STEPS FOR WORK ORDER
+        //get Work order Process  
+        $processInstance = $repairOrder->getProcessInstance();
+        //check if Work order has process
+        if ($processInstance) {
+            //get all creating steps in Work Order
+            $stepInstances = $processInstance->getSteps();
+            //array of steps with out mixes
+            $emptyMixSteps = array();
+            //get steps in work order with out mixes, as we have already considered steps with mixes
+            foreach ($stepInstances as $stepInstance) {
+                if (!in_array($stepInstance->getId(), $mixStepsIds)) {
+                    $emptyMixSteps[] = $stepInstance;
+                }
+            }
+            // create empty steps for display
+            foreach ($emptyMixSteps as $emptyMixStep) {
+                //cost of Mix (labor total paint)
+                $mixCosts = array(
+                    "materialCost" => 0,
+                    "laborCost" => 0,
+                    "totalCost" => 0,
+                    "paintCost" => '0.00',
+                    "stepNumber" => '--',
+                    "stepEmpty" => true,
+                    "stepId" => 0
+                );
+                //create mix
+                $mix = new MixOptimized($this->db);
+                $mix->mix_id = $emptyMixStep->getId();
+                //$mix->setDepartmentId($departmentId);
+                //count mix creating time by step time
+                $time = $emptyMixStep->getLastUpdateTime();
+                $time = explode('-', $time);
+                $time = mktime(0, 0, 0, $time[1], $time[2], $time[0]);
+                //set date format for correct display creation time with out department Id
+                $mix->dateFormat = $woDateFormat;
+                $mix->set_creation_time($time);
+                $mix->setDescription($emptyMixStep->getDescription());
+                $mix->spent_time = $emptyMixStep->getTotalSpentTime();
 
+                //get labor, material and total cost
+                $emptyStepResources = $emptyMixStep->getResources();
+                //count Step Resource
+                foreach ($emptyStepResources as $emptyStepResource) {
+                    $mixCosts["materialCost"] += $emptyStepResource->getMaterialCost();
+                    $mixCosts["laborCost"] += $emptyStepResource->getLaborCost();
+                }
+                //count mix total price. empty steps can't have paint cost as thay haven't got mixes
+                $mixCosts["totalCost"] = $mixCosts["materialCost"] + $mixCosts["laborCost"];
+                //add mix to mix list
+                $mixList[$emptyMixStep->getNumber()] = $mix;
+                //add mix cost to mix List cost
+                $mixCosts['stepNumber'] = $emptyMixStep->getNumber();
+                $mixCosts['stepId'] = $emptyMixStep->getId();
+                $mixesCosts[$mix->mix_id] = $mixCosts;
+                //count total work order count
+                $mixTotalPrice += $mixCosts["totalCost"];
+                $materialCost += $mixCosts["materialCost"];
+                $laborCost += $mixCosts["laborCost"];
+            }
+        }
+        //sort mix list by key(by step number)
+        ksort($mixList);
+        
+        //get facility information
         $facility = new Facility($this->db);
         $company = new Company($this->db);
         $facilityDetails = $facility->getFacilityDetails($repairOrder->facility_id);
-        $companyId = $facilityDetails["company_id"];
+        $companyId = $facilityDetails["company_id"];                
         $companyLevelLabel = new CompanyLevelLabel($this->db);
         $companyLevelLabelRepairOrder = $companyLevelLabel->getRepairOrderLabel();
         $company = new VWM\Hierarchy\Company($this->db, $companyId);
@@ -853,12 +981,42 @@ class CRepairOrder extends Controller
         $processTemplate->setId($repairOrder->getProcessTemplateId());
         $processTemplate->load();
         
+        //count work order overhead and profit
+        $workOrder = WorkOrderFactory::createWorkOrder($this->db, $company->getIndustryType()->id, $this->getFromRequest('id'));
+        //calculate sub total cost
+        $subTotalCost = $workOrder->calculateSubTotalCost($materialCost, $laborCost, $paintCost);
+        $profit = $workOrder->getProfit();
+        $overhead = $workOrder->getOverhead();
+        
+        if($workOrder->getOverheadUnitType() == WorkOrder::PERCENTAGE) {
+            //calculate profit taking procent from totalcost
+            $overhead = $overhead*$subTotalCost/100;
+            $overhead = (round($overhead,2));
+        }
+        if($workOrder->getProfitUnitType() == WorkOrder::PERCENTAGE) {
+            //calculate profit taking procent from totalcost
+            $profit = $overhead*$profit/100;
+            $profit = (round($profit,2));
+        }
+        $workOrdetTotalPrice = $mixTotalPrice + $profit + $overhead;
+        
+        //get Work order creation time
+        $creationTime = $workOrder->getCreationTime();
+        $creationTime = date($woDateFormat, $creationTime);
+        
         $this->smarty->assign('processName', $processTemplate->getName());
+        $this->smarty->assign('creationTime', $creationTime);
         $this->smarty->assign('repairOrderLabel', $repairOrderLabel);
-
+        $this->smarty->assign('overhead', $overhead);
+        $this->smarty->assign('profit', $profit);
         $this->smarty->assign('mixTotalPrice', $mixTotalPrice);
         $this->smarty->assign('repairOrder', $repairOrder);
         $this->smarty->assign('mixList', $mixList);
+        $this->smarty->assign('mixesCosts', $mixesCosts);
+        $this->smarty->assign('totalMaterialCost', $materialCost);
+        $this->smarty->assign('totalLaborCost', $laborCost);
+        $this->smarty->assign('totalPaintCost', $paintCost);
+        $this->smarty->assign('workOrdetTotalPrice', $workOrdetTotalPrice);
 
         $this->smarty->display("tpls/repairOrderLabel.tpl");
     }
