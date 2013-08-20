@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class SortColumMigration extends AbstractMigration
+class MaterialReportMigration extends AbstractMigration
 {
     /**
      * Change Method.
@@ -15,14 +15,9 @@ class SortColumMigration extends AbstractMigration
      */
     public function change()
     {
-        $this->getAdapter()->beginTransaction();
-        
-        $table = $this->table('preformulated_products');
-        $table
-              ->addColumn('weight_letter_sort', 'string', array('limit' => 255, 'default' => null))
-              ->addColumn('weight_number_sort', 'integer', array('limit' => 11, 'default' => 0))
-              ->save();
-        $this->getAdapter()->commitTransaction();
+         $this->getAdapter()->beginTransaction();
+         $rows = $this->query("INSERT INTO report SET name='Costing Report by Product', type='costingProduct', description='Costing report by Product in Work Order'");
+         $this->getAdapter()->commitTransaction();
     }
     
     
