@@ -126,10 +126,10 @@ class Rcosting extends ReportCreator implements iReportCreator
         $db = VOCApp::getInstance()->getService('db');
         $dateBeginObj = DateTime::createFromFormat($this->getDateFormat(), $this->getDateBegin());
         $dateEndObj = DateTime::createFromFormat($this->getDateFormat(), $this->getDateEnd());
-        
+
         $categoryId = $this->getCategoryId();
         $category = $this->getCategoryType();
-        
+
         /*
          * Work order attached to facility. 
          * So we generate report by facility on department level
@@ -141,15 +141,18 @@ class Rcosting extends ReportCreator implements iReportCreator
             $department->load();
             $categoryId = $department->getFacilityId();
         }
-        
+
         switch ($category) {
             case "company":
-                $company = new Company($db,$categoryId);
+                $company = new Company($db, $categoryId);
                 $fManager = new FacilityManager($db, $categoryId);
                 $facilityList = $fManager->getFacilityListByCompanyId($categoryId);
                 $facilityIds = array();
                 foreach ($facilityList as $facility) {
                     $facilityIds[] = $facility->getFacilityId();
+                }
+                if(empty($facilityIds)){
+                    throw new Exception('create facility first');
                 }
                 $facilityIds = implode(',', $facilityIds);
                 $query = "SELECT p.id, p.work_order_id, w.number, w.profit, w.overhead, w.overhead_unit_type, w.profit_unit_type FROM " . WorkOrder::TABLE_NAME . " w " .
@@ -188,7 +191,7 @@ class Rcosting extends ReportCreator implements iReportCreator
             'fax' => $categoryDetails['fax'],
             'zip' => $categoryDetails['zip']
         );
-        
+
         $db->query($query);
         $rows = $db->fetch_all_array();
         $workOrderList = $this->groupComponents($rows);
@@ -202,7 +205,7 @@ class Rcosting extends ReportCreator implements iReportCreator
 
         $page = $doc->createElement("page");
         $doc->appendChild($page);
-        
+
         //create page attribute orientstion
         $pageOrientation = $doc->createAttribute("orientation");
         $pageOrientation->appendChild(
@@ -230,7 +233,7 @@ class Rcosting extends ReportCreator implements iReportCreator
                 $doc->createTextNode("10")
         );
         $page->appendChild($pageRightMargin);
-        
+
         //create new element meta
         $meta = $doc->createElement("meta");
         $page->appendChild($meta);
@@ -246,78 +249,78 @@ class Rcosting extends ReportCreator implements iReportCreator
                 $doc->createTextNode("times")
         );
         $meta->appendChild($metaValue);
-        
-        
+
+
         //create title tag
         $title = $doc->createElement("title");
         $title->appendChild(
-                $doc->createTextNode("Coasting Report")
+                $doc->createTextNode("Costing Report")
         );
         $page->appendChild($title);
-        
+
         //crteate period tag
         $periodTag = $doc->createElement("period");
         $periodTag->appendChild(
                 $doc->createTextNode("From " . $dateBegin . " To " . $dateEnd)
         );
         $page->appendChild($periodTag);
-        
+
         //create category
         $categoryTag = $doc->createElement('category');
         $categoryTag->appendChild(
                 $doc->createTextNode($orgInfo['category'])
         );
         $page->appendChild($categoryTag);
-        
+
         //create country
         $countryTag = $doc->createElement('country');
         $countryTag->appendChild(
                 $doc->createTextNode($orgInfo['country'])
         );
         $page->appendChild($countryTag);
-        
+
         //create country
         $addressTag = $doc->createElement('address');
         $addressTag->appendChild(
                 $doc->createTextNode($orgInfo['address'])
         );
         $page->appendChild($addressTag);
-        
+
         //create country
         $phoneTag = $doc->createElement('phone');
         $phoneTag->appendChild(
                 $doc->createTextNode($orgInfo['phone'])
         );
         $page->appendChild($phoneTag);
-        
+
         //create country
         $faxTag = $doc->createElement('fax');
         $faxTag->appendChild(
                 $doc->createTextNode($orgInfo['fax'])
         );
         $page->appendChild($faxTag);
-        
-         //create country
+
+        //create country
         $zipTag = $doc->createElement('zip');
         $zipTag->appendChild(
                 $doc->createTextNode($orgInfo['zip'])
         );
         $page->appendChild($zipTag);
-        
+
         //create city
         $cityTag = $doc->createElement('city');
         $cityTag->appendChild(
                 $doc->createTextNode($orgInfo['city'])
         );
         $page->appendChild($cityTag);
-        
+
         //create category name
         $categoryNameTag = $doc->createElement('categoryName');
         $categoryNameTag->appendChild(
                 $doc->createTextNode($orgInfo['categoryName'])
         );
         $page->appendChild($categoryNameTag);
-        
+
         //create table
         $table = $doc->createElement("table");
         $page->appendChild($table);
@@ -326,7 +329,7 @@ class Rcosting extends ReportCreator implements iReportCreator
         $totalPaintCost = 0;
         $totalMaterialCost = 0;
         $totalTotalCost = 0;
-        foreach($workOrderList as $workOrder){
+        foreach ($workOrderList as $workOrder) {
             //create work Order
             $workOrderComponent = $doc->createElement("workOrder");
             $table->appendChild($workOrderComponent);
@@ -336,14 +339,14 @@ class Rcosting extends ReportCreator implements iReportCreator
                     $doc->createTextNode(html_entity_decode($workOrder['number']))
             );
             $workOrderComponent->appendChild($workOrderNumberTag);
-            
+
             //create wo profit attribute
             $workOrderProfitTag = $doc->createAttribute('profit');
             $workOrderProfitTag->appendChild(
                     $doc->createTextNode(html_entity_decode($workOrder['profit']))
             );
             $workOrderComponent->appendChild($workOrderProfitTag);
-            
+
             //create wo overhead attribute
             $workOrderOverheadTag = $doc->createAttribute('overhead');
             $workOrderOverheadTag->appendChild(
@@ -356,7 +359,7 @@ class Rcosting extends ReportCreator implements iReportCreator
             foreach ($mixList as $mix) {
                 $mixComponent = $doc->createElement("mix");
                 $workOrderComponent->appendChild($mixComponent);
-                
+
                 //create material cost
                 $mixMaterialCostTag = $doc->createAttribute('materialCost');
                 $mixMaterialCostTag->appendChild(
@@ -371,7 +374,7 @@ class Rcosting extends ReportCreator implements iReportCreator
                 );
                 $mixComponent->appendChild($mixLaborCostTag);
                 $totalLaborCost+=$mix['labor'];
-                                
+
                 //create paint cost
                 $mixPaintCostTag = $doc->createAttribute('paintCost');
                 $mixPaintCostTag->appendChild(
@@ -379,28 +382,28 @@ class Rcosting extends ReportCreator implements iReportCreator
                 );
                 $mixComponent->appendChild($mixPaintCostTag);
                 $totalPaintCost+=$mix['paint'];
-                
+
                 //create step Number
                 $mixStepTag = $doc->createAttribute('step');
                 $mixStepTag->appendChild(
                         $doc->createTextNode(html_entity_decode($mix['stepNumber']))
                 );
                 $mixComponent->appendChild($mixStepTag);
-                
+
                 //create total cost
                 $mixTotalCostTag = $doc->createAttribute('totalCost');
                 $mixTotalCostTag->appendChild(
                         $doc->createTextNode(html_entity_decode($mix['total']))
                 );
                 $mixComponent->appendChild($mixTotalCostTag);
-                
+
                 //create mix description
                 $mixDescriptionTag = $doc->createAttribute('mixDescription');
                 $mixDescriptionTag->appendChild(
                         $doc->createTextNode(html_entity_decode($mix['description']))
                 );
                 $mixComponent->appendChild($mixDescriptionTag);
-                
+
                 //create mix creation time
                 $mixCreationTimeTag = $doc->createAttribute('creationTime');
                 $mixCreationTimeTag->appendChild(
@@ -416,39 +419,39 @@ class Rcosting extends ReportCreator implements iReportCreator
             $workOrderComponent->appendChild($workOrderTotalTag);
             $totalTotalCost += $workOrder['workOrderTotal'];
         }
-        
+
         //create summary
         $summary = $doc->createElement("summary");
         $table->appendChild($summary);
-        
+
         //create mix total labor cost
         $totalLaborCostTag = $doc->createAttribute('totalLaborCost');
         $totalLaborCostTag->appendChild(
                 $doc->createTextNode(html_entity_decode($totalLaborCost))
         );
         $summary->appendChild($totalLaborCostTag);
-        
+
         //create mix total material cost
         $totalMaterialCostTag = $doc->createAttribute('totalMaterialCost');
         $totalMaterialCostTag->appendChild(
                 $doc->createTextNode(html_entity_decode($totalMaterialCost))
         );
         $summary->appendChild($totalMaterialCostTag);
-        
+
         //create mix total paint cost
         $totalPaintCostTag = $doc->createAttribute('totalPaintCost');
         $totalPaintCostTag->appendChild(
                 $doc->createTextNode(html_entity_decode($totalPaintCost))
         );
         $summary->appendChild($totalPaintCostTag);
-        
+
         //create mix total total cost
         $totalTatolCostTag = $doc->createAttribute('totalTotalCost');
         $totalTatolCostTag->appendChild(
                 $doc->createTextNode(html_entity_decode($totalTotalCost))
         );
         $summary->appendChild($totalTatolCostTag);
-        
+
         $doc->save($fileName);
     }
 
@@ -456,17 +459,21 @@ class Rcosting extends ReportCreator implements iReportCreator
     {
         $db = VOCApp::getInstance()->getService('db');
         $workOderList = array();
-        
+        $dataChain = new TypeChain(null, 'date', $db, $facilityId, 'facility');
+        $timeFormat = $dataChain->getFromTypeController('getFormat');
+        if(!is_array($rows)){
+            return array();
+        }
         foreach ($rows as $row) {
-         //total of Work Order
-         $workOrderTotal = 0;
-        $mixList = array();
+            //total of Work Order
+            $workOrderTotal = 0;
+            $mixList = array();
             $query = "SELECT * FROM " . Mix::TABLE_NAME .
                     " WHERE wo_id={$db->sqltext($row['work_order_id'])}";
-                    
+
             $db->query($query);
             $results = $db->fetch_all_array();
-            
+
             $woMixes = array();
             foreach ($results as $result) {
                 $mix = new \MixOptimized($db);
@@ -479,7 +486,7 @@ class Rcosting extends ReportCreator implements iReportCreator
             }
             // get mix step id, if we have, for correct sorting
             $mixStepsIds = array();
-            
+
             foreach ($woMixes as $woMix) {
                 //get mix cost
                 $paint = $woMix->getMixPrice();
@@ -512,7 +519,7 @@ class Rcosting extends ReportCreator implements iReportCreator
                     $stepNumber = $woMix->mix_id;
                 }
                 $time = $woMix->getCreationTimeInUnixType();
-                $time = date('Y/d/m', $time);
+                $time = date($timeFormat, $time);
                 $mixTotal = $paint + $labor + $material;
                 $mix = array(
                     'stepNumber' => $stepNumber,
@@ -521,12 +528,12 @@ class Rcosting extends ReportCreator implements iReportCreator
                     'paint' => $paint,
                     'total' => $mixTotal,
                     'description' => $woMix->description,
-                    'creationTime'=> $time
+                    'creationTime' => $time
                 );
                 $mixList[$stepNumber] = $mix;
                 $workOrderTotal += $mixTotal;
             }
-            
+
             $mixStepsIds = implode(',', $mixStepsIds);
 
             //get all empty mix Steps Instance (steps in Wo with out mixes)
@@ -551,6 +558,12 @@ class Rcosting extends ReportCreator implements iReportCreator
                     $labor+=$resource['labor_cost'];
                 }
                 $emptyMixStepTotal = $material + $labor;
+                //get Creation time
+                $creationTime = explode('-', $emptyMixStep['last_update_time']);
+                $creationTime = mktime(0, 0, 0, $creationTime[1], $creationTime[2], $creationTime[0]);
+                //get data format
+                $creationTime = date($timeFormat, $creationTime);
+
                 $mix = array(
                     'stepNumber' => $emptyMixStep['number'],
                     'material' => $material,
@@ -558,19 +571,19 @@ class Rcosting extends ReportCreator implements iReportCreator
                     'paint' => 0,
                     'total' => $emptyMixStepTotal,
                     'description' => $emptyMixStep['description'],
-                    'creationTime'=> str_replace('-','/',$emptyMixStep['last_update_time'])
+                    'creationTime' => $creationTime
                 );
                 $mixList[$emptyMixStep['number']] = $mix;
                 $workOrderTotal += $emptyMixStepTotal;
             }
             ksort($mixList);
-            
-            if($row['overhead_unit_type']==WorkOrder::PERCENTAGE){
-                $row['overhead'] = $row['overhead']*$workOrderTotal/100;
+
+            if ($row['overhead_unit_type'] == WorkOrder::PERCENTAGE) {
+                $row['overhead'] = $row['overhead'] * $workOrderTotal / 100;
             }
-            
-            if($row['profit_unit_type']==WorkOrder::PERCENTAGE){
-                $row['profit'] = $row['overhead']*$row['profit']/100;
+
+            if ($row['profit_unit_type'] == WorkOrder::PERCENTAGE) {
+                $row['profit'] = $row['overhead'] * $row['profit'] / 100;
             }
             //get new WorkOrder
             $workOrderTotal+=$row['overhead'];
@@ -580,11 +593,11 @@ class Rcosting extends ReportCreator implements iReportCreator
                 'overhead' => $row['overhead'],
                 'profit' => $row['profit'],
                 'mixList' => $mixList,
-                "workOrderTotal" =>$workOrderTotal
+                "workOrderTotal" => $workOrderTotal
             );
             $workOderList[] = $workOrder;
         }
-        
+
         return $workOderList;
     }
 
