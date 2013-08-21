@@ -258,7 +258,7 @@ class Rcosting extends ReportCreator implements iReportCreator
         );
         $page->appendChild($title);
 
-        //crteate period tag
+        //create period tag
         $periodTag = $doc->createElement("period");
         $periodTag->appendChild(
                 $doc->createTextNode("From " . $dateBegin . " To " . $dateEnd)
@@ -279,28 +279,28 @@ class Rcosting extends ReportCreator implements iReportCreator
         );
         $page->appendChild($countryTag);
 
-        //create country
+        //create address
         $addressTag = $doc->createElement('address');
         $addressTag->appendChild(
                 $doc->createTextNode($orgInfo['address'])
         );
         $page->appendChild($addressTag);
 
-        //create country
+        //create phone
         $phoneTag = $doc->createElement('phone');
         $phoneTag->appendChild(
                 $doc->createTextNode($orgInfo['phone'])
         );
         $page->appendChild($phoneTag);
 
-        //create country
+        //create fax
         $faxTag = $doc->createElement('fax');
         $faxTag->appendChild(
                 $doc->createTextNode($orgInfo['fax'])
         );
         $page->appendChild($faxTag);
 
-        //create country
+        //create zip
         $zipTag = $doc->createElement('zip');
         $zipTag->appendChild(
                 $doc->createTextNode($orgInfo['zip'])
