@@ -42,5 +42,19 @@ return array(
         }
         $log->pushHandler(new Monolog\Handler\StreamHandler($dir.'reminder_logger.log', \VWM\Apps\Logger\Logger::DEBUG));
         return $log;
+    },
+    'mixLogger'=> function($c) {
+        $log = new \VWM\Apps\Logger\Logger('mix logger');
+        $dir = dirname(__FILE__) . '/../../../../../../tmp/logs/';
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        if (!file_exists($dir.'mix_logger.log')) {
+            $fp = fopen($dir.'mix_logger.log', "a+");
+            fclose($fp);
+            chmod($dir.'error_logger.log', 0777);
+        }
+        $log->pushHandler(new Monolog\Handler\StreamHandler($dir.'mix_logger.log', \VWM\Apps\Logger\Logger::DEBUG));
+        return $log;
     }
 );
