@@ -270,5 +270,52 @@ class MDocContainer extends Module {
     	$linkArray = $doc->getArrayOfLinksByIds($idArray);
     	return array ('docs' => $linkArray);
     }
+    
+    
+    /**
+     * 
+     * recuring function of sorting Document folder
+     * 
+     * @param int $id
+     * @param array $documents
+     * 
+     * @return array();
+     */
+    public function sortDocumentsByName($id, $documents)
+    {
+        //get documents in folder
+        $mainDocuments = array();
+        $folderList = array();
+        foreach ($documents as $document) {
+            if ($document['info']['parent_id'] == $id && $document['type'] == 'file') {
+                $mainDocuments[] = $document;
+            } elseif ($document['type'] == 'folder' && $document['info']['parent_id'] == $id) {
+                $folderList[] = $document;
+            }
+        }
+        
+        usort($mainDocuments, function($a, $b) {
+                    return strcmp($a["info"]["name"], $b["info"]["name"]);
+                });
+        if (!empty($folderList)) {
+            usort($folderList, function($a, $b) {
+                    return strcmp($a["info"]["name"], $b["info"]["name"]);
+                });
+            foreach ($folderList as $folder) {
+                //List of sort folder 
+                $sortFolder = array();
+                //set folder as first element
+                $sortFolder[] = $folder;
+                //get sort folder structure recurring
+                $folderStructure = $this->sortDocumentsByName($folder['info']['id'], $documents);
+                //set structure to sort folder
+                $sortFolder = array_merge($sortFolder, $folderStructure);
+                //add folders to main documents
+                $mainDocuments = array_merge($mainDocuments, $sortFolder);
+            }
+        }
+
+        return $mainDocuments;
+    }
 }
 ?>
