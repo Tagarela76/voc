@@ -71,6 +71,7 @@
                                             <option value="3">GOM</option>
                                             <option value="2">Paint</option>
                                             <option value="1">Time</option>
+                                            <option value="0">All</option>
                                         </select>
                                     </div>
                                 </td>

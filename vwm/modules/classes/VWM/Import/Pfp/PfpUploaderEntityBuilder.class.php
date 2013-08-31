@@ -72,10 +72,12 @@ class PfpUploaderEntityBuilder extends EntityBuilder
                     }
                     //create the hole pfpDescription
                     $description = $currentPfp->getDescription();
-                    foreach($convertPfpProducts as $pfpProductDescription){
-                       $description.=' / '. $pfpProductDescription->getProductNr();
+                    if (!$currentPfp->getIsProprietary()) {
+                        foreach ($convertPfpProducts as $pfpProductDescription) {
+                            $description.=' / ' . $pfpProductDescription->getProductNr();
+                        }
+                        $description.=' /';
                     }
-                    $description.=' /';
                     $currentPfp->setDescription($description);
                     //get pfp id if exist
                     $pfpManager = new \VWM\Apps\WorkOrder\Manager\PfpManager();
@@ -100,10 +102,12 @@ class PfpUploaderEntityBuilder extends EntityBuilder
 
                 $currentPfp->setCompanyId($this->getCompanyId());
 
-                //if pfp has it's own description set description and IP    
-                $currentPfp->setDescription('/ '.$data[$this->mapper
-                        ->mappedData['productName']]);
-                
+                //if pfp has it's own description set description and IP
+                if(!$currentPfp->getIsProprietary()){
+                    $currentPfp->setDescription('/ '.$data[$this->mapper->mappedData['productName']]);
+                }else{
+                    $currentPfp->setDescription($data[$this->mapper->mappedData['productName']]);
+                }
                 if ($data[$this->mapper->mappedData['ratio']] == '' && $data[$this->mapper->mappedData['unitType']] == '') {
                     continue;    
                 }
@@ -129,7 +133,7 @@ class PfpUploaderEntityBuilder extends EntityBuilder
             $pfpProducts[] = $pfpProduct;
         }
         if($pfpsCount==0){
-            throw new \Exception('Something wrong. Check the name of the fields in the file. First field must have name:  ITEM#');
+            throw new \Exception('Something wrong. Check the name of the fields in the file. First field must have name:  ITEM #');
         }
         //get last pfp
         $currentPfp->setProducts($pfpProducts);

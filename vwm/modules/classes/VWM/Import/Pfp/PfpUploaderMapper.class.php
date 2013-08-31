@@ -2,19 +2,19 @@
 
 namespace VWM\Import\Pfp;
 
-class PfpUploaderMapper extends \VWM\Import\Mapper {
+class PfpUploaderMapper extends \VWM\Import\Mapper
+{
+    public function getMap()
+    {
+        return array(
+            "number" => array('ITEM #'),
+            "productId" => array('PRODUCT ID'),
+            "productName" => array('PRODUCT NAME/COLOR'),
+            "ratio" => array('MIX RATIO'),
+            "unitType" => array('UNIT TYPE'),
+            "IP" => array('IP'),
+        );
+    }
 
-
-	public function getMap() {
-		return array(
-            "number" => array('ITEM#'),
-			"productId" => array('PRODUCT ID'),
-			"productName" => array('PRODUCT NAME/COLOR'),
-			"ratio" => array('MIX RATIO'),
-			"unitType" => array('UNIT TYPE'),
-			"IP" => array('IP'),
-		);
-	}
 }
-
 ?>

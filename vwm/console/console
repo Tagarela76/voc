@@ -11,6 +11,7 @@ use VWM\Apps\Logbook\Console\Command\LogbookPendingRecordCreateCommand;
 use VWM\Apps\Reminder\Console\Command\BeforehandReminderCommand;
 use VWM\Apps\Reminder\Console\Command\CreateReminderUserCommand;
 use VWM\Apps\WorkOrder\Console\Command\CreateLetterAndNumberSortColumCommand;
+use VWM\Apps\WorkOrder\Console\Command\UpdatePfpLibraryCommand;
 
 
 $site_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
@@ -61,6 +62,7 @@ $application->add(new LogbookPendingRecordCreateCommand);
 $application->add(new CreateReminderUserCommand);
 $application->add(new BeforehandReminderCommand);
 $application->add(new CreateLetterAndNumberSortColumCommand);
+$application->add(new UpdatePfpLibraryCommand);
 $application->run();
 
 

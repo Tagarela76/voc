@@ -286,11 +286,7 @@ class CDocs extends Controller
 		);
 		$result = $mDocs->prepareView($params);
         //sort documents by file name
-        $docList = $result['InfoTree'];
-        usort($docList, function($a,$b) {
-                    return strcmp($a["info"]["name"], $b["info"]["name"]);
-                });
-        $result['InfoTree'] = $docList;
+        $result['InfoTree'] = $mDocs->sortDocumentsByName(0,$result['InfoTree']);
         
 		foreach($result as $key => $data) {
 			$this->smarty->assign($key,$data);

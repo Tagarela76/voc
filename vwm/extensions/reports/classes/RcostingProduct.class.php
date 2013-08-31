@@ -139,10 +139,10 @@ class RcostingProduct extends ReportCreator implements iReportCreator
                 $company = new Company($db, $categoryId);
                 $facilityList = $company->getFacilities();
                 $facilityIds = array();
-                if(empty($facilityIds)){
+                if (empty($facilityIds)) {
                     throw new Exception("Create Facility first");
                 }
-                foreach($facilityList as $facility){
+                foreach ($facilityList as $facility) {
                     $facilityIds[] = $facility->getFacilityId();
                 }
                 $facilityIds = implode(',', $facilityIds);
@@ -155,16 +155,18 @@ class RcostingProduct extends ReportCreator implements iReportCreator
                         "ON r.step_id = s.id " .
                         "WHERE w.creation_time >= " . $dateBeginObj->getTimestamp() . " " .
                         "AND  w.creation_time <= " . $dateEndObj->getTimestamp() . " " .
-                        "AND  w.facility_id IN ({$db->sqltext($facilityIds)}) ".
-                        "AND  r.resource_type_id = {$db->sqltext($resourceType)}";
-                        
-                 $category = "Company";
-                 $categoryName = $company->getName();
-                 $categoryDetails = $company->getAttributes();
+                        "AND  w.facility_id IN ({$db->sqltext($facilityIds)})";
+                if ($resourceType != 0) {
+                    $query.= " AND  r.resource_type_id = {$db->sqltext($resourceType)}";
+                }
+
+                $category = "Company";
+                $categoryName = $company->getName();
+                $categoryDetails = $company->getAttributes();
                 break;
             case "facility":
                 $facility = new Facility($db, $categoryId);
-                $query = "SELECT r.description, w.number, s.description stepDescription, w.creation_time, r.rate_qty, r.total_cost ".
+                $query = "SELECT r.description, w.number, s.description stepDescription, w.creation_time, r.rate_qty, r.total_cost " .
                         "FROM " . WorkOrder::TABLE_NAME . " w " .
                         "RIGHT JOIN " . ProcessInstance::TABLE_NAME . " p " .
                         "ON p.work_order_id = w.id " .
@@ -174,11 +176,14 @@ class RcostingProduct extends ReportCreator implements iReportCreator
                         "ON r.step_id = s.id " .
                         "WHERE w.creation_time >= " . $dateBeginObj->getTimestamp() . " " .
                         "AND  w.creation_time <= " . $dateEndObj->getTimestamp() . " " .
-                        "AND  w.facility_id = {$db->sqltext($categoryId)} ".
-                        "AND  r.resource_type_id = {$db->sqltext($resourceType)}";
-                 $category = "Facility";
-                 $categoryName = $facility->getName();
-                 $categoryDetails = $facility->getAttributes();
+                        "AND  w.facility_id = {$db->sqltext($categoryId)}";
+
+                if ($resourceType != 0) {
+                    $query.= " AND  r.resource_type_id = {$db->sqltext($resourceType)}";
+                }
+                $category = "Facility";
+                $categoryName = $facility->getName();
+                $categoryDetails = $facility->getAttributes();
                 break;
             default :
                 throw new Exception('Unknown Category');

@@ -14,10 +14,8 @@ class validateCSV
     public $errorComments;
     protected $processError = array();
     protected $processCorrect = array();
-    
     protected $pfpErrorsNames = array();
     protected $pfpCorrectsNames = array();
-    
 
     public function getProcessError()
     {
@@ -38,7 +36,7 @@ class validateCSV
     {
         $this->processCorrect[] = $processCorrect;
     }
-    
+
     public function getProductsCorrect()
     {
         return $this->productsCorrect;
@@ -58,7 +56,7 @@ class validateCSV
     {
         $this->productsError = $productsError;
     }
-    
+
     public function getPfpErrorsNames()
     {
         return $this->pfpErrorsNames;
@@ -101,7 +99,7 @@ class validateCSV
         $pfpErrorsNames = array();
         $pfpCorrectsNames = array();
         $pfpErrorsProducts = array();
-        
+
         $CSVPath = $input['inputFile'];
         //last row
         $file = fopen($CSVPath, "a");
@@ -118,14 +116,12 @@ class validateCSV
         $currentRow = 0;
         $headerEndsRow = 3;
         //	here we'll store rows for single pfp
-        
+
         $currentPfpName = '';
         $isErrorInCurrentPfp = false;
-        
+
         $i = 0;
         while ($dat = fgetcsv($file, 1000, ";")) {
-            $i++;
-
             $currentRow++;
             if ($currentRow < $headerEndsRow) {
                 //	skip first $headerEndsRow rows
@@ -133,28 +129,41 @@ class validateCSV
             }
             // get pfp Details if exist
             if (!empty($dat[1])) {
-                $currentPfpName = '/ '.$dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
-                
+                // set is Proprietary to 0 as default
+                $isProprietary = 0;
                 // check ip correct
                 if (!bulkUploader4PFP::isProprietary($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY])) {
                     $this->errorComments .= "incorrect IP :  Row " . $currentRow . ".\n";
                     $isErrorInCurrentPfp = true;
                 }
+
+                //set pfp name for primary pfp and product pfp
+                if ($dat[bulkUploader4PFP::INTELLECTUAL_PROPRIETARY] == 'IP') {
+                    $currentPfpName = $dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
+                    $isProprietary = 1;
+                } else {
+                    $currentPfpName = '/ ' . $dat[bulkUploader4PFP::PRODUCTNAME_INDEX];
+                }
+
                 if ($dat[4] == '') {
                     continue;
                 }
             }
-            
+
             $data = $this->trimAll($dat);
 
             //	pfp's are splitted by empty row
             if ($this->isEmptyRow($data)) {
 
-                if ($currentPfpName!='') {
+                if ($currentPfpName != '') {
                     if ($isErrorInCurrentPfp) {
                         $pfpErrorsNames[] = $currentPfpName;
                     } else {
-                        $pfpCorrectsNames[] = $currentPfpName.' /';
+                        if ($isProprietary) {
+                            $pfpCorrectsNames[] = $currentPfpName;
+                        } else {
+                            $pfpCorrectsNames[] = $currentPfpName . ' /';
+                        }
                     }
                     //	reset
                     $currentPfpName = '';
@@ -166,7 +175,9 @@ class validateCSV
 
             $currRowComments = $this->pfpDataCheck($data, $currentRow);
             //create the hole pfp name
-            $currentPfpName.=' / '.$data[bulkUploader4PFP::PRODUCTNR_INDEX];
+            if (!$isProprietary) {
+                $currentPfpName.=' / ' . $data[bulkUploader4PFP::PRODUCTNR_INDEX];
+            }
 
             if (bulkUploader4PFP::isRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
                 $ranges = bulkUploader4PFP::splitRangeRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX]);
@@ -176,8 +187,8 @@ class validateCSV
             if (bulkUploader4PFP::isRtuOrRtsRatio($data[bulkUploader4PFP::PRODUCTRATIO_INDEX])) {
                 $data[bulkUploader4PFP::PRODUCTRATIO_INDEX] = 1;
             }
-            
-            
+
+
             //check product dencity
             $productObj = new \Product($this->db);
             $productId = $productObj->getProductIdByName($data[bulkUploader4PFP::PRODUCTNR_INDEX]);
@@ -192,8 +203,8 @@ class validateCSV
             if ($currRowComments != "") {
                 $this->errorComments .= $currRowComments;
                 $productError = array(
-                    'productId'=>$data[bulkUploader4PFP::PRODUCTNR_INDEX],
-                    'errorComments'=>$currRowComments
+                    'productId' => $data[bulkUploader4PFP::PRODUCTNR_INDEX],
+                    'errorComments' => $currRowComments
                 );
                 $this->productsError[] = $productError;
                 $isErrorInCurrentPfp = true;
@@ -328,7 +339,7 @@ class validateCSV
         $error = "";
         $this->errorComments = "--------------------------------\n";
         $this->errorComments .= "(" . date("m.d.Y H:i:s") . ") Starting validation of " . $input['realFileName'] . "...\n";
-        
+
         while ($dat = fgetcsv($file, 1000, ";")) {
 
             $data = Array();
@@ -337,7 +348,7 @@ class validateCSV
             }
 
             $data = $this->trimAll($data);
-            
+
             $data_tmp[0] = $data[$headerKey['productID']];
             $data_tmp[1] = $data[$headerKey['mfg']];
             $data_tmp[2] = $data[$headerKey['productName']];
@@ -382,7 +393,7 @@ class validateCSV
             $data_tmp[41] = $data[$headerKey['libraryTypes']]; // product library type
 
             $data = $data_tmp;
-        
+
             if (!empty($data[0])) {
 
                 $componentKey = -1;
@@ -760,10 +771,10 @@ class validateCSV
 
         //specialty coating check
         //$sc = trim($data[4]);
-        
-        /*if (!(strtoupper($data[4]) == "YES" || strtoupper($data[4]) == "NO" || empty($data[4]))) {
-            $comments .= "	Specialty coating value is undefined. Row " . $row . ".\n";
-        }*/
+
+        /* if (!(strtoupper($data[4]) == "YES" || strtoupper($data[4]) == "NO" || empty($data[4]))) {
+          $comments .= "	Specialty coating value is undefined. Row " . $row . ".\n";
+          } */
 
         //aerosol check
         //$aerosol = trim($data[5]);
@@ -1012,12 +1023,12 @@ class validateCSV
     private function tableHeader($file)
     {
         $dat = fgetcsv($file, 1000, ";");
-        
+
         $firstRowData = Array();
         foreach ($dat as $val) {
             $firstRowData[] = mysql_real_escape_string($val);
         }
-        
+
         $dat = fgetcsv($file, 1000, ";");
         $secondRowData = Array();
         foreach ($dat as $val) {
@@ -1206,7 +1217,7 @@ class validateCSV
                     if (strtoupper(trim($firstRowData[$i])) == $header) {
                         $key['scoating'] = $i;
                         $columnIndex[$i] = TRUE;
-                    } 
+                    }
                 }
             }
 
